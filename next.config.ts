@@ -1,15 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Classic rendering model: pages read from Postgres per request / ISR,
+  // and the admin calls revalidatePath() after every publish.
+  cacheComponents: false,
+  images: {
+    remotePatterns: [
+      // Duda CDN – only until media is migrated to our own storage
+      { protocol: "https", hostname: "irp.cdn-website.com" },
+      { protocol: "https", hostname: "lirp.cdn-website.com" },
+    ],
+  },
   turbopack: {
     rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
+      "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
     },
   },
 };

@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "ronen",
+    "name": "RONEN ECKHOUSE",
+    "title": "CO-FOUNDER & CEO",
+    "longTitle": "CO-FOUNDER AND CHAIRMAN OF THE BOARD",
+    "bioMd": "Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent to the U.S. Navy Seals. Ronen holds a BSc in Electrical Engineering from the Technion Institute of Technology, and an MBA from the Haas School of Business at UC Berkeley.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg",
+    "sortOrder": 0
+  },
+  {
+    "slug": "michal",
+    "name": "MICHAL SHRIKI",
+    "title": "CHIEF FINANCIAL OFFICER",
+    "longTitle": "CHIEF FINANCIAL OFFICER",
+    "bioMd": "Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) and Starling Advanced Communications Ltd (acquired by Panasonic). Michal is a Certified Accountant with a BA in Economics and an MBA from the University of Haifa, Israel.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Michal-1920w.jpg",
+    "sortOrder": 1
+  },
+  {
+    "slug": "walid",
+    "name": "DR. WALID HADDAD",
+    "title": "CHIEF CLINICAL OFFICER",
+    "longTitle": "CHIEF CLINICAL OFFICER",
+    "bioMd": "Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer. He brings over 15 years of experience in clinical research, strategy, medical affairs, and operations as a C-suite executive in the biomedical industry. Additionally, Dr. Haddad carries extensive experience in executing FDA regulated studies. Most recently, he served as Chief Operations Officer for a cardiology startup, CardioGard. Dr. Haddad holds a Ph.D. in Physiology from the Faculty of Medicine from the Hebrew University of Jerusalem.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Walid-1920w.jpg",
+    "sortOrder": 2
+  },
+  {
+    "slug": "eitan",
+    "name": "EITAN HAVIS",
+    "title": "PRESIDENT, INTERNATIONAL",
+    "longTitle": "PRESIDENT, INTERNATIONAL",
+    "bioMd": "Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East. He has over 20 years of commercial leadership experience and helped to grow Rapid Medical from an early-stage start-up to a well-funded commercial operation. Eitan holds a BA in Business Administration and Economics from Haifa University in Israel.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Eitan-1920w.jpg",
+    "sortOrder": 3
+  },
+  {
+    "slug": "james",
+    "name": "JAMES ROMERO",
+    "title": "PRESIDENT, AMERICAS",
+    "longTitle": "PRESIDENT, AMERICAS",
+    "bioMd": "James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sales Operations and Global Sales Training for the neurovascular division at Medtronic. James brings over 20 years of leadership experience in growth-stage and large-scale MedTech companies and holds a BS in Psychology from Santa Clara University.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/James-1920w.jpg",
+    "sortOrder": 4
+  },
+  {
+    "slug": "giora",
+    "name": "GIORA KORNBLAU",
+    "title": "CHIEF TECHNOLOGY OFFICER",
+    "longTitle": "CHIEF TECHNOLOGY OFFICER",
+    "bioMd": "Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Rapid Medical, he was a partner at Terra VP leading Israeli VC and managed a technology incubator, where he helped develop deep technology products in the fields of clean energy and health. Mr. Kornblau graduated from the prestigious Talpiot program, served as an F-16 pilot in the Israeli Air Force, and holds a Bachelor’s degree with Honors in Physics and Mathematics from the Hebrew University of Jerusalem.",
+    "photoUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Giora-1920w.jpg",
+    "sortOrder": 5
+  }
+]

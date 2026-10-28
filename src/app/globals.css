@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
+/*
+ * Neutral baseline. Design tokens live here so a future redesign is a
+ * matter of changing values, not markup.
+ */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111111;
+  --muted: #6b6b6b;
+  --accent: #111111; /* placeholder – brand color TBD */
+  --accent-foreground: #ffffff;
+  --surface: #f5f5f5;
+  --border: #e5e5e5;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
+
+/* Rendered Markdown */
+.prose-rm :where(h1, h2, h3, h4) { font-weight: 600; margin: 1.5em 0 0.5em; line-height: 1.2; }
+.prose-rm :where(h1) { font-size: 2rem; }
+.prose-rm :where(h2) { font-size: 1.5rem; }
+.prose-rm :where(h3) { font-size: 1.25rem; }
+.prose-rm :where(p, ul, ol, blockquote) { margin: 0 0 1em; line-height: 1.65; }
+.prose-rm :where(ul) { list-style: disc; padding-left: 1.5em; }
+.prose-rm :where(ol) { list-style: decimal; padding-left: 1.5em; }
+.prose-rm :where(a) { text-decoration: underline; }
+.prose-rm :where(strong) { font-weight: 600; }
+.prose-rm :where(img) { max-width: 100%; height: auto; }
+.prose-rm :where(table) { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.9em; }
+.prose-rm :where(th, td) { border: 1px solid var(--border); padding: 0.4em 0.6em; text-align: left; }
+.prose-rm-sm { font-size: 0.8rem; color: var(--muted); }
