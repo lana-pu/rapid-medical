@@ -143,3 +143,58 @@ test("activity log records actions", async ({ page }) => {
   await expect(page.locator("tbody td span", { hasText: /^publish$/ }).first()).toBeVisible();
   await expect(page.locator("tbody td span", { hasText: /^login_failed$/ }).first()).toBeVisible();
 });
+
+test("on-page editor: inline text edit → pending → publish; settings draft", async ({ page, browser }) => {
+  await login(page);
+  await page.goto("/api/editor?on=1&redirect=/ous/therapies/lvo");
+  await page.waitForURL(/\/ous\/therapies\/lvo/);
+  await expect(page.locator("#rm-editor-ui")).toBeAttached();
+  await expect(page.locator("h1 [data-e]")).toBeVisible();
+
+  const h1 = page.locator("h1 [data-e]");
+  await h1.click();
+  await expect(h1).toHaveAttribute("contenteditable", /plaintext-only|true/);
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type("Inline edited title");
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("1 pending change on this page")).toBeVisible();
+  expect(sql("select data->>'heroTitle' from drafts where resource='solutions'")).toBe("Inline edited title");
+
+  const anon = await (await browser.newContext()).newPage();
+  await anon.goto("/ous/therapies/lvo");
+  await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
+  await expect(anon.locator("[data-e]")).toHaveCount(0);
+
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await expect(page.getByText("No pending changes on this page")).toBeVisible();
+  await anon.reload();
+  await expect(anon.locator("h1")).toHaveText("Inline edited title");
+
+  // restore via the editor
+  await page.locator("h1 [data-e]").click();
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type("A patient-centric approach to AIS");
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("1 pending change on this page")).toBeVisible();
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await expect(page.getByText("No pending changes on this page")).toBeVisible();
+
+  // settings-backed page (home): draft table, then publish
+  await page.goto("/");
+  const stat = page.locator('[data-e*="stats.0.value"]');
+  await stat.click();
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type("99K+");
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("1 pending change on this page")).toBeVisible();
+  expect(sql("select value->'stats'->0->>'value' from setting_drafts where key='home'")).toBe("99K+");
+  expect(sql("select value->'stats'->0->>'value' from site_settings where key='home'")).toBe("40K+");
+  page.once("dialog", (d) => d.accept());
+  await page.click('#rm-editor-ui button:has-text("Discard")');
+  await expect(page.getByText("No pending changes on this page")).toBeVisible();
+  expect(sql("select count(*) from setting_drafts")).toBe("0");
+
+  // exit
+  await page.goto("/api/editor?off=1&redirect=/");
+  await expect(page.locator("[data-e]")).toHaveCount(0);
+});

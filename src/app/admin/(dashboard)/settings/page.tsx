@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { SETTINGS_GROUPS, getSettingsGroup } from "@/admin/settings";
-import { getSetting, setSetting } from "@/lib/settings";
+import { getLiveSetting, setSetting, getSettingDraft, deleteSettingDraft } from "@/lib/settings";
 import { db, products } from "@/db";
 import { PageHeader, Notice, Button } from "@/components/admin/ui";
 import { SettingsFields } from "@/components/admin/SettingsFields";
@@ -12,7 +12,8 @@ import { SettingsFields } from "@/components/admin/SettingsFields";
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string }> }) {
   const sp = await searchParams;
   const group = getSettingsGroup(sp.group ?? "contact") ?? SETTINGS_GROUPS[0];
-  const [value, prods] = await Promise.all([getSetting(group.key), db.select().from(products)]);
+  const [live, draft, prods] = await Promise.all([getLiveSetting(group.key), getSettingDraft(group.key), db.select().from(products)]);
+  const value = draft ? { ...live, ...draft.value } : live;
 
   async function save(fd: FormData) {
     "use server";
@@ -39,9 +40,19 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       else out[f.name] = s;
     }
     await setSetting(g.key, out);
+    await deleteSettingDraft(g.key);
     await audit(user, "settings", { label: g.title, meta: { key: g.key } });
     for (const p of g.revalidate) revalidatePath(p, "layout");
     redirect(`/admin/settings?group=${g.key}&saved=1`);
+  }
+
+  async function discard(fd: FormData) {
+    "use server";
+    const user = await requireUser();
+    const key = String(fd.get("__group"));
+    await deleteSettingDraft(key);
+    await audit(user, "settings", { label: key, meta: { key, discardedDraft: true } });
+    redirect(`/admin/settings?group=${key}`);
   }
 
   return (
@@ -55,6 +66,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         ))}
       </div>
       {sp.saved && <Notice kind="success">Saved.</Notice>}
+      {draft && (
+        <Notice kind="info">
+          This group has changes made on the site by {draft.updatedByName || "an editor"} that are not live yet. The form shows them; <b>Save</b> publishes them,{" "}
+          <form action={discard} className="inline"><input type="hidden" name="__group" value={group.key} /><button type="submit" className="underline">discard</button></form> drops them.
+        </Notice>
+      )}
       {group.description && <p className="mb-4 text-sm text-neutral-500">{group.description}</p>}
       <form action={save} className="space-y-6">
         <input type="hidden" name="__group" value={group.key} />

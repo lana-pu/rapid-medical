@@ -6,6 +6,7 @@ import { safeHtml } from "@/lib/html";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { Section, H1, Prose, Eyebrow } from "@/components/site/primitives";
 import { REGION_LABELS } from "@/lib/regions";
+import { E } from "@/components/site/editable";
 
 /** Regional landing pages, e.g. /us/success-study-final-results */
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
@@ -32,8 +33,8 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
   return (
     <Section>
       <Eyebrow>{REGION_LABELS[region]}</Eyebrow>
-      <H1>{page.title}</H1>
-      <Prose html={safeHtml(page.bodyHtml)} className="mt-8 max-w-3xl" />
+      <H1><E r="pages" id={page.id} f="title">{page.title}</E></H1>
+      <E r="pages" id={page.id} f="bodyHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(page.bodyHtml)} /></E>
     </Section>
   );
 }

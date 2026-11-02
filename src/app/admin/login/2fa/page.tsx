@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { resolveEditorNext } from "@/lib/editing";
 import { eq } from "drizzle-orm";
 import { db, users } from "@/db";
 import { getSession, totpCheck, consumeRecoveryCode, markSessionVerified, destroySession } from "@/lib/auth";
@@ -27,7 +28,8 @@ export default async function TwoFactorPage({ searchParams }: { searchParams: Pr
     }
     await markSessionVerified();
     await audit(s, "login", { meta: { step: "2fa" } });
-    redirect(next.startsWith("/admin") ? next : "/admin");
+    const editorPath = await resolveEditorNext(next);
+    redirect(editorPath ?? (next.startsWith("/admin") ? next : "/admin"));
   }
 
   async function cancel() {

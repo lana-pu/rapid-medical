@@ -5,6 +5,7 @@ import { getSetting } from "@/lib/settings";
 import { REGION_LABELS } from "@/lib/regions";
 import { Section, Container, H1, H2, Btn, Img, Eyebrow } from "@/components/site/primitives";
 import { VideoHero } from "@/components/site/Media";
+import { E, EMedia } from "@/components/site/editable";
 
 type Landing = {
   title?: string; intro?: string; heroVideoUrl?: string; note?: string;
@@ -21,15 +22,16 @@ export default async function TherapiesIndex({ params }: { params: Promise<{ seg
   const region = regionOr404((await params).seg);
   const [landing, items] = await Promise.all([getSetting<Landing>(`therapies:${region}`), getSolutionsNav(region)]);
   const blocks = landing.blocks ?? [];
+  const R = { r: `settings:therapies:${region}` } as const;
 
   return (
     <>
       <VideoHero videoUrl={landing.heroVideoUrl}>
         <Container className="py-20 md:py-28">
           <Eyebrow>{REGION_LABELS[region]} · <Link href="/choose-your-location" className="underline">change</Link></Eyebrow>
-          <H1>{landing.title ?? "Our Therapies"}</H1>
-          {landing.intro && <p className="mt-6 max-w-3xl text-lg">{landing.intro}</p>}
-          {landing.note && <p className="mt-3 text-sm opacity-80">{landing.note}</p>}
+          <H1><E {...R} f="title">{landing.title ?? "Our Therapies"}</E></H1>
+          {landing.intro && <p className="mt-6 max-w-3xl text-lg"><E {...R} f="intro">{landing.intro}</E></p>}
+          {landing.note && <p className="mt-3 text-sm opacity-80"><E {...R} f="note">{landing.note}</E></p>}
         </Container>
       </VideoHero>
 
@@ -39,13 +41,13 @@ export default async function TherapiesIndex({ params }: { params: Promise<{ seg
             {blocks.map((b, i) => (
               <div key={i} className="grid items-center gap-8 md:grid-cols-2">
                 <div>
-                  <H2>{b.title}</H2>
-                  <p className="mt-4 text-muted">{b.body}</p>
+                  <H2><E {...R} f={`blocks.${i}.title`}>{b.title}</E></H2>
+                  <p className="mt-4 text-muted"><E {...R} f={`blocks.${i}.body`}>{b.body}</E></p>
                   <div className="mt-6 flex flex-wrap gap-3">
-                    {b.links?.map((l) => <Btn key={l.href} href={l.href} variant="secondary">{l.label} →</Btn>)}
+                    {b.links?.map((l, j) => <Btn key={l.href} href={l.href} variant="secondary"><E {...R} f={`blocks.${i}.links.${j}.label`} fh={`blocks.${i}.links.${j}.href`} k="link">{l.label}</E> →</Btn>)}
                   </div>
                 </div>
-                {b.imageUrl ? <Img src={b.imageUrl} className="w-full rounded" /> : <div />}
+                {b.imageUrl ? <EMedia {...R} f={`blocks.${i}.imageUrl`}><Img src={b.imageUrl} className="w-full rounded" /></EMedia> : <div />}
               </div>
             ))}
           </div>
@@ -66,8 +68,8 @@ export default async function TherapiesIndex({ params }: { params: Promise<{ seg
       )}
 
       <Section className="bg-surface">
-        <H2>{landing.closingTitle ?? "Questions?"}</H2>
-        <p className="mt-3 text-muted">{landing.closingBody ?? "Reach out to learn more about our company and stroke solutions."}</p>
+        <H2><E {...R} f="closingTitle">{landing.closingTitle ?? "Questions?"}</E></H2>
+        <p className="mt-3 text-muted"><E {...R} f="closingBody">{landing.closingBody ?? "Reach out to learn more about our company and stroke solutions."}</E></p>
         <div className="mt-6"><Btn href={`/contact-us?region=${region}`}>Contact us</Btn></div>
       </Section>
     </>

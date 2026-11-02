@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { resolveEditorNext } from "@/lib/editing";
 import { authenticate, createSession, getSession } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { inputCls } from "@/components/admin/ui";
@@ -24,8 +25,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     const { needsTotp } = await createSession(result.user);
     const u = result.user;
     await audit({ id: u.id, email: u.email, name: u.name, role: u.role }, "login", { meta: needsTotp ? { step: "password" } : {} });
-    const target = next.startsWith("/admin") ? next : "/admin";
-    redirect(needsTotp ? `/admin/login/2fa?next=${encodeURIComponent(target)}` : target);
+    const target = next.startsWith("/admin") || next.startsWith("/api/editor") ? next : "/admin";
+    if (needsTotp) redirect(`/admin/login/2fa?next=${encodeURIComponent(target)}`);
+    const editorPath = await resolveEditorNext(target);
+    redirect(editorPath ?? target);
   }
 
   return (

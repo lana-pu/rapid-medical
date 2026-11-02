@@ -3,6 +3,7 @@ import { getSetting } from "@/lib/settings";
 import { getSuggestedRegion } from "@/lib/region-cookie";
 import { REGION_CHOICES } from "@/lib/regions";
 import { Section, H1 } from "@/components/site/primitives";
+import { E } from "@/components/site/editable";
 
 export const metadata = { title: "Choose Your Location", description: "Access tailored neurovascular therapy options worldwide." };
 
@@ -13,8 +14,8 @@ export default async function ChooseLocation({ searchParams }: { searchParams: P
 
   return (
     <Section>
-      <H1>{regional.chooserTitle ?? "Choose your location."}</H1>
-      <p className="mt-3 max-w-xl text-muted">{regional.chooserNote ?? "Product availability and regulatory information differ by region."}</p>
+      <H1><E r="settings:regional" f="chooserTitle">{regional.chooserTitle ?? "Choose your location."}</E></H1>
+      <p className="mt-3 max-w-xl text-muted"><E r="settings:regional" f="chooserNote">{regional.chooserNote ?? "Product availability and regulatory information differ by region."}</E></p>
       <ul className="mt-10 grid gap-4 sm:grid-cols-3">
         {REGION_CHOICES.map((o) => (
           <li key={o.label}>

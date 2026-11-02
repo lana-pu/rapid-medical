@@ -4,6 +4,7 @@ import { getJob } from "@/lib/content";
 import { safeHtml } from "@/lib/html";
 import { Section, H1, Btn, Prose } from "@/components/site/primitives";
 import { ContactForm } from "@/components/site/ContactForm";
+import { E } from "@/components/site/editable";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const j = await getJob((await params).slug);
@@ -17,9 +18,9 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
   return (
     <Section>
       <Link href="/open-positions" className="text-sm underline">← All positions</Link>
-      <H1 className="mt-4">{j.title}</H1>
+      <H1 className="mt-4"><E r="jobs" id={j.id} f="title">{j.title}</E></H1>
       <div className="mt-2 text-muted">{[j.department, j.location].filter(Boolean).join(" · ")}</div>
-      <Prose html={safeHtml(j.descriptionHtml)} className="mt-8 max-w-3xl" />
+      <E r="jobs" id={j.id} f="descriptionHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(j.descriptionHtml)} /></E>
       <div className="mt-8 flex gap-3">
         {j.applyUrl && <Btn href={j.applyUrl}>Apply</Btn>}
         {j.applyEmail && <Btn href={`mailto:${j.applyEmail}?subject=${encodeURIComponent(j.title)}`} variant="secondary">Apply by email</Btn>}

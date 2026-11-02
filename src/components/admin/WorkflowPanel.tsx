@@ -15,6 +15,7 @@ export function WorkflowPanel({
   user,
   requireApproval,
   previewHref,
+  editHref,
 }: {
   resourceSlug: string;
   id: number;
@@ -24,6 +25,7 @@ export function WorkflowPanel({
   user: SessionUser;
   requireApproval: boolean;
   previewHref: string | null;
+  editHref?: string | null;
 }) {
   const hidden = (
     <>
@@ -71,6 +73,7 @@ export function WorkflowPanel({
           <div className="mt-3 text-xs">
             <Link href={previewHref} target="_blank" className="underline">Preview {pending ? "with pending changes" : "page"} ↗</Link>
             <span className="ml-2 text-neutral-400">(share this link — valid 7 days)</span>
+            {editHref && <a href={editHref} className="ml-4 font-medium underline">Edit on site ✎</a>}
           </div>
         )}
       </div>

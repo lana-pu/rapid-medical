@@ -65,6 +65,16 @@ Everything with a `status` field is only public when `published`. Saving revalid
 - **Unsaved-changes guard**: warns before leaving a dirty form and keeps a local backup that can be restored.
 - **Lists**: search, filters (status / region / product / featured), column sorting, pagination, bulk publish / unpublish / delete.
 
+### On-page editor (“Edit site”)
+
+Webflow-Editor-style editing on the live site, for people who should change texts and media without touching structure.
+
+- Enter from the admin sidebar (*Edit site*) or from any record (*Edit on site*); `/api/editor?on=1&redirect=/path` turns it on for the browser (Next draft mode + `rm_edit` cookie, admin session required), `?off=1` turns it off. A bar at the bottom shows who is editing and what is pending on the page.
+- Every editable text and media slot is outlined. **Click text** to edit in place (Enter saves, Esc cancels, Shift+Enter = newline). **Click an image/video** for *Replace image / Replace video / Remove video / Clear image* via the media library. **Rich-text blocks** (regulatory, references, page bodies, bios, job descriptions) open the full editor in a panel. **Buttons** open a label + link popover.
+- Saves go through the normal workflow: a published record gets a pending draft (visible in the editor and in preview links, invisible to visitors); unpublished records are updated in place; singleton pages (home, about, careers, evidence, therapy landings, location chooser, offices) are stored in site settings and get a `setting_drafts` row. The bar's **Publish** publishes everything pending on the page (respecting *Require approval* — editors get *Submit for review* instead), **Discard** drops it. Pending setting drafts also show on the dashboard and on the Site settings form (where *Save* publishes them).
+- Structure (adding/removing blocks, order, tables, slugs, SEO) stays in the admin forms by design.
+- Implementation: `src/components/site/editable.tsx` (`<E>` / `<EMedia>` wrappers that render nothing extra outside editor mode), `src/components/editor/EditorOverlay.tsx` (client overlay, loaded only in editor mode), `src/admin/inline.ts` (server actions: field path validation against the resource/settings schemas, save, pending, publish, discard, review), `src/lib/editing.ts`.
+
 ### Editorial workflow
 
 - **Live vs pending.** Editing a published record never touches the site: changes are stored as a pending draft until someone clicks *Publish changes*. Unpublished records are edited in place.

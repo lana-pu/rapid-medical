@@ -6,9 +6,11 @@ import { getAllSettings } from "@/lib/settings";
 import { getSolutionsNav } from "@/lib/content";
 import { draftMode } from "next/headers";
 import { PreviewBanner } from "@/components/site/PreviewBanner";
+import { EditorLoader } from "@/components/editor/EditorLoader";
+import { isEditing } from "@/lib/editing";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [region, settings, dm] = await Promise.all([getRememberedRegion(), getAllSettings(), draftMode()]);
+  const [region, settings, dm, editing] = await Promise.all([getRememberedRegion(), getAllSettings(), draftMode(), isEditing()]);
   const nav = region ? await getSolutionsNav(region) : [];
   const contact = (settings.contact ?? {}) as { phoneHq?: string; phoneUs?: string; email?: string };
   const social = (settings.social ?? {}) as { x?: string; linkedin?: string; instagram?: string; youtube?: string };
@@ -19,11 +21,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <>
-      {dm.isEnabled && <PreviewBanner />}
+      {dm.isEnabled && !editing && <PreviewBanner />}
       <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} />
       <div className="flex-1">{children}</div>
       <Footer contact={contact} social={social} region={region} regionalNotice={notice} />
-      <Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} />
+      {editing ? <EditorLoader /> : <Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} />}
     </>
   );
 }

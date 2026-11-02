@@ -51,6 +51,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <button className="underline hover:text-neutral-900">Sign out</button>
           </form>
           <Link href="/" className="mt-1 block underline hover:text-neutral-900" target="_blank">View site ↗</Link>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- route handler: needs a full navigation */}
+          <a href="/api/editor?on=1&redirect=%2F" className="mt-1 block underline hover:text-neutral-900">Edit site ✎</a>
         </div>
       </aside>
       <main className="min-w-0 flex-1 p-8">{children}</main>

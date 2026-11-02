@@ -437,6 +437,16 @@ export const drafts = pgTable(
   (t) => [uniqueIndex("drafts_resource_record").on(t.resource, t.recordId)],
 );
 
+/** Pending change to a site_settings group (made from the on-page editor). */
+export const settingDrafts = pgTable("setting_drafts", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").$type<Record<string, unknown>>().notNull(),
+  updatedById: integer("updated_by_id").references(() => users.id, { onDelete: "set null" }),
+  updatedByName: text("updated_by_name").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+export type SettingDraft = typeof settingDrafts.$inferSelect;
+
 /** Immutable snapshot taken at every save / publish / restore. */
 export const revisions = pgTable(
   "revisions",

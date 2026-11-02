@@ -5,6 +5,7 @@ import { getPage } from "@/lib/content";
 import { safeHtml } from "@/lib/html";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { Section, H1, Prose } from "@/components/site/primitives";
+import { E } from "@/components/site/editable";
 
 /**
  * /us and /ous  → region landing (therapies index)
@@ -30,8 +31,8 @@ export default async function GlobalPage({ params }: { params: Promise<{ seg: st
 
   return (
     <Section>
-      <H1>{page.title}</H1>
-      <Prose html={safeHtml(page.bodyHtml)} className="mt-8 max-w-3xl" />
+      <H1><E r="pages" id={page.id} f="title">{page.title}</E></H1>
+      <E r="pages" id={page.id} f="bodyHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(page.bodyHtml)} /></E>
     </Section>
   );
 }

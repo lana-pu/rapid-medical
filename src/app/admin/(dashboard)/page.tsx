@@ -3,6 +3,8 @@ import { count, desc, eq } from "drizzle-orm";
 import { db, solutions, publications, newsItems, webinars, jobs, pages, contactSubmissions, teamMembers } from "@/db";
 import { PageHeader, StatusBadge, formatDate } from "@/components/admin/ui";
 import { pendingDrafts } from "@/admin/workflow";
+import { listSettingDrafts } from "@/lib/settings";
+import { getSettingsGroup } from "@/admin/settings";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
@@ -16,7 +18,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     db.select({ n: count() }).from(teamMembers),
     db.select({ n: count() }).from(contactSubmissions).where(eq(contactSubmissions.status, "new")),
   ]);
-  const [latest, pending] = await Promise.all([db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt)).limit(8), pendingDrafts()]);
+  const [latest, pending, settingPending] = await Promise.all([db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt)).limit(8), pendingDrafts(), listSettingDrafts()]);
   const REVIEW: Record<string, string> = { editing: "Editing", in_review: "In review", changes_requested: "Changes requested", approved: "Approved" };
 
   const cards = [
@@ -50,7 +52,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             <tr><th className="px-3 py-2">Record</th><th className="px-3 py-2">Type</th><th className="px-3 py-2">Changed by</th><th className="px-3 py-2">Review</th><th className="px-3 py-2">Scheduled</th><th className="px-3 py-2">Updated</th></tr>
           </thead>
           <tbody>
-            {pending.length === 0 && <tr><td colSpan={6} className="px-3 py-6 text-center text-neutral-400">Nothing pending — everything is live.</td></tr>}
+            {pending.length === 0 && settingPending.length === 0 && <tr><td colSpan={6} className="px-3 py-6 text-center text-neutral-400">Nothing pending — everything is live.</td></tr>}
+            {settingPending.map((d) => (
+              <tr key={`s-${d.key}`} className="border-t border-neutral-100">
+                <td className="px-3 py-2"><Link href={`/admin/settings?group=${d.key}`} className="font-medium underline">{getSettingsGroup(d.key)?.title ?? d.key}</Link></td>
+                <td className="px-3 py-2 text-neutral-600">Site settings (edited on site)</td>
+                <td className="px-3 py-2">{d.updatedByName}</td>
+                <td className="px-3 py-2"><span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">Editing</span></td>
+                <td className="px-3 py-2" />
+                <td className="px-3 py-2 text-neutral-500">{formatDate(d.updatedAt, { dateStyle: "medium", timeStyle: "short" })}</td>
+              </tr>
+            ))}
             {pending.map((d) => (
               <tr key={d.id} className="border-t border-neutral-100">
                 <td className="px-3 py-2"><Link href={`/admin/${d.resource}/${d.recordId}`} className="font-medium underline">{d.label}</Link></td>

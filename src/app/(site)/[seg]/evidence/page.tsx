@@ -6,6 +6,7 @@ import { REGION_LABELS } from "@/lib/regions";
 import { Section, Container, H1, H2, Eyebrow, Img, formatMonth } from "@/components/site/primitives";
 import { VideoHero } from "@/components/site/Media";
 import { Tabs } from "@/components/site/Tabs";
+import { E, EMedia } from "@/components/site/editable";
 
 type EvidenceSettings = {
   title?: string; intro?: string; heroVideoUrl?: string; statImageUrl?: string;
@@ -23,6 +24,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
 
   // A family tab (e.g. TIGERTRIEVER™) also lists sub-products that have no tab of their own in this region.
   const tabbed = new Set(products.map((p) => p.slug));
+  const R = { r: "settings:evidence" } as const;
   const allProducts = await getProductsForRegion(region);
   void allProducts;
   const listFor = (slug: string) =>
@@ -42,7 +44,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
               <li key={p.id} className="flex flex-col gap-1 py-4 md:flex-row md:gap-6">
                 <span className="w-20 flex-none text-sm text-muted">{formatMonth(p.publishedOn)}</span>
                 <div className="flex-1">
-                  <div className="font-medium">{p.title}</div>
+                  <div className="font-medium"><E r="publications" id={p.id} f="title">{p.title}</E></div>
                   {(p.authors || p.journal) && <div className="mt-1 text-sm text-muted">{[p.authors, p.journal].filter(Boolean).join(" · ")}</div>}
                   <div className="mt-1 flex gap-4 text-sm">
                     {p.url && <a href={p.url} target="_blank" rel="noopener" className="underline">{p.doi ? `doi:${p.doi}` : "Read"}</a>}
@@ -61,33 +63,33 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
       <VideoHero videoUrl={cfg.heroVideoUrl}>
         <Container className="py-20 md:py-28">
           <Eyebrow>{REGION_LABELS[region]} · <Link href="/choose-your-location?next=evidence" className="underline">change</Link></Eyebrow>
-          <H1>{cfg.title ?? "Evidence"}</H1>
-          <p className="mt-4 max-w-2xl text-lg">{cfg.intro}</p>
+          <H1><E {...R} f="title">{cfg.title ?? "Evidence"}</E></H1>
+          <p className="mt-4 max-w-2xl text-lg"><E {...R} f="intro">{cfg.intro}</E></p>
         </Container>
       </VideoHero>
 
       <Section>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
-            {cfg.statImageUrl ? <Img src={cfg.statImageUrl} className="max-w-sm" /> : <p className="text-4xl font-semibold">{all.length}+ clinical publications</p>}
-            {cfg.forefrontText && <p className="mt-6 max-w-md text-lg">{cfg.forefrontText}</p>}
+            {cfg.statImageUrl ? <EMedia {...R} f="statImageUrl" className="max-w-sm"><Img src={cfg.statImageUrl} className="w-full" /></EMedia> : <p className="text-4xl font-semibold">{all.length}+ clinical publications</p>}
+            {cfg.forefrontText && <p className="mt-6 max-w-md text-lg"><E {...R} f="forefrontText">{cfg.forefrontText}</E></p>}
           </div>
           <div className="space-y-4">
-            {cfg.forefrontImageUrl && <Img src={cfg.forefrontImageUrl} className="w-full rounded" />}
-            {cfg.forefrontImage2Url && <Img src={cfg.forefrontImage2Url} className="w-full rounded" />}
+            {cfg.forefrontImageUrl && <EMedia {...R} f="forefrontImageUrl"><Img src={cfg.forefrontImageUrl} className="w-full rounded" /></EMedia>}
+            {cfg.forefrontImage2Url && <EMedia {...R} f="forefrontImage2Url"><Img src={cfg.forefrontImage2Url} className="w-full rounded" /></EMedia>}
           </div>
         </div>
       </Section>
 
       {featured.length > 0 && (
         <Section className="bg-surface">
-          <H2>{cfg.featuredTitle ?? "Featured publications"}</H2>
+          <H2><E {...R} f="featuredTitle">{cfg.featuredTitle ?? "Featured publications"}</E></H2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
             {featured.map((p) => (
               <li key={p.id} className="rounded border border-border bg-background p-5">
-                <Img src={p.imageUrl} className="mb-4 aspect-video w-full rounded object-cover" />
+                <EMedia r="publications" id={p.id} f="imageUrl" className="mb-4"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></EMedia>
                 <div className="text-xs font-semibold uppercase text-muted">{formatMonth(p.publishedOn)}</div>
-                <div className="mt-2 font-medium">{p.title}</div>
+                <div className="mt-2 font-medium"><E r="publications" id={p.id} f="title">{p.title}</E></div>
                 <a href={p.pdfUrl || p.url || "#"} target="_blank" rel="noopener" className="mt-3 inline-block text-sm underline">Read ›</a>
               </li>
             ))}
@@ -96,7 +98,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
       )}
 
       <Section id="browse-by-product">
-        <H2>{cfg.browseTitle ?? "Browse by product"}</H2>
+        <H2><E {...R} f="browseTitle">{cfg.browseTitle ?? "Browse by product"}</E></H2>
         <div className="mt-8">
           {/* anchors so therapy pages can deep-link to a tab */}
           {products.map((p) => <span key={p.slug} id={p.slug} />)}
