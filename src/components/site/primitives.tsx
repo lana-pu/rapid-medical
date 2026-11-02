@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { lookupMedia } from "@/lib/media-lookup";
 
 /* Layout primitives – intentionally plain. Visual design is a later pass. */
 
@@ -49,11 +50,33 @@ export function Btn({ href, children, variant = "primary", external }: { href: s
   );
 }
 
-/** Placeholder-aware image: renders a neutral box when no URL is set. */
-export function Img({ src, alt = "", className = "" }: { src?: string | null; alt?: string; className?: string }) {
+/**
+ * Placeholder-aware image. For files from the media library it emits a
+ * responsive WebP srcset, intrinsic size and a blur-up placeholder; other
+ * URLs (external, legacy) render as a plain <img>.
+ */
+export async function Img({ src, alt = "", className = "", sizes = "(max-width: 768px) 100vw, 50vw", priority = false }: { src?: string | null; alt?: string; className?: string; sizes?: string; priority?: boolean }) {
   if (!src) return <div className={`bg-surface ${className}`} aria-hidden />;
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={alt} className={className} loading="lazy" />;
+  const info = (await lookupMedia([src])).get(src);
+  if (!info?.srcSet) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt || info?.alt || ""} className={className} loading={priority ? "eager" : "lazy"} />;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      srcSet={info.srcSet}
+      sizes={sizes}
+      width={info.width ?? undefined}
+      height={info.height ?? undefined}
+      alt={alt || info.alt}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      style={info.placeholder ? { backgroundImage: `url(${info.placeholder})`, backgroundSize: "cover" } : undefined}
+    />
+  );
 }
 
 export function Prose({ html, className = "" }: { html: string; className?: string }) {

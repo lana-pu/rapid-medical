@@ -102,7 +102,11 @@ Current import: 13 therapy pages, 102 publications, 53 news items, 5 webinars, 6
 
 ## Media & videos
 
-The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same "image" field in the admin (paste a `.mp4` URL or upload). Rich-text fields accept videos and YouTube embeds from the toolbar.
+The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same media field in the admin. Rich-text fields accept videos and YouTube embeds from the toolbar.
+
+**Pipeline** (`src/lib/media.ts`, `src/lib/images.ts`): every uploaded raster image gets WebP variants at 480 / 960 / 1600 px (never upscaled) and a 16-px blur placeholder; every video gets a poster frame via ffmpeg. The site's `<Img>` / `<Video>` primitives emit `srcset`/`sizes`, intrinsic dimensions and the poster automatically for library files. `npm run media:process` backfills files imported before the pipeline existed.
+
+**Storage** (`src/lib/storage.ts`): `STORAGE_DRIVER=local` writes to `public/uploads` (single server); `STORAGE_DRIVER=s3` uses any S3-compatible bucket (AWS S3, Cloudflare R2, MinIO) — required on Vercel or with more than one instance. Deleting a library file removes the original, variants and poster from storage; deletion is refused while the file is referenced anywhere.
 
 ## Integrations (Site settings → Integrations)
 

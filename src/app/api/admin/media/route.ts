@@ -3,6 +3,7 @@ import { desc, ilike, or, sql, eq } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { db, media } from "@/db";
 import { findMediaUsage } from "@/lib/media-usage";
+import { removeMedia } from "@/lib/media";
 
 /** GET /api/admin/media?q=&type=image|video|pdf&page=1 — media library listing for the picker. */
 export async function GET(req: Request) {
@@ -43,6 +44,7 @@ export async function DELETE(req: Request) {
   if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const usage = await findMediaUsage(row.url);
   if (usage.length) return NextResponse.json({ error: "File is in use", usage }, { status: 409 });
+  await removeMedia(row);
   await db.delete(media).where(eq(media.id, id));
   return NextResponse.json({ ok: true });
 }

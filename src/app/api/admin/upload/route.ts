@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { storeFile } from "@/lib/storage";
-import { db, media } from "@/db";
+import { ingestFile } from "@/lib/media";
 import { audit } from "@/lib/audit";
 
 const MAX = 200 * 1024 * 1024;
@@ -16,11 +15,7 @@ export async function POST(req: Request) {
   if (file.size > MAX) return NextResponse.json({ error: "File too large (max 200 MB)" }, { status: 400 });
   if (!ALLOWED.test(file.type)) return NextResponse.json({ error: `Unsupported type ${file.type}` }, { status: 400 });
 
-  const stored = await storeFile(file);
-  const [row] = await db
-    .insert(media)
-    .values({ url: stored.url, filename: stored.filename, mime: stored.mime, size: stored.size, alt: String(fd.get("alt") ?? "") })
-    .returning();
-  await audit(session, "media", { recordId: row.id, label: row.filename, meta: { size: row.size } });
-  return NextResponse.json({ url: row.url, id: row.id });
+  const row = await ingestFile(file, String(fd.get("alt") ?? ""));
+  await audit(session, "media", { recordId: row.id, label: row.filename, meta: { size: row.size, variants: row.variants.length } });
+  return NextResponse.json({ url: row.url, id: row.id, variants: row.variants, posterUrl: row.posterUrl });
 }

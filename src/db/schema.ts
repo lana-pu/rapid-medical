@@ -78,6 +78,14 @@ export const media = pgTable("media", {
   width: integer("width"),
   height: integer("height"),
   alt: text("alt").notNull().default(""),
+  /** Storage key of the original (for deletion) */
+  key: text("key"),
+  /** Responsive WebP variants [{w, url}] for raster images */
+  variants: jsonb("variants").$type<{ w: number; url: string }[]>().notNull().default([]),
+  /** Tiny data-URI placeholder for blur-up */
+  placeholder: text("placeholder"),
+  /** Poster image URL for videos */
+  posterUrl: text("poster_url"),
   /** Original Duda URL, kept for traceability during migration */
   sourceUrl: text("source_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

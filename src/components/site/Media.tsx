@@ -1,12 +1,14 @@
 import { youtubeId } from "@/lib/html";
+import { lookupMedia } from "@/lib/media-lookup";
 
 /**
  * Media primitives. Video backgrounds autoplay muted; inline videos get
  * controls. Replace styling freely – the markup is intentionally plain.
  */
 
-export function Video({ src, poster, className = "", background = false }: { src?: string | null; poster?: string | null; className?: string; background?: boolean }) {
+export async function Video({ src, poster, className = "", background = false }: { src?: string | null; poster?: string | null; className?: string; background?: boolean }) {
   if (!src) return null;
+  if (!poster) poster = (await lookupMedia([src])).get(src)?.posterUrl ?? null;
   if (background)
     return <video className={`pointer-events-none absolute inset-0 h-full w-full object-cover ${className}`} src={src} poster={poster ?? undefined} autoPlay muted loop playsInline aria-hidden preload="metadata" />;
   return <video className={`w-full rounded ${className}`} src={src} poster={poster ?? undefined} autoPlay muted loop playsInline controls preload="metadata" />;
