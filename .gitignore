@@ -47,3 +47,7 @@ next-env.d.ts
 
 # raw crawl snapshots are large; regenerate with scripts/scrape-duda.ts
 /content/raw/
+
+# tests
+/test-results/
+/playwright-report/

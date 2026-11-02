@@ -40,7 +40,8 @@ const ALLOWED = {
 
 export function safeHtml(html: string | null | undefined): string {
   if (!html) return "";
-  return sanitizeHtml(html, ALLOWED);
+  // drop iframes whose src was stripped (disallowed host)
+  return sanitizeHtml(html, ALLOWED).replace(/<iframe(?![^>]*\ssrc=)[^>]*>\s*<\/iframe>/gi, "");
 }
 
 /** True when a string looks like HTML (vs. legacy Markdown). */

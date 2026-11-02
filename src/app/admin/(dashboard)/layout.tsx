@@ -24,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/media", label: "Media" },
     { href: "/admin/submissions", label: "Form submissions" },
     { href: "/admin/redirects", label: "Redirects" },
+    { href: "/admin/not-found-log", label: "Broken links" },
     { href: "/admin/activity", label: "Activity log" },
     ...(user.role === "admin" ? [{ href: "/admin/users", label: "Users" }] : []),
   ];
@@ -45,7 +46,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="border-t border-neutral-200 p-3 text-xs text-neutral-500">
           <div className="truncate font-medium text-neutral-800">{user.name}</div>
           <div className="truncate">{user.email} · {user.role}</div>
-          <form action={logout} className="mt-2">
+          <Link href="/admin/account" className="mt-2 block underline hover:text-neutral-900">My account &amp; security</Link>
+          <form action={logout} className="mt-1">
             <button className="underline hover:text-neutral-900">Sign out</button>
           </form>
           <Link href="/" className="mt-1 block underline hover:text-neutral-900" target="_blank">View site ↗</Link>

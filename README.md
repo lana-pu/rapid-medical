@@ -76,6 +76,22 @@ Everything with a `status` field is only public when `published`. Saving revalid
 
 Roles: `admin` (everything, incl. users), `approver` (can approve and publish), `editor` (edits, submits for review; publishes directly only when approval is off).
 
+### Security & operations
+
+- **Sessions** are server-side and revocable: *My account* lists active devices and can sign out the others; a password change or reset signs out everywhere.
+- **Login throttling**: 8 failed attempts per email or IP in 15 minutes → locked for the window. Failed logins are in the activity log.
+- **Two-factor authentication** (TOTP, any authenticator app) with 8 one-time recovery codes; admins can reset a user's 2FA.
+- **Password reset** by emailed link (1 hour, single use).
+- **Security headers** (nosniff, frame-options, referrer policy, HSTS in production) from `src/proxy.ts`.
+- **Broken links** (`/admin/not-found-log`): public 404s are counted; add a redirect in one click.
+- **Form submissions** export as CSV. **`/api/health`** for uptime probes.
+
+### Tests
+
+- `npm test` — unit tests (Vitest): sanitiser, Markdown conversion, region mapping.
+- `npm run test:e2e` — Playwright: public pages, redirects, video/tabs/map, contact form, admin login, drafts → preview → publish, approval workflow, scheduling via cron, media pipeline, 2FA, throttling, activity log. Seeds a scratch database first (set `DATABASE_URL`, `AUTH_SECRET` in `.env`).
+- `.github/workflows/ci.yml` runs all of it on every push and pull request.
+
 Adding a new content type = a table in `src/db/schema.ts` + an entry in `src/admin/resources.ts`. Lists, forms, validation and persistence are generated from that description (`src/admin/engine.ts`).
 
 ## Content migration

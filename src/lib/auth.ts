@@ -1,77 +1,105 @@
 import "server-only";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { SignJWT, jwtVerify } from "jose";
+import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
-import { db, users, type User } from "@/db";
+import { and, eq, gt, lt, sql } from "drizzle-orm";
+import { generateSecret, generate, verify as verifyTotp, generateURI } from "otplib";
+import { db, users, sessions, passwordResets, loginAttempts, type User } from "@/db";
 
-const COOKIE = "rm_admin";
+/**
+ * Authentication.
+ * - Server-side sessions (revocable; "sign out everywhere").
+ * - Login throttling per email and per IP.
+ * - Optional TOTP two-factor with recovery codes.
+ * - Password reset by emailed token.
+ */
+
+export const SESSION_COOKIE = "rm_admin";
 const TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const MAX_ATTEMPTS = 8; // per 15 minutes
+const WINDOW_MS = 15 * 60 * 1000;
 
-function secret() {
-  const s = process.env.AUTH_SECRET;
-  if (!s || s.length < 16) throw new Error("AUTH_SECRET must be set (16+ chars)");
-  return new TextEncoder().encode(s);
-}
+export type SessionUser = { id: number; email: string; name: string; role: User["role"]; sessionId?: string; totpPending?: boolean };
 
-export type SessionUser = { id: number; email: string; name: string; role: User["role"] };
+/* ------------------------------------------------------------------ */
+/*  Passwords                                                          */
+/* ------------------------------------------------------------------ */
 
 export async function hashPassword(plain: string) {
   return bcrypt.hash(plain, 12);
 }
-
 export async function verifyPassword(plain: string, hash: string) {
   return bcrypt.compare(plain, hash);
 }
 
-export async function createSession(user: SessionUser) {
-  const token = await new SignJWT({ email: user.email, name: user.name, role: user.role })
-    .setProtectedHeader({ alg: "HS256" })
-    .setSubject(String(user.id))
-    .setIssuedAt()
-    .setExpirationTime(`${TTL_SECONDS}s`)
-    .sign(secret());
+/* ------------------------------------------------------------------ */
+/*  Sessions                                                           */
+/* ------------------------------------------------------------------ */
+
+async function clientInfo() {
+  try {
+    const h = await headers();
+    return { ip: (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null, userAgent: h.get("user-agent")?.slice(0, 300) ?? null };
+  } catch {
+    return { ip: null, userAgent: null };
+  }
+}
+
+export async function createSession(user: Pick<User, "id" | "totpEnabledAt">): Promise<{ needsTotp: boolean }> {
+  const id = crypto.randomBytes(32).toString("hex");
+  const needsTotp = Boolean(user.totpEnabledAt);
+  const { ip, userAgent } = await clientInfo();
+  await db.insert(sessions).values({ id, userId: user.id, verified: !needsTotp, ip, userAgent, expiresAt: new Date(Date.now() + TTL_SECONDS * 1000) });
   const jar = await cookies();
-  jar.set(COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: TTL_SECONDS,
-  });
+  jar.set(SESSION_COOKIE, id, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: TTL_SECONDS });
+  return { needsTotp };
 }
 
 export async function destroySession() {
   const jar = await cookies();
-  jar.delete(COOKIE);
+  const id = jar.get(SESSION_COOKIE)?.value;
+  if (id) await db.delete(sessions).where(eq(sessions.id, id)).catch(() => {});
+  jar.delete(SESSION_COOKIE);
 }
 
-/** Verify the cookie only (cheap; used in proxy and layouts). */
-export async function readSessionToken(token: string | undefined): Promise<SessionUser | null> {
-  if (!token) return null;
-  try {
-    const { payload } = await jwtVerify(token, secret());
-    return {
-      id: Number(payload.sub),
-      email: String(payload.email),
-      name: String(payload.name),
-      role: payload.role as User["role"],
-    };
-  } catch {
-    return null;
-  }
+export async function destroyAllSessions(userId: number, exceptCurrent = true) {
+  const jar = await cookies();
+  const current = jar.get(SESSION_COOKIE)?.value;
+  const rows = await db.select({ id: sessions.id }).from(sessions).where(eq(sessions.userId, userId));
+  for (const r of rows) if (!exceptCurrent || r.id !== current) await db.delete(sessions).where(eq(sessions.id, r.id));
 }
 
+export async function listSessions(userId: number) {
+  const jar = await cookies();
+  const current = jar.get(SESSION_COOKIE)?.value;
+  const rows = await db.select().from(sessions).where(and(eq(sessions.userId, userId), gt(sessions.expiresAt, new Date()))).orderBy(sessions.lastSeenAt);
+  return rows.map((r) => ({ ...r, current: r.id === current }));
+}
+
+/** Full session lookup (DB). `totpPending` = password ok but 2FA not yet passed. */
 export async function getSession(): Promise<SessionUser | null> {
   const jar = await cookies();
-  return readSessionToken(jar.get(COOKIE)?.value);
+  const id = jar.get(SESSION_COOKIE)?.value;
+  if (!id || !/^[a-f0-9]{64}$/.test(id)) return null;
+  const row = await db
+    .select({ s: sessions, u: users })
+    .from(sessions)
+    .innerJoin(users, eq(users.id, sessions.userId))
+    .where(and(eq(sessions.id, id), gt(sessions.expiresAt, new Date())))
+    .limit(1);
+  const hit = row[0];
+  if (!hit || !hit.u.active) return null;
+  // touch at most once a minute
+  if (Date.now() - hit.s.lastSeenAt.getTime() > 60_000) db.update(sessions).set({ lastSeenAt: new Date() }).where(eq(sessions.id, id)).catch(() => {});
+  return { id: hit.u.id, email: hit.u.email, name: hit.u.name, role: hit.u.role, sessionId: id, totpPending: !hit.s.verified };
 }
 
 /** Use at the top of every admin page / server action. */
 export async function requireUser(): Promise<SessionUser> {
   const s = await getSession();
   if (!s) redirect("/admin/login");
+  if (s.totpPending) redirect("/admin/login/2fa");
   return s;
 }
 
@@ -81,13 +109,108 @@ export async function requireAdmin(): Promise<SessionUser> {
   return s;
 }
 
-export async function authenticate(email: string, password: string): Promise<SessionUser | null> {
-  const user = await db.query.users.findFirst({ where: eq(users.email, email.toLowerCase().trim()) });
-  if (!user || !user.active) return null;
-  const ok = await verifyPassword(password, user.passwordHash);
-  if (!ok) return null;
-  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
-  return { id: user.id, email: user.email, name: user.name, role: user.role };
+/* ------------------------------------------------------------------ */
+/*  Login + throttling                                                 */
+/* ------------------------------------------------------------------ */
+
+async function tooManyAttempts(keys: string[]): Promise<boolean> {
+  const since = new Date(Date.now() - WINDOW_MS);
+  for (const key of keys) {
+    const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
+    if (n >= MAX_ATTEMPTS) return true;
+  }
+  return false;
 }
 
-export const SESSION_COOKIE = COOKIE;
+async function recordAttempt(keys: string[]) {
+  await db.insert(loginAttempts).values(keys.map((key) => ({ key })));
+  // opportunistic cleanup
+  if (Math.random() < 0.05) await db.delete(loginAttempts).where(lt(loginAttempts.at, new Date(Date.now() - WINDOW_MS * 4)));
+}
+
+export type AuthResult = { ok: true; user: User } | { ok: false; reason: "invalid" | "throttled" };
+
+export async function authenticate(email: string, password: string): Promise<AuthResult> {
+  const e = email.toLowerCase().trim();
+  const { ip } = await clientInfo();
+  const keys = [`email:${e}`, ...(ip ? [`ip:${ip}`] : [])];
+  if (await tooManyAttempts(keys)) return { ok: false, reason: "throttled" };
+
+  const user = await db.query.users.findFirst({ where: eq(users.email, e) });
+  const ok = user && user.active && (await verifyPassword(password, user.passwordHash));
+  if (!ok) {
+    await recordAttempt(keys);
+    return { ok: false, reason: "invalid" };
+  }
+  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+  return { ok: true, user };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Two-factor (TOTP)                                                  */
+/* ------------------------------------------------------------------ */
+
+export function totpSetup(email: string) {
+  const secret = generateSecret();
+  const uri = generateURI({ secret, issuer: "Rapid Medical Admin", label: email });
+  return { secret, uri };
+}
+
+export async function totpCheck(secret: string, token: string): Promise<boolean> {
+  const t = token.replace(/\s+/g, "");
+  if (!/^\d{6,8}$/.test(t)) return false;
+  try {
+    return (await verifyTotp({ secret, token: t })).valid;
+  } catch {
+    return false;
+  }
+}
+
+/** For tests / previews: current code for a secret. */
+export async function totpCurrent(secret: string) {
+  return generate({ secret });
+}
+
+export function makeRecoveryCodes(n = 8): { plain: string[]; hashed: string[] } {
+  const plain = Array.from({ length: n }, () => crypto.randomBytes(5).toString("hex").replace(/(.{5})/, "$1-"));
+  const hashed = plain.map((p) => crypto.createHash("sha256").update(p).digest("hex"));
+  return { plain, hashed };
+}
+
+export async function consumeRecoveryCode(userId: number, code: string): Promise<boolean> {
+  const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
+  if (!user) return false;
+  const h = crypto.createHash("sha256").update(code.trim().toLowerCase()).digest("hex");
+  if (!user.recoveryCodes.includes(h)) return false;
+  await db.update(users).set({ recoveryCodes: user.recoveryCodes.filter((x) => x !== h) }).where(eq(users.id, userId));
+  return true;
+}
+
+export async function markSessionVerified() {
+  const jar = await cookies();
+  const id = jar.get(SESSION_COOKIE)?.value;
+  if (id) await db.update(sessions).set({ verified: true }).where(eq(sessions.id, id));
+}
+
+/* ------------------------------------------------------------------ */
+/*  Password reset                                                     */
+/* ------------------------------------------------------------------ */
+
+export async function createPasswordReset(email: string): Promise<{ token: string; user: User } | null> {
+  const user = await db.query.users.findFirst({ where: eq(users.email, email.toLowerCase().trim()) });
+  if (!user || !user.active) return null;
+  const token = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  await db.insert(passwordResets).values({ userId: user.id, tokenHash, expiresAt: new Date(Date.now() + 60 * 60 * 1000) });
+  return { token, user };
+}
+
+export async function consumePasswordReset(token: string, newPassword: string): Promise<User | null> {
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const row = await db.query.passwordResets.findFirst({ where: eq(passwordResets.tokenHash, tokenHash) });
+  if (!row || row.usedAt || row.expiresAt < new Date()) return null;
+  await db.update(users).set({ passwordHash: await hashPassword(newPassword) }).where(eq(users.id, row.userId));
+  await db.update(passwordResets).set({ usedAt: new Date() }).where(eq(passwordResets.id, row.id));
+  await db.delete(sessions).where(eq(sessions.userId, row.userId)); // sign out everywhere
+  return (await db.query.users.findFirst({ where: eq(users.id, row.userId) })) ?? null;
+}

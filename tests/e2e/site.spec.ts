@@ -1,0 +1,61 @@
+import { test, expect } from "@playwright/test";
+
+const PUBLIC = ["/", "/choose-your-location", "/us/therapies", "/ous/therapies", "/apac/therapies", "/ous/therapies/lvo", "/apac/therapies/mvo", "/us/therapies/aneurysm", "/us/evidence", "/ous/evidence", "/apac/evidence", "/ous/webinars", "/news-events", "/about-us", "/team/ronen", "/careers", "/open-positions", "/contact-us", "/privacy-statement", "/distals-results", "/ous/comparison-video", "/sitemap.xml", "/robots.txt"];
+
+for (const path of PUBLIC) {
+  test(`renders ${path}`, async ({ request }) => {
+    const res = await request.get(path);
+    expect(res.status(), path).toBe(200);
+  });
+}
+
+test("legacy URLs redirect", async ({ request }) => {
+  for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"]]) {
+    const res = await request.get(from, { maxRedirects: 0 });
+    expect([301, 308]).toContain(res.status());
+    expect(res.headers().location).toContain(to);
+  }
+});
+
+test("legacy subdomains redirect to path regions", async ({ request }) => {
+  const res = await request.get("/vasospasm", { headers: { host: "apac.rapid-medical.com" }, maxRedirects: 0 });
+  expect(res.status()).toBe(301);
+  expect(res.headers().location).toContain("/apac/therapies/vasospasm");
+});
+
+test("therapy page has video hero, tabs and regulatory text", async ({ page }) => {
+  await page.goto("/ous/therapies/lvo");
+  await expect(page.locator("video").first()).toHaveAttribute("src", /\.mp4/);
+  await expect(page.getByRole("tab", { name: "How it works" })).toBeVisible();
+  await page.getByRole("tab", { name: "How it works" }).click();
+  await expect(page.getByText("PENETRATE")).toBeVisible();
+  await expect(page.getByText("Sadasivan C")).toBeVisible();
+});
+
+test("evidence tabs follow the region", async ({ page }) => {
+  await page.goto("/apac/evidence");
+  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toBeVisible();
+  await page.goto("/us/evidence");
+  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "DRIVEWIRE™" })).toBeVisible();
+});
+
+test("about page renders the interactive map", async ({ page }) => {
+  await page.goto("/about-us");
+  await expect(page.locator("svg path").first()).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("UNITED STATES AND CANADA")).toBeVisible();
+});
+
+test("contact form stores a submission", async ({ page }) => {
+  await page.goto("/contact-us?region=us&topic=demo");
+  await expect(page.locator("select[name=topic]")).toHaveValue("Request a demo");
+  await page.fill("input[name=firstName]", "E2E");
+  await page.fill("input[name=lastName]", "Tester");
+  await page.fill("input[name=email]", "e2e@example.com");
+  await page.click('button:has-text("Submit")');
+  await expect(page.getByText("Thank you for contacting us.")).toBeVisible();
+});
+
+test("unknown path returns 404", async ({ request }) => {
+  expect((await request.get("/definitely-not-here")).status()).toBe(404);
+});

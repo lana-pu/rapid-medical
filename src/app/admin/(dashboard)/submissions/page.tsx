@@ -11,7 +11,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PageHeader title="Form submissions" subtitle={`${rows.length} shown`} />
+      <PageHeader title="Form submissions" subtitle={`${rows.length} shown`} actions={<a href="/api/admin/submissions.csv" className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">Export CSV</a>} />
       <div className="mb-4 flex gap-1 border-b border-neutral-200">
         {tabs.map((t) => (
           <Link key={t} href={t ? `/admin/submissions?status=${t}` : "/admin/submissions"} className={`-mb-px border-b-2 px-3 py-2 text-sm ${(sp.status ?? "") === t ? "border-neutral-900 font-medium" : "border-transparent text-neutral-500"}`}>

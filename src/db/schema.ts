@@ -60,9 +60,65 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull().default("editor"),
   active: boolean("active").notNull().default(true),
+  /** TOTP secret (base32) once 2FA is enabled */
+  totpSecret: text("totp_secret"),
+  totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
+  /** Hashed one-time recovery codes */
+  recoveryCodes: jsonb("recovery_codes").$type<string[]>().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
 });
+
+/** Server-side sessions: revocable, listable ("sign out everywhere"). */
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey(), // random 32-byte hex
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /** 2FA passed (or not required) */
+    verified: boolean("verified").notNull().default(false),
+    ip: text("ip"),
+    userAgent: text("user_agent"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("sessions_user").on(t.userId)],
+);
+
+/** Password-reset tokens (hashed) */
+export const passwordResets = pgTable("password_resets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+});
+
+/** Login attempts per email/IP for throttling */
+export const loginAttempts = pgTable(
+  "login_attempts",
+  {
+    id: serial("id").primaryKey(),
+    key: text("key").notNull(), // "email:<e>" or "ip:<ip>"
+    at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("login_attempts_key").on(t.key, t.at)],
+);
+
+/** Public 404s, so editors can create redirects for old links. */
+export const notFoundLog = pgTable(
+  "not_found_log",
+  {
+    path: text("path").primaryKey(),
+    hits: integer("hits").notNull().default(1),
+    lastReferer: text("last_referer"),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    /** Set when a redirect was created for it */
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+);
 
 /* ------------------------------------------------------------------ */
 /*  Media library                                                       */
@@ -452,5 +508,6 @@ export type Page = typeof pages.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
 export type Draft = typeof drafts.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
 export type Revision = typeof revisions.$inferSelect;
 export type AuditEntry = typeof auditLog.$inferSelect;

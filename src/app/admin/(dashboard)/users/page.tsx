@@ -37,6 +37,15 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     redirect("/admin/users");
   }
 
+  async function reset2fa(fd: FormData) {
+    "use server";
+    const me = await requireAdmin();
+    const id = Number(fd.get("id"));
+    await db.update(users).set({ totpSecret: null, totpEnabledAt: null, recoveryCodes: [] }).where(eq(users.id, id));
+    await audit(me, "user", { recordId: id, meta: { totpResetByAdmin: true } });
+    redirect("/admin/users?saved=1");
+  }
+
   async function resetPassword(fd: FormData) {
     "use server";
     const me = await requireAdmin();
@@ -55,7 +64,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       <div className="mb-8 overflow-hidden rounded-lg border border-neutral-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">
-            <tr><th className="px-3 py-2">Name</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Role</th><th className="px-3 py-2">Last login</th><th className="px-3 py-2">Active</th><th className="px-3 py-2">New password</th></tr>
+            <tr><th className="px-3 py-2">Name</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Role</th><th className="px-3 py-2">Last login</th><th className="px-3 py-2">2FA</th><th className="px-3 py-2">Active</th><th className="px-3 py-2">New password</th></tr>
           </thead>
           <tbody>
             {rows.map((u) => (
@@ -64,6 +73,11 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                 <td className="px-3 py-2">{u.email}</td>
                 <td className="px-3 py-2">{u.role}</td>
                 <td className="px-3 py-2 text-neutral-500">{formatDate(u.lastLoginAt, { dateStyle: "medium", timeStyle: "short" })}</td>
+                <td className="px-3 py-2">
+                  {u.totpEnabledAt ? (
+                    <form action={reset2fa} className="inline"><input type="hidden" name="id" value={u.id} /><span className="text-green-700">on</span> <button className="ml-1 text-xs text-neutral-500 underline">reset</button></form>
+                  ) : <span className="text-neutral-400">off</span>}
+                </td>
                 <td className="px-3 py-2">
                   <form action={toggle}>
                     <input type="hidden" name="id" value={u.id} />
