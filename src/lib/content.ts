@@ -1,5 +1,6 @@
 import "server-only";
-import { and, asc, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { draftMode } from "next/headers";
+import { and, asc, desc, eq, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import {
   db,
@@ -11,31 +12,67 @@ import {
   jobs,
   pages,
   products,
+  drafts,
   type Region,
 } from "@/db";
 
-/* Public read layer – always filters to published content. */
+/**
+ * Public read layer.
+ * Normally only `published` rows are returned. In Next draft mode (opened via
+ * /api/preview?token=…) unpublished rows are included and pending drafts from
+ * the admin are layered on top, so editors can share a preview link.
+ */
 
-const published = { status: "published" as const };
+async function isPreview(): Promise<boolean> {
+  try {
+    return (await draftMode()).isEnabled;
+  } catch {
+    return false; // outside a request (e.g. sitemap generation)
+  }
+}
+
+/** status = published, unless previewing. */
+async function visible(statusCol: PgColumn): Promise<SQL> {
+  return (await isPreview()) ? sql`true` : eq(statusCol, "published");
+}
+
+/** Merge pending admin drafts into rows (preview only). `resource` = admin resource slug. */
+async function overlay<T extends { id: number }>(resource: string, rows: T[]): Promise<T[]> {
+  if (!rows.length || !(await isPreview())) return rows;
+  const ids = rows.map((r) => r.id);
+  const pending = await db.select().from(drafts).where(and(eq(drafts.resource, resource), inArray(drafts.recordId, ids)));
+  if (!pending.length) return rows;
+  const byId = new Map(pending.filter((d) => d.data).map((d) => [d.recordId, d.data as Partial<T>]));
+  return rows.map((r) => (byId.has(r.id) ? { ...r, ...byId.get(r.id), id: r.id } : r));
+}
+
+async function one<T extends { id: number }>(resource: string, row: T | undefined | null): Promise<T | null> {
+  if (!row) return null;
+  return (await overlay(resource, [row]))[0];
+}
+
+/* ------------------------------------------------------------------ */
 
 export async function getSolutionsNav(region: Region) {
-  return db
-    .select({ slug: solutions.slug, navLabel: solutions.navLabel, heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl })
+  const rows = await db
+    .select({ id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl })
     .from(solutions)
-    .where(and(eq(solutions.region, region), eq(solutions.status, published.status)))
+    .where(and(eq(solutions.region, region), await visible(solutions.status)))
     .orderBy(asc(solutions.sortOrder), asc(solutions.id));
+  return overlay("solutions", rows);
 }
 
 export async function getSolution(region: Region, slug: string) {
-  return db.query.solutions.findFirst({
-    where: and(eq(solutions.region, region), eq(solutions.slug, slug), eq(solutions.status, published.status)),
+  const row = await db.query.solutions.findFirst({
+    where: and(eq(solutions.region, region), eq(solutions.slug, slug), await visible(solutions.status)),
     with: { product: true },
   });
+  return one("solutions", row);
 }
 
 /** Regions where a given therapy slug exists (for the region switcher). */
 export async function getSolutionRegions(slug: string): Promise<Region[]> {
-  const rows = await db.select({ region: solutions.region }).from(solutions).where(and(eq(solutions.slug, slug), eq(solutions.status, published.status)));
+  const rows = await db.select({ region: solutions.region }).from(solutions).where(and(eq(solutions.slug, slug), await visible(solutions.status)));
   return rows.map((r) => r.region);
 }
 
@@ -58,66 +95,74 @@ function regionFilter(table: { regions: PgColumn }, region: Region) {
 
 export async function getPublications(region: Region) {
   const rows = await db.query.publications.findMany({
-    where: and(eq(publications.status, published.status), regionFilter(publications, region)),
+    where: and(await visible(publications.status), regionFilter(publications, region)),
     with: { product: true },
     orderBy: [desc(publications.publishedOn), desc(publications.id)],
   });
-  return rows;
+  return overlay("publications", rows);
 }
 
 export async function getFeaturedPublications(region: Region, limit = 3) {
-  return db.query.publications.findMany({
-    where: and(eq(publications.status, published.status), eq(publications.featured, true), regionFilter(publications, region)),
+  const rows = await db.query.publications.findMany({
+    where: and(await visible(publications.status), eq(publications.featured, true), regionFilter(publications, region)),
     orderBy: [desc(publications.publishedOn)],
     limit,
   });
+  return overlay("publications", rows);
 }
 
 export async function getNews(limit?: number) {
-  return db.query.newsItems.findMany({
-    where: eq(newsItems.status, published.status),
+  const rows = await db.query.newsItems.findMany({
+    where: await visible(newsItems.status),
     orderBy: [desc(newsItems.publishedOn), desc(newsItems.id)],
     limit,
   });
+  return overlay("news", rows);
 }
 
 export async function getFeaturedNews(limit = 4) {
   const rows = await db.query.newsItems.findMany({
-    where: and(eq(newsItems.status, published.status), eq(newsItems.featured, true)),
+    where: and(await visible(newsItems.status), eq(newsItems.featured, true)),
     orderBy: [desc(newsItems.publishedOn)],
     limit,
   });
-  return rows.length ? rows : getNews(limit);
+  return rows.length ? overlay("news", rows) : getNews(limit);
 }
 
 export async function getWebinars(region: Region) {
-  return db.query.webinars.findMany({
-    where: and(eq(webinars.status, published.status), regionFilter(webinars, region)),
+  const rows = await db.query.webinars.findMany({
+    where: and(await visible(webinars.status), regionFilter(webinars, region)),
     with: { product: true },
     orderBy: [asc(webinars.sortOrder), desc(webinars.heldOn)],
   });
+  return overlay("webinars", rows);
 }
 
 export async function getTeam() {
-  return db.select().from(teamMembers).where(eq(teamMembers.status, published.status)).orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id));
+  const rows = await db.select().from(teamMembers).where(await visible(teamMembers.status)).orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id));
+  return overlay("team", rows);
 }
 
 export async function getTeamMember(slug: string) {
-  return db.query.teamMembers.findFirst({ where: and(eq(teamMembers.slug, slug), eq(teamMembers.status, published.status)) });
+  return one("team", await db.query.teamMembers.findFirst({ where: and(eq(teamMembers.slug, slug), await visible(teamMembers.status)) }));
 }
 
 export async function getJobs() {
-  return db.select().from(jobs).where(eq(jobs.status, published.status)).orderBy(asc(jobs.sortOrder), desc(jobs.createdAt));
+  const rows = await db.select().from(jobs).where(await visible(jobs.status)).orderBy(asc(jobs.sortOrder), desc(jobs.createdAt));
+  return overlay("jobs", rows);
 }
 
 export async function getJob(slug: string) {
-  return db.query.jobs.findFirst({ where: and(eq(jobs.slug, slug), eq(jobs.status, published.status)) });
+  return one("jobs", await db.query.jobs.findFirst({ where: and(eq(jobs.slug, slug), await visible(jobs.status)) }));
 }
 
 export async function getPage(slug: string, region: Region | null) {
-  return db.query.pages.findFirst({
-    where: and(eq(pages.slug, slug), region ? eq(pages.region, region) : isNull(pages.region), eq(pages.status, published.status)),
-  });
+  return one(
+    "pages",
+    await db.query.pages.findFirst({
+      where: and(eq(pages.slug, slug), region ? eq(pages.region, region) : isNull(pages.region), await visible(pages.status)),
+    }),
+  );
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {

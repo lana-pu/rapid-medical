@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import { getResource } from "./resources";
-import { parseForm, saveRow, deleteRow, duplicateRow, bulk, type FieldErrors } from "./engine";
+import { parseForm, deleteRow, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
+import { saveWithWorkflow, publish, unpublish, discardDraft, setReview, schedule, restoreRevision, canPublish, getDraft, hasWorkflow } from "./workflow";
+import type { ReviewStatus } from "@/db";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -15,7 +18,7 @@ function revalidate(paths: string[], extra?: string | null) {
 }
 
 export async function saveResource(_prev: SaveState, fd: FormData): Promise<SaveState> {
-  await requireUser();
+  const user = await requireUser();
   const slug = String(fd.get("__resource"));
   const idRaw = fd.get("__id");
   const id = idRaw ? Number(idRaw) : null;
@@ -25,51 +28,113 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
   const { data, errors } = parseForm(res, fd);
   if (Object.keys(errors).length) return { errors, message: "Please fix the highlighted fields." };
 
-  let savedId: number;
+  let result: { id: number; pending: boolean };
   try {
-    savedId = await saveRow(res, id, data);
+    result = await saveWithWorkflow(res, id, data, user);
   } catch (e) {
     const msg = (e as Error).message;
     if (/unique/i.test(msg)) return { message: "A record with this slug/region already exists." };
     return { message: msg };
   }
-  revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
-  redirect(`/admin/${res.slug}/${savedId}?saved=1`);
+  if (!result.pending) revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
+  redirect(`/admin/${res.slug}/${result.id}?${result.pending ? "pending=1" : "saved=1"}`);
 }
 
-export async function deleteResource(fd: FormData) {
-  await requireUser();
+async function ctx(fd: FormData) {
+  const user = await requireUser();
   const slug = String(fd.get("__resource"));
   const id = Number(fd.get("__id"));
   const res = getResource(slug);
-  if (!res || !id) return;
+  if (!res || !id) throw new Error("Bad request");
+  return { user, res, id };
+}
+
+export async function publishResource(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const draft = await getDraft(res, id);
+  const allowed = await canPublish(user, draft);
+  if (!allowed.ok) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(allowed.reason ?? "Not allowed")}`);
+  await publish(res, id, user);
+  const row = await getRow(res, id);
+  revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
+  redirect(`/admin/${res.slug}/${id}?published=1`);
+}
+
+export async function unpublishResource(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const row = await getRow(res, id);
+  await unpublish(res, id, user);
+  revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
+  redirect(`/admin/${res.slug}/${id}?unpublished=1`);
+}
+
+export async function discardDraftAction(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  await discardDraft(res, id, user);
+  redirect(`/admin/${res.slug}/${id}?discarded=1`);
+}
+
+export async function reviewAction(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const status = String(fd.get("status")) as ReviewStatus;
+  const note = String(fd.get("note") ?? "").slice(0, 2000);
+  if (!["editing", "in_review", "changes_requested", "approved"].includes(status)) return;
+  if ((status === "approved" || status === "changes_requested") && user.role === "editor") redirect(`/admin/${res.slug}/${id}?error=Only+approvers+can+approve`);
+  await setReview(res, id, status, note, user);
+  redirect(`/admin/${res.slug}/${id}?review=${status}`);
+}
+
+export async function scheduleAction(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const raw = String(fd.get("publishAt") ?? "");
+  const at = raw ? new Date(raw) : null;
+  if (at && Number.isNaN(at.getTime())) redirect(`/admin/${res.slug}/${id}?error=Invalid+date`);
+  await schedule(res, id, at, user);
+  redirect(`/admin/${res.slug}/${id}?scheduled=1`);
+}
+
+export async function restoreAction(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const revId = Number(fd.get("revision"));
+  await restoreRevision(res, revId, user);
+  redirect(`/admin/${res.slug}/${id}?restored=1`);
+}
+
+export async function deleteResource(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  const row = await getRow(res, id);
   await deleteRow(res, id);
+  await audit(user, "delete", { resource: res.slug, recordId: id, label: String(row?.[res.labelField] ?? "") });
   revalidate(res.revalidate);
   redirect(`/admin/${res.slug}?deleted=1`);
 }
 
 export async function duplicateResource(fd: FormData) {
-  await requireUser();
-  const slug = String(fd.get("__resource"));
-  const id = Number(fd.get("__id"));
-  const res = getResource(slug);
-  if (!res || !id) return;
+  const { user, res, id } = await ctx(fd);
   const overrides: Record<string, unknown> = {};
-  // Therapy pages: "Copy to other region"
   const region = fd.get("region");
   if (region) overrides.region = region;
   const newId = await duplicateRow(res, id, overrides);
+  await audit(user, "save", { resource: res.slug, recordId: newId, meta: { duplicatedFrom: id, ...overrides } });
   redirect(`/admin/${res.slug}/${newId}`);
 }
 
 export async function bulkResource(fd: FormData) {
-  await requireUser();
+  const user = await requireUser();
   const slug = String(fd.get("__resource"));
   const action = String(fd.get("__action")) as "publish" | "unpublish" | "delete";
   const ids = fd.getAll("ids").map(Number).filter(Boolean);
   const res = getResource(slug);
   if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
-  await bulk(res, ids, action);
+  if (action === "publish" && hasWorkflow(res)) {
+    for (const id of ids) {
+      const allowed = await canPublish(user, await getDraft(res, id));
+      if (allowed.ok) await publish(res, id, user);
+    }
+  } else {
+    await bulk(res, ids, action);
+    await audit(user, "bulk", { resource: res.slug, meta: { action, ids } });
+  }
   revalidate(res.revalidate);
   redirect(`/admin/${res.slug}?bulk=${action}&n=${ids.length}`);
 }

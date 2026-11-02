@@ -76,5 +76,8 @@ export function Notice({ kind = "info", children }: { kind?: "info" | "success" 
 
 export function formatDate(d: Date | string | null | undefined, opts: Intl.DateTimeFormatOptions = { year: "numeric", month: "short" }) {
   if (!d) return "";
-  return new Date(d).toLocaleDateString("en-US", opts);
+  const date = new Date(d);
+  if (Number.isNaN(date.getTime())) return "";
+  // toLocaleDateString rejects timeStyle; use the full formatter when a time is requested
+  return opts.timeStyle ? new Intl.DateTimeFormat("en-GB", opts).format(date) : date.toLocaleDateString("en-US", opts);
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import { SETTINGS_GROUPS, getSettingsGroup } from "@/admin/settings";
 import { getSetting, setSetting } from "@/lib/settings";
 import { db, products } from "@/db";
@@ -15,7 +16,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   async function save(fd: FormData) {
     "use server";
-    await requireUser();
+    const user = await requireUser();
     const g = getSettingsGroup(String(fd.get("__group")));
     if (!g) return;
     const out: Record<string, unknown> = {};
@@ -38,6 +39,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       else out[f.name] = s;
     }
     await setSetting(g.key, out);
+    await audit(user, "settings", { label: g.title, meta: { key: g.key } });
     for (const p of g.revalidate) revalidatePath(p, "layout");
     redirect(`/admin/settings?group=${g.key}&saved=1`);
   }

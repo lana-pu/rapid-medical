@@ -65,6 +65,17 @@ Everything with a `status` field is only public when `published`. Saving revalid
 - **Unsaved-changes guard**: warns before leaving a dirty form and keeps a local backup that can be restored.
 - **Lists**: search, filters (status / region / product / featured), column sorting, pagination, bulk publish / unpublish / delete.
 
+### Editorial workflow
+
+- **Live vs pending.** Editing a published record never touches the site: changes are stored as a pending draft until someone clicks *Publish changes*. Unpublished records are edited in place.
+- **Preview links.** Every record has a shareable preview URL (valid 7 days) that shows the site with pending changes and draft pages, with a banner and an *Exit preview* link. Built on Next draft mode.
+- **Approval** (Site settings → Workflow → *Require approval*). Editors *Submit for review*; approvers/admins *Approve*, *Request changes* and publish. Submissions can notify an email address. Off by default — a one-person team just publishes.
+- **Scheduled publishing.** Set a date/time on a record; `/api/cron/publish` publishes due drafts (Vercel cron in `vercel.json`, or any cron hitting the URL with `Authorization: Bearer $CRON_SECRET`).
+- **Revision history.** Every save, publish and restore is snapshotted. `…/history` compares any two revisions (or live / pending) field by field with word-level highlighting; any revision can be restored.
+- **Activity log** (`/admin/activity`): logins and failed logins, saves, publishes, deletes, restores, reviews, settings and user changes, media uploads — with user, IP and time.
+
+Roles: `admin` (everything, incl. users), `approver` (can approve and publish), `editor` (edits, submits for review; publishes directly only when approval is off).
+
 Adding a new content type = a table in `src/db/schema.ts` + an entry in `src/admin/resources.ts`. Lists, forms, validation and persistence are generated from that description (`src/admin/engine.ts`).
 
 ## Content migration

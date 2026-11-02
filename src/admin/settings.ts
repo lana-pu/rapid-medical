@@ -173,6 +173,16 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ] as FieldDef[],
   })),
   {
+    key: "workflow",
+    title: "Workflow",
+    description: "Editorial workflow for published content.",
+    revalidate: [],
+    fields: [
+      { name: "requireApproval", label: "Require approval before publishing (editors submit, approvers/admins publish)", type: "boolean" },
+      { name: "notifyEmail", label: "Notify this email when content is submitted for review", type: "text", half: true },
+    ],
+  },
+  {
     key: "branding",
     title: "Branding",
     revalidate: ["/"],

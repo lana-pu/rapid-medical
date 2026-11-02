@@ -43,6 +43,7 @@ export function UnsavedGuard({ formRef, storageKey }: { formRef: React.RefObject
     const onInput = () => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => {
+        if (submitting.current) return;
         const now = JSON.stringify(serialise());
         const d = now !== baseline.current;
         dirtyRef.current = d;

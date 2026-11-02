@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { destroySession, requireUser } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import { RESOURCES } from "@/admin/resources";
 
 export const metadata = { title: "Rapid Medical · Admin" };
@@ -10,6 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   async function logout() {
     "use server";
+    await audit(user, "logout");
     await destroySession();
     redirect("/admin/login");
   }
@@ -22,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/media", label: "Media" },
     { href: "/admin/submissions", label: "Form submissions" },
     { href: "/admin/redirects", label: "Redirects" },
+    { href: "/admin/activity", label: "Activity log" },
     ...(user.role === "admin" ? [{ href: "/admin/users", label: "Users" }] : []),
   ];
 

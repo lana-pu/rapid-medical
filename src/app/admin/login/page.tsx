@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { authenticate, createSession, getSession } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import { inputCls } from "@/components/admin/ui";
 
 export const metadata = { title: "Sign in · Rapid Medical admin" };
@@ -14,8 +15,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     const password = String(fd.get("password") ?? "");
     const next = String(fd.get("next") ?? "/admin");
     const user = await authenticate(email, password);
-    if (!user) redirect(`/admin/login?error=1&next=${encodeURIComponent(next)}`);
+    if (!user) {
+      await audit(null, "login_failed", { meta: { email } });
+      redirect(`/admin/login?error=1&next=${encodeURIComponent(next)}`);
+    }
     await createSession(user);
+    await audit(user, "login");
     redirect(next.startsWith("/admin") ? next : "/admin");
   }
 

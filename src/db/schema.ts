@@ -24,7 +24,11 @@ export const REGIONS: Region[] = ["us", "ous", "apac"];
 export const statusEnum = pgEnum("status", ["draft", "published"]);
 export type Status = (typeof statusEnum.enumValues)[number];
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "editor"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "approver", "editor"]);
+export type UserRole = (typeof userRoleEnum.enumValues)[number];
+
+export const reviewStatusEnum = pgEnum("review_status", ["editing", "in_review", "changes_requested", "approved"]);
+export type ReviewStatus = (typeof reviewStatusEnum.enumValues)[number];
 
 export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_progress", "done", "spam"]);
 
@@ -344,6 +348,67 @@ export const redirects = pgTable("redirects", {
 });
 
 /* ------------------------------------------------------------------ */
+/*  Editorial workflow                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Pending changes to a *published* record. The live table keeps what the
+ * site shows; the draft holds the next version until it is published.
+ * `data` is null when the draft only schedules publication of the live row.
+ */
+export const drafts = pgTable(
+  "drafts",
+  {
+    id: serial("id").primaryKey(),
+    resource: text("resource").notNull(), // admin resource slug
+    recordId: integer("record_id").notNull(),
+    data: jsonb("data").$type<Record<string, unknown> | null>(),
+    reviewStatus: reviewStatusEnum("review_status").notNull().default("editing"),
+    reviewNote: text("review_note").notNull().default(""),
+    publishAt: timestamp("publish_at", { withTimezone: true }),
+    updatedById: integer("updated_by_id").references(() => users.id, { onDelete: "set null" }),
+    updatedByName: text("updated_by_name").notNull().default(""),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("drafts_resource_record").on(t.resource, t.recordId)],
+);
+
+/** Immutable snapshot taken at every save / publish / restore. */
+export const revisions = pgTable(
+  "revisions",
+  {
+    id: serial("id").primaryKey(),
+    resource: text("resource").notNull(),
+    recordId: integer("record_id").notNull(),
+    kind: text("kind").notNull(), // draft | published | restored | created
+    data: jsonb("data").$type<Record<string, unknown>>().notNull(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    userName: text("user_name").notNull().default(""),
+    note: text("note").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("revisions_record").on(t.resource, t.recordId, t.createdAt)],
+);
+
+/** Who did what in the admin. */
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    userName: text("user_name").notNull().default(""),
+    action: text("action").notNull(), // login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, review
+    resource: text("resource"),
+    recordId: text("record_id"),
+    label: text("label").notNull().default(""),
+    meta: jsonb("meta").$type<Record<string, unknown>>().notNull().default({}),
+    ip: text("ip"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("audit_created").on(t.createdAt)],
+);
+
+/* ------------------------------------------------------------------ */
 /*  Relations                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -378,3 +443,6 @@ export type Job = typeof jobs.$inferSelect;
 export type Page = typeof pages.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
+export type Draft = typeof drafts.$inferSelect;
+export type Revision = typeof revisions.$inferSelect;
+export type AuditEntry = typeof auditLog.$inferSelect;

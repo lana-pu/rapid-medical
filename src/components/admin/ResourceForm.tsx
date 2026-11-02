@@ -18,6 +18,8 @@ type Props = {
   fields: FieldDef[];
   row: Record<string, unknown> | null;
   products: Product[];
+  /** Published records: status is controlled by the workflow panel, not the form */
+  hideStatus?: boolean;
 };
 
 function toDateInput(v: unknown): string {
@@ -26,7 +28,7 @@ function toDateInput(v: unknown): string {
   return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
-export function ResourceForm({ resourceSlug, fields, row, products }: Props) {
+export function ResourceForm({ resourceSlug, fields, row, products, hideStatus = false }: Props) {
   const [state, action, pending] = useActionState<SaveState, FormData>(saveResource, null);
   const errors = state?.errors ?? {};
   const formRef = useRef<HTMLFormElement>(null);
@@ -34,6 +36,7 @@ export function ResourceForm({ resourceSlug, fields, row, products }: Props) {
   // Group by section, preserving order of first appearance
   const sections: { name: string; fields: FieldDef[] }[] = [];
   for (const f of fields) {
+    if (hideStatus && f.type === "status") continue;
     const name = f.section ?? "";
     let s = sections.find((x) => x.name === name);
     if (!s) {
@@ -66,7 +69,7 @@ export function ResourceForm({ resourceSlug, fields, row, products }: Props) {
         <Button type="submit" disabled={pending}>
           {pending ? "Saving…" : "Save"}
         </Button>
-        <span className="text-xs text-neutral-500">Changes go live immediately when status is “published”.</span>
+        <span className="text-xs text-neutral-500">{hideStatus ? "This record is live: saving creates pending changes to review and publish." : "Unpublished record: saving updates it in place; set status to “published” or use Publish to go live."}</span>
       </div>
     </form>
   );

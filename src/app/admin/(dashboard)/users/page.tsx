@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db, users } from "@/db";
 import { hashPassword, requireAdmin } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 import { PageHeader, Button, inputCls, formatDate, Notice } from "@/components/admin/ui";
 
 export default async function UsersPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
@@ -12,14 +13,14 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   async function create(fd: FormData) {
     "use server";
     const me = await requireAdmin();
-    void me;
     const email = String(fd.get("email") ?? "").toLowerCase().trim();
     const name = String(fd.get("name") ?? "").trim();
     const password = String(fd.get("password") ?? "");
-    const role = fd.get("role") === "admin" ? "admin" : "editor";
+    const role = (["admin", "approver", "editor"].includes(String(fd.get("role"))) ? String(fd.get("role")) : "editor") as "admin" | "approver" | "editor";
     if (!email || !name || password.length < 10) redirect("/admin/users?error=Password+must+be+10%2B+chars");
     try {
-      await db.insert(users).values({ email, name, role, passwordHash: await hashPassword(password) });
+      const [u] = await db.insert(users).values({ email, name, role, passwordHash: await hashPassword(password) }).returning();
+      await audit(me, "user", { recordId: u.id, label: email, meta: { created: true, role } });
     } catch {
       redirect("/admin/users?error=Email+already+exists");
     }
@@ -32,16 +33,17 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     const id = Number(fd.get("id"));
     if (id === me.id) redirect("/admin/users?error=You+cannot+deactivate+yourself");
     const u = await db.query.users.findFirst({ where: eq(users.id, id) });
-    if (u) await db.update(users).set({ active: !u.active }).where(eq(users.id, id));
+    if (u) { await db.update(users).set({ active: !u.active }).where(eq(users.id, id)); await audit(me, "user", { recordId: id, label: u.email, meta: { active: !u.active } }); }
     redirect("/admin/users");
   }
 
   async function resetPassword(fd: FormData) {
     "use server";
-    await requireAdmin();
+    const me = await requireAdmin();
     const password = String(fd.get("password") ?? "");
     if (password.length < 10) redirect("/admin/users?error=Password+must+be+10%2B+chars");
     await db.update(users).set({ passwordHash: await hashPassword(password) }).where(eq(users.id, Number(fd.get("id"))));
+    await audit(me, "user", { recordId: Number(fd.get("id")), meta: { passwordReset: true } });
     redirect("/admin/users?saved=1");
   }
 
@@ -86,7 +88,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <div><label className="mb-1 block text-sm">Name</label><input name="name" required className={inputCls} /></div>
         <div><label className="mb-1 block text-sm">Email</label><input name="email" type="email" required className={inputCls} /></div>
         <div><label className="mb-1 block text-sm">Password (10+ chars)</label><input name="password" type="password" required minLength={10} className={inputCls} /></div>
-        <div><label className="mb-1 block text-sm">Role</label><select name="role" className={inputCls}><option value="editor">Editor</option><option value="admin">Admin</option></select></div>
+        <div><label className="mb-1 block text-sm">Role</label><select name="role" className={inputCls}><option value="editor">Editor</option><option value="approver">Approver</option><option value="admin">Admin</option></select></div>
         <div className="col-span-2"><Button type="submit">Create user</Button></div>
       </form>
     </>

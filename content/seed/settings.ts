@@ -39,6 +39,10 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
     faviconUrl: "/favicon.ico",
     ogImageUrl: "/og-image.jpg",
   },
+  workflow: {
+    requireApproval: false,
+    notifyEmail: "",
+  },
   integrations: {
     gaMeasurementId: "G-FB4LNFSBSR",
     userwayAccount: "cDW2354yK3",
