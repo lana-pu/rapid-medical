@@ -13,8 +13,8 @@ import * as cheerio from "cheerio";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const HOSTS = ["www.rapid-medical.com", "us.rapid-medical.com", "ous.rapid-medical.com"];
-const STAGING_HOSTS = ["us-rapid-medical.juuced.co", "ous-rapid-medical.juuced.co"];
+const HOSTS = ["www.rapid-medical.com", "us.rapid-medical.com", "ous.rapid-medical.com", "apac.rapid-medical.com"];
+const STAGING_HOSTS = ["us-rapid-medical.juuced.co", "ous-rapid-medical.juuced.co", "apac-rapid-medical.juuced.co"];
 const OUT = path.resolve("content/raw");
 
 type PageRecord = {
@@ -43,6 +43,7 @@ function normalize(raw: string, base: string): string | null {
     // Staging domains mirror the real subdomains
     if (u.hostname === STAGING_HOSTS[0]) u.hostname = "us.rapid-medical.com";
     if (u.hostname === STAGING_HOSTS[1]) u.hostname = "ous.rapid-medical.com";
+    if (u.hostname === STAGING_HOSTS[2]) u.hostname = "apac.rapid-medical.com";
     if (!HOSTS.includes(u.hostname)) return null;
     u.hash = "";
     u.search = "";

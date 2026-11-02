@@ -1,5 +1,6 @@
 import type { PgTable } from "drizzle-orm/pg-core";
 import {
+  products,
   solutions,
   publications,
   newsItems,
@@ -65,11 +66,14 @@ export const RESOURCES: Resource[] = [
 
       { name: "heroTitle", label: "Hero title", type: "text", required: true, section: "Hero" },
       { name: "heroBody", label: "Hero body", type: "textarea", section: "Hero", rows: 3 },
-      { name: "heroImageUrl", label: "Hero image", type: "image", section: "Hero" },
+      { name: "heroImageUrl", label: "Hero image (or video poster)", type: "image", section: "Hero", half: true },
+      { name: "heroVideoUrl", label: "Hero background video (mp4)", type: "image", section: "Hero", half: true },
       { name: "heroCta", label: "Hero CTA", type: "repeater", section: "Hero", fields: actionLinkFields, help: "Only the first item is used." },
 
       { name: "introTitle", label: "Intro title", type: "text", section: "Intro" },
       { name: "introBody", label: "Intro body", type: "textarea", section: "Intro", rows: 3 },
+      { name: "introImageUrl", label: "Intro image", type: "image", section: "Intro", half: true },
+      { name: "introVideoUrl", label: "Intro video (mp4)", type: "image", section: "Intro", half: true },
 
       {
         name: "benefits",
@@ -80,8 +84,10 @@ export const RESOURCES: Resource[] = [
           { name: "eyebrow", label: "Eyebrow", type: "text", half: true },
           { name: "title", label: "Title", type: "text", required: true, half: true },
           { name: "body", label: "Body", type: "textarea", rows: 3 },
-          { name: "imageUrl", label: "Image", type: "image" },
+          { name: "imageUrl", label: "Image", type: "image", half: true },
+          { name: "videoUrl", label: "Video (mp4 or YouTube)", type: "image", half: true },
           { name: "footnote", label: "Footnote", type: "text" },
+          { name: "link", label: "Link (JSON {label, href})", type: "text", help: "e.g. {\"label\":\"See the comparison\",\"href\":\"/us/see-the-comparison\"}" },
         ],
       },
 
@@ -99,7 +105,8 @@ export const RESOURCES: Resource[] = [
         fields: [
           { name: "title", label: "Title", type: "text", required: true },
           { name: "body", label: "Body", type: "textarea", rows: 2 },
-          { name: "imageUrl", label: "Image", type: "image" },
+          { name: "imageUrl", label: "Image", type: "image", half: true },
+          { name: "videoUrl", label: "Video (mp4)", type: "image", half: true },
         ],
       },
 
@@ -134,6 +141,7 @@ export const RESOURCES: Resource[] = [
 
       { name: "closingTitle", label: "Closing title", type: "text", section: "Closing" },
       { name: "closingBody", label: "Closing body", type: "textarea", section: "Closing", rows: 2 },
+      { name: "closingEmbedUrl", label: "Closing video (YouTube URL or mp4)", type: "url", section: "Closing" },
 
       { name: "regulatoryMd", label: "Indications / contraindications (Markdown)", type: "markdown", section: "Regulatory", rows: 8 },
       { name: "referencesMd", label: "References (Markdown)", type: "markdown", section: "Regulatory", rows: 8 },
@@ -317,6 +325,33 @@ export const RESOURCES: Resource[] = [
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
       { ...statusField, section: "SEO" },
+    ],
+  },
+
+  /* ------------------------------------------------------------- */
+  {
+    slug: "products",
+    title: "Products",
+    titleSingular: "Product",
+    table: products,
+    labelField: "name",
+    sortBy: "sortOrder",
+    revalidate: ["/us/evidence", "/ous/evidence", "/apac/evidence"],
+    listColumns: [
+      { name: "name", label: "Name" },
+      { name: "slug", label: "Slug" },
+      { name: "family", label: "Family" },
+      { name: "regions", label: "Evidence tab in", kind: "regions" },
+      { name: "sortOrder", label: "Order" },
+    ],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, half: true, placeholder: "TIGERTRIEVER™ 13" },
+      { name: "slug", label: "Slug", type: "slug", required: true, half: true },
+      { name: "fullName", label: "Full name", type: "text", required: true },
+      { name: "family", label: "Family slug (parent product)", type: "text", half: true, help: "e.g. tigertriever; empty for a top-level product" },
+      sortField,
+      { name: "regions", label: "Own Evidence tab in regions", type: "regions", help: "Empty = all regions." },
+      { name: "aliases", label: "Region aliases (JSON)", type: "markdown", rows: 4, help: "{\"apac\": {\"name\": \"COLUMBUS™\", \"fullName\": \"COLUMBUS™ Steerable Guidewire\"}}" },
     ],
   },
 

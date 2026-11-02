@@ -78,10 +78,11 @@ export function Repeater({ name, fields, initial, products }: { name: string; fi
                     <input type="checkbox" checked={Boolean(v)} onChange={(e) => update(i, f.name, e.target.checked)} /> {f.label}
                   </label>
                 );
+              const sv = v != null && typeof v === "object" ? JSON.stringify(v) : String(v ?? "");
               return (
                 <div key={f.name} className={wrap}>
                   {label}
-                  <input value={String(v ?? "")} onChange={(e) => update(i, f.name, e.target.value)} className={inputCls} />
+                  <input value={sv} onChange={(e) => update(i, f.name, e.target.value)} className={inputCls} />
                 </div>
               );
             })}

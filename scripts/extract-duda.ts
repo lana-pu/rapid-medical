@@ -80,15 +80,17 @@ type Pub = {
   publishedOn: string; product: string; variant: string | null; regions: string[]; featured: boolean; imageUrl: string | null;
 };
 
-function productFor(title: string, fallback: string) {
-  const t = title.toLowerCase();
+/** Map a tab label to a product slug (see content/seed/settings.ts PRODUCTS). */
+function productForTab(tab: string): string {
+  const t = tab.toLowerCase().replace(/\s+/g, "");
   if (/comaneci/.test(t)) return "comaneci";
   if (/drivewire|columbus/.test(t)) return "drivewire";
-  if (/tiger/.test(t)) return "tigertriever";
-  return fallback;
+  if (/tigertriever13/.test(t)) return "tigertriever-13";
+  if (/25|xl/.test(t)) return "tigertriever-xl";
+  return "tigertriever";
 }
 
-async function publicationsFrom(host: string, region: "us" | "ous"): Promise<Pub[]> {
+async function publicationsFrom(host: string, region: "us" | "ous" | "apac"): Promise<Pub[]> {
   const $ = cheerio.load(await html(host, "evidence"));
   const out: Pub[] = [];
   const btnSel = $(".tab-btn").length ? ".tab-btn" : ".product-name";
@@ -96,7 +98,7 @@ async function publicationsFrom(host: string, region: "us" | "ous"): Promise<Pub
   const tabNames = $(btnSel).map((_, b) => clean($(b).text())).get();
   $(panelSel).each((pi, panel) => {
     const tab = tabNames[pi] ?? "";
-    const fallback = /comaneci/i.test(tab) ? "comaneci" : /drivewire/i.test(tab) ? "drivewire" : "tigertriever";
+    const product = productForTab(tab);
     $(panel).find("li").each((_, li) => {
       const strong = $(li).find("strong").first();
       const date = clean(strong.find("span").first().text());
@@ -107,17 +109,19 @@ async function publicationsFrom(host: string, region: "us" | "ous"): Promise<Pub
       let authors = parts[0] ?? "";
       if (/^(https?:\/\/|doi)/i.test(authors)) { parts.unshift(""); authors = ""; }
       const citation = parts.slice(1).join(" ");
-      const link = $(li).closest("a").attr("href") ?? $(li).find("a").first().attr("href") ?? null;
+      const links = [$(li).closest("a").attr("href"), ...$(li).find("a").map((_, a) => $(a).attr("href")).get()].filter((x): x is string => !!x);
+      const link = links.find((x) => !/\.pdf(\?|$)/i.test(x)) ?? links[0] ?? null;
+      const pdf = links.find((x) => /\.pdf(\?|$)/i.test(x)) ?? null;
       const doi = /10\.\d{4,}\/[^\s)]+/.exec(`${citation} ${link ?? ""}`)?.[0]?.replace(/[.,]$/, "") ?? null;
       out.push({
         title, authors,
         journal: clean(citation.replace(/https?:\/\/\S+/g, "").replace(/\b(doi|DOI):?\s*\S+/g, "")),
         doi,
         url: link && !/\.pdf(\?|$)/i.test(link) ? link : doi ? `https://doi.org/${doi}` : null,
-        pdfUrl: link && /\.pdf(\?|$)/i.test(link) ? link : null,
+        pdfUrl: pdf,
         publishedOn: monthYear(date),
-        product: productFor(title, fallback),
-        variant: /13/.test(tab) ? "TIGERTRIEVER 13" : /25/.test(tab) ? "TIGERTRIEVER 25 & XL" : null,
+        product,
+        variant: null,
         regions: [region], featured: false, imageUrl: null,
       });
     });
@@ -126,19 +130,21 @@ async function publicationsFrom(host: string, region: "us" | "ous"): Promise<Pub
 }
 
 async function publications() {
-  const [us, ous] = await Promise.all([publicationsFrom("us.rapid-medical.com", "us"), publicationsFrom("ous.rapid-medical.com", "ous")]);
+  const [us, ous, apac] = await Promise.all([publicationsFrom("us.rapid-medical.com", "us"), publicationsFrom("ous.rapid-medical.com", "ous"), publicationsFrom("apac.rapid-medical.com", "apac")]);
   const key = (p: Pub) => p.title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 70);
   const merged = new Map<string, Pub>();
-  for (const p of [...us, ...ous]) {
+  for (const p of [...us, ...ous, ...apac]) {
     const k = key(p);
     const ex = merged.get(k);
     if (ex) {
       ex.regions = [...new Set([...ex.regions, ...p.regions])];
-      ex.url ??= p.url; ex.pdfUrl ??= p.pdfUrl; ex.doi ??= p.doi; ex.variant ??= p.variant;
+      ex.url ??= p.url; ex.pdfUrl ??= p.pdfUrl; ex.doi ??= p.doi;
+      // prefer the more specific product (tigertriever-13 over tigertriever)
+      if (p.product.length > ex.product.length) ex.product = p.product;
       if (!ex.authors) ex.authors = p.authors;
     } else merged.set(k, { ...p });
   }
-  const list = [...merged.values()].map((p) => ({ ...p, regions: p.regions.length === 2 ? [] : p.regions }));
+  const list = [...merged.values()].map((p) => ({ ...p, regions: p.regions.length === 3 ? [] : p.regions }));
   list.sort((a, b) => (a.publishedOn < b.publishedOn ? 1 : a.publishedOn > b.publishedOn ? -1 : 0));
   // "Latest" block on Evidence = 3 most recent; take their images from the US page in order
   const $ = cheerio.load(await html("us.rapid-medical.com", "evidence"));
@@ -177,7 +183,7 @@ async function team() {
 /* ------------------------------------------------------------------ */
 /*  Generic pages                                                      */
 /* ------------------------------------------------------------------ */
-const PAGES: { host: string; slug: string; region: "us" | "ous" | null; noindex?: boolean; title: string }[] = [
+const PAGES: { host: string; slug: string; region: "us" | "ous" | "apac" | null; noindex?: boolean; title: string }[] = [
   { host: "www.rapid-medical.com", slug: "privacy-statement", region: null, title: "Privacy Statement" },
   { host: "www.rapid-medical.com", slug: "terms", region: null, title: "Terms of Use" },
   { host: "www.rapid-medical.com", slug: "compliance-statement", region: null, title: "Compliance Statement" },
@@ -189,22 +195,56 @@ const PAGES: { host: string; slug: string; region: "us" | "ous" | null; noindex?
   { host: "ous.rapid-medical.com", slug: "comparison-video", region: "ous", noindex: true, title: "See the comparison" },
   { host: "ous.rapid-medical.com", slug: "comaneci-spinal-case-patankar", region: "ous", noindex: true, title: "COMANECI spinal case – Dr. Patankar" },
   { host: "ous.rapid-medical.com", slug: "comaneci-for-vasospasm", region: "ous", noindex: true, title: "COMANECI for vasospasm" },
+  { host: "apac.rapid-medical.com", slug: "success-study-final-results", region: "apac", noindex: true, title: "SUCCESS Study – Final Results" },
+  { host: "apac.rapid-medical.com", slug: "see-the-comparison", region: "apac", noindex: true, title: "See the comparison" },
+  { host: "apac.rapid-medical.com", slug: "comaneci-for-vasospasm", region: "apac", noindex: true, title: "COMANECI for vasospasm" },
 ];
 
 async function pages() {
   const out = [];
   for (const p of PAGES) {
-    const src = await md(p.host, p.slug);
-    const titleLine = src.split("\n")[0].replace(/^# /, "");
-    const description = clean(src.split("\n\n")[1] ?? "");
-    let body = src.split(/!\[logo\]\([^)]+\)\n\n/)[1] ?? src;
-    body = body.split(/\[https:\/\/x\.com\/Rapid__Medical\]/)[0];
-    body = body
-      .split("\n\n")
-      .map((l) => l.replace(/[​﻿]/g, "").trimEnd())
-      .filter((l, i, arr) => l.trim() && arr.indexOf(l) === i)
-      .join("\n\n");
-    out.push({ slug: p.slug, region: p.region, title: p.title, metaTitle: titleLine, metaDescription: description, noindex: p.noindex ?? false, bodyMd: body });
+    const $ = cheerio.load(await html(p.host, p.slug));
+    const metaTitle = clean($("title").first().text());
+    const description = $('meta[name="description"]').attr("content") ?? "";
+
+    // Background / inline videos live in Duda widget JSON, not in <video> tags.
+    const raw = $.html();
+    const videos = [...new Set([...raw.matchAll(/https?:\/\/vid\.cdn-website\.com\/[^"'\s\\<)&]+\.mp4/g)].map((m) => m[0]))];
+
+    $("script, style, noscript, header, nav, footer, .dmHeaderContainer, .dmFooterContainer, #dm_hidden, #dmPopup, .dmPopupMask").remove();
+    const seen = new Set<string>();
+    const lines: string[] = [];
+    const CHROME = /Get in touch|HQ: \+972|US: \+1-469|^info@rapid-medical\.com$|^Welcome$|^Our Therapies$|^Evidence$|^News & Events$|^About Us$|^Careers$|^Contact Us$|^Privacy Statement$|^Terms of Use$|^Compliance Statement$|^Patents$|^Rapid Medical™?$|Share by|^© ?20|^Large vessel stroke$|^Aneurysm$|^Access$|^Medium vessel stroke$|^Vasospasm$|^choose-your-location/;
+
+    $("h1,h2,h3,h4,h5,h6,p,li,img,a[href]").each((_, el) => {
+      const tag = el.tagName.toLowerCase();
+      if (tag === "img") {
+        const src = $(el).attr("src") || $(el).attr("data-src") || "";
+        // skip logos, responsive duplicates (-391w etc.), tiny icons
+        if (!src || seen.has(src) || /logo|RapidMedical_logo|-\d{2,3}w\./i.test(src)) return;
+        // skip the mobile variant when a desktop one with the same stem exists
+        if (/obile/i.test(src)) return;
+        seen.add(src);
+        lines.push(`![${$(el).attr("alt") ?? ""}](${src})`);
+        return;
+      }
+      const text = clean($(el).text());
+      if (!text || text.length < 2 || seen.has(text) || CHROME.test(text)) return;
+      if ($(el).find("h1,h2,h3,h4,p,li").length > 0 && tag !== "li") return; // container
+      seen.add(text);
+      if (tag === "a") {
+        const href = $(el).attr("href") ?? "";
+        if (/^(https?:|mailto:|\/)/.test(href) && !/rapid-medical\.com\/?$/.test(href)) lines.push(`[${text}](${href})`);
+        return;
+      }
+      if (/^h[1-6]$/.test(tag)) lines.push(`${"#".repeat(Number(tag[1]))} ${text}`);
+      else if (tag === "li") lines.push(`- ${text}`);
+      else lines.push(text);
+    });
+
+    // Standalone video pages: put the video first
+    const body = [...videos.map((v) => `@[video](${v})`), ...lines].join("\n\n");
+    out.push({ slug: p.slug, region: p.region, title: p.title, metaTitle, metaDescription: description, noindex: p.noindex ?? false, bodyMd: body });
   }
   return out;
 }

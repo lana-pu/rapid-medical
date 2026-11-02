@@ -82,7 +82,7 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
   const name = namePrefix + f.name;
   const wrap = f.half ? "col-span-1" : "col-span-2";
   const help = f.help ? <p className="mt-1 text-xs text-neutral-500">{f.help}</p> : null;
-  const str = value == null ? "" : String(value);
+  const str = value == null ? "" : typeof value === "object" && f.type === "markdown" ? JSON.stringify(value, null, 2) : String(value);
 
   switch (f.type) {
     case "text":

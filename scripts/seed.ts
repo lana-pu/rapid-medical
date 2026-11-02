@@ -12,7 +12,7 @@ import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
 import { SOLUTIONS } from "../content/seed/solutions";
-import { SETTINGS, PRODUCTS, REDIRECTS } from "../content/seed/settings";
+import { SETTINGS, PRODUCTS, REDIRECTS, WEBINARS } from "../content/seed/settings";
 
 const RESET = process.argv.includes("--reset");
 
@@ -25,7 +25,7 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is not set");
   const client = postgres(url, { max: 1 });
   const db = drizzle(client, { schema });
-  const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users } = schema;
+  const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars } = schema;
 
   if (RESET) {
     await db.execute(sql`TRUNCATE solutions, publications, news_items, webinars, team_members, jobs, pages, redirects RESTART IDENTITY CASCADE`);
@@ -34,7 +34,8 @@ async function main() {
 
   /* products */
   for (const p of PRODUCTS) {
-    await db.insert(products).values(p).onConflictDoUpdate({ target: products.slug, set: { name: p.name, fullName: p.fullName, sortOrder: p.sortOrder } });
+    const row = { ...p, regions: p.regions as schema.Region[], aliases: p.aliases as schema.Product["aliases"] };
+    await db.insert(products).values(row).onConflictDoUpdate({ target: products.slug, set: row });
   }
   const prodRows = await db.select().from(products);
   const prodId = (slug: string | null | undefined) => prodRows.find((p) => p.slug === slug)?.id ?? null;
@@ -43,6 +44,10 @@ async function main() {
   for (const [key, value] of Object.entries(SETTINGS)) {
     await db.insert(siteSettings).values({ key, value }).onConflictDoUpdate({ target: siteSettings.key, set: { value, updatedAt: new Date() } });
   }
+
+  /* webinars */
+  if (!RESET) await db.delete(webinars);
+  await db.insert(webinars).values(WEBINARS.map((w) => ({ title: w.title, speaker: w.speaker, event: w.event ?? "", productId: prodId(w.product), sortOrder: w.sortOrder, regions: [], status: "published" as const })));
 
   /* solutions */
   for (const s of SOLUTIONS) {

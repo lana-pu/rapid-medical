@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "Rapid Medical™ | Neurovascular Therapy Solutions", template: "%s | Rapid Medical™" },
   description: "Purpose-built devices for stroke intervention. Personalized tools for patient anatomy.",
-  openGraph: { type: "website", siteName: "Rapid Medical™" },
-  twitter: { card: "summary" },
+  openGraph: { type: "website", siteName: "Rapid Medical™", images: ["/og-image.jpg"] },
+  twitter: { card: "summary", images: ["/og-image.jpg"] },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

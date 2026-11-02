@@ -16,10 +16,10 @@ import { relations } from "drizzle-orm";
 /*  Enums                                                              */
 /* ------------------------------------------------------------------ */
 
-/** Regulatory regions. "us" = Americas, "ous" = Outside US (EU/MEA/APAC). */
-export const regionEnum = pgEnum("region", ["us", "ous"]);
+/** Regulatory regions. "us" = Americas, "ous" = Europe & Middle East (+ LATAM/AU), "apac" = Asia-Pacific. */
+export const regionEnum = pgEnum("region", ["us", "ous", "apac"]);
 export type Region = (typeof regionEnum.enumValues)[number];
-export const REGIONS: Region[] = ["us", "ous"];
+export const REGIONS: Region[] = ["us", "ous", "apac"];
 
 export const statusEnum = pgEnum("status", ["draft", "published"]);
 export type Status = (typeof statusEnum.enumValues)[number];
@@ -32,8 +32,9 @@ export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_prog
 /*  JSON shapes stored in jsonb columns                                */
 /* ------------------------------------------------------------------ */
 
-export type Benefit = { eyebrow?: string; title: string; body: string; imageUrl?: string; footnote?: string };
-export type Step = { title: string; body?: string; imageUrl?: string };
+export type ActionLink = { label: string; href: string };
+export type Benefit = { eyebrow?: string; title: string; body: string; imageUrl?: string; videoUrl?: string; footnote?: string; link?: ActionLink };
+export type Step = { title: string; body?: string; imageUrl?: string; videoUrl?: string };
 export type InPracticeItem = {
   kind: "testimonial" | "case" | "recording";
   title: string;
@@ -42,7 +43,6 @@ export type InPracticeItem = {
   linkUrl: string;
   imageUrl?: string;
 };
-export type ActionLink = { label: string; href: string };
 
 /* ------------------------------------------------------------------ */
 /*  Users / auth                                                        */
@@ -87,6 +87,12 @@ export const products = pgTable("products", {
   slug: text("slug").notNull().unique(), // tigertriever | comaneci | drivewire
   name: text("name").notNull(), // TIGERTRIEVER™
   fullName: text("full_name").notNull(), // TIGERTRIEVER™ Revascularization Device
+  /** Parent family slug (e.g. tigertriever-13 → tigertriever); null for a family itself */
+  family: text("family"),
+  /** Regions where this product gets its own Evidence tab; empty = all */
+  regions: jsonb("regions").$type<Region[]>().notNull().default([]),
+  /** Region-specific display names, e.g. { apac: "COLUMBUS™" } */
+  aliases: jsonb("aliases").$type<Partial<Record<Region, { name: string; fullName: string }>>>().notNull().default({}),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -113,11 +119,14 @@ export const solutions = pgTable(
     heroTitle: text("hero_title").notNull(),
     heroBody: text("hero_body").notNull().default(""),
     heroImageUrl: text("hero_image_url"),
+    heroVideoUrl: text("hero_video_url"),
     heroCta: jsonb("hero_cta").$type<ActionLink | null>(),
 
     /** Optional intro block below the hero (e.g. "Like fingerprints…") */
     introTitle: text("intro_title"),
     introBody: text("intro_body"),
+    introVideoUrl: text("intro_video_url"),
+    introImageUrl: text("intro_image_url"),
 
     benefits: jsonb("benefits").$type<Benefit[]>().notNull().default([]),
 
@@ -138,6 +147,8 @@ export const solutions = pgTable(
 
     closingTitle: text("closing_title"),
     closingBody: text("closing_body"),
+    /** YouTube/Vimeo embed or mp4 shown in the closing section */
+    closingEmbedUrl: text("closing_embed_url"),
 
     /** Indications / contraindications – markdown, region-specific */
     regulatoryMd: text("regulatory_md").notNull().default(""),

@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/site/ContactForm";
 export const metadata = { title: "Contact Us", description: "Connect with Rapid Medical™ for neurovascular therapy." };
 
 const TOPICS = ["Request a demo", "Product question / Support", "Customer Service / Orders", "Meetings & Events", "Investor relations", "Other"];
-const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe" };
+const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac: "Asia Pacific" };
 const TOPIC_MAP: Record<string, string> = { demo: "Request a demo", support: "Product question / Support", orders: "Customer Service / Orders" };
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ region?: string; topic?: string }> }) {

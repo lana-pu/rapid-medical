@@ -23,7 +23,15 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       const raw = fd.get(f.name);
       const s = typeof raw === "string" ? raw.trim() : "";
       if (f.type === "repeater") {
-        try { out[f.name] = s ? JSON.parse(s) : []; } catch { out[f.name] = []; }
+        try {
+          const arr = s ? (JSON.parse(s) as Record<string, unknown>[]) : [];
+          out[f.name] = arr.map((it) => {
+            const copy = { ...it };
+            for (const k of ["links", "link"]) if (typeof copy[k] === "string") { try { copy[k] = copy[k] ? JSON.parse(copy[k] as string) : undefined; } catch { copy[k] = undefined; } }
+            for (const k of ["lat", "lon"]) if (typeof copy[k] === "string" && copy[k] !== "") copy[k] = Number(copy[k]);
+            return copy;
+          });
+        } catch { out[f.name] = []; }
       } else if (f.type === "boolean") out[f.name] = raw === "on";
       else if (f.type === "stringList") out[f.name] = s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
       else out[f.name] = s;

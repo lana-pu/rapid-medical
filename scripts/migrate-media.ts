@@ -18,7 +18,7 @@ const OUT_DIR = path.join(process.cwd(), "public", "uploads", "duda");
 
 /** Columns that may hold asset URLs (text or jsonb), per table. */
 const TARGETS: Record<string, string[]> = {
-  solutions: ["hero_image_url", "overview_image_url", "spec_image_urls", "benefits", "how_it_works", "in_practice", "regulatory_md", "references_md"],
+  solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_md", "references_md"],
   publications: ["pdf_url", "image_url"],
   news_items: ["image_url"],
   webinars: ["image_url"],
@@ -43,10 +43,12 @@ async function download(url: string): Promise<{ file: string; size: number; mime
     const s = await stat(file);
     return { file: name, size: s.size, mime: "" };
   } catch { /* not downloaded yet */ }
-  // Duda serves responsive variants; ask for the original when the URL has /opt/…-1920w
+  // Duda serves responsive variants; ask for the original when the URL has /opt/…-1920w.
+  // Videos (vid.cdn-website.com) have no variants and the CDN wants a browser UA.
+  const isVideo = /vid\.cdn-website\.com/.test(url);
   const original = url.replace("/dms3rep/multi/opt/", "/dms3rep/multi/").replace(/-1920w(?=\.\w+$)/, "");
-  for (const candidate of [original, url]) {
-    const res = await fetch(candidate, { headers: { "user-agent": "Mozilla/5.0 (migration bot)" } });
+  for (const candidate of isVideo ? [url] : [original, url]) {
+    const res = await fetch(candidate, { headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36", referer: "https://www.rapid-medical.com/" } });
     if (!res.ok) continue;
     const buf = Buffer.from(await res.arrayBuffer());
     await writeFile(file, buf);

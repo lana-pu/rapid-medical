@@ -43,6 +43,14 @@ export async function getProducts() {
   return db.select().from(products).orderBy(asc(products.sortOrder));
 }
 
+/** Products that get an Evidence tab in a region, with region-specific names applied. */
+export async function getProductsForRegion(region: Region) {
+  const all = await getProducts();
+  return all
+    .filter((p) => p.regions.length === 0 || p.regions.includes(region))
+    .map((p) => ({ ...p, name: p.aliases[region]?.name ?? p.name, fullName: p.aliases[region]?.fullName ?? p.fullName }));
+}
+
 function regionFilter(table: { regions: PgColumn }, region: Region) {
   // empty array = all regions
   return or(sql`jsonb_array_length(${table.regions}) = 0`, sql`${table.regions} @> ${JSON.stringify([region])}::jsonb`);
@@ -121,7 +129,7 @@ export async function getAllPublicPaths(): Promise<string[]> {
   ]);
   return [
     "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us", "/choose-your-location",
-    "/us/therapies", "/ous/therapies", "/us/evidence", "/ous/evidence", "/us/webinars", "/ous/webinars",
+    ...["us", "ous", "apac"].flatMap((r) => [`/${r}/therapies`, `/${r}/evidence`, `/${r}/webinars`]),
     ...sols.map((s) => `/${s.region}/therapies/${s.slug}`),
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
     ...team.map((t) => `/team/${t.slug}`),

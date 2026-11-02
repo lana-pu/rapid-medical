@@ -9,9 +9,12 @@
     "publishedOn": "2026-09-01",
     "product": "drivewire",
     "variant": null,
-    "regions": [],
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": true,
-    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-1920w.png"
+    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-1920w.png?jxl&v=jxl"
   },
   {
     "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
@@ -23,9 +26,12 @@
     "publishedOn": "2026-07-01",
     "product": "tigertriever",
     "variant": null,
-    "regions": [],
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": true,
-    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Untitled-1-e3fb2907-1920w.png"
+    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Untitled-1-e3fb2907-1920w.png?jxl&v=jxl"
   },
   {
     "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
@@ -36,10 +42,13 @@
     "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/fneur-17-1839128.pdf",
     "publishedOn": "2026-04-01",
     "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
-    "regions": [],
+    "variant": null,
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": true,
-    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Screenshot+2025-11-23+at+02.04.57-365dad50-1920w.png"
+    "imageUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Screenshot+2025-11-23+at+02.04.57-365dad50-1920w.png?jxl&v=jxl"
   },
   {
     "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
@@ -50,8 +59,11 @@
     "pdfUrl": null,
     "publishedOn": "2026-02-01",
     "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
-    "regions": [],
+    "variant": null,
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": false,
     "imageUrl": null
   },
@@ -65,7 +77,10 @@
     "publishedOn": "2026-02-01",
     "product": "comaneci",
     "variant": null,
-    "regions": [],
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": false,
     "imageUrl": null
   },
@@ -74,12 +89,15 @@
     "authors": "Jason M Davies et al.",
     "journal": "",
     "doi": null,
-    "url": null,
+    "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
     "pdfUrl": "https://jnis.bmj.com/content/neurintsurg/early/2025/11/19/jnis-2025-024136.full.pdf",
     "publishedOn": "2025-11-01",
     "product": "comaneci",
     "variant": null,
-    "regions": [],
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": false,
     "imageUrl": null
   },
@@ -109,7 +127,10 @@
     "publishedOn": "2025-06-01",
     "product": "drivewire",
     "variant": null,
-    "regions": [],
+    "regions": [
+      "us",
+      "ous"
+    ],
     "featured": false,
     "imageUrl": null
   },
@@ -121,10 +142,11 @@
     "url": "https://doi.org/10.1177/15910199251347776",
     "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/T13+for+DMVO-+Raphaeli+2025.pdf",
     "publishedOn": "2025-06-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -190,6 +212,38 @@
     "imageUrl": null
   },
   {
+    "title": "Sustained efficacy of angioplasty for cerebral vasospasm after aneurysmal subarachnoid hemorrhage: Risk features and device comparison",
+    "authors": "Li Ma, Samer S Hoz, Alhamza R Al-Bayati, Raul G Nogueira, Michael J Lang, Bradley A Gross",
+    "journal": "",
+    "doi": "10.1016/j.jocn.2024.110784",
+    "url": "https://doi.org/10.1016/j.jocn.2024.110784",
+    "pdfUrl": null,
+    "publishedOn": "2024-10-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Treatment of Cerebral Vasospasm after Aneurysmal Subarachnoid Hemorrhage Using the Compliant Manually Adjustable Mesh Comaneci",
+    "authors": "Adrien Guenego, Hamza Adel Salim, Maud Wang, Jeremy J Heit, Niloufar Sadeghi, Noémie Ligot, Valentina Lolli, Fadi Tannouri, Fabio Silvio Taccone, Boris Lubicz",
+    "journal": "",
+    "doi": "10.5334/jbsr.3714",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/39431058/",
+    "pdfUrl": null,
+    "publishedOn": "2024-10-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
     "authors": "Brian Jankowit et al.",
     "journal": "",
@@ -228,7 +282,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -281,14 +336,15 @@
     "title": "P067/132 Cerebral vasospasm treatment using comaneci device – registry study",
     "authors": "10.1136/jnis-2023-ESMINT.100",
     "journal": "",
-    "doi": null,
+    "doi": "10.1136/jnis-2023-ESMINT.100",
     "url": "https://jnis.bmj.com/content/15/Suppl_2/A43.2",
     "pdfUrl": null,
     "publishedOn": "2023-08-01",
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -304,7 +360,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -320,7 +377,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -377,12 +435,13 @@
     "journal": "",
     "doi": "10.3389/fneur2022.1032307",
     "url": "https://doi.org/10.3389/fneur2022.1032307",
-    "pdfUrl": null,
+    "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/1-23-fneur-13-1032307.pdf",
     "publishedOn": "2023-01-01",
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -420,6 +479,22 @@
     "imageUrl": null
   },
   {
+    "title": "Mechanical Comaneci 17-stent angioplasty for a sub-optimally deployed flow-diverter stent",
+    "authors": "Georgi Vladev, Alexander Sirakov, Kristina Sirakova and Sanimir S Sirakov",
+    "journal": "Interventional Neuroradiology,",
+    "doi": "10.1177/15910199221149633",
+    "url": "https://journals.sagepub.com/doi/abs/10.1177/15910199221149633",
+    "pdfUrl": null,
+    "publishedOn": "2022-12-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
     "authors": "Gabriele Vinacci et al.",
     "journal": "",
@@ -452,6 +527,22 @@
     "imageUrl": null
   },
   {
+    "title": "Comaneci-assisted coiling of wide-necked intracranial aneurysm: A single center preliminary experience",
+    "authors": "Gabriele Vinacci, Angelica Celentano, Edoardo Agosti, Alberto Vito Terrana, Francesco Alberto Vizzari, Luca Nativo, Fabio Baruzzi, Antonio Tabano, Davide Locatelli and Andrea Giorgianni.",
+    "journal": "Journal of Clinical Medicine",
+    "doi": null,
+    "url": null,
+    "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/11-22jcm-1899801+%281%29.pdf",
+    "publishedOn": "2022-11-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "COMMANd: multicenter experience",
     "authors": "10.1136/neurintsurg-2022-019272",
     "journal": "",
@@ -468,6 +559,22 @@
     "imageUrl": null
   },
   {
+    "title": "Comaneci MechANical dilation for vasospasm (COMMAND): multicenter experience",
+    "authors": "Mohamed M Salem, Jane Khalife, Sohum Desai, Vera Sharashidze, Clint Badger, Anna L Kuhn, Andre Monteiro, Hisham Salahuddin, Adnan H Siddiqui, Jasmeet Singh, Elad I Levy, Michael Lang, Ramesh Grandhi, Ajith J Thomas, Li-Mei Lin, Omar Tanweer, Jan-Karl Burkhardt, Ajit S Puri, Bradley A Gross, Erez Nossek, Ameer E Hassan, Hamza A Shaikh, Brian T Jankowitz Salem MM, Khalife J, Desai S, et alCOManeci MechANical dilation for vasospasm (COMMAND): multicenter experience Journal of NeuroInterventional Surgery Published Online First: 24 August 2022. doi: 10.1136/jnis-2022-019272",
+    "journal": "",
+    "doi": null,
+    "url": "https://jnis.bmj.com/content/15/9/864",
+    "pdfUrl": null,
+    "publishedOn": "2022-08-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "The Anch'Or Harpoon Technique with a Manually Expandable Stentretriever (Tigertriever 13), a Technical Note",
     "authors": "Maud Wang, Stephanie Elen, Thomas Bonnet, Marin Halut, Juan Vazquez Suarez, Benjamin Mine, Boris Lubicz, Adrien Guenego",
     "journal": "Frontiers.",
@@ -475,10 +582,11 @@
     "url": "https://www.frontiersin.org/articles/10.3389/fneur.2022.934690/abstract?s=01",
     "pdfUrl": null,
     "publishedOn": "2022-06-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -500,6 +608,22 @@
     "imageUrl": null
   },
   {
+    "title": "Distal cerebral vasospasm treatment following aneurysmal subarachnoid hemorrhage using the Comaneci device: technical feasibility and single-center preliminary results",
+    "authors": "Louis Thiery, Xavier Carle, Benoit Testud, Gregoire Boulouis, Paul Habert, Farouk Tradi, Anthony Reyre, Pierre Lehmann, Philippe Dory-Lautrec, Jan-Patrick Stellmann, Nadine Girard, Herve Brunel, Jean-Francois Hak",
+    "journal": "Journal of NeuroInterventional Surgery Published Online First: 18 May 2022.",
+    "doi": "10.1136/neurintsurg-2022-018699",
+    "url": "https://jnis.bmj.com/content/15/4/325",
+    "pdfUrl": null,
+    "publishedOn": "2022-05-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Efficacy and safety of stent-retrievers for cerebral vasospasms",
     "authors": "10.1177/15910199221086389",
     "journal": "",
@@ -516,6 +640,22 @@
     "imageUrl": null
   },
   {
+    "title": "Efficacy and safety in the use of stent-retrievers for treatment of cerebral vasospasms after subarachnoid hemorrhage",
+    "authors": "J Hensler, F Wodarg, J Madjidyar, S Peters, G Cohrs, O Jansen, N Larsen",
+    "journal": "Interventional Neuroradiology, sagepub.com/journals-permissions journals.sagepub.com/home/ine",
+    "doi": "10.1177/15910199221086389",
+    "url": "https://doi.org/10.1177/15910199221086389",
+    "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/2-22Hensler+2022.pdf",
+    "publishedOn": "2022-02-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Comaneci Plus Balloon-assisted Embolization of Ruptured Wide-necked Cerebral Aneurysms",
     "authors": "A. Sirakov et al.",
     "journal": "",
@@ -526,7 +666,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -558,7 +699,8 @@
     "product": "drivewire",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -587,10 +729,11 @@
     "url": "https://doi.org/10.1007/s00234-021-02792-x",
     "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/10-21-Fischer2021_Article_TheTigertriever13ForMechanical.pdf",
     "publishedOn": "2021-10-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -603,10 +746,26 @@
     "url": "https://www.jacc.org/doi/full/10.1016/j.jcin.2021.07.050",
     "pdfUrl": null,
     "publishedOn": "2021-10-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 25 & XL",
+    "product": "tigertriever-xl",
+    "variant": null,
     "regions": [
       "ous"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Novel Large-Diameter Manually Expandable Stentriever, Embolic Prevention Stent and Flow Reversal in Large-Thrombus-Burden ICA Proximal Occlusion Stroke",
+    "authors": "Lukasz Tekieli, MD, PHD, Krzysztof Banaszkiewicz, MD, PHD, Zbigniew Moczulski, MD, Małgorzata Urbanczyk, MD, Piotr Musialek, MD, DPHIL",
+    "journal": "— JACC: Cardiovascular Interventions",
+    "doi": "10.1016/j.jcin.2021.07.050",
+    "url": "https://www.jacc.org/doi/full/10.1016/j.jcin.2021.07.050",
+    "pdfUrl": null,
+    "publishedOn": "2021-10-01",
+    "product": "tigertriever-xl",
+    "variant": null,
+    "regions": [
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -619,10 +778,11 @@
     "url": "https://journals.sagepub.com/doi/10.1177/15910199211039926?url_ver=Z39.88-2003&rfr_id=ori%3Arid%3Acrossref.org&rfr_dat=cr_pub++0pubmed&",
     "pdfUrl": null,
     "publishedOn": "2021-09-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -635,10 +795,26 @@
     "url": "https://doi.org/10.3390/jcm10173853",
     "pdfUrl": null,
     "publishedOn": "2021-08-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 25 & XL",
+    "product": "tigertriever-xl",
+    "variant": null,
     "regions": [
       "ous"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Mechanical Thrombectomy in Acute Terminal Internal Carotid Artery Occlusions Using a Large Manually Expandable Stentretriever (Tiger XL Device): Multicenter Initial Experience",
+    "authors": "Volker Maus, Sabeth Hüsken, Vladimir Kalousek, Grzegorz Marek Karwacki, Hannes Nordmeyer, Ilka Kleffner, Werner Weber and Sebastian Fischer",
+    "journal": "Academic Editors: Hugues Chabriat, Hans Henkes, Hansjörg Bäzner and Lindsay A. Farrer Clin. Med. 2021, 10, 3853.",
+    "doi": "10.3390/jcm10173853",
+    "url": "https://doi.org/10.3390/jcm10173853",
+    "pdfUrl": null,
+    "publishedOn": "2021-08-01",
+    "product": "tigertriever-xl",
+    "variant": null,
+    "regions": [
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -654,7 +830,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -670,7 +847,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -718,7 +896,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -764,7 +943,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -810,7 +990,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -839,10 +1020,11 @@
     "url": "https://jnis.bmj.com/content/13/12/1067",
     "pdfUrl": null,
     "publishedOn": "2021-01-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -869,10 +1051,11 @@
     "url": "https://pubmed.ncbi.nlm.nih.gov/33340639/",
     "pdfUrl": null,
     "publishedOn": "2020-12-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -888,7 +1071,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -920,7 +1104,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -952,7 +1137,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -965,10 +1151,11 @@
     "url": "https://www.ahajournals.org/doi/full/10.1161/STROKEAHA.120.028956",
     "pdfUrl": null,
     "publishedOn": "2020-07-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1022,6 +1209,38 @@
     "imageUrl": null
   },
   {
+    "title": "Treatment of cerebral vasospasm secondary to subarachnoid hemorrhage utilizing the Comaneci device",
+    "authors": "Clint A Badger, Brian T Jankowitz, Hamza A Shaikh",
+    "journal": "2020 Jul 28;1591019920945554, PMID: 32722988",
+    "doi": "10.1177/1591019920945554",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/32722988/",
+    "pdfUrl": null,
+    "publishedOn": "2020-07-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "The Comaneci Device for Entering an Acute-Angled Small Feeder during Cerebral AVM Embolization: A Novel Technique to Support Microcatheterization",
+    "authors": "Lars Wessels, MD, Joost de Vries, MD, Ph, Hieronymus D. Boogaarts, MD, PhD",
+    "journal": "Neurointervention 2020;15(2):79-83., Print publication date: July 1, 2020, Published online: June 23, 2020,",
+    "doi": "10.5469/neuroint.2020.00122",
+    "url": "https://neurointervention.org/journal/view.php?doi=10.5469/neuroint.2020.00122",
+    "pdfUrl": null,
+    "publishedOn": "2020-07-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
     "authors": "L. Will et al.",
     "journal": "",
@@ -1032,7 +1251,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1102,6 +1322,54 @@
     "imageUrl": null
   },
   {
+    "title": "Large aneurysm of basilar artery tip mimicking midbrain tumor and causing unilateral obstructive hydrocephalus: a case report and technical note",
+    "authors": "Vladimir Kalousek, Bruno Splavski, Vili Beroš, Branimir Čulo, Filip Vrban, Ante Rotim6 and Krešimir Rotim",
+    "journal": "Acta Clin Croat 2020; 59:166-172,",
+    "doi": "10.20471/acc.2020.59.01.21",
+    "url": "https://doi.org/10.20471/acc.2020.59.01.21",
+    "pdfUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/5-20Kalousek+May+2020.pdf",
+    "publishedOn": "2020-05-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Comaneci-Assisted Coiling as a Treatment Option for Acutely Ruptured Wide Neck Cerebral Aneurysm: Case Series of 118 Patients",
+    "authors": "Alexander Sirakov, MD, Krasimir Minkin, MD, PhD, Marin Penkov, MD, Kristian Ninov, MD, Vasil Karakostov, MD, PhD, Stanimir Sirakov, MD, PhD",
+    "journal": "Neurosurgery, nyaa200, Published: 26 May 2020",
+    "doi": "10.1093/neuros/nyaa200",
+    "url": "https://journals.lww.com/neurosurgery/pages/default.aspx",
+    "pdfUrl": null,
+    "publishedOn": "2020-05-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Comaneci-Assisted Coiling Embolization of a Post-Traumatic Carotid-Cavernous Fistula: Case Report",
+    "authors": "Andrea Giorgianni, Edoardo Agosti, Alberto Terrana, Gabriele Vinacci, Luca Nativo, Luca Valvassori Davide Locatelli, Giuseppe Lanzino",
+    "journal": "PMID: 32474096",
+    "doi": "10.1016/j.wneu.2020.05.185",
+    "url": "https://europepmc.org/article/med/32474096",
+    "pdfUrl": null,
+    "publishedOn": "2020-05-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Removal of distal fragments of liquid embolic agents during AVM embolization",
     "authors": "Faith L. Y. Ho, René Chapot",
     "journal": "J NeuroIntervent Surg.",
@@ -1109,10 +1377,11 @@
     "url": "https://jnis.bmj.com/content/12/8/794",
     "pdfUrl": null,
     "publishedOn": "2020-02-01",
-    "product": "tigertriever",
-    "variant": "TIGERTRIEVER 13",
+    "product": "tigertriever-13",
+    "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1134,6 +1403,22 @@
     "imageUrl": null
   },
   {
+    "title": "Use of a neck-bridging device for endovascular coiling of a wide-necked middle cerebral artery aneurysm",
+    "authors": "Rimal Dossani, Muhammad Waqas, Justice O Agyei, Michael K Tso, Gary B Rajah, Swetadri Vasan Setlur Nagesh, Jason Davis http://dx.doi.org/10.1136/neurintsurg-2019-015639",
+    "journal": "",
+    "doi": null,
+    "url": "https://jnis.bmj.com/content/12/5/536",
+    "pdfUrl": null,
+    "publishedOn": "2020-02-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Transradial Comaneci-assisted coiling of a direct CCF",
     "authors": "",
     "journal": "",
@@ -1150,6 +1435,22 @@
     "imageUrl": null
   },
   {
+    "title": "Transradial Comaneci-assisted coiling of a direct carotid-cavernous fistula",
+    "authors": "Roger Barranco Pons, MD, Valerio Da Ros, MD, Jacopo Scaggiante, MD, Greicy Muniz da Silva, MD, Eliseo Picchi, MD, Francesca Di Giuliano, MD, Lucia Aja Rodriguez, MD, and Oscar Chirife Chaparro, MD 2019 Dec; 14(12): 1554–1557. Published online 2019 Oct 31. doi: 10.1016/j.radcr.2019.09.001 PMCID: PMC6849349 PMID: 31737134",
+    "journal": "",
+    "doi": null,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6849349/",
+    "pdfUrl": null,
+    "publishedOn": "2019-10-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Single-center Experience with the Tigertriever Device for the Recanalization of Large Vessel Occlusions in Acute Ischemic Stroke",
     "authors": "Batuhan Kara et al.",
     "journal": "",
@@ -1160,7 +1461,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1198,6 +1500,22 @@
     "imageUrl": null
   },
   {
+    "title": "Fenestration of the Basilar Artery associated with Aneurysm treated by support of temporary bridging device - Comaneci",
+    "authors": "Stanimir S Sirakov, Alexander Sirakov, Hristo Hristov, Radoslav Raychev",
+    "journal": "BMJ Case Reports, 2018 May 18,",
+    "doi": "10.1136/bcr-2017-222703",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/30130570/",
+    "pdfUrl": null,
+    "publishedOn": "2018-08-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
     "title": "Clinical case report – Comaneci17",
     "authors": "Prof. Pierre Goffette … UCL St. Luc Hospital, Brussels, Belgium",
     "journal": "",
@@ -1208,7 +1526,8 @@
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1217,14 +1536,63 @@
     "title": "Coiling of ruptured, wide-necked basilar tip aneurysm using double Comaneci technique",
     "authors": "BMJ Case Reports, 2018 May 18, doi:10.1136/bcr-2017-222703",
     "journal": "",
-    "doi": null,
+    "doi": "10.1136/bcr-2017-222703",
     "url": "https://casereports.bmj.com/content/2018/bcr-2017-222703.long",
     "pdfUrl": null,
     "publishedOn": "2018-05-01",
     "product": "comaneci",
     "variant": null,
     "regions": [
-      "ous"
+      "ous",
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "MCA Aneurysm Embolization",
+    "authors": "Course Director: Prof. René Chapot",
+    "journal": "Advanced Live Interventional Course of Essen, Live Case #2, 2018 March 12-14",
+    "doi": null,
+    "url": "https://alice-the-course.info/",
+    "pdfUrl": null,
+    "publishedOn": "2018-03-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Early experience with a temporary bridging device (Comaneci) in the endovascular treatment of ruptured wide neck aneurysms",
+    "authors": "Stanimir Sirakov et al.",
+    "journal": "",
+    "doi": "10.1136/neurintsurg-2017-013641",
+    "url": "https://doi.org/10.1136/neurintsurg-2017-013641",
+    "pdfUrl": null,
+    "publishedOn": "2018-02-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Coiling of wide-necked carotid artery aneurysms assisted by a temporary bridging device (Comaneci): preliminary experience",
+    "authors": "Fischer S et al.",
+    "journal": "",
+    "doi": "10.1136/neurintsurg-2016-012664",
+    "url": "https://doi.org/10.1136/neurintsurg-2016-012664",
+    "pdfUrl": null,
+    "publishedOn": "2016-10-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1240,7 +1608,8 @@
     "product": "tigertriever",
     "variant": null,
     "regions": [
-      "us"
+      "us",
+      "apac"
     ],
     "featured": false,
     "imageUrl": null
@@ -1257,6 +1626,22 @@
     "variant": null,
     "regions": [
       "ous"
+    ],
+    "featured": false,
+    "imageUrl": null
+  },
+  {
+    "title": "Initial experience of coiling cerebral aneurysms using the new Comaneci device",
+    "authors": "Lawson AL et al.",
+    "journal": "",
+    "doi": "10.1136/bcr-2015-011726",
+    "url": "https://doi.org/10.1136/bcr-2015-011726",
+    "pdfUrl": null,
+    "publishedOn": "2016-06-01",
+    "product": "comaneci",
+    "variant": null,
+    "regions": [
+      "apac"
     ],
     "featured": false,
     "imageUrl": null

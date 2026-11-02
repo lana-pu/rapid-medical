@@ -1,4 +1,5 @@
 import { regionOr404 } from "@/lib/region-param";
+import { REGION_FORM_VALUE } from "@/lib/regions";
 import { getWebinars } from "@/lib/content";
 import { Section, H1, Img } from "@/components/site/primitives";
 import { ContactForm } from "@/components/site/ContactForm";
@@ -31,7 +32,7 @@ export default async function WebinarsPage({ params }: { params: Promise<{ seg: 
       )}
 
       <div className="mt-12 max-w-2xl">
-        <ContactForm form="webinar" topics={list.length ? list.map((w) => w.title) : ["Webinar recording request"]} defaultRegion={region === "us" ? "Americas" : "Europe"} compact />
+        <ContactForm form="webinar" topics={list.length ? list.map((w) => w.title) : ["Webinar recording request"]} defaultRegion={REGION_FORM_VALUE[region]} compact />
       </div>
     </Section>
   );

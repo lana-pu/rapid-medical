@@ -1,6 +1,6 @@
 # Rapid Medical — website + admin
 
-Custom replacement for the three Duda sites (`www.`, `us.`, `ous.rapid-medical.com`), merged into one Next.js app with a built-in content admin.
+Custom replacement for the four Duda sites (`www.`, `us.`, `ous.`, `apac.rapid-medical.com`), merged into one Next.js app with a built-in content admin.
 
 **Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PostgreSQL 16
 
@@ -23,13 +23,13 @@ npm run dev                     # http://localhost:3000  ·  admin: /admin
 | URL | Content |
 |---|---|
 | `/` | Home (hero, stats, featured news) — edited under **Site settings → Home** |
-| `/choose-your-location` | Region chooser → `/us/…` or `/ous/…` |
-| `/us/therapies`, `/ous/therapies` | Therapy index for the region |
-| `/us/therapies/lvo` … | Therapy pages — one row per *(slug, region)*, so US and OUS regulatory copy are edited separately. "Copy to OUS/US" button in the admin. |
-| `/us/evidence`, `/ous/evidence` | Publications, filtered by region, grouped by product |
+| `/choose-your-location` | Region chooser → `/us/…`, `/ous/…` or `/apac/…` (visitor country suggests one) |
+| `/us/therapies`, `/ous/therapies`, `/apac/therapies` | "Our Therapies" landing per region (video hero, Ischemic / Hemorrhagic / Access blocks) — **Site settings → Therapies landing** |
+| `/us/therapies/lvo` … | Therapy pages — one row per *(slug, region)*: 3 US, 5 OUS, 5 APAC. Video hero, benefit blocks with video, how-it-works videos, tabs, YouTube closing, region-specific regulatory copy. "Copy to other region" in the admin. |
+| `/us/evidence`, `/ous/evidence`, `/apac/evidence` | Publications, filtered by region, tabs per product variant (OUS/APAC: T13 · T · T25&XL · COMANECI · DRIVEWIRE/COLUMBUS; US: 3 tabs) |
 | `/us/webinars`, `/ous/webinars` | Webinar list + request form |
 | `/news-events` | External news links |
-| `/about-us`, `/team/[slug]` | About + leadership profiles |
+| `/about-us`, `/team/[slug]` | About + leadership + offices + **interactive world map** (hover regions, click → regional contact) |
 | `/careers`, `/open-positions`, `/open-positions/[slug]` | Careers + jobs |
 | `/contact-us` | Contact form (`?region=us&topic=demo` preselects) |
 | `/privacy-statement`, `/terms`, … | Generic Markdown pages (global or regional) |
@@ -38,7 +38,7 @@ Region is **in the path**, not in a cookie, so Google indexes US and OUS regulat
 
 ### Legacy URLs
 
-`src/proxy.ts` 301-redirects `us.rapid-medical.com/*` → `/us/*` and `ous.` → `/ous/*`. Other old paths (`/welcome_d`, `/ronen`, …) live in the **Redirects** table and are checked before a 404 is returned.
+`src/proxy.ts` 301-redirects `us.`/`ous.`/`apac.rapid-medical.com/*` → `/us/*`, `/ous/*`, `/apac/*` (product slugs map to `/therapies/…`). Other old paths (`/welcome_d`, `/ronen`, …) live in the **Redirects** table and are checked before a 404 is returned.
 
 ## Admin (`/admin`)
 
@@ -48,7 +48,8 @@ Email + password, roles `admin` / `editor`. Content types:
 - **Evidence** (publications with product, region, DOI/PDF)
 - **News & Events**, **Webinars**, **Leadership team**, **Open positions**
 - **Pages** (Markdown body; global or regional; noindex flag for campaign landing pages)
-- **Site settings** (contact, social, home, about, careers, regional notices)
+- **Products** (families + variants, per-region Evidence tabs, region aliases such as COLUMBUS™ in APAC)
+- **Site settings** (contact + office pins, social, branding, integrations, home, about, careers, evidence, therapies landing ×3, regional notices)
 - **Media** (upload; stored locally in `public/uploads`, S3 driver stub in `src/lib/storage.ts`)
 - **Form submissions** (contact / webinar / careers, with status)
 - **Redirects**, **Users** (admin only)
@@ -68,7 +69,7 @@ scripts/seed.ts            seed/* → database
 scripts/migrate-media.ts   download every Duda CDN asset, register in media, rewrite references
 ```
 
-Current import: 8 therapy pages, 81 publications, 53 news items, 6 team members, 11 pages, 105 media files.
+Current import: 13 therapy pages, 102 publications, 53 news items, 5 webinars, 6 team members, 14 pages, 197 media files (incl. 36 videos, ~260 MB).
 
 ### Known content issues carried over from Duda (need a human decision)
 
@@ -76,8 +77,16 @@ Current import: 8 therapy pages, 81 publications, 53 news items, 6 team members,
 - **Access (Drivewire) pages** have no text at all on the live site — the copy is baked into images. Placeholders left in the admin.
 - **Specifications** are screenshots on Duda. The schema has `specImageUrls` for now; replace with a real table once the design is settled.
 - "Dr. Rishi Gupta – TICI 3" case on US LVO was a Wix-hosted PDF viewer; link needs a proper PDF.
-- Home hero background video (`vid.cdn-website.com`) could not be downloaded — upload it manually via Media.
-- TIGERTRIEVER 13 / 25 publications are tagged with the TIGERTRIEVER product; the variant is kept only in titles.
+- Form recipient addresses are set server-side on Duda and not visible in the HTML — configure `MAIL_TO` (and per-form routing if needed in `src/lib/forms.ts`).
+- APAC MVO "Comfort of control" and a few APAC blocks use OUS imagery where APAC had none.
+
+## Media & videos
+
+The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same "image" field in the admin (paste a `.mp4` URL or upload). Markdown pages support `@[video](url)` and `@[youtube](url)`.
+
+## Integrations (Site settings → Integrations)
+
+GA4 (`G-FB4LNFSBSR` on the live site), UserWay accessibility widget (`cDW2354yK3`), region suggestion by visitor country (reads `x-vercel-ip-country` / `cf-ipcountry`; Duda did a hard geo-redirect, we only suggest).
 
 ## Forms & email
 

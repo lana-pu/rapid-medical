@@ -107,6 +107,19 @@ export function parseForm(res: Resource, fd: FormData): { data: Row; errors: Fie
     let v = parseField(f, fd.get(f.name), errors, f.name);
     // heroCta is stored as a single object; the form uses a repeater
     if (f.name === "heroCta" && Array.isArray(v)) v = v[0] ?? null;
+    // JSON-typed free-text fields
+    if (f.name === "aliases") {
+      try { v = v ? JSON.parse(String(v)) : {}; } catch { errors[f.name] = "Invalid JSON"; v = {}; }
+    }
+    // repeater sub-field "link" typed as text but stored as {label, href}
+    if (f.type === "repeater" && Array.isArray(v)) {
+      v = (v as Record<string, unknown>[]).map((it) => {
+        if (typeof it.link === "string") {
+          try { return { ...it, link: it.link ? JSON.parse(it.link) : undefined }; } catch { return { ...it, link: undefined }; }
+        }
+        return it;
+      });
+    }
     data[f.name] = v;
   }
   return { data, errors };

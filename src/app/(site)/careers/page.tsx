@@ -1,13 +1,14 @@
 import { getSetting } from "@/lib/settings";
 import { getJobs } from "@/lib/content";
-import { Section, H1, H2, Btn, Img } from "@/components/site/primitives";
+import { Section, Container, H1, H2, Btn, Img } from "@/components/site/primitives";
+import { VideoHero } from "@/components/site/Media";
 import { ContactForm } from "@/components/site/ContactForm";
 
-export const metadata = { title: "Careers", description: "Join Rapid Medical. Explore job opportunities." };
+export const metadata = { title: "Career Opportunities", description: "Explore job opportunities at Rapid Medical. Join us!" };
 
 type Careers = {
-  heroTitle?: string; heroSub?: string; heroBody?: string; heroImageUrl?: string;
-  quotes?: { quote: string; imageUrl?: string }[];
+  heroTitle?: string; heroSub?: string; heroBody?: string; heroImageUrl?: string; heroVideoUrl?: string;
+  quotes?: { quote: string; author?: string; imageUrl?: string }[];
   principlesTitle?: string; principlesBody?: string; principlesImageUrl?: string; eeoStatement?: string;
 };
 
@@ -16,38 +17,40 @@ export default async function CareersPage() {
 
   return (
     <>
-      <Section>
-        <H1>{c.heroTitle ?? "Unlock your potential"}</H1>
-        {c.heroSub && <p className="mt-4 text-xl">{c.heroSub}</p>}
-        {c.heroBody && <p className="mt-4 max-w-3xl text-muted">{c.heroBody}</p>}
-        <div className="mt-6"><Btn href="/open-positions">View open positions{jobs.length ? ` (${jobs.length})` : ""}</Btn></div>
-        <Img src={c.heroImageUrl} className="mt-10 aspect-[21/9] w-full rounded object-cover" />
-      </Section>
+      <VideoHero videoUrl={c.heroVideoUrl} poster={c.heroImageUrl}>
+        <Container className="py-20 md:py-32">
+          <H1>{c.heroTitle ?? "Unlock your potential"}</H1>
+          {c.heroSub && <p className="mt-4 text-xl">{c.heroSub}</p>}
+          {c.heroBody && <p className="mt-4 max-w-3xl opacity-90">{c.heroBody}</p>}
+          <div className="mt-6"><Btn href="/open-positions">View open positions{jobs.length ? ` (${jobs.length})` : ""}</Btn></div>
+        </Container>
+      </VideoHero>
 
       {c.quotes && c.quotes.length > 0 && (
-        <Section className="bg-surface">
-          <ul className="grid gap-8 md:grid-cols-2">
+        <Section>
+          <ul className="grid gap-10 md:grid-cols-2">
             {c.quotes.map((q, i) => (
-              <li key={i} className="flex gap-4">
-                <Img src={q.imageUrl} className="h-24 w-24 flex-none rounded object-cover" />
+              <li key={i}>
+                <Img src={q.imageUrl} className="mb-5 aspect-video w-full rounded object-cover" />
                 <blockquote className="text-lg">“{q.quote}”</blockquote>
+                {q.author && <div className="mt-2 text-sm text-muted">– {q.author}</div>}
               </li>
             ))}
           </ul>
         </Section>
       )}
 
-      <Section>
+      <Section className="bg-surface">
         <H2>{c.principlesTitle ?? "Our guiding principles"}</H2>
         {c.principlesBody && <p className="mt-3 text-muted">{c.principlesBody}</p>}
         <Img src={c.principlesImageUrl} className="mt-8 w-full max-w-3xl" />
       </Section>
 
-      <Section className="bg-surface" id="general-interest">
+      <Section id="general-interest">
         <H2>Submit general interest</H2>
         {c.eeoStatement && <p className="mt-4 max-w-3xl text-sm text-muted">{c.eeoStatement}</p>}
         <div className="mt-8 max-w-2xl">
-          <ContactForm form="careers" topics={["General interest", "Internship", "Other"]} />
+          <ContactForm form="careers" topics={["General interest", "Internship", "Other"]} compact />
         </div>
       </Section>
     </>
