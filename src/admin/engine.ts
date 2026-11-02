@@ -1,5 +1,5 @@
 import "server-only";
-import { desc, eq, sql, getTableColumns } from "drizzle-orm";
+import { asc, desc, eq, inArray, sql, getTableColumns } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import { db } from "@/db";
 import { isRegion } from "@/lib/regions";
@@ -20,15 +20,51 @@ function col(table: PgTable, name: string) {
   return c;
 }
 
-export async function listRows(res: Resource, opts: { search?: string; limit?: number } = {}): Promise<Row[]> {
-  const order = col(res.table, res.sortBy);
-  const dir = res.sortBy === "sortOrder" || res.sortBy === "id" ? order : desc(order);
-  let q = db.select().from(res.table as any).orderBy(dir, desc(col(res.table, "id"))).$dynamic();
-  if (opts.search) {
-    const label = col(res.table, res.labelField);
-    q = q.where(sql`${label} ILIKE ${"%" + opts.search + "%"}`);
+export type ListQuery = {
+  search?: string;
+  /** column → value; "regions" matches jsonb containment, others equality */
+  filters?: Record<string, string>;
+  sort?: string;
+  dir?: "asc" | "desc";
+  page?: number;
+  per?: number;
+};
+
+export async function listRows(res: Resource, q: ListQuery = {}): Promise<{ rows: Row[]; total: number; page: number; per: number }> {
+  const cols = getTableColumns(res.table) as Row;
+  const conds: ReturnType<typeof sql>[] = [];
+  if (q.search) conds.push(sql`${col(res.table, res.labelField)} ILIKE ${"%" + q.search + "%"}`);
+  for (const [k, v] of Object.entries(q.filters ?? {})) {
+    if (!v || !cols[k]) continue;
+    if (k === "regions") conds.push(sql`(jsonb_array_length(${cols[k]}) = 0 OR ${cols[k]} @> ${JSON.stringify([v])}::jsonb)`);
+    else if (v === "__null") conds.push(sql`${cols[k]} IS NULL`);
+    else if (cols[k].dataType === "number") conds.push(sql`${cols[k]} = ${Number(v)}`);
+    else if (cols[k].dataType === "boolean") conds.push(sql`${cols[k]} = ${v === "true"}`);
+    else conds.push(sql`${cols[k]} = ${v}`);
   }
-  return (await q.limit(opts.limit ?? 500)) as Row[];
+  const where = conds.length ? sql.join(conds, sql` AND `) : undefined;
+
+  const sortKey = q.sort && cols[q.sort] ? q.sort : res.sortBy;
+  const defaultDir: "asc" | "desc" = sortKey === "sortOrder" || sortKey === "id" || sortKey === "name" || sortKey === "title" ? "asc" : "desc";
+  const dirv = q.dir ?? (q.sort ? "asc" : defaultDir);
+  const order = dirv === "asc" ? asc(cols[sortKey]) : desc(cols[sortKey]);
+  const per = q.per ?? 50;
+  const page = Math.max(1, q.page ?? 1);
+
+  const [rows, [{ n }]] = await Promise.all([
+    db.select().from(res.table as any).where(where).orderBy(order, desc(col(res.table, "id"))).limit(per).offset((page - 1) * per),
+    db.select({ n: sql<number>`count(*)::int` }).from(res.table as any).where(where),
+  ]);
+  return { rows: rows as Row[], total: n, page, per };
+}
+
+/** Bulk status change / delete. */
+export async function bulk(res: Resource, ids: number[], action: "publish" | "unpublish" | "delete") {
+  if (!ids.length) return;
+  const idc = col(res.table, "id");
+  const cols = getTableColumns(res.table) as Row;
+  if (action === "delete") await db.delete(res.table as any).where(inArray(idc, ids));
+  else if (cols.status) await db.update(res.table as any).set({ status: action === "publish" ? "published" : "draft", ...(cols.updatedAt ? { updatedAt: new Date() } : {}) }).where(inArray(idc, ids));
 }
 
 export async function getRow(res: Resource, id: number): Promise<Row | null> {
@@ -47,11 +83,19 @@ function parseField(f: FieldDef, raw: FormDataEntryValue | null, errors: FieldEr
   switch (f.type) {
     case "text":
     case "textarea":
-    case "markdown":
     case "status":
     case "select":
       if (required) errors[key] = "Required";
       return s;
+    case "markdown": {
+      // Tiptap emits "<p></p>" for an empty document
+      const v = /^(<p>\s*<\/p>\s*)*$/.test(s) ? "" : s;
+      if (f.required && !v) errors[key] = "Required";
+      return v;
+    }
+    case "json":
+      if (!s) return {};
+      try { return JSON.parse(s); } catch { errors[key] = "Invalid JSON"; return {}; }
     case "url":
       if (required) errors[key] = "Required";
       if (s && !/^(https?:\/\/|mailto:|\/)/i.test(s)) errors[key] = "Must be an absolute URL, mailto: or a path";
@@ -84,6 +128,23 @@ function parseField(f: FieldDef, raw: FormDataEntryValue | null, errors: FieldEr
       return s ? Number(s) : null;
     case "stringList":
       return s ? s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) : [];
+    case "link": {
+      if (!s) return null;
+      try {
+        const o = JSON.parse(s) as { label?: string; href?: string };
+        if (!o.label && !o.href) return null;
+        if (!o.href) errors[key] = "Link needs a URL";
+        return { label: o.label ?? "", href: o.href ?? "" };
+      } catch { errors[key] = "Invalid link"; return null; }
+    }
+    case "table": {
+      if (!s) return null;
+      try {
+        const t = JSON.parse(s) as { columns?: string[]; rows?: string[][] };
+        if (!Array.isArray(t.columns) || !t.columns.length) return null;
+        return t;
+      } catch { errors[key] = "Invalid table"; return null; }
+    }
     case "repeater": {
       if (!s) return [];
       try {
@@ -104,23 +165,7 @@ export function parseForm(res: Resource, fd: FormData): { data: Row; errors: Fie
   const data: Row = {};
   const errors: FieldErrors = {};
   for (const f of res.fields) {
-    let v = parseField(f, fd.get(f.name), errors, f.name);
-    // heroCta is stored as a single object; the form uses a repeater
-    if (f.name === "heroCta" && Array.isArray(v)) v = v[0] ?? null;
-    // JSON-typed free-text fields
-    if (f.name === "aliases") {
-      try { v = v ? JSON.parse(String(v)) : {}; } catch { errors[f.name] = "Invalid JSON"; v = {}; }
-    }
-    // repeater sub-field "link" typed as text but stored as {label, href}
-    if (f.type === "repeater" && Array.isArray(v)) {
-      v = (v as Record<string, unknown>[]).map((it) => {
-        if (typeof it.link === "string") {
-          try { return { ...it, link: it.link ? JSON.parse(it.link) : undefined }; } catch { return { ...it, link: undefined }; }
-        }
-        return it;
-      });
-    }
-    data[f.name] = v;
+    data[f.name] = parseField(f, fd.get(f.name), errors, f.name);
   }
   return { data, errors };
 }

@@ -1,69 +1,85 @@
-import { desc, eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
+import { desc, eq, ilike, or, sql } from "drizzle-orm";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import { db, media } from "@/db";
-import { requireUser } from "@/lib/auth";
-import { storeFile } from "@/lib/storage";
-import { PageHeader, Button, formatDate } from "@/components/admin/ui";
+import { findMediaUsage } from "@/lib/media-usage";
+import { PageHeader, formatDate, inputCls, Notice } from "@/components/admin/ui";
+import { MediaGrid } from "@/components/admin/MediaGrid";
 
-export default async function MediaPage() {
-  const rows = await db.select().from(media).orderBy(desc(media.createdAt)).limit(300);
+type SP = { q?: string; type?: string; page?: string; id?: string };
 
-  async function upload(fd: FormData) {
-    "use server";
-    await requireUser();
-    const files = fd.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
-    for (const f of files) {
-      const stored = await storeFile(f);
-      await db.insert(media).values({ url: stored.url, filename: stored.filename, mime: stored.mime, size: stored.size });
-    }
-    redirect("/admin/media");
-  }
+export default async function MediaPage({ searchParams }: { searchParams: Promise<SP> }) {
+  const sp = await searchParams;
+  if (sp.id) return <MediaDetail id={Number(sp.id)} />;
 
-  async function remove(fd: FormData) {
-    "use server";
-    await requireUser();
-    await db.delete(media).where(eq(media.id, Number(fd.get("id"))));
-    redirect("/admin/media");
-  }
-
-  async function updateAlt(fd: FormData) {
-    "use server";
-    await requireUser();
-    await db.update(media).set({ alt: String(fd.get("alt") ?? "") }).where(eq(media.id, Number(fd.get("id"))));
-    redirect("/admin/media");
-  }
+  const per = 60;
+  const page = Math.max(1, Number(sp.page ?? 1));
+  const conds = [];
+  if (sp.q) conds.push(or(ilike(media.filename, `%${sp.q}%`), ilike(media.alt, `%${sp.q}%`)));
+  if (sp.type === "image") conds.push(ilike(media.mime, "image/%"));
+  if (sp.type === "video") conds.push(ilike(media.mime, "video/%"));
+  if (sp.type === "pdf") conds.push(eq(media.mime, "application/pdf"));
+  const where = conds.length ? sql.join(conds, sql` AND `) : undefined;
+  const [rows, [{ n }]] = await Promise.all([
+    db.select().from(media).where(where).orderBy(desc(media.createdAt)).limit(per).offset((page - 1) * per),
+    db.select({ n: sql<number>`count(*)::int` }).from(media).where(where),
+  ]);
+  const pages = Math.max(1, Math.ceil(n / per));
 
   return (
     <>
-      <PageHeader title="Media library" subtitle={`${rows.length} files`} />
-      <form action={upload} className="mb-6 flex items-center gap-3 rounded-lg border border-dashed border-neutral-300 bg-white p-4">
-        <input type="file" name="files" multiple accept="image/*,.pdf" className="text-sm" />
-        <Button type="submit">Upload</Button>
-        <span className="text-xs text-neutral-500">Images and PDFs, up to 25 MB each.</span>
+      <PageHeader title="Media library" subtitle={`${n} files`} />
+      <form className="mb-4 flex flex-wrap items-center gap-2">
+        <input name="q" defaultValue={sp.q ?? ""} placeholder="Search filename or alt…" className={`${inputCls} max-w-xs`} />
+        <select name="type" defaultValue={sp.type ?? ""} className={`${inputCls} w-auto`}>
+          <option value="">All types</option><option value="image">Images</option><option value="video">Videos</option><option value="pdf">PDFs</option>
+        </select>
+        <button className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">Apply</button>
       </form>
-      <div className="grid grid-cols-4 gap-4">
-        {rows.map((m) => (
-          <div key={m.id} className="rounded-lg border border-neutral-200 bg-white p-3 text-xs">
-            {m.mime.startsWith("image/") ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={m.url} alt={m.alt} className="mb-2 h-32 w-full rounded object-contain bg-neutral-100" />
-            ) : (
-              <div className="mb-2 flex h-32 items-center justify-center rounded bg-neutral-100 text-neutral-500">{m.mime}</div>
-            )}
-            <div className="truncate font-medium" title={m.filename}>{m.filename}</div>
-            <div className="text-neutral-500">{(m.size / 1024).toFixed(0)} KB · {formatDate(m.createdAt, { dateStyle: "medium" })}</div>
-            <input readOnly value={m.url} className="mt-1 w-full rounded border border-neutral-200 px-1 py-0.5 font-mono text-[10px]" onFocus={undefined} />
-            <form action={updateAlt} className="mt-1 flex gap-1">
-              <input type="hidden" name="id" value={m.id} />
-              <input name="alt" defaultValue={m.alt} placeholder="Alt text" className="w-full rounded border border-neutral-200 px-1 py-0.5" />
-              <button className="rounded border border-neutral-300 px-2">Save</button>
-            </form>
-            <form action={remove} className="mt-1 text-right">
-              <input type="hidden" name="id" value={m.id} />
-              <button className="text-red-600 hover:underline">delete</button>
-            </form>
-          </div>
-        ))}
+      <MediaGrid items={rows.map((m) => ({ ...m, createdAt: m.createdAt.toISOString() }))} />
+      {pages > 1 && (
+        <div className="mt-4 flex justify-center gap-3 text-sm">
+          {page > 1 && <Link href={`/admin/media?q=${sp.q ?? ""}&type=${sp.type ?? ""}&page=${page - 1}`} className="underline">‹ Prev</Link>}
+          <span className="text-neutral-500">Page {page} of {pages}</span>
+          {page < pages && <Link href={`/admin/media?q=${sp.q ?? ""}&type=${sp.type ?? ""}&page=${page + 1}`} className="underline">Next ›</Link>}
+        </div>
+      )}
+    </>
+  );
+}
+
+async function MediaDetail({ id }: { id: number }) {
+  const m = await db.query.media.findFirst({ where: eq(media.id, id) });
+  if (!m) notFound();
+  const usage = await findMediaUsage(m.url);
+  return (
+    <>
+      <PageHeader title={m.filename} subtitle={`${m.mime} · ${(m.size / 1024).toFixed(0)} KB · ${formatDate(m.createdAt, { dateStyle: "medium" })}`} actions={<Link href="/admin/media" className="text-sm underline">← Library</Link>} />
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="rounded border border-neutral-200 bg-white p-4">
+          {m.mime.startsWith("image/") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={m.url} alt={m.alt} className="max-h-96 w-full object-contain" />
+          ) : m.mime.startsWith("video/") ? (
+            <video src={m.url} controls className="w-full" />
+          ) : (
+            <a href={m.url} target="_blank" className="underline">Open file</a>
+          )}
+          <input readOnly value={m.url} className={`${inputCls} mt-3 font-mono text-xs`} />
+          {m.sourceUrl && <p className="mt-1 text-xs text-neutral-500">Migrated from: {m.sourceUrl}</p>}
+        </div>
+        <div className="rounded border border-neutral-200 bg-white p-4 text-sm">
+          <h2 className="font-semibold">Used in {usage.length} place(s)</h2>
+          {usage.length === 0 ? (
+            <Notice kind="info">Not referenced anywhere — safe to delete.</Notice>
+          ) : (
+            <ul className="mt-2 space-y-1">
+              {usage.map((u, i) => (
+                <li key={i}><Link href={u.adminHref} className="underline">{u.label}</Link> <span className="text-neutral-400">({u.table})</span></li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </>
   );

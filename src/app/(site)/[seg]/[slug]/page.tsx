@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getPage } from "@/lib/content";
-import { md } from "@/lib/markdown";
+import { safeHtml } from "@/lib/html";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { Section, H1, Prose, Eyebrow } from "@/components/site/primitives";
 import { REGION_LABELS } from "@/lib/regions";
@@ -33,7 +33,7 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
     <Section>
       <Eyebrow>{REGION_LABELS[region]}</Eyebrow>
       <H1>{page.title}</H1>
-      <Prose html={md(page.bodyMd)} className="mt-8 max-w-3xl" />
+      <Prose html={safeHtml(page.bodyHtml)} className="mt-8 max-w-3xl" />
     </Section>
   );
 }

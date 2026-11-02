@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import type { FieldDef } from "@/admin/fields";
 import { saveResource, type SaveState } from "@/admin/actions";
 import { REGIONS, type Product } from "@/db/schema";
@@ -8,6 +8,10 @@ import { REGION_LABELS } from "@/lib/regions";
 import { Button, inputCls, Notice } from "./ui";
 import { Repeater } from "./Repeater";
 import { ImageField } from "./ImageField";
+import { RichText } from "./RichText";
+import { UnsavedGuard } from "./UnsavedGuard";
+import { TableEditor } from "./TableEditor";
+import type { SpecTable } from "@/db/schema";
 
 type Props = {
   resourceSlug: string;
@@ -25,6 +29,7 @@ function toDateInput(v: unknown): string {
 export function ResourceForm({ resourceSlug, fields, row, products }: Props) {
   const [state, action, pending] = useActionState<SaveState, FormData>(saveResource, null);
   const errors = state?.errors ?? {};
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Group by section, preserving order of first appearance
   const sections: { name: string; fields: FieldDef[] }[] = [];
@@ -39,9 +44,10 @@ export function ResourceForm({ resourceSlug, fields, row, products }: Props) {
   }
 
   return (
-    <form action={action} className="space-y-8">
+    <form ref={formRef} action={action} className="space-y-8">
       <input type="hidden" name="__resource" value={resourceSlug} />
       {row?.id ? <input type="hidden" name="__id" value={String(row.id)} /> : null}
+      <UnsavedGuard formRef={formRef} storageKey={`rm-draft:${resourceSlug}:${row?.id ?? "new"}`} />
 
       {state?.message && <Notice kind="error">{state.message}</Notice>}
 
@@ -82,7 +88,7 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
   const name = namePrefix + f.name;
   const wrap = f.half ? "col-span-1" : "col-span-2";
   const help = f.help ? <p className="mt-1 text-xs text-neutral-500">{f.help}</p> : null;
-  const str = value == null ? "" : typeof value === "object" && f.type === "markdown" ? JSON.stringify(value, null, 2) : String(value);
+  const str = value == null ? "" : String(value);
 
   switch (f.type) {
     case "text":
@@ -104,13 +110,27 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
         </div>
       );
     case "textarea":
+      return (
+        <div className={wrap}>
+          <Label f={f} error={error} />
+          <textarea id={name} name={name} defaultValue={str} rows={f.rows ?? 4} className={inputCls} />
+          {help}
+        </div>
+      );
     case "markdown":
       return (
         <div className={wrap}>
           <Label f={f} error={error} />
-          <textarea id={name} name={name} defaultValue={str} rows={f.rows ?? 4} className={`${inputCls} ${f.type === "markdown" ? "font-mono text-xs" : ""}`} />
+          <RichText name={name} defaultValue={str} minHeight={(f.rows ?? 8) * 28} />
           {help}
-          {f.type === "markdown" && <p className="mt-1 text-xs text-neutral-400">Markdown supported.</p>}
+        </div>
+      );
+    case "json":
+      return (
+        <div className={wrap}>
+          <Label f={f} error={error} />
+          <textarea id={name} name={name} defaultValue={value == null ? "" : typeof value === "object" ? JSON.stringify(value, null, 2) : String(value)} rows={f.rows ?? 4} className={`${inputCls} font-mono text-xs`} />
+          {help}
         </div>
       );
     case "boolean":
@@ -200,19 +220,45 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
         </div>
       );
     case "repeater": {
-      // heroCta is stored as an object; present it as a 0/1-item list
-      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : value && typeof value === "object" ? [value as Record<string, unknown>] : [];
+      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
       return (
         <div className={wrap}>
           <Label f={f} error={error} />
-          <Repeater name={name} fields={f.fields ?? []} initial={items} products={products} />
+          <Repeater name={name} fields={f.fields ?? []} initial={items} products={products} itemLabel={f.label.toLowerCase().replace(/s$/, "")} />
           {help}
         </div>
       );
     }
+    case "link":
+      return (
+        <div className={wrap}>
+          <Label f={f} error={error} />
+          <LinkInput name={name} initial={value as { label?: string; href?: string } | null} />
+          {help}
+        </div>
+      );
+    case "table":
+      return (
+        <div className={wrap}>
+          <Label f={f} error={error} />
+          <TableEditor name={name} initial={value as SpecTable | null} />
+          {help}
+        </div>
+      );
     default:
       return null;
   }
+}
+
+function LinkInput({ name, initial }: { name: string; initial: { label?: string; href?: string } | null }) {
+  const [v, setV] = useState({ label: initial?.label ?? "", href: initial?.href ?? "" });
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <input type="hidden" name={name} value={v.label || v.href ? JSON.stringify(v) : ""} readOnly />
+      <input placeholder="Label" value={v.label} onChange={(e) => setV({ ...v, label: e.target.value })} className={inputCls} />
+      <input placeholder="https://… , mailto:… or /path" value={v.href} onChange={(e) => setV({ ...v, href: e.target.value })} className={inputCls} />
+    </div>
+  );
 }
 
 function RegionsCheckboxes({ name, selected }: { name: string; selected: string[] }) {

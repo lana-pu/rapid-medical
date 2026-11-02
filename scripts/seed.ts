@@ -11,6 +11,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
+import { markdownToHtml } from "../src/lib/html";
 import { SOLUTIONS } from "../content/seed/solutions";
 import { SETTINGS, PRODUCTS, REDIRECTS, WEBINARS } from "../content/seed/settings";
 
@@ -52,7 +53,7 @@ async function main() {
   /* solutions */
   for (const s of SOLUTIONS) {
     const { product, heroCta, ...rest } = s;
-    const row: schema.NewSolution = { ...rest, productId: prodId(product), heroCta: heroCta ?? null, status: "published" };
+    const row: schema.NewSolution = { ...rest, regulatoryHtml: markdownToHtml(rest.regulatoryHtml), referencesHtml: markdownToHtml(rest.referencesHtml), productId: prodId(product), heroCta: heroCta ?? null, status: "published" };
     await db
       .insert(solutions)
       .values(row)
@@ -77,17 +78,19 @@ async function main() {
   await db.insert(newsItems).values(news.map((n) => ({ ...n, publishedOn: new Date(n.publishedOn), status: "published" as const })));
 
   /* team */
-  type TeamSeed = { slug: string; name: string; title: string; longTitle: string; bioMd: string; photoUrl: string | null; sortOrder: number };
+  type TeamSeed = { slug: string; name: string; title: string; longTitle: string; bioHtml: string; photoUrl: string | null; sortOrder: number };
   for (const t of await json<TeamSeed[]>("team")) {
-    await db.insert(teamMembers).values({ ...t, status: "published" }).onConflictDoUpdate({ target: teamMembers.slug, set: { ...t, updatedAt: new Date() } });
+    const tt = { ...t, bioHtml: markdownToHtml(t.bioHtml) };
+    await db.insert(teamMembers).values({ ...tt, status: "published" }).onConflictDoUpdate({ target: teamMembers.slug, set: { ...tt, updatedAt: new Date() } });
   }
 
   /* pages */
-  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyMd: string };
+  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyHtml: string };
   for (const p of await json<PageSeed[]>("pages")) {
     const existing = await db.query.pages.findFirst({ where: p.region ? sql`${pages.slug} = ${p.slug} AND ${pages.region} = ${p.region}` : sql`${pages.slug} = ${p.slug} AND ${pages.region} IS NULL` });
-    if (existing) await db.update(pages).set({ ...p, updatedAt: new Date() }).where(eq(pages.id, existing.id));
-    else await db.insert(pages).values({ ...p, status: "published" });
+    const pp = { ...p, bodyHtml: markdownToHtml(p.bodyHtml) };
+    if (existing) await db.update(pages).set({ ...pp, updatedAt: new Date() }).where(eq(pages.id, existing.id));
+    else await db.insert(pages).values({ ...pp, status: "published" });
   }
 
   /* redirects */

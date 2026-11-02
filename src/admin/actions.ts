@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "./resources";
-import { parseForm, saveRow, deleteRow, duplicateRow, type FieldErrors } from "./engine";
+import { parseForm, saveRow, deleteRow, duplicateRow, bulk, type FieldErrors } from "./engine";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -60,4 +60,16 @@ export async function duplicateResource(fd: FormData) {
   if (region) overrides.region = region;
   const newId = await duplicateRow(res, id, overrides);
   redirect(`/admin/${res.slug}/${newId}`);
+}
+
+export async function bulkResource(fd: FormData) {
+  await requireUser();
+  const slug = String(fd.get("__resource"));
+  const action = String(fd.get("__action")) as "publish" | "unpublish" | "delete";
+  const ids = fd.getAll("ids").map(Number).filter(Boolean);
+  const res = getResource(slug);
+  if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
+  await bulk(res, ids, action);
+  revalidate(res.revalidate);
+  redirect(`/admin/${res.slug}?bulk=${action}&n=${ids.length}`);
 }

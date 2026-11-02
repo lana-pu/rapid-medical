@@ -160,7 +160,7 @@ async function team() {
   const about = await md("www.rapid-medical.com", "about-us");
   const order = [...about.matchAll(/\n([A-Z][A-Z .]+[A-Z])\n\n\[([^\]]+) →\]\(\/(\w+)\)/g)];
   const seen = new Set<string>();
-  const out: { slug: string; name: string; title: string; longTitle: string; bioMd: string; photoUrl: string | null; sortOrder: number }[] = [];
+  const out: { slug: string; name: string; title: string; longTitle: string; bioHtml: string; photoUrl: string | null; sortOrder: number }[] = [];
   for (const m of order) {
     const slug = m[3];
     if (seen.has(slug)) continue;
@@ -175,7 +175,7 @@ async function team() {
     const rest = withName ? clean(withName.slice(name.length)) : "";
     const longTitle = rest || upper.find((t) => t !== name && !t.startsWith(name)) || clean(m[2]);
     const bio = paras.filter((t) => t.length > 80 && !/Privacy Statement|Share by|Get in touch/.test(t)).join("\n\n");
-    out.push({ slug, name, title: clean(m[2]), longTitle, bioMd: bio, photoUrl: photo, sortOrder: out.length });
+    out.push({ slug, name, title: clean(m[2]), longTitle, bioHtml: bio, photoUrl: photo, sortOrder: out.length });
   }
   return out;
 }
@@ -244,7 +244,7 @@ async function pages() {
 
     // Standalone video pages: put the video first
     const body = [...videos.map((v) => `@[video](${v})`), ...lines].join("\n\n");
-    out.push({ slug: p.slug, region: p.region, title: p.title, metaTitle, metaDescription: description, noindex: p.noindex ?? false, bodyMd: body });
+    out.push({ slug: p.slug, region: p.region, title: p.title, metaTitle, metaDescription: description, noindex: p.noindex ?? false, bodyHtml: body });
   }
   return out;
 }

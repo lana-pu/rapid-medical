@@ -6,7 +6,10 @@ export type FieldType =
   | "text"
   | "slug"
   | "textarea"
-  | "markdown"
+  | "markdown" // rich text (stored as HTML)
+  | "json" // raw JSON textarea → object
+  | "link" // {label, href}
+  | "table" // SpecTable {columns, rows}
   | "number"
   | "boolean"
   | "select"

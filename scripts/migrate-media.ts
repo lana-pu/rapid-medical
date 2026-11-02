@@ -18,13 +18,13 @@ const OUT_DIR = path.join(process.cwd(), "public", "uploads", "duda");
 
 /** Columns that may hold asset URLs (text or jsonb), per table. */
 const TARGETS: Record<string, string[]> = {
-  solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_md", "references_md"],
+  solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"],
   publications: ["pdf_url", "image_url"],
   news_items: ["image_url"],
   webinars: ["image_url"],
-  team_members: ["photo_url", "bio_md"],
-  jobs: ["description_md"],
-  pages: ["body_md"],
+  team_members: ["photo_url", "bio_html"],
+  jobs: ["description_html"],
+  pages: ["body_html"],
   site_settings: ["value"],
 };
 
@@ -96,7 +96,7 @@ async function main() {
       for (const [from, to] of map) {
         const fromJson = from.replace(/\//g, "\\/"); // jsonb may escape slashes
         await db.execute(sql.raw(
-          `UPDATE "${table}" SET "${c}" = REPLACE(REPLACE("${c}"::text, '${from}', '${to}'), '${fromJson}', '${to}')::${c.endsWith("_md") || c.endsWith("_url") ? "text" : "jsonb"} WHERE "${c}"::text LIKE '%cdn-website.com%'`,
+          `UPDATE "${table}" SET "${c}" = REPLACE(REPLACE("${c}"::text, '${from}', '${to}'), '${fromJson}', '${to}')::${c.endsWith("_html") || c.endsWith("_url") ? "text" : "jsonb"} WHERE "${c}"::text LIKE '%cdn-website.com%'`,
         )).catch(async () => {
           // text columns can't be cast to jsonb – retry as plain text
           await db.execute(sql.raw(`UPDATE "${table}" SET "${c}" = REPLACE("${c}", '${from}', '${to}') WHERE "${c}" LIKE '%cdn-website.com%'`));

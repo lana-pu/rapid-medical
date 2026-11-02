@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getSolution, getSolutionRegions } from "@/lib/content";
-import { md } from "@/lib/markdown";
+import { safeHtml } from "@/lib/html";
 import { REGION_SHORT } from "@/lib/regions";
 import { Section, Container, H1, H2, Btn, Img, Prose, Eyebrow } from "@/components/site/primitives";
 import { MediaBlock, Embed, VideoHero, Video } from "@/components/site/Media";
 import { Tabs } from "@/components/site/Tabs";
+import { SpecTableView } from "@/components/site/SpecTable";
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
   const { seg, slug } = await params;
@@ -104,13 +105,19 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
                   <Eyebrow>Product overview</Eyebrow>
                   {s.overviewBody && <p className="max-w-3xl text-lg">{s.overviewBody}</p>}
                   {s.overviewImageUrl && <Img src={s.overviewImageUrl} className="mt-8 w-full rounded" />}
-                  {s.specImageUrls.length > 0 && (
+                  {s.specs && s.specs.columns.length > 0 ? (
+                    <div className="mt-10">
+                      <Eyebrow>Specifications</Eyebrow>
+                      <SpecTableView t={s.specs} />
+                      {(s.specs.note || s.specNote) && <p className="mt-2 text-xs italic text-muted">{s.specs.note || s.specNote}</p>}
+                    </div>
+                  ) : s.specImageUrls.length > 0 ? (
                     <div className="mt-10">
                       <Eyebrow>Specifications</Eyebrow>
                       {s.specImageUrls.map((u) => <Img key={u} src={u} className="mt-4 w-full rounded border border-border" />)}
                       {s.specNote && <p className="mt-2 text-xs italic text-muted">{s.specNote}</p>}
                     </div>
-                  )}
+                  ) : null}
                   {actions}
                 </div>
               ),
@@ -188,11 +195,11 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
         </Section>
       )}
 
-      {(s.regulatoryMd || s.referencesMd) && (
+      {(s.regulatoryHtml || s.referencesHtml) && (
         <section className="border-t border-border py-10">
           <Container>
-            {s.regulatoryMd && <Prose html={md(s.regulatoryMd)} className="prose-rm-sm max-w-4xl" />}
-            {s.referencesMd && <Prose html={md(s.referencesMd)} className="prose-rm-sm mt-6 max-w-4xl" />}
+            {s.regulatoryHtml && <Prose html={safeHtml(s.regulatoryHtml)} className="prose-rm-sm max-w-4xl" />}
+            {s.referencesHtml && <Prose html={safeHtml(s.referencesHtml)} className="prose-rm-sm mt-6 max-w-4xl" />}
           </Container>
         </section>
       )}

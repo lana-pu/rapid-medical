@@ -68,7 +68,7 @@ export const RESOURCES: Resource[] = [
       { name: "heroBody", label: "Hero body", type: "textarea", section: "Hero", rows: 3 },
       { name: "heroImageUrl", label: "Hero image (or video poster)", type: "image", section: "Hero", half: true },
       { name: "heroVideoUrl", label: "Hero background video (mp4)", type: "image", section: "Hero", half: true },
-      { name: "heroCta", label: "Hero CTA", type: "repeater", section: "Hero", fields: actionLinkFields, help: "Only the first item is used." },
+      { name: "heroCta", label: "Hero CTA", type: "link", section: "Hero" },
 
       { name: "introTitle", label: "Intro title", type: "text", section: "Intro" },
       { name: "introBody", label: "Intro body", type: "textarea", section: "Intro", rows: 3 },
@@ -87,14 +87,15 @@ export const RESOURCES: Resource[] = [
           { name: "imageUrl", label: "Image", type: "image", half: true },
           { name: "videoUrl", label: "Video (mp4 or YouTube)", type: "image", half: true },
           { name: "footnote", label: "Footnote", type: "text" },
-          { name: "link", label: "Link (JSON {label, href})", type: "text", help: "e.g. {\"label\":\"See the comparison\",\"href\":\"/us/see-the-comparison\"}" },
+          { name: "link", label: "Link", type: "link" },
         ],
       },
 
       { name: "overviewTitle", label: "Overview title", type: "text", section: "Product overview", half: true },
       { name: "overviewBody", label: "Overview body", type: "textarea", section: "Product overview", rows: 3 },
       { name: "overviewImageUrl", label: "Overview image", type: "image", section: "Product overview" },
-      { name: "specImageUrls", label: "Specification images", type: "stringList", section: "Product overview", help: "One URL per line. Replace with a real table later." },
+      { name: "specs", label: "Specifications table", type: "table", section: "Product overview", help: "Shown instead of the specification images when filled in." },
+      { name: "specImageUrls", label: "Specification images (legacy)", type: "stringList", section: "Product overview", help: "One URL per line. Used only while the table above is empty." },
       { name: "specNote", label: "Specification note", type: "text", section: "Product overview" },
 
       {
@@ -143,8 +144,8 @@ export const RESOURCES: Resource[] = [
       { name: "closingBody", label: "Closing body", type: "textarea", section: "Closing", rows: 2 },
       { name: "closingEmbedUrl", label: "Closing video (YouTube URL or mp4)", type: "url", section: "Closing" },
 
-      { name: "regulatoryMd", label: "Indications / contraindications (Markdown)", type: "markdown", section: "Regulatory", rows: 8 },
-      { name: "referencesMd", label: "References (Markdown)", type: "markdown", section: "Regulatory", rows: 8 },
+      { name: "regulatoryHtml", label: "Indications / contraindications", type: "markdown", section: "Regulatory", rows: 8 },
+      { name: "referencesHtml", label: "References ", type: "markdown", section: "Regulatory", rows: 8 },
 
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
@@ -264,7 +265,7 @@ export const RESOURCES: Resource[] = [
       { name: "title", label: "Short title", type: "text", required: true, half: true, placeholder: "CO-FOUNDER & CEO" },
       { name: "longTitle", label: "Long title", type: "text", half: true },
       { name: "photoUrl", label: "Photo", type: "image" },
-      { name: "bioMd", label: "Bio (Markdown)", type: "markdown", rows: 8 },
+      { name: "bioHtml", label: "Bio ", type: "markdown", rows: 8 },
       statusField,
       sortField,
     ],
@@ -291,7 +292,7 @@ export const RESOURCES: Resource[] = [
       { name: "slug", label: "Slug", type: "slug", required: true, half: true },
       { name: "location", label: "Location", type: "text", half: true },
       { name: "department", label: "Department", type: "text", half: true },
-      { name: "descriptionMd", label: "Description (Markdown)", type: "markdown", rows: 12 },
+      { name: "descriptionHtml", label: "Description ", type: "markdown", rows: 12 },
       { name: "applyUrl", label: "Apply URL", type: "url", half: true },
       { name: "applyEmail", label: "Apply email", type: "text", half: true },
       statusField,
@@ -321,7 +322,7 @@ export const RESOURCES: Resource[] = [
       { name: "slug", label: "Slug", type: "slug", required: true, half: true },
       { name: "region", label: "Region (empty = global)", type: "region", half: true },
       { name: "noindex", label: "Hide from search engines", type: "boolean", half: true },
-      { name: "bodyMd", label: "Body (Markdown)", type: "markdown", rows: 20 },
+      { name: "bodyHtml", label: "Body ", type: "markdown", rows: 20 },
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
       { ...statusField, section: "SEO" },
@@ -351,7 +352,7 @@ export const RESOURCES: Resource[] = [
       { name: "family", label: "Family slug (parent product)", type: "text", half: true, help: "e.g. tigertriever; empty for a top-level product" },
       sortField,
       { name: "regions", label: "Own Evidence tab in regions", type: "regions", help: "Empty = all regions." },
-      { name: "aliases", label: "Region aliases (JSON)", type: "markdown", rows: 4, help: "{\"apac\": {\"name\": \"COLUMBUS™\", \"fullName\": \"COLUMBUS™ Steerable Guidewire\"}}" },
+      { name: "aliases", label: "Region aliases (JSON)", type: "json", rows: 4, help: "{\"apac\": {\"name\": \"COLUMBUS™\", \"fullName\": \"COLUMBUS™ Steerable Guidewire\"}}" },
     ],
   },
 

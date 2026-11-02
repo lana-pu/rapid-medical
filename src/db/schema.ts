@@ -33,6 +33,7 @@ export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_prog
 /* ------------------------------------------------------------------ */
 
 export type ActionLink = { label: string; href: string };
+export type SpecTable = { caption?: string; columns: string[]; rows: string[][]; note?: string };
 export type Benefit = { eyebrow?: string; title: string; body: string; imageUrl?: string; videoUrl?: string; footnote?: string; link?: ActionLink };
 export type Step = { title: string; body?: string; imageUrl?: string; videoUrl?: string };
 export type InPracticeItem = {
@@ -150,10 +151,12 @@ export const solutions = pgTable(
     /** YouTube/Vimeo embed or mp4 shown in the closing section */
     closingEmbedUrl: text("closing_embed_url"),
 
-    /** Indications / contraindications – markdown, region-specific */
-    regulatoryMd: text("regulatory_md").notNull().default(""),
-    /** Numbered references – markdown */
-    referencesMd: text("references_md").notNull().default(""),
+    /** Structured specification table (replaces spec screenshots) */
+    specs: jsonb("specs").$type<SpecTable | null>(),
+    /** Indications / contraindications – rich text HTML, region-specific */
+    regulatoryHtml: text("regulatory_html").notNull().default(""),
+    /** Numbered references – rich text HTML */
+    referencesHtml: text("references_html").notNull().default(""),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -241,7 +244,7 @@ export const teamMembers = pgTable("team_members", {
   name: text("name").notNull(),
   title: text("title").notNull(), // shown on About
   longTitle: text("long_title").notNull().default(""), // shown on profile
-  bioMd: text("bio_md").notNull().default(""),
+  bioHtml: text("bio_html").notNull().default(""),
   photoUrl: text("photo_url"),
   sortOrder: integer("sort_order").notNull().default(0),
   status: statusEnum("status").notNull().default("published"),
@@ -258,7 +261,7 @@ export const jobs = pgTable("jobs", {
   title: text("title").notNull(),
   location: text("location").notNull().default(""),
   department: text("department").notNull().default(""),
-  descriptionMd: text("description_md").notNull().default(""),
+  descriptionHtml: text("description_html").notNull().default(""),
   applyUrl: text("apply_url"),
   applyEmail: text("apply_email"),
   status: statusEnum("status").notNull().default("draft"),
@@ -279,7 +282,7 @@ export const pages = pgTable(
     /** null = global page; otherwise lives under /[region]/… */
     region: regionEnum("region"),
     title: text("title").notNull(),
-    bodyMd: text("body_md").notNull().default(""),
+    bodyHtml: text("body_html").notNull().default(""),
     metaTitle: text("meta_title").notNull().default(""),
     metaDescription: text("meta_description").notNull().default(""),
     /** Hide from sitemap/nav (landing pages used in campaigns) */

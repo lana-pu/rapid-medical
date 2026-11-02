@@ -1,4 +1,4 @@
-import { youtubeId } from "@/lib/markdown";
+import { youtubeId } from "@/lib/html";
 
 /**
  * Media primitives. Video backgrounds autoplay muted; inline videos get

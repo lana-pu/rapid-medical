@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTeamMember } from "@/lib/content";
-import { md } from "@/lib/markdown";
+import { safeHtml } from "@/lib/html";
 import { Section, Img, Prose } from "@/components/site/primitives";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -21,7 +21,7 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ slu
         <div className="md:col-span-2">
           <h1 className="text-2xl font-semibold uppercase tracking-wide">{m.name}</h1>
           <div className="mt-1 text-muted uppercase">{m.longTitle || m.title}</div>
-          <Prose html={md(m.bioMd)} className="mt-6 max-w-2xl" />
+          <Prose html={safeHtml(m.bioHtml)} className="mt-6 max-w-2xl" />
         </div>
       </div>
     </Section>

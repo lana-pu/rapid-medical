@@ -38,8 +38,8 @@ export type SolutionSeed = {
   closingTitle?: string;
   closingBody?: string;
   closingEmbedUrl?: string;
-  regulatoryMd: string;
-  referencesMd: string;
+  regulatoryHtml: string;
+  referencesHtml: string;
 };
 
 const IMG = (site: string, p: string) => `https://irp.cdn-website.com/${site}/dms3rep/multi/${p}`;
@@ -272,8 +272,8 @@ export const SOLUTIONS: SolutionSeed[] = [
     closingTitle: "Active thrombectomy tailors the procedure to the patient.",
     closingBody: CLOSING_Q,
     closingEmbedUrl: TIGER_YOUTUBE,
-    regulatoryMd: TIGER_IFU_US,
-    referencesMd: TIGER_REFERENCES,
+    regulatoryHtml: TIGER_IFU_US,
+    referencesHtml: TIGER_REFERENCES,
   },
   {
     slug: "aneurysm", region: "us", product: "comaneci", sortOrder: 2,
@@ -302,8 +302,8 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "",
-    referencesMd: COMANECI_REFERENCES,
+    regulatoryHtml: "",
+    referencesHtml: COMANECI_REFERENCES,
   },
   {
     slug: "access", region: "us", product: "drivewire", sortOrder: 3,
@@ -320,7 +320,7 @@ export const SOLUTIONS: SolutionSeed[] = [
     howItWorks: [], inPractice: [],
     actionLinks: ACTIONS.us, actionNote: "Canada: orders.canada@rapid-medical.com",
     webinarCtaEnabled: false,
-    regulatoryMd: DRIVEWIRE_IFU, referencesMd: "",
+    regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
   },
 
   /* ============================== OUS ============================= */
@@ -347,7 +347,7 @@ export const SOLUTIONS: SolutionSeed[] = [
     closingTitle: "Active thrombectomy tailors the procedure to the patient.",
     closingBody: CLOSING_Q,
     closingEmbedUrl: TIGER_YOUTUBE,
-    regulatoryMd: "", referencesMd: TIGER_REFERENCES,
+    regulatoryHtml: "", referencesHtml: TIGER_REFERENCES,
   },
   {
     slug: "mvo", region: "ous", product: "tigertriever-13", sortOrder: 2,
@@ -379,8 +379,8 @@ export const SOLUTIONS: SolutionSeed[] = [
     ],
     actionLinks: ACTIONS.ous,
     closingBody: CLOSING_Q,
-    regulatoryMd: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
-    referencesMd: MVO_REFERENCES,
+    regulatoryHtml: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
+    referencesHtml: MVO_REFERENCES,
   },
   {
     slug: "aneurysm", region: "ous", product: "comaneci", sortOrder: 3,
@@ -409,7 +409,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "", referencesMd: COMANECI_REFERENCES,
+    regulatoryHtml: "", referencesHtml: COMANECI_REFERENCES,
   },
   {
     slug: "vasospasm", region: "ous", product: "comaneci", sortOrder: 4,
@@ -436,7 +436,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:infousa@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "", referencesMd: VASO_REFERENCES,
+    regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
     slug: "access", region: "ous", product: "drivewire", sortOrder: 5,
@@ -452,7 +452,7 @@ export const SOLUTIONS: SolutionSeed[] = [
     specImageUrls: [IMG(OUS, "opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg")],
     howItWorks: [], inPractice: [],
     actionLinks: ACTIONS.ous, webinarCtaEnabled: false,
-    regulatoryMd: DRIVEWIRE_IFU, referencesMd: "",
+    regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
   },
 
   /* ============================== APAC ============================ */
@@ -480,7 +480,7 @@ export const SOLUTIONS: SolutionSeed[] = [
     closingTitle: "Active thrombectomy tailors the procedure to the patient.",
     closingBody: CLOSING_Q,
     closingEmbedUrl: TIGER_YOUTUBE,
-    regulatoryMd: "", referencesMd: TIGER_REFERENCES,
+    regulatoryHtml: "", referencesHtml: TIGER_REFERENCES,
   },
   {
     slug: "mvo", region: "apac", product: "tigertriever-13", sortOrder: 2,
@@ -514,8 +514,8 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
-    referencesMd: MVO_REFERENCES,
+    regulatoryHtml: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
+    referencesHtml: MVO_REFERENCES,
   },
   {
     slug: "aneurysm", region: "apac", product: "comaneci", sortOrder: 3,
@@ -542,7 +542,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "", referencesMd: COMANECI_REFERENCES,
+    regulatoryHtml: "", referencesHtml: COMANECI_REFERENCES,
   },
   {
     slug: "vasospasm", region: "apac", product: "comaneci", sortOrder: 4,
@@ -566,7 +566,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
     closingBody: CLOSING_Q,
-    regulatoryMd: "", referencesMd: VASO_REFERENCES,
+    regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
     slug: "access", region: "apac", product: "drivewire", sortOrder: 5,
@@ -582,6 +582,6 @@ export const SOLUTIONS: SolutionSeed[] = [
     specImageUrls: [IMG(APAC, "opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg")],
     howItWorks: [], inPractice: [],
     actionLinks: ACTIONS.apac, webinarCtaEnabled: false,
-    regulatoryMd: DRIVEWIRE_IFU, referencesMd: "",
+    regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
   },
 ];

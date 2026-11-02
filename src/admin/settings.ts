@@ -165,7 +165,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
           { name: "title", label: "Title", type: "text", required: true },
           { name: "body", label: "Body", type: "textarea", rows: 3 },
           { name: "imageUrl", label: "Image", type: "image" },
-          { name: "links", label: "Links (JSON [{label, href}])", type: "text" },
+          { name: "links", label: "Links", type: "repeater", fields: [{ name: "label", label: "Label", type: "text", required: true, half: true }, { name: "href", label: "Link", type: "text", required: true, half: true }] },
         ],
       },
       { name: "closingTitle", label: "Closing title", type: "text", half: true },

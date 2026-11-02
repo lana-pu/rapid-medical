@@ -47,7 +47,7 @@ Email + password, roles `admin` / `editor`. Content types:
 - **Therapies** (structured: hero, benefits, overview, specs, how-it-works, in-practice, actions, regulatory, references)
 - **Evidence** (publications with product, region, DOI/PDF)
 - **News & Events**, **Webinars**, **Leadership team**, **Open positions**
-- **Pages** (Markdown body; global or regional; noindex flag for campaign landing pages)
+- **Pages** (rich-text body; global or regional; noindex flag for campaign landing pages)
 - **Products** (families + variants, per-region Evidence tabs, region aliases such as COLUMBUS™ in APAC)
 - **Site settings** (contact + office pins, social, branding, integrations, home, about, careers, evidence, therapies landing ×3, regional notices)
 - **Media** (upload; stored locally in `public/uploads`, S3 driver stub in `src/lib/storage.ts`)
@@ -55,6 +55,15 @@ Email + password, roles `admin` / `editor`. Content types:
 - **Redirects**, **Users** (admin only)
 
 Everything with a `status` field is only public when `published`. Saving revalidates the affected routes.
+
+### Editing experience
+
+- **Rich text** (Tiptap): headings, lists, links, tables, images and videos from the media library, YouTube. Stored as HTML, sanitised on output (`src/lib/html.ts`).
+- **Lists of blocks** (benefits, steps, offices, …): drag to reorder, collapse, duplicate; nested lists supported (`Repeater.tsx`).
+- **Media library picker** in every image/video field: search, filter by type, upload in place. Library page shows where a file is used and refuses to delete a referenced file.
+- **Specification tables**: structured table editor on therapy pages — paste a range from Excel to fill it. Replaces the Duda screenshots.
+- **Unsaved-changes guard**: warns before leaving a dirty form and keeps a local backup that can be restored.
+- **Lists**: search, filters (status / region / product / featured), column sorting, pagination, bulk publish / unpublish / delete.
 
 Adding a new content type = a table in `src/db/schema.ts` + an entry in `src/admin/resources.ts`. Lists, forms, validation and persistence are generated from that description (`src/admin/engine.ts`).
 
@@ -82,7 +91,7 @@ Current import: 13 therapy pages, 102 publications, 53 news items, 5 webinars, 6
 
 ## Media & videos
 
-The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same "image" field in the admin (paste a `.mp4` URL or upload). Markdown pages support `@[video](url)` and `@[youtube](url)`.
+The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same "image" field in the admin (paste a `.mp4` URL or upload). Rich-text fields accept videos and YouTube embeds from the toolbar.
 
 ## Integrations (Site settings → Integrations)
 
