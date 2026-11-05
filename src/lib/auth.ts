@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import { and, eq, gt, lt, sql } from "drizzle-orm";
-import { generateSecret, generate, verify as verifyTotp, generateURI } from "otplib";
+import { generateSecret, verify as verifyTotp, generateURI } from "otplib";
 import { db, users, sessions, passwordResets, loginAttempts, type User } from "@/db";
 
 /**
@@ -164,11 +164,6 @@ export async function totpCheck(secret: string, token: string): Promise<boolean>
   } catch {
     return false;
   }
-}
-
-/** For tests / previews: current code for a secret. */
-export async function totpCurrent(secret: string) {
-  return generate({ secret });
 }
 
 export function makeRecoveryCodes(n = 8): { plain: string[]; hashed: string[] } {

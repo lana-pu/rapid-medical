@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getResource } from "./resources";
-import { parseForm, deleteRow, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
+import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
 import { saveWithWorkflow, publish, unpublish, discardDraft, setReview, schedule, restoreRevision, canPublish, getDraft, hasWorkflow } from "./workflow";
 import type { ReviewStatus } from "@/db";
 
@@ -98,15 +98,6 @@ export async function restoreAction(fd: FormData) {
   const revId = Number(fd.get("revision"));
   await restoreRevision(res, revId, user);
   redirect(`/admin/${res.slug}/${id}?restored=1`);
-}
-
-export async function deleteResource(fd: FormData) {
-  const { user, res, id } = await ctx(fd);
-  const row = await getRow(res, id);
-  await deleteRow(res, id);
-  await audit(user, "delete", { resource: res.slug, recordId: id, label: String(row?.[res.labelField] ?? "") });
-  revalidate(res.revalidate);
-  redirect(`/admin/${res.slug}?deleted=1`);
 }
 
 export async function duplicateResource(fd: FormData) {

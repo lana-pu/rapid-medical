@@ -46,7 +46,7 @@
 | `FeatureGrid`, `AnnotatedImage`, `PracticeList`, `Banner`, `Gallery`, `Principles` | blocks/Blocks.tsx | Блоки страниц терапий / карьеры |
 | `Carousel`, `NewsTimeline` | blocks/ | Карусель, лента по годам |
 | `SpecTableView` | SpecTable.tsx | Таблица спецификаций |
-| `WorldMap` | WorldMap.tsx | Интерактивная карта (d3-geo, world-atlas) |
+| `WorldMap` | WorldMap.tsx | Интерактивная карта (d3-geo, данные `public/map/countries-50m.json`) |
 
 ## Отступления от токенов (хардкод, по коду)
 - Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — therapy page,
