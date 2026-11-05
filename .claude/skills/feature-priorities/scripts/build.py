@@ -12,7 +12,8 @@
 
 Скрипт сначала проверяет данные и печатает все ошибки; страницу пишет, только если ошибок нет.
 """
-import json, sys, glob, os
+import json, sys, glob, os, re
+from urllib.parse import urlparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
@@ -50,6 +51,20 @@ def main():
         if k not in cfg:
             err.append(f"config.json: нет поля {k}")
     keys = [b["key"] for b in cfg.get("buckets", [])]
+    # id и ключи попадают в атрибуты и id элементов — только безопасный набор символов
+    safe = lambda v: isinstance(v, str) and re.fullmatch(r"[A-Za-z0-9._-]{1,40}", v)
+    for k in keys:
+        if not safe(k):
+            err.append(f"config.buckets: ключ {k!r} — только латиница, цифры, . _ -")
+    for k in cfg.get("areas", {}):
+        if not safe(k):
+            err.append(f"config.areas: ключ {k!r} — только латиница, цифры, . _ -")
+    for k in refs:
+        if not safe(k):
+            err.append(f"refs.json: ключ {k!r} — только латиница, цифры, . _ -")
+    ru = cfg.get("refsUrl") or ""
+    if ru and urlparse(ru).scheme not in ("http", "https"):
+        err.append(f"config.refsUrl: нужна ссылка http(s), сейчас {ru!r}")
     areas = cfg.get("areas", {})
     ids = set()
     for i, r in enumerate(F):
@@ -57,6 +72,8 @@ def main():
         for k in ["id", "area", "name", "now", "prio", "why"]:
             if not r.get(k):
                 err.append(f"{rid}: пустое поле {k}")
+        if not safe(r.get("id")):
+            err.append(f"{rid}: id — только латиница, цифры, . _ -")
         if rid in ids:
             err.append(f"{rid}: повторяющийся id")
         ids.add(rid)
@@ -79,12 +96,14 @@ def main():
             if not d.get(k):
                 err.append(f"detail {did}: пустое поле {k}")
         comps = d.get("competitors", [])
-        if not comps and not d.get("gap"):
-            err.append(f"detail {did}: нет ни конкурентов, ни gap")
+        if not comps and not d.get("gap") and not d.get("compNote"):
+            err.append(f"detail {did}: нет ни конкурентов, ни gap, ни compNote")
         for c in comps:
             for k in ["name", "how", "src"]:
                 if not c.get(k):
                     err.append(f"detail {did} / {c.get('name', '?')}: пустое поле {k}")
+            if c.get("checked") not in (None, "vendor", "secondhand"):
+                err.append(f"detail {did} / {c.get('name', '?')}: checked = {c.get('checked')!r}, нужно vendor или secondhand")
     missing = [i for i in ids if i not in detail]
     if missing:
         print(f"⚠ без подробностей: {', '.join(sorted(missing))}")

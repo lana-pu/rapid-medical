@@ -5,8 +5,8 @@ description: Таблица приоритетов фич — инвентарь
 
 # /feature-priorities
 
-Корень воркспейса — папка с `modules/` (из проекта это `../../`). Прочитай
-`<корень>/modules/product/prompts/feature-prioritization.md` и выполни в текущем проекте.
+Прочитай метод `~/Desktop/Studio/modules/product/prompts/feature-prioritization.md` (Studio — корень воркспейса,
+папка с `modules/`; из проекта в `projects/<slug>/` это `../../`) и выполни в текущем проекте.
 
 Ресурсы этого скилла (пути от папки скилла):
 - `assets/template.html` — страница: корзины, фильтры, поиск, «Подробнее», правки приоритета и комментариев в базе

@@ -106,6 +106,7 @@ tr.detail > td{background:var(--sunk);padding:16px}
 .kv .k{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;flex:none}
 .k.take{background:var(--ok-soft);color:var(--ok)} .k.dont{background:var(--bad-soft);color:var(--bad)}
 .src{font-size:12px;color:var(--faint);margin-top:6px}
+.chk{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.04em;padding:1px 6px;border-radius:5px;background:var(--warn-soft);color:var(--warn);vertical-align:middle;white-space:nowrap} .chk.ok{background:var(--ok-soft);color:var(--ok)}
 .gapnote{margin-top:12px;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:10px 12px}
 @media (max-width:760px){tr.detail > td::before{content:none} .comps{grid-template-columns:1fr}}
 .empty{padding:24px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:10px}
@@ -146,6 +147,7 @@ tr.detail > td{background:var(--sunk);padding:16px}
   <div class="sync" id="sync">Приоритеты из базы загружаются…</div>
 
   <main id="list" style="display:grid;gap:26px"></main>
+  <div id="sources"></div>
 </div>
 
 <script>
@@ -174,12 +176,13 @@ tr.detail > td{background:var(--sunk);padding:16px}
   $("#lede").innerHTML = CONFIG.ledeHtml;
   $("#how").innerHTML = CONFIG.how.map(col => `<dl>${col.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join("")}</dl>`).join("");
   $("#area").setAttribute("aria-label", CONFIG.areaLabel); $("#area").options[0].textContent = CONFIG.areaAll; $("#group").options[1].textContent = "По " + CONFIG.areaGroupBy;
+  if (!ATLAS && Object.keys(REFS).length) $("#sources").innerHTML = `<details class="how"><summary>Источники</summary><div class="in"><dl>${Object.entries(REFS).map(([id, c]) => `<dt id="src-${esc(id)}">${esc(id)} · ${c[1] ? "L" + c[1] : "без уровня"} · ${esc(c[0])}</dt><dd>${esc(c[2] || "")}</dd>`).join("")}</dl></div></details>`;
   const open = new Set();
-  const detailText = id => { const d = DETAIL[id]; if (!d) return ""; return [d.what, d.now, d.research, d.gap, ...(d.competitors || []).map(c => [c.name, c.how, c.users, c.take, c.dont].join(" "))].join(" "); };
+  const detailText = id => { const d = DETAIL[id]; if (!d) return ""; return [d.what, d.now, d.research, d.gap, d.note, d.compNote, ...(d.competitors || []).map(c => [c.name, c.how, c.users, c.take, c.dont].join(" "))].join(" "); };
   const para = (lab, t) => t ? `<div class="dblock"><div class="dlab">${lab}</div><p>${esc(t)}</p></div>` : "";
   function detailHtml(r){
     const d = DETAIL[r.id]; if (!d) return "";
-    const comps = (d.competitors || []).map(c => `<article class="comp"><h3>${esc(c.name)}</h3>
+    const comps = (d.competitors || []).map(c => `<article class="comp"><h3>${esc(c.name)}${c.checked ? ` <span class="chk ${c.checked === "vendor" ? "ok" : ""}">${c.checked === "vendor" ? "проверено у вендора" : "не проверено"}</span>` : ""}</h3>
       <div class="dlab">Как работает у них</div><p>${esc(c.how)}</p>
       ${c.users ? `<div class="dlab">Что говорят пользователи</div><p>${esc(c.users)}</p>` : ""}
       ${c.take ? `<div class="kv"><span class="k take">Взять</span><span>${esc(c.take)}</span></div>` : ""}
@@ -187,38 +190,39 @@ tr.detail > td{background:var(--sunk);padding:16px}
       ${c.src ? `<div class="src">Источник: ${linkify(c.src)}</div>` : ""}</article>`).join("");
     return `<tr class="detail"><td colspan="5"><div class="dgrid">${para("Что это", d.what)}${para("Сейчас в " + CONFIG.product, d.now)}${para("Что показал ресёрч", d.research)}</div>
       <div class="dlab" style="margin-top:14px">Конкуренты · ${(d.competitors || []).length}</div>
-      ${comps ? `<div class="comps">${comps}</div>` : `<p class="note">Близких решений у конкурентов нет.</p>`}
-      ${d.gap ? `<div class="gapnote"><b>Чего нет ни у кого.</b> ${esc(d.gap)}</div>` : ""}</td></tr>`;
+      ${comps ? `<div class="comps">${comps}</div>` : `<p class="note">${esc(d.compNote || "Близких решений у конкурентов нет.")}</p>`}
+      ${d.gap ? `<div class="gapnote"><b>Чего нет ни у кого.</b> ${esc(d.gap)}</div>` : ""}
+      ${d.note ? `<div class="dblock" style="margin-top:12px"><div class="dlab">Оговорка</div><p>${esc(d.note)}</p></div>` : ""}</td></tr>`;
   }
   function linkify(t){ return esc(t).replace(/https?:\/\/[^\s;,)]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//, "").slice(0, 60)}</a>`); }
 
-  const compOf = r => { const d = DETAIL[r.id]; const n = d && (d.competitors || []).map(c => c.name); return n && n.length ? n.join(", ") : (d && d.gap ? "Никто полностью" : r.comp); };
+  const compOf = r => { const d = DETAIL[r.id]; const n = d && (d.competitors || []).map(c => c.name); return n && n.length ? n.join(", ") : (d && d.compNote ? d.compNote : d && d.gap ? "Никто полностью" : r.comp); };
   const prioOf = r => okP(over[r.id] && over[r.id].p) || r.prio;
   const noteOf = r => (over[r.id] && over[r.id].note) || "";
   const isChanged = r => !!(over[r.id] && ((over[r.id].p && over[r.id].p !== r.prio) || over[r.id].note));
 
-  for (const [k, v] of Object.entries(AREAS)) $("#area").insertAdjacentHTML("beforeend", `<option value="${k}">${esc(v)}</option>`);
-  $("#stChips").innerHTML = Object.entries(ST).map(([k, v]) => `<button type="button" class="chip" data-st="${k}" aria-pressed="false">${v}</button>`).join("");
+  for (const [k, v] of Object.entries(AREAS)) $("#area").insertAdjacentHTML("beforeend", `<option value="${esc(k)}">${esc(v)}</option>`);
+  $("#stChips").innerHTML = Object.entries(ST).map(([k, v]) => `<button type="button" class="chip" data-st="${esc(k)}" aria-pressed="false">${esc(v)}</button>`).join("");
 
   function jobChips(s){
     return String(s || "").split(/,\s*/).filter(x => x && x !== "—").map(j => { const t = JOBS[j]; return `<span class="job" title="${esc(t ? t[0] : "")}">${esc(j)}</span>`; }).join(" ");
   }
   function refChips(ids){
-    return ids.map(id => { const c = REFS[id]; if (!c) return ""; const lv = c[1]; return (ATLAS ? `<a class="ref" href="${ATLAS}#${id}" target="_blank" rel="noopener" title="${esc(c[0])}">` : `<span class="ref" title="${esc(c[0])}">`) + `<span class="lv ${lv ? "lv" + lv : "lvx"}">${lv ? "L" + lv : "—"}</span>${esc(c[0].length > 38 ? c[0].slice(0, 36) + "…" : c[0])}` + (ATLAS ? "</a>" : "</span>"); }).join("");
+    return ids.map(id => { const c = REFS[id]; if (!c) return ""; const lv = c[1]; return (ATLAS ? `<a class="ref" href="${esc(ATLAS)}#${esc(id)}" target="_blank" rel="noopener" title="${esc(c[0])}">` : `<a class="ref" href="#src-${esc(id)}" title="${esc(c[2] || c[0])}">`) + `<span class="lv ${lv ? "lv" + lv : "lvx"}">${lv ? "L" + lv : "—"}</span>${esc(c[0].length > 38 ? c[0].slice(0, 36) + "…" : c[0])}` + "</a>"; }).join("");
   }
   function rowHtml(r){
     const p = prioOf(r);
-    const opts = Object.entries(PRIO).map(([k, v]) => `<option value="${k}"${k === p ? " selected" : ""}>${v}</option>`).join("");
-    return `<tr data-id="${r.id}">
-      <td class="f" data-l="Фича"><div class="fname">${esc(r.name)}</div>${DETAIL[r.id] ? `<button type="button" class="more" data-more="${r.id}" aria-expanded="${open.has(r.id)}">${open.has(r.id) ? "Свернуть" : "Подробнее"}</button>` : ""}<div class="meta"><span class="fid">${r.id}</span>${jobChips(r.jobs)}<span>${esc(AREAS[r.area] || "")}</span></div></td>
-      <td class="now" data-l="Сейчас"><span class="st ${r.now}">${ST[r.now]}</span><div class="note">${esc(r.nowNote)}</div></td>
+    const opts = Object.entries(PRIO).map(([k, v]) => `<option value="${esc(k)}"${k === p ? " selected" : ""}>${esc(v)}</option>`).join("");
+    return `<tr data-id="${esc(r.id)}">
+      <td class="f" data-l="Фича"><div class="fname">${esc(r.name)}</div>${DETAIL[r.id] ? `<button type="button" class="more" data-more="${esc(r.id)}" aria-expanded="${open.has(r.id)}">${open.has(r.id) ? "Свернуть" : "Подробнее"}</button>` : ""}<div class="meta"><span class="fid">${esc(r.id)}</span>${jobChips(r.jobs)}<span>${esc(AREAS[r.area] || "")}</span></div></td>
+      <td class="now" data-l="Сейчас"><span class="st ${esc(r.now)}">${esc(ST[r.now])}</span><div class="note">${esc(r.nowNote)}</div></td>
       <td class="res" data-l="Из ресёрча"><div>${esc(r.res)}</div>${r.refs.length ? `<div class="refs">${refChips(r.refs)}</div>` : ""}</td>
       <td class="cmp" data-l="Конкуренты"><span class="note">${esc(compOf(r))}</span></td>
-      <td class="pr c-${p}" data-l="Приоритет"><select id="p-${r.id}" aria-label="Приоритет ${esc(r.name)}"${db && canWrite ? "" : " disabled"}>${opts}</select>
+      <td class="pr c-${esc(p)}" data-l="Приоритет"><select id="p-${esc(r.id)}" aria-label="Приоритет ${esc(r.name)}"${db && canWrite ? "" : " disabled"}>${opts}</select>
         <div class="why">${esc(r.why)}</div>
         ${r.decide ? `<span class="decide">${esc(CONFIG.decideLabel)}</span>` : ""}
-        ${isChanged(r) && p !== r.prio ? `<div class="changed">Изменено · было ${PRIO[r.prio]}</div>` : ""}
-        ${db && canWrite ? `<textarea id="n-${r.id}" rows="1" placeholder="Комментарий" aria-label="Комментарий к ${esc(r.name)}">${esc(noteOf(r))}</textarea>` : (noteOf(r) ? `<div class="note" style="margin-top:6px">${esc(noteOf(r))}</div>` : "")}
+        ${isChanged(r) && p !== r.prio ? `<div class="changed">Изменено · было ${esc(PRIO[r.prio])}</div>` : ""}
+        ${db && canWrite ? `<textarea id="n-${esc(r.id)}" rows="1" placeholder="Комментарий" aria-label="Комментарий к ${esc(r.name)}">${esc(noteOf(r))}</textarea>` : (noteOf(r) ? `<div class="note" style="margin-top:6px">${esc(noteOf(r))}</div>` : "")}
       </td></tr>${open.has(r.id) ? detailHtml(r) : ""}`;
   }
   function filtered(){
@@ -229,7 +233,7 @@ tr.detail > td{background:var(--sunk);padding:16px}
   }
   function render(){
     const counts = Object.fromEntries(PKEYS.map(k => [k, 0])); for (const r of rows) counts[prioOf(r)]++;
-    $("#buckets").innerHTML = Object.entries(PRIO).map(([k, v]) => `<button type="button" class="bucket c-${k}" data-b="${k}" aria-pressed="${state.bucket === k}"><span class="n">${counts[k]}</span><span class="t">${v}</span><span class="d">${PRIO_D[k]}</span></button>`).join("");
+    $("#buckets").innerHTML = Object.entries(PRIO).map(([k, v]) => `<button type="button" class="bucket c-${esc(k)}" data-b="${esc(k)}" aria-pressed="${state.bucket === k}"><span class="n">${counts[k]}</span><span class="t">${esc(v)}</span><span class="d">${esc(PRIO_D[k])}</span></button>`).join("");
     const list = filtered();
     $("#count").textContent = `${list.length} из ${rows.length}`;
     if (!list.length) { $("#list").innerHTML = `<div class="empty">Ничего не найдено. Сбросьте фильтры или поиск.</div>`; return; }
@@ -237,7 +241,7 @@ tr.detail > td{background:var(--sunk);padding:16px}
       ? Object.keys(PRIO).map(k => [k, PRIO[k], list.filter(r => prioOf(r) === k), `c-${k}`])
       : Object.keys(AREAS).map(k => [k, AREAS[k], list.filter(r => r.area === k), "c-p2"]);
     const head = `<thead><tr><th>Фича</th><th>Сейчас</th><th>Из ресёрча</th><th>Конкуренты</th><th>Приоритет</th></tr></thead>`;
-    $("#list").innerHTML = groups.filter(g => g[2].length).map(([k, t, rs, cls]) => `<section class="group ${cls}"><div class="group-h"><h2>${esc(t)}</h2><span class="tag">${rs.length}</span></div>
+    $("#list").innerHTML = groups.filter(g => g[2].length).map(([k, t, rs, cls]) => `<section class="group ${esc(cls)}"><div class="group-h"><h2>${esc(t)}</h2><span class="tag">${rs.length}</span></div>
       <div class="tbl"><table>${head}<tbody>${rs.map(rowHtml).join("")}</tbody></table></div></section>`).join("");
   }
 
