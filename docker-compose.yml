@@ -1,5 +1,5 @@
 # Run everything locally:   docker compose up --build
-#   site  → http://localhost:3000      admin → http://localhost:3000/admin
+#   site  → http://localhost:${APP_PORT:-3000}   admin → …/admin   (ports: APP_PORT / DB_PORT in .env)
 #   login → ADMIN_EMAIL / ADMIN_PASSWORD below (change them!)
 # Only the database (for `npm run dev` on the host):   docker compose up -d db
 services:
@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: rapid_medical
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -22,14 +22,14 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "${APP_PORT:-3000}:3000"
     depends_on:
       db:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/rapid_medical
       AUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-0123456789}
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:${APP_PORT:-3000}
       STORAGE_DRIVER: local
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@rapid-medical.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me-now-123}

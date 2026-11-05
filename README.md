@@ -12,7 +12,7 @@ Custom replacement for the four Duda sites (`www.`, `us.`, `ous.`, `apac.rapid-m
 docker compose up --build        # first run: builds the image, creates the DB, seeds all content (~3–5 min)
 ```
 
-Then open **http://localhost:3000** (site) and **http://localhost:3000/admin** (admin, login `admin@rapid-medical.com` / `change-me-now-123` — change it in *Account* or set `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first start). Media is read from `public/uploads`; if that folder is empty the first start downloads everything from the Duda CDN instead. Data persists in the `pgdata` Docker volume; `docker compose down -v` wipes it for a fresh seed. `Ctrl+C` stops, `docker compose up` starts again (no rebuild needed unless the code changed).
+Then open **http://localhost:3000** (site) and **http://localhost:3000/admin** (admin, login `admin@rapid-medical.com` / `change-me-now-123` — change it in *Account* or set `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first start). Media is read from `public/uploads`; if that folder is empty the first start downloads everything from the Duda CDN instead. Data persists in the `pgdata` Docker volume; `docker compose down -v` wipes it for a fresh seed. `Ctrl+C` stops, `docker compose up` starts again (no rebuild needed unless the code changed). Ports 3000 / 5432 already taken? Set `APP_PORT` / `DB_PORT` in `.env` (and `DATABASE_URL` accordingly for host-side Node).
 
 ### Option B — Node on the host (for development)
 
