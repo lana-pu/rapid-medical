@@ -19,7 +19,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 DEFS = os.path.join(HERE, "..", "assets", "stages.json")
 SKILLS = os.path.join(HERE, "..", "..")
-BLOCKS = {"text", "sub", "list", "claims", "table", "link", "fold", "shots"}
+BLOCKS = {"text", "sub", "list", "claims", "table", "link", "fold", "shots", "cards", "prio", "prices", "stack"}
+STACK = {"ok", "bad", "warn", "none", "accent", "l0", "l2", "l4", "sunk"}
+SAFE = re.compile(r"[A-Za-z0-9._-]{1,40}")
 LABELS = {"fact", "inference", "limit", "pattern"}
 TONES = {"ok", "bad", "warn", "none"}
 KINDS = {"question", "decision"}
@@ -49,10 +51,38 @@ def check_block(b, where, err, images):
             check_block(x, where, err, images)
     elif t == "shots":
         for i in b.get("items", []):
+            if i.get("img") is None:
+                continue  # шаг без экрана: страница покажет заглушку
             if not re.fullmatch(r"img/[\w./-]+\.(webp|png|jpg)", str(i.get("img"))) or ".." in i["img"]:
                 err.append(f"{where}: img = {i.get('img')!r}, нужен путь img/….webp")
             else:
                 images.add(i["img"])
+    elif t == "cards":
+        for c in b.get("items", []):
+            if not SAFE.fullmatch(str(c.get("id"))) or not c.get("t"):
+                err.append(f"{where}: у карточки нужны t и id из латиницы и цифр, сейчас {c.get('id')!r}")
+            if c.get("level") not in (None, 1, 2, 3, 4, 5):
+                err.append(f"{where}: карточка {c.get('id')}: level = {c.get('level')!r}")
+            for x in c.get("blocks", []):
+                check_block(x, where, err, images)
+    elif t == "prio":
+        keys = [k.get("key") for k in b.get("buckets", [])]
+        for k in keys:
+            if not SAFE.fullmatch(str(k)):
+                err.append(f"{where}: ключ корзины {k!r}")
+        if not SAFE.fullmatch(str(b.get("collection"))):
+            err.append(f"{where}: collection = {b.get('collection')!r}")
+        for r in b.get("rows", []):
+            if not SAFE.fullmatch(str(r.get("id"))) or r.get("prio") not in keys:
+                err.append(f"{where}: строка {r.get('id')!r}: нужен id и prio из корзин")
+    elif t == "prices":
+        for r in b.get("rows", []):
+            if len(r) != 4 or not all(v is None or isinstance(v, (int, float)) for v in r[1:3]):
+                err.append(f"{where}: строка цен {r!r}: нужны название, цена, цена за год, оговорка")
+    elif t == "stack":
+        for i in b.get("items", []):
+            if i.get("c") not in STACK or not isinstance(i.get("n"), int):
+                err.append(f"{where}: полоса {i!r}: n — число, c из {sorted(STACK)}")
     elif t == "list" and not b.get("items"):
         err.append(f"{where}: пустой list")
     elif t == "claims":

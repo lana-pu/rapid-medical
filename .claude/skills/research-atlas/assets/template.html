@@ -7,7 +7,8 @@
 /* Layout: a research logbook — stage index stays on the left, one stage per view, overview opens on what is unfinished */
 :root{
   --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEFF3; --fg:#121820; --muted:#566170; --faint:#6F7A88; --line:#D9DFE6;
-  --accent:#3A3FB8; --accent-soft:#E6E7FA;
+  --accent:#3A3FB8; --accent-soft:#E6E7FA; --c-mon:#3A3FB8; --c-ann:#00869F; --l0:#C5CCD6;
+  --p0:#3A3FB8; --p0-soft:#E6E7FA; --p1:#2E8396; --p1-soft:#DCEBEE; --p2:#6B7480; --p2-soft:#E8ECF0; --no:#B23A35; --no-soft:#F8E1DF;
   --l1:#DCEBEE; --l2:#AED3DA; --l3:#6DB0BD; --l4:#2E8396; --l5:#13505F;
   --l1-ink:#23434B; --l2-ink:#183A42; --l3-ink:#0D2E36; --l4-ink:#FFFFFF; --l5-ink:#FFFFFF;
   --ok:#1E7A4C; --ok-soft:#DDF1E6; --bad:#B23A35; --bad-soft:#F8E1DF; --warn:#8A5E06; --warn-soft:#F7EBCF; --none:#5F6873; --none-soft:#E8ECF0;
@@ -17,19 +18,22 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
-  --accent:#9A9EF5; --accent-soft:#25275A;
+  --accent:#9A9EF5; --accent-soft:#25275A; --c-mon:#6E73E8; --c-ann:#0097AF; --l0:#3A4450;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
   --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
   --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
   --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
   color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
-  --accent:#9A9EF5; --accent-soft:#25275A;
+  --accent:#9A9EF5; --accent-soft:#25275A; --c-mon:#6E73E8; --c-ann:#0097AF; --l0:#3A4450;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
   --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
   --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
   --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
   color-scheme:dark }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
 a{color:var(--accent)}
 .shell{max-width:1320px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 64px;display:grid;grid-template-columns:292px minmax(0,1fr);gap:32px;align-items:start}
@@ -117,6 +121,86 @@ details.fold > .tbl{margin-top:8px}
 .shots figure{margin:0;display:grid;gap:6px;align-content:start;min-width:0}
 .shots img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:var(--sunk)}
 .shots figcaption{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.shot{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.noshot{aspect-ratio:4/3;display:grid;place-content:center;text-align:center;gap:2px;background:var(--sunk);border:1px dashed var(--line);border-radius:6px;font-size:13px;color:var(--muted)}
+#lb{position:fixed;inset:0;z-index:30;background:rgba(10,14,20,.86);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px;padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+#lb img{max-width:100%;max-height:100%;margin:auto;object-fit:contain;min-height:0}
+#lb p{margin:0 auto;max-width:72ch;color:#fff;font-size:14px;text-align:center}
+#lb button{position:absolute;top:max(12px, env(safe-area-inset-top, 0px));right:max(12px, env(safe-area-inset-right, 0px));font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:0;background:#fff;color:#121820;cursor:pointer}
+.dl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.dl button{font:inherit;font-size:13px;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.dl span{color:var(--muted);flex-basis:100%}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ctl input,.ctl select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);min-width:0;max-width:100%}
+.ctl input{flex:1 1 200px}
+.ctl .cnt{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto}
+.ctl .lab{font-size:12.5px;color:var(--muted)}
+.stacks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.stackbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.bar{display:flex;gap:2px;height:14px}
+.bar i{display:block;border-radius:3px;min-width:4px}
+.lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.lg span{display:inline-flex;gap:5px;align-items:center}
+.lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.lg b{font-family:var(--mono);font-weight:500;color:var(--fg)}
+.pbuckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pb{background:var(--surface);padding:12px 14px;display:grid;gap:3px;align-content:start;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+.pb:hover{background:var(--sunk)}
+.pb[aria-pressed="true"]{box-shadow:inset 0 -3px 0 var(--c)}
+.pb b{font-family:var(--display);font-size:26px;font-weight:700;color:var(--c);line-height:1.1;font-variant-numeric:tabular-nums}
+.pb span{font-size:13px;color:var(--muted)}
+.c-p0{--c:var(--p0);--c-soft:var(--p0-soft)} .c-p1{--c:var(--p1);--c-soft:var(--p1-soft)} .c-p2{--c:var(--p2);--c-soft:var(--p2-soft)} .c-no{--c:var(--no);--c-soft:var(--no-soft)}
+.pgroup{display:grid;gap:8px}
+.pgroup .tag{font-family:var(--mono);font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--c-soft);color:var(--c)}
+.ph{display:flex;gap:10px;align-items:baseline}
+td.f{min-width:210px;width:24%} td.nw{min-width:170px;width:20%} td.rs{min-width:220px;width:26%} td.cm{min-width:110px;width:11%} td.pr{min-width:180px;width:19%}
+.fname{font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.job{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:5px;padding:0 5px;cursor:help;background:var(--bg)}
+.note{font-size:13px;color:var(--muted)}
+.refs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.ref{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px 1px 2px;display:inline-flex;gap:5px;align-items:center;color:var(--fg);text-decoration:none;background:var(--bg)}
+.ref:hover{border-color:var(--accent)}
+.lvx{background:var(--sunk);color:var(--muted)}
+.pr select{font:inherit;font-size:13.5px;font-weight:600;padding:5px 8px;border-radius:8px;border:1px solid var(--line);width:100%;background:var(--c-soft);color:var(--c)}
+.pr select:disabled{opacity:1}
+.pr textarea{font:inherit;font-size:13px;width:100%;margin-top:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical;min-height:34px}
+.why{font-size:13px;margin-top:6px}
+.changed{font-size:12px;color:var(--accent);margin-top:4px}
+.decide{display:inline-block;font-size:12px;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:1px 7px;margin-top:6px}
+.more{font:inherit;font-size:12.5px;color:var(--accent);background:none;border:0;padding:4px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+tr.detail > td{background:var(--sunk);padding:14px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.dlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.dgrid p,.comp p{margin:2px 0 0;font-size:14px;max-width:72ch}
+.comps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:8px}
+.comp{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px;align-content:start;min-width:0;overflow-wrap:anywhere}
+.kv{display:flex;gap:8px;align-items:baseline;font-size:13.5px;margin-top:6px}
+.kk{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;flex:none}
+.kk.take{background:var(--ok-soft);color:var(--ok)} .kk.dont{background:var(--bad-soft);color:var(--bad)}
+.srcs{font-size:12px;color:var(--muted);margin-top:6px}
+.chk{font-family:var(--mono);font-size:10px;font-weight:500;padding:1px 6px;border-radius:5px;background:var(--warn-soft);color:var(--warn);white-space:nowrap} .chk.ok{background:var(--ok-soft);color:var(--ok)}
+.gapnote{margin-top:12px;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:10px 12px}
+details.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.card > summary{cursor:pointer;padding:10px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:baseline}
+details.card .cq{grid-column:2;font-size:13.5px;color:var(--muted)}
+details.card .cm2{grid-column:2;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+details.card > .fin{padding:4px 14px 14px}
+.cards{display:grid;gap:6px}
+.pchart svg{display:block;width:100%;min-width:560px;max-width:900px}
+@media (max-width:760px){
+  .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:auto!important;min-width:0!important}
+  .ptable thead{display:none}
+  .ptable tr{border-bottom:1px solid var(--line);padding:4px 0}
+  .ptable td{border:0;padding:8px 12px}
+  .ptable td::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+}
+@media print{
+  .side,.ctl,.dl,#lb,.more{display:none!important}
+  .shell{display:block;max-width:none;padding:0}
+  figure,tr,.claim,.box{break-inside:avoid}
+  .stage-all{break-before:page}
+}
 .foot{font-size:13px;color:var(--muted);margin:0}
 .linkrow{display:grid;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
 a.linkrow:hover{border-color:var(--accent)}
@@ -142,10 +226,13 @@ mark{background:var(--warn-soft);color:var(--fg);border-radius:3px}
   <aside class="side">
     <a class="brand" href="#overview" id="brand"></a>
     <input id="q" type="search" placeholder="Поиск по всем этапам" aria-label="Поиск по всем этапам">
+    <div class="dl" id="dl" hidden><button type="button" data-dl="pdf">Скачать PDF</button><button type="button" data-dl="md">Скачать Markdown</button><span id="dlmsg" aria-live="polite"></span></div>
+    <a id="dlpdf" href="atlas.pdf" target="_blank" rel="noopener" hidden>Открыть PDF</a>
     <nav id="nav" aria-label="Этапы"></nav>
   </aside>
   <main id="main"></main>
 </div>
+<div id="lb" hidden role="dialog" aria-label="Экран крупно"><button type="button" id="lbx">Закрыть</button><img id="lbi" alt=""><p id="lbc"></p></div>
 
 <script>
 /*__DATA__*/
@@ -169,6 +256,7 @@ const dot = st => `<span class="dot s-${st}" aria-hidden="true"></span>`;
 function cell(c){
   if (c && typeof c === "object") {
     if (c.level) return level(c.level);
+    if (c.tip) return `<span title="${esc(c.tip)}">${inline(c.t ?? "")}</span>`;
     return c.tone ? `<span class="pill t-${c.tone}">${esc(c.t)}</span>` : inline(c.t ?? "");
   }
   return inline(c ?? "");
@@ -176,15 +264,26 @@ function cell(c){
 function table(b){
   const long = b.rows.map(r => r.map(c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "").length));
   const wide = b.head.map((_, i) => Math.max(...long.map(r => r[i]), 0) > 40);
-  const t = `<div class="tbl"><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
-    b.rows.map(r => `<tr>${r.map((c, i) => `<td${wide[i] ? ' class="wide"' : ""}>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  const plain = c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "");
+  const opts = i => [...new Set(b.rows.map(r => plain(r[i])))].filter(Boolean);
+  const ctl = !b.filter ? "" : `<div class="ctl"><input type="search" data-tq placeholder="Найти в таблице" aria-label="Найти в таблице">${b.filter.map(f => f.kind === "chips"
+    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${opts(f.col).map(o => `<button type="button" class="chip" data-col="${f.col}" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>`
+    : `<select data-col="${f.col}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${opts(f.col).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-tc>${b.rows.length} из ${b.rows.length}</span></div>`;
+  const t = `${ctl}<div class="tbl"${b.filter ? " data-ft" : ""}><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
+    b.rows.map(r => `<tr${b.filter ? ` data-row="${esc(JSON.stringify(r.map(plain)))}"` : ""}>${r.map((c, i) => `<td${wide[i] ? ' class="wide"' : ""}>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   return b.fold ? `<details class="fold"><summary>${esc(b.fold)}</summary>${t}</details>` : t;
 }
 function block(b){
   if (b.type === "text") return `<p>${inline(b.t)}</p>`;
   if (b.type === "sub") return `<h3>${inline(b.t)}</h3>`;
   if (b.type === "fold") return `<details class="fold"><summary>${inline(b.t)}</summary><div class="fin">${b.blocks.map(block).join("")}</div></details>`;
-  if (b.type === "shots") return `<div class="shots">${b.items.map(i => `<figure><img src="${esc(i.img)}" alt="" loading="lazy"><figcaption>${inline(i.cap || "")}</figcaption></figure>`).join("")}</div>`;
+  if (b.type === "shots") return `<div class="shots">${b.items.map((i, n) => `<figure>${i.img
+    ? `<button type="button" class="shot" data-img="${esc(i.img)}" data-cap="${esc(i.cap || "")}" aria-label="Открыть экран крупно"><img src="${esc(i.img)}" alt="" loading="lazy"></button>`
+    : `<div class="noshot"><span>Шаг ${n + 1}</span><span>экрана нет, по документации</span></div>`}<figcaption>${inline(i.cap || "")}</figcaption></figure>`).join("")}</div>`;
+  if (b.type === "prices") return priceChart(b);
+  if (b.type === "stack") return stack(b);
+  if (b.type === "cards") return `<div data-cards></div>`;
+  if (b.type === "prio") return `<div data-prio style="display:grid;gap:14px"></div>`;
   if (b.type === "list") return `<ul>${b.items.map(i => `<li>${inline(i)}</li>`).join("")}</ul>`;
   if (b.type === "table") return table(b);
   if (b.type === "claims") return `<div class="claims">${b.items.map(c => `<div class="claim"><div class="lab">${LABEL[c.label]}${level(c.level)}</div><div>${inline(c.t)}${c.src ? `<div class="src">${esc(c.src)}</div>` : ""}</div></div>`).join("")}</div>`;
@@ -224,9 +323,10 @@ function overview(){
   });
 }
 
-function stage(s){
+function stage(s){ main.innerHTML = stageHtml(s); mount(); }
+function stageHtml(s){
   const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision" || t.kind === "review");
-  main.innerHTML = `<header><div class="eyebrow">${esc(s.part)} · этап ${esc(s.n)}</div><h1>${esc(s.title)}</h1><p class="lede">${esc(s.q)}</p>
+  return `<header><div class="eyebrow">${esc(s.part)} · этап ${esc(s.n)}</div><h1>${esc(s.title)}</h1><p class="lede">${esc(s.q)}</p>
     <div class="sh">${pill(s)}${s.confirmed ? `<span class="code">подтверждён ${esc(s.confirmed)}</span>` : ""}<span class="code">/${esc(s.skill)}${s.skillReady ? "" : " · скилл не написан"}</span>${s.optional ? `<span class="code">${esc(s.optional)}</span>` : ""}</div>
     ${s.needs.length ? `<p class="muted">Опирается на: ${s.needs.map(n => `<a href="#s-${esc(n.id)}">${esc(n.title)}</a>`).join(", ")}</p>` : ""}</header>
   ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
@@ -241,6 +341,10 @@ function texts(b){
   if (b.type === "fold") return [b.t, ...b.blocks.flatMap(texts)];
   if (b.type === "list") return b.items;
   if (b.type === "shots") return b.items.map(i => i.cap || "");
+  if (b.type === "prices") return b.rows.map(r => [r[0], r[3]].join(" · "));
+  if (b.type === "stack") return [b.t, ...b.items.map(i => i.t)];
+  if (b.type === "cards") return b.items.flatMap(c => [c.t, c.q || "", ...c.blocks.flatMap(texts)]);
+  if (b.type === "prio") return b.rows.flatMap(r => [r.name, r.research || "", r.nowNote || "", r.why || "", detailText(b, r.id)]);
   if (b.type === "claims") return b.items.map(c => c.t);
   if (b.type === "link") return [[b.t, b.note].filter(Boolean).join(" · ")];
   if (b.type === "table") return b.rows.map(r => r.map(c => typeof c === "object" && c ? c.t ?? "" : c ?? "").join(" · "));
@@ -264,15 +368,313 @@ function search(term){
 }
 
 function route(){
+  const card = /^#c-(.+)$/.exec(location.hash);
+  if (location.hash === "#all") return allView();
   const m = /^#s-(.+)$/.exec(location.hash);
-  const s = m && STAGES.find(x => x.id === m[1]);
+  const owner = card && STAGES.find(x => x.outputs.some(o => o.blocks.some(b => b.type === "cards" && b.items.some(c => c.id === card[1]))));
+  const s = owner || (m && STAGES.find(x => x.id === m[1]));
   renderNav(s ? s.id : null);
   q.value = "";
+  if (card) { cState.q = ""; cState.sel = {}; cState.chips = {}; }
   s ? stage(s) : overview();
+  if (card) return openCard(card[1]);
   window.scrollTo(0, 0);
 }
+/* весь документ на одной странице: из него собирается PDF */
+function allView(){
+  printAll = true;
+  renderNav(null);
+  main.innerHTML = STAGES.map(s => `<section class="stage-all" style="display:grid;gap:22px">${stageHtml(s)}</section>`).join("");
+  mount();
+  main.querySelectorAll("details").forEach(d => { d.open = true; });
+}
+
+/* таблица с фильтрами */
+function applyTable(ctl){
+  const ft = ctl.nextElementSibling, cols = {}, term = ctl.querySelector("[data-tq]").value.trim().toLowerCase();
+  ctl.querySelectorAll("select").forEach(x => { if (x.value) cols[x.dataset.col] = new Set([x.value]); });
+  ctl.querySelectorAll('.chip[aria-pressed="true"]').forEach(x => { (cols[x.dataset.col] ||= new Set()).add(x.dataset.v); });
+  let shown = 0;
+  const rows = ft.querySelectorAll("tr[data-row]");
+  rows.forEach(tr => {
+    const v = JSON.parse(tr.dataset.row);
+    const ok = (!term || v.join(" ").toLowerCase().includes(term)) && Object.entries(cols).every(([c, set]) => set.has(v[c]));
+    tr.hidden = !ok; if (ok) shown++;
+  });
+  ctl.querySelector("[data-tc]").textContent = `${shown} из ${rows.length}`;
+}
+main.addEventListener("input", e => { const c = e.target.closest(".ctl"); if (c && e.target.matches("[data-tq]")) applyTable(c); });
+main.addEventListener("change", e => { const c = e.target.closest(".ctl"); if (c && e.target.matches("select[data-col]")) applyTable(c); });
+main.addEventListener("click", e => {
+  const b = e.target.closest(".chip[data-col]");
+  if (b) { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); applyTable(b.closest(".ctl")); }
+});
+
+/* график цен и полосы */
+function stack(b){
+  const sum = b.items.reduce((n, i) => n + i.n, 0) || 1, col = c => ({ok:"var(--ok)", bad:"var(--bad)", warn:"var(--warn)", none:"var(--none)", accent:"var(--accent)", l0:"var(--l0)", l2:"var(--l2)", l4:"var(--l4)", sunk:"var(--sunk)"}[c]);
+  return `<div class="stackbox"><h3>${esc(b.t)}</h3><div class="bar" role="img" aria-label="${esc(b.t)}">${b.items.map(i => `<i style="flex:${i.n} 0 0;background:${col(i.c)}" title="${esc(i.t)}: ${i.n} из ${sum}"></i>`).join("")}</div>
+    <div class="lg">${b.items.map(i => `<span><i style="background:${col(i.c)}"></i>${esc(i.t)} <b>${i.n}</b></span>`).join("")}</div></div>`;
+}
+function priceChart(b){
+  const rows = b.rows.slice().sort((x, y) => ((x[2] ?? x[1]) - (y[2] ?? y[1])));
+  const W = 640, L = 110, R = 96, rowH = 26, top = 26, H = top + rows.length * rowH + 24;
+  const max = Math.max(60, Math.ceil(Math.max(...rows.map(r => r[1] ?? r[2])) / 20) * 20), x = v => L + (W - L - R) * v / max;
+  let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(b.t || "Цены")}" style="font-family:var(--body)">`;
+  if (b.band) g += `<rect x="${x(b.band[0])}" y="${top - 14}" width="${x(b.band[1]) - x(b.band[0])}" height="${rows.length * rowH + 8}" fill="var(--accent-soft)"/><text x="${(x(b.band[0]) + x(b.band[1])) / 2}" y="${top - 17}" text-anchor="middle" font-size="11" fill="var(--accent)">${esc(b.bandLabel || "")}</text>`;
+  for (let t = 0; t <= max; t += max > 60 ? 20 : 10) g += `<line x1="${x(t)}" x2="${x(t)}" y1="${top - 8}" y2="${top + rows.length * rowH}" stroke="var(--line)" stroke-width="1"/><text x="${x(t)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--muted)">$${t}</text>`;
+  rows.forEach((r, i) => {
+    const [n, mon, ann, note] = r, y = top + i * rowH + 8;
+    g += `<g><title>${esc(n)}: ${mon != null ? "$" + mon + " помесячно" : ""}${mon != null && ann != null ? ", " : ""}${ann != null ? "$" + ann + " в месяц при оплате за год" : ""}. ${esc(note)}</title><rect x="0" y="${y - 12}" width="${W}" height="${rowH}" fill="transparent"/>`;
+    g += `<text x="${L - 10}" y="${y + 4}" text-anchor="end" font-size="12.5" fill="var(--fg)">${esc(n)}</text>`;
+    if (mon != null && ann != null) g += `<line x1="${x(ann)}" x2="${x(mon)}" y1="${y}" y2="${y}" stroke="var(--l0)" stroke-width="2"/>`;
+    if (ann != null) g += `<circle cx="${x(ann)}" cy="${y}" r="5" fill="var(--c-ann)" stroke="var(--surface)" stroke-width="2"/>`;
+    if (mon != null) g += `<circle cx="${x(mon)}" cy="${y}" r="5" fill="var(--c-mon)" stroke="var(--surface)" stroke-width="2"/>`;
+    g += `<text x="${W - R + 12}" y="${y + 4}" font-size="11.5" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${mon != null ? "$" + mon : "—"} / ${ann != null ? "$" + ann : "—"}</text></g>`;
+  });
+  return `<div class="lg"><span><i style="background:var(--c-ann)"></i>${esc(b.annLabel || "за год")}</span><span><i style="background:var(--c-mon)"></i>${esc(b.monLabel || "помесячно")}</span></div><div class="tbl pchart">${g}</svg></div>`;
+}
+
+/* карточки с фильтрами */
+const CARDS = STAGES.flatMap(s => s.outputs.flatMap(o => o.blocks)).find(b => b.type === "cards");
+const cState = {q:"", sel:{}, chips:{}};
+function cardsList(){
+  const term = cState.q.trim().toLowerCase();
+  return CARDS.items.filter(c => (!term || (c.t + " " + (c.q || "") + " " + c.blocks.flatMap(texts).join(" ")).toLowerCase().includes(term))
+    && Object.entries(cState.sel).every(([k, v]) => !v || c.tags[k] === v)
+    && Object.entries(cState.chips).every(([k, set]) => !set.size || set.has(c.tags[k])));
+}
+function renderCardList(el){
+  const list = cardsList();
+  el.querySelector("[data-cc]").textContent = `${list.length} из ${CARDS.items.length}`;
+  el.querySelector(".cards").innerHTML = list.map(c => `<details class="card" id="${esc(c.id)}"><summary>${c.level ? level(c.level) : '<span class="lv lvx">—</span>'}<strong>${inline(c.t)}</strong>${c.q ? `<span class="cq">${inline(c.q)}</span>` : ""}<span class="cm2">${(c.meta || []).map(esc).join(" · ")}</span></summary><div class="fin">${c.blocks.map(block).join("")}</div></details>`).join("") || `<p class="empty">Ничего не нашлось. Сбросьте часть фильтров.</p>`;
+}
+function mountCards(el){
+  el.innerHTML = `<div style="display:grid;gap:10px"><div class="ctl"><input type="search" data-cq placeholder="${esc(CARDS.placeholder || "Поиск по карточкам")}" aria-label="Поиск по карточкам" value="${esc(cState.q)}">${CARDS.filters.map(f => f.kind === "chips"
+    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${Object.entries(f.options).map(([k, v]) => `<button type="button" class="chip" data-ck="${esc(f.key)}" data-cv="${esc(k)}" aria-pressed="${!!(cState.chips[f.key] && cState.chips[f.key].has(k))}">${esc(v)}</button>`).join("")}</div>`
+    : `<select data-ck="${esc(f.key)}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${Object.entries(f.options).map(([k, v]) => `<option value="${esc(k)}"${cState.sel[f.key] === k ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-cc></span></div><div class="cards"></div></div>`;
+  renderCardList(el);
+  el.addEventListener("input", e => { if (e.target.matches("[data-cq]")) { cState.q = e.target.value; renderCardList(el); } });
+  el.addEventListener("change", e => { if (e.target.matches("select[data-ck]")) { cState.sel[e.target.dataset.ck] = e.target.value; renderCardList(el); } });
+  el.addEventListener("click", e => {
+    const b = e.target.closest(".chip[data-ck]"); if (!b) return;
+    const set = cState.chips[b.dataset.ck] ||= new Set(), k = b.dataset.cv;
+    set.has(k) ? set.delete(k) : set.add(k);
+    b.setAttribute("aria-pressed", set.has(k)); renderCardList(el);
+  });
+}
+function openCard(id){
+  const d = document.getElementById(id);
+  if (d) { d.open = true; d.scrollIntoView({block:"start"}); }
+}
+
+/* таблица приоритетов */
+const PB = STAGES.flatMap(s => s.outputs.flatMap(o => o.blocks)).find(b => b.type === "prio");
+const ST = {have:"Есть", part:"Частично", broken:"Сломано", none:"Нет"};
+const over = Object.create(null), pOpen = new Set();
+const pState = {q:"", area:"", st:new Set(), bucket:"", group:"prio", only:false};
+let db = null, canWrite = false, syncMsg = "Приоритеты из базы загружаются…", printAll = false;
+function detailText(b, id){ const d = b.details[id]; if (!d) return ""; return [d.what, d.now, d.research, d.gap, d.note, d.compNote, ...(d.competitors || []).map(c => [c.name, c.how, c.users, c.take, c.dont].join(" "))].join(" "); }
+const prioKeys = () => PB.buckets.map(b => b.key);
+const okP = p => prioKeys().includes(p) ? p : undefined;
+const prioOf = r => okP(over[r.id] && over[r.id].p) || r.prio;
+const noteOf = r => (over[r.id] && over[r.id].note) || "";
+const isChanged = r => !!(over[r.id] && ((over[r.id].p && over[r.id].p !== r.prio) || over[r.id].note));
+const compOf = r => { const d = PB.details[r.id], n = d && (d.competitors || []).map(c => c.name); return n && n.length ? n.join(", ") : (d && d.compNote ? d.compNote : d && d.gap ? "Никто полностью" : r.comp || "—"); };
+const linkify = t => esc(t).replace(/https?:\/\/[^\s;,)]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//, "").slice(0, 60)}</a>`);
+const para = (l, t) => t ? `<div><div class="dlab">${esc(l)}</div><p>${esc(t)}</p></div>` : "";
+function prioDetail(r){
+  const d = PB.details[r.id]; if (!d) return "";
+  const comps = (d.competitors || []).map(c => `<article class="comp"><h3>${esc(c.name)}${c.checked ? ` <span class="chk ${c.checked === "vendor" ? "ok" : ""}">${c.checked === "vendor" ? "проверено у вендора" : "не проверено"}</span>` : ""}</h3>
+    <div class="dlab">Как работает у них</div><p>${esc(c.how)}</p>
+    ${c.users ? `<div class="dlab">Что говорят пользователи</div><p>${esc(c.users)}</p>` : ""}
+    ${c.take ? `<div class="kv"><span class="kk take">Взять</span><span>${esc(c.take)}</span></div>` : ""}
+    ${c.dont ? `<div class="kv"><span class="kk dont">Не брать</span><span>${esc(c.dont)}</span></div>` : ""}
+    ${c.src ? `<div class="srcs">Источник: ${linkify(c.src)}</div>` : ""}</article>`).join("");
+  return `<tr class="detail"><td colspan="5"><div class="dgrid">${para("Что это", d.what)}${para("Сейчас в " + PB.product, d.now)}${para("Что показал ресёрч", d.research)}</div>
+    <div class="dlab" style="margin-top:14px">Конкуренты · ${(d.competitors || []).length}</div>
+    ${comps ? `<div class="comps">${comps}</div>` : `<p class="note">${esc(d.compNote || "Близких решений у конкурентов нет.")}</p>`}
+    ${r.comp ? `<p class="note">Коротко: ${esc(r.comp)}</p>` : ""}
+    ${d.gap ? `<div class="gapnote"><b>Чего нет ни у кого.</b> ${esc(d.gap)}</div>` : ""}
+    ${d.note ? `<div style="margin-top:12px"><div class="dlab">Оговорка</div><p>${esc(d.note)}</p></div>` : ""}</td></tr>`;
+}
+const jobChips = s => String(s || "").split(/,\s*/).filter(x => x && x !== "—").map(j => { const t = PB.jobs[j]; return `<span class="job" title="${esc(t ? t[0] : "")}">${esc(j)}</span>`; }).join(" ");
+const refChips = ids => (ids || []).map(id => { const c = PB.refs[id]; if (!c) return ""; const lv = c[1]; return `<a class="ref" href="#c-${esc(id)}" title="${esc(c[0])}"><span class="lv ${lv ? "lv" + Number(lv) : "lvx"}">${lv ? "L" + Number(lv) : "—"}</span>${esc(c[0].length > 38 ? c[0].slice(0, 36) + "…" : c[0])}</a>`; }).join("");
+function prioRow(r){
+  const p = prioOf(r), PR = Object.fromEntries(PB.buckets.map(b => [b.key, b.label])), open = pOpen.has(r.id) || printAll;
+  return `<tr>
+    <td class="f" data-l="Фича"><div class="fname">${esc(r.name)}</div>${PB.details[r.id] ? `<button type="button" class="more" data-more="${esc(r.id)}" aria-expanded="${open}">${open ? "Свернуть" : "Подробнее"}</button>` : ""}<div class="meta"><span class="code">${esc(r.id)}</span>${jobChips(r.jobs)}<span>${esc(PB.areas[r.area] || "")}</span></div></td>
+    <td class="nw" data-l="Сейчас"><span class="pill ${{have:"t-ok", part:"t-warn", broken:"t-bad", none:"t-none"}[r.now]}">${esc(ST[r.now])}</span><div class="note">${esc(r.nowNote || "")}</div></td>
+    <td class="rs" data-l="Из ресёрча"><div>${esc(r.research || "")}</div>${(r.refs || []).length ? `<div class="refs">${refChips(r.refs)}</div>` : ""}</td>
+    <td class="cm" data-l="Конкуренты"><span class="note">${esc(compOf(r))}</span></td>
+    <td class="pr c-${esc(p)}" data-l="Приоритет"><select id="p-${esc(r.id)}" aria-label="Приоритет ${esc(r.name)}"${db && canWrite ? "" : " disabled"}>${Object.entries(PR).map(([k, v]) => `<option value="${esc(k)}"${k === p ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+      <div class="why">${esc(r.why || "")}</div>${r.decide ? `<span class="decide">${esc(PB.decideLabel)}</span>` : ""}
+      ${p !== r.prio ? `<div class="changed">Изменено · было ${esc(PR[r.prio])}</div>` : ""}
+      ${db && canWrite ? `<textarea id="n-${esc(r.id)}" rows="1" placeholder="Комментарий" aria-label="Комментарий к ${esc(r.name)}">${esc(noteOf(r))}</textarea>` : (noteOf(r) ? `<div class="note" style="margin-top:6px">${esc(noteOf(r))}</div>` : "")}
+    </td></tr>${open ? prioDetail(r) : ""}`;
+}
+function prioList(){
+  const t = pState.q.trim().toLowerCase();
+  return PB.rows.filter(r => (!t || [r.name, r.research, r.nowNote, r.id, r.comp, detailText(PB, r.id)].join(" ").toLowerCase().includes(t))
+    && (!pState.area || r.area === pState.area) && (!pState.st.size || pState.st.has(r.now))
+    && (!pState.bucket || prioOf(r) === pState.bucket) && (!pState.only || isChanged(r)));
+}
+function renderPrioList(){
+  const el = main.querySelector("[data-prio]"); if (!el) return;
+  const counts = Object.fromEntries(prioKeys().map(k => [k, 0])); for (const r of PB.rows) counts[prioOf(r)]++;
+  el.querySelector("#pbk").innerHTML = PB.buckets.map(b => `<button type="button" class="pb c-${esc(b.key)}" data-b="${esc(b.key)}" aria-pressed="${pState.bucket === b.key}"><b>${counts[b.key]}</b><strong>${esc(b.label)}</strong><span>${esc(b.short)}</span></button>`).join("");
+  const list = prioList();
+  el.querySelector("#pcnt").textContent = `${list.length} из ${PB.rows.length}`;
+  el.querySelector("#psync").textContent = syncMsg;
+  const groups = pState.group === "prio" ? PB.buckets.map(b => [b.label, list.filter(r => prioOf(r) === b.key), `c-${b.key}`]) : Object.keys(PB.areas).map(k => [PB.areas[k], list.filter(r => r.area === k), "c-p2"]);
+  const head = `<thead><tr><th>Фича</th><th>Сейчас</th><th>Из ресёрча</th><th>Конкуренты</th><th>Приоритет</th></tr></thead>`;
+  el.querySelector("#plist").innerHTML = list.length ? groups.filter(g => g[1].length).map(([t, rs, cls]) => `<section class="pgroup ${esc(cls)}"><div class="ph"><h2>${esc(t)}</h2><span class="tag">${rs.length}</span></div><div class="tbl"><table class="ptable">${head}<tbody>${rs.map(prioRow).join("")}</tbody></table></div></section>`).join("") : `<p class="empty">Ничего не найдено. Сбросьте фильтры или поиск.</p>`;
+}
+function mountPrio(el){
+  el.innerHTML = `<div class="pbuckets" id="pbk" role="group" aria-label="Корзины приоритета"></div>
+  <div class="ctl"><input type="search" id="pq" placeholder="Найти фичу" aria-label="Найти фичу" value="${esc(pState.q)}">
+    <select id="parea" aria-label="${esc(PB.areaLabel)}"><option value="">${esc(PB.areaAll)}</option>${Object.entries(PB.areas).map(([k, v]) => `<option value="${esc(k)}"${pState.area === k ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+    <div class="chips" id="pst">${Object.entries(ST).map(([k, v]) => `<button type="button" class="chip" data-st="${k}" aria-pressed="${pState.st.has(k)}">${v}</button>`).join("")}</div>
+    <select id="pgroup" aria-label="Группировать"><option value="prio">По приоритету</option><option value="area"${pState.group === "area" ? " selected" : ""}>По ${esc(PB.areaGroupBy)}</option></select>
+    <button type="button" class="chip" id="ponly" aria-pressed="${pState.only}">Только изменённые</button>
+    <button type="button" class="chip" id="pall">Раскрыть все</button><span class="cnt" id="pcnt"></span></div>
+  <div class="note" id="psync"></div><div id="plist" style="display:grid;gap:22px"></div>`;
+  renderPrioList();
+  el.addEventListener("input", e => { if (e.target.id === "pq") { pState.q = e.target.value; renderPrioList(); } });
+  el.addEventListener("change", e => {
+    if (e.target.id === "parea") { pState.area = e.target.value; renderPrioList(); }
+    else if (e.target.id === "pgroup") { pState.group = e.target.value; renderPrioList(); }
+    else if (e.target.matches("select[id^='p-']")) savePrio(e.target.id.slice(2), {p: e.target.value});
+  });
+  el.addEventListener("focusout", e => {
+    const t = e.target; if (!t.matches("textarea[id^='n-']")) return;
+    const id = t.id.slice(2); if ((t.value || "") !== ((over[id] && over[id].note) || "")) savePrio(id, {note: t.value.trim()});
+  });
+  el.addEventListener("click", e => {
+    const m = e.target.closest("[data-more]"), b = e.target.closest("[data-b]"), st = e.target.closest("[data-st]");
+    if (m) { const id = m.dataset.more; pOpen.has(id) ? pOpen.delete(id) : pOpen.add(id); renderPrioList(); }
+    else if (b) { pState.bucket = pState.bucket === b.dataset.b ? "" : b.dataset.b; renderPrioList(); }
+    else if (st) { const k = st.dataset.st; pState.st.has(k) ? pState.st.delete(k) : pState.st.add(k); st.setAttribute("aria-pressed", pState.st.has(k)); renderPrioList(); }
+    else if (e.target.id === "ponly") { pState.only = !pState.only; e.target.setAttribute("aria-pressed", pState.only); renderPrioList(); }
+    else if (e.target.id === "pall") { const all = prioList().filter(r => PB.details[r.id]), closed = all.some(r => !pOpen.has(r.id)); for (const r of all) closed ? pOpen.add(r.id) : pOpen.delete(r.id); e.target.textContent = closed ? "Свернуть все" : "Раскрыть все"; renderPrioList(); }
+  });
+}
+async function savePrio(id, patch){
+  const r = PB.rows.find(x => x.id === id); if (!r || !db) return;
+  const cur = over[id] || {};
+  const next = {p: okP(patch.p) ?? okP(cur.p) ?? r.prio, note: patch.note ?? cur.note ?? "", at: Date.now()};
+  over[id] = next; renderPrioList();
+  try { await db.collection(PB.collection).doc(id).set(next); syncMsg = "Сохранено."; }
+  catch (err) {
+    if (err && err.code === "invalid_argument") { canWrite = false; syncMsg = "У вас нет права менять приоритеты, таблица только для чтения."; }
+    else syncMsg = "Не удалось сохранить. Проверьте соединение и попробуйте ещё раз.";
+  }
+  renderPrioList();
+}
+async function connectPrio(){
+  if (!PB) return;
+  const cl = window.claude;
+  db = cl && cl.use ? await cl.use("db") : null;
+  if (!db) { syncMsg = "Приоритеты показаны из файла. Менять их можно в опубликованной странице."; renderPrioList(); return; }
+  const user = await cl.use("user");
+  const can = user && user.can ? await user.can("data.write") : null;
+  canWrite = can !== false;
+  let first = true;
+  const timer = setTimeout(() => { if (first) { syncMsg = "База пока не отвечает, показаны приоритеты из файла."; renderPrioList(); } }, 10000);
+  db.collection(PB.collection).onSnapshot(snap => {
+    const ids = new Set(PB.rows.map(r => r.id));
+    for (const k of Object.keys(over)) delete over[k];
+    for (const d of snap.docs) { if (!ids.has(d.id)) continue; const v = d.data() || {}, p = okP(v.p), note = typeof v.note === "string" ? v.note.slice(0, 2000) : ""; if (p || note) over[d.id] = {p, note}; }
+    if (!snap.metadata || !snap.metadata.fromCache) { first = false; clearTimeout(timer); }
+    const n = Object.keys(over).length;
+    syncMsg = canWrite ? (n ? `Изменённых строк: ${n}. Меняйте приоритет в строке, сохраняется сразу.` : "Меняйте приоритет в строке, сохраняется сразу для всех.") : "Таблица только для чтения.";
+    const a = document.activeElement; if (!(a && a.id && a.id.startsWith("n-"))) renderPrioList();
+  }, () => { clearTimeout(timer); syncMsg = "Не удалось загрузить сохранённые приоритеты, показаны приоритеты из файла."; canWrite = false; renderPrioList(); });
+}
+function mount(){
+  const c = main.querySelectorAll("[data-cards]"); c.forEach(mountCards);
+  const p = main.querySelectorAll("[data-prio]"); p.forEach(mountPrio);
+}
+
+/* экран крупно */
+const lb = document.getElementById("lb");
+document.addEventListener("click", e => {
+  const b = e.target.closest(".shot");
+  if (b) { document.getElementById("lbi").src = b.dataset.img; document.getElementById("lbc").textContent = b.dataset.cap.replace(/\*\*/g, ""); lb.hidden = false; return; }
+  if (e.target.id === "lbx" || e.target === lb) lb.hidden = true;
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+
+/* Markdown и PDF */
+function mdCell(c){ return String(typeof c === "object" && c ? (c.level ? "L" + c.level : c.t ?? "") : c ?? "").replace(/\|/g, "\\|").replace(/\n/g, " "); }
+function mdBlock(b, o){
+  if (b.type === "text") o.push(b.t, "");
+  else if (b.type === "sub") o.push("#### " + b.t, "");
+  else if (b.type === "list") o.push(...b.items.map(i => "- " + i), "");
+  else if (b.type === "claims") o.push(...b.items.map(c => `- *${LABEL[c.label]}${c.level ? " · L" + c.level : ""}.* ${c.t}${c.src ? ` (${c.src})` : ""}`), "");
+  else if (b.type === "table") o.push("| " + b.head.join(" | ") + " |", "|" + " --- |".repeat(b.head.length), ...b.rows.map(r => "| " + r.map(mdCell).join(" | ") + " |"), "");
+  else if (b.type === "link") o.push(`- ${b.t}${b.url ? " — " + b.url : ""}${b.path ? " — " + b.path : ""}`, "");
+  else if (b.type === "fold") { o.push("#### " + b.t, ""); b.blocks.forEach(x => mdBlock(x, o)); }
+  else if (b.type === "shots") o.push(...b.items.map((i, n) => `${n + 1}. ${i.cap || ""}`), "");
+  else if (b.type === "stack") o.push(`**${b.t}:** ` + b.items.map(i => `${i.t} ${i.n}`).join(" · "), "");
+  else if (b.type === "prices") o.push("| Продукт | Помесячно | За год, в месяц | Оговорки |", "| --- | --- | --- | --- |", ...b.rows.map(r => `| ${r[0]} | ${r[1] ?? "—"} | ${r[2] ?? "—"} | ${r[3]} |`), "");
+  else if (b.type === "cards") b.items.forEach(c => { o.push(`#### ${c.level ? "[L" + c.level + "] " : ""}${c.t}`, ""); if (c.q) o.push(c.q, ""); c.blocks.forEach(x => mdBlock(x, o)); });
+  else if (b.type === "prio") {
+    for (const k of b.buckets) {
+      const rs = b.rows.filter(r => prioOf(r) === k.key); if (!rs.length) continue;
+      o.push(`#### ${k.label} · ${rs.length}`, "");
+      for (const r of rs) {
+        o.push(`**${r.id} · ${r.name}.** Сейчас: ${ST[r.now]}. ${r.nowNote || ""} Ресёрч: ${r.research || "—"} Почему: ${r.why || "—"}${noteOf(r) ? " Комментарий: " + noteOf(r) : ""}`, "");
+        const d = b.details[r.id]; if (!d) continue;
+        o.push(d.what, "");
+        for (const c of d.competitors || []) o.push(`- **${c.name}.** ${c.how}${c.take ? " Взять: " + c.take : ""}${c.dont ? " Не брать: " + c.dont : ""}${c.src ? " Источник: " + c.src : ""}`);
+        o.push("");
+      }
+    }
+  }
+}
+window.atlasToMarkdown = function(){
+  const o = ["# " + PROJECT.heading, "", PROJECT.lede, ""];
+  for (const s of STAGES) {
+    o.push(`## ${s.n} · ${s.title}`, "", `*${s.q}* Статус: ${STATUS[s.status]}.`, "");
+    if (s.skip) o.push("Пропущен: " + s.skip, "");
+    if (s.conclusions.length) o.push("### Выводы для решения", "", ...s.conclusions.map(c => "- " + c), "");
+    for (const u of s.outputs) { o.push("### " + u.title, ""); u.blocks.length ? u.blocks.forEach(b => mdBlock(b, o)) : o.push("Пока пусто.", ""); }
+    const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision");
+    if (rest.length) o.push("### Открыто", "", ...rest.map(t => `- ${KIND[t.kind]}: ${t.t}`), "");
+  }
+  return o.join("\n");
+};
+(async () => {
+  const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  const box = document.getElementById("dl"), msg = document.getElementById("dlmsg"), link = document.getElementById("dlpdf");
+  if (!dl) { link.hidden = false; return; }
+  box.hidden = false;
+  const ERR = {declined:"Скачивание отменено.", rate_limited:"Подождите немного и попробуйте снова.", missing:"PDF не найден рядом со страницей."};
+  const stamp = new Date().toISOString().slice(0, 10), base = PROJECT.product.split(" ")[0].toLowerCase();
+  box.addEventListener("click", async e => {
+    const b = e.target.closest("[data-dl]"); if (!b) return;
+    msg.textContent = "Готовлю файл…";
+    try {
+      let data, filename;
+      if (b.dataset.dl === "md") { data = window.atlasToMarkdown(); filename = `${base}-atlas-${stamp}.md`; }
+      else {
+        const r = await fetch(new URL("atlas.pdf", location.href), {cache: "no-store"});
+        const buf = r.ok ? await r.arrayBuffer() : null;
+        if (!buf || buf.byteLength < 1024 || new TextDecoder().decode(new Uint8Array(buf, 0, 4)) !== "%PDF") throw {code:"missing"};
+        data = new Uint8Array(buf); filename = `${base}-atlas.pdf`;
+      }
+      await dl.save({filename, data});
+      msg.textContent = "Готово.";
+    } catch (err) {
+      msg.textContent = ERR[err && err.code] || "Скачивание сейчас недоступно.";
+      if (b.dataset.dl === "pdf" && !(err && err.code === "declined")) link.hidden = false;
+    }
+  });
+})();
 document.getElementById("brand").textContent = PROJECT.product;
 q.addEventListener("input", () => { const t = q.value.trim(); t.length > 1 ? search(t) : route(); });
 window.addEventListener("hashchange", route);
 route();
+connectPrio();
 </script>
