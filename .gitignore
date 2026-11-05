@@ -41,9 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# uploaded media (lives in storage, not in git)
-/public/uploads/
-!/public/uploads/.gitkeep
+# uploaded media is committed for now (local/dev convenience); once STORAGE_DRIVER=s3 is live, re-ignore /public/uploads/
 
 # raw crawl snapshots are large; regenerate with scripts/scrape-duda.ts
 /content/raw/
