@@ -337,7 +337,7 @@ function stageHtml(s){
   ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
   ${s.reference ? "" : `<div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>`}
   ${s.outputs.map(o => `<section class="sec" id="o-${esc(o.key)}"><div class="sec-h"><h2>${esc(o.title)}</h2>${o.state === "linked" ? '<span class="pill t-warn">Не разобрано</span>' : ""}</div>
-    ${o.blocks.length ? o.blocks.map(block).join("") : `<div class="empty">Пока пусто. ${esc(o.hint)}</div>`}</section>`).join("")}
+    ${o.blocks.length ? o.blocks.map(block).join("") : `<div class="empty">${o.optional ? "Необязательный раздел." : "Пока пусто."} ${esc(o.hint)}</div>`}</section>`).join("")}
   ${rest.length ? `<section class="sec"><h2>Открыто на этом этапе</h2><div class="claims">${rest.map(t => `<div class="claim"><div class="lab">${esc(KIND[t.kind])}</div><div>${inline(t.t)}</div></div>`).join("")}</div></section>` : ""}`;
 }
 

@@ -186,7 +186,7 @@ def assemble(src):
         ready = os.path.exists(os.path.join(SKILLS, d["skill"], "SKILL.md"))
         todo = []
         if status in ("todo", "work"):
-            for o in outs:
+            for o in need:
                 if o["state"] == "linked":
                     todo.append({"kind": "moved", "t": o["title"], "out": o["key"]})
                 elif o["state"] == "empty":
@@ -199,7 +199,7 @@ def assemble(src):
             todo += [{"kind": it["kind"], "t": it["t"]} for it in data.get("open", [])]
         stages.append({**d, "outputs": outs, "conclusions": conclusions, "confirmed": confirmed, "skip": skip,
                        "status": status, "skillReady": ready, "todo": todo,
-                       "filled": len(filled), "total": len(outs)})
+                       "filled": len(filled), "total": len(need)})
 
     base = os.path.realpath(src)
     root = os.path.realpath(os.path.join(src, project.get("imgRoot", "")))

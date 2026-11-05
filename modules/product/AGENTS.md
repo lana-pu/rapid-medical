@@ -22,6 +22,8 @@
 | Конкуренты: карта рынка, профили, за что платят, мы в сравнении — скилл `/competitor-research` | `prompts/competitor-research.md` |
 | Как работают сегодня: участники, путь, обходные приёмы — скилл `/current-process` | `prompts/current-process.md` |
 | Проблема и решение: точки потерь, метрики, критические допущения — скилл `/problem-solution` | `prompts/problem-solution.md` |
+| Роли и сегменты: для кого проектируем, портрет — скилл `/users-segments` | `prompts/users-segments.md` |
+| JTBD: фазы, работы, работа → функция → метрика — скилл `/jtbd` | `prompts/jtbd.md` |
 | Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;
