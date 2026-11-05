@@ -53,6 +53,7 @@ nav{display:grid;gap:12px;min-width:0}
 .s-skip{--c:var(--line);--fill:var(--line)}
 main{display:grid;gap:22px;min-width:0}
 main > *{min-width:0}
+main p,main li,main td,main h3,summary{overflow-wrap:anywhere}
 .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:4px 0 0;text-wrap:balance;letter-spacing:-.01em}
 h2{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.3;margin:0;text-wrap:balance}
@@ -107,6 +108,11 @@ tr:last-child td{border-bottom:0}
 details.fold{min-width:0}
 details.fold > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);padding:4px 0}
 details.fold > .tbl{margin-top:8px}
+.fin{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:8px 0 14px}
+.fin p{margin:0;max-width:78ch}
+.fin > ul{margin:0;padding-left:18px;display:grid;gap:4px;max-width:78ch}
+.fin .tbl td{font-size:13.5px}
+.foot{font-size:13px;color:var(--muted);margin:0}
 .linkrow{display:grid;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
 a.linkrow:hover{border-color:var(--accent)}
 .linkrow small{font-size:12.5px;color:var(--muted)}
@@ -139,14 +145,17 @@ mark{background:var(--warn-soft);color:var(--fg);border-radius:3px}
 <script>
 /*__DATA__*/
 const LABEL = {fact:"Подтверждено", inference:"Вывод", limit:"Ограничение", pattern:"Паттерн"};
-const KIND = {missing:"Нет материала", moved:"Не разобрано", review:"Подтвердить", decision:"Решение", question:"Вопрос", method:"Нет скилла"};
+const KIND = {missing:"Нет материала", moved:"Не разобрано", review:"Подтвердить", decision:"Решение", question:"Вопрос"};
 const KIND_LONG = {missing:"Нет материала", moved:"Есть в другом месте, не разобрано", review:"Ждёт подтверждения",
-  decision:"Решение за: " + PROJECT.owner, question:"Открытые вопросы", method:"Скилл не написан"};
+  decision:"Решение за: " + PROJECT.owner, question:"Открытые вопросы"};
 const main = document.getElementById("main"), nav = document.getElementById("nav"), q = document.getElementById("q");
 let kind = "all";
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+const inline = s => esc(s)
+  .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+  .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+  .replace(/(^|[\s(«])\*([^*\s][^*]*?)\*(?=$|[\s.,:;)»])/g, "$1<em>$2</em>");
 const safeUrl = u => /^https?:\/\//i.test(u) ? esc(u) : "";
 const level = n => n ? `<span class="lv lv${Number(n)}" title="Уровень доказательности">L${Number(n)}</span>` : "";
 const pill = s => `<span class="pill p-${s.status}">${esc(STATUS[s.status])}</span>`;
@@ -168,6 +177,8 @@ function table(b){
 }
 function block(b){
   if (b.type === "text") return `<p>${inline(b.t)}</p>`;
+  if (b.type === "sub") return `<h3>${inline(b.t)}</h3>`;
+  if (b.type === "fold") return `<details class="fold"><summary>${inline(b.t)}</summary><div class="fin">${b.blocks.map(block).join("")}</div></details>`;
   if (b.type === "list") return `<ul>${b.items.map(i => `<li>${inline(i)}</li>`).join("")}</ul>`;
   if (b.type === "table") return table(b);
   if (b.type === "claims") return `<div class="claims">${b.items.map(c => `<div class="claim"><div class="lab">${LABEL[c.label]}${level(c.level)}</div><div>${inline(c.t)}${c.src ? `<div class="src">${esc(c.src)}</div>` : ""}</div></div>`).join("")}</div>`;
@@ -199,7 +210,8 @@ function overview(){
   <div class="chips" id="kinds"><button class="chip" type="button" data-k="all" aria-pressed="${kind === "all"}">Всё <b>${all.length}</b></button>${
     kinds.map(([k, n]) => `<button class="chip" type="button" data-k="${k}" aria-pressed="${kind === k}">${esc(KIND_LONG[k])} <b>${n}</b></button>`).join("")}</div>
   <div class="todo">${shown.length ? shown.map(({s, items}) => `<section class="tstage"><div class="th">${dot(s.status)}<a href="#s-${esc(s.id)}"><span class="code">${esc(s.n)}</span> ${esc(s.title)}</a>${pill(s)}</div>
-    <ul>${items.map(t => `<li><span class="k ${t.kind}">${esc(KIND[t.kind])}</span><span>${inline(t.t)}</span></li>`).join("")}</ul></section>`).join("") : `<p class="empty">Всё закрыто.</p>`}</div>`;
+    <ul>${items.map(t => `<li><span class="k ${t.kind}">${esc(KIND[t.kind])}</span><span>${inline(t.t)}</span></li>`).join("")}</ul></section>`).join("") : `<p class="empty">Всё закрыто.</p>`}</div>
+  <p class="foot">Методы этапов: написано ${STAGES.filter(s => !s.reference && s.skillReady).length} скилла из ${STAGES.filter(s => !s.reference).length}. На само исследование это не влияет: материал этапа можно вести и без скилла.</p>`;
   document.getElementById("kinds").addEventListener("click", e => {
     const b = e.target.closest("[data-k]");
     if (b) { kind = b.dataset.k; overview(); }
@@ -212,14 +224,15 @@ function stage(s){
     <div class="sh">${pill(s)}${s.confirmed ? `<span class="code">подтверждён ${esc(s.confirmed)}</span>` : ""}<span class="code">/${esc(s.skill)}${s.skillReady ? "" : " · скилл не написан"}</span>${s.optional ? `<span class="code">${esc(s.optional)}</span>` : ""}</div>
     ${s.needs.length ? `<p class="muted">Опирается на: ${s.needs.map(n => `<a href="#s-${esc(n.id)}">${esc(n.title)}</a>`).join(", ")}</p>` : ""}</header>
   ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
-  <div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>
+  ${s.reference ? "" : `<div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>`}
   ${s.outputs.map(o => `<section class="sec" id="o-${esc(o.key)}"><div class="sec-h"><h2>${esc(o.title)}</h2>${o.state === "linked" ? '<span class="pill t-warn">Не разобрано</span>' : ""}</div>
     ${o.blocks.length ? o.blocks.map(block).join("") : `<div class="empty">Пока пусто. ${esc(o.hint)}</div>`}</section>`).join("")}
   ${rest.length ? `<section class="sec"><h2>Открыто на этом этапе</h2><div class="claims">${rest.map(t => `<div class="claim"><div class="lab">${esc(KIND[t.kind])}</div><div>${inline(t.t)}</div></div>`).join("")}</div></section>` : ""}`;
 }
 
 function texts(b){
-  if (b.type === "text") return [b.t];
+  if (b.type === "text" || b.type === "sub") return [b.t];
+  if (b.type === "fold") return [b.t, ...b.blocks.flatMap(texts)];
   if (b.type === "list") return b.items;
   if (b.type === "claims") return b.items.map(c => c.t);
   if (b.type === "link") return [[b.t, b.note].filter(Boolean).join(" · ")];

@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 DEFS = os.path.join(HERE, "..", "assets", "stages.json")
 SKILLS = os.path.join(HERE, "..", "..")
-BLOCKS = {"text", "list", "claims", "table", "link"}
+BLOCKS = {"text", "sub", "list", "claims", "table", "link", "fold"}
 LABELS = {"fact", "inference", "limit", "pattern"}
 TONES = {"ok", "bad", "warn", "none"}
 KINDS = {"question", "decision"}
@@ -40,8 +40,13 @@ def check_block(b, where, err):
     t = b.get("type")
     if t not in BLOCKS:
         err.append(f"{where}: тип блока {t!r}, нужно одно из {sorted(BLOCKS)}")
-    elif t == "text" and not b.get("t"):
-        err.append(f"{where}: пустой text")
+    elif t in ("text", "sub") and not b.get("t"):
+        err.append(f"{where}: пустой {t}")
+    elif t == "fold":
+        if not b.get("t") or not b.get("blocks"):
+            err.append(f"{where}: у fold нужны t и blocks")
+        for x in b.get("blocks", []):
+            check_block(x, where, err)
     elif t == "list" and not b.get("items"):
         err.append(f"{where}: пустой list")
     elif t == "claims":
@@ -124,13 +129,14 @@ def assemble(src):
             err.append(f"{where}: skip — напиши причину")
 
         filled = [o for o in outs if o["state"] == "filled"]
-        complete = len(filled) == len(outs) and bool(conclusions)
+        ref = d.get("reference")  # справочники: без выводов и подтверждения
+        complete = len(filled) == len(outs) and (bool(conclusions) or bool(ref))
         if confirmed and not complete:
             err.append(f"{where}: confirmed стоит, но этап не заполнен")
         if skip:
             status = "skip"
         elif complete:
-            status = "done" if confirmed else "review"
+            status = "done" if confirmed or ref else "review"
         elif filled or conclusions or any(o["state"] == "linked" for o in outs):
             status = "work"
         else:
@@ -144,14 +150,12 @@ def assemble(src):
                     todo.append({"kind": "moved", "t": o["title"], "out": o["key"]})
                 elif o["state"] == "empty":
                     todo.append({"kind": "missing", "t": o["title"], "out": o["key"]})
-            if not conclusions:
+            if not conclusions and not ref:
                 todo.append({"kind": "missing", "t": "Выводы для решения"})
         if status == "review":
             todo.append({"kind": "review", "t": "Прочитать и подтвердить этап"})
         if status != "skip":
             todo += [{"kind": it["kind"], "t": it["t"]} for it in data.get("open", [])]
-        if not ready and status in ("todo", "work"):
-            todo.append({"kind": "method", "t": f"Написать скилл /{d['skill']}"})
         stages.append({**d, "outputs": outs, "conclusions": conclusions, "confirmed": confirmed, "skip": skip,
                        "status": status, "skillReady": ready, "todo": todo,
                        "filled": len(filled), "total": len(outs)})
@@ -186,6 +190,9 @@ def report(stages, nxt):
             print(f"\n{s['n']} {s['title']}")
             for t in s["todo"]:
                 print(f"  [{t['kind']}] {t['t']}")
+    todo = [s["skill"] for s in stages if not s["skillReady"]]
+    if todo:
+        print(f"\nСкиллы ещё не написаны ({len(todo)}): {', '.join('/' + k for k in todo)}")
 
 
 def main():
