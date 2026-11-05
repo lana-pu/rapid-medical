@@ -23,7 +23,6 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
       { name: "Rapid Medical Ltd.", label: "Headquarters", address: "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL", phone: "+972-72-250-3331", fax: "+972-72-250-3332", ordersEmail: "customerservice.ltd@rapid-medical.com", lat: 32.659, lon: 35.104 },
       { name: "Rapid Medical Inc.", label: "USA", address: "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA", phone: "+1-469-991-7712", fax: "+1-469-914-9300", ordersEmail: "orders.inc@rapid-medical.com", lat: 32.9378, lon: -97.1246 },
       { name: "Rapid Medical GmbH", label: "Germany", address: "Westendstrasse 21\n60325 Frankfurt\nGERMANY", phone: "+49 69 795 888 718", fax: "+49 (0) 69 795 888 711", ordersEmail: "ordersgmbh@rapid-medical.com", lat: 50.1146, lon: 8.6631 },
-      { name: "Rapid Medical UK", label: "UK & Ireland", address: "3rd Floor, Great Titchfield House\n14-18 Great Titchfield Street\nLondon, W1W 8BD", phone: "+44 7876 122250", fax: "", ordersEmail: "uk-support@rapid-medical.com", lat: 51.518, lon: -0.1415 },
     ],
   },
   social: {
@@ -59,7 +58,7 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
     problemTitle: "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
     problemVideoUrl: `${VWWW}/nIyRh0PITsqiIot7omkk_Fingerprint+video-v.mp4`,
     stats: [
-      { value: "40K+", label: "patients treated", iconUrl: "/icons/stat-patients.svg" },
+      { value: "50K+", label: "patients treated", iconUrl: "/icons/stat-patients.svg" },
       { value: "100+", label: "issued patents", iconUrl: "/icons/stat-patents.svg" },
       { value: "85+", label: "clinical publications", iconUrl: "/icons/stat-publications.svg" },
     ],
@@ -134,7 +133,7 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
       { title: "Neurovascular access", body: ACCESS, imageUrl: `${US}/opt/Neurovascular+access-2-a125c36a-1920w.png`, links: [{ label: "Learn more", href: "/us/therapies/access" }] },
     ],
     closingTitle: "Questions?",
-    closingBody: "Reach out to learn more about our company and stroke solutions.",
+    closingBody: "Reach out to learn more about our company and devices.",
   },
   "therapies:ous": {
     title: "Our Therapies",
@@ -147,7 +146,7 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
       { title: "Neurovascular access", body: ACCESS, imageUrl: `${OUS}/opt/Neurovascular+access-2-a125c36a-1920w.png`, links: [{ label: "Learn more", href: "/ous/therapies/access" }] },
     ],
     closingTitle: "Questions?",
-    closingBody: "Reach out to learn more about our company and stroke solutions.",
+    closingBody: "Reach out to learn more about our company and devices.",
   },
   "therapies:apac": {
     title: "Our Therapies",

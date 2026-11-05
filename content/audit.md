@@ -103,7 +103,7 @@ P 3. Comparison with a Balt Eclipse 6x7 mm
 
 title: Vasospasm Therapy | Rapid Medical™​
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Screenshot+2025-07-21+at+9.29.37-AM-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Screenshot+2025-07-21+at+9.29.37-AM-1920w.png?jxl&v=jxl
 
 
 ## apac.rapid-medical.com/contact-us
@@ -127,15 +127,15 @@ VIDEO-REF https://vid.cdn-website.com/48595db0/videos/3MxSd4f4R3ytbzaUxsbN_Evide
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/3MxSd4f4R3ytbzaUxsbN_Evidence-v.mp4
 H1 EVIDENCE
 P Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our solutions have on patient outcomes.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/75+clinical+publications-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/75+clinical+publications-1920w.png?jxl&v=jxl
 P We remain at the forefront of bold initiatives that target underserved areas of research.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Artboard-1-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Artboard-1-1920w.png?jxl&v=jxl
 P FEATURED PUBLICATIONS
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/featurd-2-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/featurd-2-1920w.png?jxl&v=jxl
 P JULY 2025
 P Early experience with the Drivewire 24: a newly FDA-approved steerable microwire
 A Read > -> https://jnis.bmj.com/content/early/2025/06/19/jnis-2025-023730
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Featured-1-48c4c5ee-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Featured-1-48c4c5ee-1920w.png?jxl&v=jxl
 P JUNE 2025
 P Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion
 P JUNE 2022
@@ -228,7 +228,7 @@ H3 Neurovascular access
 P DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.
 P View solutions for:
 A Learn more -> /us/lvo
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png?jxl&v=jxl
 P Questions?
 P Reach out to learn more about our company and stroke solutions.
 A Contact us -> /contact-us
@@ -274,7 +274,7 @@ H3 Gain active
 H3 control
 P Unlike conventional stent retrievers, active thrombectomy can improve clot penetration1 and facilitate smooth retrieval with adjustable radial force.
 IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/3666+TT13+Expand+-+Compress+Dynamic+V3_HIGHRES.gif
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png?jxl&v=jxl
 H3 Accelerate
 H3 thrombectomy
 P Two million brain cells die every minute. TIGERTRIEVER saves minutes when removing the clot–with reported procedure times faster than the leading competitors.
@@ -284,17 +284,17 @@ P TIGERTRIEVER saves minutes when removing the clot– with reported procedure t
 P The 1st pass
 H3 should be the last
 P Adjustability handles patient variability in real-time. TIGERTRIEVER has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png?jxl&v=jxl
 P Adjustability handles patient variability in real-time. TIGERTRIEVER has high first pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).
 P Click on a tab below to learn more.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Mobile-Scroll-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Mobile-Scroll-1920w.png?jxl&v=jxl
 A Clinical evidence -> https://apac.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P The world’s first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-US-1920w.jpg
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-US-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Specifications-1920w.jpg
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/chart-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Specifications-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/chart-1920w.png?jxl&v=jxl
 A Place an order -> mailto:customerservice@rapid-medical.com?subject=Order%20inquiry
 A Ask a product question -> https://apac.rapid-medical.com/contact-us
 A Request an IFU -> mailto:customerservice@rapid-medical.com?subject=IFU%20request
@@ -306,10 +306,10 @@ IMG 	https://lirp.cdn-website.com/48595db0/dms3rep/multi/opt/Webinar-Edited-Resi
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://apac.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-1-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-1-1920w.png?jxl&v=jxl
 A View the case → -> https://irp.cdn-website.com/48595db0/files/uploaded/Marie_DoubleTIGER_Case.pdf
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-2-1920w.png
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-3-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-2-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Solutions-OUS-3-1920w.png?jxl&v=jxl
 A Watch recording → -> https://www.youtube.com/watch?v=kdIcJW-QDL4&feature=youtu.be
 P Active thrombectomy tailors the procedure to the patient.
 P Questions?
@@ -361,12 +361,12 @@ P TIGERTRIEVER™ is the only device that can remove force before and during ret
 H3 The comfort
 H3 of control
 P Traditional 3 mm stent retrievers exert higher forces as vessels narrow. Active thrombectomy with TIGERTRIEVER™ 13 adjusts to meet the constraints of the anatomy.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Comfort_feather-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Comfort_feather-1920w.png?jxl&v=jxl
 P Adjust to the anatomy with TIGER 13.
 P Deliver and retrieve with the lowest forces4,5
 H3 Go the distals
 P Simplify distal reach and tortuous paths with 30% lower delivery profile & delivery force than other 3 mm retrievers.4
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/go-the-distals-graohic-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/go-the-distals-graohic-1920w.png?jxl&v=jxl
 A Learn more -> https://clinicaltrials.gov/study/NCT05152524?term=distals,%20thrombectomy&rank=1
 P ADVANCING THE FIELD OF STROKE
 P Rapid Medical™ is pioneering a new frontier to offer treatment to patients suffering from medium vessel strokes. In addition to engineering devices to the unique requirements of the anatomy, the company is leading scientific advancement with the first-ever FDA-approved study for distal indication, the DISTALS Study.
@@ -375,19 +375,19 @@ P Click on a tab below to learn more.
 A Clinical evidence -> https://apac.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P The world’s first and only adjustable stent retriever, TIGERTRIEVER TM is designed with active, responsive technology for patient-specific procedures.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-US-1920w.jpg
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-US-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
 IMG https://lirp.cdn-website.com/48595db0/dms3rep/multi/opt/Specifications-Resized-1920w.jpg
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/chart-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/chart-1920w.png?jxl&v=jxl
 A Place an order -> mailto:info@rapidmedical.com?subject=Order%20inquiry
 A Ask a product question -> https://apac.rapid-medical.com/contact-us
 A Request an IFU -> mailto:info@rapid-medical.com?subject=IFU%20request
 P 1 PENETRATE the clot with active integration
 P 2 ADJUST with complete visibility
 P 3 RELAX to relieve vessel traction
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/First-pass-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/First-pass-1920w.png?jxl&v=jxl
 A View case report → -> https://irp.cdn-website.com/48595db0/files/uploaded/Solich_T13_case.pdf
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/First-pass-3-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/First-pass-3-1920w.png?jxl&v=jxl
 P 1. Waqas M, Kuo CC, Dossani RH, et al. Mechanical thrombectomy versus intravenous thrombolysis for distal large-vessel occlusion: a systematic review and meta-analysis of observational studies. Neurosurg Focus. 2021;51(1):E5. doi:10.3171/2021.4.FOCUS21139
 P 2. Ospel JM, Menon BK, Demchuk AM, et al. Clinical Course of Acute Ischemic Stroke Due to Medium Vessel Occlusion With and Without Intravenous Alteplase Treatment. Stroke. 2020;51(11):3232-3240. doi:10.1161/STROKEAHA.120.030227
 P 3. Seners P, Turc G, Maier B, Mas JL, Oppenheim C, Baron JC. Incidence and predictors of early recanalization after intravenous thrombolysis: a systematic review and meta‐analysis. Stroke. 2016;47:2409‐2412.
@@ -448,7 +448,7 @@ P Restore the flow with
 P active control
 P Unlike other angioplasty devices, COMANECI’s active technology offers precise control over vessel dilation with full visibility, potentially reducing the risk of vessel injury.1
 P Gradual expansion can achieve similar results as high-impact balloons–with less damage to the vessel.3
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Com+VS+radial+force+comp-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Com+VS+radial+force+comp-1920w.png?jxl&v=jxl
 P Restore the
 P flow with
 P Unlike other angioplasty devices,
@@ -467,7 +467,7 @@ P The patent design of COMANECI allows dual treatment–mechanical dilation plus
 P The proof is in the patients
 P In a multicenter study, severe vessel constriction improved significantly, with 52% of patients achieving favorable outcomes at 6 months. 2
 A Unlock the data -> https://jnis.bmj.com/content/15/9/864
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/vasospasm-stats-1920w.jpg
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/vasospasm-stats-1920w.jpg?jxl&v=jxl
 P The proof is in
 P the patients
 P In a multicenter study, severe vessel constriction improved significantly, with 52% of patients achieving favorable outcomes at 6 months.2
@@ -475,23 +475,23 @@ P Click on a tab below to learn more.
 A Clinical evidence -> https://apac.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures.
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-Comaneci_OUS_D2-1920w.jpg
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-Comaneci_OUS_D2-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/COMANEC-Specs-1920w.jpg
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Vasospasm+chart-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/COMANEC-Specs-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Vasospasm+chart-1920w.png?jxl&v=jxl
 A Place an order -> mailto:info@rapid-medical.com?subject=Order%20inquiry
 A Ask a product question -> https://apac.rapid-medical.com/contact-us
 A Request an IFU -> mailto:infousa@rapid-medical.com?subject=IFU%20request
 H4 HOW IT WORKS
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+1_vaso-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+1_vaso-1920w.png?jxl&v=jxl
 P 1 TREAT distal → proximal
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+2_vaso-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+2_vaso-1920w.png?jxl&v=jxl
 P 2 Gradually EXPAND COMANECI™
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+3_vaso-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Step+3_vaso-1920w.png?jxl&v=jxl
 P 3 WAIT for dilation–on average 2.5 minutes (range 30 sec. – 5 min). 5
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/dr+tufail-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/dr+tufail-1920w.png?jxl&v=jxl
 A View the case → -> https://apac.rapid-medical.com/comaneci-for-vasospasm
-IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/DrSVETLANA-1920w.png
+IMG https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/DrSVETLANA-1920w.png?jxl&v=jxl
 P Leave nothing behind with COMANECI™
 P Questions?
 P Reach out to learn more about our company and stroke solutions.
@@ -516,9 +516,9 @@ P To request a webinar recording, please fill in the form below:
 
 title: Neurovascular Therapy | Rapid Medical™
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/RM_Drivewire-Ad_Graphic-V2-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Drivewire_middle+diagram-5944d55f-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/RM_Drivewire-Ad_Graphic-V2-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Drivewire_middle+diagram-5944d55f-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg?jxl&v=jxl
 H6 Indications for Use: The Drivewire 24 Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
 
 
@@ -537,11 +537,12 @@ VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/YZIbnEVShmzXOfSkqfeP_Coman
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/jLzXBp2RKNRvIZg3kNSw_How+to+1-v.mp4
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/F9cU7UdsSGSFNYolsjWT_How+to+2-v.mp4
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/ExjqBNiTbuoBPClyXqvw_How+to+3-v.mp4
-P OUR SOLUTIONS / ANEURYSM
+P Therapies/ ANEURYSM
 H1 Bridging the gap in assist devices
 P COMANECI™ is the only non-occlusive and temporary device for
 P wide-neck aneurysm treatment.
 A Request a demo -> /contact-us
+P Therapies / ANEURYSM
 P COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.
 IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent.gif
 P Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device—its added user control overcomes the limitations of conventional balloons and stents.
@@ -560,7 +561,7 @@ P Leaves no trace—
 P except SUCCESS
 P 95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.2
 A Unlock SUCCESS: The prospective study data -> /success-study-final-results
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/chart-image-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/chart-image-1920w.png?jxl&v=jxl
 P Click on a tab below to learn more.
 BUTTON Product overview
 BUTTON How it works
@@ -568,10 +569,10 @@ BUTTON In-Practice
 A Clinical evidence -> https://ous.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures.
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Aneurysm-Product-Overview-1920w.jpg
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Aneurysm-Product-Overview-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Aneurysm-Specifications-1920w.jpg
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_APAC_Product+Overview_chart-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Aneurysm-Specifications-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_APAC_Product+Overview_chart-1920w.png?jxl&v=jxl
 A Place an order -> mailto:info@rapidmedical.com?subject=Order%20inquiry
 A Ask a product question -> https://apac.rapid-medical.com/contact-us
 A Request an IFU -> mailto:info@rapidmedical.com?subject=IFU%20request
@@ -583,14 +584,14 @@ IMG https://lirp.cdn-website.com/48595db0/dms3rep/multi/opt/Webinar-Edited-Resiz
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://ous.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-1-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-1-1920w.png?jxl&v=jxl
 A View the case → -> https://irp.cdn-website.com/8b5f57de/files/uploaded/Patankar_COMANECI+case+report_giant+ICA+AN.pdf
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-2-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-2-1920w.png?jxl&v=jxl
 A View the publication → -> https://pubmed.ncbi.nlm.nih.gov/38578712/
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-3-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-4-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-3-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Aneurysym+slider-4-1920w.png?jxl&v=jxl
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 P *90 consecutive patients in the U.S.
 P 1. Lim, Jaims et al. “Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon- Coiling Assistance Techniques.” World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008
@@ -636,6 +637,21 @@ P (*indicates a required field)
 P Sign me up! I would like to recieve Rapid Medical news and updates.
 
 
+## ous.rapid-medical.com/evidence-copy
+
+title: evidence copy
+popups/lightboxes: 1
+BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/3MxSd4f4R3ytbzaUxsbN_Evidence-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/3MxSd4f4R3ytbzaUxsbN_Evidence-v.mp4
+H1 EVIDENCE
+P Clinical & scientific research play
+P a pivotal role in understanding the effectiveness, safety, and long-term impact that our solutions have on patient outcomes.
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/75+clinical+publications-1920w.png?jxl&v=jxl
+P We remain at the forefront of bold initiatives that target underserved areas of research.
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Artboard+1-1920w.png?jxl&v=jxl
+P FEATURED PUBLICATIONS
+
+
 ## ous.rapid-medical.com/evidence
 
 title: Neurovascular Therapy Evidence | Rapid Medical™
@@ -650,13 +666,12 @@ P Clinical & scientific research play
 P a pivotal role in understanding the effectiveness, safety, and long-term impact that our solutions have on patient outcomes.
 A Request a demo -> /contact-us
 P OUR SOLUTIONS / VASOSPASM
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/75-clinical-publications-640w-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/75+clinical+publications-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/85-+Clinical+Publications-1920w.png?jxl&v=jxl
 P We remain at the forefront of bold initiatives that target underserved areas of research.
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/ChatGPT+Image+Sep+30-+2026-+01_22_47+PM-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Artboard-1-edd4c5d0-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/ChatGPT+Image+Sep+30-+2026-+01_22_47+PM-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Artboard-1-edd4c5d0-1920w.png?jxl&v=jxl
 P FEATURED PUBLICATIONS
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-1920w.png?jxl&v=jxl
 P Jul. 2026
 P Radially adjustable Tigertriever
 P demonstrates higher reperfusion
@@ -666,10 +681,10 @@ P thrombectomy of large vessel
 P occlusions: a systematic review
 P and meta-analysis
 A Read > -> https://irp.cdn-website.com/8b5f57de/files/uploaded/fneur-17-1839128.pdf
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-1920w.png?jxl&v=jxl
 P FEB. 2026
 P Long-term outcomes of temporary stent-assisted coil embolization for the treatment of intracranial aneurysms using Comaneci remodeling device
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot-2026-02-11-at-11.18.50-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot-2026-02-11-at-11.18.50-1920w.png?jxl&v=jxl
 P NOV. 2025
 P Challenging the limits of angioplasty: Comaneci device for distal vasospasm following subarachnoid hemorrhage
 P BROWSE BY PRODUCT
@@ -770,9 +785,9 @@ P Hemorrhagic stroke is caused by a blood vessel that ruptures in the brain. COM
 H3 Neurovascular access
 P DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.
 A Learn more -> /access
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png?jxl&v=jxl
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 
 
@@ -808,7 +823,7 @@ VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/0saPDx9aSyyoIoj5zk9d_HowTo
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/sjIQ67SJQYupyII8PBjC_HowTo_3-v.mp4
 YOUTUBE youtube.com/watch?v=kdIcJW-QDL4&amp;feature=youtu.be
 YOUTUBE youtube.com/embed/ja2bTvMJRLs
-P OUR SOLUTIONS / Large vessel stroke
+P Therapies / Large vessel stroke
 H2 A patient-centric approach to AIS
 P TIGERTRIEVER™ is the only active thrombectomy device– it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.
 A Request a demo -> /contact-us
@@ -822,7 +837,7 @@ P Speed matters – TIGER Trial showed quicker time to reperfusion than using as
 P The 1st pass
 P should be the last
 P Adjustability handles patient variability in real-time. TIGERTRIEVER has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png?jxl&v=jxl
 P Click on a tab below to learn more.
 BUTTON Product overview
 BUTTON How it works
@@ -830,10 +845,10 @@ BUTTON In-Practice
 A Clinical evidence -> https://ous.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P The world’s first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures.
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-LVO-Product-Overview-1920w.jpg
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-LVO-Product-Overview-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Specifications-1920w.jpg
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_LVO_Product+Overview-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Specifications_Updated-1920w.png?jxl&v=jxl
 A Place an order -> mailto:customerservice@rapid-medical.com?subject=Order%20inquiry
 A Ask a product question -> https://ous.rapid-medical.com/contact-us
 A Request an IFU -> mailto:customerservice@rapid-medical.com?subject=IFU%20request
@@ -845,14 +860,14 @@ IMG https://lirp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Webinar-Edited-Resiz
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://ous.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-1-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-1-1920w.png?jxl&v=jxl
 A View the case → -> https://irp.cdn-website.com/8b5f57de/files/uploaded/Marie_DoubleTIGER_Case.pdf
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-2-1920w.png
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-3-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-2-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Solutions-OUS-3-1920w.png?jxl&v=jxl
 A Watch recording → -> https://www.youtube.com/watch?v=kdIcJW-QDL4&feature=youtu.be
 P Active thrombectomy tailors the procedure to the patient.
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 P 1. Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886
 P 2. Gupta, Rishi et al. “New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.” Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436
@@ -899,10 +914,11 @@ VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/jiIhPkczR4WrQZiiV7dD_Copy+
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/067J7P1fRCGyilO6KPCe_HowTo_1-v.mp4
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/0saPDx9aSyyoIoj5zk9d_HowTo_2-v.mp4
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/sjIQ67SJQYupyII8PBjC_HowTo_3-v.mp4
-P OUR SOLUTIONS / Medium vessel stroke
+P Therapies / Medium vessel stroke
 H2 The only device designed for distals
 P TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.
 A Request a demo -> /contact-us
+P OUR SOLUTIONS / Medium vessel stroke
 P Strokes in smaller arteries can still cause disabling deficits, and clot-dissolving drugs work less than half the time.1,2,3
 P Yet, these vessels are at increased risk for hemorrhage during treatment.
 P Protect the vessel with TIGERTRIEVER™ 13
@@ -915,7 +931,7 @@ P Adjust to the anatomy with TIGER 13.
 P Deliver and retrieve with the lowest forces4,5
 H3 Go the distals
 P Simplify distal reach and tortuous paths with 30% lower delivery profile & delivery force than other 3 mm retrievers.4
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/go-the-distals-graohic-1920w_f-1920w.webp
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/go-the-distals-graohic-1920w_f-1920w.webp?jxl&v=jxl
 P Simplify distal reach and tortuous paths with 30% lower delivery profile & delivery force than other3 mm retrievers.4
 P ADVANCING THE FIELD OF STROKE
 P Rapid Medical™ has pioneered a new frontier in MVO treatment with randomized evidence demonstrating that TIGERTRIEVER™ 13 significantly improves blood flow to the brain with a strong safety profile compared with medical management. The DISTALS Trial brings long-needed clarity to an underserved market representing nearly half of ischemic strokes.
@@ -928,8 +944,8 @@ H4 PRODUCT OVERVIEW
 P The world’s first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures.
 IMG https://lirp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-MVO-Product-Overview-1920w.jpg
 H4 SPECIFICATIONS
-IMG https://lirp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Specifications-Resized-1920w.jpg
-IMG https://lirp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_MVO_Product+Overview-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%282%29-1920w.png?jxl&v=jxl
 A Place an order -> mailto:customerservice@rapid-medical.com?subject=Order%20inquiry
 A Ask a product question -> https://ous.rapid-medical.com/contact-us
 A Request an IFU -> mailto:customerservice@rapid-medical.com?subject=IFU%20request
@@ -937,18 +953,40 @@ H4 HOW IT WORKS
 P 1 PENETRATE the clot with active integration
 P 2 ADJUST with complete visibility
 P 3 RELAX to relieve vessel traction
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg?jxl&v=jxl
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://ous.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/First-pass-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/First-pass-1920w.png?jxl&v=jxl
 A View case report → -> https://irp.cdn-website.com/8b5f57de/files/uploaded/Solich_T13_case.pdf
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/First-pass-3-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/First-pass-3-1920w.png?jxl&v=jxl
 P *TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.1. Waqas M, Kuo CC, Dossani RH, et al. Mechanical thrombectomy versus intravenous thrombolysis for distal large-vessel occlusion: a systematic review and meta-analysis of observational studies. Neurosurg Focus. 2021;51(1):E5. doi:10.3171/2021.4.FOCUS21139
 P 2. Ospel JM, Menon BK, Demchuk AM, et al. Clinical Course of Acute Ischemic Stroke Due to Medium Vessel Occlusion With and Without Intravenous Alteplase Treatment. Stroke. 2020;51(11):3232-3240. doi:10.1161/STROKEAHA.120.030227
 P 3. Seners P, Turc G, Maier B, Mas JL, Oppenheim C, Baron JC. Incidence and predictors of early recanalization after intravenous thrombolysis: a systematic review and meta‐analysis. Stroke. 2016;47:2409‐2412.
 P 4-5 Data on file
 P 6. Wang, Maud, et al. "The Anch'Or Harpoon Technique With a Manually Expandable Stentretriever (Tigertriever 13), a Technical Note." Frontiers in Neurology, vol. 13, 2022, p. 934690, https://doi.org/10.3389/fneur.2022.934690
+
+
+## ous.rapid-medical.com/playgrond
+
+title: playgrond
+popups/lightboxes: 1
+VIDEO https://vid.cdn-website.com/8b5f57de/videos/kyPILWv5TcOjXPybGxxQ_T13+Tiger+wireframe+walk+16x9-v.mp4
+VIDEO https://vid.cdn-website.com/8b5f57de/videos/nIyRh0PITsqiIot7omkk_Fingerprint+video-v.mp4
+VIDEO https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4
+BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/kyPILWv5TcOjXPybGxxQ_T13+Tiger+wireframe+walk+16x9-v.mp4
+BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/nIyRh0PITsqiIot7omkk_Fingerprint+video-v.mp4
+BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/kyPILWv5TcOjXPybGxxQ_T13+Tiger+wireframe+walk+16x9-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/kyPILWv5TcOjXPybGxxQ_T13+Tiger+wireframe+walk+16x9-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/nIyRh0PITsqiIot7omkk_Fingerprint+video-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/nIyRh0PITsqiIot7omkk_Fingerprint+video-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4
+A New Button -> https://irp.cdn-website.com/8b5f57de/files/uploaded/Comaneci+vasospasm-Raphaeli+INR+2025.pdf
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-MVO-Product-Overview-c328f30b-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS_MVO_Product+Overview-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-MVO-Product-Overview-1920w.jpg?jxl&v=jxl
 
 
 ## ous.rapid-medical.com/success-study-final-results
@@ -979,16 +1017,17 @@ VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/rRCzwiTS2JXz3BOhSARg_Com+V
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/GmiuX37hStWkhs64aaUW_Comaneci+Blood+Flow_VASO+%28OUS+%2B+APAC%29-v.mp4
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/GqX322JIQRe3C0ZglhEd_Comaneci+Blood+Flow_VASO+%28OUS+%2B+APAC%29-v.mp4
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/GqX322JIQRe3C0ZglhEd_Comaneci+Blood+Flow_VASO+%28OUS+%2B+APAC%29-v.mp4
-P OUR SOLUTIONS / VASOSPASM
+P Therapies/ VASOSPASM
 H2 Take command in vasospasm
 P COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm, providing results without permanent implants.
+P Therapies / VASOSPASM
 P Cerebral vasospasm is an orphan disease, and leading cause of death and disability following subarachnoid haemorrhage (SAH) 1,2 , yet lacks a defined treatment strategy.
 P COMANECI is the first device to receive FDA breakthrough designation to provide options for these patients.
 P Strokes in smaller arteries can still cause disabling deficits, and clot-dissolving drugs work less than half the time.1,2,3
 P Yet, these vessels are at increased risk for hemorrhage during treatment.
 P Restore the flow with active control
 P Unlike other angioplasty devices, COMANECI’s active technology offers precise control over vessel dilation with full visibility, potentially reducing the risk of vessel injury. 1,2
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Com+VS+radial+force+comp-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Com+VS+radial+force+comp-1920w.png?jxl&v=jxl
 P Gradual expansion can achieve similar results as high-impact balloons–with less damage to the vessel. 3
 P Continuous blood supply
 P Unlike balloons, COMANECI provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an
@@ -1004,9 +1043,9 @@ P The proof is in
 P the patients
 P In a multicenter study, severe vessel constriction improved significantly, with 52% of patients achieving favorable outcomes at 6 months. 2
 A Unlock the data -> https://jnis.bmj.com/content/15/9/864
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/vasospasm-stats-1920w-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/vasospasm-stats-1920w-1920w.png?jxl&v=jxl
 P In a multicenter study, severe vessel constriction improved significantly, with 52% of patients achieving favorable outcomes at 6 months.2
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/vasospasm-stats-1920w.jpg
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/vasospasm-stats-1920w.jpg?jxl&v=jxl
 P Click on a tab below to learn more.
 BUTTON Product overview
 BUTTON How it works
@@ -1014,29 +1053,29 @@ BUTTON In-Practice
 A Clinical evidence -> https://ous.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures.
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Vasospasm-Product-Overview-D2-d9c9896b-1920w.jpg
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Vasospasm-Product-Overview-D2-d9c9896b-1920w.jpg?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/COMANEC-Specs-1920w.jpg
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Vasospasm+chart-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/COMANEC-Specs-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Vasospasm+chart-1920w.png?jxl&v=jxl
 A Place an order -> mailto:info@rapidmedical.com?subject=Order%20inquiry
 A Ask a product question -> https://ous.rapid-medical.com/contact-us
 A Request an IFU -> mailto:infousa@rapid-medical.com?subject=IFU%20request
 H4 HOW IT WORKS
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+1_vaso-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+1_vaso-1920w.png?jxl&v=jxl
 P 1 TREAT distal → proximal
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+2_vaso-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+2_vaso-1920w.png?jxl&v=jxl
 P 2 Gradually EXPAND COMANECI™
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+3_vaso-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Step+3_vaso-1920w.png?jxl&v=jxl
 P 3 WAIT for dilation–on average 2.5 minutes (range 30 sec. – 5 min). 5
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg?jxl&v=jxl
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://ous.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/dr+tufail-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/dr+tufail-1920w.png?jxl&v=jxl
 A View the case → -> https://ous.rapid-medical.com/comaneci-for-vasospasm
-IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/DrSVETLANA-1920w.png
+IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/DrSVETLANA-1920w.png?jxl&v=jxl
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 P 1. Kassell NF, Sasaki T, Colohan AR, Nazar G. Cerebral vasospasm following aneurysmal subarachnoid hemorrhage. Stroke. 1985;16(4):562-572. doi:10.1161/01.str.16.4.562
 P 2. Salem MM, Khalife J, Desai S, et al. COManeci MechANical Dilation for vasospasm (COMMAND): multicenter experience. J Neurointerv Surg. 2023;15(9):864-870. doi:10.1136/jnis-2022-019272
@@ -1058,18 +1097,17 @@ P To request a webinar recording, please fill in the form below:
 
 title: Neurovascular Therapy | Rapid Medical™​
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/RM_Drivewire-Ad_Graphic-V2-1920w.png
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Drivewire_middle-diagram-1920w.png
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Drivewire-Chart-1920w.png
-P Indications for Use: The Drivewire 24 Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
-P Contraindications: Drivewire™ 24 Guidewire is contraindicated for patients with known hypersensitivity to nickel-titanium and patients with stenosis and/or pre-existing stent proximal to the target site that may preclude safe navigation of the device.
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/RM_Drivewire-Ad_Graphic-V2-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Drivewire_middle-diagram-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-5b10d33a-1920w.png?jxl&v=jxl
+P Indications for Use:
+P The Drivewire Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire Guidewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
 
 
 ## us.rapid-medical.com/aneurysm
 
 title: Neurovascular Therapy for Aneurysms | Rapid Medical™​
 popups/lightboxes: 1
-VIDEO https://vid.cdn-website.com/9d0280ee/videos/xTssjdbXR6QAyB451i8m_Comaneci+Blood+Flow-v.mp4
 VIDEO https://vid.cdn-website.com/48595db0/videos/jLzXBp2RKNRvIZg3kNSw_How+to+1-v.mp4
 VIDEO https://vid.cdn-website.com/48595db0/videos/F9cU7UdsSGSFNYolsjWT_How+to+2-v.mp4
 VIDEO https://vid.cdn-website.com/48595db0/videos/ExjqBNiTbuoBPClyXqvw_How+to+3-v.mp4
@@ -1077,14 +1115,13 @@ VIDEO /videos/video1.mp4
 VIDEO /videos/video2.mp4
 VIDEO /videos/video3.mp4
 BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/YZIbnEVShmzXOfSkqfeP_Comaneci+Blood+Flow-v.mp4
-BGVIDEO https://vid.cdn-website.com/9d0280ee/videos/xTssjdbXR6QAyB451i8m_Comaneci+Blood+Flow-v.mp4
+BGVIDEO https://vid.cdn-website.com/8b5f57de/videos/YZIbnEVShmzXOfSkqfeP_Comaneci+Blood+Flow-v.mp4
 VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/YZIbnEVShmzXOfSkqfeP_Comaneci+Blood+Flow-v.mp4
-VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/xTssjdbXR6QAyB451i8m_Comaneci+Blood+Flow-v.mp4
-VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/xTssjdbXR6QAyB451i8m_Comaneci+Blood+Flow-v.mp4
+VIDEO-REF https://vid.cdn-website.com/8b5f57de/videos/YZIbnEVShmzXOfSkqfeP_Comaneci+Blood+Flow-v.mp4
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/jLzXBp2RKNRvIZg3kNSw_How+to+1-v.mp4
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/F9cU7UdsSGSFNYolsjWT_How+to+2-v.mp4
 VIDEO-REF https://vid.cdn-website.com/48595db0/videos/ExjqBNiTbuoBPClyXqvw_How+to+3-v.mp4
-P OUR SOLUTIONS / ANEURYSM
+P Therapies / Aneurysm
 H1 Bridging the gap in assist devices
 P COMANECI™ is the only non-occlusive and temporary device for
 P wide-neck aneurysm treatment.
@@ -1102,8 +1139,6 @@ P blood supply
 P Unlike balloons, COMANECI™ provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an ischemic event.
 P COMANECI™ demonstrates the highest complete occlusion and lowest complication rates.
 A See the comparison -> /see-the-comparison
-P Unlike balloons, COMANECI provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an ischemic event.
-P COMANECI demonstrates the highest complete occlusion and lowest complication rates.
 P Leaves no trace—
 P except SUCCESS
 P 95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.2
@@ -1113,7 +1148,7 @@ P Click on a tab below to learn more.
 BUTTON Product overview
 BUTTON How it works
 BUTTON In-Practice
-A Clinical evidence -> https://ous.rapid-medical.com/evidence#browse-by-product
+A Clinical evidence -> https://us.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures.
 IMG https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-Aneurysm-Product-Overview-1920w.jpg?jxl&v=jxl
@@ -1130,14 +1165,14 @@ P 3. REMOVE the coiling catheter with COMANECI expanded. Remove COMANECI.
 IMG https://lirp.cdn-website.com/48595db0/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
-A Request to view -> https://ous.rapid-medical.com/webinars
+A Request to view -> https://us.rapid-medical.com/webinars
 IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/COMANECI-testimonial-1-1920w.jpg?jxl&v=jxl
 A View the case → -> https://irp.cdn-website.com/9d0280ee/files/uploaded/Abecassis_case+summary+1+.pdf
 IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/COMANECI-testimonial-2-1920w.png?jxl&v=jxl
 A View the publication → -> https://pubmed.ncbi.nlm.nih.gov/38578712/
 IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/COMANECI-testimonial-3-1920w.png?jxl&v=jxl
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 P *90 consecutive patients in the U.S.
 P 1. Lim, Jaims et al. “Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon- Coiling Assistance Techniques.” World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008
@@ -1156,6 +1191,26 @@ P (*indicates a required field)
 P Sign me up! I would like to recieve Rapid Medical news and updates.
 
 
+## us.rapid-medical.com/dw24-svin-poster
+
+title: DW24 SVIN Poster
+popups/lightboxes: 1
+IFRAME https://irp.cdn-website.com/9d0280ee/files/uploaded/DW24+SVIN+Poster.pdf#toolbar=0&navpanes=0&scrollbar=1
+
+
+## us.rapid-medical.com/empty-page
+
+title: Empty Page
+popups/lightboxes: 1
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%282%29-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Specifications_Updated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/US-LVO-Product-Overview-1920w.webp?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_LVO_Both_Handles_Annotated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%281%29-16332637-1920w.png?jxl&v=jxl
+
+
 ## us.rapid-medical.com/evidence
 
 title: Neurovascular Therapy Research | Rapid Medical™​
@@ -1167,7 +1222,7 @@ VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/3MxSd4f4R3ytbzaUxsbN_Evide
 VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/3MxSd4f4R3ytbzaUxsbN_Evidence-v.mp4
 H1 EVIDENCE
 P Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our solutions have on patient outcomes.
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/75+clinical+publications-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/85-+Clinical+Publications-1920w.png?jxl&v=jxl
 P We remain at the forefront of bold initiatives that target underserved areas of research.
 IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/ChatGPT+Image+Sep+30-+2026-+01_22_47+PM-1920w.png?jxl&v=jxl
 IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-1920w.png?jxl&v=jxl
@@ -1200,7 +1255,7 @@ LI 1/24 Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute
 LI 9/23 Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease Diego J Ojeda et al.doi: 10.1136/jnis-2023-020796
 LI 7/23 E-272 Novel Use of a Triple Stent Retriever ‘bouquet’ Deployment with Zoom 88 Large-bore Aspiration and Walrus Balloon-guide Catheter Flow Arrest for Definitive Thrombectomy of a Carotid Free Floating Thrombus B Meyer et al.Journal of NeuroInterventional Surgery 2023;15:A240-A241.
 LI 5/23 Bailout Endovascular Techniques Applied in a Complicated Basilar Thrombectomy Case Aryan Ali et al.http://dx.doi.org/10.1136/jnis-2022-019687
-LI 1/23 Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis Piotr Piasecki et al.doi: 10.3389/fneur2022.1032307
+LI 1/23 Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis Piotr Piasecki et al.doi: 10.3389/fneur.2022.1032307
 LI 7/21 Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial RishiGupta, Jeffrey L.Saverhttps://doi.org/10.1016/j.wneu.2021.05.039
 LI 7/21 Inadvertent Detachment of Stent Retrievers during Mechanical Thrombectomy—A Clinical and Biomechanical Perspective Piotr Piasecki et al.https://doi.org/10.3390/life11070658
 LI 3/21 A New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter Tiger Trial Rishi Gupta et al.https://doi.org/10.1161/STROKEAHA.121.034436
@@ -1230,6 +1285,14 @@ BUTTON COMANECI™ Embolization Assist Device
 BUTTON DRIVEWIRE™ Steerable Guidewire
 
 
+## us.rapid-medical.com/ifu-tigertriever-canada
+
+title: ifu-tigertriever-canada
+popups/lightboxes: 1
+IFRAME https://irp.cdn-website.com/9d0280ee/files/uploaded/TigerTrieverIFU_CANADA_ANTRPP3661C_07-Jan+2026.pdf#toolbar=0&navpanes=0&scrollbar=1
+A Open PDF -> https://irp.cdn-website.com/9d0280ee/files/uploaded/TigerTrieverIFU_CANADA_ANTRPP3661C_07-Jan+2026.pdf
+
+
 ## us.rapid-medical.com/index
 
 title: Our Therapies | Rapid Medical™​ | US
@@ -1247,11 +1310,11 @@ P Hemorrhagic stroke is caused by a blood vessel that ruptures in the brain. COM
 H3 Neurovascular access
 P DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.
 A Learn more -> /access
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-391w.png
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-391w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Neurovascular+access-2-a125c36a-1920w.png?jxl&v=jxl
 H3 Vascular access
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
 
 
@@ -1285,12 +1348,12 @@ VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/sjIQ67SJQYupyII8PBjC_HowTo
 YOUTUBE youtu.be/ZCslloX6Ei0
 YOUTUBE youtube.com/watch?v=kdIcJW-QDL4&amp;feature=youtu.be
 YOUTUBE youtube.com/embed/ja2bTvMJRLs
-P OUR SOLUTIONS / LARGE VESSEL STROKE
+P Therapies / LARGE VESSEL STROKE
 H2 A patient-centric
 H2 approach to AIS
 P TIGERTRIEVER™ is the only active thrombectomy device– it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.
 A Request a demo -> /contact-us
-P OUR SOLUTIONS / LVO
+P Therapies / Large vessel stroke
 H1 A patient-centric approach to AIS
 P TIGERTRIEVER™ is the only active thrombectomy device–it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.
 P Gain active control
@@ -1302,7 +1365,7 @@ P Speed matters – TIGER Trial showed quicker time to reperfusion than using as
 P The 1st pass
 H3 should be the last
 P Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png?jxl&v=jxl
 P Adjustability handles patient variability in real-time. TIGERTRIEVER has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).
 P Click on a tab below to learn more.
 BUTTON Product overview
@@ -1311,10 +1374,10 @@ BUTTON In-Practice
 A Clinical evidence -> https://us.rapid-medical.com/evidence#browse-by-product
 H4 PRODUCT OVERVIEW
 P The world’s first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures.
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/US-LVO-Product-Overview-1920w.jpg
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/US-LVO-Product-Overview-1920w.webp?jxl&v=jxl
 H4 SPECIFICATIONS
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Specifications-Resized-1920w.jpg
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/ChatGPT+Image+Sep+11-+2026-+08_49_40+PM-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_LVO_Both_Handles_Annotated-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%281%29-16332637-1920w.png?jxl&v=jxl
 A Place an order -> mailto:orders.inc@rapid-medical.com
 A Ask a product question -> https://us.rapid-medical.com/contact-us
 A Request an IFU -> mailto:customerservice@rapid-medical.com?subject=IFU%20request
@@ -1323,22 +1386,24 @@ H4 HOW IT WORKS
 P 1. PENETRATE the clot with active integration
 P 2. ADJUST with complete visibility
 P 3. RELAX to relieve vessel traction
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg?jxl&v=jxl
 H2 WEBINARS
 P Physician-led webinars are available to view on-demand. To watch a recording, please submit a request here.
 A Request to view -> https://us.rapid-medical.com/webinars
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/DrMajidi-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/DrMajidi-1920w.png?jxl&v=jxl
 A View testimonial → -> https://youtu.be/ZCslloX6Ei0
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Clot-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Clot-1920w.png?jxl&v=jxl
 A View the case → -> https://wixlabs-pdf-dev.appspot.com/index?pageId=u0z6t&compId=comp-lw9ecbj32&viewerCompId=comp-lw9ecbj32&siteRevision=1840&viewMode=site&deviceType=desktop&locale=en&tz=America%2FChicago&regionalLanguage=en&width=980&height=1368&instance=ditFnaco5DjhJBuG28zAAdYTF4povj7kyfNDLSqkp_U.eyJpbnN0YW5jZUlkIjoiMDViM2MyNzEtZDA4Ny00YjdiLWI1NzgtMDc4MjgzMjUxZjg4IiwiYXBwRGVmSWQiOiIxM2VlMTBhMy1lY2I5LTdlZmYtNDI5OC1kMmY5ZjM0YWNmMGQiLCJtZXRhU2l0ZUlkIjoiMzQ5OWQ2ZDgtYmYxZC00NjAwLWFiNDYtOGU5NzJmMTM4ZTNjIiwic2lnbkRhdGUiOiIyMDI1LTA3LTEwVDE4OjQxOjE5LjA3OFoiLCJkZW1vTW9kZSI6ZmFsc2UsIm9yaWdpbkluc3RhbmNlSWQiOiIyODhkNWU2YS1jYTRhLTRmNjAtYTIyNi01MjFiYzk1ZjEwOGQiLCJhaWQiOiJmYjgxNmU0NS1lYTA2LTQxM2YtOTY5Mi1kNmM4MDYwM2Q2ZTIiLCJiaVRva2VuIjoiMzEyYTE0YTktNmY5YS0wZDdiLTFlM2UtODkxNWFjMzY5MWI0Iiwic2l0ZU93bmVySWQiOiI1NjVmNzU5OS00ODk5LTQxZTAtOTliMy00OGNiZTllNjVhNTkiLCJicyI6IlhoNmFHU2ItcDExamZYWmFfNTJRU2tPa2oyWE9Xclc3SGhST0tCQzNCQ2siLCJzY2QiOiIyMDE5LTA3LTEzVDE4OjUzOjQ2LjA3OFoifQ&currency=USD&currentCurrency=USD&commonConfig=%7B%22brand%22%3A%22wix%22%2C%22host%22%3A%22VIEWER%22%2C%22bsi%22%3Anull%2C%22siteRevision%22%3A%221840%22%2C%22renderingFlow%22%3A%22NONE%22%2C%22language%22%3A%22en%22%2C%22locale%22%3A%22en-us%22%2C%22BSI%22%3Anull%7D&currentRoute=.%2Ftici3&consent-policy=%7B%22func%22%3A0%2C%22anl%22%3A0%2C%22adv%22%3A0%2C%22dt3%22%3A1%2C%22ess%22%3A1%7D&vsi=13485233-c5bb-415a-8748-7396973d5c87
-IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/DrSamaniego-1920w.png
+IMG https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/DrSamaniego-1920w.png?jxl&v=jxl
 A Watch recording → -> https://www.youtube.com/watch?v=kdIcJW-QDL4&feature=youtu.be
 P Active thrombectomy tailors the procedure to the patient.
 P Questions?
-P Reach out to learn more about our company and stroke solutions.
+P Reach out to learn more about our company and devices.
 A Contact us -> /contact-us
-P Indications for Use The Tigertriever Revascularization Device is intended to restore blood flow by removing thrombus from a large intracranial vessel in patients experiencing ischemic stroke within 8 hours of symptom onset. Patients who are ineligible for thrombolytic drug therapy or who failed thrombolytic drug therapy are candidates for treatment .
-P Contraindications Use of the Tigertriever Revascularization Device is contraindicated under these conditions: Patients with known hypersensitivity to nickel-titanium. Patients with stenosis and/or pre-existing stent proximal to the thrombus site that may preclude safe recovery of the Tigertriever Revascularization Device. Patients with angiographic
+P Indications for Use
+P The Tigertriever Revascularization Device is intended to restore blood flow by removing thrombus from a large intracranial vessel in patients experiencing ischemic stroke within 8 hours of symptom onset. Patients who are ineligible for thrombolytic drug therapy or who failed thrombolytic drug therapy are candidates for treatment.
+P Contraindications
+P Use of the Tigertriever Revascularization Device is contraindicated under these conditions: Patients with known hypersensitivity to nickel-titanium. Patients with stenosis and/or pre-existing stent proximal to the thrombus site that may preclude safe recovery of the Tigertriever Revascularization Device. Patients with angiographic evidence of carotid dissection.
 P 1. Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886
 P 2. Gupta, Rishi et al. “New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.” Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436
 P 3. Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1
@@ -1373,6 +1438,24 @@ H1 Webinars
 P To request a webinar recording, please fill in the form below:
 
 
+## www.rapid-medical.com/LongTerm_Outcomes
+
+title: Empty Page
+popups/lightboxes: 1
+IFRAME https://irp.cdn-website.com/be427182/files/uploaded/long_term_outcomes_of_temporary_stent_assisted.1879.pdf#toolbar=0&navpanes=0&scrollbar=1
+
+
+## www.rapid-medical.com/RSVP
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+P Registration is closed!
+P FROM PHYSICS TO PRACTICE
+P Innovation and the Future of Neurointervention
+P Monday, 12 October 2026
+P Park Hyatt Busan
+
+
 ## www.rapid-medical.com/about-us
 
 title: About Us | Rapid Medical™​ | Worldwide
@@ -1383,22 +1466,22 @@ H2 What we do
 P Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke.
 H2 Leadership Team
 P Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg?jxl&v=jxl
 P RONEN ECKHOUSE
 A CO-FOUNDER & CEO → -> /ronen
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Michal-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Michal-1920w.jpg?jxl&v=jxl
 P MICHAL SHRIKI
 A CHIEF FINANCIAL OFFICER → -> /michal
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Walid-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Walid-1920w.jpg?jxl&v=jxl
 P DR. WALID HADDAD
 A CHIEF CLINICAL OFFICER → -> /walid
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Eitan-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Eitan-1920w.jpg?jxl&v=jxl
 P EITAN HAVIS
 A PRESIDENT, INTERNATIONAL → -> /eitan
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/James-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/James-1920w.jpg?jxl&v=jxl
 P JAMES ROMERO
 A PRESIDENT‭, ‬AMERICAS → -> /james
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Giora-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Giora-1920w.jpg?jxl&v=jxl
 P GIORA KORNBLAU
 A CHIEF TECHNOLOGY OFFICER → -> /giora
 H2 GLOBAL OFFICES
@@ -1427,16 +1510,9 @@ P Frankfurt GERMANY
 P Tel: +49 69 795 888 718
 P Fax: +49 (0) 69 795 888 711
 P ordersgmbh@rapid-medical.com
-P Rapid Medical UK
-P UK & Ireland
-P 3rd Floor, Great Titchfield House,
-P 14-18 Great Titchfield Street
-P London, W1W 8BD
-P Tel: +44 7876 122250
-P uk-support@rapid-medical.com
 H4 Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting.
 H4 Select a region to get in touch with a local representative.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Map+Directory-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Map+Directory-1920w.png?jxl&v=jxl
 P Have a question? We’d love to hear from you.
 A Contact us -> /contact-us
 
@@ -1454,10 +1530,10 @@ P From an inclusive, passionate culture to comprehensive benefits and profession
 A View open positions -> /open-positions
 P From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel
 P the future of neurovascular innovation.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Leaderboard-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Leaderboard-1920w.jpg?jxl&v=jxl
 P "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career."
 A – Isaac, Clinical Specialist -> 
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/careers-2-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/careers-2-1920w.jpg?jxl&v=jxl
 P "The most rewarding aspect is knowing that with each shipment a potential life is saved."
 A - Morgan, Customer Service -> 
 H3 Our guiding principles
@@ -1465,6 +1541,19 @@ P What we at Rapid Medical believe in above all else.
 IMG https://irp.cdn-website.com/be427182/dms3rep/multi/We+are+Rapid+Graphic+Resized.svg
 H3 Submit general interest
 P Rapid Medical is an equal opportunity employer and prohibits discrimination and harassment of any kind. We are committed to the principle of equal employment opportunity for all employees and to providing employees with a work environment free of discrimination and harassment. All employment decisions at Rapid Medical are based on business needs, job requirements, and individual qualifications, without regard to race, color, religion or belief, national, social or ethnic origin, sex (including pregnancy), age, disability, sexual orientation, gender identity and/or expression, marital or domestic partnership status, military service, or any other status protected by the laws or regulations in the locations where we operate. Rapid Medical will not tolerate discrimination or harassment based on any of these characteristics.
+
+
+## www.rapid-medical.com/carousel
+
+title: test
+popups/lightboxes: 1
+LI Slide title Write your caption here Button
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/T13_TechTour_landscape-1920w.jpeg?jxl&v=jxl
+H3 Slide title
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-1-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-2-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-3-1920w.jpg?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-4-1920w.jpg?jxl&v=jxl
 
 
 ## www.rapid-medical.com/choose-your-location
@@ -1518,13 +1607,13 @@ title: Neurovascular Therapy Solutions |  Rapid Medical™​ | Worldwide
 popups/lightboxes: 1
 H2 A new era for patients with Medium Vessel Occlusion
 H3 DISTALS results mark a turning point in MVO—showing TIGERTRIEVER™ 13 restores blood flow safely, with a consistent trend toward better outcomes, expanding what’s possible for nearly 50% of ischemic stroke patients.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/1+desk-1920w.png
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/1+obile-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/1+desk-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/1+obile-1920w.png?jxl&v=jxl
 H3 The Positive Primary Endpoint Is In
 P DISTALS and TIGERTRIEVER™ 13 delivered 3x improvement in successful reperfusion without symptomatic intracranial hemorrhage (sICH) events.
 A View more Trial results -> https://irp.cdn-website.com/be427182/files/uploaded/DISTALS+ESOC+May+2026-for+web.pdf
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Untitled-2-Recovered-1920w.png
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Untitled-2-obile-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Untitled-2-Recovered-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Untitled-2-obile-1920w.png?jxl&v=jxl
 H3 More patients return to life with little to no disability
 P With TIGERTRIEVER™ 13, outcomes
 P consistently trended toward better
@@ -1534,16 +1623,16 @@ H3 on a patient-reported quality of life survey (EQ-5D)
 A Register for the upcoming SNIS webinar to see all outcomes -> https://register.gotowebinar.com/register/4102322318293015388
 H2 a Pivotal moment
 H3 Finally, evidence from the first device and trial specifically designed for the delicate anatomy of distal stroke introduce a new interventional option for patients.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_T13-dc60bdf7-8052cb91-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_T13-dc60bdf7-8052cb91-1920w.png?jxl&v=jxl
 H3 A distal-specific device
 P TIGERTRIEVER 13 is the only thrombectomy system designed to actively adjust to the vessel anatomy.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Image_013-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Image_013-1920w.png?jxl&v=jxl
 H3 Flow restoration with maintained safety
 P TIGERTRIEVER 13 restored more blood flow to the brain, with no observed increase in sICH risk compared with medical management.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_CT-6e1a4ea3-c59aa13d-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_CT-6e1a4ea3-c59aa13d-1920w.png?jxl&v=jxl
 H3 A more meaningful measure of recovery
 P DISTALS measured whether blood reached the brain tissue (CT perfusion). More blood flow to the brain was linked to a trend toward better recovery.
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_FDA-ecf9b249-d35e2157-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Icon_FDA-ecf9b249-d35e2157-1920w.png?jxl&v=jxl
 H3 FDA-approved DMVO IDE study
 P Independent imaging core lab and strict oversight
 A Read about DISTALS -> https://clinicaltrials.gov/study/NCT05152524
@@ -1560,13 +1649,131 @@ LI Psychogios M, Brehm A, Ribo M, et al. Endovascular Treatment for Stroke Due t
 LI DISCOUNT Trial. Presented at the International Stroke Conference (ISC); February 2025; Los Angeles, CA.
 
 
+## www.rapid-medical.com/ds26
+
+title: ds26
+popups/lightboxes: 1
+H2 Event Details
+H3 Welcome Dinner
+P 19:30Private Dining at SoHi
+H3 Main Meeting
+P 08:00–17:00Hudson Ballroom
+H3 The Dominick
+P New York City, NY
+H2 Agenda
+H3 Friday, August 28
+H3 Saturday, August 29
+H2 Contact
+H3 Questions during the Summit?
+P Send us a message in the What’s App Group - “Distal Summit 2026 - NYC”.
+
+
 ## www.rapid-medical.com/eitan
 
 title: Eitan
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Eitan-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Eitan-1920w.jpg?jxl&v=jxl
 P EITAN HAVISPRESIDENT, INTERNATIONAL
 P Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East. He has over 20 years of commercial leadership experience and helped to grow Rapid Medical from an early-stage start-up to a well-funded commercial operation. Eitan holds a BA in Business Administration and Economics from Haifa University in Israel.
+
+
+## www.rapid-medical.com/event-details__drivewire--24-in-clinical-practice
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-85335, input:label-dmform-85335, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+P Rapid Medical at ESMINT
+P DRIVEWIRE™ 24 in Clinical Practice
+P Real-World Experience from Two Perspectives with Dr. Rui de Carvalho and Dr. Markus Holtmannspötter
+P Thursday, 3 September 2026 (Marseille)
+P 12:45 PM
+P Please provide a few contact details below.
+P (*indicates a required field)
+
+
+## www.rapid-medical.com/event-details__first-asia-tigertriever-workshop
+
+title: First Asia TIGERTRIEVER™ Workshop | Rapid Medical
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, select:dmform-7, input:label-dmform-7, input:dmform-8, input:label-dmform-8, input:dmform-9, input:label-dmform-9, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 First Asia TIGERTRIEVER™ Workshop
+P Please provide a few contact details below.
+P (*indicates a required field)
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
+## www.rapid-medical.com/event-details__international-partners-summit
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, select:dmform-7, input:label-dmform-7, input:dmform-8, input:label-dmform-8, input:dmform-9, input:label-dmform-9, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 International Partners Summit
+P Please provide a few contact details below.
+P (*indicates a required field)
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
+## www.rapid-medical.com/event-details__meet-the-experts-dinner-event-at-dgnr-2025-october-22
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 3
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, select:dmform-7, input:label-dmform-7, input:dmform-8, input:label-dmform-8, input:dmform-9, input:label-dmform-9, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H1 This event is full
+P Please contact your Rapid Medical representative or speak to us at the booth during the DGNR Conference for further details.
+H2 Meet The Experts Dinner event at DGNR 2025
+P Sign me up! I would like to recieve Rapid Medical news and updates.
+P Please provide a few contact details below.
+P (*indicates a required field)
+
+
+## www.rapid-medical.com/event-details__murcia-academic-workshop-spain-2025
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, select:dmform-7, input:label-dmform-7, input:dmform-8, input:label-dmform-8, input:dmform-9, input:label-dmform-9, input:dmform-85335, input:label-dmform-85335, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 Academic Workshop in Murcia, Spain 2025
+P Please provide a few contact details below.
+P (*indicates a required field)
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
+## www.rapid-medical.com/event-details__rapid-medical-at-linnc-paris
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-85335, input:label-dmform-85335, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 More than Conventional
+H3 Dinner & Discussion at LINNC Paris with Dr. Sudipta Roychowdhury
+H3 June 1, 2026 - 19:30
+H3 Hôtel Regina Louvre
+P Please provide a few contact details below.
+P (*indicates a required field)
+H3 Academic Workshop in Murcia, Spain 2025
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
+## www.rapid-medical.com/event-details__tigertriever--workshop-in-partnership-with-kaneka
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-8, input:label-dmform-8, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 TIGERTRIEVER™ Workshop in partnership with Kaneka
+H2 September 15-16, 2026
+P Please provide a few contact details below.
+P (*indicates a required field)
+H3 International Partners Summit
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
+## www.rapid-medical.com/event-details__users-meeting
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-0, input:label-dmform-0, input:dmform-5, input:label-dmform-5, input:dmform-6, input:label-dmform-6, input:dmform-1, input:label-dmform-1, input:dmform-2, input:label-dmform-2, select:dmform-7, input:label-dmform-7, input:dmform-8, input:label-dmform-8, input:dmform-9, input:label-dmform-9, textarea:dmform-10, input:label-dmform-10, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 Users Meeting
+P Please provide a few contact details below.
+P (*indicates a required field)
+P Sign me up! I would like to receive Rapid Medical news and updates.
 
 
 ## www.rapid-medical.com/evidence
@@ -1583,7 +1790,7 @@ H3 Europe & Middle East
 
 title: Giora
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Giora-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Giora-1920w.jpg?jxl&v=jxl
 P GIORA KORNBLAUCHIEF TECHNOLOGY OFFICER
 P Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Rapid Medical, he was a partner at Terra VP leading Israeli VC and managed a technology incubator, where he helped develop deep technology products in the fields of clean energy and health. Mr. Kornblau graduated from the prestigious Talpiot program, served as an F-16 pilot in the Israeli Air Force, and holds a Bachelor’s degree with Honors in Physics and Mathematics from the Hebrew University of Jerusalem.
 
@@ -1607,7 +1814,7 @@ A Explore Our Therapies -> /our-solutions
 P Like fingerprints, no two strokes are the same.
 P Yet, conventional therapy options are limited and can compromise patient safety
 P Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety
-H1 40K+
+H1 50K+
 P patients treated
 H1 100+
 P issued patents
@@ -1630,7 +1837,7 @@ A View all news > -> /news-events
 
 title: James
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/James-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/James-1920w.jpg?jxl&v=jxl
 P JAMES ROMEROPRESIDENT‭, ‬AMERICAS
 P James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sales Operations and Global Sales Training for the neurovascular division at Medtronic. James brings over 20 years of leadership experience in growth-stage and large-scale MedTech companies and holds a BS in Psychology from Santa Clara University.
 
@@ -1639,7 +1846,7 @@ P James Romero joined Rapid Medical in 2021 as an accomplished medical device ex
 
 title: Michal
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Michal-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Michal-1920w.jpg?jxl&v=jxl
 P MICHAL SHRIKICHIEF FINANCIAL OFFICER
 P Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) and Starling Advanced Communications Ltd (acquired by Panasonic). Michal is a Certified Accountant with a BA in Economics and an MBA from the University of Haifa, Israel.
 
@@ -1652,14 +1859,14 @@ BGVIDEO https://vid.cdn-website.com/9d0280ee/videos/3MxSd4f4R3ytbzaUxsbN_Evidenc
 VIDEO-REF https://vid.cdn-website.com/9d0280ee/videos/3MxSd4f4R3ytbzaUxsbN_Evidence-v.mp4
 H1 NEWS & EVENTS
 P LATEST NEWS
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/WhatsApp+Image+2026-07-21+at+10.30.00-1920w.jpeg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/WhatsApp+Image+2026-07-21+at+10.30.00-1920w.jpeg?jxl&v=jxl
 H3 July 2026
 P Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases
 A Continue reading -> https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases
 P View all news
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-09b67a02-1920w.png
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-1920w.png
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2024-1920w.png
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-09b67a02-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-1920w.png?jxl&v=jxl
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2024-1920w.png?jxl&v=jxl
 H3 List of Services
 LI 5/26 Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings Read more 5/26
 P 5/26
@@ -1990,11 +2197,22 @@ P Rapid Medical reserves the right to change this Privacy Policy at any time, so
 P 17. Have any Questions?
 
 
+## www.rapid-medical.com/request-form
+
+title: Contact Rapid Medical™​ | Worldwide
+popups/lightboxes: 1
+FORM fields=[input:dmform-4, input:dmform-4, input:dmform-4, input:label-dmform-4, input:dmform-1, input:label-dmform-1, input:dmform-11, input:label-dmform-11, input:dmformsendto, input:action, input:dmformsubject, input:dmformfrom, input:dmformautoreplyenabled, input:dmformautoreplyfrom, input:dmformautoreplysubject, input:dmformautoreplymsg, input:dmformautoreplyincludeformcopy, input:page_uuid]
+H2 Request a brochure
+P Enter your email and we’ll send you the requested product brochure.
+P (*indicates a required field)
+P Sign me up! I would like to receive Rapid Medical news and updates.
+
+
 ## www.rapid-medical.com/ronen
 
 title: Ronen
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg?jxl&v=jxl
 P RONEN ECKHOUSE
 P CO-FOUNDER AND CHAIRMAN OF THE BOARD
 P Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent to the U.S. Navy Seals. Ronen holds a BSc in Electrical Engineering from the Technion Institute of Technology, and an MBA from the Haas School of Business at UC Berkeley.
@@ -2055,7 +2273,7 @@ P * * * *
 
 title: Walid
 popups/lightboxes: 1
-IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Walid-1920w.jpg
+IMG https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Walid-1920w.jpg?jxl&v=jxl
 P DR. WALID HADDADCHIEF CLINICAL OFFICER
 P Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer. He brings over 15 years of experience in clinical research, strategy, medical affairs, and operations as a C-suite executive in the biomedical industry. Additionally, Dr. Haddad carries extensive experience in executing FDA regulated studies. Most recently, he served as Chief Operations Officer for a cardiology startup, CardioGard. Dr. Haddad holds a Ph.D. in Physiology from the Faculty of Medicine from the Hebrew University of Jerusalem.
 

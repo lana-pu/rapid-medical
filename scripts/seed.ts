@@ -78,17 +78,19 @@ async function main() {
   await db.insert(newsItems).values(news.map((n) => ({ ...n, publishedOn: new Date(n.publishedOn), status: "published" as const })));
 
   /* team */
-  type TeamSeed = { slug: string; name: string; title: string; longTitle: string; bioHtml: string; photoUrl: string | null; sortOrder: number };
+  type TeamSeed = { slug: string; name: string; title: string; longTitle: string; bioMd: string; photoUrl: string | null; sortOrder: number };
   for (const t of await json<TeamSeed[]>("team")) {
-    const tt = { ...t, bioHtml: markdownToHtml(t.bioHtml) };
+    const { bioMd, ...member } = t;
+    const tt = { ...member, bioHtml: markdownToHtml(bioMd) };
     await db.insert(teamMembers).values({ ...tt, status: "published" }).onConflictDoUpdate({ target: teamMembers.slug, set: { ...tt, updatedAt: new Date() } });
   }
 
   /* pages */
-  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyHtml: string };
+  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyMd: string };
   for (const p of await json<PageSeed[]>("pages")) {
     const existing = await db.query.pages.findFirst({ where: p.region ? sql`${pages.slug} = ${p.slug} AND ${pages.region} = ${p.region}` : sql`${pages.slug} = ${p.slug} AND ${pages.region} IS NULL` });
-    const pp = { ...p, bodyHtml: markdownToHtml(p.bodyHtml) };
+    const { bodyMd, ...page } = p;
+    const pp = { ...page, bodyHtml: markdownToHtml(bodyMd) };
     if (existing) await db.update(pages).set({ ...pp, updatedAt: new Date() }).where(eq(pages.id, existing.id));
     else await db.insert(pages).values({ ...pp, status: "published" });
   }

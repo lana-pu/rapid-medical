@@ -20,7 +20,7 @@ const OUT_DIR = path.join(process.cwd(), "public", "uploads", "duda");
 const TARGETS: Record<string, string[]> = {
   solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"],
   publications: ["pdf_url", "image_url"],
-  news_items: ["image_url"],
+  news_items: ["image_url", "url"],
   webinars: ["image_url"],
   team_members: ["photo_url", "bio_html"],
   jobs: ["description_html"],

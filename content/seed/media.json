@@ -3789,6 +3789,343 @@
   "filename": "Ronan-03804f.jpg",
   "mime": "image/jpeg",
   "size": 50060,
+  "width": 1080,
+  "height": 1080,
+  "alt": "",
+  "key": "duda/Ronan-03804f.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/ronan-03804f-6e3a06d6-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/ronan-03804f-6e3a06d6-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAABwAgCdASoQABAAA4BaJYwCdH8AgnS3Y7sL2kAAAP701atBDAVZJT1Tc2HtAPtEKK/G0E74rSXNv66rwGTUOYM5KvwCOw06yBC6VDuYpgkh6wP00zGgAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/Ajit-ee736c.png",
+  "filename": "Ajit-ee736c.png",
+  "mime": "image/png",
+  "size": 304708,
+  "width": 500,
+  "height": 499,
+  "alt": "",
+  "key": "duda/Ajit-ee736c.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/ajit-ee736c-775a146e-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4WAoAAAAQAAAADwAADwAAQUxQSJAAAAABcBDZttrc/xyEDWQipqSDKwS1sQaugMB7t/hjISIUtm3bZO+kPQMQQdyfzwcJRAAIwuWTZnyuQggE+ZFqdW3KU/G1t6yUJLXiIQYWLPmHFTdIzrR/MJ6zjo9JZXfMxgc1R+3Q7vhLlJcMC1b+QQi8/7CPIMgPNK2rxn7+CYJgeSeNj3UIAeAc4u5w1EsgDgBWUDgghgAAAJACAJ0BKhAAEAADgFoloAJ0fwCCaLcjnEZZfmAAAM4Hdas2BeYZ38dEw9YLRLNVevIrQqD1mx093bTed+Mga5EdyfqXMbIadM/YBLsXLDuyXfnIbtgHIzbB+6B1+nJFvh8FgWpZq6+pMVNqeH4iYIe/3Btx0iBPH6JJvKgkkvqgVvPlqAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Ajit-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/COMANECI-chart-f27bbb.png",
+  "filename": "COMANECI-chart-f27bbb.png",
+  "mime": "image/png",
+  "size": 603183,
+  "width": 1920,
+  "height": 358,
+  "alt": "",
+  "key": "duda/COMANECI-chart-f27bbb.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/comaneci-chart-f27bbb-e8e5b126-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/comaneci-chart-f27bbb-e8e5b126-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/comaneci-chart-f27bbb-e8e5b126-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4WAoAAAAQAAAADwAAAgAAQUxQSCwAAAABX6CmbQOGP+J+uyAiIvUUJBiIJONRRBkVRBBBFw1UkO+FiOh/ZhRb8Nx2eFZQOCAoAAAA0AEAnQEqEAADAAOAWiWUAsOxFKN51EAA/vIWS8t45c18csih671EAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/COMANECI-chart-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Featured-1-48c4c5ee-9ae901.png",
+  "filename": "Featured-1-48c4c5ee-9ae901.png",
+  "mime": "image/png",
+  "size": 95450,
+  "width": 300,
+  "height": 138,
+  "alt": "",
+  "key": "duda/Featured-1-48c4c5ee-9ae901.png",
+  "variants": [
+   {
+    "w": 300,
+    "url": "/uploads/duda/variants/featured-1-48c4c5ee-9ae901-fa32819c-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRowAAABXRUJQVlA4WAoAAAAQAAAADwAABgAAQUxQSC4AAAABN6CgbRuGP9i+DUBoREQAegaFkKxQ9yaRUEIIIX+OL0JE/yfABOBF66Eu6eIPVlA4IDgAAADwAQCdASoQAAcAA4BaJYwC7AEKqD7JFwAA/rPhSWJIVCPp929XgPiSXzLWn7JW+tDOM4Zwcj5AAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Featured-1-48c4c5ee-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Mobile-Scroll-a2e42e.png",
+  "filename": "Mobile-Scroll-a2e42e.png",
+  "mime": "image/png",
+  "size": 1545,
+  "width": 600,
+  "height": 53,
+  "alt": "",
+  "key": "duda/Mobile-Scroll-a2e42e.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/mobile-scroll-a2e42e-d409855a-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4WAoAAAAQAAAADwAAAAAAQUxQSBEAAAAAAAAAAgBYUk9RUVsAAwAAAABWUDggPgAAABACAJ0BKhAAAQADgFolsAJ0ugACumrsVwAA/rboDVhSjL9WvmzrdG4tmvZaQftVlmdiOg7itfumdokkAAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Mobile-Scroll-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Product-Overview-Comaneci_D3-82c016.jpg",
+  "filename": "Product-Overview-Comaneci_D3-82c016.jpg",
+  "mime": "image/jpeg",
+  "size": 57097,
+  "width": 1920,
+  "height": 380,
+  "alt": "",
+  "key": "duda/Product-Overview-Comaneci_D3-82c016.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/product-overview-comaneci-d3-82c016-d3cf9a2f-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/product-overview-comaneci-d3-82c016-d3cf9a2f-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/product-overview-comaneci-d3-82c016-d3cf9a2f-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAMAA4BaJaQAAub1/vpAAP73FhZb+1Nil3pj2rn0fa1dsvHTDFimgAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-Comaneci_D3-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/Product-Overview-Comaneci_OUS_D2-edc774.jpg",
+  "filename": "Product-Overview-Comaneci_OUS_D2-edc774.jpg",
+  "mime": "image/jpeg",
+  "size": 91454,
+  "width": 1920,
+  "height": 655,
+  "alt": "",
+  "key": "duda/Product-Overview-Comaneci_OUS_D2-edc774.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/product-overview-comaneci-ous-d2-edc774-ac93b633-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/product-overview-comaneci-ous-d2-edc774-ac93b633-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/product-overview-comaneci-ous-d2-edc774-ac93b633-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACQAQCdASoQAAUAA4BaJaQAAltHmQAA/vYh7UUHeMHV0AF5tCwzcX9ydUA8SIMAAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Product-Overview-Comaneci_OUS_D2-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/featurd-2-68d722.png",
+  "filename": "featurd-2-68d722.png",
+  "mime": "image/png",
+  "size": 153607,
+  "width": 715,
+  "height": 485,
+  "alt": "",
+  "key": "duda/featurd-2-68d722.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/featurd-2-68d722-2aa5317c-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRhoBAABXRUJQVlA4WAoAAAAQAAAADwAACgAAQUxQSIgAAAABgGJt27Loft8XT9a1kog0EodK55BYgY+7u/sSfKa6u8/EWc3/LyIiJgBQAzTb2qkIICaESqsP11u190VUjMTU40E94xXCPznwD72PJBGwABtdxE+3Y4iaCEbvHOdl1BSnMdFNHo8CiGO3CIq7+ci/+BFcNSJE/qoYTsFO1pv/4yjuQnp6s4ACVlA4IGwAAADQAQCdASoQAAsAA4BaJaQAD43w7rAwAAD8DgXe/niMGmxqRVOlYmvrEEHb2XtPAGhX69lw+KbUaFg632LX7sZ1r0m4epvti2Ky4eKJjFI3usIi+akX7QgFYW2yj/mhhtFG/SD7zlh8REgAAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/featurd-2-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-02e621.png",
+  "filename": "5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-02e621.png",
+  "mime": "image/png",
+  "size": 39671,
+  "width": 674,
+  "height": 309,
+  "alt": "",
+  "key": "duda/5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-02e621.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/5314-comaneci-spiral-v3-528a8192-788b9681-429d3a1a-71f342f2--041e2c04-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRrAAAABXRUJQVlA4WAoAAAAQAAAADwAABgAAQUxQSD4AAAABYBPZtpPzEznHCgd0dFkBqpCA56shIgQERayBdN23CpFJnSnmEp1rx1irakovZW0VgzXqbHlHFEP2/F+EAVZQOCBMAAAA0AEAnQEqEAAHAAOAWiWcAA+KikSlkgAAykA3by0VB+PyZP7mcpzH9GaarChXjiIdqVCpiULlKDFFTP48ZJqVuh7X2fPe5C2KAAAAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/5314-Comaneci_spiral_V3-528a8192-788b9681-429d3a1a-71f342f2-a45f3c20-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/75-clinical-publications-640w-9e4cea.png",
+  "filename": "75-clinical-publications-640w-9e4cea.png",
+  "mime": "image/png",
+  "size": 50993,
+  "width": 420,
+  "height": 232,
+  "alt": "",
+  "key": "duda/75-clinical-publications-640w-9e4cea.png",
+  "variants": [
+   {
+    "w": 420,
+    "url": "/uploads/duda/variants/75-clinical-publications-640w-9e4cea-52cd4322-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRrIAAABXRUJQVlA4WAoAAAAQAAAADwAACAAAQUxQSDwAAAABb6CobRs4p57PwhyARUS8jlwBoABU07YV/T+XhxBCHBl0OQIKY65r02gQ0f8IHgCcpEmSUTMX01a7129WUDggUAAAADACAJ0BKhAACQADgFolAE6AxaDOZprqx74AAP70VJ4dU0zv6yC1RUEVJamZLjBahnvJ5/XsFaez+G4s8NowxHKuNjcc3ERMcE02QMTMQAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/75-clinical-publications-640w-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/85--Clinical-Publications-857ed4.png",
+  "filename": "85--Clinical-Publications-857ed4.png",
+  "mime": "image/png",
+  "size": 1024534,
+  "width": 1870,
+  "height": 841,
+  "alt": "",
+  "key": "duda/85--Clinical-Publications-857ed4.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/85-clinical-publications-857ed4-b8916157-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/85-clinical-publications-857ed4-b8916157-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/85-clinical-publications-857ed4-b8916157-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACwAQCdASoQAAcAA4BaJQBOgB9BODmAAP70nM/IKfjPPmvDlbaVQu6nMyN7xrCjqWSoDf21HS7NyLN7lL1ZyB2YW4zigKbnZgUhwq+AAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/85-+Clinical+Publications-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/OUS-MVO-Product-Overview-c328f30b-2cbd89.jpg",
+  "filename": "OUS-MVO-Product-Overview-c328f30b-2cbd89.jpg",
+  "mime": "image/jpeg",
+  "size": 111903,
+  "width": 1920,
+  "height": 655,
+  "alt": "",
+  "key": "duda/OUS-MVO-Product-Overview-c328f30b-2cbd89.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/ous-mvo-product-overview-c328f30b-2cbd89-583e54e2-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/ous-mvo-product-overview-c328f30b-2cbd89-583e54e2-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/ous-mvo-product-overview-c328f30b-2cbd89-583e54e2-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAUAA4BaJaQAAuddQQgAAP71IRXk7X8tux6aOwDMypxxNyYCmAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/OUS-MVO-Product-Overview-c328f30b-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/Screenshot-2026-02-11-at-11.18.50-059ba3.png",
+  "filename": "Screenshot-2026-02-11-at-11.18.50-059ba3.png",
+  "mime": "image/png",
+  "size": 561099,
+  "width": 1246,
+  "height": 572,
+  "alt": "",
+  "key": "duda/Screenshot-2026-02-11-at-11.18.50-059ba3.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/screenshot-2026-02-11-at-11-18-50-059ba3-d2d156e3-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/screenshot-2026-02-11-at-11-18-50-059ba3-d2d156e3-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAACQAQCdASoQAAcAA4BaJaQAAe4XSOAA/sBRyKDDz3OLUbRkwBi7TwE5KBPxbAHGgA9NEAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot-2026-02-11-at-11.18.50-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-9035a4.png",
+  "filename": "WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-9035a4.png",
+  "mime": "image/png",
+  "size": 238739,
+  "width": 1600,
+  "height": 735,
+  "alt": "",
+  "key": "duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-9035a4.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/whatsapp-image-2026-07-21-at-10-30-00-281-29-29656de8-9035a4-078cfa38-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/whatsapp-image-2026-07-21-at-10-30-00-281-29-29656de8-9035a4-078cfa38-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAcAA4BaJaQAAqHyvYcAAP74uj6F/AIPdaOmiIKI3pDRGSl+fUsAAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-29656de8-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/vasospasm-stats-1920w-9a8b70.png",
+  "filename": "vasospasm-stats-1920w-9a8b70.png",
+  "mime": "image/png",
+  "size": 401810,
+  "width": 946,
+  "height": 1061,
+  "alt": "",
+  "key": "duda/vasospasm-stats-1920w-9a8b70.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/vasospasm-stats-1920w-9a8b70-a16a32ee-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAQBACdASoQABIAPu1iqU2ppaOiMAgBMB2JQBWECYhXGQz3lrO2gJ1usAD+tqQVRMJccvgpEpaEnQ36L7Y4bRzkPhwXbMa9dE7xdodwPf0QT2jqOI06jJ5BjzvQ9xYKsgX4h9J+Jhj9kYBhOMo8KmcQX0nZ9ppEcPwnAAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/vasospasm-stats-1920w-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Comaneci-vasospasm-Raphaeli-INR-2025-5c9332.pdf",
+  "filename": "Comaneci-vasospasm-Raphaeli-INR-2025-5c9332.pdf",
+  "mime": "application/pdf",
+  "size": 1502759,
   "width": null,
   "height": null,
   "alt": "",
@@ -3796,6 +4133,631 @@
   "variants": [],
   "placeholder": null,
   "posterUrl": null,
-  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Ronan-1920w.jpg"
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/Comaneci+vasospasm-Raphaeli+INR+2025.pdf"
+ },
+ {
+  "url": "/uploads/duda/Sandner-2_COMANECI-case-report-3b0855.pdf",
+  "filename": "Sandner-2_COMANECI-case-report-3b0855.pdf",
+  "mime": "application/pdf",
+  "size": 286746,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": null,
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/files/uploaded/Sandner+2_COMANECI+case+report.pdf"
+ },
+ {
+  "url": "/uploads/duda/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-d2eaae.png",
+  "filename": "Rapid_Medical_OUS_LVO_Both_Handles_Annotated-d2eaae.png",
+  "mime": "image/png",
+  "size": 249188,
+  "width": 1920,
+  "height": 584,
+  "alt": "",
+  "key": "duda/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-d2eaae.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-both-handles-annotated-d2eaae-e2dcbf2f-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-both-handles-annotated-d2eaae-e2dcbf2f-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-both-handles-annotated-d2eaae-e2dcbf2f-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAACQAQCdASoQAAUAA4BaJaQAAuguRKAA/vcI0W+96ZpCdPeAAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Both_Handles_Annotated-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Rapid_Medical_OUS_LVO_Specifications_Updated-39e0eb.png",
+  "filename": "Rapid_Medical_OUS_LVO_Specifications_Updated-39e0eb.png",
+  "mime": "image/png",
+  "size": 218469,
+  "width": 1920,
+  "height": 586,
+  "alt": "",
+  "key": "duda/Rapid_Medical_OUS_LVO_Specifications_Updated-39e0eb.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-specifications-updated-39e0eb-69a98cf4-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-specifications-updated-39e0eb-69a98cf4-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/rapid-medical-ous-lvo-specifications-updated-39e0eb-69a98cf4-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAAAQAgCdASoQAAUAA4BaJYwCdH8GJ/gebkRAAP7q8vX5ddr9wuJ3sq1oYVZhW7zo1UgAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_OUS_LVO_Specifications_Updated-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-b1a11c.png",
+  "filename": "Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-b1a11c.png",
+  "mime": "image/png",
+  "size": 152408,
+  "width": 1920,
+  "height": 359,
+  "alt": "",
+  "key": "duda/Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-b1a11c.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/rapid-medical-us-access-drivewire-specifications-updated-b1a-ea2a0acd-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/rapid-medical-us-access-drivewire-specifications-updated-b1a-ea2a0acd-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/rapid-medical-us-access-drivewire-specifications-updated-b1a-ea2a0acd-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAADQAQCdASoQAAMAA4BaJYwCdAEO+mNgAAD+4AvZHO5hpz1qdXXcZdjPAfewAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_Access_DRIVEWIRE_Specifications_Updated-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Rapid_Medical_US_LVO_Both_Handles_Annotated-cfe713.png",
+  "filename": "Rapid_Medical_US_LVO_Both_Handles_Annotated-cfe713.png",
+  "mime": "image/png",
+  "size": 250016,
+  "width": 1920,
+  "height": 584,
+  "alt": "",
+  "key": "duda/Rapid_Medical_US_LVO_Both_Handles_Annotated-cfe713.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/rapid-medical-us-lvo-both-handles-annotated-cfe713-d1b7b2c9-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/rapid-medical-us-lvo-both-handles-annotated-cfe713-d1b7b2c9-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/rapid-medical-us-lvo-both-handles-annotated-cfe713-d1b7b2c9-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAACQAQCdASoQAAUAA4BaJaQAAuguRKAA/vcI0W+96ZpCdPeAAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Rapid_Medical_US_LVO_Both_Handles_Annotated-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/US-LVO-Product-Overview-cede34.webp",
+  "filename": "US-LVO-Product-Overview-cede34.webp",
+  "mime": "image/webp",
+  "size": 71622,
+  "width": 1920,
+  "height": 655,
+  "alt": "",
+  "key": "duda/US-LVO-Product-Overview-cede34.webp",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/us-lvo-product-overview-cede34-a982d96c-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/us-lvo-product-overview-cede34-a982d96c-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/us-lvo-product-overview-cede34-a982d96c-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAUAA4BaJaQAAudQJGIYAP71IdXSM72zERlIiekz0iXJxKVqMAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/US-LVO-Product-Overview-1920w.webp"
+ },
+ {
+  "url": "/uploads/duda/Webinar-Edited-Resized-7ccd5d.jpg",
+  "filename": "Webinar-Edited-Resized-7ccd5d.jpg",
+  "mime": "image/jpeg",
+  "size": 86972,
+  "width": 1920,
+  "height": 711,
+  "alt": "",
+  "key": "duda/Webinar-Edited-Resized-7ccd5d.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/webinar-edited-resized-7ccd5d-90911bf4-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/webinar-edited-resized-7ccd5d-90911bf4-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/webinar-edited-resized-7ccd5d-90911bf4-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADQAQCdASoQAAYAA4BaJZgCdADHiU/1MAD+0Szf0ntzB1t0OCcxqu84PlAb7lHqJVphYA0IjVZQKZM1JV6vMq5ZGIrUAAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Webinar-Edited-Resized-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/download-1--16332637-607309.png",
+  "filename": "download-1--16332637-607309.png",
+  "mime": "image/png",
+  "size": 249399,
+  "width": 1920,
+  "height": 565,
+  "alt": "",
+  "key": "duda/download-1--16332637-607309.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/download-1-16332637-607309-113a7f04-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/download-1-16332637-607309-113a7f04-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/download-1-16332637-607309-113a7f04-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAAAQAgCdASoQAAUAA4BaJYwCdEf/geiAWEcAAP7reS3BSA8EmpOGATsItadgOyFy+IzgAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%281%29-16332637-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/download-2--e0c432.png",
+  "filename": "download-2--e0c432.png",
+  "mime": "image/png",
+  "size": 166100,
+  "width": 1920,
+  "height": 451,
+  "alt": "",
+  "key": "duda/download-2--e0c432.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/download-2-e0c432-45339f2b-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/download-2-e0c432-45339f2b-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/download-2-e0c432-45339f2b-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAAAwAgCdASoQAAQAA4BaJYwCdH8GJ/gfMJl2sAD+7bOR2+yFylkPSPDp4k5VRZdpf8AAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/download+%282%29-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/DW24-SVIN-Poster-efb97e.pdf",
+  "filename": "DW24-SVIN-Poster-efb97e.pdf",
+  "mime": "application/pdf",
+  "size": 845412,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": null,
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/files/uploaded/DW24+SVIN+Poster.pdf"
+ },
+ {
+  "url": "/uploads/duda/TigerTrieverIFU_CANADA_ANTRPP3661C_07-Jan-2026-58a58f.pdf",
+  "filename": "TigerTrieverIFU_CANADA_ANTRPP3661C_07-Jan-2026-58a58f.pdf",
+  "mime": "application/pdf",
+  "size": 725924,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": null,
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/files/uploaded/TigerTrieverIFU_CANADA_ANTRPP3661C_07-Jan+2026.pdf"
+ },
+ {
+  "url": "/uploads/duda/2024-9b1831.png",
+  "filename": "2024-9b1831.png",
+  "mime": "image/png",
+  "size": 18037,
+  "width": 595,
+  "height": 441,
+  "alt": "",
+  "key": "duda/2024-9b1831.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/2024-9b1831-e132f0d0-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4WAoAAAAQAAAADwAACwAAQUxQSIgAAAABgBzbtqronIu729Q1CIiDPKg/JxeKIGAuLUObdhTYe6flVccQERMAEkwaSASJYnT+et3UYQG0TnLy+ujDAjtdH85ddTAQ5PzqvSTdtUQMwEpOfx9ao5xtVP8TpTvVUXd+8T60QAwAtro+3OOmvdFIonWUk9NbHwYARDE6fb5s6iCCJCwfAw1BVlA4II4AAABwAgCdASoQAAwAA4BaJbACdAabPnLdlcwymI34AP7xUiQndwsf67/Q/8V2pOd61YFHn0BOaYL/5YUyYpr5WM12zX6g1r3W5wV9fnL/kLzV1AZf/Cg+NObz9Lh5nvH+bRBF2OWbm2Ffx2kAANvjRgtSHCNok1kfOdtn+4609q9tBVwsXPD49WvdXZ8GMAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2024-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/2025-09b67a02-a49bec.png",
+  "filename": "2025-09b67a02-a49bec.png",
+  "mime": "image/png",
+  "size": 70466,
+  "width": 595,
+  "height": 441,
+  "alt": "",
+  "key": "duda/2025-09b67a02-a49bec.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/2025-09b67a02-a49bec-484fa99c-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRj4BAABXRUJQVlA4WAoAAAAQAAAADwAACwAAQUxQSIgAAAABgBzbtqronIu729Q1CIiDPKg/JxeKIGAuLUObdhTYe6flVccQERMAEkwaSASJYnT+et3UYQG0TnLy+ujDAjtdH85ddTAQ5PzqvSTdtUQMwEpOfx9ao5xtVP8TpTvVUXd+8T60QAwAtro+3OOmvdFIonWUk9NbHwYARDE6fb5s6iCCJCwfAw1BVlA4IJAAAACwAgCdASoQAAwAA4BaJbACdH8Aju/jUizik+hoqAAA/vFSI+d24x/rv9D/xXaj52fFf21/NygZtueXJmPDMFsidRceexDCjGLOEFOAvof/nsjUswtA/U26OdI39ONdxPe0WOEQXPLNzaAbI7SAAG3xowId7ioVCkQ0iUOBVgssn+X28j0W7ZNbUZl7PgxgAAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-09b67a02-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/2025-d5a46a.png",
+  "filename": "2025-d5a46a.png",
+  "mime": "image/png",
+  "size": 18225,
+  "width": 595,
+  "height": 441,
+  "alt": "",
+  "key": "duda/2025-d5a46a.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/2025-d5a46a-e9453d32-480w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4WAoAAAAQAAAADwAACwAAQUxQSIgAAAABgBzbtqronIu729Q1CIiDPKg/JxeKIGAuLUObdhTYe6flVccQERMAEkwaSASJYnT+et3UYQG0TnLy+ujDAjtdH85ddTAQ5PzqvSTdtUQMwEpOfx9ao5xtVP8TpTvVUXd+8T60QAwAtro+3OOmvdFIonWUk9NbHwYARDE6fb5s6iCCJCwfAw1BVlA4II4AAABwAgCdASoQAAwAA4BaJbACdAabPnLdlcwymI34AP7xUiQndwsf67/Q/8V2pOd61YFHn0BOaYL/5YUyYpr5WM12zX6g1r3W5wV9fnL/kLzV1AZf/Cg+NObz9Lh5nvH+bRBF2OWbm2Ffx2kAANvjRgtSHCNok1kfOdtn+4609q9tBVwsXPD49WvdXZ8GMAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/2025-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/Artboard-1-c51258.png",
+  "filename": "Artboard-1-c51258.png",
+  "mime": "image/png",
+  "size": 42327,
+  "width": 1200,
+  "height": 450,
+  "alt": "",
+  "key": "duda/Artboard-1-c51258.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/artboard-1-c51258-fce70b1d-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/artboard-1-c51258-fce70b1d-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRogAAABXRUJQVlA4WAoAAAAQAAAADwAABQAAQUxQSDEAAAABYBRJkiL/ApZBDx+zFOzfrIWIEBIkkrzij24gdJc+8IHwotvwfIQbpV179BgSISwMAFZQOCAwAAAA0AEAnQEqEAAGAAOAWiWMAnQAzw6O5pAA/tHeRKIE4kIvfaJlRv1hugldjuaGllAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/Artboard+1-1920w.png"
+ },
+ {
+  "url": "/uploads/duda/MORE-THAN-T13-Tech-Tour-1-47a606.jpg",
+  "filename": "MORE-THAN-T13-Tech-Tour-1-47a606.jpg",
+  "mime": "image/jpeg",
+  "size": 450017,
+  "width": 1920,
+  "height": 1920,
+  "alt": "",
+  "key": "duda/MORE-THAN-T13-Tech-Tour-1-47a606.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-1-47a606-440e3b4d-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-1-47a606-440e3b4d-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-1-47a606-440e3b4d-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADwAQCdASoQABAAA4BaJZQBTAAs3PcGUgAA/u1hdrgMts17xbHvbaVkoZeSKFtaAl79hWMluB7xASYr9y6V92SOkq6ZbBN0Ly4OgFcCM34FwAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-1-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/MORE-THAN-T13-Tech-Tour-2-e48cc4.jpg",
+  "filename": "MORE-THAN-T13-Tech-Tour-2-e48cc4.jpg",
+  "mime": "image/jpeg",
+  "size": 439074,
+  "width": 1920,
+  "height": 1920,
+  "alt": "",
+  "key": "duda/MORE-THAN-T13-Tech-Tour-2-e48cc4.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-2-e48cc4-4f97ecfe-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-2-e48cc4-4f97ecfe-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-2-e48cc4-4f97ecfe-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADQAQCdASoQABAAA4BaJYwAAudI+6r3AAD+7VOJnhnYvPx35isGfBHYfkQzt0YY5+8F14E2HtwvOJ+gufnE0Yowkz1msIg98j2mHe0v6fGoAAAA",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-2-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/MORE-THAN-T13-Tech-Tour-3-602382.jpg",
+  "filename": "MORE-THAN-T13-Tech-Tour-3-602382.jpg",
+  "mime": "image/jpeg",
+  "size": 409154,
+  "width": 1920,
+  "height": 1920,
+  "alt": "",
+  "key": "duda/MORE-THAN-T13-Tech-Tour-3-602382.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-3-602382-61f3ab81-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-3-602382-61f3ab81-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-3-602382-61f3ab81-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwAgCdASoQABAAA4BaJZQAEPw8X8NzySmosfDQAP7h7OeAcHBpFrlNvwCxEZQuVxj1sdxX5MV3heO/UZxaoqrWQeGwiQqxifabhwIhToR55rWutrPPeLT48QX0xtX72ZAAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-3-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/MORE-THAN-T13-Tech-Tour-4-47011a.jpg",
+  "filename": "MORE-THAN-T13-Tech-Tour-4-47011a.jpg",
+  "mime": "image/jpeg",
+  "size": 525704,
+  "width": 1920,
+  "height": 1920,
+  "alt": "",
+  "key": "duda/MORE-THAN-T13-Tech-Tour-4-47011a.jpg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-4-47011a-52889c86-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-4-47011a-52889c86-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/more-than-t13-tech-tour-4-47011a-52889c86-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQAgCdASoQABAAA4BaJZwAAp1RsBG58pAAAP7wRiXb32qCm43OZ+99sP9+TnlexfYLze1oB9q9pyu2fvtX0UwiugTmYeleeTag/bleTASWALYcD2AAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/MORE+THAN-T13+Tech+Tour-4-1920w.jpg"
+ },
+ {
+  "url": "/uploads/duda/T13_TechTour_landscape-694692.jpeg",
+  "filename": "T13_TechTour_landscape-694692.jpeg",
+  "mime": "image/jpeg",
+  "size": 39041,
+  "width": 1024,
+  "height": 256,
+  "alt": "",
+  "key": "duda/T13_TechTour_landscape-694692.jpeg",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/t13-techtour-landscape-694692-9ef61860-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/t13-techtour-landscape-694692-9ef61860-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADQAQCdASoQAAQAA4BaJYwCdAEUlx7TQAD+sjruoc6Ptwf2p/TVBZMVJY/qv8TBmhqAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/dms3rep/multi/opt/T13_TechTour_landscape-1920w.jpeg"
+ },
+ {
+  "url": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+  "filename": "Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+  "mime": "application/pdf",
+  "size": 1585544,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": null,
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/files/uploaded/Comaneci+SUCCESS-jnis-2025.pdf"
+ },
+ {
+  "url": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+  "filename": "long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+  "mime": "application/pdf",
+  "size": 496883,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": null,
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/be427182/files/uploaded/long_term_outcomes_of_temporary_stent_assisted.1879.pdf"
+ },
+ {
+  "url": "/uploads/duda/nVGpaaf1Qhn4FzSmHI6e_Comaneci-Blood-Flow-v-375561.mp4",
+  "filename": "nVGpaaf1Qhn4FzSmHI6e_Comaneci-Blood-Flow-v-375561.mp4",
+  "mime": "video/mp4",
+  "size": 1463281,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": "duda/nVGpaaf1Qhn4FzSmHI6e_Comaneci-Blood-Flow-v-375561.mp4",
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://vid.cdn-website.com/48595db0/videos/nVGpaaf1Qhn4FzSmHI6e_Comaneci+Blood+Flow-v.mp4"
+ },
+ {
+  "url": "/uploads/duda/GmiuX37hStWkhs64aaUW_Comaneci-Blood-Flow_VASO-OUS-APAC--v-3752b4.mp4",
+  "filename": "GmiuX37hStWkhs64aaUW_Comaneci-Blood-Flow_VASO-OUS-APAC--v-3752b4.mp4",
+  "mime": "video/mp4",
+  "size": 1238777,
+  "width": null,
+  "height": null,
+  "alt": "",
+  "key": "duda/GmiuX37hStWkhs64aaUW_Comaneci-Blood-Flow_VASO-OUS-APAC--v-3752b4.mp4",
+  "variants": [],
+  "placeholder": null,
+  "posterUrl": null,
+  "sourceUrl": "https://vid.cdn-website.com/8b5f57de/videos/GmiuX37hStWkhs64aaUW_Comaneci+Blood+Flow_VASO+%28OUS+%2B+APAC%29-v.mp4"
+ },
+ {
+  "url": "/uploads/duda/Screenshot-2025-07-21-at-8.49.02-AM-afbaf7.png",
+  "filename": "Screenshot-2025-07-21-at-8.49.02-AM-afbaf7.png",
+  "mime": "image/png",
+  "size": 915128,
+  "width": 1920,
+  "height": 1098,
+  "alt": "",
+  "key": "duda/Screenshot-2025-07-21-at-8.49.02-AM-afbaf7.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-afbaf7-d4734723-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-afbaf7-d4734723-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-afbaf7-d4734723-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADQAQCdASoQAAkAA4BaJZQAAudS2ghcAAD+56deOSYCHmj1QRO055aabemR2F9cw3ZT0byBnyAAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/9d0280ee/dms3rep/multi/opt/Screenshot+2025-07-21+at+8.49.02-AM-1920w.png?jxl&amp;v=jxl"
+ },
+ {
+  "url": "/uploads/duda/Screenshot-2025-07-21-at-8.49.02-AM-cdaf1f.png",
+  "filename": "Screenshot-2025-07-21-at-8.49.02-AM-cdaf1f.png",
+  "mime": "image/png",
+  "size": 915128,
+  "width": 1920,
+  "height": 1098,
+  "alt": "",
+  "key": "duda/Screenshot-2025-07-21-at-8.49.02-AM-cdaf1f.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-cdaf1f-5263759e-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-cdaf1f-5263759e-960w.webp"
+   },
+   {
+    "w": 1600,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-8-49-02-am-cdaf1f-5263759e-1600w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADQAQCdASoQAAkAA4BaJZQAAudS2ghcAAD+56deOSYCHmj1QRO055aabemR2F9cw3ZT0byBnyAAAA==",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot+2025-07-21+at+8.49.02-AM-1920w.png?jxl&amp;v=jxl"
+ },
+ {
+  "url": "/uploads/duda/Screenshot-2025-07-21-at-9.29.37-AM-352845.png",
+  "filename": "Screenshot-2025-07-21-at-9.29.37-AM-352845.png",
+  "mime": "image/png",
+  "size": 3969578,
+  "width": 1468,
+  "height": 1962,
+  "alt": "",
+  "key": "duda/Screenshot-2025-07-21-at-9.29.37-AM-352845.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-9-29-37-am-352845-2589340f-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-9-29-37-am-352845-2589340f-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JZwAAW9wzdEa6lE16DnQA/tl3jBddsGZMxo6fnI53JOvKAJdSabKG1RANxVhm8hdKeasjg6arAER0ZwsPXki7HEeObVeo5jGy+vNu3FVT15VT6rtc4hO2ne39Ol/Zmb70K6sWEAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/8b5f57de/dms3rep/multi/opt/Screenshot+2025-07-21+at+9.29.37-AM-1920w.png?jxl&amp;v=jxl"
+ },
+ {
+  "url": "/uploads/duda/Screenshot-2025-07-21-at-9.29.37-AM-962785f2-ffcfd5.png",
+  "filename": "Screenshot-2025-07-21-at-9.29.37-AM-962785f2-ffcfd5.png",
+  "mime": "image/png",
+  "size": 3969578,
+  "width": 1468,
+  "height": 1962,
+  "alt": "",
+  "key": "duda/Screenshot-2025-07-21-at-9.29.37-AM-962785f2-ffcfd5.png",
+  "variants": [
+   {
+    "w": 480,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-9-29-37-am-962785f2-ffcfd5-10237b36-480w.webp"
+   },
+   {
+    "w": 960,
+    "url": "/uploads/duda/variants/screenshot-2025-07-21-at-9-29-37-am-962785f2-ffcfd5-10237b36-960w.webp"
+   }
+  ],
+  "placeholder": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JZwAAW9wzdEa6lE16DnQA/tl3jBddsGZMxo6fnI53JOvKAJdSabKG1RANxVhm8hdKeasjg6arAER0ZwsPXki7HEeObVeo5jGy+vNu3FVT15VT6rtc4hO2ne39Ol/Zmb70K6sWEAA=",
+  "posterUrl": null,
+  "sourceUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/Screenshot+2025-07-21+at+9.29.37-AM-962785f2-1920w.png?jxl&amp;v=jxl"
  }
 ]

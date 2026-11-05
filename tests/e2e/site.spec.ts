@@ -9,6 +9,14 @@ for (const path of PUBLIC) {
   });
 }
 
+test("seeded pages and bios keep their text", async ({ page }) => {
+  await page.goto("/terms");
+  await expect(page.locator("main")).toContainText("Rapid Medical");
+  expect((await page.locator("main").innerText()).length).toBeGreaterThan(2000);
+  await page.goto("/team/ronen");
+  expect((await page.locator("main").innerText()).length).toBeGreaterThan(200);
+});
+
 test("legacy URLs redirect", async ({ request }) => {
   for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"]]) {
     const res = await request.get(from, { maxRedirects: 0 });

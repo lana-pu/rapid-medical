@@ -36,6 +36,7 @@
 | `APP_PORT`, `DB_PORT` | `docker-compose.yml` | нет |
 | `NEXT_PUBLIC_DEMO`, `NEXT_PUBLIC_BASE_PATH` | демо-сборка (`src/lib/demo.ts`, `next.config.ts`) | только демо |
 | `DEMO_BASE_PATH`, `DEMO_PORT`, `DEMO_SITE_URL`, `SKIP_BUILD` | `scripts/export-demo.ts` | только демо |
+| `E2E_BASE_URL` | `playwright.config.ts` | только тесты |
 | `VERCEL`, `NODE_ENV` | системные: блок загрузок на Vercel при `local`; HSTS и `secure`-cookie в production | — |
 
 Дефолты в `docker-compose.yml` (только для локального запуска): `AUTH_SECRET=local-dev-secret-…`,
@@ -56,8 +57,8 @@
 подключения Vercel каждый push в `main` = деплой — тогда правило в `docs/rules/commits.md` ужесточается.
 
 ## Хранилище медиа
-- `local`: `public/uploads/<yyyy-mm>/<name>-<hex>.<ext>` + варианты/постеры. Сейчас **~270 МБ закоммичено в
-  git** (`public/uploads`, 197 файлов, 36 видео по README) — временно, «until S3 is configured» (`.gitignore`).
+- `local`: `public/uploads/<yyyy-mm>/<name>-<hex>.<ext>` + варианты/постеры. Сейчас **~300 МБ закоммичено в
+  git** (`public/uploads`, 240 записей медиатеки, 50 видео, плюс WebP-варианты) — временно, «until S3 is configured» (`.gitignore`).
 - `s3`: любой S3-совместимый бакет (AWS S3, Cloudflare R2, Backblaze, MinIO); `S3_PUBLIC_URL` — CDN перед бакетом.
 - Перенос существующих файлов в бакет — «todo when hosting is decided» (README).
 - Duda CDN (`irp.cdn-website.com`, `lirp.cdn-website.com`) разрешён в `images.remotePatterns` до конца миграции.
@@ -75,6 +76,9 @@ Playwright chromium → `npm run test:e2e`; при падении — артеф
 `GET /api/health` (select 1, 200/503). Внешнего аптайм-мониторинга, error-трекинга, бэкапов БД в репозитории
 не настроено (не подтверждено вне репо).
 
-## Ветки (локальные ссылки, без fetch)
-`main` (= `59169da`), `origin/gh-pages`, `origin/docs/tigertriever-ux-2026-11-05` (UX-ресёрч по
-Tigertriever, ответвлена от `5b1f8c0`, в `main` не влита).
+## Ветки
+`main` и `gh-pages` (статическое демо). Ресёрч Tigertriever влит в `main` (`docs/tigertriever/`), отдельной ветки нет.
+
+## Duda
+Сырой краул `content/raw/` (8 МБ) в git не входит: пересоздаётся `npm run duda:scrape`. Краулер читает sitemap всех хостов.
+Обновить инвентарь: `npx tsx scripts/audit-duda.ts > content/audit.md`.

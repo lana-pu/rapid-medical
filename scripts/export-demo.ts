@@ -56,6 +56,7 @@ async function main() {
   const ids: Record<string, number[]> = {};
   for (const r of resources) ids[r] = (await sql.unsafe<{ id: number }[]>(`select id from "${table[r] ?? r}" order by id`)).map((x) => x.id);
   const media = await sql<{ id: number; url: string; filename: string; mime: string; size: number; alt: string; createdAt: Date }[]>`select id, url, filename, mime, size, alt, created_at as "createdAt" from media where url like '/uploads/%' order by id desc`;
+  const hiddenPages = await sql<{ slug: string; region: string | null }[]>`select slug, region from pages where noindex and status = 'published'`;
   await sql.end();
 
   try {
@@ -90,6 +91,7 @@ async function main() {
   const sm = await (await fetch(`${ORIGIN}${BASE}/sitemap.xml`)).text();
   const paths = Array.from(sm.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => new URL(m[1]).pathname.replace(new RegExp(`^${BASE}`), "") || "/");
   for (const extra of ["/us", "/ous", "/apac", "/this-page-does-not-exist"]) paths.push(extra);
+  for (const p of hiddenPages) paths.push(p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`); // noindex pages are not in the sitemap
   let n = 0;
   for (const p of paths) {
     const r = await get(p);

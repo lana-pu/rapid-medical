@@ -40,7 +40,7 @@ npm run dev                     # http://localhost:3000  ·  admin: /admin
 | `/about-us`, `/team/[slug]` | About + leadership + offices + **interactive world map** (hover regions, click → regional contact) |
 | `/careers`, `/open-positions`, `/open-positions/[slug]` | Careers + jobs |
 | `/contact-us` | Contact form (`?region=us&topic=demo` preselects) |
-| `/privacy-statement`, `/terms`, … | Generic Markdown pages (global or regional) |
+| `/privacy-statement`, `/terms`, … | Generic rich-text pages (global or regional) |
 
 Region is **in the path**, not in a cookie, so Google indexes US and OUS regulatory text separately. The last-visited region is remembered in a cookie only to pick the right "Our Therapies" menu.
 
@@ -50,7 +50,7 @@ Region is **in the path**, not in a cookie, so Google indexes US and OUS regulat
 
 ## Admin (`/admin`)
 
-Email + password, roles `admin` / `editor`. Content types:
+Email + password, roles `admin` / `approver` / `editor`. Content types:
 
 - **Therapies** (structured: hero, benefits, overview, specs, how-it-works, in-practice, actions, regulatory, references)
 - **Evidence** (publications with product, region, DOI/PDF)
@@ -58,7 +58,7 @@ Email + password, roles `admin` / `editor`. Content types:
 - **Pages** (rich-text body; global or regional; noindex flag for campaign landing pages)
 - **Products** (families + variants, per-region Evidence tabs, region aliases such as COLUMBUS™ in APAC)
 - **Site settings** (contact + office pins, social, branding, integrations, home, about, careers, evidence, therapies landing ×3, regional notices)
-- **Media** (upload; stored locally in `public/uploads`, S3 driver stub in `src/lib/storage.ts`)
+- **Media** (upload; stored locally in `public/uploads`, S3 driver in `src/lib/storage.ts`)
 - **Form submissions** (contact / webinar / careers, with status)
 - **Redirects**, **Users** (admin only)
 
@@ -123,20 +123,20 @@ scripts/seed.ts            seed/* → database
 scripts/migrate-media.ts   download every Duda CDN asset, register in media, rewrite references
 ```
 
-Current import: 13 therapy pages, 102 publications, 53 news items, 5 webinars, 6 team members, 14 pages, 197 media files (incl. 36 videos, ~260 MB).
+Current import: 13 therapy pages, 102 publications, 53 news items, 5 webinars, 6 team members, 17 pages, 240 media files (incl. 50 videos, ~300 MB with variants).
+
+Pages that are not migrated (past events, brochure form) are archived in `content/duda-archive.md`. `scripts/scrape-duda.ts` reads the sitemaps too, so unlinked pages are found. Duda is still being edited: re-crawl and compare before launch.
 
 ### Known content issues carried over from Duda (need a human decision)
 
-- **US Aneurysm page** embeds OUS overview/spec images and links to `apac.rapid-medical.com` on the live site. Reproduced as-is; flagged in `content/seed/solutions.ts`.
-- **Access (Drivewire) pages** have no text at all on the live site — the copy is baked into images. Placeholders left in the admin.
-- **Specifications** are screenshots on Duda. The schema has `specImageUrls` for now; replace with a real table once the design is settled.
+- **US Aneurysm page** still uses an OUS diagram; flagged in `content/seed/solutions.ts`.
 - "Dr. Rishi Gupta – TICI 3" case on US LVO was a Wix-hosted PDF viewer; link needs a proper PDF.
 - Form recipient addresses are set server-side on Duda and not visible in the HTML — configure `MAIL_TO` (and per-form routing if needed in `src/lib/forms.ts`).
 - APAC MVO "Comfort of control" and a few APAC blocks use OUS imagery where APAC had none.
 
 ## Media & videos
 
-The site uses ~36 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same media field in the admin. Rich-text fields accept videos and YouTube embeds from the toolbar.
+The site uses ~50 background / explainer videos (hero loops, animated graphs, how-it-works steps). They are stored like any other upload and set via the same media field in the admin. Rich-text fields accept videos and YouTube embeds from the toolbar.
 
 **Pipeline** (`src/lib/media.ts`, `src/lib/images.ts`): every uploaded raster image gets WebP variants at 480 / 960 / 1600 px (never upscaled) and a 16-px blur placeholder; every video gets a poster frame via ffmpeg. The site's `<Img>` / `<Video>` primitives emit `srcset`/`sizes`, intrinsic dimensions and the poster automatically for library files. `npm run media:process` backfills files imported before the pipeline existed.
 
@@ -172,7 +172,7 @@ Submissions are stored in `contact_submissions` and emailed via SMTP (`SMTP_*` i
 
 ### Any other Node host
 
-Railway, Fly, a VPS with PM2 or Docker (`Dockerfile` / `docker-compose.yml`). Needs `DATABASE_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, SMTP; run `npx tsx scripts/bootstrap.ts` before `next start` (the Docker image does). For multi-instance hosting switch `STORAGE_DRIVER` to S3 and move the login rate limiter to Redis.
+Railway, Fly, a VPS with PM2 or Docker (`Dockerfile` / `docker-compose.yml`). Needs `DATABASE_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, SMTP; run `npx tsx scripts/bootstrap.ts` before `next start` (the Docker image does). For multi-instance hosting switch `STORAGE_DRIVER` to S3 and move the form rate limiter to Redis.
 
 Point `www`, `us`, `ous` and `apac` DNS at the app; the proxy handles the legacy subdomain redirects.
 

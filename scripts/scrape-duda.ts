@@ -166,7 +166,23 @@ async function crawl(url: string) {
   console.log(`✓ ${url}  (${rec.images.length} img, ${rec.files.length} files)`);
 }
 
+/** Pages that nothing links to (PDF wrappers, event forms) are only listed in the sitemaps. */
+async function seedFromSitemaps() {
+  for (const host of HOSTS) {
+    const res = await fetch(`https://${host}/sitemap.xml`, { headers: { "user-agent": "Mozilla/5.0 (migration bot)" } });
+    if (!res.ok) {
+      broken.push(`${res.status} https://${host}/sitemap.xml`);
+      continue;
+    }
+    for (const m of (await res.text()).matchAll(/<loc>\s*([^<\s]+)/g)) {
+      const n = normalize(m[1], `https://${host}/`);
+      if (n) queue.push(n);
+    }
+  }
+}
+
 async function main() {
+  await seedFromSitemaps();
   await mkdir(OUT, { recursive: true });
   while (queue.length) {
     const next = queue.shift()!;

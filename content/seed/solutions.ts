@@ -353,9 +353,9 @@ const VASO_REFERENCES = `1. Kassell NF, Sasaki T, Colohan AR, Nazar G. Cerebral 
 4. Data on file
 5. Hensler J, Larsen N, Wodarg F, et al. P099 Multi-center study to assess effectiveness of the comaneci device in the treatment of symptomatic cerebral vasospasm following aneurysmal subarachnoid hemorrhage (SAH) – interim results. Journal of NeuroInterventional Surgery 2024;16:A88.`;
 
-const DRIVEWIRE_IFU = `**Indications for Use.** The Drivewire 24 Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
-
-**Contraindications.** Drivewire™ 24 Guidewire is contraindicated for patients with known hypersensitivity to nickel-titanium and patients with stenosis and/or pre-existing stent proximal to the target site that may preclude safe navigation of the device.`;
+const DRIVEWIRE_IFU = `**Indications for Use.** The Drivewire 24 Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.`;
+// US wording changed on Duda (crawl of 2026-11-05); OUS and APAC keep the "Drivewire 24" text.
+const DRIVEWIRE_IFU_US = `**Indications for Use.** The Drivewire Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire Guidewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.`;
 
 /* ------------------------------------------------------------------ */
 /*  Actions per region                                                   */
@@ -380,7 +380,8 @@ const ACTIONS: Record<Region, ActionLink[]> = {
 };
 
 const demo = (r: Region): ActionLink => ({ label: "Request a demo", href: `/contact-us?region=${r}&topic=demo` });
-const CLOSING_Q = "Questions? Reach out to learn more about our company and stroke solutions.";
+const CLOSING_Q = "Questions? Reach out to learn more about our company and devices.";
+const CLOSING_Q_APAC = "Questions? Reach out to learn more about our company and stroke solutions.";
 
 const samaniego = (site: string, img: string): InPracticeItem => ({
   kind: "recording",
@@ -399,7 +400,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== US ============================== */
   {
     slug: "lvo", region: "us", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "OUR SOLUTIONS / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "Therapies / Large vessel stroke",
     metaTitle: "Neurovascular Therapy | Rapid Medical™ | US",
     metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment. Contact us to improve patient outcomes today!",
     heroTitle: "A patient-centric approach to AIS",
@@ -426,7 +427,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "us", product: "comaneci", sortOrder: 2,
-    navLabel: "Aneurysm", breadcrumb: "OUR SOLUTIONS / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "Therapies / Aneurysm",
     metaTitle: "Neurovascular Therapy for Aneurysms | Rapid Medical™ | US",
     metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
     heroTitle: "Bridging the gap in assist devices",
@@ -477,13 +478,13 @@ export const SOLUTIONS: SolutionSeed[] = [
     howItWorks: [], inPractice: [],
     actionLinks: ACTIONS.us, actionNote: "Canada: orders.canada@rapid-medical.com",
     webinarCtaEnabled: false,
-    regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
+    regulatoryHtml: DRIVEWIRE_IFU_US, referencesHtml: "",
   },
 
   /* ============================== OUS ============================= */
   {
     slug: "lvo", region: "ous", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "OUR SOLUTIONS / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "Therapies / Large vessel stroke",
     metaTitle: "Neurovascular Therapy | Rapid Medical™ | OUS",
     metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment.",
     heroTitle: "A patient-centric approach to AIS",
@@ -508,7 +509,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "mvo", region: "ous", product: "tigertriever-13", sortOrder: 2,
-    navLabel: "Medium vessel stroke", breadcrumb: "OUR SOLUTIONS / MEDIUM VESSEL STROKE",
+    navLabel: "Medium vessel stroke", breadcrumb: "Therapies / Medium vessel stroke",
     metaTitle: "Medium Vessel Stroke | TIGERTRIEVER™ 13 | Rapid Medical™ | OUS",
     metaDescription: "TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.",
     heroTitle: "The only device designed for distals",
@@ -541,7 +542,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "ous", product: "comaneci", sortOrder: 3,
-    navLabel: "Aneurysm", breadcrumb: "OUR SOLUTIONS / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "Therapies / ANEURYSM",
     metaTitle: "Aneurysm Treatment | Rapid Medical™ | OUS",
     metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
     heroTitle: "Bridging the gap in assist devices",
@@ -570,7 +571,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "vasospasm", region: "ous", product: "comaneci", sortOrder: 4,
-    navLabel: "Vasospasm", breadcrumb: "OUR SOLUTIONS / VASOSPASM",
+    navLabel: "Vasospasm", breadcrumb: "Therapies / VASOSPASM",
     metaTitle: "Cerebral Vasospasm Therapy | Rapid Medical™ | OUS",
     metaDescription: "COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm.",
     heroTitle: "Take command in vasospasm",
@@ -643,7 +644,7 @@ export const SOLUTIONS: SolutionSeed[] = [
     ],
     actionLinks: ACTIONS.apac,
     closingTitle: "Active thrombectomy tailors the procedure to the patient.",
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     closingEmbedUrl: TIGER_YOUTUBE,
     regulatoryHtml: "", referencesHtml: TIGER_REFERENCES,
   },
@@ -678,7 +679,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
     referencesHtml: MVO_REFERENCES,
   },
@@ -706,7 +707,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "", referencesHtml: COMANECI_REFERENCES,
   },
   {
@@ -730,7 +731,7 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
