@@ -1,0 +1,25 @@
+ID,Decision or hypothesis,Decision class,Evidence,Validation and owner
+D01,Rapid Medical owns approved clinical content,Fixed responsibility,C,Client confirms approval contacts
+D02,"UX team owns IA, UI and evaluations",Fixed responsibility,Brief,Designer executes
+D03,No inferred cross-market content substitution,Fixed safety guardrail,C/P/D,Test invalid scope case
+D04,Exact configuration and release context is visible,Fixed design requirement,C/P/D,Comprehension task
+D05,Adaptive entry using package manifest,Working recommendation,IA alternatives/D,First-click study
+D06,One stage renderer: direct + sequential entry,Working recommendation,C/R/O,Find-stage task
+D07,Eight Tiger procedure stages with typed intro/outro,Working source interpretation,C,Check approved program source
+D08,Stage media and text visually associated,Working recommendation,R/O,Low-fi comprehension test
+D09,Desktop stage rail; narrow-screen collapsed index,Working layout hypothesis,O/D,Compare layouts
+D10,Compare entry from overview and stage,Working recommendation,C/D,Discovery/return task
+D11,Two-column independent-video Compare desktop,Working layout hypothesis,R/O/D,Compare vs guided summary
+D12,A/B vs stacked on narrow screens,Unresolved design hypothesis,D,Test alternatives
+D13,Compare pair requires explicit eligibility,Fixed content-governance requirement,C/D,Missing B scenario
+D14,Model comparison only for approved comparable fields,Fixed data constraint,C/P,Coverage check
+D15,Supplemental resources contextual not top-level by format,Working recommendation,P/O/D,Find-reference task
+D16,Program-first Content Studio,Working recommendation,C/O/D,2–4 editor tasks
+D17,Impact review before changing shared media,Proposed required workflow safeguard,C/O/D,Replace-video task
+D18,"Draft, Approved, Released, Distributed separate",Fixed conceptual invariant,O/T,State comprehension
+D19,Editor preview uses learner renderer,Working requirement,O/D,Compare actual offline output
+D20,Immutable per-release manifest/snapshot,Fixed technical contract,T/O,Deterministic rebuild test
+D21,Standalone ZIP packaging path TBD,Open technical decision,T,Compatibility spike
+D22,Marketing/site facts not automatic medical guidance,Fixed sourcing boundary,C/P,Content intake audit
+D23,Release phases kept out of clinician navigation,Fixed IA principle,C/D,Review stage sitemap
+D24,No scope claim about earlier budget for production system,Fixed project constraint,Project,Re-estimate after P0

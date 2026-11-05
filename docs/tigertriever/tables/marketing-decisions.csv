@@ -1,0 +1,11 @@
+index,Question ID,Ask marketing,Why now,Category
+0,SCOPE-09,Can you share the exact Option #3 accepted proposal/PO scope and exclusions?,Must distinguish accepted concept from $950 contracted deliverables,Contract / commercial
+1,SCOPE-07,"Which models, handle variants and markets must ship first, and is 17U included?",Limits first release and comparison pairs,Content coverage
+2,SCOPE-08,"Which videos are available, pending review or still to be filmed for each stage/configuration?",Determines playable and comparable stages,Media readiness
+3,SCOPE-02,"What was promised by Quick Reference — direct stage access, separate export, or separate mode?",Ensures functional client request is preserved,Functional scope
+4,SCOPE-01,"Does approved Option #3 include an interactive T13 knob mechanism demonstration, or is it optional?",Interaction is different from a passive explainer,Functional scope
+5,SCOPE-03,Is short WhatsApp video a separate delivery expectation or outside this phase?,"Explicit July brief, unclear final contract",Separate output
+6,SCOPE-04,Is there also a hosted learner-facing webpage or only offline learner + online admin?,Changes hosting and distribution architecture,Distribution
+7,SCOPE-05,"Which target devices/browsers matter for the first release (hospital desktops, tablets, phones)?",Needed for offline spike/responsive scope,Technology
+8,MED-05,Who supplies and clinically approves precise compare-ready media/pair differences?,Safe comparison must not infer medical equivalence,Content approval
+9,MED-08,Who can approve training content and authorize a new downloadable release?,Defines status/permission workflow,Editorial operations
