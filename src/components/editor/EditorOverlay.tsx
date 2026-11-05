@@ -3,9 +3,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { readField, saveField, pendingFor, publishTargets, discardTargets, submitTargetsForReview, type PendingItem, type InlineKind } from "@/admin/inline";
+import * as live from "@/admin/inline";
+import type { PendingItem, InlineKind } from "@/admin/inline";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { RichText } from "@/components/admin/RichText";
+import { DEMO, withBase } from "@/lib/demo";
+import { demoApi, applyDemoState, demoEditorOff, setDemoEditorOff } from "./demo-store";
+
+// Static demo build: edits live in the visitor's browser; otherwise server actions + workflow.
+const { readField, saveField, pendingFor, publishTargets, discardTargets, submitTargetsForReview } = DEMO ? demoApi : live;
 
 
 type Tag = { r: string; id: number; f: string; k: "text" | "rich" | "link" | "media"; fh?: string; fv?: string };
@@ -34,6 +40,7 @@ function parse(el: Element): Tag | null {
 export default function EditorOverlay() {
   const router = useRouter();
   const pathname = usePathname();
+  const [off, setOff] = useState(false);
   const [active, setActive] = useState<Active | null>(null);
   const [pending, setPending] = useState<{ items: PendingItem[]; canPublishAll: boolean; requireApproval: boolean; user: { name: string; role: string } } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -64,17 +71,28 @@ export default function EditorOverlay() {
   }, [targetsOnPage, say]);
 
   useEffect(() => {
-    const t = setTimeout(refreshPending, 50);
+    const t = setTimeout(() => {
+      if (DEMO) {
+        applyDemoState();
+        setOff(demoEditorOff());
+      }
+      void refreshPending();
+    }, 50);
     return () => clearTimeout(t);
   }, [refreshPending, pathname]);
+
+  const refresh = useCallback(() => {
+    if (DEMO) applyDemoState();
+    else router.refresh();
+  }, [router]);
 
   const save = useCallback(
     async (tag: { r: string; id: number; f: string }, kind: InlineKind, value: unknown) => {
       setBusy("Saving…");
       try {
         const res = await saveField(tag, kind, value);
-        say(res.pending ? "Saved as pending change" : "Saved");
-        router.refresh();
+        say(DEMO ? "Saved in this browser (demo)" : res.pending ? "Saved as pending change" : "Saved");
+        refresh();
         await refreshPending();
         return true;
       } catch (e) {
@@ -84,7 +102,7 @@ export default function EditorOverlay() {
         setBusy(null);
       }
     },
-    [router, refreshPending, say],
+    [refresh, refreshPending, say],
   );
 
   /* ---- inline plain text ---- */
@@ -168,8 +186,8 @@ export default function EditorOverlay() {
     setBusy("Publishing…");
     try {
       const r = await publishTargets(targetsOnPage());
-      say(r.published ? `Published ${r.published} change${r.published > 1 ? "s" : ""}` : r.blocked.length ? `Blocked: ${r.blocked.join(", ")}` : "Nothing to publish");
-      router.refresh();
+      say(r.published ? `Published ${r.published} change${r.published > 1 ? "s" : ""}${DEMO ? " (demo: only in this browser)" : ""}` : r.blocked.length ? `Blocked: ${r.blocked.join(", ")}` : "Nothing to publish");
+      refresh();
       await refreshPending();
     } finally {
       setBusy(null);
@@ -181,7 +199,7 @@ export default function EditorOverlay() {
     try {
       const n = await discardTargets(targetsOnPage());
       say(n ? `Discarded ${n}` : "Nothing to discard");
-      router.refresh();
+      refresh();
       await refreshPending();
     } finally {
       setBusy(null);
@@ -200,11 +218,26 @@ export default function EditorOverlay() {
   };
 
   const count = pending?.items.length ?? 0;
-  const adminHref = pending?.items[0]?.href ?? "/admin";
+  const adminHref = pending?.items[0]?.href ?? withBase("/admin");
+
+  if (off) {
+    return (
+      <div id="rm-editor-ui">
+        <button type="button" onClick={() => { setDemoEditorOff(false); setOff(false); }} className="fixed bottom-4 right-4 z-[1000] rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white shadow-xl hover:bg-neutral-700">
+          ✎ Edit this page (demo)
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div id="rm-editor-ui">
       <style>{STYLE}</style>
+      {DEMO && (
+        <div className="fixed inset-x-0 top-0 z-[1000] bg-amber-400 px-4 py-1 text-center text-xs font-medium text-black">
+          Demo — edits are saved only in your browser (localStorage). No server, no database.
+        </div>
+      )}
 
       {/* bottom toolbar */}
       <div className="fixed inset-x-0 bottom-0 z-[1000] border-t border-neutral-800 bg-neutral-900 text-white shadow-2xl">
@@ -223,7 +256,11 @@ export default function EditorOverlay() {
           )}
           {count > 0 && <button type="button" disabled={!!busy} onClick={doDiscard} className="rounded border border-neutral-600 px-3 py-1.5 text-sm hover:bg-neutral-800 disabled:opacity-50">Discard</button>}
           <a href={adminHref} className="rounded border border-neutral-600 px-3 py-1.5 text-sm hover:bg-neutral-800">Open in admin</a>
-          <a href={`/api/editor?off=1&redirect=${encodeURIComponent(pathname)}`} className="rounded px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800">Exit editor</a>
+          {DEMO ? (
+            <button type="button" onClick={() => { setDemoEditorOff(true); setOff(true); }} className="rounded px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800">View as visitor</button>
+          ) : (
+            <a href={`/api/editor?off=1&redirect=${encodeURIComponent(pathname)}`} className="rounded px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800">Exit editor</a>
+          )}
         </div>
         {showList && count > 0 && (
           <ul className="mx-auto max-w-6xl divide-y divide-neutral-800 border-t border-neutral-800 px-4 text-xs">

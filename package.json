@@ -18,6 +18,7 @@
     "duda:media": "tsx --env-file=.env scripts/migrate-media.ts",
     "setup": "tsx --env-file=.env scripts/bootstrap.ts",
     "media:process": "tsx --env-file=.env scripts/process-media.ts",
+    "demo:export": "tsx --env-file=.env scripts/export-demo.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "npm run lint && npm run typecheck && npm test"

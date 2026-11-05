@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { destroySession, requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { RESOURCES } from "@/admin/resources";
+import { DEMO, withBase } from "@/lib/demo";
 
 export const metadata = { title: "Rapid Medical · Admin" };
 
@@ -51,11 +52,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <button className="underline hover:text-neutral-900">Sign out</button>
           </form>
           <Link href="/" className="mt-1 block underline hover:text-neutral-900" target="_blank">View site ↗</Link>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- route handler: needs a full navigation */}
-          <a href="/api/editor?on=1&redirect=%2F" className="mt-1 block underline hover:text-neutral-900">Edit site ✎</a>
+          <a href={DEMO ? withBase("/") : "/api/editor?on=1&redirect=%2F"} className="mt-1 block underline hover:text-neutral-900">Edit site ✎</a>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-8">{children}</main>
+      <main className="min-w-0 flex-1 p-8">
+        {DEMO && <div className="mb-6 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">Admin preview (demo): everything is clickable, but Save / Publish only show a confirmation — nothing is stored.</div>}
+        {children}
+      </main>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { getResource } from "@/admin/resources";
 import { getEditable, hasWorkflow, listRevisions, workflowSettings } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
+import { DEMO, withBase } from "@/lib/demo";
 import { duplicateResource } from "@/admin/actions";
 import { PageHeader, LinkButton, Notice, Button } from "@/components/admin/ui";
 import { ResourceForm } from "@/components/admin/ResourceForm";
@@ -28,7 +29,7 @@ export default async function EditResource({ params, searchParams }: { params: P
   const { row, draft, live } = editable;
 
   const previewPath = res.previewUrl?.(row) ?? null;
-  const previewHref = previewPath ? `/api/preview?token=${await makePreviewToken(previewPath)}` : null;
+  const previewHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/preview?token=${await makePreviewToken(previewPath)}`) : null;
   const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => r !== row.region) : [];
 
   return (
@@ -65,7 +66,7 @@ export default async function EditResource({ params, searchParams }: { params: P
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} />
         </div>
         {hasWorkflow(res) && (
-          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={previewPath ? `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}` : null} />
+          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null} />
         )}
       </div>
     </>

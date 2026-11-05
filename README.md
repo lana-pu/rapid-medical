@@ -166,6 +166,10 @@ Submissions are stored in `contact_submissions` and emailed via SMTP (`SMTP_*` i
 3. **Media uploads** — the committed `public/uploads` is served read-only on Vercel; *new* uploads from the admin need S3-compatible storage (Cloudflare R2 / AWS S3 / Backblaze): set `STORAGE_DRIVER=s3` and the `S3_*` variables, then run `scripts/migrate-media.ts`-style copy of `public/uploads` to the bucket (todo when hosting is decided). Until then the admin shows a clear “uploads not available on this host” message.
 4. **Scheduled publishing** — Vercel Hobby runs crons once a day (`vercel.json`: 05:00 UTC); on Pro set `*/5 * * * *`.
 
+### Static demo (GitHub Pages, no server)
+
+`npm run demo:export` builds the app with `NEXT_PUBLIC_DEMO=1` + `basePath=/rapid-medical`, crawls every public page and the admin, and writes a fully static site to `out/`. Publish `out/` to the `gh-pages` branch → https://lana-pu.github.io/rapid-medical/. In this mode the on-page editor is always on and saves to the visitor's localStorage (“Publish” just flips a flag, “View as visitor” hides the outlines), the media picker reads `demo/media.json`, admin forms show a “saved (demo)” toast, any login works. It is a simulation for reviewing look & feel and editing UX — nothing is stored. Code: `src/lib/demo.ts`, `src/components/editor/demo-store.ts`, `src/components/editor/DemoShell.tsx`, `scripts/export-demo.ts`.
+
 ### Any other Node host
 
 Railway, Fly, a VPS with PM2 or Docker (`Dockerfile` / `docker-compose.yml`). Needs `DATABASE_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, SMTP; run `npx tsx scripts/bootstrap.ts` before `next start` (the Docker image does). For multi-instance hosting switch `STORAGE_DRIVER` to S3 and move the login rate limiter to Redis.

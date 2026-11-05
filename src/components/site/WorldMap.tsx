@@ -1,5 +1,7 @@
 "use client";
 
+import { withBase } from "@/lib/demo";
+
 import { useEffect, useRef, useState } from "react";
 import { geoEqualEarth, geoPath } from "d3-geo";
 import { feature, mesh, merge } from "topojson-client";
@@ -56,7 +58,7 @@ export function WorldMap({ offices, links, fallbackImageUrl, className = "" }: W
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/map/countries-50m.json")
+    fetch(withBase("/map/countries-50m.json"))
       .then((r) => r.json())
       .then((topo: Topology<{ countries: GeometryCollection }>) => {
         if (cancelled) return;

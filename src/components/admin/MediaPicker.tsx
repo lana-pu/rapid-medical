@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { DEMO, withBase } from "@/lib/demo";
 
 export type MediaItem = { id: number; url: string; filename: string; mime: string; size: number; alt: string; createdAt: string };
 export type MediaKind = "image" | "video" | "pdf" | "any";
@@ -22,6 +23,15 @@ export function MediaPicker({ kind = "any", onPick, onClose }: { kind?: MediaKin
   const load = useCallback(async () => {
     setBusy(true);
     try {
+      if (DEMO) {
+        // static demo: the whole library as one JSON file, filtered here
+        const all = (await (await fetch(withBase("/demo/media.json"))).json()) as MediaItem[];
+        const want = type === "image" ? /^image\// : type === "video" ? /^video\// : type === "pdf" ? /pdf/ : /./;
+        const hit = all.filter((m) => want.test(m.mime) && (!q || (m.filename + " " + m.alt).toLowerCase().includes(q.toLowerCase())));
+        setItems(hit.slice((page - 1) * 48, page * 48));
+        setTotal(hit.length);
+        return;
+      }
       const res = await fetch(`/api/admin/media?q=${encodeURIComponent(q)}&type=${type === "any" ? "" : type}&page=${page}`);
       const json = await res.json();
       setItems(json.items ?? []);
@@ -43,6 +53,7 @@ export function MediaPicker({ kind = "any", onPick, onClose }: { kind?: MediaKin
     setBusy(true);
     setErr(null);
     try {
+      if (DEMO) throw new Error("Demo mode: uploads are not available (no server). Pick an existing file instead.");
       for (const f of Array.from(files)) {
         const fd = new FormData();
         fd.append("file", f);

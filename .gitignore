@@ -49,3 +49,6 @@ next-env.d.ts
 # tests
 /test-results/
 /playwright-report/
+
+# static demo export (scripts/export-demo.ts)
+/out/

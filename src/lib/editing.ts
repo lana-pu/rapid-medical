@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { cookies, draftMode } from "next/headers";
 import { getSession, type SessionUser } from "./auth";
+import { DEMO } from "./demo";
 
 export const EDIT_COOKIE = "rm_edit";
 
@@ -13,6 +14,7 @@ export const EDIT_COOKIE = "rm_edit";
  * Cached per request so every <E> wrapper on a page shares one lookup.
  */
 export const editingUser = cache(async (): Promise<SessionUser | null> => {
+  if (DEMO) return { id: 0, email: "demo", name: "Demo editor", role: "admin" }; // static demo: editor always on, saves stay in the browser
   try {
     const [dm, jar] = await Promise.all([draftMode(), cookies()]);
     if (!dm.isEnabled || jar.get(EDIT_COOKIE)?.value !== "1") return null;
