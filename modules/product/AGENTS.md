@@ -20,6 +20,7 @@
 | Начало ресёрча: какое решение принимаем, вопросы, допущения, рамки, план — скилл `/research-frame` | `prompts/research-frame.md` |
 | Контекст и рынок: аудитория, цены, ограничения, темы, требования — скилл `/desk-research` | `prompts/desk-research.md` |
 | Конкуренты: карта рынка, профили, за что платят, мы в сравнении — скилл `/competitor-research` | `prompts/competitor-research.md` |
+| Как работают сегодня: участники, путь, обходные приёмы — скилл `/current-process` | `prompts/current-process.md` |
 | Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;
