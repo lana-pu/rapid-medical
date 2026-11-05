@@ -52,6 +52,8 @@ def main():
         detail.update({d["id"]: d for d in load(p)})
 
     table, details = [], []
+    for col in cfg.get("how", []):
+        table.append({"type": "table", "head": ["Что", "Как читать"], "rows": [list(pair) for pair in col]})
     for b in cfg["buckets"]:
         rows = [r for r in F if r["prio"] == b["key"]]
         if not rows:
@@ -81,6 +83,8 @@ def main():
             names = [f"{refs[x][0]} (L{refs[x][1]})" if len(refs[x]) > 1 and refs[x][1] else refs[x][0] for x in r.get("refs", []) if x in refs]
             if names:
                 blocks.append({"type": "text", "t": "**Источники.** " + "; ".join(names)})
+            if r.get("comp"):
+                blocks.append({"type": "text", "t": f"**Конкуренты коротко.** {r['comp']}"})
             for c in d.get("competitors", []):
                 blocks += card(c)
             if d.get("compNote"):

@@ -167,10 +167,16 @@ def assemble(src):
                        "status": status, "skillReady": ready, "todo": todo,
                        "filled": len(filled), "total": len(outs)})
 
-    root = os.path.join(src, project.get("imgRoot", ""))
+    base = os.path.realpath(src)
+    root = os.path.realpath(os.path.join(src, project.get("imgRoot", "")))
+    if root != base and not root.startswith(base + os.sep):
+        err.append("project.json: imgRoot должен быть внутри папки данных")
     for i in sorted(images):
-        if not os.path.exists(os.path.join(root, i)):
-            err.append(f"экран не найден: {os.path.join(root, i)}")
+        full = os.path.realpath(os.path.join(root, i))
+        if not full.startswith(root + os.sep):
+            err.append(f"экран вне папки imgRoot: {i}")
+        elif not os.path.isfile(full):
+            err.append(f"экран не найден: {full}")
     titles = {s["id"]: s["title"] for s in stages}
     for s in stages:
         s["needs"] = [{"id": n, "title": titles[n]} for n in s["needs"]]
