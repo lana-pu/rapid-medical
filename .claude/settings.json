@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use-bash.sh\"" } ] },
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use-write.sh\"" } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-module-index.sh\"" } ] }
+    ]
+  }
+}

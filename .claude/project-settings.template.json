@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/pre-tool-use-bash.sh\"" },
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/pre-tool-use-security-reminder.sh\"" }
+      ]},
+      { "matcher": "Edit|Write", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/pre-tool-use-write.sh\"" }
+      ]}
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write|MultiEdit", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/post-tool-use-security-counter.sh\"" },
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/post-tool-use-infra-reminder.sh\"" }
+      ]},
+      { "matcher": "Bash", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/post-tool-use-savesession-reminder.sh\"" }
+      ]},
+      { "matcher": "Edit|Write|Bash", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/context-alert.sh\"" }
+      ]}
+    ],
+    "PreCompact": [
+      { "matcher": "", "hooks": [
+        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/../../.claude/hooks/pre-compact-snapshot.sh\"" }
+      ]}
+    ]
+  }
+}
