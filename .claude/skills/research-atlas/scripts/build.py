@@ -95,6 +95,10 @@ def check_block(b, where, err, images):
                 err.append(f"{where}: level = {c.get('level')!r}, нужно 1–5")
     elif t == "table":
         head = b.get("head", [])
+        for f in b.get("filter", []):
+            col = f.get("col")
+            if not isinstance(col, int) or isinstance(col, bool) or not 0 <= col < len(head) or f.get("kind") not in ("chips", "select") or not isinstance(f.get("label"), str):
+                err.append(f"{where}: фильтр {f!r}: нужны col в пределах таблицы, kind chips или select, label")
         for i, r in enumerate(b.get("rows", [])):
             if len(r) != len(head):
                 err.append(f"{where}: строка {i + 1} — ячеек {len(r)}, колонок {len(head)}")

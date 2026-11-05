@@ -267,8 +267,8 @@ function table(b){
   const plain = c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "");
   const opts = i => [...new Set(b.rows.map(r => plain(r[i])))].filter(Boolean);
   const ctl = !b.filter ? "" : `<div class="ctl"><input type="search" data-tq placeholder="Найти в таблице" aria-label="Найти в таблице">${b.filter.map(f => f.kind === "chips"
-    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${opts(f.col).map(o => `<button type="button" class="chip" data-col="${f.col}" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>`
-    : `<select data-col="${f.col}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${opts(f.col).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-tc>${b.rows.length} из ${b.rows.length}</span></div>`;
+    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${opts(f.col).map(o => `<button type="button" class="chip" data-col="${Number(f.col)}" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>`
+    : `<select data-col="${Number(f.col)}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${opts(f.col).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-tc>${b.rows.length} из ${b.rows.length}</span></div>`;
   const t = `${ctl}<div class="tbl"${b.filter ? " data-ft" : ""}><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
     b.rows.map(r => `<tr${b.filter ? ` data-row="${esc(JSON.stringify(r.map(plain)))}"` : ""}>${r.map((c, i) => `<td${wide[i] ? ' class="wide"' : ""}>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   return b.fold ? `<details class="fold"><summary>${esc(b.fold)}</summary>${t}</details>` : t;
