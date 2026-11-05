@@ -1,3 +1,4 @@
 {
-  "crons": [{ "path": "/api/cron/publish", "schedule": "*/5 * * * *" }]
+  "buildCommand": "npm run build:vercel",
+  "crons": [{ "path": "/api/cron/publish", "schedule": "0 5 * * *" }]
 }

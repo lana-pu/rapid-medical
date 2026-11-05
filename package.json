@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "tsx scripts/bootstrap.ts && next build",
     "start": "next start",
     "lint": "eslint src scripts",
     "typecheck": "tsc --noEmit",
@@ -15,7 +16,7 @@
     "duda:scrape": "tsx scripts/scrape-duda.ts",
     "duda:extract": "tsx scripts/extract-duda.ts",
     "duda:media": "tsx --env-file=.env scripts/migrate-media.ts",
-    "setup": "npm run db:migrate && npm run db:seed && npm run duda:media",
+    "setup": "tsx --env-file=.env scripts/bootstrap.ts",
     "media:process": "tsx --env-file=.env scripts/process-media.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",

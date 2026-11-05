@@ -20,13 +20,11 @@ Then open **http://localhost:3000** (site) and **http://localhost:3000/admin** (
 cp .env.example .env            # set DATABASE_URL and AUTH_SECRET
 docker compose up -d db         # local Postgres (or point DATABASE_URL at your own)
 npm install
-npm run db:migrate              # apply SQL migrations
-ADMIN_EMAIL=you@rapid-medical.com ADMIN_PASSWORD='long-password' npm run db:seed
-npm run duda:media              # pull all images/PDFs off the Duda CDN into public/uploads
+ADMIN_EMAIL=you@rapid-medical.com ADMIN_PASSWORD='long-password' npm run setup   # migrations + content + media snapshot (5 s)
 npm run dev                     # http://localhost:3000  ·  admin: /admin
 ```
 
-`npm run setup` runs migrate + seed + media in one go.
+`npm run setup` = `scripts/bootstrap.ts`: migrate, and seed only when the database is empty. Individual steps: `db:migrate`, `db:seed`, `duda:media` (re-download anything missing from the Duda CDN), `media:process` (regenerate WebP variants / posters), `tsx scripts/export-media.ts` (refresh `content/seed/media.json`).
 
 ## How the site is organised
 
@@ -154,9 +152,25 @@ Submissions are stored in `contact_submissions` and emailed via SMTP (`SMTP_*` i
 
 ## Deploying
 
-Any Node host works (Vercel, Railway, Fly, a VPS with PM2). Needs: `DATABASE_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, SMTP. For multi-instance hosting switch `STORAGE_DRIVER` to S3 (driver to be implemented in `src/lib/storage.ts`) and move the rate limiter to Redis.
+### Vercel + Neon (staging / production)
 
-Point `www`, `us` and `ous` DNS at the app; the proxy handles the subdomain redirects.
+1. **Database** — create a free Postgres on [neon.tech](https://neon.tech), copy the connection string (`postgres://…?sslmode=require`).
+2. **Vercel** — [vercel.com/new](https://vercel.com/new) → import `lana-pu/rapid-medical` → *Environment variables*:
+   - `DATABASE_URL` = the Neon string
+   - `AUTH_SECRET` = any 32+ random characters
+   - `NEXT_PUBLIC_SITE_URL` = `https://<project>.vercel.app` (change to the real domain later)
+   - `ADMIN_EMAIL`, `ADMIN_PASSWORD` = first admin login (only used while the `users` table is empty)
+   - `CRON_SECRET` = any random string (protects scheduled publishing)
+   - optional: SMTP_* for form notifications
+   → **Deploy**. The build runs `scripts/bootstrap.ts` first: migrations, and on an empty database the full content + media snapshot (`content/seed/media.json`). Every push to `main` redeploys automatically.
+3. **Media uploads** — the committed `public/uploads` is served read-only on Vercel; *new* uploads from the admin need S3-compatible storage (Cloudflare R2 / AWS S3 / Backblaze): set `STORAGE_DRIVER=s3` and the `S3_*` variables, then run `scripts/migrate-media.ts`-style copy of `public/uploads` to the bucket (todo when hosting is decided). Until then the admin shows a clear “uploads not available on this host” message.
+4. **Scheduled publishing** — Vercel Hobby runs crons once a day (`vercel.json`: 05:00 UTC); on Pro set `*/5 * * * *`.
+
+### Any other Node host
+
+Railway, Fly, a VPS with PM2 or Docker (`Dockerfile` / `docker-compose.yml`). Needs `DATABASE_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_SITE_URL`, SMTP; run `npx tsx scripts/bootstrap.ts` before `next start` (the Docker image does). For multi-instance hosting switch `STORAGE_DRIVER` to S3 and move the login rate limiter to Redis.
+
+Point `www`, `us`, `ous` and `apac` DNS at the app; the proxy handles the legacy subdomain redirects.
 
 ## Design
 

@@ -41,8 +41,7 @@ async function main() {
   if (n === 0) {
     console.log("empty database → seeding content from content/seed");
     run("npx tsx scripts/seed.ts");
-    run("npx tsx scripts/migrate-media.ts");
-    run("npx tsx scripts/process-media.ts"); // responsive variants + video posters
+    run("npx tsx scripts/migrate-media.ts"); // links seeded content to the media snapshot; downloads only what is missing
   } else {
     console.log(`database already has content (${n} therapy pages) – skipping seed`);
     if (u === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) run("npx tsx scripts/seed.ts");

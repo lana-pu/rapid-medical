@@ -93,6 +93,17 @@ async function main() {
     else await db.insert(pages).values({ ...pp, status: "published" });
   }
 
+  /* media library snapshot (rows + variants/posters) – only rows not present yet */
+  try {
+    const snap = await json<Omit<schema.Media, "id" | "createdAt">[]>("media");
+    const have = new Set((await db.select({ url: schema.media.url }).from(schema.media)).map((r) => r.url));
+    const fresh = snap.filter((m) => !have.has(m.url));
+    for (let i = 0; i < fresh.length; i += 50) await db.insert(schema.media).values(fresh.slice(i, i + 50));
+    console.log(`media: ${fresh.length} rows added from snapshot (${have.size} already present)`);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+  }
+
   /* redirects */
   for (const r of REDIRECTS) {
     await db.insert(redirects).values(r).onConflictDoUpdate({ target: redirects.from, set: { to: r.to } });
