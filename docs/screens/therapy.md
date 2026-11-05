@@ -1,0 +1,46 @@
+# Экран: Страница терапии `/{region}/therapies/{slug}`
+
+Код: `src/app/(site)/[seg]/therapies/[slug]/page.tsx`. Данные: `solutions` (одна строка на slug+region).
+Восстановлено по коду `59169da`.
+
+## Доступ
+Публичный. Регион не из `us|ous|apac` → 404. Запись не найдена или не `published` → 404
+(в preview — видны черновики и pending-правки).
+
+## Данные
+`getSolution(region, slug)` (+ `product`), `getSolutionRegions(slug)` — в каких ещё регионах есть эта терапия.
+Поля — см. `docs/spec.md → Данные → solutions`. Метаданные: `metaTitle` || «{navLabel} – {REGION}»,
+`metaDescription` || первые 160 символов `heroBody`.
+
+## Структура и правила показа
+| Блок | Условие / правило |
+|---|---|
+| Hero | Фон-видео `heroVideoUrl` (постер — `heroImageUrl`); без видео — картинка `heroImageUrl` справа. Eyebrow: `breadcrumb` или «Our solutions / {navLabel}» + ссылки «{REGION} version» на другие регионы. CTA `heroCta` — если есть `href` |
+| Intro | Если заполнено хоть одно из `introTitle/Body/VideoUrl/ImageUrl` |
+| Benefits | Для каждого блока: текст (eyebrow, title, body, footnote, link) + медиа. Приоритет медиа: `stats` (круги) → `chart` (SVG, только если `categories` не пусто) → видео/картинка. С `secondaryImageUrl` — раскладка в 3 колонки; иначе 2 колонки, чётные блоки зеркально |
+| Табы (pills; аккордеон на мобильном) | **Product overview** — всегда. **How it works** — если есть шаги. **In-Practice** — если есть элементы или `webinarCtaEnabled`. **Clinical evidence** — ссылка на `/{region}/evidence#{product.slug}` (без продукта — `#browse-by-product`) |
+| Overview | `overviewBody`; `overviewFeatures` (2×2) или, если их нет, legacy `overviewImageUrl`. Specifications: `annotatedImage` (маркеры); `specs` таблица, иначе `specImageUrls` (кроме совпадающей с диаграммой); сноска `specs.note` || `specNote` |
+| Action links | Под каждым табом: первая — primary, остальные — secondary; `actionNote` рядом |
+| Webinar CTA | В табе In-Practice при `webinarCtaEnabled`: «Request to view» → `/{region}/webinars` (текст захардкожен) |
+| Closing band | Если `closingTitle` или `closingEmbedUrl`. `.mp4` → фоновое видео, иначе iframe (YouTube → embed) |
+| Questions band | Если `closingBody`; префикс «Questions?» из текста срезается; кнопка «Contact us» → `/contact-us?region={region}` |
+| Regulatory / References | `regulatoryHtml`, `referencesHtml` через `safeHtml` (санитайзер) |
+
+## Действия посетителя
+Переключение табов; переход на версию другого региона; CTA / action links (URL, `mailto:`); Evidence;
+Webinars; Contact us. Внешние ссылки (`http…`, `mailto:`) — `<a>`, `http` открываются в новой вкладке.
+
+## On-page editor
+Почти все тексты и медиа обёрнуты в `<E>/<EMedia>` (hero, intro, benefits.*, overviewBody,
+overviewFeatures.*, маркеры диаграммы, specImageUrls.*, specNote, howItWorks.*, inPractice.*,
+actionLinks.* (label+href), actionNote, closingTitle/Body, regulatory/references как rich).
+Не редактируются на странице: `overviewTitle`, `breadcrumb`, таблица `specs`, `chart`, `stats` в benefits
+кроме value/label, `heroVideoUrl` без картинки-слота, порядок и состав блоков, slug, SEO.
+
+## Валидация (админ-форма, `src/admin/resources.ts` + `engine.ts`)
+- Обязательны: `navLabel`, `slug` (нормализуется в `a-z0-9-`), `region`, `heroTitle`.
+- Уникальность `slug + region` → «A record with this slug/region already exists.»
+- `url`-поля: `http(s)://`, `mailto:` или путь `/…`. `json`-поля (`chart` в benefits — внутри repeater, `annotatedImage`) — валидный JSON.
+- Внутри repeater-ов (benefits, steps, inPractice, actionLinks) обязательность и формат подполей
+  **на сервере не проверяются** — только JSON-массив (см. BACKLOG).
+- Сохранение опубликованной страницы → pending-черновик (см. `docs/spec.md → Редакционный процесс`).

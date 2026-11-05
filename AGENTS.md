@@ -7,3 +7,46 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# AGENTS.md — Rapid Medical
+
+Общие принципы, библиотека промтов и правила воркспейса — в `../../AGENTS.md` (подгружается сам).
+Здесь — только то, что относится к этому проекту.
+
+## Контекст продукта
+`docs/spec.md → ## Продукт` (что и для кого), индекс экранов — `docs/spec.md → ## Экраны`. Здесь не дублируем.
+
+## Железные правила
+1. **spec.md всегда актуален.** Изменение поведения (логика, состояния, данные, доступы, workflow) →
+   сначала `docs/spec.md` / `docs/screens/*.md`, потом код, в одном коммите.
+2. **DESIGN.md → примитивы → страницы.** Визуал сейчас намеренно нейтральный (`docs/DESIGN.md`): токены
+   в `src/app/globals.css`, примитивы в `src/components/site/primitives.tsx`. Новый токен — сначала в
+   DESIGN.md; хардкод цветов/пикселей в шаблонах страниц запрещён.
+3. **Новый тип контента** = таблица в `src/db/schema.ts` + запись в `src/admin/resources.ts` (формы и
+   списки генерирует `src/admin/engine.ts`). Сразу отразить в `docs/spec.md → ## Данные`.
+4. **Регион — в пути URL** (`/us`, `/ous`, `/apac`), не в cookie (ADR-002). Правка регионального
+   контента — проверить все три региона и revalidate-пути для `/apac`.
+5. **Миграции — Drizzle** (`drizzle/`, `npm run db:migrate`). Не сбрасывать локальную БД с данными;
+   прод-миграции идут в build (`scripts/bootstrap.ts`).
+
+## Push и деплой — осторожно
+По README push в `main` автоматически деплоит на Vercel (статус подключения не подтверждён —
+`docs/memory/infrastructure.md`). Поэтому: коммитить можно сразу, **push в `main` — только после
+`npm run build` + `npm test` и с явного «да»**. Рабочее — в ветках.
+
+## Когда → Файл
+| Когда | Файл |
+|---|---|
+| Коммит, push | `docs/rules/commits.md` (+ `../../rules/commits.md`) |
+| Деплой, ENV, хранилище, cron, CI | `docs/memory/infrastructure.md` |
+| Почему так устроено (стек, регионы, черновики, хранилище) | `docs/memory/decisions/` |
+| Аудит безопасности | `/security-check` (скоуп: админка, роли, 2FA, загрузки, формы) |
+| Новая фича | `/new-feature` |
+| Какой промт библиотеки запустить | `../../modules/_INDEX.md` |
+
+## Активная работа
+`docs/memory/state.md` — журнал «что произошло». Бэклог — `docs/memory/BACKLOG.md`, **единственный**
+источник «что не сделано» (P0 → P1 → P2 → идеи → решения за владельцем).
+
+## История решений
+`docs/memory/INDEX.md` (ADR, findings, sessions).
