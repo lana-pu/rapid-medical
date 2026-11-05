@@ -189,10 +189,6 @@ export async function saveRow(res: Resource, id: number | null, data: Row): Prom
   return inserted[0].id as number;
 }
 
-export async function deleteRow(res: Resource, id: number) {
-  await db.delete(res.table as any).where(eq(col(res.table, "id"), id));
-}
-
 export async function duplicateRow(res: Resource, id: number, overrides: Row = {}): Promise<number> {
   const row = await getRow(res, id);
   if (!row) throw new Error("Not found");
