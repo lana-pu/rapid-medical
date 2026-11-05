@@ -1,0 +1,5 @@
+index,ID,Constraint,Original intent,Source,Where tested,Qualifier
+0,NFR-01,Audience / context,Physicians; rep-led and direct physician learning,SRC-01 p.1,Product onboarding and UX validation,No clinician interview yet; test with prototypes
+1,NFR-02,Non-promotional education,Training should not silently mix promotional claims with approved instructions,SRC-01 p.1,"Content hierarchy, claims separation",Client approves all medical and compliance content
+2,NFR-03,Silent media teaching,"Client draft specifies brief visible text and play/pause clips, no narration",SRC-01 pp.1–2,Stage Player; captions/text alternatives,Do not create voiceover by default; marketing may confirm final production
+3,NFR-04,Simple use,Initial request: intuitive/easy-to-follow training,SRC-04,"Task completion, error recognition, return to stage","Operationalize as UX test outcomes, not as a cosmetic claim"
