@@ -1,4 +1,7 @@
-# Local Postgres for development: `docker compose up -d`
+# Run everything locally:   docker compose up --build
+#   site  → http://localhost:3000      admin → http://localhost:3000/admin
+#   login → ADMIN_EMAIL / ADMIN_PASSWORD below (change them!)
+# Only the database (for `npm run dev` on the host):   docker compose up -d db
 services:
   db:
     image: postgres:16-alpine
@@ -10,5 +13,30 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rapid_medical"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/rapid_medical
+      AUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-0123456789}
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      STORAGE_DRIVER: local
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@rapid-medical.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me-now-123}
+      CRON_SECRET: ${CRON_SECRET:-}
+    volumes:
+      # uploaded media lives on the host so it survives rebuilds
+      - ./public/uploads:/app/public/uploads
+
 volumes:
   pgdata:

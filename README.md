@@ -6,9 +6,19 @@ Custom replacement for the four Duda sites (`www.`, `us.`, `ous.`, `apac.rapid-m
 
 ## Quick start
 
+### Option A — Docker only (nothing else to install)
+
+```bash
+docker compose up --build        # first run: builds the image, creates the DB, seeds all content (~3–5 min)
+```
+
+Then open **http://localhost:3000** (site) and **http://localhost:3000/admin** (admin, login `admin@rapid-medical.com` / `change-me-now-123` — change it in *Account* or set `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before the first start). Media is read from `public/uploads`; if that folder is empty the first start downloads everything from the Duda CDN instead. Data persists in the `pgdata` Docker volume; `docker compose down -v` wipes it for a fresh seed. `Ctrl+C` stops, `docker compose up` starts again (no rebuild needed unless the code changed).
+
+### Option B — Node on the host (for development)
+
 ```bash
 cp .env.example .env            # set DATABASE_URL and AUTH_SECRET
-docker compose up -d            # local Postgres (or point DATABASE_URL at your own)
+docker compose up -d db         # local Postgres (or point DATABASE_URL at your own)
 npm install
 npm run db:migrate              # apply SQL migrations
 ADMIN_EMAIL=you@rapid-medical.com ADMIN_PASSWORD='long-password' npm run db:seed
