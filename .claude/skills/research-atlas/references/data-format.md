@@ -55,7 +55,7 @@ docs/research/
 | `fold` | `t`, `blocks` | свёрнутая группа: профиль, карточка исследования |
 | `list` | `items` | список |
 | `shots` | `items: [{img, cap}]` | экраны с подписями, клик открывает крупно; `img` — путь `img/….webp` от папки `imgRoot`, `null` — шаг без экрана |
-| `claims` | `items: [{t, label, level, src}]` | утверждения; `label`: `fact`, `inference`, `limit`, `pattern`; `level`: 1–5 |
+| `claims` | `items: [{t, label, level, src}]` | утверждения; `label`: `fact`, `external`, `input`, `inference`, `limit`, `pattern`; `level`: 1–5 |
 | `table` | `head`, `rows`, `fold`, `filter` | таблица; `fold` — подпись свёрнутой таблицы; `filter: [{col, label, kind}]` — поиск и фильтры по колонкам, `kind`: `select` или `chips` |
 | `cards` | `items: [{id, t, q, level, meta, tags, blocks}]`, `filters`, `placeholder` | библиотека с поиском и фильтрами; на карточку ведёт `#c-<id>`; один блок на атлас |
 | `prio` | пишет `to-stage.py` | таблица приоритетов: правка в строке, фильтры, подробности; один блок на атлас |

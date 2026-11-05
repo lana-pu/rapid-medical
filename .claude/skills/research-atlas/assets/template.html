@@ -236,7 +236,7 @@ mark{background:var(--warn-soft);color:var(--fg);border-radius:3px}
 
 <script>
 /*__DATA__*/
-const LABEL = {fact:"Подтверждено", inference:"Вывод", limit:"Ограничение", pattern:"Паттерн"};
+const LABEL = {fact:"Подтверждено", external:"Внешний контекст", input:"Вводная проекта", inference:"Вывод", limit:"Ограничение", pattern:"Паттерн"};
 const KIND = {missing:"Нет материала", moved:"Не разобрано", review:"Подтвердить", decision:"Решение", question:"Вопрос"};
 const KIND_LONG = {missing:"Нет материала", moved:"Есть в другом месте, не разобрано", review:"Ждёт подтверждения",
   decision:"Решение за: " + PROJECT.owner, question:"Открытые вопросы"};
@@ -316,19 +316,24 @@ function overview(){
     kinds.map(([k, n]) => `<button class="chip" type="button" data-k="${k}" aria-pressed="${kind === k}">${esc(KIND_LONG[k])} <b>${n}</b></button>`).join("")}</div>
   <div class="todo">${shown.length ? shown.map(({s, items}) => `<section class="tstage"><div class="th">${dot(s.status)}<a href="#s-${esc(s.id)}"><span class="code">${esc(s.n)}</span> ${esc(s.title)}</a>${pill(s)}</div>
     <ul>${items.map(t => `<li><span class="k ${t.kind}">${esc(KIND[t.kind])}</span><span>${inline(t.t)}</span></li>`).join("")}</ul></section>`).join("") : `<p class="empty">Всё закрыто.</p>`}</div>
-  <p class="foot">Методы этапов: написано ${STAGES.filter(s => !s.reference && s.skillReady).length} скилла из ${STAGES.filter(s => !s.reference).length}. На само исследование это не влияет: материал этапа можно вести и без скилла.</p>`;
+  <p class="foot">Этапы с прописанным методом: ${STAGES.filter(s => !s.reference && s.card).length} из ${STAGES.filter(s => !s.reference).length}. Написано скиллов: ${STAGES.filter(s => !s.reference && s.skillReady).length}.</p>`;
   document.getElementById("kinds").addEventListener("click", e => {
     const b = e.target.closest("[data-k]");
     if (b) { kind = b.dataset.k; overview(); }
   });
 }
 
+function cardHtml(c){
+  const part = (t, a) => a && a.length ? `<h3>${t}</h3><ul>${a.map(x => `<li>${inline(x)}</li>`).join("")}</ul>` : "";
+  return `<details class="fold"><summary>Как проходит этап</summary><div class="fin"><p>${inline(c.why)}</p>${part("Вход", c.input)}${part("Шаги", c.steps)}${part("Правила", c.rules)}${part("Инструменты", c.tools)}${part("Готово, когда", c.done)}</div></details>`;
+}
 function stage(s){ main.innerHTML = stageHtml(s); mount(); }
 function stageHtml(s){
   const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision" || t.kind === "review");
   return `<header><div class="eyebrow">${esc(s.part)} · этап ${esc(s.n)}</div><h1>${esc(s.title)}</h1><p class="lede">${esc(s.q)}</p>
     <div class="sh">${pill(s)}${s.confirmed ? `<span class="code">подтверждён ${esc(s.confirmed)}</span>` : ""}<span class="code">/${esc(s.skill)}${s.skillReady ? "" : " · скилл не написан"}</span>${s.optional ? `<span class="code">${esc(s.optional)}</span>` : ""}</div>
     ${s.needs.length ? `<p class="muted">Опирается на: ${s.needs.map(n => `<a href="#s-${esc(n.id)}">${esc(n.title)}</a>`).join(", ")}</p>` : ""}</header>
+  ${s.card ? cardHtml(s.card) : ""}
   ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
   ${s.reference ? "" : `<div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>`}
   ${s.outputs.map(o => `<section class="sec" id="o-${esc(o.key)}"><div class="sec-h"><h2>${esc(o.title)}</h2>${o.state === "linked" ? '<span class="pill t-warn">Не разобрано</span>' : ""}</div>
