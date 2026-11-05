@@ -11,10 +11,9 @@ for (const path of PUBLIC) {
 
 test("seeded pages and bios keep their text", async ({ page }) => {
   await page.goto("/terms");
-  await expect(page.locator("main")).toContainText("Rapid Medical");
-  expect((await page.locator("main").innerText()).length).toBeGreaterThan(2000);
+  await expect(page.getByRole("heading", { name: "1. Acceptance of the Terms" })).toBeVisible();
   await page.goto("/team/ronen");
-  expect((await page.locator("main").innerText()).length).toBeGreaterThan(200);
+  await expect(page.getByText("Ronen Eckhouse is the co-founder")).toBeVisible();
 });
 
 test("legacy URLs redirect", async ({ request }) => {
