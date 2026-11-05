@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 DEFS = os.path.join(HERE, "..", "assets", "stages.json")
 SKILLS = os.path.join(HERE, "..", "..")
-BLOCKS = {"text", "sub", "list", "claims", "table", "link", "fold"}
+BLOCKS = {"text", "sub", "list", "claims", "table", "link", "fold", "shots"}
 LABELS = {"fact", "inference", "limit", "pattern"}
 TONES = {"ok", "bad", "warn", "none"}
 KINDS = {"question", "decision"}
@@ -36,7 +36,7 @@ def check_url(u, where, err):
         err.append(f"{where}: нужна ссылка http(s), сейчас {u!r}")
 
 
-def check_block(b, where, err):
+def check_block(b, where, err, images):
     t = b.get("type")
     if t not in BLOCKS:
         err.append(f"{where}: тип блока {t!r}, нужно одно из {sorted(BLOCKS)}")
@@ -46,7 +46,13 @@ def check_block(b, where, err):
         if not b.get("t") or not b.get("blocks"):
             err.append(f"{where}: у fold нужны t и blocks")
         for x in b.get("blocks", []):
-            check_block(x, where, err)
+            check_block(x, where, err, images)
+    elif t == "shots":
+        for i in b.get("items", []):
+            if not re.fullmatch(r"img/[\w./-]+\.(webp|png|jpg)", str(i.get("img"))) or ".." in i["img"]:
+                err.append(f"{where}: img = {i.get('img')!r}, нужен путь img/….webp")
+            else:
+                images.add(i["img"])
     elif t == "list" and not b.get("items"):
         err.append(f"{where}: пустой list")
     elif t == "claims":
@@ -96,6 +102,7 @@ def assemble(src):
     if project.get("eyebrow") is None:
         project["eyebrow"] = ""
 
+    images = set()
     ids = {d["id"] for d in defs}
     sdir = os.path.join(src, "stages")
     for name in sorted(os.listdir(sdir)) if os.path.isdir(sdir) else []:
@@ -116,7 +123,7 @@ def assemble(src):
         for o in d["outputs"]:
             blocks = got.get(o["key"], [])
             for b in blocks:
-                check_block(b, f"{where} / {o['key']}", err)
+                check_block(b, f"{where} / {o['key']}", err, images)
             outs.append({**o, "blocks": blocks, "state": output_state(blocks)})
         for it in data.get("open", []):
             if it.get("kind") not in KINDS or not it.get("t"):
@@ -160,6 +167,10 @@ def assemble(src):
                        "status": status, "skillReady": ready, "todo": todo,
                        "filled": len(filled), "total": len(outs)})
 
+    root = os.path.join(src, project.get("imgRoot", ""))
+    for i in sorted(images):
+        if not os.path.exists(os.path.join(root, i)):
+            err.append(f"экран не найден: {os.path.join(root, i)}")
     titles = {s["id"]: s["title"] for s in stages}
     for s in stages:
         s["needs"] = [{"id": n, "title": titles[n]} for n in s["needs"]]
@@ -175,7 +186,7 @@ def assemble(src):
             action = f"Написать скилл /{s['skill']} и пройти этап"
         nxt = {"id": s["id"], "n": s["n"], "title": s["title"], "action": action}
         break
-    return project, stages, nxt, err
+    return project, stages, nxt, err, sorted(images)
 
 
 def report(stages, nxt):
@@ -203,7 +214,7 @@ def main():
         sys.exit(__doc__)
     src = args[0]
     out = args[1] if len(args) > 1 else os.path.join(src, "research-atlas.html")
-    project, stages, nxt, err = assemble(src)
+    project, stages, nxt, err, images = assemble(src)
     if err:
         print("\n".join("✗ " + e for e in err))
         sys.exit(f"Ошибок: {len(err)}. Страница не собрана.")
@@ -223,7 +234,10 @@ def main():
     html = tpl.replace("__TITLE__", project["title"].replace("<", "&lt;")).replace("/*__DATA__*/", data)
     with open(out, "w", encoding="utf8") as f:
         f.write(html)
-    print(f"✓ {out}: {len(html) // 1024} КБ")
+    print(f"✓ {out}: {len(html) // 1024} КБ, экранов {len(images)}")
+    if images:
+        with open(out + ".files.json", "w", encoding="utf8") as f:
+            json.dump(images, f, ensure_ascii=False, indent=0)
     report(stages, nxt)
 
 

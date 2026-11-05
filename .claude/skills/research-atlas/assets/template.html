@@ -53,7 +53,8 @@ nav{display:grid;gap:12px;min-width:0}
 .s-skip{--c:var(--line);--fill:var(--line)}
 main{display:grid;gap:22px;min-width:0}
 main > *{min-width:0}
-main p,main li,main td,main h3,summary{overflow-wrap:anywhere}
+main p,main li,main h3,summary{overflow-wrap:anywhere}
+main td{overflow-wrap:break-word;hyphens:auto}
 .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:4px 0 0;text-wrap:balance;letter-spacing:-.01em}
 h2{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.3;margin:0;text-wrap:balance}
@@ -112,6 +113,10 @@ details.fold > .tbl{margin-top:8px}
 .fin p{margin:0;max-width:78ch}
 .fin > ul{margin:0;padding-left:18px;display:grid;gap:4px;max-width:78ch}
 .fin .tbl td{font-size:13.5px}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.shots figure{margin:0;display:grid;gap:6px;align-content:start;min-width:0}
+.shots img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:var(--sunk)}
+.shots figcaption{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .foot{font-size:13px;color:var(--muted);margin:0}
 .linkrow{display:grid;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
 a.linkrow:hover{border-color:var(--accent)}
@@ -179,6 +184,7 @@ function block(b){
   if (b.type === "text") return `<p>${inline(b.t)}</p>`;
   if (b.type === "sub") return `<h3>${inline(b.t)}</h3>`;
   if (b.type === "fold") return `<details class="fold"><summary>${inline(b.t)}</summary><div class="fin">${b.blocks.map(block).join("")}</div></details>`;
+  if (b.type === "shots") return `<div class="shots">${b.items.map(i => `<figure><img src="${esc(i.img)}" alt="" loading="lazy"><figcaption>${inline(i.cap || "")}</figcaption></figure>`).join("")}</div>`;
   if (b.type === "list") return `<ul>${b.items.map(i => `<li>${inline(i)}</li>`).join("")}</ul>`;
   if (b.type === "table") return table(b);
   if (b.type === "claims") return `<div class="claims">${b.items.map(c => `<div class="claim"><div class="lab">${LABEL[c.label]}${level(c.level)}</div><div>${inline(c.t)}${c.src ? `<div class="src">${esc(c.src)}</div>` : ""}</div></div>`).join("")}</div>`;
@@ -234,6 +240,7 @@ function texts(b){
   if (b.type === "text" || b.type === "sub") return [b.t];
   if (b.type === "fold") return [b.t, ...b.blocks.flatMap(texts)];
   if (b.type === "list") return b.items;
+  if (b.type === "shots") return b.items.map(i => i.cap || "");
   if (b.type === "claims") return b.items.map(c => c.t);
   if (b.type === "link") return [[b.t, b.note].filter(Boolean).join(" · ")];
   if (b.type === "table") return b.rows.map(r => r.map(c => typeof c === "object" && c ? c.t ?? "" : c ?? "").join(" · "));
