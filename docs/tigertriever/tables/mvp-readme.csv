@@ -1,0 +1,12 @@
+index,Topic,Decision / warning
+0,Edition,v0.7 · 2026-11-05 · JTBD-to-feature coverage and staged MVP recommendation
+1,Source documents,JTBD Map v0.1 (19 jobs); Feature Inventory Audited v0.6.1 (57 functions); July content draft; October wireframe; accepted Option #3 context
+2,No client interviews,Direct questions can go only to Rapid Medical marketing at this stage; physician usability tests only after prototype
+3,Prototype ≠ product,Prototype flags do NOT mean production implementation or contracted scope
+4,Operational MVP,"Includes safety-critical content scope, self-service editor and immutable offline bundle; requires separate engineering plan and testing"
+5,Do not over-promise,Existing $950 proposal context does not support an assumption that 57 features or full two-system implementation is contracted
+6,Clinical content,Rapid Medical supplies and approves all medical instructions/media; no inferred eligibility or equivalent handling
+7,July vs October source,July draft includes Opening/8 stages/Closing (10 narrative sections); October wireframe has eight procedural stages
+8,Model rollout,First Tiger 13/17; Tiger 21/25 later per October concept. Tiger 17U appears in July draft but is not reconciled
+9,Required validation,UX task tests with clinicians only after design; marketing supplies source facts and distribution constraints
+10,Status,Proposed design prioritization; pending marketing scope confirmation and technical feasibility
