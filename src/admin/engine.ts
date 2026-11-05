@@ -94,8 +94,9 @@ function parseField(f: FieldDef, raw: FormDataEntryValue | null, errors: FieldEr
       return v;
     }
     case "json":
-      if (!s) return {};
-      try { return JSON.parse(s); } catch { errors[key] = "Invalid JSON"; return {}; }
+      // nullable json columns (chart, annotatedImage) get null when empty; required ones (aliases) an empty object
+      if (!s || s === "{}" || s === "null") return f.required ? {} : null;
+      try { return JSON.parse(s); } catch { errors[key] = "Invalid JSON"; return f.required ? {} : null; }
     case "url":
       if (required) errors[key] = "Required";
       if (s && !/^(https?:\/\/|mailto:|\/)/i.test(s)) errors[key] = "Must be an absolute URL, mailto: or a path";

@@ -3,13 +3,15 @@ import { regionOr404 } from "@/lib/region-param";
 import { getPublications, getFeaturedPublications, getProductsForRegion } from "@/lib/content";
 import { getSetting } from "@/lib/settings";
 import { REGION_LABELS } from "@/lib/regions";
-import { Section, Container, H1, H2, Eyebrow, Img, formatMonth } from "@/components/site/primitives";
+import { Section, Container, H1, H2, Eyebrow, Img, Btn, formatMonth } from "@/components/site/primitives";
 import { VideoHero } from "@/components/site/Media";
 import { Tabs } from "@/components/site/Tabs";
 import { E, EMedia } from "@/components/site/editable";
+import { StatBadge } from "@/components/site/blocks/Stats";
+import { Carousel } from "@/components/site/blocks/Carousel";
 
 type EvidenceSettings = {
-  title?: string; intro?: string; heroVideoUrl?: string; statImageUrl?: string;
+  title?: string; intro?: string; heroVideoUrl?: string; statImageUrl?: string; statValue?: string; statLabel?: string; statIconUrl?: string;
   forefrontText?: string; forefrontImageUrl?: string; forefrontImage2Url?: string; featuredTitle?: string; browseTitle?: string;
 };
 
@@ -20,7 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
 
 export default async function EvidencePage({ params }: { params: Promise<{ seg: string }> }) {
   const region = regionOr404((await params).seg);
-  const [all, featured, products, cfg] = await Promise.all([getPublications(region), getFeaturedPublications(region), getProductsForRegion(region), getSetting<EvidenceSettings>("evidence")]);
+  const [all, featured, products, cfg] = await Promise.all([getPublications(region), getFeaturedPublications(region, 6), getProductsForRegion(region), getSetting<EvidenceSettings>("evidence")]);
+  const latest = all.filter((p) => p.imageUrl).slice(0, 3);
 
   // A family tab (e.g. TIGERTRIEVER™) also lists sub-products that have no tab of their own in this region.
   const tabbed = new Set(products.map((p) => p.slug));
@@ -36,6 +39,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
     .map(({ prod, list }) => ({
       id: prod.slug,
       label: prod.name,
+      sublabel: prod.fullName.replace(prod.name, "").replace(/^[\s™®–-]+/, "") || undefined,
       content: (
         <div>
           <h3 className="mb-2 text-lg font-semibold">{prod.fullName}</h3>
@@ -69,23 +73,34 @@ export default async function EvidencePage({ params }: { params: Promise<{ seg: 
       </VideoHero>
 
       <Section>
-        <div className="grid items-center gap-8 md:grid-cols-2">
-          <div>
-            {cfg.statImageUrl ? <EMedia {...R} f="statImageUrl" className="max-w-sm"><Img src={cfg.statImageUrl} className="w-full" /></EMedia> : <p className="text-4xl font-semibold">{all.length}+ clinical publications</p>}
-            {cfg.forefrontText && <p className="mt-6 max-w-md text-lg"><E {...R} f="forefrontText">{cfg.forefrontText}</E></p>}
-          </div>
-          <div className="space-y-4">
-            {cfg.forefrontImageUrl && <EMedia {...R} f="forefrontImageUrl"><Img src={cfg.forefrontImageUrl} className="w-full rounded" /></EMedia>}
-            {cfg.forefrontImage2Url && <EMedia {...R} f="forefrontImage2Url"><Img src={cfg.forefrontImage2Url} className="w-full rounded" /></EMedia>}
-          </div>
+        <div className="text-center">
+          <StatBadge stat={{ value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }} render={(part) => <E {...R} f={part === "value" ? "statValue" : "statLabel"}>{part === "value" ? cfg.statValue || `${all.length}+` : cfg.statLabel || "clinical publications"}</E>} />
+          {cfg.forefrontText && <p className="mx-auto mt-8 max-w-xl text-lg italic text-accent"><E {...R} f="forefrontText">{cfg.forefrontText}</E></p>}
         </div>
+        {featured.length > 0 && (
+          <div className="mt-10">
+            <Carousel ariaLabel="Featured publications">
+              {featured.map((p) => (
+                <article key={p.id} className="grid gap-6 rounded border border-border bg-surface p-6 md:grid-cols-2 md:p-10">
+                  <EMedia r="publications" id={p.id} f="imageUrl"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></EMedia>
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-widest text-muted">{[p.journal, formatMonth(p.publishedOn)].filter(Boolean).join(" · ")}</div>
+                    <h3 className="mt-2 text-xl font-semibold md:text-2xl"><E r="publications" id={p.id} f="title">{p.title}</E></h3>
+                    {p.authors && <div className="mt-3 text-xs text-muted">{p.authors}</div>}
+                    <div className="mt-6"><Btn href={p.pdfUrl || p.url || "#"} external>Read article</Btn></div>
+                  </div>
+                </article>
+              ))}
+            </Carousel>
+          </div>
+        )}
       </Section>
 
-      {featured.length > 0 && (
+      {latest.length > 0 && (
         <Section className="bg-surface">
           <H2><E {...R} f="featuredTitle">{cfg.featuredTitle ?? "Featured publications"}</E></H2>
           <ul className="mt-8 grid gap-6 md:grid-cols-3">
-            {featured.map((p) => (
+            {latest.map((p) => (
               <li key={p.id} className="rounded border border-border bg-background p-5">
                 <EMedia r="publications" id={p.id} f="imageUrl" className="mb-4"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></EMedia>
                 <div className="text-xs font-semibold uppercase text-muted">{formatMonth(p.publishedOn)}</div>

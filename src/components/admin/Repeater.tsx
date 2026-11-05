@@ -187,6 +187,16 @@ export function SubField({ f, value, onChange, products, path }: { f: FieldDef; 
         </div>
       );
     }
+    case "json": {
+      // free-form object (e.g. chart definition); kept as text while editing, parsed on change
+      const text = typeof value === "string" ? value : value && Object.keys(value as object).length ? JSON.stringify(value, null, 2) : "";
+      return (
+        <div className={wrap}>{label}
+          <textarea rows={6} defaultValue={text} onChange={(e) => { try { onChange(e.target.value.trim() ? JSON.parse(e.target.value) : null); } catch { onChange(e.target.value); } }} className={`${inputCls} font-mono text-xs`} />
+          {help}
+        </div>
+      );
+    }
     case "repeater":
       return (
         <div className={wrap}>{label}

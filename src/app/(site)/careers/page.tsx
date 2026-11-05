@@ -4,13 +4,14 @@ import { Section, Container, H1, H2, Btn, Img } from "@/components/site/primitiv
 import { VideoHero } from "@/components/site/Media";
 import { ContactForm } from "@/components/site/ContactForm";
 import { E, EMedia } from "@/components/site/editable";
+import { Gallery, Principles } from "@/components/site/blocks/Blocks";
 
 export const metadata = { title: "Career Opportunities", description: "Explore job opportunities at Rapid Medical. Join us!" };
 
 type Careers = {
   heroTitle?: string; heroSub?: string; heroBody?: string; heroImageUrl?: string; heroVideoUrl?: string;
   quotes?: { quote: string; author?: string; imageUrl?: string }[];
-  principlesTitle?: string; principlesBody?: string; principlesImageUrl?: string; eeoStatement?: string;
+  principlesTitle?: string; principlesBody?: string; principlesImageUrl?: string; principles?: { title: string; body: string }[]; eeoStatement?: string;
 };
 
 export default async function CareersPage() {
@@ -30,22 +31,15 @@ export default async function CareersPage() {
 
       {c.quotes && c.quotes.length > 0 && (
         <Section>
-          <ul className="grid gap-10 md:grid-cols-2">
-            {c.quotes.map((q, i) => (
-              <li key={i}>
-                <EMedia {...R} f={`quotes.${i}.imageUrl`} className="mb-5"><Img src={q.imageUrl} className="aspect-video w-full rounded object-cover" /></EMedia>
-                <blockquote className="text-lg">“<E {...R} f={`quotes.${i}.quote`}>{q.quote}</E>”</blockquote>
-                {q.author && <div className="mt-2 text-sm text-muted">– <E {...R} f={`quotes.${i}.author`}>{q.author}</E></div>}
-              </li>
-            ))}
-          </ul>
+          <Gallery items={c.quotes} render={(i, part) => <E {...R} f={`quotes.${i}.${part}`}>{c.quotes![i][part]}</E>} />
         </Section>
       )}
 
       <Section className="bg-surface">
         <H2><E {...R} f="principlesTitle">{c.principlesTitle ?? "Our guiding principles"}</E></H2>
         {c.principlesBody && <p className="mt-3 text-muted"><E {...R} f="principlesBody">{c.principlesBody}</E></p>}
-        <EMedia {...R} f="principlesImageUrl" className="mt-8 max-w-3xl"><Img src={c.principlesImageUrl} className="w-full" /></EMedia>
+        {c.principlesImageUrl && <EMedia {...R} f="principlesImageUrl" className="mx-auto mt-8 max-w-xl"><Img src={c.principlesImageUrl} className="w-full" /></EMedia>}
+        {c.principles && c.principles.length > 0 && <div className="mt-10"><Principles items={c.principles} render={(i, part) => <E {...R} f={`principles.${i}.${part}`}>{c.principles![i][part]}</E>} /></div>}
       </Section>
 
       <Section id="general-interest">

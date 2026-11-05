@@ -10,6 +10,10 @@ import { MediaBlock, Embed, VideoHero, Video } from "@/components/site/Media";
 import { Tabs } from "@/components/site/Tabs";
 import { SpecTableView } from "@/components/site/SpecTable";
 import { E, EMedia } from "@/components/site/editable";
+import { StatCircles } from "@/components/site/blocks/Stats";
+import { BarChart } from "@/components/site/blocks/BarChart";
+import { FeatureGrid, AnnotatedImage, PracticeList } from "@/components/site/blocks/Blocks";
+import type { Chart } from "@/db";
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
   const { seg, slug } = await params;
@@ -18,6 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
   if (!s) return {};
   return { title: s.metaTitle || `${s.navLabel} – ${REGION_SHORT[region]}`, description: s.metaDescription || s.heroBody.slice(0, 160) };
 }
+
+const isChart = (c: unknown): c is Chart => !!c && typeof c === "object" && Array.isArray((c as Chart).categories) && (c as Chart).categories.length > 0;
 
 export default async function SolutionPage({ params }: { params: Promise<{ seg: string; slug: string }> }) {
   const { seg, slug } = await params;
@@ -37,6 +43,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
   );
 
   const evidenceHref = `/${region}/evidence#${s.product?.slug ?? "browse-by-product"}`;
+  const hasFeatures = s.overviewFeatures.length > 0;
+  const annotated = s.annotatedImage?.imageUrl ? s.annotatedImage : null;
+  const closingIsVideo = !!s.closingEmbedUrl && /\.mp4(\?|$)/i.test(s.closingEmbedUrl);
+  const questions = s.closingBody?.replace(/^questions\?\s*/i, "") ?? "";
 
   return (
     <>
@@ -70,12 +80,15 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
         </Section>
       )}
 
-      {/* Benefits */}
+      {/* Benefit rows: text + media (proof points / chart / video / image), optional device photo */}
       {s.benefits.length > 0 && (
         <Section className="bg-surface">
           <div className="space-y-20">
-            {s.benefits.map((b, i) => (
-              <div key={i} className={`grid items-center gap-8 md:grid-cols-2 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}>
+            {s.benefits.map((b, i) => {
+              const stats = b.stats?.filter((x) => x.value) ?? [];
+              const chart = isChart(b.chart) ? b.chart : null;
+              const hasMedia = stats.length > 0 || chart || b.videoUrl || b.imageUrl;
+              const text = (
                 <div>
                   {b.eyebrow && <Eyebrow><E {...R} f={`benefits.${i}.eyebrow`}>{b.eyebrow}</E></Eyebrow>}
                   <H2><E {...R} f={`benefits.${i}.title`}>{b.title}</E></H2>
@@ -87,14 +100,40 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
                     </div>
                   )}
                 </div>
-                <EMedia {...R} f={`benefits.${i}.imageUrl`} fv={`benefits.${i}.videoUrl`}><MediaBlock videoUrl={b.videoUrl} imageUrl={b.imageUrl} alt={b.title} /></EMedia>
-              </div>
-            ))}
+              );
+              const media = hasMedia && (
+                <div className="space-y-6">
+                  {stats.length > 0 && (
+                    <StatCircles
+                      items={stats}
+                      caption={b.statsCaption ? <E {...R} f={`benefits.${i}.statsCaption`}>{b.statsCaption}</E> : undefined}
+                      render={(st, j, part) => <E {...R} f={`benefits.${i}.stats.${j}.${part}`}>{st[part]}</E>}
+                    />
+                  )}
+                  {chart && <BarChart chart={chart} />}
+                  {(b.videoUrl || b.imageUrl) && (
+                    <EMedia {...R} f={`benefits.${i}.imageUrl`} fv={`benefits.${i}.videoUrl`}><MediaBlock videoUrl={b.videoUrl} imageUrl={b.imageUrl} alt={b.title} /></EMedia>
+                  )}
+                </div>
+              );
+              const secondary = b.secondaryImageUrl && (
+                <EMedia {...R} f={`benefits.${i}.secondaryImageUrl`}><Img src={b.secondaryImageUrl} className="mx-auto max-h-64 w-auto object-contain" /></EMedia>
+              );
+              return secondary ? (
+                <div key={i} className="grid items-center gap-8 md:grid-cols-[1.2fr_1fr_0.8fr]">
+                  {media}{text}{secondary}
+                </div>
+              ) : (
+                <div key={i} className={`grid items-center gap-8 md:grid-cols-2 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}>
+                  {text}{media}
+                </div>
+              );
+            })}
           </div>
         </Section>
       )}
 
-      {/* Tabs */}
+      {/* Product tabs (pills; accordion on phones) */}
       <Section id="overview">
         <Tabs
           hint="Click on a tab below to learn more."
@@ -104,22 +143,31 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
               label: "Product overview",
               content: (
                 <div>
-                  <Eyebrow>Product overview</Eyebrow>
+                  <Eyebrow>{s.overviewTitle || "Product overview"}</Eyebrow>
                   {s.overviewBody && <p className="max-w-3xl text-lg"><E {...R} f="overviewBody">{s.overviewBody}</E></p>}
-                  {s.overviewImageUrl && <EMedia {...R} f="overviewImageUrl" className="mt-8"><Img src={s.overviewImageUrl} className="w-full rounded" /></EMedia>}
-                  {s.specs && s.specs.columns.length > 0 ? (
-                    <div className="mt-10">
-                      <Eyebrow>Specifications</Eyebrow>
-                      <SpecTableView t={s.specs} />
-                      {(s.specs.note || s.specNote) && <p className="mt-2 text-xs italic text-muted">{s.specs.note || s.specNote}</p>}
-                    </div>
-                  ) : s.specImageUrls.length > 0 ? (
-                    <div className="mt-10">
-                      <Eyebrow>Specifications</Eyebrow>
-                      {s.specImageUrls.map((u, i) => <EMedia key={u} {...R} f={`specImageUrls.${i}`} className="mt-4"><Img src={u} className="w-full rounded border border-border" /></EMedia>)}
-                      {s.specNote && <p className="mt-2 text-xs italic text-muted"><E {...R} f="specNote">{s.specNote}</E></p>}
-                    </div>
+                  {hasFeatures ? (
+                    <div className="mt-8"><FeatureGrid items={s.overviewFeatures} render={(f, j, part) => <E {...R} f={`overviewFeatures.${j}.${part}`}>{f[part]}</E>} /></div>
+                  ) : s.overviewImageUrl ? (
+                    <EMedia {...R} f="overviewImageUrl" className="mt-8"><Img src={s.overviewImageUrl} className="w-full rounded" /></EMedia>
                   ) : null}
+
+                  {(annotated || (s.specs && s.specs.columns.length > 0) || s.specImageUrls.length > 0) && (
+                    <div className="mt-12">
+                      <Eyebrow>Specifications</Eyebrow>
+                      {annotated && <div className="mt-4"><AnnotatedImage a={annotated} render={(j) => <E {...R} f={`annotatedImage.markers.${j}.label`}>{annotated.markers[j].label}</E>} /></div>}
+                      {s.specs && s.specs.columns.length > 0 ? (
+                        <>
+                          <SpecTableView t={s.specs} />
+                          {(s.specs.note || s.specNote) && <p className="mt-2 text-xs italic text-muted">*{s.specs.note || s.specNote}</p>}
+                        </>
+                      ) : (
+                        <>
+                          {s.specImageUrls.filter((u) => !annotated || u !== annotated.imageUrl).map((u, j) => <EMedia key={u} {...R} f={`specImageUrls.${j}`} className="mt-4"><Img src={u} className="w-full rounded border border-border" /></EMedia>)}
+                          {s.specNote && <p className="mt-2 text-xs italic text-muted"><E {...R} f="specNote">{s.specNote}</E></p>}
+                        </>
+                      )}
+                    </div>
+                  )}
                   {actions}
                 </div>
               ),
@@ -133,11 +181,9 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
                       <Eyebrow>How it works</Eyebrow>
                       <ol className="grid gap-6 md:grid-cols-3">
                         {s.howItWorks.map((st, i) => (
-                          <li key={i} className="rounded border border-border p-5">
-                            {(st.videoUrl || st.imageUrl) && <EMedia {...R} f={`howItWorks.${i}.imageUrl`} fv={`howItWorks.${i}.videoUrl`} className="mb-4"><MediaBlock videoUrl={st.videoUrl} imageUrl={st.imageUrl} className="aspect-video object-cover" /></EMedia>}
-                            <div className="text-3xl font-semibold text-muted">{i + 1}</div>
-                            <div className="mt-2 font-medium"><E {...R} f={`howItWorks.${i}.title`}>{st.title}</E></div>
-                            {st.body && <p className="mt-1 text-sm text-muted"><E {...R} f={`howItWorks.${i}.body`}>{st.body}</E></p>}
+                          <li key={i}>
+                            <div className="mb-3 text-sm"><span className="font-semibold text-accent">{i + 1}. <E {...R} f={`howItWorks.${i}.title`}>{st.title}</E></span>{st.body && <span className="text-muted"> <E {...R} f={`howItWorks.${i}.body`}>{st.body}</E></span>}</div>
+                            {(st.videoUrl || st.imageUrl) && <EMedia {...R} f={`howItWorks.${i}.imageUrl`} fv={`howItWorks.${i}.videoUrl`}><MediaBlock videoUrl={st.videoUrl} imageUrl={st.imageUrl} className="aspect-video object-cover" /></EMedia>}
                           </li>
                         ))}
                       </ol>
@@ -154,26 +200,13 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
                     <div>
                       <Eyebrow>In practice</Eyebrow>
                       {s.webinarCtaEnabled && (
-                        <div className="mb-8 rounded border border-border p-6">
-                          <h3 className="text-lg font-semibold">Webinars</h3>
-                          <p className="mt-1 text-sm text-muted">Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.</p>
-                          <div className="mt-4"><Btn href={`/${region}/webinars`} variant="secondary">Request to view</Btn></div>
+                        <div className="relative mb-6 overflow-hidden rounded bg-neutral-900 px-6 py-10 text-center text-white">
+                          <h3 className="text-xl font-semibold uppercase tracking-wide">Webinars</h3>
+                          <p className="mx-auto mt-2 max-w-xl text-sm opacity-90">Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.</p>
+                          <div className="mt-5"><Btn href={`/${region}/webinars`}>Request to view</Btn></div>
                         </div>
                       )}
-                      <ul className="grid gap-6 md:grid-cols-3">
-                        {s.inPractice.map((p, i) => (
-                          <li key={i} className="rounded border border-border p-5">
-                            <EMedia {...R} f={`inPractice.${i}.imageUrl`} className="mb-4"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></EMedia>
-                            {(p.person || p.location) && <div className="text-sm font-medium"><E {...R} f={`inPractice.${i}.person`}>{p.person}</E>{p.person && p.location ? " – " : ""}<E {...R} f={`inPractice.${i}.location`}>{p.location}</E></div>}
-                            <div className="mt-1 text-sm"><E {...R} f={`inPractice.${i}.title`}>{p.title}</E></div>
-                            {p.linkUrl && p.linkUrl !== "#" && (
-                              <a href={p.linkUrl} target={p.linkUrl.startsWith("/") ? undefined : "_blank"} rel="noopener" className="mt-3 inline-block text-sm underline">
-                                {p.kind === "case" ? "View the case →" : p.kind === "recording" ? "Watch recording →" : "View testimonial →"}
-                              </a>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
+                      <PracticeList items={s.inPractice} render={(p, i, part) => <E {...R} f={`inPractice.${i}.${part}`}>{p[part]}</E>} />
                       {actions}
                     </div>
                   ),
@@ -184,17 +217,26 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
         />
       </Section>
 
-      {(s.closingTitle || s.closingBody || s.closingEmbedUrl) && (
-        <Section className="bg-surface">
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <div>
-              {s.closingTitle && <H2><E {...R} f="closingTitle">{s.closingTitle}</E></H2>}
-              {s.closingBody && <p className="mt-3 text-muted"><E {...R} f="closingBody">{s.closingBody}</E></p>}
-              <div className="mt-6"><Btn href={`/contact-us?region=${region}`}>Contact us</Btn></div>
-            </div>
-            {s.closingEmbedUrl && (/\.mp4(\?|$)/i.test(s.closingEmbedUrl) ? <Video src={s.closingEmbedUrl} /> : <Embed url={s.closingEmbedUrl} />)}
-          </div>
-        </Section>
+      {/* Statement band (+ video) */}
+      {(s.closingTitle || s.closingEmbedUrl) && (
+        <section className="relative overflow-hidden bg-neutral-900 py-16 text-white md:py-24">
+          {closingIsVideo && <Video src={s.closingEmbedUrl} background />}
+          <Container className="relative text-center">
+            {s.closingTitle && <h2 className="text-2xl font-medium md:text-3xl"><E {...R} f="closingTitle">{s.closingTitle}</E></h2>}
+            {s.closingEmbedUrl && !closingIsVideo && <div className="mx-auto mt-10 max-w-3xl"><Embed url={s.closingEmbedUrl} /></div>}
+          </Container>
+        </section>
+      )}
+
+      {/* Questions band */}
+      {s.closingBody && (
+        <section className="bg-black py-12 text-white">
+          <Container className="flex flex-wrap items-center gap-6 md:gap-12">
+            <h2 className="text-3xl font-light uppercase tracking-wide">Questions?</h2>
+            <p className="max-w-md flex-1 text-sm opacity-90"><E {...R} f="closingBody">{questions}</E></p>
+            <Btn href={`/contact-us?region=${region}`}>Contact us</Btn>
+          </Container>
+        </section>
       )}
 
       {(s.regulatoryHtml || s.referencesHtml) && (

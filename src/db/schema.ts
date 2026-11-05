@@ -38,7 +38,43 @@ export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_prog
 
 export type ActionLink = { label: string; href: string };
 export type SpecTable = { caption?: string; columns: string[]; rows: string[][]; note?: string };
-export type Benefit = { eyebrow?: string; title: string; body: string; imageUrl?: string; videoUrl?: string; footnote?: string; link?: ActionLink };
+/** Big number + caption (home counters, evidence badge, "47% FPE" circles). */
+export type Stat = { value: string; label: string; note?: string; iconUrl?: string };
+/** Structured chart rendered as SVG (replaces chart screenshots). */
+export type Chart = {
+  kind: "bar" | "stackedBar";
+  title?: string;
+  unit?: string;
+  max?: number;
+  /** one label per bar / bar group */
+  categories: string[];
+  /** bar: one series with a value per category; stackedBar: several series stacked per category */
+  series: { name: string; values: number[] }[];
+  /** indexes of categories drawn in the accent colour (kind "bar") */
+  highlight?: number[];
+  /** free-text callouts shown beside the chart */
+  annotations?: string[];
+  note?: string;
+};
+/** Icon + title + text, laid out 2×2 (product overview). */
+export type Feature = { iconUrl?: string; title: string; body: string };
+/** Image with numbered markers and a legend (device diagrams). */
+export type AnnotatedImage = { imageUrl: string; caption?: string; markers: { x: number; y: number; label: string }[] };
+/** Text + media row. The media slot shows (in priority order) stats, chart, video, image. */
+export type Benefit = {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  /** extra image shown beside the main media (e.g. device photo) */
+  secondaryImageUrl?: string;
+  stats?: Stat[];
+  statsCaption?: string;
+  chart?: Chart;
+  footnote?: string;
+  link?: ActionLink;
+};
 export type Step = { title: string; body?: string; imageUrl?: string; videoUrl?: string };
 export type InPracticeItem = {
   kind: "testimonial" | "case" | "recording";
@@ -201,6 +237,10 @@ export const solutions = pgTable(
 
     overviewTitle: text("overview_title").notNull().default("Product overview"),
     overviewBody: text("overview_body").notNull().default(""),
+    /** Icon + title + text features (2×2 grid) */
+    overviewFeatures: jsonb("overview_features").$type<Feature[]>().notNull().default([]),
+    /** Device diagram with numbered markers */
+    annotatedImage: jsonb("annotated_image").$type<AnnotatedImage | null>(),
     overviewImageUrl: text("overview_image_url"),
     specImageUrls: jsonb("spec_image_urls").$type<string[]>().notNull().default([]),
     specNote: text("spec_note").notNull().default("Not all products are available in all countries."),

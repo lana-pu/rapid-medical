@@ -18,7 +18,7 @@ const OUT_DIR = path.join(process.cwd(), "public", "uploads", "duda");
 
 /** Columns that may hold asset URLs (text or jsonb), per table. */
 const TARGETS: Record<string, string[]> = {
-  solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"],
+  solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"],
   publications: ["pdf_url", "image_url"],
   news_items: ["image_url"],
   webinars: ["image_url"],

@@ -5,7 +5,7 @@
  *
  * Duda site ids:  be427182 = www · 9d0280ee = us · 8b5f57de = ous · 48595db0 = apac
  */
-import type { Region, Benefit, Step, InPracticeItem, ActionLink } from "../../src/db/schema";
+import type { Region, Benefit, Step, InPracticeItem, ActionLink, Feature, AnnotatedImage, SpecTable, Chart, Stat } from "../../src/db/schema";
 
 export type SolutionSeed = {
   slug: string;
@@ -28,6 +28,9 @@ export type SolutionSeed = {
   benefits: Benefit[];
   overviewBody: string;
   overviewImageUrl?: string;
+  overviewFeatures?: Feature[];
+  annotatedImage?: AnnotatedImage | null;
+  specs?: SpecTable | null;
   specImageUrls: string[];
   specNote?: string;
   howItWorks: Step[];
@@ -47,6 +50,150 @@ const VID = (site: string, p: string) => `https://vid.cdn-website.com/${site}/vi
 const FILE = (site: string, p: string) => `https://irp.cdn-website.com/${site}/files/uploaded/${p}`;
 const US = "9d0280ee", OUS = "8b5f57de", APAC = "48595db0";
 
+
+/* ------------------------------------------------------------------ */
+/*  Structured blocks (replace text/tables/charts baked into images)     */
+/* ------------------------------------------------------------------ */
+
+const F = (n: string) => `/uploads/features/${n}.jpg`;
+
+const TIGER_FEATURES: Feature[] = [
+  { iconUrl: F("tt-distal-protection"), title: "Reinforced distal protection", body: "Distal Embolic Net (“TIGER DEN”) helps protect against distal emboli and provides the lowest ENT rate of any mechanical thrombectomy trial (2.6%).¹" },
+  { iconUrl: F("tt-visibility"), title: "Complete visibility", body: "Radiopacity improves first-pass success with precise positioning & visual feedback.⁶˒⁷˒⁸" },
+  { iconUrl: F("tt-active-technology"), title: "Proprietary active technology", body: "The only clot retriever equipped with real-time adjustability – accelerates clot integration and removes tension on the vessel." },
+  { iconUrl: F("tt-microcatheter"), title: "Small microcatheter compatibility", body: "Lower profile microcatheter (MC) compatibility and lower delivery forces." },
+];
+
+const comaneciFeatures = (vaso: boolean): Feature[] => [
+  { iconUrl: F(vaso ? "comaneci-vaso-non-occlusive" : "comaneci-non-occlusive"), title: "Non-occlusive design", body: "Unique braiding technology prevents flow disruption during the coiling procedure." },
+  { iconUrl: F(vaso ? "comaneci-vaso-visibility" : "comaneci-visibility"), title: "Complete visibility", body: "100% radiopacity enables precise positioning & visualization throughout the procedure." },
+  { iconUrl: F(vaso ? "comaneci-vaso-active-technology" : "comaneci-active-technology"), title: "Proprietary active technology", body: "Operator-controlled adjustability enables adjustable vessel conformity." },
+  { iconUrl: F(vaso ? "comaneci-vaso-low-profile" : "comaneci-low-profile"), title: "Low profile delivery", body: vaso ? "Easy navigation in difficult-to-reach areas." : ">25% smaller than the smallest occlusion balloons³ facilitates access to complex anatomy and enhances stability." },
+];
+
+const DRIVEWIRE_FEATURES: Feature[] = [
+  { title: "Retain the shape. Rely on support.", body: "Achieve procedural precision with the ability to shape and reshape the distal tip in real-time." },
+  { title: "Active navigation", body: "Reduce procedure time and handle sharp turns with ease." },
+  { title: "Procedural control", body: "Address patient variability with intra-arterial control." },
+];
+
+/** Device diagrams: numbered markers + legend instead of labels baked into the picture (x/y in % of the image). */
+const TIGER_DIAGRAM = (site: string): AnnotatedImage => ({
+  imageUrl: IMG(site, "opt/Specifications-Resized-1920w.jpg"),
+  caption: "TIGERTRIEVER™ – device anatomy",
+  markers: [
+    { x: 4, y: 55, label: "Radiopaque distal tip" },
+    { x: 12, y: 64, label: "Distal radiopaque marker" },
+    { x: 27, y: 42, label: "Cage length" },
+    { x: 41, y: 64, label: "Proximal radiopaque marker" },
+    { x: 62, y: 56, label: "Fluoro markers" },
+    { x: 80, y: 46, label: "Slider" },
+    { x: 90, y: 64, label: "Handle" },
+  ],
+});
+const COMANECI_DIAGRAM = (site: string, img: string): AnnotatedImage => ({
+  imageUrl: IMG(site, img),
+  caption: "COMANECI™ – device anatomy",
+  markers: [
+    { x: 6, y: 70, label: "Radiopaque distal tip" },
+    { x: 12, y: 74, label: "Distal radiopaque marker" },
+    { x: 28, y: 56, label: "Cage length" },
+    { x: 43, y: 72, label: "Proximal radiopaque marker" },
+    { x: 52, y: 70, label: "Delivery wire" },
+    { x: 58, y: 70, label: "Fluoro markers" },
+    { x: 82, y: 58, label: "Thumb slider" },
+    { x: 78, y: 76, label: "Handle" },
+  ],
+});
+const DRIVEWIRE_DIAGRAM = (site: string, img: string): AnnotatedImage => ({
+  imageUrl: IMG(site, img),
+  caption: "DRIVEWIRE™ 24 – dimensions",
+  markers: [
+    { x: 14, y: 62, label: "Tip bend diameter" },
+    { x: 20, y: 84, label: "Radiopaque length" },
+    { x: 32, y: 93, label: "Working length" },
+  ],
+});
+
+/** Specification tables transcribed from the Duda images – to be confirmed against the IFU / catalogue by Rapid Medical. */
+const TT_COLS = ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Recommended vessel size (mm)", "Minimum microcatheter compatibility ID (in)", "Total length excluding handle (cm)"];
+const TT_SPECS_OUS: SpecTable = {
+  columns: TT_COLS,
+  rows: [
+    ["TIGERTRIEVER™ 13", "TRPP3144", "0.5 – 2.5", "20.5", "1.5 – 2.5", "0.0165″ / 0.013″", "233"],
+    ["TIGERTRIEVER™ 17", "TRPP3166", "0.5 – 3.0", "23", "1.5 – 3.0", "0.017″", "223"],
+    ["TIGERTRIEVER™ 17 ULTRA", "TRPP3266", "0.5 – 3.0", "32", "—", "0.017″", "224"],
+    ["TIGERTRIEVER™ 21", "TRPP3155", "1.5 – 6.0", "32", "2.5 – 6.0", "0.021″", "224"],
+    ["TIGERTRIEVER™ 25", "TRPP3125", "1.5 – 7.5", "53", "2.5 – 7.5", "0.025″", "226"],
+  ],
+  note: "Not all products are available in all countries.",
+};
+const TT_SPECS_MVO_OUS: SpecTable = { columns: TT_COLS, rows: TT_SPECS_OUS.rows.slice(0, 2), note: TT_SPECS_OUS.note };
+const TT_SPECS_US: SpecTable = {
+  columns: TT_COLS,
+  rows: [
+    ["TIGERTRIEVER™ 13", "TRPP7144", "0.5 – 2.5", "20.5", "1.5 – 2.5", "0.0165″ / 0.013″", "233"],
+    ["TIGERTRIEVER™ 17", "TRPP7166", "0.5 – 3", "23", "1.5 – 2.5", "0.0165″", "223"],
+    ["TIGERTRIEVER™ 21", "TRPP7155", "1.5 – 6", "32", "2.5 – 6", "0.021″", "224"],
+  ],
+};
+const COMANECI_SPECS: SpecTable = {
+  columns: ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Distal tip length (mm)", "Minimum microcatheter ID compatibility (in)", "Total length excluding handle (cm)"],
+  rows: [
+    ["COMANECI 17", "ANPP3199", "0.5 – 3.0", "22", "7", "0.017″", "223"],
+    ["COMANECI PETIT", "ANPP3188", "1.5 – 3.5", "24", "7", "0.021″", "223"],
+    ["COMANECI", "ANPP3177", "1.5 – 4.5", "32", "7", "0.021″", "224"],
+  ],
+};
+const DRIVEWIRE_SPECS_OUS: SpecTable = {
+  caption: "Ordering information – catalog number GWPP2422",
+  columns: ["OD (in)", "Effective length (cm)", "Radiopaque length (cm)", "Fluorosafe length (cm)", "Length from distal end to fluorosafe marker (cm)", "Distal tip length (mm)", "Tip bend diameter – Drive Loop shape (mm)", "Tip bend diameter – J shape (mm)", "Hydrophilic coating length (cm)", "Microcatheter ID compatibility (in)"],
+  rows: [["0.024", "192", "40", "5", "100", "15.7", "5", "10", "42", "0.027″"]],
+};
+const DRIVEWIRE_SPECS_US: SpecTable = {
+  caption: "DRIVEWIRE™ 24 – catalog number DRPP2411",
+  columns: ["OD (in)", "Total length including handle (cm)", "Length from distal end to fluorosafe marker (cm)", "Effective length (cm)", "Radiopaque length (cm)", "Hydrophilic coating length (cm)", "Distal tip length (mm)", "Tip bend diameter (mm)", "Microcatheter ID compatibility (in)"],
+  rows: [["0.024″", "202", "100", "192", "40", "42", "15.7", "10", "0.027″"]],
+};
+
+/** Proof points and charts – numbers as shown on the current site. */
+const FPE_STATS: Stat[] = [{ value: "47%", label: "FPE", note: "mTICI ≥2b" }, { value: "0%", label: "ENT" }];
+const SUCCESS_CHART: Chart = {
+  kind: "stackedBar",
+  title: "Successful intracranial aneurysm occlusion (Raymond Roy Classification I or II)",
+  unit: "%",
+  max: 100,
+  categories: ["End of procedure (N=90)", "Follow up ≤180 days (N=75)"],
+  series: [
+    { name: "Raymond Roy Classification I", values: [79, 89] },
+    { name: "Raymond Roy Classification II", values: [7, 5] },
+    { name: "Raymond Roy Classification III", values: [14, 5] },
+  ],
+  annotations: ["Raymond I+II: 86% at end of procedure → 95% at follow-up (P=0.05)"],
+};
+const SUCCESS_STATS: Stat[] = [
+  { value: "95%", label: "Successful occlusion", note: "at 6 months" },
+  { value: "99%", label: "Did not require retreatment" },
+  { value: "Zero", label: "Symptomatic thromboembolic events" },
+];
+const RADIAL_FORCE_CHART: Chart = {
+  kind: "bar",
+  title: "Radial force comparison",
+  unit: "N/mm",
+  max: 1.2,
+  categories: ["Scepter C™ 4x11", "COMANECI™", "Stent retriever 6x40"],
+  series: [{ name: "Radial force", values: [1.0, 0.5, 0.1] }],
+  highlight: [1],
+  annotations: ["Lower risk of damage to the vessel with half the force of a balloon", "Lasting patency with up to 10x more force than a stent retriever"],
+  note: "Values read from the published comparison chart⁴ – to be confirmed.",
+};
+const VASO_STATS: Stat[] = [
+  { value: "90%", label: "Significant improvement", note: "in vessel diameter" },
+  { value: "129", label: "vessels", note: "with vasospasms treated" },
+  { value: "40", label: "patients", note: "studied" },
+];
+const DISTALS_STATS: Stat[] = [{ value: "30%", label: "less diameter", note: "TIGERTRIEVER™ 13: 1.3 F OD / 0.013″ ID — 3 mm devices: 1.7 F OD / 0.017″ ID" }];
+
 /* ------------------------------------------------------------------ */
 /*  Shared TIGERTRIEVER content                                          */
 /* ------------------------------------------------------------------ */
@@ -57,6 +204,7 @@ const tigerBenefits = (site: string): Benefit[] => [
     title: "control",
     body: "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
     videoUrl: VID(site, "i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4"),
+    secondaryImageUrl: IMG(APAC, "opt/TT_Revised-Base_V4-1920w.png"),
   },
   {
     eyebrow: "Accelerate",
@@ -69,8 +217,8 @@ const tigerBenefits = (site: string): Benefit[] => [
     eyebrow: "The 1st pass",
     title: "should be the last",
     body: "Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).",
-    imageUrl: IMG(site, "opt/Screenshot+2025-05-08+at+12.39.08-PM-1920w.png"),
-    videoUrl: VID(site, site === OUS ? "DDCXTnSRSCmasu6QIGlU_TIGER+graph_website_3-v.mp4" : "j4Uo8taSRCv4Ch0EW7r1_TIGER+graph_website-v.mp4"),
+    stats: FPE_STATS,
+    statsCaption: "In challenging ICAD cases⁵",
   },
 ];
 
@@ -118,7 +266,7 @@ const mvoBenefits = (site: string, forceVideo: string): Benefit[] => [
   {
     title: "Go the distals",
     body: "Simplify distal reach and tortuous paths with 30% lower delivery profile & delivery force than other 3 mm retrievers.⁴",
-    imageUrl: site === APAC ? IMG(APAC, "opt/go-the-distals-graohic-1920w.png") : IMG(OUS, "opt/go-the-distals-graohic-1920w_f-1920w.webp"),
+    stats: DISTALS_STATS,
   },
 ];
 
@@ -145,7 +293,8 @@ const comaneciBenefits = (site: string, bloodFlowVideo: string, comparisonHref: 
     eyebrow: "Leaves no trace —",
     title: "except SUCCESS",
     body: "95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.²",
-    imageUrl: IMG(site, "opt/chart-image-1920w.png"),
+    stats: SUCCESS_STATS,
+    chart: SUCCESS_CHART,
     link: { label: "Unlock SUCCESS: The prospective study data", href: successHref },
   },
 ];
@@ -168,7 +317,7 @@ const vasoBenefits = (site: string, bloodFlowVideo: string, comparisonHref: stri
     title: "active control",
     body: "Unlike other angioplasty devices, COMANECI's active technology offers precise control over vessel dilation with full visibility, potentially reducing the risk of vessel injury.¹˒²",
     footnote: "Gradual expansion can achieve similar results as high-impact balloons – with less damage to the vessel.³",
-    imageUrl: IMG(site, "opt/Com+VS+radial+force+comp-1920w.png"),
+    chart: RADIAL_FORCE_CHART,
     videoUrl: VID(site, "rRCzwiTS2JXz3BOhSARg_Com+VS+stair+graph+v2-v.mp4"),
   },
   {
@@ -187,7 +336,7 @@ const vasoBenefits = (site: string, bloodFlowVideo: string, comparisonHref: stri
     eyebrow: "The proof is in",
     title: "the patients",
     body: "In a multicenter study, severe vessel constriction improved significantly, with 52% of patients achieving favorable outcomes at 6 months.²",
-    imageUrl: IMG(site, "opt/vasospasm-stats-1920w.jpg"),
+    stats: VASO_STATS,
     link: { label: "Unlock the data", href: "https://jnis.bmj.com/content/15/9/864" },
   },
 ];
@@ -314,7 +463,15 @@ export const SOLUTIONS: SolutionSeed[] = [
     heroBody: "DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.",
     heroImageUrl: IMG(US, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png"),
     heroCta: demo("us"),
-    benefits: [{ title: "Steer with precision", body: "", imageUrl: IMG(US, "opt/Drivewire_middle-diagram-1920w.png") }],
+    benefits: [
+      {
+        eyebrow: "Reshape",
+        title: "Navigation",
+        body: "Boost efficiency with robust support, dynamic control, and consistent trackability.",
+        footnote: "“I saved about 45 minutes of frustration and futility, quickly accessing an artery arising at a difficult 180-degree angle on the first attempt. Drivewire provides immediate access to difficult anatomy that we may not have even tried accessing before.” – Dr. Jeremy Rempel",
+        imageUrl: IMG(US, "opt/Drivewire_middle-diagram-1920w.png"),
+      },
+    ],
     overviewBody: "",
     specImageUrls: [IMG(US, "opt/Drivewire-Chart-1920w.png")],
     howItWorks: [], inPractice: [],
@@ -447,7 +604,15 @@ export const SOLUTIONS: SolutionSeed[] = [
     heroBody: "DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.",
     heroImageUrl: IMG(OUS, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png"),
     heroCta: demo("ous"),
-    benefits: [{ title: "Steer with precision", body: "", imageUrl: IMG(OUS, "opt/Drivewire_middle+diagram-5944d55f-1920w.png") }],
+    benefits: [
+      {
+        eyebrow: "Reshape",
+        title: "Navigation",
+        body: "Boost efficiency with robust support, dynamic control, and consistent trackability.",
+        footnote: "“I saved about 45 minutes of frustration and futility, quickly accessing an artery arising at a difficult 180-degree angle on the first attempt. Drivewire provides immediate access to difficult anatomy that we may not have even tried accessing before.” – Dr. Jeremy Rempel",
+        imageUrl: IMG(OUS, "opt/Drivewire_middle+diagram-5944d55f-1920w.png"),
+      },
+    ],
     overviewBody: "",
     specImageUrls: [IMG(OUS, "opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg")],
     howItWorks: [], inPractice: [],
@@ -577,7 +742,15 @@ export const SOLUTIONS: SolutionSeed[] = [
     heroBody: "DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.",
     heroImageUrl: IMG(APAC, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png"),
     heroCta: demo("apac"),
-    benefits: [{ title: "Steer with precision", body: "", imageUrl: IMG(APAC, "opt/Drivewire+graphic-1920w.png") }],
+    benefits: [
+      {
+        eyebrow: "Reshape",
+        title: "Navigation",
+        body: "Boost efficiency with robust support, dynamic control, and consistent trackability.",
+        footnote: "“I saved about 45 minutes of frustration and futility, quickly accessing an artery arising at a difficult 180-degree angle on the first attempt. Drivewire provides immediate access to difficult anatomy that we may not have even tried accessing before.” – Dr. Jeremy Rempel",
+        imageUrl: IMG(APAC, "opt/Drivewire+graphic-1920w.png"),
+      },
+    ],
     overviewBody: "",
     specImageUrls: [IMG(APAC, "opt/OUS_Drivewire+chart_Product+Overview-1920w.jpg")],
     howItWorks: [], inPractice: [],
@@ -585,3 +758,22 @@ export const SOLUTIONS: SolutionSeed[] = [
     regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
   },
 ];
+
+/* Attach the structured overview blocks per product (same on every region). */
+for (const s of SOLUTIONS) {
+  const site = s.region === "us" ? US : s.region === "ous" ? OUS : APAC;
+  if (s.product.startsWith("tigertriever")) {
+    s.overviewFeatures = TIGER_FEATURES;
+    s.annotatedImage = TIGER_DIAGRAM(site);
+    s.specs = s.region === "us" ? TT_SPECS_US : s.slug === "mvo" ? TT_SPECS_MVO_OUS : TT_SPECS_OUS;
+  } else if (s.product === "comaneci") {
+    const vaso = s.slug === "vasospasm";
+    s.overviewFeatures = comaneciFeatures(vaso);
+    s.annotatedImage = COMANECI_DIAGRAM(OUS, vaso ? "opt/COMANEC-Specs-1920w.jpg" : "opt/OUS-Aneurysm-Specifications-1920w.jpg");
+    s.specs = COMANECI_SPECS;
+  } else if (s.product === "drivewire") {
+    s.overviewFeatures = DRIVEWIRE_FEATURES;
+    s.annotatedImage = DRIVEWIRE_DIAGRAM(s.region === "us" ? US : OUS, s.region === "us" ? "opt/Drivewire_middle-diagram-1920w.png" : "opt/Drivewire_middle+diagram-5944d55f-1920w.png");
+    s.specs = s.region === "us" ? DRIVEWIRE_SPECS_US : DRIVEWIRE_SPECS_OUS;
+  }
+}

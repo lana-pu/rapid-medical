@@ -57,6 +57,13 @@
       "when": 1793643719462,
       "tag": "0007_setting_drafts",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793880021396,
+      "tag": "0008_blocks",
+      "breakpoints": true
     }
   ]
 }
