@@ -6,13 +6,13 @@
 | Триггер | Модуль | Индекс |
 |---|---|---|
 | Новый проект, подключить репозиторий, настройка AI, память, save-session, правила, скиллы, README, пополнение библиотеки | ai-config | `ai-config/AGENTS.md` |
-| Что строим и для кого, спека продукта и экранов, PRD, правка спеки, бриф лендинга | product | `product/AGENTS.md` |
+| Исследование продукта по этапам, что строим и для кого, спека продукта и экранов, PRD, правка спеки, бриф лендинга | product | `product/AGENTS.md` |
 | DESIGN.md, UI-кит, FSD, экраны, адаптив, UX-аудит, картинки, лендинг, правка визуала | design | `design/AGENTS.md` |
 | Код, БД, auth, письма, файлы, AI-фичи, админка, API, тесты, git, ENV, деплой, домен, security, хуки | development | `development/AGENTS.md` |
 | SEO-мета, robots/sitemap, GEO, аналитика, вычитка текстов | seo-geo | `seo-geo/AGENTS.md` |
 
 ## Типичный путь продукта с нуля
-1. `ai-config/init-project` → `product/product-concept-interview` → `product/screens-spec-*` → `product/spec-review-and-prd`
+1. `ai-config/init-project` → (`product/research-pipeline`, если нужно исследование) → `product/product-concept-interview` → `product/screens-spec-*` → `product/spec-review-and-prd`
 2. `design/design-system` → `ui-kit` → `fsd-architecture` → `screen-visual-spec` → `screens-prototype` → `responsive-audit` → `ux-audit`
 3. `development/git-github-setup` → `env-secrets` → `deploy-strategy-adr` → деплой → `domain-https` → `server-security-basics` → `security-check`
 4. `development/db-*` → `mocks-to-real-db` → `auth-setup` → письма → `file-storage` → `auth-security-hardening` → `persistence-smoke-check`

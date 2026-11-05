@@ -4,6 +4,7 @@
 `docs/PRD.md` проекта.
 
 ## Порядок для нового продукта
+Исследование (если нужно): `research-pipeline`, начиная с `research-frame`.
 `product-concept-interview` → `screens-spec-from-figma` **или** `screens-spec-from-sketches-or-idea` →
 `spec-review-and-prd`.
 
@@ -15,6 +16,8 @@
 | Спека собрана: сверка, закрытие пробелов, `PRD.md` | `prompts/spec-review-and-prd.md` |
 | Меняется поведение, экран, роль, правило, модель данных | `prompts/spec-change.md` |
 | Перед лендингом: сегменты, JTBD, оффер, визуальный стиль | `prompts/landing-research-brief.md` |
+| Исследование продукта: этапы от рамки до приоритетов, что дальше, что не сделано — скилл `/research-atlas` | `prompts/research-pipeline.md` |
+| Начало ресёрча: какое решение принимаем, вопросы, допущения, рамки, план — скилл `/research-frame` | `prompts/research-frame.md` |
 | Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;

@@ -1,0 +1,258 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: a research logbook — stage index stays on the left, one stage per view, overview opens on what is unfinished */
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEFF3; --fg:#121820; --muted:#566170; --faint:#6F7A88; --line:#D9DFE6;
+  --accent:#3A3FB8; --accent-soft:#E6E7FA;
+  --l1:#DCEBEE; --l2:#AED3DA; --l3:#6DB0BD; --l4:#2E8396; --l5:#13505F;
+  --l1-ink:#23434B; --l2-ink:#183A42; --l3-ink:#0D2E36; --l4-ink:#FFFFFF; --l5-ink:#FFFFFF;
+  --ok:#1E7A4C; --ok-soft:#DDF1E6; --bad:#B23A35; --bad-soft:#F8E1DF; --warn:#8A5E06; --warn-soft:#F7EBCF; --none:#5F6873; --none-soft:#E8ECF0;
+  --display:"Unbounded", "Golos Text", system-ui, sans-serif;
+  --body:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+a{color:var(--accent)}
+.shell{max-width:1320px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 64px;display:grid;grid-template-columns:292px minmax(0,1fr);gap:32px;align-items:start}
+.side{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px);max-height:calc(100vh - 32px);overflow-y:auto;display:grid;gap:12px;min-width:0}
+.brand{font-family:var(--display);font-weight:700;font-size:14px;color:var(--fg);text-decoration:none;line-height:1.3}
+.side input{font:inherit;font-size:14px;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+nav{display:grid;gap:12px;min-width:0}
+.ngroup{display:grid;gap:1px;min-width:0}
+.nlabel{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 8px 3px}
+.nitem{display:grid;grid-template-columns:14px 24px minmax(0,1fr) auto;gap:6px;align-items:center;padding:6px 8px;border-radius:8px;color:var(--fg);text-decoration:none;font-size:14px;line-height:1.25}
+.nitem:hover{background:var(--sunk)}
+.nitem[aria-current="page"]{background:var(--accent-soft);font-weight:600}
+.nitem .num{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.nitem .cnt{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nover{grid-template-columns:minmax(0,1fr) auto}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--c);background:var(--fill);display:inline-block;flex:none}
+.s-todo{--c:var(--none);--fill:transparent}
+.s-work{--c:var(--warn);--fill:linear-gradient(90deg,var(--warn) 50%,transparent 50%)}
+.s-review{--c:var(--accent);--fill:var(--accent-soft)}
+.s-done{--c:var(--ok);--fill:var(--ok)}
+.s-skip{--c:var(--line);--fill:var(--line)}
+main{display:grid;gap:22px;min-width:0}
+main > *{min-width:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:4px 0 0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.3;margin:0;text-wrap:balance}
+h3{font-size:15px;margin:0}
+.lede{max-width:72ch;margin:8px 0 0}
+.muted{color:var(--muted)}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tally div{background:var(--surface);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.tally b{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
+.tally span{font-size:13px;color:var(--muted)}
+.next{background:var(--accent-soft);border-radius:10px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;justify-content:space-between}
+.next p{margin:0}
+.next a{font-weight:600;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.chip b{font-family:var(--mono);font-weight:500;color:var(--muted)}
+.todo{display:grid;gap:10px}
+.tstage{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:grid;gap:8px}
+.th{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.th a{font-weight:600;color:var(--fg);text-decoration:none}
+.th a:hover{color:var(--accent)}
+.tstage ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.tstage li{display:grid;grid-template-columns:128px minmax(0,1fr);gap:10px;font-size:14px}
+.k{font-family:var(--mono);font-size:11px;line-height:1.75;color:var(--muted)}
+.k.moved{color:var(--warn)} .k.review,.k.decision{color:var(--accent)} .k.missing{color:var(--bad)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.t-ok,.p-done{background:var(--ok-soft);color:var(--ok)} .t-bad{background:var(--bad-soft);color:var(--bad)} .t-warn,.p-work{background:var(--warn-soft);color:var(--warn)}
+.t-none,.p-todo,.p-skip{background:var(--none-soft);color:var(--none)} .p-review{background:var(--accent-soft);color:var(--accent)}
+.sh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:10px}
+.code{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.box ul{margin:0;padding-left:18px;display:grid;gap:5px;max-width:78ch}
+.sec{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.sec-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.sec p{margin:0;max-width:78ch}
+.sec > ul{margin:0;padding-left:18px;display:grid;gap:4px;max-width:78ch}
+.empty{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.claims{display:grid;gap:8px}
+.claim{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;font-size:14.5px}
+.claim .lab{font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted)}
+.claim .lab .lv{margin-left:4px}
+.claim .src{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.lv{font-family:var(--mono);font-weight:700;font-size:10.5px;border-radius:999px;padding:0 6px;line-height:1.6;display:inline-block}
+.lv1{background:var(--l1);color:var(--l1-ink)} .lv2{background:var(--l2);color:var(--l2-ink)} .lv3{background:var(--l3);color:var(--l3-ink)} .lv4{background:var(--l4);color:var(--l4-ink)} .lv5{background:var(--l5);color:var(--l5-ink)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;min-width:88px}
+td.wide{min-width:240px}
+tr:last-child td{border-bottom:0}
+details.fold{min-width:0}
+details.fold > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);padding:4px 0}
+details.fold > .tbl{margin-top:8px}
+.linkrow{display:grid;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
+a.linkrow:hover{border-color:var(--accent)}
+.linkrow small{font-size:12.5px;color:var(--muted)}
+.hit{display:grid;gap:2px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--fg);text-decoration:none}
+.hit small{color:var(--muted);font-size:12.5px}
+mark{background:var(--warn-soft);color:var(--fg);border-radius:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:18px}
+  .side{position:static;max-height:none;overflow:visible}
+  nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+  .ngroup{display:flex;gap:6px;flex:none}
+  .nlabel{display:none}
+  .nitem,.nover{display:flex;flex:none;background:var(--surface);border:1px solid var(--line);white-space:nowrap}
+}
+@media (max-width:560px){
+  .tstage li,.claim{grid-template-columns:minmax(0,1fr);gap:0}
+}
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="#overview" id="brand"></a>
+    <input id="q" type="search" placeholder="Поиск по всем этапам" aria-label="Поиск по всем этапам">
+    <nav id="nav" aria-label="Этапы"></nav>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+/*__DATA__*/
+const LABEL = {fact:"Подтверждено", inference:"Вывод", limit:"Ограничение", pattern:"Паттерн"};
+const KIND = {missing:"Нет материала", moved:"Не разобрано", review:"Подтвердить", decision:"Решение", question:"Вопрос", method:"Нет скилла"};
+const KIND_LONG = {missing:"Нет материала", moved:"Есть в другом месте, не разобрано", review:"Ждёт подтверждения",
+  decision:"Решение за: " + PROJECT.owner, question:"Открытые вопросы", method:"Скилл не написан"};
+const main = document.getElementById("main"), nav = document.getElementById("nav"), q = document.getElementById("q");
+let kind = "all";
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+const safeUrl = u => /^https?:\/\//i.test(u) ? esc(u) : "";
+const level = n => n ? `<span class="lv lv${Number(n)}" title="Уровень доказательности">L${Number(n)}</span>` : "";
+const pill = s => `<span class="pill p-${s.status}">${esc(STATUS[s.status])}</span>`;
+const dot = st => `<span class="dot s-${st}" aria-hidden="true"></span>`;
+
+function cell(c){
+  if (c && typeof c === "object") {
+    if (c.level) return level(c.level);
+    return c.tone ? `<span class="pill t-${c.tone}">${esc(c.t)}</span>` : inline(c.t ?? "");
+  }
+  return inline(c ?? "");
+}
+function table(b){
+  const long = b.rows.map(r => r.map(c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "").length));
+  const wide = b.head.map((_, i) => Math.max(...long.map(r => r[i]), 0) > 40);
+  const t = `<div class="tbl"><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
+    b.rows.map(r => `<tr>${r.map((c, i) => `<td${wide[i] ? ' class="wide"' : ""}>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  return b.fold ? `<details class="fold"><summary>${esc(b.fold)}</summary>${t}</details>` : t;
+}
+function block(b){
+  if (b.type === "text") return `<p>${inline(b.t)}</p>`;
+  if (b.type === "list") return `<ul>${b.items.map(i => `<li>${inline(i)}</li>`).join("")}</ul>`;
+  if (b.type === "table") return table(b);
+  if (b.type === "claims") return `<div class="claims">${b.items.map(c => `<div class="claim"><div class="lab">${LABEL[c.label]}${level(c.level)}</div><div>${inline(c.t)}${c.src ? `<div class="src">${esc(c.src)}</div>` : ""}</div></div>`).join("")}</div>`;
+  if (b.type === "link") {
+    const body = `<span>${inline(b.t)}</span>${b.note ? `<small>${esc(b.note)}</small>` : ""}${b.path ? `<small class="code">${esc(b.path)}</small>` : ""}`;
+    return b.url ? `<a class="linkrow" href="${safeUrl(b.url)}" target="_blank" rel="noopener">${body}</a>` : `<div class="linkrow">${body}</div>`;
+  }
+  return "";
+}
+
+function renderNav(current){
+  const parts = [...new Set(STAGES.map(s => s.part))];
+  const open = STAGES.reduce((n, s) => n + s.todo.length, 0);
+  nav.innerHTML = `<div class="ngroup"><a class="nitem nover" href="#overview"${current ? "" : ' aria-current="page"'}><span>Что не сделано</span><span class="cnt">${open}</span></a></div>` +
+    parts.map(p => `<div class="ngroup"><div class="nlabel">${esc(p)}</div>${STAGES.filter(s => s.part === p).map(s =>
+      `<a class="nitem" href="#s-${esc(s.id)}"${current === s.id ? ' aria-current="page"' : ""} title="${esc(STATUS[s.status])}">${dot(s.status)}<span class="num">${esc(s.n)}</span><span>${esc(s.title)}</span><span class="cnt">${s.filled}/${s.total}</span></a>`).join("")}</div>`).join("");
+}
+
+function overview(){
+  const tally = Object.keys(STATUS).map(k => [k, STAGES.filter(s => s.status === k).length]).filter(x => x[1]);
+  const color = {todo:"var(--none)", work:"var(--warn)", review:"var(--accent)", done:"var(--ok)", skip:"var(--muted)"};
+  const all = STAGES.flatMap(s => s.todo);
+  const kinds = Object.keys(KIND_LONG).map(k => [k, all.filter(t => t.kind === k).length]).filter(x => x[1]);
+  const shown = STAGES.map(s => ({s, items: s.todo.filter(t => kind === "all" || t.kind === kind)})).filter(x => x.items.length);
+  main.innerHTML = `<header><div class="eyebrow">${esc(PROJECT.eyebrow)}</div><h1>${esc(PROJECT.heading)}</h1><p class="lede">${inline(PROJECT.lede)}</p></header>
+  <div class="tally">${tally.map(([k, n]) => `<div style="--c:${color[k]}"><b>${n}</b><span>${esc(STATUS[k])}</span></div>`).join("")}</div>
+  ${NEXT ? `<div class="next"><p><strong>Следующий шаг.</strong> ${esc(NEXT.n)} ${esc(NEXT.title)}: ${esc(NEXT.action)}.</p><a href="#s-${esc(NEXT.id)}">Открыть этап</a></div>` : ""}
+  <h2>Что не сделано</h2>
+  <div class="chips" id="kinds"><button class="chip" type="button" data-k="all" aria-pressed="${kind === "all"}">Всё <b>${all.length}</b></button>${
+    kinds.map(([k, n]) => `<button class="chip" type="button" data-k="${k}" aria-pressed="${kind === k}">${esc(KIND_LONG[k])} <b>${n}</b></button>`).join("")}</div>
+  <div class="todo">${shown.length ? shown.map(({s, items}) => `<section class="tstage"><div class="th">${dot(s.status)}<a href="#s-${esc(s.id)}"><span class="code">${esc(s.n)}</span> ${esc(s.title)}</a>${pill(s)}</div>
+    <ul>${items.map(t => `<li><span class="k ${t.kind}">${esc(KIND[t.kind])}</span><span>${inline(t.t)}</span></li>`).join("")}</ul></section>`).join("") : `<p class="empty">Всё закрыто.</p>`}</div>`;
+  document.getElementById("kinds").addEventListener("click", e => {
+    const b = e.target.closest("[data-k]");
+    if (b) { kind = b.dataset.k; overview(); }
+  });
+}
+
+function stage(s){
+  const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision" || t.kind === "review");
+  main.innerHTML = `<header><div class="eyebrow">${esc(s.part)} · этап ${esc(s.n)}</div><h1>${esc(s.title)}</h1><p class="lede">${esc(s.q)}</p>
+    <div class="sh">${pill(s)}${s.confirmed ? `<span class="code">подтверждён ${esc(s.confirmed)}</span>` : ""}<span class="code">/${esc(s.skill)}${s.skillReady ? "" : " · скилл не написан"}</span>${s.optional ? `<span class="code">${esc(s.optional)}</span>` : ""}</div>
+    ${s.needs.length ? `<p class="muted">Опирается на: ${s.needs.map(n => `<a href="#s-${esc(n.id)}">${esc(n.title)}</a>`).join(", ")}</p>` : ""}</header>
+  ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
+  <div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>
+  ${s.outputs.map(o => `<section class="sec" id="o-${esc(o.key)}"><div class="sec-h"><h2>${esc(o.title)}</h2>${o.state === "linked" ? '<span class="pill t-warn">Не разобрано</span>' : ""}</div>
+    ${o.blocks.length ? o.blocks.map(block).join("") : `<div class="empty">Пока пусто. ${esc(o.hint)}</div>`}</section>`).join("")}
+  ${rest.length ? `<section class="sec"><h2>Открыто на этом этапе</h2><div class="claims">${rest.map(t => `<div class="claim"><div class="lab">${esc(KIND[t.kind])}</div><div>${inline(t.t)}</div></div>`).join("")}</div></section>` : ""}`;
+}
+
+function texts(b){
+  if (b.type === "text") return [b.t];
+  if (b.type === "list") return b.items;
+  if (b.type === "claims") return b.items.map(c => c.t);
+  if (b.type === "link") return [[b.t, b.note].filter(Boolean).join(" · ")];
+  if (b.type === "table") return b.rows.map(r => r.map(c => typeof c === "object" && c ? c.t ?? "" : c ?? "").join(" · "));
+  return [];
+}
+const INDEX = STAGES.flatMap(s => [
+  ...s.conclusions.map(t => ({s, where:"Выводы для решения", t})),
+  ...s.outputs.flatMap(o => o.blocks.flatMap(b => texts(b).map(t => ({s, where:o.title, t})))),
+  ...s.todo.filter(t => t.kind === "question" || t.kind === "decision").map(t => ({s, where:KIND[t.kind], t:t.t})),
+]);
+function search(term){
+  const low = term.toLowerCase();
+  const hits = INDEX.filter(x => x.t.toLowerCase().includes(low));
+  const snip = t => {
+    const plain = t.replace(/\*\*/g, ""), i = plain.toLowerCase().indexOf(low);
+    const from = Math.max(0, i - 70), to = Math.min(plain.length, i + low.length + 110);
+    return (from ? "…" : "") + esc(plain.slice(from, Math.max(i, from))) + (i < 0 ? esc(plain.slice(0, 180)) : `<mark>${esc(plain.slice(i, i + low.length))}</mark>` + esc(plain.slice(i + low.length, to))) + (to < plain.length ? "…" : "");
+  };
+  main.innerHTML = `<header><div class="eyebrow">Поиск</div><h1>«${esc(term)}»</h1><p class="lede muted">Найдено: ${hits.length}</p></header>
+  <div>${hits.slice(0, 80).map(h => `<a class="hit" href="#s-${esc(h.s.id)}"><small>${esc(h.s.n)} ${esc(h.s.title)} · ${esc(h.where)}</small><span>${snip(h.t)}</span></a>`).join("")}</div>`;
+}
+
+function route(){
+  const m = /^#s-(.+)$/.exec(location.hash);
+  const s = m && STAGES.find(x => x.id === m[1]);
+  renderNav(s ? s.id : null);
+  q.value = "";
+  s ? stage(s) : overview();
+  window.scrollTo(0, 0);
+}
+document.getElementById("brand").textContent = PROJECT.product;
+q.addEventListener("input", () => { const t = q.value.trim(); t.length > 1 ? search(t) : route(); });
+window.addEventListener("hashchange", route);
+route();
+</script>

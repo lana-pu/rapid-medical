@@ -16,3 +16,4 @@
 | Что блокируют и о чём напоминают хуки | `hooks-guardrails.md` |
 | `NOT` / `notIn` над nullable-полем в запросах | `sql-nullable-not.md` |
 | Создал промт или правило в библиотеке | `module-indexation.md` |
+| Ресёрч, выводы, источники — уровни L1–L5 и метки утверждений | `evidence-levels.md` |
