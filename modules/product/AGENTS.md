@@ -24,6 +24,10 @@
 | Проблема и решение: точки потерь, метрики, критические допущения — скилл `/problem-solution` | `prompts/problem-solution.md` |
 | Роли и сегменты: для кого проектируем, портрет — скилл `/users-segments` | `prompts/users-segments.md` |
 | JTBD: фазы, работы, работа → функция → метрика — скилл `/jtbd` | `prompts/jtbd.md` |
+| Бенчмарк: сценарий, пути в картинках, аналоги, берём / не берём — скилл `/benchmark` | `prompts/benchmark.md` |
+| Сценарии, отвергнутое, принципы дизайна — скилл `/design-principles` | `prompts/design-principles.md` |
+| Инвентарь продукта по коду — скилл `/product-inventory` | `prompts/product-inventory.md` |
+| Проверка на людях: отбор, гайд, вердикты — скилл `/user-validation` | `prompts/user-validation.md` |
 | Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;
