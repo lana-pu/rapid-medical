@@ -1,8 +1,11 @@
 # Инфраструктура — Rapid Medical
 
 > Снимок по файлам репозитория на `59169da` (Dockerfile, docker-compose.yml, vercel.json, CI,
-> .env.example, README). **Подключение внешних сервисов (Vercel, Neon, GitHub Pages, S3, SMTP) не
-> проверялось** — сеть не трогали. Значения секретов здесь не хранятся.
+> .env.example, README). Значения секретов здесь не хранятся.
+>
+> **Факт (владелица, 2026-11-05): ничего не подключено** — Vercel, Neon, домен, SMTP, S3 не настроены.
+> Живёт только статическое демо на GitHub Pages; оно нужно для сбора информации с сайтов Duda, структура
+> в нём ещё не проработана. Строки ниже про Vercel/Neon — описание из README, а не работающая среда.
 
 ## Окружения
 
@@ -10,8 +13,8 @@
 |---|---|---|---|---|
 | Локально, Docker | `docker compose up --build` → app `:${APP_PORT:-3000}` + Postgres `:${DB_PORT:-5432}` | `postgres:16-alpine`, volume `pgdata` | `./public/uploads` смонтирован в контейнер | по README; работает у владельца — не подтверждено |
 | Локально, Node | `docker compose up -d db` → `npm install` → `npm run setup` → `npm run dev` | локальный Postgres или свой `DATABASE_URL` | `public/uploads` | по README |
-| Staging/prod, Vercel + Neon | Импорт `lana-pu/rapid-medical` в Vercel; build = `npm run build:vercel` (bootstrap: migrate + seed на пустой БД, затем `next build`) | Neon Postgres (`sslmode=require`) | `public/uploads` read-only; новые загрузки требуют S3 (иначе 503) | по README, статус подключения не проверен |
-| Статическое демо, GitHub Pages | `npm run demo:export` → `out/` → ветка `gh-pages` → https://lana-pu.github.io/rapid-medical/ | только на этапе сборки (нужен `DATABASE_URL`) | копия в `out/` | ветка `origin/gh-pages` существует локально (последний коммит 2026-11-05) |
+| Staging/prod, Vercel + Neon | Импорт `lana-pu/rapid-medical` в Vercel; build = `npm run build:vercel` (bootstrap: migrate + seed на пустой БД, затем `next build`) | Neon Postgres (`sslmode=require`) | `public/uploads` read-only; новые загрузки требуют S3 (иначе 503) | **не подключено** (2026-11-05) |
+| Статическое демо, GitHub Pages | `npm run demo:export` → `out/` → ветка `gh-pages` → https://lana-pu.github.io/rapid-medical/ | только на этапе сборки (нужен `DATABASE_URL`) | копия в `out/` | **единственная живая среда**; цель — сбор информации с Duda, структура не проработана |
 | Любой Node-хост (Railway, Fly, VPS, Docker) | `npx tsx scripts/bootstrap.ts && next start` | любой Postgres | для >1 инстанса — S3 + Redis для лимитера | описано в README, не используется |
 
 Домен: `www.rapid-medical.com` фигурирует как дефолт `NEXT_PUBLIC_SITE_URL` в коде; DNS на приложение
@@ -42,15 +45,15 @@
 
 | Поток | Триггер | Что происходит |
 |---|---|---|
-| Vercel | push в `main` → автодеплой (по README) | `build:vercel` = `tsx scripts/bootstrap.ts && next build`: ждёт БД, `scripts/migrate.ts`, сид на пустой БД (+ `migrate-media.ts`) |
+| Vercel | push в `main` → автодеплой — **когда подключат**; сейчас не подключён | `build:vercel` = `tsx scripts/bootstrap.ts && next build`: ждёт БД, `scripts/migrate.ts`, сид на пустой БД (+ `migrate-media.ts`) |
 | GitHub Pages (демо) | вручную: `npm run demo:export`, затем публикация `out/` в `gh-pages` | сборка с `NEXT_PUBLIC_DEMO=1` + `basePath=/rapid-medical`, обход всех публичных страниц и части админки, переписывание путей |
 | Docker | `docker compose up --build` | образ `node:22-bookworm-slim` + ffmpeg; `CMD`: bootstrap → `next start -p 3000` |
 
 Миграции: Drizzle (`drizzle/0000_init … 0008_blocks`), применяются `scripts/migrate.ts` (в bootstrap).
 Генерация новых — `npm run db:generate`.
 
-**Push-политика (вывод):** если Vercel действительно подключён, каждый push в `main` = деплой.
-Правило для `docs/rules/commits.md` проекта пока не создано (шаг 8 методологии — за координатором).
+**Push-политика:** сейчас push в `main` запускает только CI (GitHub Actions), деплоя нет. После
+подключения Vercel каждый push в `main` = деплой — тогда правило в `docs/rules/commits.md` ужесточается.
 
 ## Хранилище медиа
 - `local`: `public/uploads/<yyyy-mm>/<name>-<hex>.<ext>` + варианты/постеры. Сейчас **~270 МБ закоммичено в

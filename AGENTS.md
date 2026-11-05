@@ -29,10 +29,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 5. **Миграции — Drizzle** (`drizzle/`, `npm run db:migrate`). Не сбрасывать локальную БД с данными;
    прод-миграции идут в build (`scripts/bootstrap.ts`).
 
-## Push и деплой — осторожно
-По README push в `main` автоматически деплоит на Vercel (статус подключения не подтверждён —
-`docs/memory/infrastructure.md`). Поэтому: коммитить можно сразу, **push в `main` — только после
-`npm run build` + `npm test` и с явного «да»**. Рабочее — в ветках.
+## Стадия, push и деплой
+Внешние сервисы **не подключены** (Vercel, Neon, домен, SMTP, S3); живёт только статическое демо на
+GitHub Pages — оно для сбора информации с Duda, структура сайта ещё не проработана (`docs/spec.md → Стадия`).
+Push в `main` сейчас запускает только CI, не деплой: коммит документации можно пушить сразу, код — после
+зелёных `tsc` / `lint` / `npm test`. **Когда подключат Vercel** — push в `main` снова только с явного «да»
+(обновить этот раздел и `docs/rules/commits.md`).
 
 ## Когда → Файл
 | Когда | Файл |

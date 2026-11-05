@@ -23,6 +23,12 @@
 публикация, история ревизий; on-page editor; медиапайплайн (WebP-варианты, постеры видео); 301 со
 старых доменов Duda; статическое демо на GitHub Pages.
 
+**Стадия (со слов владелицы, 2026-11-05).** Продукт существует на уровне документации и демо. Внешние
+сервисы **не подключены**: нет Vercel, Neon, домена, SMTP, S3 — сайт нигде не работает в проде.
+Демо собрано **до проработки структуры**: оно повторяет текущие сайты Duda и нужно прежде всего, чтобы
+собрать с них информацию (контент, медиа, страницы). Информационная архитектура нового сайта ещё не
+проработана — структура и состав экранов в этой спеке описывают *текущий код*, а не утверждённый продукт.
+
 ## Платформа
 
 | Слой | Что | Где |
@@ -37,7 +43,7 @@
 | Auth | Серверные сессии в БД, bcrypt, TOTP (`otplib`), preview-JWT (`jose`) | `src/lib/auth.ts`, `src/lib/preview.ts` |
 | Почта | `nodemailer` по SMTP; без SMTP — `console.log` | `src/lib/mail.ts` |
 | Тесты | Vitest (unit), Playwright (e2e), CI на GitHub Actions | `tests/`, `.github/workflows/ci.yml` |
-| Хостинг | Docker / Node / Vercel+Neon (по README) / GitHub Pages (демо) | `docs/memory/infrastructure.md` |
+| Хостинг | Не подключён (Vercel+Neon описаны в README, но не настроены); работает только демо на GitHub Pages | `docs/memory/infrastructure.md` |
 
 Новый тип контента = таблица в `src/db/schema.ts` + запись в `src/admin/resources.ts`; списки, формы,
 валидация и сохранение генерируются (`src/admin/engine.ts`).
@@ -174,7 +180,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Duda CDN | `images.remotePatterns`, скрипты миграции `scripts/*duda*` | Временно, до полной миграции медиа |
 | S3-совместимое хранилище | `@aws-sdk/client-s3`, `STORAGE_DRIVER=s3` | Код есть; не сконфигурировано (BACKLOG) |
 | SMTP | `nodemailer` | Не сконфигурировано по умолчанию |
-| Vercel Cron | `vercel.json` → `/api/cron/publish` 05:00 UTC | По README; подключение не подтверждено |
+| Vercel Cron | `vercel.json` → `/api/cron/publish` 05:00 UTC | Не подключено (Vercel не настроен) |
 
 ## Экраны (индекс)
 
