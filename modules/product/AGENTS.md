@@ -18,6 +18,7 @@
 | Перед лендингом: сегменты, JTBD, оффер, визуальный стиль | `prompts/landing-research-brief.md` |
 | Исследование продукта: этапы от рамки до приоритетов, что дальше, что не сделано — скилл `/research-atlas` | `prompts/research-pipeline.md` |
 | Начало ресёрча: какое решение принимаем, вопросы, допущения, рамки, план — скилл `/research-frame` | `prompts/research-frame.md` |
+| Контекст и рынок: аудитория, цены, ограничения, темы, требования — скилл `/desk-research` | `prompts/desk-research.md` |
 | Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;
