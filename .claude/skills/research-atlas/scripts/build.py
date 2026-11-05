@@ -169,9 +169,10 @@ def assemble(src):
         if skip is not None and not str(skip).strip():
             err.append(f"{where}: skip — напиши причину")
 
-        filled = [o for o in outs if o["state"] == "filled"]
+        need = [o for o in outs if not o.get("optional")]
+        filled = [o for o in need if o["state"] == "filled"]
         ref = d.get("reference")  # справочники: без выводов и подтверждения
-        complete = len(filled) == len(outs) and (bool(conclusions) or bool(ref))
+        complete = len(filled) == len(need) and (bool(conclusions) or bool(ref))
         if confirmed and not complete:
             err.append(f"{where}: confirmed стоит, но этап не заполнен")
         if skip:
