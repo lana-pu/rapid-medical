@@ -28,7 +28,7 @@ The Content Studio should act as a **task-oriented editorial workspace for a sma
 
 **Method.** Targeted desk research of current vendor documentation and accessible procedural-authoring help pages, interpreted against documented Rapid Medical content structure and two previous product research reports. This is **not** a field observation, comparative usability study, source-code evaluation, regulatory compliance audit, or systematic literature review. We did not access authenticated editor sessions for all products.
 
-**Evidence key.** `[P]` = primary vendor documentation of a feature; `[C]` = client-supplied non-final content/requirements; `[H]` = UX design hypothesis; `[T]` = technical feasibility assumption requiring a prototype; `[OPEN]` = unknown operational fact. A vendor feature existing does not prove that its UI improves editor performance or that it fits our budget.
+**Evidence key.** `[P]` = primary vendor documentation of a feature; `[C]` = client-supplied non-final content/requirements; `[H]` = UX design hypothesis; `[T]` = technical feasibility assumption requiring a prototype; `[OPEN]` = unknown operational fact. A vendor feature existing does not prove that its UI improves editor performance or that it fits our project.
 
 ---
 
@@ -268,7 +268,7 @@ This is a **qualitative design tradeoff matrix, not usability test data**. Imple
 
 **P0 — coherent demonstration / prototype:** one catalog path; exact sample configuration; fixed eight-stage structure; a lesson form for uploaded text/video; preview with shared renderer; visible draft vs released status; one synthetic comparison example; manual/developer-assisted local ZIP build may be acceptable. Keep source content separate and marked nonclinical.
 
-**P1 — operational Content Studio:** reusable media revisions, exact multi-configuration applicability and impact checking, real approval states, curated comparison pairs, release validation and ZIP generation, release history/manifest, authentication and basic permissions, supported cross-platform testing. Do not claim this complete production system fits the earlier $950 budget without a new scoped estimate.
+**P1 — operational Content Studio:** reusable media revisions, exact multi-configuration applicability and impact checking, real approval states, curated comparison pairs, release validation and ZIP generation, release history/manifest, authentication and basic permissions, supported cross-platform testing. Do not claim this complete production system fits the earlier proposal without a new scoped estimate.
 
 **P2 — conditional advanced features:** granular field-level diff, workflow routing and notifications, controlled parallel localisation, release-to-release visual diff, bulk editing, automatic update distribution, complex inheritance, LMS assessments, training analytics, advanced asset transcoding. These are not required merely because commercial CMS products offer them.
 

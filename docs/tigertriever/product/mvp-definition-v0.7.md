@@ -9,7 +9,7 @@ We audited **57 feature entries** from *Feature Inventory Audited v0.6.1* agains
 
 **Recommendation:** Design and test two connected *vertical slices*: (1) a small physician-facing offline learner journey including a single approved legacy/new handle comparison and quick stage lookup; (2) an editor journey updating one shared video, inspecting impact, previewing draft vs released, and seeing release readiness. Verify offline technical feasibility before promising the architecture.
 
-The **operational MVP** is different: a robust downloadable guide and usable Content Studio that can publish complete, approved, versioned offline bundles. The two-environment product should not be silently redefined as a static microsite. Neither the full 57-feature inventory nor the minimum production platform can be presumed included in the historical $950 proposal.
+The **operational MVP** is different: a robust downloadable guide and usable Content Studio that can publish complete, approved, versioned offline bundles. The two-environment product should not be silently redefined as a static microsite. Neither the full 57-feature inventory nor the minimum production platform can be presumed included in the historical proposal.
 
 ## 1. Evidence and ownership
 
@@ -157,7 +157,7 @@ The **initial** feature map lacked explicit links for representative jobs R01 an
 
 **Jobs:** E04. **Expected behavior:** Block invalid bundle; build and download versioned offline package  
 **Acceptance example:** With missing paired clip export is blocked; approved snapshot is frozen and works offline  
-**Dependency / boundary:** Do not treat ZIP generation as included in small design PO  
+**Dependency / boundary:** Do not treat ZIP generation as included in the original PO  
 **Questions:** OPS-05; ED-06; MED-08.
 
 ### FS-13 · Catalog extensibility and filming readiness (A-20/A-21)
@@ -197,7 +197,7 @@ The **initial** feature map lacked explicit links for representative jobs R01 an
 
 ## 6. Marketing meeting — only questions they can answer or route to an authority
 
-1. **SCOPE-09** — Can you share the exact Option #3 accepted proposal/PO scope and exclusions? *Why:* Must distinguish accepted concept from $950 contracted deliverables.
+1. **SCOPE-09** — Can you share the exact Option #3 accepted proposal/PO scope and exclusions? *Why:* Must distinguish accepted concept from contracted deliverables.
 2. **SCOPE-07** — Which models, handle variants and markets must ship first, and is 17U included? *Why:* Limits first release and comparison pairs.
 3. **SCOPE-08** — Which videos are available, pending review or still to be filmed for each stage/configuration? *Why:* Determines playable and comparable stages.
 4. **SCOPE-02** — What was promised by Quick Reference — direct stage access, separate export, or separate mode? *Why:* Ensures functional client request is preserved.
