@@ -205,7 +205,11 @@ def main():
         return
 
     def js(name, v):
-        return f"const {name} = " + json.dumps(v, ensure_ascii=False).replace("</", "<\\/") + ";"
+        # данные идут внутрь <script>: ни один символ не должен менять разбор HTML
+        raw = json.dumps(v, ensure_ascii=False)
+        for ch, code in (("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"), ("\u2028", "\\u2028"), ("\u2029", "\\u2029")):
+            raw = raw.replace(ch, code)
+        return f"const {name} = {raw};"
 
     data = "\n".join([js("PROJECT", project), js("STAGES", stages), js("NEXT", nxt), js("STATUS", STATUS)])
     tpl = open(TEMPLATE, encoding="utf8").read()
