@@ -15,6 +15,7 @@
 | Спека собрана: сверка, закрытие пробелов, `PRD.md` | `prompts/spec-review-and-prd.md` |
 | Меняется поведение, экран, роль, правило, модель данных | `prompts/spec-change.md` |
 | Перед лендингом: сегменты, JTBD, оффер, визуальный стиль | `prompts/landing-research-brief.md` |
+| Что делать первым: таблица приоритетов фич (есть / ресёрч / конкуренты → P0–P2, правки в базе) — скилл `/feature-priorities` | `prompts/feature-prioritization.md` |
 
 Связанное: спеки экранов по готовому коду и `_global.md` — `../development/AGENTS.md`;
 новая фича целиком (`/new-feature`) — `../development/prompts/new-feature.md`.

@@ -1,0 +1,290 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: a working ledger — bucket summary on top, one filter row, feature rows grouped by priority */
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEFF3; --fg:#121820; --muted:#566170; --faint:#8A94A2; --line:#D9DFE6;
+  --accent:#3A3FB8; --accent-soft:#E6E7FA;
+  --l1:#DCEBEE; --l2:#AED3DA; --l3:#6DB0BD; --l4:#2E8396; --l5:#13505F;
+  --l1-ink:#23434B; --l2-ink:#183A42; --l3-ink:#0D2E36; --l4-ink:#FFFFFF; --l5-ink:#FFFFFF;
+  --ok:#1E7A4C; --ok-soft:#DDF1E6; --bad:#B23A35; --bad-soft:#F8E1DF; --warn:#9A6A08; --warn-soft:#F7EBCF; --none:#6B7480; --none-soft:#E8ECF0;
+  --p0:#3A3FB8; --p0-soft:#E6E7FA; --p1:#2E8396; --p1-soft:#DCEBEE; --p2:#6B7480; --p2-soft:#E8ECF0; --no:#B23A35; --no-soft:#F8E1DF;
+  --display:"Unbounded", "Golos Text", system-ui, sans-serif;
+  --body:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#6E7A87; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#6E7A87; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:32px 64px;display:grid;gap:22px}
+.wrap > *{min-width:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,38px);line-height:1.1;margin:4px 0 0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:500;font-size:18px;margin:0;text-wrap:balance}
+.lede{max-width:72ch;color:var(--fg);margin:0}
+.muted{color:var(--muted)} .faint{color:var(--faint)}
+.mono{font-family:var(--mono)}
+a{color:var(--accent)}
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bucket{background:var(--surface);padding:14px 16px;display:grid;gap:4px;align-content:start;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+.bucket:hover,.bucket:focus-visible{background:var(--sunk);outline:none}
+.bucket[aria-pressed="true"]{box-shadow:inset 0 -3px 0 var(--c)}
+.bucket .n{font-family:var(--display);font-size:30px;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums;line-height:1.1}
+.bucket .t{font-weight:600}
+.bucket .d{font-size:13px;color:var(--muted)}
+details.how{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.how > summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+details.how > summary::before{content:"›";color:var(--muted);transition:transform .15s}
+details.how[open] > summary::before{transform:rotate(90deg)}
+.how .in{padding:0 16px 16px;display:grid;gap:14px}
+.how dl{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 16px;margin:0;font-size:14px}
+.how dt{font-weight:600} .how dd{margin:0;color:var(--muted)}
+@media (max-width:560px){.how dl{grid-template-columns:1fr} .how dd{margin-bottom:6px}}
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;position:sticky;top:env(safe-area-inset-top, 0px);z-index:5}
+.filters input[type=search],.filters select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);min-width:0;max-width:100%}
+.filters input[type=search]{flex:1 1 220px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.chip:focus-visible,.bucket:focus-visible,select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.count{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto}
+.sync{font-size:13px;color:var(--muted)}
+.group{display:grid;gap:10px}
+.group-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.group-h .tag{font-family:var(--mono);font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--c-soft);color:var(--c)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.f{min-width:230px;width:24%} td.now{min-width:190px;width:20%} td.res{min-width:240px;width:26%} td.cmp{min-width:120px;width:11%} td.pr{min-width:190px;width:19%}
+.fname{font-weight:600}
+.fid{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.job{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:5px;padding:0 5px;cursor:help;background:var(--bg)}
+.st{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-bottom:4px}
+.st.have{background:var(--ok-soft);color:var(--ok)} .st.part{background:var(--warn-soft);color:var(--warn)} .st.broken{background:var(--bad-soft);color:var(--bad)} .st.none{background:var(--none-soft);color:var(--none)}
+.note{font-size:13px;color:var(--muted)}
+.refs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.ref{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px 1px 2px;display:inline-flex;gap:5px;align-items:center;color:var(--fg);text-decoration:none;background:var(--bg)}
+.ref:hover{border-color:var(--accent)}
+.lv{font-family:var(--mono);font-weight:700;font-size:10.5px;border-radius:999px;padding:0 5px;line-height:1.6}
+.lv1{background:var(--l1);color:var(--l1-ink)} .lv2{background:var(--l2);color:var(--l2-ink)} .lv3{background:var(--l3);color:var(--l3-ink)} .lv4{background:var(--l4);color:var(--l4-ink)} .lv5{background:var(--l5);color:var(--l5-ink)} .lvx{background:var(--sunk);color:var(--muted)}
+.pr select{font:inherit;font-size:13.5px;font-weight:600;padding:5px 8px;border-radius:8px;border:1px solid var(--line);width:100%;background:var(--c-soft);color:var(--c)}
+.pr select:disabled{opacity:1;cursor:default}
+.why{font-size:13px;margin-top:6px}
+.changed{font-size:12px;color:var(--accent);margin-top:4px}
+.decide{display:inline-block;font-size:12px;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:1px 7px;margin-top:6px}
+.pr textarea{font:inherit;font-size:13px;width:100%;margin-top:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical;min-height:34px}
+.more{font:inherit;font-size:12.5px;color:var(--accent);background:none;border:0;padding:4px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+tr.detail > td{background:var(--sunk);padding:16px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.dblock p,.comp p{margin:2px 0 0;font-size:14px;max-width:72ch}
+.dlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.comps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-top:8px}
+.comp{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px;align-content:start;min-width:0;overflow-wrap:anywhere}
+.comp h3{margin:0;font-size:15px}
+.kv{display:flex;gap:8px;align-items:baseline;font-size:13.5px;margin-top:6px}
+.kv .k{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;flex:none}
+.k.take{background:var(--ok-soft);color:var(--ok)} .k.dont{background:var(--bad-soft);color:var(--bad)}
+.src{font-size:12px;color:var(--faint);margin-top:6px}
+.gapnote{margin-top:12px;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:10px 12px}
+@media (max-width:760px){tr.detail > td::before{content:none} .comps{grid-template-columns:1fr}}
+.empty{padding:24px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:10px}
+.c-p0{--c:var(--p0);--c-soft:var(--p0-soft)} .c-p1{--c:var(--p1);--c-soft:var(--p1-soft)} .c-p2{--c:var(--p2);--c-soft:var(--p2-soft)} .c-no{--c:var(--no);--c-soft:var(--no-soft)}
+@media (max-width:760px){
+  table,tbody,tr,td{display:block;width:auto!important;min-width:0!important} thead{display:none}
+  tr{border-bottom:1px solid var(--line);padding:4px 0} td{border:0;padding:8px 12px}
+  td::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+  .tbl{overflow:visible}
+  .filters{position:static}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+
+  <div class="buckets" id="buckets" role="group" aria-label="Корзины приоритета"></div>
+
+  <details class="how">
+    <summary>Как раскладывали</summary>
+    <div class="in" id="how"></div>
+  </details>
+
+  <div class="filters" role="search">
+    <input type="search" id="q" placeholder="Найти фичу" aria-label="Найти фичу">
+    <select id="area" aria-label="Область"><option value="">Все области</option></select>
+    <div class="chips" id="stChips" role="group" aria-label="Сейчас"></div>
+    <select id="group" aria-label="Группировать"><option value="prio">По приоритету</option><option value="area">По области</option></select>
+    <button type="button" class="chip" id="onlyChanged" aria-pressed="false">Только изменённые</button>
+    <button type="button" class="chip" id="expandAll">Раскрыть все</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="sync" id="sync">Приоритеты из базы загружаются…</div>
+
+  <main id="list" style="display:grid;gap:26px"></main>
+</div>
+
+<script>
+/*__DATA__*/
+</script>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const ATLAS = CONFIG.refsUrl || "";
+  const PRIO = Object.fromEntries(CONFIG.buckets.map(b => [b.key, b.label]));
+  const PRIO_D = Object.fromEntries(CONFIG.buckets.map(b => [b.key, b.short]));
+  const ST = {have:"Есть", part:"Частично", broken:"Сломано", none:"Нет"};
+  const rows = F.map(r => ({id:r.id, area:r.area, name:r.name, jobs:r.jobs || "", now:r.now, nowNote:r.nowNote || "", res:r.research || "", refs:r.refs || [], comp:r.comp || "—", prio:r.prio, why:r.why || "", decide:!!r.decide}));
+  const over = Object.create(null);   // id -> {p, note} from the shared store
+  const PKEYS = CONFIG.buckets.map(b => b.key);
+  const okP = p => PKEYS.includes(p) ? p : undefined;
+  const IDS = new Set(rows.map(r => r.id));
+  let db = null, canWrite = false;
+  const state = {q:"", area:"", st:new Set(), bucket:"", group:"prio", onlyChanged:false};
+
+
+  document.title = CONFIG.title;
+  $("#eyebrow").textContent = CONFIG.eyebrow;
+  $("#h1").textContent = CONFIG.heading;
+  $("#lede").innerHTML = CONFIG.ledeHtml;
+  $("#how").innerHTML = CONFIG.how.map(col => `<dl>${col.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join("")}</dl>`).join("");
+  $("#area").setAttribute("aria-label", CONFIG.areaLabel); $("#area").options[0].textContent = CONFIG.areaAll; $("#group").options[1].textContent = "По " + CONFIG.areaGroupBy;
+  const open = new Set();
+  const detailText = id => { const d = DETAIL[id]; if (!d) return ""; return [d.what, d.now, d.research, d.gap, ...(d.competitors || []).map(c => [c.name, c.how, c.users, c.take, c.dont].join(" "))].join(" "); };
+  const para = (lab, t) => t ? `<div class="dblock"><div class="dlab">${lab}</div><p>${esc(t)}</p></div>` : "";
+  function detailHtml(r){
+    const d = DETAIL[r.id]; if (!d) return "";
+    const comps = (d.competitors || []).map(c => `<article class="comp"><h3>${esc(c.name)}</h3>
+      <div class="dlab">Как работает у них</div><p>${esc(c.how)}</p>
+      ${c.users ? `<div class="dlab">Что говорят пользователи</div><p>${esc(c.users)}</p>` : ""}
+      ${c.take ? `<div class="kv"><span class="k take">Взять</span><span>${esc(c.take)}</span></div>` : ""}
+      ${c.dont ? `<div class="kv"><span class="k dont">Не брать</span><span>${esc(c.dont)}</span></div>` : ""}
+      ${c.src ? `<div class="src">Источник: ${linkify(c.src)}</div>` : ""}</article>`).join("");
+    return `<tr class="detail"><td colspan="5"><div class="dgrid">${para("Что это", d.what)}${para("Сейчас в " + CONFIG.product, d.now)}${para("Что показал ресёрч", d.research)}</div>
+      <div class="dlab" style="margin-top:14px">Конкуренты · ${(d.competitors || []).length}</div>
+      ${comps ? `<div class="comps">${comps}</div>` : `<p class="note">Близких решений у конкурентов нет.</p>`}
+      ${d.gap ? `<div class="gapnote"><b>Чего нет ни у кого.</b> ${esc(d.gap)}</div>` : ""}</td></tr>`;
+  }
+  function linkify(t){ return esc(t).replace(/https?:\/\/[^\s;,)]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//, "").slice(0, 60)}</a>`); }
+
+  const compOf = r => { const d = DETAIL[r.id]; const n = d && (d.competitors || []).map(c => c.name); return n && n.length ? n.join(", ") : (d && d.gap ? "Никто полностью" : r.comp); };
+  const prioOf = r => okP(over[r.id] && over[r.id].p) || r.prio;
+  const noteOf = r => (over[r.id] && over[r.id].note) || "";
+  const isChanged = r => !!(over[r.id] && ((over[r.id].p && over[r.id].p !== r.prio) || over[r.id].note));
+
+  for (const [k, v] of Object.entries(AREAS)) $("#area").insertAdjacentHTML("beforeend", `<option value="${k}">${esc(v)}</option>`);
+  $("#stChips").innerHTML = Object.entries(ST).map(([k, v]) => `<button type="button" class="chip" data-st="${k}" aria-pressed="false">${v}</button>`).join("");
+
+  function jobChips(s){
+    return String(s || "").split(/,\s*/).filter(x => x && x !== "—").map(j => { const t = JOBS[j]; return `<span class="job" title="${esc(t ? t[0] : "")}">${esc(j)}</span>`; }).join(" ");
+  }
+  function refChips(ids){
+    return ids.map(id => { const c = REFS[id]; if (!c) return ""; const lv = c[1]; return (ATLAS ? `<a class="ref" href="${ATLAS}#${id}" target="_blank" rel="noopener" title="${esc(c[0])}">` : `<span class="ref" title="${esc(c[0])}">`) + `<span class="lv ${lv ? "lv" + lv : "lvx"}">${lv ? "L" + lv : "—"}</span>${esc(c[0].length > 38 ? c[0].slice(0, 36) + "…" : c[0])}` + (ATLAS ? "</a>" : "</span>"); }).join("");
+  }
+  function rowHtml(r){
+    const p = prioOf(r);
+    const opts = Object.entries(PRIO).map(([k, v]) => `<option value="${k}"${k === p ? " selected" : ""}>${v}</option>`).join("");
+    return `<tr data-id="${r.id}">
+      <td class="f" data-l="Фича"><div class="fname">${esc(r.name)}</div>${DETAIL[r.id] ? `<button type="button" class="more" data-more="${r.id}" aria-expanded="${open.has(r.id)}">${open.has(r.id) ? "Свернуть" : "Подробнее"}</button>` : ""}<div class="meta"><span class="fid">${r.id}</span>${jobChips(r.jobs)}<span>${esc(AREAS[r.area] || "")}</span></div></td>
+      <td class="now" data-l="Сейчас"><span class="st ${r.now}">${ST[r.now]}</span><div class="note">${esc(r.nowNote)}</div></td>
+      <td class="res" data-l="Из ресёрча"><div>${esc(r.res)}</div>${r.refs.length ? `<div class="refs">${refChips(r.refs)}</div>` : ""}</td>
+      <td class="cmp" data-l="Конкуренты"><span class="note">${esc(compOf(r))}</span></td>
+      <td class="pr c-${p}" data-l="Приоритет"><select id="p-${r.id}" aria-label="Приоритет ${esc(r.name)}"${db && canWrite ? "" : " disabled"}>${opts}</select>
+        <div class="why">${esc(r.why)}</div>
+        ${r.decide ? `<span class="decide">${esc(CONFIG.decideLabel)}</span>` : ""}
+        ${isChanged(r) && p !== r.prio ? `<div class="changed">Изменено · было ${PRIO[r.prio]}</div>` : ""}
+        ${db && canWrite ? `<textarea id="n-${r.id}" rows="1" placeholder="Комментарий" aria-label="Комментарий к ${esc(r.name)}">${esc(noteOf(r))}</textarea>` : (noteOf(r) ? `<div class="note" style="margin-top:6px">${esc(noteOf(r))}</div>` : "")}
+      </td></tr>${open.has(r.id) ? detailHtml(r) : ""}`;
+  }
+  function filtered(){
+    const q = state.q.trim().toLowerCase();
+    return rows.filter(r => (!q || (r.name + " " + r.res + " " + r.nowNote + " " + r.id + " " + r.comp + " " + detailText(r.id)).toLowerCase().includes(q))
+      && (!state.area || r.area === state.area) && (!state.st.size || state.st.has(r.now))
+      && (!state.bucket || prioOf(r) === state.bucket) && (!state.onlyChanged || isChanged(r)));
+  }
+  function render(){
+    const counts = Object.fromEntries(PKEYS.map(k => [k, 0])); for (const r of rows) counts[prioOf(r)]++;
+    $("#buckets").innerHTML = Object.entries(PRIO).map(([k, v]) => `<button type="button" class="bucket c-${k}" data-b="${k}" aria-pressed="${state.bucket === k}"><span class="n">${counts[k]}</span><span class="t">${v}</span><span class="d">${PRIO_D[k]}</span></button>`).join("");
+    const list = filtered();
+    $("#count").textContent = `${list.length} из ${rows.length}`;
+    if (!list.length) { $("#list").innerHTML = `<div class="empty">Ничего не найдено. Сбросьте фильтры или поиск.</div>`; return; }
+    const groups = state.group === "prio"
+      ? Object.keys(PRIO).map(k => [k, PRIO[k], list.filter(r => prioOf(r) === k), `c-${k}`])
+      : Object.keys(AREAS).map(k => [k, AREAS[k], list.filter(r => r.area === k), "c-p2"]);
+    const head = `<thead><tr><th>Фича</th><th>Сейчас</th><th>Из ресёрча</th><th>Конкуренты</th><th>Приоритет</th></tr></thead>`;
+    $("#list").innerHTML = groups.filter(g => g[2].length).map(([k, t, rs, cls]) => `<section class="group ${cls}"><div class="group-h"><h2>${esc(t)}</h2><span class="tag">${rs.length}</span></div>
+      <div class="tbl"><table>${head}<tbody>${rs.map(rowHtml).join("")}</tbody></table></div></section>`).join("");
+  }
+
+  $("#q").addEventListener("input", e => { state.q = e.target.value; render(); });
+  $("#area").addEventListener("change", e => { state.area = e.target.value; render(); });
+  $("#group").addEventListener("change", e => { state.group = e.target.value; render(); });
+  $("#stChips").addEventListener("click", e => { const b = e.target.closest("[data-st]"); if (!b) return; const k = b.dataset.st; state.st.has(k) ? state.st.delete(k) : state.st.add(k); b.setAttribute("aria-pressed", state.st.has(k)); render(); });
+  $("#onlyChanged").addEventListener("click", e => { state.onlyChanged = !state.onlyChanged; e.currentTarget.setAttribute("aria-pressed", state.onlyChanged); render(); });
+  $("#buckets").addEventListener("click", e => { const b = e.target.closest("[data-b]"); if (!b) return; state.bucket = state.bucket === b.dataset.b ? "" : b.dataset.b; render(); });
+
+  async function save(id, patch){
+    const r = rows.find(x => x.id === id); if (!r || !db) return;
+    const cur = over[id] || {};
+    const next = {p: okP(patch.p) ?? okP(cur.p) ?? r.prio, note: patch.note ?? cur.note ?? "", at: Date.now()};
+    over[id] = next; render();
+    try { await db.collection(CONFIG.collection).doc(id).set(next); $("#sync").textContent = "Сохранено."; }
+    catch (err) {
+      if (err && err.code === "invalid_argument") { canWrite = false; $("#sync").textContent = "У вас нет права менять приоритеты — таблица только для чтения."; }
+      else $("#sync").textContent = "Не удалось сохранить. Проверьте соединение и попробуйте ещё раз.";
+      render();
+    }
+  }
+  $("#list").addEventListener("click", e => { const b = e.target.closest("[data-more]"); if (!b) return; const id = b.dataset.more; open.has(id) ? open.delete(id) : open.add(id); render(); });
+  $("#expandAll").addEventListener("click", e => { const all = filtered().filter(r => DETAIL[r.id]); const anyClosed = all.some(r => !open.has(r.id)); for (const r of all) anyClosed ? open.add(r.id) : open.delete(r.id); e.currentTarget.textContent = anyClosed ? "Свернуть все" : "Раскрыть все"; render(); });
+  $("#list").addEventListener("change", e => { const s = e.target.closest("select[id^='p-']"); if (s) save(s.id.slice(2), {p: s.value}); });
+  $("#list").addEventListener("blur", e => { const t = e.target.closest("textarea[id^='n-']"); if (!t) return; const id = t.id.slice(2); if ((t.value || "") !== ((over[id] && over[id].note) || "")) save(id, {note: t.value.trim()}); }, true);
+
+  render();
+  (async () => {
+    const cl = window.claude;
+    db = cl && cl.use ? await cl.use("db") : null;
+    if (!db) { $("#sync").textContent = "Предложенные приоритеты. Менять их можно в опубликованной странице."; render(); return; }
+    const user = await cl.use("user");
+    const can = user && user.can ? await user.can("data.write") : null;
+    canWrite = can !== false;
+    let first = true;
+    const timer = setTimeout(() => { if (first) $("#sync").textContent = "База пока не отвечает — показаны предложенные приоритеты."; }, 10000);
+    db.collection(CONFIG.collection).onSnapshot(snap => {
+      for (const k of Object.keys(over)) delete over[k];
+      for (const d of snap.docs) { if (!IDS.has(d.id)) continue; const v = d.data() || {}; const p = okP(v.p), note = typeof v.note === "string" ? v.note.slice(0, 2000) : ""; if (p || note) over[d.id] = {p, note}; }
+      if (!snap.metadata || !snap.metadata.fromCache) { first = false; clearTimeout(timer); }
+      const n = Object.keys(over).length;
+      $("#sync").textContent = canWrite ? (n ? `Изменённых строк: ${n}. Меняйте приоритет в строке — сохраняется сразу.` : "Меняйте приоритет в строке — сохраняется сразу для всех.") : "Таблица только для чтения.";
+      const active = document.activeElement && document.activeElement.id && document.activeElement.id.startsWith("n-") ? document.activeElement.id : null;
+      if (!active) render();
+    }, err => { clearTimeout(timer); $("#sync").textContent = "Не удалось загрузить сохранённые приоритеты — показаны предложенные."; canWrite = false; render(); });
+  })();
+})();
+
+</script>
