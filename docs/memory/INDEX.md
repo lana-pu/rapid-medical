@@ -16,6 +16,7 @@
 ## Находки (findings) — `findings/`
 
 - [pre-launch-audit](findings/pre-launch-audit.md) — дефекты кода, чек-лист перед запуском (2026-11-05)
+- [admin-ux-review](findings/admin-ux-review.md) — разбор текущей админки, основа для единой (2026-11-06)
 
 ## Сессии — `sessions/`
 
