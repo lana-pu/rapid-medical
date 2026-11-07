@@ -12,6 +12,7 @@
 | [ADR-003](decisions/ADR-003-drafts-vs-live.md) | Live-таблица + `drafts` / `setting_drafts` / `revisions` | принято (ретро) | 2026-11-05 |
 | [ADR-004](decisions/ADR-004-storage-drivers.md) | Медиа: драйверы `local` / `s3`, медиа временно в git | принято частично | 2026-11-05 |
 | [ADR-005](decisions/ADR-005-one-repo-unified-admin.md) | Один репозиторий и единая админка на сайт и инструмент | принято | 2026-11-05 |
+| [ADR-006](decisions/ADR-006-admin-work-model.md) | Как люди работают в единой админке: роли, комментарии, регионы | принято | 2026-11-06 |
 
 ## Находки (findings) — `findings/`
 
