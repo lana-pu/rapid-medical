@@ -19,6 +19,7 @@
 - [pre-launch-audit](findings/pre-launch-audit.md) — дефекты кода, чек-лист перед запуском (2026-11-05)
 - [admin-ux-review](findings/admin-ux-review.md) — разбор текущей админки, основа для единой (2026-11-06)
 - [admin-editor-best-practices](findings/admin-editor-best-practices.md) — практики для нетехнических редакторов, разбор прототипа v0.1 (2026-11-07)
+- [block-inventory](findings/block-inventory.md) — все секции сайта, состав коллекции блоков (2026-11-07)
 
 ## Сессии — `sessions/`
 
