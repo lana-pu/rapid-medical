@@ -1,0 +1,18 @@
+{
+  "package": "Offline test S0",
+  "version": "0.0-test",
+  "market": "Test market",
+  "built": "2026-11-08",
+  "purpose": "Check that a training package opens and plays from a hospital computer with no internet.",
+  "files": [
+    { "path": "index.html", "role": "page" },
+    { "path": "content.js", "role": "package data, same as this manifest" },
+    { "path": "media/deployment-legacy-slider.mp4", "role": "stage clip, side A", "codec": "H.264 + AAC", "source": "public Rapid Medical website, stand-in" },
+    { "path": "media/deployment-precision-knob.mp4", "role": "stage clip, side B", "codec": "H.264 + AAC", "source": "public Rapid Medical website, stand-in" }
+  ],
+  "configs": [
+    { "id": "a", "model": "Tiger 13", "handle": "Legacy slider" },
+    { "id": "b", "model": "Tiger 13", "handle": "Precision knob" }
+  ],
+  "comparison": { "pair": ["a", "b"], "stages": [3] }
+}

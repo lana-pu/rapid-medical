@@ -1,0 +1,148 @@
+<title>Rapid Medical marketing meeting</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column; each question is a row with its ID, the question, why we ask and a place to note the answer. */
+:root{
+  --bg:#FFFFFF;--fg:#18222B;--muted:#5D6A75;--line:#DDE3E8;--soft:#F2F5F7;
+  --accent:#174C5A;--accent-soft:#E3EEF0;--done:#1E6B45;--done-soft:#E2F2E8;
+  --body:"Public Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#12181D;--fg:#E5EAEE;--muted:#9AA7B2;--line:#2A343C;--soft:#1A2228;--accent:#7FB8C6;--accent-soft:#1D2E34;--done:#6FCF97;--done-soft:#17301F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12181D;--fg:#E5EAEE;--muted:#9AA7B2;--line:#2A343C;--soft:#1A2228;--accent:#7FB8C6;--accent-soft:#1D2E34;--done:#6FCF97;--done-soft:#17301F;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:32px}
+h1{font-size:30px;line-height:1.2;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:20px;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted);max-width:65ch;margin-top:10px}
+.kicker{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bring{border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.bring ul{margin:0;padding-left:20px}
+.progress{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bar{flex:1 1 200px;height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--done);width:0;transition:width .2s}
+.count{font:500 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+button{font:600 14px var(--body);padding:9px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.sec{background:transparent;color:var(--accent)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:6px}
+section > header{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+section > header p{color:var(--muted)}
+.q{border-top:1px solid var(--line);padding:14px 0;display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 14px}
+.q:last-child{border-bottom:1px solid var(--line)}
+.q .id{font:500 13px var(--mono);color:var(--accent);padding-top:3px}
+.q .text{font-weight:600}
+.q .why{color:var(--muted);font-size:14.5px;grid-column:2}
+.q .ask{font-size:14px;grid-column:2}
+.q .ask b{font-weight:600}
+.q .rec{grid-column:2;display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.q label.done{display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer;width:max-content}
+.q label.done input{accent-color:var(--done);width:16px;height:16px}
+.q textarea{font:14px/1.45 var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;resize:vertical;width:100%}
+.q.is-done{background:linear-gradient(90deg,var(--done-soft),transparent 60%)}
+.q.is-done .id{color:var(--done)}
+.foot{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:16px}
+#copied{font-size:13px;color:var(--muted)}
+#out{position:absolute;left:-9999px}
+@media (max-width:520px){.q{grid-template-columns:44px minmax(0,1fr)}h1{font-size:25px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">Rapid Medical · November 2026</p>
+    <h1>Marketing meeting: questions</h1>
+    <p class="lead">Facts we need to build the first Tigertriever training package and to move the website off Duda. We are not asking you to design screens or to approve clinical claims. “Unknown, owner needed” is a good answer.</p>
+  </header>
+
+  <div class="bring">
+    <b>Bring and show</b>
+    <ul>
+      <li>The offline test package. Try it on a hospital computer during the meeting; the steps are inside the ZIP.</li>
+      <li>The two training prototypes on screen: the physician view and the Content Studio.</li>
+    </ul>
+  </div>
+
+  <div class="progress"><div class="bar" aria-hidden="true"><i id="barFill"></i></div><span class="count" id="count"></span><button type="button" id="copy">Copy answers</button><button type="button" class="sec" id="clear">Clear notes</button><span id="copied" role="status"></span></div>
+
+  <div id="sections"></div>
+
+  <p class="foot">For each answer, note who answered and attach the file if there is one. A marketing answer is not clinical approval. Notes on this page stay in this browser only; press “Copy answers” to keep them.</p>
+  <textarea id="out" aria-hidden="true" tabindex="-1"></textarea>
+</div>
+
+<script>
+const SECTIONS = [
+  { id: 'tool', title: 'Training tool: needed for the first package', note: 'Without these we cannot set up the configurations or build a real package.', qs: [
+    ['T1', 'Which models, handles and markets go in the first package? Is Tiger 17U included? When do Tiger 21 and 25 follow?', 'The July draft lists 17U; the October wireframe does not. This sets what we build first.', 'Release list'],
+    ['T2', 'Is the precision knob offered in the US and Europe but not in Asia Pacific, as the wireframe shows? One package per market, or one for all?', 'Sets the market rules and whether a physician picks a market at all.', 'Market and handle list'],
+    ['T3', 'Who enters the content, who checks it, and who may release a new package? Does medical or regulatory see it before release?', 'There is no separate approval step: publishing is the release.', 'Names and roles'],
+    ['T4', 'What is the current state of the filming table on page 14 of the July draft? When will Emily film the precision-knob clips?', 'Deployment, Prepare to retrieve and Retrieval cannot ship for the knob until then.', 'Updated asset table'],
+    ['T5', 'The July draft has no warnings on screen. Do any stages need approved warning or IFU text? Who supplies it?', 'The warning field is optional and stays out unless you need it.', 'Approved text and owner'],
+    ['T6', 'Is “Before you begin · Anesthesia” for Europe and Tiger 13 real content or a wireframe placeholder? Who owns it?', 'It shows only for that market and device.', 'Content owner'],
+    ['T7', 'The opening and closing use trial figures and comparative wording, while the training is called non-promotional. Who approves that text for each market?', 'Sets what may appear in a package for each market.', 'Approver'],
+    ['T8', 'Please run the offline test on the computers physicians and reps will use. How do files reach those computers? Desktops only, or tablets and phones too?', 'Decides how the package is built.', '“Copy results” text from each computer'],
+  ] },
+  { id: 'scope', title: 'Training tool: scope', note: 'What was agreed, so we neither drop nor add work by accident.', qs: [
+    ['S1', 'Can you share the accepted Option #3 text, including what was left out?', 'We only have a summary of it.'],
+    ['S2', 'Was the interactive precision-knob demonstration agreed as a deliverable, or offered as an idea? Is there an animation to build it from?', 'Interactive and passive versions differ a lot in effort.'],
+    ['S3', 'Do physicians also need the training as a web page, in addition to the offline package?', 'The July draft title asks for both.'],
+    ['S4', 'Is the short WhatsApp video still needed, and is it part of this project?', 'Page 13 of the July draft.'],
+    ['S5', 'Quick Reference: is direct access to any named stage enough, or was a separate mode promised?', 'The prototypes have direct access to every stage.'],
+    ['S6', 'Can you show one current training package with its source files, and one recent case where a clip changed?', 'Shows how updates happen today.'],
+    ['S7', 'When a package was already sent out and needs a correction, what happens today?', 'Files already on computers cannot be recalled.'],
+  ] },
+  { id: 'site', title: 'Website: move from Duda', note: 'Open points from migrating the four Duda sites.', qs: [
+    ['W1', 'Who receives contact, webinar and careers form requests: one address, or by form or region?', 'Needed before launch.'],
+    ['W2', 'The “Europe, Middle East, Latin America & Australia” label disagrees with how visitors are sent: Middle East goes to Asia Pacific, Latin America to Americas. Which is right?', 'Region mapping.'],
+    ['W3', 'Which version is the base for pages that are nearly the same across regions: US or international? Regulatory text stays separate per region; please confirm.', 'Decides how regional differences are edited.'],
+    ['W4', 'When does Duda editing stop? Until then, who tells us about changes?', '11 pages changed since our first copy.'],
+    ['W5', 'Who does the visual design? Can you share brand colours, fonts and logos?', 'Visual redesign.'],
+    ['W6', 'Missing content: the PDF for the Dr. Rishi Gupta TICI 3 case, Asia Pacific images, Access texts, the US Aneurysm diagram. Who provides them?', 'Gaps found on Duda.'],
+    ['W7', 'Do you need the brochure request form and the event registration pages on the new site? Who sends brochures?', 'They exist on Duda, not on the new site.'],
+    ['W8', 'Drivewire regulatory text differs between the US and other regions. Can the regulatory owner confirm both?', 'We copy Duda as it is.'],
+    ['W9', 'The UK office was removed from About on Duda. Is that intended?', 'It is removed from the new site too.'],
+    ['W10', 'Evidence “Featured publications”: hand-picked or latest? Is a webinars page needed for Asia Pacific?', 'Small content rules.'],
+    ['W11', 'Are the Google Analytics and UserWay accounts still current? Do you need a cookie consent banner?', 'Privacy and analytics.'],
+    ['W12', 'Who manages DNS for rapid-medical.com, and when may we switch the domains?', 'Launch planning.'],
+  ] },
+];
+const KEY = 'rm-meeting-2026-11';
+let notes = {};
+try { notes = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { notes = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch (e) {} };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const all = SECTIONS.flatMap((s) => s.qs);
+
+document.getElementById('sections').innerHTML = SECTIONS.map((s) => `<section aria-labelledby="h-${s.id}"><header><h2 id="h-${s.id}">${esc(s.title)}</h2><p>${esc(s.note)}</p></header><div>${s.qs.map(([id, q, why, ask]) => `
+  <div class="q" id="q-${id}"><span class="id">${id}</span><span class="text">${esc(q)}</span><p class="why">${esc(why)}</p>${ask ? `<p class="ask"><b>Ask for:</b> ${esc(ask)}</p>` : ''}
+    <div class="rec"><label class="done" for="d-${id}"><input type="checkbox" id="d-${id}" data-id="${id}"> Answered</label><textarea id="n-${id}" data-id="${id}" rows="1" placeholder="Answer, who said it, file"></textarea></div></div>`).join('')}</div></section>`).join('');
+
+function sync() {
+  let n = 0;
+  all.forEach(([id]) => { const v = notes[id] || {}; const d = document.getElementById('d-' + id), t = document.getElementById('n-' + id); d.checked = !!v.done; if (document.activeElement !== t) t.value = v.text || ''; document.getElementById('q-' + id).classList.toggle('is-done', !!v.done); if (v.done) n++; });
+  document.getElementById('count').textContent = `${n} of ${all.length} answered`;
+  document.getElementById('barFill').style.width = (100 * n / all.length) + '%';
+}
+document.getElementById('sections').addEventListener('change', (e) => { const id = e.target.dataset.id; if (!id || e.target.type !== 'checkbox') return; notes[id] = { ...(notes[id] || {}), done: e.target.checked }; save(); sync(); });
+document.getElementById('sections').addEventListener('input', (e) => { const id = e.target.dataset.id; if (!id || e.target.tagName !== 'TEXTAREA') return; notes[id] = { ...(notes[id] || {}), text: e.target.value }; if (e.target.value.trim() && !notes[id].done) notes[id].done = true; save(); sync(); });
+
+function report() {
+  return ['Rapid Medical marketing meeting, ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }), ''].concat(
+    SECTIONS.flatMap((s) => ['## ' + s.title].concat(s.qs.map(([id, q]) => { const v = notes[id] || {}; return `${id}. ${q}\n   ${v.text ? v.text.trim() : v.done ? '(answered, no note)' : '(not answered)'}`; }), ['']))).join('\n');
+}
+document.getElementById('copy').addEventListener('click', () => {
+  const t = report(), msg = document.getElementById('copied');
+  const fallback = () => { const o = document.getElementById('out'); o.value = t; o.select(); try { document.execCommand('copy'); msg.textContent = 'Copied.'; } catch (e) { msg.textContent = 'Copy did not work in this view.'; } };
+  try { navigator.clipboard.writeText(t).then(() => { msg.textContent = 'Copied.'; }, fallback); } catch (e) { fallback(); }
+});
+let armed = false;
+document.getElementById('clear').addEventListener('click', (e) => {
+  if (!armed) { armed = true; e.target.textContent = 'Click again to clear'; setTimeout(() => { armed = false; e.target.textContent = 'Clear notes'; }, 3000); return; }
+  notes = {}; save(); armed = false; e.target.textContent = 'Clear notes'; sync(); document.getElementById('copied').textContent = 'Notes cleared.';
+});
+sync();
+</script>
