@@ -25,4 +25,5 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-08 | Единая админка: модель работы, правка на странице, коллекция блоков | [2026-11-08-unified-admin-blocks.md](sessions/2026-11-08-unified-admin-blocks.md) |
 | 2026-11-06 | Ревизия, чистка, добор с Duda | [2026-11-06-revision-duda-tails.md](sessions/2026-11-06-revision-duda-tails.md) |
