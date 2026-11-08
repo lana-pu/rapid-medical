@@ -1,0 +1,688 @@
+<title>Атлас Tigertriever</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: a research logbook — stage index stays on the left, one stage per view, overview opens on what is unfinished */
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --sunk:#EBEFF3; --fg:#121820; --muted:#566170; --faint:#6F7A88; --line:#D9DFE6;
+  --accent:#3A3FB8; --accent-soft:#E6E7FA; --c-mon:#3A3FB8; --c-ann:#00869F; --l0:#C5CCD6;
+  --p0:#3A3FB8; --p0-soft:#E6E7FA; --p1:#2E8396; --p1-soft:#DCEBEE; --p2:#6B7480; --p2-soft:#E8ECF0; --no:#B23A35; --no-soft:#F8E1DF;
+  --l1:#DCEBEE; --l2:#AED3DA; --l3:#6DB0BD; --l4:#2E8396; --l5:#13505F;
+  --l1-ink:#23434B; --l2-ink:#183A42; --l3-ink:#0D2E36; --l4-ink:#FFFFFF; --l5-ink:#FFFFFF;
+  --ok:#1E7A4C; --ok-soft:#DDF1E6; --bad:#B23A35; --bad-soft:#F8E1DF; --warn:#8A5E06; --warn-soft:#F7EBCF; --none:#5F6873; --none-soft:#E8ECF0;
+  --display:"Unbounded", "Golos Text", system-ui, sans-serif;
+  --body:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A; --c-mon:#6E73E8; --c-ann:#0097AF; --l0:#3A4450;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --surface:#161D24; --sunk:#1C252E; --fg:#E6EBF0; --muted:#9AA6B3; --faint:#7F8B98; --line:#2A3540;
+  --accent:#9A9EF5; --accent-soft:#25275A; --c-mon:#6E73E8; --c-ann:#0097AF; --l0:#3A4450;
+  --p0:#9A9EF5; --p0-soft:#25275A; --p1:#4BA6B8; --p1-soft:#1E3439; --p2:#9AA6B3; --p2-soft:#232D37; --no:#F08A84; --no-soft:#3E1D1C;
+  --l1:#1E3439; --l2:#24525C; --l3:#2F7C8B; --l4:#4BA6B8; --l5:#8ED6E4;
+  --l1-ink:#BFDDE3; --l2-ink:#D5EEF2; --l3-ink:#FFFFFF; --l4-ink:#06222A; --l5-ink:#06222A;
+  --ok:#5CC98F; --ok-soft:#163A28; --bad:#F08A84; --bad-soft:#3E1D1C; --warn:#E3B556; --warn-soft:#3A2E12; --none:#9AA6B3; --none-soft:#232D37;
+  color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+a{color:var(--accent)}
+.shell{max-width:1320px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 64px;display:grid;grid-template-columns:292px minmax(0,1fr);gap:32px;align-items:start}
+.side{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px);max-height:calc(100vh - 32px);overflow-y:auto;display:grid;gap:12px;min-width:0}
+.brand{font-family:var(--display);font-weight:700;font-size:14px;color:var(--fg);text-decoration:none;line-height:1.3}
+.side input{font:inherit;font-size:14px;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+nav{display:grid;gap:12px;min-width:0}
+.ngroup{display:grid;gap:1px;min-width:0}
+.nlabel{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 8px 3px}
+.nitem{display:grid;grid-template-columns:14px 24px minmax(0,1fr) auto;gap:6px;align-items:center;padding:6px 8px;border-radius:8px;color:var(--fg);text-decoration:none;font-size:14px;line-height:1.25}
+.nitem:hover{background:var(--sunk)}
+.nitem[aria-current="page"]{background:var(--accent-soft);font-weight:600}
+.nitem .num{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.nitem .cnt{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nover{grid-template-columns:minmax(0,1fr) auto}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--c);background:var(--fill);display:inline-block;flex:none}
+.s-todo{--c:var(--none);--fill:transparent}
+.s-work{--c:var(--warn);--fill:linear-gradient(90deg,var(--warn) 50%,transparent 50%)}
+.s-review{--c:var(--accent);--fill:var(--accent-soft)}
+.s-done{--c:var(--ok);--fill:var(--ok)}
+.s-skip{--c:var(--line);--fill:var(--line)}
+main{display:grid;gap:22px;min-width:0}
+main > *{min-width:0}
+main p,main li,main h3,summary{overflow-wrap:anywhere}
+main td{overflow-wrap:break-word;hyphens:auto}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:4px 0 0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.3;margin:0;text-wrap:balance}
+h3{font-size:15px;margin:0}
+.lede{max-width:72ch;margin:8px 0 0}
+.muted{color:var(--muted)}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tally div{background:var(--surface);padding:12px 14px;display:grid;gap:2px;align-content:start}
+.tally b{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
+.tally span{font-size:13px;color:var(--muted)}
+.next{background:var(--accent-soft);border-radius:10px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;justify-content:space-between}
+.next p{margin:0}
+.next a{font-weight:600;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.chip b{font-family:var(--mono);font-weight:500;color:var(--muted)}
+.todo{display:grid;gap:10px}
+.tstage{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:grid;gap:8px}
+.th{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.th a{font-weight:600;color:var(--fg);text-decoration:none}
+.th a:hover{color:var(--accent)}
+.tstage ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.tstage li{display:grid;grid-template-columns:128px minmax(0,1fr);gap:10px;font-size:14px}
+.k{font-family:var(--mono);font-size:11px;line-height:1.75;color:var(--muted)}
+.k.moved{color:var(--warn)} .k.review,.k.decision{color:var(--accent)} .k.missing{color:var(--bad)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.t-ok,.p-done{background:var(--ok-soft);color:var(--ok)} .t-bad{background:var(--bad-soft);color:var(--bad)} .t-warn,.p-work{background:var(--warn-soft);color:var(--warn)}
+.t-none,.p-todo,.p-skip{background:var(--none-soft);color:var(--none)} .p-review{background:var(--accent-soft);color:var(--accent)}
+.sh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:10px}
+.code{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.box ul{margin:0;padding-left:18px;display:grid;gap:5px;max-width:78ch}
+.sec{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.sec-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.sec p{margin:0;max-width:78ch}
+.sec > ul{margin:0;padding-left:18px;display:grid;gap:4px;max-width:78ch}
+.empty{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.claims{display:grid;gap:8px}
+.claim{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;font-size:14.5px}
+.claim .lab{font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted)}
+.claim .lab .lv{margin-left:4px}
+.claim .src{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.lv{font-family:var(--mono);font-weight:700;font-size:10.5px;border-radius:999px;padding:0 6px;line-height:1.6;display:inline-block}
+.lv1{background:var(--l1);color:var(--l1-ink)} .lv2{background:var(--l2);color:var(--l2-ink)} .lv3{background:var(--l3);color:var(--l3-ink)} .lv4{background:var(--l4);color:var(--l4-ink)} .lv5{background:var(--l5);color:var(--l5-ink)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;min-width:88px}
+td.wide{min-width:240px}
+tr:last-child td{border-bottom:0}
+details.fold{min-width:0}
+details.fold > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);padding:4px 0}
+details.fold > .tbl{margin-top:8px}
+.fin{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:8px 0 14px}
+.fin p{margin:0;max-width:78ch}
+.fin > ul{margin:0;padding-left:18px;display:grid;gap:4px;max-width:78ch}
+.fin .tbl td{font-size:13.5px}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.shots figure{margin:0;display:grid;gap:6px;align-content:start;min-width:0}
+.shots img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:var(--sunk)}
+.shots figcaption{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.shot{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.noshot{aspect-ratio:4/3;display:grid;place-content:center;text-align:center;gap:2px;background:var(--sunk);border:1px dashed var(--line);border-radius:6px;font-size:13px;color:var(--muted)}
+#lb{position:fixed;inset:0;z-index:30;background:rgba(10,14,20,.86);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px;padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+#lb img{max-width:100%;max-height:100%;margin:auto;object-fit:contain;min-height:0}
+#lb p{margin:0 auto;max-width:72ch;color:#fff;font-size:14px;text-align:center}
+#lb button{position:absolute;top:max(12px, env(safe-area-inset-top, 0px));right:max(12px, env(safe-area-inset-right, 0px));font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:0;background:#fff;color:#121820;cursor:pointer}
+.dl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.dl button{font:inherit;font-size:13px;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.dl span{color:var(--muted);flex-basis:100%}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ctl input,.ctl select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);min-width:0;max-width:100%}
+.ctl input{flex:1 1 200px}
+.ctl .cnt{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto}
+.ctl .lab{font-size:12.5px;color:var(--muted)}
+.stacks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.stackbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.bar{display:flex;gap:2px;height:14px}
+.bar i{display:block;border-radius:3px;min-width:4px}
+.lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.lg span{display:inline-flex;gap:5px;align-items:center}
+.lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.lg b{font-family:var(--mono);font-weight:500;color:var(--fg)}
+.pbuckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pb{background:var(--surface);padding:12px 14px;display:grid;gap:3px;align-content:start;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+.pb:hover{background:var(--sunk)}
+.pb[aria-pressed="true"]{box-shadow:inset 0 -3px 0 var(--c)}
+.pb b{font-family:var(--display);font-size:26px;font-weight:700;color:var(--c);line-height:1.1;font-variant-numeric:tabular-nums}
+.pb span{font-size:13px;color:var(--muted)}
+.c-p0{--c:var(--p0);--c-soft:var(--p0-soft)} .c-p1{--c:var(--p1);--c-soft:var(--p1-soft)} .c-p2{--c:var(--p2);--c-soft:var(--p2-soft)} .c-no{--c:var(--no);--c-soft:var(--no-soft)}
+.pgroup{display:grid;gap:8px}
+.pgroup .tag{font-family:var(--mono);font-weight:700;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--c-soft);color:var(--c)}
+.ph{display:flex;gap:10px;align-items:baseline}
+td.f{min-width:210px;width:24%} td.nw{min-width:170px;width:20%} td.rs{min-width:220px;width:26%} td.cm{min-width:110px;width:11%} td.pr{min-width:180px;width:19%}
+.fname{font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.job{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:5px;padding:0 5px;cursor:help;background:var(--bg)}
+.note{font-size:13px;color:var(--muted)}
+.refs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.ref{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px 1px 2px;display:inline-flex;gap:5px;align-items:center;color:var(--fg);text-decoration:none;background:var(--bg)}
+.ref:hover{border-color:var(--accent)}
+.lvx{background:var(--sunk);color:var(--muted)}
+.pr select{font:inherit;font-size:13.5px;font-weight:600;padding:5px 8px;border-radius:8px;border:1px solid var(--line);width:100%;background:var(--c-soft);color:var(--c)}
+.pr select:disabled{opacity:1}
+.pr textarea{font:inherit;font-size:13px;width:100%;margin-top:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);resize:vertical;min-height:34px}
+.why{font-size:13px;margin-top:6px}
+.changed{font-size:12px;color:var(--accent);margin-top:4px}
+.decide{display:inline-block;font-size:12px;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:1px 7px;margin-top:6px}
+.more{font:inherit;font-size:12.5px;color:var(--accent);background:none;border:0;padding:4px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+tr.detail > td{background:var(--sunk);padding:14px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.dlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.dgrid p,.comp p{margin:2px 0 0;font-size:14px;max-width:72ch}
+.comps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:8px}
+.comp{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px;align-content:start;min-width:0;overflow-wrap:anywhere}
+.kv{display:flex;gap:8px;align-items:baseline;font-size:13.5px;margin-top:6px}
+.kk{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;flex:none}
+.kk.take{background:var(--ok-soft);color:var(--ok)} .kk.dont{background:var(--bad-soft);color:var(--bad)}
+.srcs{font-size:12px;color:var(--muted);margin-top:6px}
+.chk{font-family:var(--mono);font-size:10px;font-weight:500;padding:1px 6px;border-radius:5px;background:var(--warn-soft);color:var(--warn);white-space:nowrap} .chk.ok{background:var(--ok-soft);color:var(--ok)}
+.gapnote{margin-top:12px;font-size:14px;background:var(--warn-soft);border-radius:8px;padding:10px 12px}
+details.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.card > summary{cursor:pointer;padding:10px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:baseline}
+details.card .cq{grid-column:2;font-size:13.5px;color:var(--muted)}
+details.card .cm2{grid-column:2;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+details.card > .fin{padding:4px 14px 14px}
+.cards{display:grid;gap:6px}
+.pchart svg{display:block;width:100%;min-width:560px;max-width:900px}
+@media (max-width:760px){
+  .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:auto!important;min-width:0!important}
+  .ptable thead{display:none}
+  .ptable tr{border-bottom:1px solid var(--line);padding:4px 0}
+  .ptable td{border:0;padding:8px 12px}
+  .ptable td::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+}
+@media print{
+  .side,.ctl,.dl,#lb,.more{display:none!important}
+  .shell{display:block;max-width:none;padding:0}
+  figure,tr,.claim,.box{break-inside:avoid}
+  .stage-all{break-before:page}
+}
+.foot{font-size:13px;color:var(--muted);margin:0}
+.linkrow{display:grid;gap:1px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;color:var(--fg);overflow-wrap:anywhere}
+a.linkrow:hover{border-color:var(--accent)}
+.linkrow small{font-size:12.5px;color:var(--muted)}
+.hit{display:grid;gap:2px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--fg);text-decoration:none}
+.hit small{color:var(--muted);font-size:12.5px}
+mark{background:var(--warn-soft);color:var(--fg);border-radius:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:18px}
+  .side{position:static;max-height:none;overflow:visible}
+  nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+  .ngroup{display:flex;gap:6px;flex:none}
+  .nlabel{display:none}
+  .nitem,.nover{display:flex;flex:none;background:var(--surface);border:1px solid var(--line);white-space:nowrap}
+}
+@media (max-width:560px){
+  .tstage li,.claim{grid-template-columns:minmax(0,1fr);gap:0}
+}
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="#overview" id="brand"></a>
+    <input id="q" type="search" placeholder="Поиск по всем этапам" aria-label="Поиск по всем этапам">
+    <div class="dl" id="dl" hidden><button type="button" data-dl="pdf">Скачать PDF</button><button type="button" data-dl="md">Скачать Markdown</button><span id="dlmsg" aria-live="polite"></span></div>
+    <a id="dlpdf" href="atlas.pdf" target="_blank" rel="noopener" hidden>Открыть PDF</a>
+    <nav id="nav" aria-label="Этапы"></nav>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="lb" hidden role="dialog" aria-label="Экран крупно"><button type="button" id="lbx">Закрыть</button><img id="lbi" alt=""><p id="lbc"></p></div>
+
+<script>
+const PROJECT = {"title": "Атлас Tigertriever", "product": "Обучающий инструмент Tigertriever", "eyebrow": "Rapid Medical · исследование учебного инструмента", "heading": "Атлас исследования", "lede": "Что знаем, откуда и чего не хватает. Ранний ресёрч инструмента лежит в docs/tigertriever/research и сюда пока не перенесён.", "owner": "владелица", "imgRoot": "competitors"};
+const STAGES = [{"id": "frame", "n": "00", "part": "Рамка", "title": "Рамка исследования", "skill": "research-frame", "q": "Какое решение мы принимаем и что для этого нужно узнать?", "needs": [], "outputs": [{"key": "about", "title": "О компании и продукте", "hint": "Что за компания и продукт, для кого, стадия, позиционирование. С метками: откуда известно.", "blocks": [], "state": "empty"}, {"key": "decision", "title": "Решение", "hint": "Какое решение поддерживает исследование, кто его принимает, к какому сроку.", "blocks": [], "state": "empty"}, {"key": "questions", "title": "Исследовательские вопросы", "hint": "5–12 вопросов, от ответа на которые решение меняется. У каждого — этап и нужный уровень доказательности.", "blocks": [], "state": "empty"}, {"key": "assumptions", "title": "Реестр допущений", "hint": "Что принимаем на веру: утверждение, откуда взялось, вердикт, что будет, если неверно.", "blocks": [], "state": "empty"}, {"key": "limits", "title": "Рамки", "hint": "Бюджет, срок, доступ к людям и данным, приватность, что вне исследования, где отходим от метода и чем рискуем.", "blocks": [], "state": "empty"}, {"key": "plan", "title": "План этапов", "hint": "Какие этапы проходим, какие пропускаем и почему, с чего начинаем.", "blocks": [], "state": "empty"}], "card": {"why": "Понять, какое решение мы принимаем и что для него нужно узнать. Без этого ресёрч собирает всё подряд и непонятно, когда остановиться.", "input": ["Спека, заметки владельца, уже сделанный ресёрч"], "steps": ["О компании и продукте: что известно и откуда", "Решение: что сделаем по-другому, когда исследование закончится", "Вопросы: 5–12, у каждого этап и нужный уровень", "Реестр допущений: откуда, вердикт, критические", "Рамки: бюджет, срок, доступ к людям, приватность, отход от метода", "План: какие этапы проходим, какие пропускаем и почему"], "rules": ["Вопрос остаётся, только если другой ответ изменит решение", "Вопросы про поведение и факты, а не про мнения", "Допущения формулируем проверяемо и отмечаем критические", "У вопроса указан уровень, ниже которого ответу нельзя верить", "Внешние данные не выдаём за внутреннюю статистику", "Сделанное переносим в разделы, а перед словом «пробел» ищем по материалу", "Отход от метода записываем в рамки: что нарушаем, почему и чем рискуем", "Решает владелец, агент этап не подтверждает"], "tools": ["/research-frame", "файлы проекта, Notion"], "done": ["Описаны компания и продукт", "Есть решение, кто его принимает и срок", "5–12 вопросов с этапами и уровнями", "Реестр допущений с критическими", "Рамки, включая отход от метода", "План с причинами пропусков", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "О компании и продукте", "out": "about"}, {"kind": "missing", "t": "Решение", "out": "decision"}, {"kind": "missing", "t": "Исследовательские вопросы", "out": "questions"}, {"kind": "missing", "t": "Реестр допущений", "out": "assumptions"}, {"kind": "missing", "t": "Рамки", "out": "limits"}, {"kind": "missing", "t": "План этапов", "out": "plan"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 6}, {"id": "desk", "n": "01", "part": "Рынок", "title": "Контекст и рынок", "skill": "desk-research", "q": "В каком мире живёт продукт и кто в нём платит?", "needs": [{"id": "frame", "title": "Рамка исследования"}], "outputs": [{"key": "market", "title": "Рынок и контекст", "hint": "Что происходит на рынке, какие сдвиги, что это значит для продукта.", "blocks": [], "state": "empty"}, {"key": "audience", "title": "Аудитория и география", "hint": "Кто покупает, где, сколько таких людей, откуда это известно.", "blocks": [], "state": "empty"}, {"key": "pricing", "title": "Цены и готовность платить", "hint": "Ценовой коридор по страницам вендоров, что известно о готовности платить.", "blocks": [], "state": "empty"}, {"key": "constraints", "title": "Внешние ограничения", "hint": "Законы, правила платформ, каналы и доступы, которые нельзя обойти.", "blocks": [], "state": "empty"}, {"key": "themes", "title": "Темы под продукт", "hint": "Что нужно именно этому сценарию: среда, доверие, цифровой доступ, социальный контекст. Тема идёт из вопроса рамки.", "blocks": [], "state": "empty"}, {"key": "requirements", "title": "Требования к решению", "hint": "«Решение должно…» с уровнем по самому слабому основанию. Требования, а не экраны.", "blocks": [], "state": "empty"}], "card": {"why": "Понять среду, в которой живёт сценарий, и получить требования к будущему решению. Этап не выбирает интерфейс, он задаёт требования.", "input": ["Рамка: вопросы этого этапа, допущения, рамки"], "steps": ["Выбрать темы под продукт из вопросов рамки", "Собрать источники по четырём разделам и темам", "Разметить метками, уровнями и датами", "Сделать вывод по каждой теме", "Выписать требования к решению", "Перенести вердикты в реестр допущений"], "rules": ["Внешние данные не выдаём за внутренние", "Первоисточник важнее пересказа", "Цены только со страниц вендоров, с датой проверки", "Отчёт deep-research считается L1, пока каждое утверждение не проверено", "Цифры без источника не цитируем, выдуманные записываем в ограничения", "Указываем, для кого верно: страна, сегмент, год", "«Не нашли» не значит «нет»", "Интерфейс здесь не выбираем, только требования"], "tools": ["/desk-research", "поиск и страницы вендоров", "/deep-research для широкого обзора"], "done": ["Заполнены четыре раздела и темы", "У утверждений есть метки, уровни и источники", "Требования выписаны с уровнями", "Ограничения названы", "Вопросы рамки получили ответ или попали в открытые", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Рынок и контекст", "out": "market"}, {"kind": "missing", "t": "Аудитория и география", "out": "audience"}, {"kind": "missing", "t": "Цены и готовность платить", "out": "pricing"}, {"kind": "missing", "t": "Внешние ограничения", "out": "constraints"}, {"kind": "missing", "t": "Темы под продукт", "out": "themes"}, {"kind": "missing", "t": "Требования к решению", "out": "requirements"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 6}, {"id": "competitors", "n": "02", "part": "Рынок", "title": "Конкуренты", "skill": "competitor-research", "q": "С кем нас сравнивают и чем мы можем отличаться?", "needs": [{"id": "frame", "title": "Рамка исследования"}, {"id": "desk", "title": "Контекст и рынок"}], "outputs": [{"key": "scope", "title": "Цель и ограничения сравнения", "hint": "Зачем сравниваем, что сравнение не докажет, что не удалось проверить.", "blocks": [], "state": "empty"}, {"key": "map", "title": "Карта рынка", "hint": "Прямые и смежные конкуренты по классам, включая обходные решения без продукта.", "blocks": [], "state": "empty"}, {"key": "profiles", "title": "Профили", "hint": "Кто пользователь, цены, каналы, ключевые механики, сигналы бизнеса, что проверено у вендора.", "blocks": [], "state": "empty"}, {"key": "why_pay", "title": "За что платят", "hint": "Причины покупки с основанием: отзывы, тарифы, данные.", "blocks": [], "state": "empty"}, {"key": "complaints", "title": "На что жалуются", "hint": "Повторяющиеся жалобы: площадка, дата, тип отзыва.", "blocks": [], "state": "empty"}, {"key": "us", "title": "Мы в сравнении", "hint": "Чем продукт отличается на самом деле, что слабее, что может быть отличием. Без рекламы.", "blocks": [], "state": "empty"}, {"key": "risks", "title": "Риски позиции", "hint": "Кто опаснее всего, что уже не уникально, где возможное отличие.", "blocks": [], "state": "empty"}], "card": {"why": "Понять, с кем нас сравнивают, за что там платят, на что жалуются и в чём наше возможное отличие.", "input": ["Рамка и контекст рынка"], "steps": ["Записать цель и ограничения сравнения", "Собрать карту рынка по классам, включая обходные решения", "Разобрать профили, по группам и параллельно", "Свести, за что платят и на что жалуются", "Честно описать, чем мы отличаемся", "Назвать риски, сделать выводы"], "rules": ["Конкуренты ищутся ради переносимых паттернов, а не как доказательство, что у нас сработает так же", "У каждого паттерна рядом ограничение: почему он может не перенестись", "Механики и цены проверяем на страницах вендоров, с датой", "У каждого отзыва указан тип: независимый, от вендора, по приглашению", "Обзор, написанный конкурентом, так и помечаем", "Прямых и смежных не смешиваем", "«Не нашли» не значит «нет функции»", "Механики по шагам здесь не разбираем, это этап 07"], "tools": ["/competitor-research", "параллельные агенты по группам продуктов", "страницы вендоров и площадки отзывов"], "done": ["Записаны цель и ограничения", "Карта рынка по классам", "Профили с отметкой, что проверено у вендора", "Сведены причины платить и жалобы", "Описано «Мы в сравнении»", "Названы риски", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Цель и ограничения сравнения", "out": "scope"}, {"kind": "missing", "t": "Карта рынка", "out": "map"}, {"kind": "missing", "t": "Профили", "out": "profiles"}, {"kind": "missing", "t": "За что платят", "out": "why_pay"}, {"kind": "missing", "t": "На что жалуются", "out": "complaints"}, {"kind": "missing", "t": "Мы в сравнении", "out": "us"}, {"kind": "missing", "t": "Риски позиции", "out": "risks"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 7}, {"id": "process", "n": "03", "part": "Люди", "title": "Как работают сейчас", "skill": "current-process", "q": "Как люди решают эту задачу сегодня, без нашего продукта?", "needs": [{"id": "frame", "title": "Рамка исследования"}], "outputs": [{"key": "participants", "title": "Участники процесса", "hint": "Кто участвует, что делает, почему важен для бизнеса. Включая тех, кто не будет пользователем.", "blocks": [], "state": "empty"}, {"key": "journey", "title": "Путь сегодня", "hint": "Нумерованные шаги от первого действия до результата: кто, что происходит, уровень, как проверить.", "blocks": [], "state": "empty"}, {"key": "workarounds", "title": "Обходные пути", "hint": "Таблицы, заметки, напоминания, договорённости: что люди придумывают сами.", "blocks": [], "state": "empty"}, {"key": "behaviour", "title": "Что показывают данные", "hint": "Наблюдения и замеры поведения с уровнем доказательности.", "blocks": [], "state": "empty"}], "card": {"why": "Описать, как задача решается сегодня, без нашего продукта: кто участвует, какие шаги, где что теряется. Экраны потом проектируем от этого, а не от догадок.", "input": ["Рамка и контекст рынка"], "steps": ["Назвать участников, их роли и значение для бизнеса", "Записать путь нумерованными шагами", "Собрать обходные приёмы", "Свести, что показывают данные", "Отделить подтверждённое от гипотез"], "rules": ["Описываем процесс без нашего продукта и будущих решений", "Путь пишем шагами, от первого действия до результата", "У каждого шага понятно, кто его делает", "Что сказал представитель или участник, помечаем отдельно", "Техническая возможность не значит, что так уже работает", "Данные не про нашу аудиторию помечаем ограничением", "Догадку не записываем как факт: у шага есть уровень и способ проверки"], "tools": ["/current-process", "файлы проекта, данные и корпус", "интервью, если есть"], "done": ["Названы участники и их роли", "Путь записан по шагам с уровнями", "Собраны обходные приёмы", "Сведены данные", "Выводы для решения", "Вопросы к людям вынесены в открытые", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Участники процесса", "out": "participants"}, {"kind": "missing", "t": "Путь сегодня", "out": "journey"}, {"kind": "missing", "t": "Обходные пути", "out": "workarounds"}, {"kind": "missing", "t": "Что показывают данные", "out": "behaviour"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 4}, {"id": "problem", "n": "04", "part": "Смысл", "title": "Проблема и решение", "skill": "problem-solution", "q": "Что именно ломается, у кого, и какой ответ мы предлагаем?", "needs": [{"id": "process", "title": "Как работают сейчас"}, {"id": "desk", "title": "Контекст и рынок"}], "outputs": [{"key": "context", "title": "Контекст проблемы", "hint": "Что происходит и откуда это известно; конкурентный контекст и вводные с метками.", "blocks": [], "state": "empty"}, {"key": "losses", "title": "Где возникает проблема", "hint": "Точки потерь: что известно, риск, статус причин.", "blocks": [], "state": "empty"}, {"key": "user_problem", "title": "Проблема пользователя", "hint": "Одной связной формулировкой.", "blocks": [], "state": "empty"}, {"key": "business_problem", "title": "Проблема бизнеса", "hint": "Плюс долгосрочный риск доверия и конкурентный риск.", "blocks": [], "state": "empty"}, {"key": "solution", "title": "Решение", "hint": "Высокоуровневая задача и связный рассказ, без экранов.", "blocks": [], "state": "empty"}, {"key": "effect", "title": "Ожидаемый эффект", "hint": "«Решение потенциально может…»: результаты списком.", "blocks": [], "state": "empty"}, {"key": "metrics", "title": "Метрики", "hint": "Основной продуктовый результат, операционный результат, защитная метрика.", "blocks": [], "state": "empty"}, {"key": "critical", "title": "Критические допущения", "hint": "Без чего решение падает. Ссылка на реестр из этапа 00.", "blocks": [], "state": "empty"}], "card": {"why": "Сформулировать, что именно ломается, у кого, и какой ответ мы предлагаем, до того как думать об экранах.", "input": ["Контекст рынка, конкуренты, путь сегодня"], "steps": ["Описать контекст проблемы", "Разобрать точки потерь", "Сформулировать проблему пользователя и бизнеса", "Описать решение словами", "Записать ожидаемый эффект и три метрики", "Выписать критические допущения"], "rules": ["Проблема формулируется от пользователя и без решения", "У точки потерь есть риск и статус причин; неизвестные причины так и пишем", "Моделируемые цифры называем вводной, а не статистикой", "Отделяем то, что продуктовой проблемой не является", "Решение описываем словами, без экранов", "Эффект формулируем осторожно: «потенциально может»", "Метрик три, одна защитная: рост не должен стоить доверия", "Критические допущения связаны с реестром этапа 00"], "tools": ["/problem-solution", "материал этапов 01–03"], "done": ["Описан контекст", "Точки потерь с риском и статусом причин", "Проблема пользователя и бизнеса", "Решение без экранов", "Эффект и три метрики", "Критические допущения", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Контекст проблемы", "out": "context"}, {"kind": "missing", "t": "Где возникает проблема", "out": "losses"}, {"kind": "missing", "t": "Проблема пользователя", "out": "user_problem"}, {"kind": "missing", "t": "Проблема бизнеса", "out": "business_problem"}, {"kind": "missing", "t": "Решение", "out": "solution"}, {"kind": "missing", "t": "Ожидаемый эффект", "out": "effect"}, {"kind": "missing", "t": "Метрики", "out": "metrics"}, {"kind": "missing", "t": "Критические допущения", "out": "critical"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 8}, {"id": "users", "n": "05", "part": "Смысл", "title": "Роли и сегменты", "skill": "users-segments", "q": "Для кого мы проектируем в первую очередь и почему?", "needs": [{"id": "problem", "title": "Проблема и решение"}], "outputs": [{"key": "roles", "title": "Роли", "hint": "Роль, задача и действия, в периметре или нет. Выбранная роль с обоснованием.", "blocks": [], "state": "empty"}, {"key": "segments", "title": "Сегменты", "hint": "По одному основанию, последовательно: контекст, влияние на сценарий, три работы, открытый вопрос, риск.", "blocks": [], "state": "empty"}, {"key": "chosen", "title": "Выбранный сегмент", "hint": "Самый сложный сценарий, не самый большой, с оговоркой. Это решение владельца.", "blocks": [], "state": "empty"}, {"key": "portrait", "title": "Рабочий портрет", "hint": "Параметр, что знаем, статус. Синтетическая персона только с пометкой «не основание для решений».", "blocks": [], "state": "empty"}, {"key": "persona", "title": "Синтетическая персона", "hint": "Необязательно. Всегда с оговоркой: не основание для решений.", "optional": true, "blocks": [], "state": "empty"}], "card": {"why": "Решить, для кого проектируем в первую очередь и почему.", "input": ["Проблема и решение, участники из этапа 03"], "steps": ["Составить таблицу ролей", "Выбрать роль и обосновать", "Выделить сегменты по одному основанию", "Предложить сегмент", "Собрать рабочий портрет"], "rules": ["Сегменты строим по одному основанию, а не демографией", "У сегмента есть контекст, влияние на сценарий, три работы, открытый вопрос и риск", "Берём самый сложный сценарий, а не самый большой, и пишем эту оговорку", "В портрете у каждого параметра есть статус: что знаем и откуда", "Неизвестное так и пишем", "Синтетическая персона всегда с оговоркой «не основание для решений»", "Выбор делает владелец, агент только предлагает с обоснованием"], "tools": ["/users-segments", "материал этапов 03–04"], "done": ["Таблица ролей и выбранная роль", "Сегменты по одному основанию", "Выбранный сегмент с оговоркой", "Рабочий портрет со статусами", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Роли", "out": "roles"}, {"kind": "missing", "t": "Сегменты", "out": "segments"}, {"kind": "missing", "t": "Выбранный сегмент", "out": "chosen"}, {"kind": "missing", "t": "Рабочий портрет", "out": "portrait"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 4}, {"id": "jtbd", "n": "06", "part": "Смысл", "title": "JTBD, функции и метрики", "skill": "jtbd", "q": "Какие работы пользователь нанимает нас сделать и что их закрывает?", "needs": [{"id": "users", "title": "Роли и сегменты"}], "outputs": [{"key": "flow", "title": "Флоу по фазам", "hint": "Фазы пути и сквозные работы.", "blocks": [], "state": "empty"}, {"key": "jobs", "title": "Список работ", "hint": "«Когда …, я хочу …, чтобы …» по стадиям; социальные и эмоциональные — жирным.", "blocks": [], "state": "empty"}, {"key": "features", "title": "Работы → функции → метрики", "hint": "По фазам: JTBD, функция с номером «фаза.n», метрика.", "blocks": [], "state": "empty"}], "card": {"why": "Описать, какие работы пользователь нанимает нас сделать, и что их закрывает. Функция здесь — содержание, а не макет.", "input": ["Выбранные роль и сегмент, путь, точки потерь"], "steps": ["Разложить флоу по фазам и сквозным работам", "Написать работы «Когда…, я хочу…, чтобы…»", "Выделить социальные и эмоциональные", "По фазам связать работу, функцию и метрику", "Проверить, что все точки потерь закрыты"], "rules": ["Ситуация конкретная, без продукта и без решения", "Фазы идут от пути сегмента, а не от экранов", "Социальные и эмоциональные работы выделяем жирным", "Функция отвечает на работу; функция без работы — кандидат на удаление", "Работа без функции остаётся видимой, сквозная может её не иметь", "Отложенное помечаем «Позже», работу не удаляем", "Метрики согласованы с этапом 04"], "tools": ["/jtbd", "материал этапов 03–05"], "done": ["Флоу по фазам и сквозные", "Список работ с кодами", "Таблицы работа → функция → метрика по фазам", "Все точки потерь закрыты работами", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Флоу по фазам", "out": "flow"}, {"kind": "missing", "t": "Список работ", "out": "jobs"}, {"kind": "missing", "t": "Работы → функции → метрики", "out": "features"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 3}, {"id": "benchmark", "n": "07", "part": "Решения", "title": "Бенчмарк и паттерны", "skill": "benchmark", "q": "Как те же работы закрыты у других и что из этого брать?", "needs": [{"id": "jtbd", "title": "JTBD, функции и метрики"}, {"id": "competitors", "title": "Конкуренты"}], "outputs": [{"key": "scenarios", "title": "Сценарный бенчмарк", "hint": "Продукты × шаги пути, шаги берутся из фаз JTBD.", "blocks": [{"type": "text", "t": "**Путь.** Нейроинтервенционист годами работал с Tiger 17 со слайдером. Больница берёт Tiger 13 с новой ручкой-кнопкой для дистальных окклюзий. Представитель проводит с ним сессию на ноутбуке. Вечером перед первым случаем врач сам открывает этап Deployment и смотрит, что иначе с кнопкой. Шаги взяты из работ P01–P05, P08, R01, R03 (`docs/tigertriever/research/jtbd-map-v0.1.md`)."}, {"type": "table", "head": ["Шаг", "Работа", "Засчитываем", "Не засчитываем"], "rows": [["1. Нашла своё устройство и рынок", "P01, P05", "Точная конфигурация выбрана за 1–2 действия и видна на каждом экране", "Общий поиск по каталогу без варианта"], ["2. Сессия с представителем", "R01, P04", "Медиа занимает большую часть экрана, шаги листаются без поиска кнопок, мало лишнего", "Длинная страница с прокруткой"], ["3. Клип и текст вместе", "P01, P04", "Текст и медиа на одном экране без прокрутки, есть пауза и повтор", "Текст ниже края экрана"], ["4. Что иначе у другой ручки", "P02, R02", "Переключение варианта на том же шаге или оба рядом", "Отдельный курс, найденный заново"], ["5. Вернуться к одному шагу", "P03, P08", "До нужного шага 1–2 действия, видно, что уже смотрел", "Пройти последовательность заново"], ["6. Без интернета", "R03", "Работает без сети после загрузки", "Нужен вход или сеть"]]}, {"type": "text", "t": "● описано · ◐ частично · ○ нет данных (не значит «нет функции») · — к продукту не относится. Наведите на клетку, чтобы увидеть основание."}, {"type": "table", "head": ["Продукт", "1. Нашла своё устройство и рынок", "2. Сессия с представителем", "3. Клип и текст вместе", "4. Что иначе у другой ручки", "5. Вернуться к одному шагу", "6. Без интернета"], "rows": [["Touch Surgery (Medtronic)", {"t": "◐", "tip": "Каталог 300+ процедур по специальностям; варианта устройства внутри процедуры нет"}, {"t": "◐", "tip": "Пошаговый плеер на весь экран, но на телефоне; режима показа на большом экране не видно"}, {"t": "●", "tip": "Медиа сверху, текст в шторке снизу на одном экране, счётчик 9/12"}, {"t": "○", "tip": "Не видели"}, {"t": "◐", "tip": "▶▶ и ✕ внутри шага; список шагов по описанию"}, {"t": "●", "tip": "Загрузка модулей по описанию вендора"}], ["Thrombectomy EVT (ATIF ELNIL)", {"t": "—", "tip": "Одна программа, выбирать нечего"}, {"t": "◐", "tip": "Таймер и A−/A+ для крупного текста; видео нет"}, {"t": "○", "tip": "Видео нет, только текст и чек-листы"}, {"t": "—", "tip": "Вариантов нет"}, {"t": "●", "tip": "Полоса из 10 вкладок-этапов внизу всегда видна"}, {"t": "●", "tip": "Работает офлайн по описанию"}], ["Incision Assist", {"t": "●", "tip": "Вариант процедуры «Left Side ▾» прямо над содержимым"}, {"t": "○", "tip": "Нет данных"}, {"t": "◐", "tip": "Фото и пункты; видео отдельными туториалами"}, {"t": "◐", "tip": "Переключатель стороны перерисовывает тот же экран; сравнения рядом нет"}, {"t": "●", "tip": "Раздел процедуры открывается из списка"}, {"t": "○", "tip": "Нет данных"}], ["Philips IGT Learning", {"t": "◐", "tip": "Темы и системы плитками; варианта внутри темы нет"}, {"t": "○", "tip": "Нет данных"}, {"t": "◐", "tip": "Видео и документы списком, текст отдельным файлом"}, {"t": "○", "tip": "Не видели"}, {"t": "◐", "tip": "Поиск и сохранённое"}, {"t": "◐", "tip": "Вкладка Saved; офлайн не подтверждён"}], ["iFixit (руками)", {"t": "●", "tip": "Гайд под точную модель устройства"}, {"t": "○", "tip": "Длинная страница, режима показа нет"}, {"t": "●", "tip": "Фото слева, пункты справа, цвет меток на фото совпадает с пунктами"}, {"t": "○", "tip": "Не видели"}, {"t": "◐", "tip": "Якоря шагов на длинной странице"}, {"t": "◐", "tip": "Только PDF"}], ["HelloFresh, Recime (готовка)", {"t": "—", "tip": "Не про варианты"}, {"t": "●", "tip": "Режим шагов: один шаг на экран, большая кнопка Next"}, {"t": "●", "tip": "HelloFresh: фото сверху, текст под ним; Recime только текст"}, {"t": "—", "tip": "—"}, {"t": "●", "tip": "Кнопка списка шагов рядом с Next"}, {"t": "○", "tip": "Нет данных"}], ["Future, Centr (тренировки)", {"t": "—", "tip": "—"}, {"t": "◐", "tip": "Видео на весь экран, управление в шторке"}, {"t": "◐", "tip": "Видео и короткое название; текста мало"}, {"t": "—", "tip": "—"}, {"t": "●", "tip": "Список упражнений из шторки, Restart"}, {"t": "○", "tip": "Нет данных"}], ["Cal AI, Cash App, WHOOP (инструкции с вариантами)", {"t": "—", "tip": "—"}, {"t": "—", "tip": "—"}, {"t": "◐", "tip": "Картинка и шаги"}, {"t": "●", "tip": "Переключатель вариантов перерисовывает ту же инструкцию; у WHOOP оба варианта в одном шаге"}, {"t": "—", "tip": "—"}, {"t": "○", "tip": "Нет данных"}], ["Codecademy, Adobe Learn (курсы)", {"t": "—", "tip": "—"}, {"t": "○", "tip": "Нет"}, {"t": "◐", "tip": "Видео сверху, текст во вкладках под ним"}, {"t": "—", "tip": "—"}, {"t": "●", "tip": "Список уроков с длительностью и отметкой «просмотрено», «Next item»"}, {"t": "○", "tip": "Нет"}], ["Наш прототип v0.3 (руками)", {"t": "●", "tip": "Рынок → устройство → ручка, контекст в шапке"}, {"t": "○", "tip": "Режима показа нет; на ноутбуке видео начинается на 335 px из 900"}, {"t": "◐", "tip": "На ноутбуке рядом; на телефоне видео с 560 px из 844, текст за краем экрана"}, {"t": "◐", "tip": "Только отдельной страницей Compare; переключить ручку на том же этапе нельзя"}, {"t": "●", "tip": "Полоса этапов, поиск, «назад-вперёд»"}, {"t": "◐", "tip": "Пакет S0 проверен в Chrome на Маке"}]]}, {"type": "fold", "t": "Почему такие оценки и как проверяли", "blocks": [{"type": "list", "items": ["**Руками:** iFixit (страница гайда в браузере, 2026-11-08) и наш прототип v0.3 (замер положения видео и текста в Chrome, 1280 и 390 px).", "**По экранам App Store, 2026-11-08:** Touch Surgery, Thrombectomy EVT, Incision Assist, Philips IGT Learning, EVT Navigator, Ask Terumo Neuro, Mako Training. Это маркетинговые экраны вендора, не прохождение.", "**По Mobbin, 2026-11-08:** HelloFresh, Recime, NYT Cooking, Apple News, Future, Centr, Nike Training Club, Cal AI, Cash App, WHOOP, Codecademy, Adobe Express Learn.", "**По описаниям прошлого исследования:** офлайн у Touch Surgery и Thrombectomy EVT (`docs/tigertriever/research/platform-research-full.md`, 2.1 и 2.9).", "EVT Navigator, Ask Terumo Neuro и Mako Training в матрицу не вошли: это справочники и калькуляторы, а не обучение по шагам."]}]}], "state": "filled"}, {"key": "flows", "title": "Пути в картинках", "hint": "Экран за экраном: что пользователь видит и делает.", "blocks": [{"type": "sub", "t": "Touch Surgery: шаг процедуры"}, {"type": "text", "t": "**Зачем смотреть:** самый близкий к нам плеер шага в медицине. **Источник:** App Store, экраны вендора, 2026-11-08. **Взять:** счётчик и полосу прогресса над медиа, текст в шторке под медиа на том же экране."}, {"type": "shots", "items": [{"img": "img/touch-surgery/player-callout.webp", "cap": "Сверху «9/12», полоса прогресса, название процедуры, кнопки ▶▶ и ✕. Медиа занимает больше половины экрана, на кадре подпись к инструменту, в углу вставка с самим устройством. Под медиа шторка с двумя строками текста и ⓘ."}, {"img": "img/touch-surgery/player-step.webp", "cap": "Видео операции «36/40» с подписями на кадре и вставкой-схемой. Ниже шторка: инструкция и короткое пояснение, ⓘ для подробностей."}]}, {"type": "sub", "t": "Thrombectomy EVT: этапы и предупреждения"}, {"type": "text", "t": "**Зачем смотреть:** восемь этапов того же лечения, офлайн. **Источник:** App Store, 2026-11-08. **Взять:** полосу этапов, всегда видимую; A−/A+ для крупного текста. **Не брать:** плотные тёмные экраны, таймеры, калькуляторы."}, {"type": "shots", "items": [{"img": "img/thrombectomy/home-steps.webp", "cap": "Шапка с названием, таймером, A− и A+. Красный блок-предупреждение, ниже карточки «Step 1 · LVO Activation and Immediate Checklist», «Step 2 · RACE and LAMS Score Calculators». Внизу полоса из 10 иконок этапов."}, {"img": "img/thrombectomy/step-warnings.webp", "cap": "«Step 2 — RACE and LAMS Calculators» с кнопкой Back. Синий блок с источником, ниже калькулятор с итогом «7 · LVO likely»."}]}, {"type": "sub", "t": "Incision Assist: вариант процедуры"}, {"type": "text", "t": "**Зачем смотреть:** вариант процедуры переключается на месте, без возврата в каталог. **Источник:** App Store, 2026-11-08. **Взять:** чип варианта прямо над содержимым."}, {"type": "shots", "items": [{"img": "img/incision/variant-chip.webp", "cap": "Трёхмерная операционная, в правом верхнем углу чип «Left Side ▾» для смены варианта процедуры."}]}, {"type": "sub", "t": "Режим шагов в готовке"}, {"type": "text", "t": "**Зачем смотреть:** руки заняты, шаг читают, глядя на процесс; это похоже на сессию у стола. **Источник:** Mobbin, 2026-11-08. **Взять:** один шаг на экран и крупную кнопку Next для режима показа."}, {"type": "shots", "items": [{"img": "img/recime/step-mode.webp", "cap": "Recime: «Step 1 of 4», сегментная полоса из четырёх частей, крупный текст шага. Внизу кнопка списка шагов и большая оранжевая Next."}, {"img": "img/hellofresh/step-media.webp", "cap": "HelloFresh: «Step 2 of 6» с точками, фото на всю ширину, номер шага, текст пунктами и кнопки таймеров."}, {"img": "img/apple-news/step-focus.webp", "cap": "Apple News: текущий шаг яркий, следующие приглушены; сверху вкладки Ingredients и Directions."}]}, {"type": "sub", "t": "Видео упражнения"}, {"type": "shots", "items": [{"img": "img/future/player-sheet.webp", "cap": "Future: видео на весь экран, сверху время и пауза. В шторке название «Chaturanga», список, прогресс, кнопки Guide и Restart."}, {"img": "img/centr/video-skip.webp", "cap": "Centr: туториал с кнопками назад и вперёд на 10 секунд, под видео название упражнения и цель."}]}, {"type": "sub", "t": "Инструкции с вариантами"}, {"type": "text", "t": "**Зачем смотреть:** ближайший аналог нашей ручки. **Источник:** Mobbin, 2026-11-08. **Взять:** сегментный переключатель над инструкцией."}, {"type": "shots", "items": [{"img": "img/cal-ai/variant-switch.webp", "cap": "Cal AI: переключатель «Home Screen | Lock Screen» над картинкой; ниже «How to add widget» и шаг 1 для выбранного варианта."}, {"img": "img/whoop/two-variants-one-step.webp", "cap": "WHOOP: два зарядных устройства рядом на одной картинке, в шаге «1. Confirm charger has power» отдельные строки для Basic Charger и Wireless PowerPack."}]}, {"type": "sub", "t": "Курс и ремонтный гайд"}, {"type": "shots", "items": [{"img": "img/codecademy/course-player.webp", "cap": "Codecademy: слева «Course Contents» с длительностью каждого урока и отметкой, сверху «0/23» и «Next item», под видео вкладки Overview, Transcript, Resources."}, {"img": "img/ifixit/step-markers.webp", "cap": "iFixit: «Step 1 Lower Case», фото слева с цветными кружками на винтах, справа пункты с точками тех же цветов и заметка с иконкой."}]}, {"type": "sub", "t": "Наш прототип v0.3 на том же пути"}, {"type": "shots", "items": [{"img": "img/rapid-medical/v03-stage-desktop.webp", "cap": "1280 px: шапка, хлебные крошки, плашка-дисклеймер, заголовок этапа и подписи разделов; видео начинается на 335 px из 900. Три способа навигации одновременно: шапка с Change device и Find stage, крошки, список этапов слева и «назад-вперёд» снизу."}, {"img": "img/rapid-medical/v03-stage-phone.webp", "cap": "390 px: до видео шапка, крошки, дисклеймер, лента этапов, заголовок и кнопка Compare; видео начинается около 560 px из 844, текст к нему ниже края экрана."}]}], "state": "filled"}, {"key": "analogues", "title": "Аналоги из других областей", "hint": "Где ещё решают ту же задачу: группы по типу сходства, вывод и почему аналог может не перенестись.", "blocks": [{"type": "text", "t": "Типы сходства выбраны по работам, а не по категории: руки заняты и взгляд на процессе, один процесс в двух вариантах, вернуться к одному шагу, показать другому человеку."}, {"type": "table", "head": ["Тип сходства", "Где", "Что подсказывает", "Почему может не перенестись"], "rows": [["Руки заняты, шаг читают на ходу", "HelloFresh, Recime, Apple News", "Один шаг на экран, крупная кнопка дальше, текущий шаг выделен", "Рецепт короткий и без видео; врач смотрит не у стола, а до случая"], ["Повторить движение за видео", "Future, Centr, Nike Training Club", "Видео главное, управление в шторке, перемотка на 10 секунд", "Тренировка идёт по таймеру и с музыкой; у нас темп задаёт человек"], ["Одна инструкция в двух вариантах", "Cal AI, Cash App, WHOOP, Incision", "Переключатель перерисовывает тот же шаг; оба варианта в одном шаге", "Наши варианты отличаются клинически; после переключения метка ручки должна быть крупной"], ["Вернуться к нужному месту", "Codecademy, Adobe Learn, Thrombectomy EVT", "Список с длительностью и отметкой «смотрел», полоса этапов всегда видна", "Курс подталкивает к прогрессу и тестам; у нас обучение не проверяется"], ["Точно показать деталь", "iFixit", "Цветные метки на кадре совпадают с пунктами", "Метки рисует автор; у нас их может дать только клиент"]]}, {"type": "claims", "items": [{"t": "Перенос из готовки и тренировок — гипотеза: у этих продуктов нет клинического риска ошибки варианта.", "label": "limit", "level": 2, "src": "Mobbin, 2026-11-08"}, {"t": "Самый полезный аналог для нашей ручки — переключатель варианта в бытовых инструкциях, а не медицинские приложения: в медицинских такого не нашли.", "label": "inference", "level": 2, "src": "Матрица этого этапа"}]}], "state": "filled"}, {"key": "nobody", "title": "Чего нет ни у кого", "hint": "Работы, которые никто не закрывает. «Не нашли» отделять от «нет».", "blocks": [{"type": "claims", "items": [{"t": "Сравнение одного шага у двух вариантов устройства с видео рядом. Проверили 10 продуктов матрицы: нет.", "label": "inference", "level": 2, "src": "Матрица этого этапа"}, {"t": "Режим показа для представителя, который ведёт сессию на чужом экране. Не нашли; Thrombectomy EVT даёт только A−/A+.", "label": "inference", "level": 2, "src": "App Store, Mobbin"}, {"t": "Переключение варианта устройства внутри медицинского обучения. В медицине не нашли, есть только у Incision для стороны операции.", "label": "inference", "level": 2, "src": "App Store"}, {"t": "Явная пометка «этот текст одинаков для обеих ручек». Не нашли; у WHOOP варианты просто перечислены в одном шаге.", "label": "inference", "level": 2, "src": "Mobbin"}, {"t": "«Не нашли» не значит «нет»: просмотр по экранам вендора, внутрь закрытых академий (Medtronic, Stryker, Boston Scientific) не заходили.", "label": "limit", "level": 2, "src": "platform-research-full.md, 2.16"}]}], "state": "filled"}, {"key": "patterns", "title": "Паттерны", "hint": "По фазам: у кого, что делает, что берём и, важнее, что не берём.", "blocks": [{"type": "table", "head": ["Фаза", "У кого", "Что делает", "Берём", "Не берём"], "filter": [{"col": 0, "label": "Фаза", "kind": "chips"}], "rows": [["Выбор", "Incision", "Чип варианта над содержимым", "Чип «Tiger 13 · Precision knob · Europe ▾» в шапке этапа вместо крошек", "Ленту обновлений и соцфункции"], ["Выбор", "Thrombectomy EVT", "Одна программа, выбора нет", "Пропускать выбор, если в пакете одна конфигурация (уже в спеке)", "—"], ["Шаг", "Touch Surgery", "Счётчик n/N, медиа больше половины экрана, текст в шторке", "Экран этапа как плеер: медиа сверху крупно, текст рядом без прокрутки", "3D-симуляции и библиотеку из 300 процедур"], ["Шаг", "HelloFresh", "Фото сверху, номер шага, пункты под ним", "Пункты сразу под видео на телефоне", "Таймеры"], ["Шаг", "iFixit", "Цветные метки на кадре совпадают с пунктами", "Как возможность контента, если клиент даст размеченные кадры", "Длинную страницу всех шагов и магазин"], ["Шаг", "Thrombectomy EVT", "Цветные блоки предупреждений с источником", "Один тип блока, только если клиент захочет предупреждения", "Плотные чек-листы и калькуляторы"], ["Сессия", "Recime, Future", "Один шаг на экран, крупная кнопка Next, полноэкранное видео", "Режим показа для представителя: на весь экран, стрелки клавиатуры, крупный текст", "Музыку, таймер тренировки"], ["Сессия", "Thrombectomy EVT", "A−/A+ в шапке", "Крупный текст в режиме показа", "Секундомер"], ["Вариант", "Cal AI, Cash App", "Сегментный переключатель перерисовывает инструкцию", "Переключатель ручки на том же этапе, метка ручки крупно", "Переключение без явной смены метки"], ["Вариант", "WHOOP", "Оба варианта в одном шаге", "«Показать обе ручки рядом» как продолжение переключателя", "—"], ["Возврат", "Codecademy", "Список с длительностью и отметкой «смотрел», Next item", "Длительность клипа и отметку «смотрел» в полосе этапов, продолжить с места", "Процент прогресса, тесты, геймификацию"], ["Возврат", "Thrombectomy EVT", "Полоса этапов всегда видна", "Полоса этапов — единственная навигация по этапам; поиск убрать", "Десять иконок без подписей"], ["Библиотека", "Philips IGT", "Видео с длительностью «~3 min», документы отдельно", "Длительность у каждого клипа", "Поиск-первым для десяти разделов"]]}, {"type": "text", "t": "Источники: App Store (2026-11-08), Mobbin (2026-11-08), страница iFixit (2026-11-08), прототип v0.3 (замер 2026-11-08), прошлое исследование `docs/tigertriever/research/platform-research-full.md` и `design/mobbin-flow-audit-v0.2.md`."}], "state": "filled"}], "card": {"why": "Посмотреть, как те же работы закрыты у других, и решить, что берём, а что нет.", "input": ["JTBD и конкуренты"], "steps": ["Написать сценарий из фаз JTBD", "Заполнить матрицу продукты × шаги", "Собрать пути экран за экраном", "Разобрать аналоги из других областей", "Выписать, чего нет ни у кого", "Разложить паттерны по фазам"], "rules": ["Шаги берём из работ пользователя, а не из наших экранов", "Сравниваем всех на одном типичном пути", "Заранее пишем, что засчитывается, а что нет", "«Не нашли» отделяем от «нет»", "Подписи к экранам только по самому экрану", "Аналоги ищем по типу сходства, а не по категории продукта", "Для паттерна пишем, что берём и что не берём; второе важнее", "Отмечаем, что проверено руками, а что только по документации"], "tools": ["/benchmark", "Mobbin, Lazyweb, видео, справка вендоров", "пробные аккаунты"], "done": ["Матрица с оценками и основаниями", "Пути с экранами", "Аналоги из других областей", "Чего нет ни у кого", "Паттерны с «не берём»", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": ["**Экран этапа сделать плеером, а не страницей.** Медиа крупно сверху, текст рядом и виден без прокрутки, как у Touch Surgery и HelloFresh. Сейчас на ноутбуке видео начинается на 335 px из 900, на телефоне около 560 px из 844, текст на телефоне за краем экрана. Убрать с экрана этапа крошки, плашку-дисклеймер (в подвал) и подписи «Watch» и «Read alongside».", "**Переключать ручку на том же этапе.** Сегментный переключатель «Legacy slider | Precision knob» над видео там, где у модели и рынка две ручки, как у Cal AI и Incision. Отдельная страница Compare остаётся как «показать обе рядом». Сейчас для смены ручки надо уходить в каталог.", "**Режим показа для представителя.** Видео на весь экран, крупный текст, стрелки клавиатуры, минимум кнопок. Такого нет ни у кого из медицинских продуктов в выборке; основа — режим шагов в готовке.", "**Одна навигация по этапам.** Оставить полосу этапов и «назад-вперёд», убрать поиск этапа и крошки: для десяти разделов это дубли. В полосу добавить длительность клипа и отметку «смотрел», при открытии предлагать продолжить с места.", "Всё это уровень L2: экраны и эвристика, без проверки на врачах. Проверять на 3–5 врачах или представителях заданиями «найди этап», «посмотри, что иначе у кнопки», «проведи сессию»."], "confirmed": null, "skip": null, "status": "review", "skillReady": true, "todo": [{"kind": "review", "t": "Прочитать и подтвердить этап"}, {"kind": "decision", "t": "Переделать учебный прототип по выводам: экран-плеер, переключатель ручки, режим показа, одна навигация (v0.4)"}, {"kind": "question", "t": "На чём идёт сессия с представителем: ноутбук врача, проектор, планшет представителя? (встреча с маркетингом, вопрос T8)"}], "filled": 5, "total": 5}, {"id": "principles", "n": "08", "part": "Решения", "title": "Сценарии и принципы", "skill": "design-principles", "q": "Как это должно работать и чего мы сознательно не делаем?", "needs": [{"id": "jtbd", "title": "JTBD, функции и метрики"}, {"id": "benchmark", "title": "Бенчмарк и паттерны"}], "outputs": [{"key": "userflows", "title": "Пользовательские сценарии", "hint": "Прозой, по шагам.", "blocks": [], "state": "empty"}, {"key": "rejected", "title": "Отвергнуто", "hint": "Механика и причина отказа.", "blocks": [], "state": "empty"}, {"key": "principles", "title": "Принципы дизайна", "hint": "Тема → основание → правила → принцип.", "blocks": [], "state": "empty"}], "card": {"why": "Описать, как это должно работать и чего мы сознательно не делаем. Это мост от исследования к экранам.", "input": ["JTBD, бенчмарк и паттерны"], "steps": ["Написать сценарии прозой по фазам", "Записать отвергнутые механики с причиной", "Сформулировать принципы: основание, правила, принцип"], "rules": ["Сценарии без раскладки экранов, со сбоями, выходом и возвратом", "Отвергнутое записываем, чтобы к нему не возвращаться", "У причины отказа есть основание", "Правила принципа проверяются на любом экране", "Принцип решает спор двух хороших вещей, а не звучит общо", "Рост не за счёт доверия"], "tools": ["/design-principles", "материал этапов 06–07"], "done": ["Сценарии по всем фазам", "Отвергнутые механики с причинами", "5–8 принципов с правилами", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Пользовательские сценарии", "out": "userflows"}, {"kind": "missing", "t": "Отвергнуто", "out": "rejected"}, {"kind": "missing", "t": "Принципы дизайна", "out": "principles"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 3}, {"id": "inventory", "n": "09", "part": "Решения", "title": "Инвентарь продукта", "skill": "product-inventory", "optional": "Нужен, если продукт уже существует", "q": "Что в продукте есть на самом деле?", "needs": [], "outputs": [{"key": "features", "title": "Фичи по экранам", "hint": "Все фичи, статус каждой сверен с кодом: есть, частично, сломано, нет.", "blocks": [], "state": "empty"}, {"key": "drift", "title": "Расхождения со спекой", "hint": "Что заявлено и не работает, что работает и нигде не описано.", "blocks": [], "state": "empty"}], "card": {"why": "Понять, что в продукте есть на самом деле, чтобы таблица приоритетов стояла на коде, а не на спеке.", "input": ["Код и документация продукта"], "steps": ["Разбить продукт на части и пройти по коду параллельно", "Описать функции и поставить статусы", "Выписать расхождения", "Сделать вывод, что важно до редизайна"], "rules": ["Только функционал: без раскладки, цветов и UX-решений", "Где код и документация расходятся, прав код", "У статуса есть ссылка на код", "Если продукт не запускали, так и пишем", "Инвентарь живёт в атласе, отдельную копию не ведём", "В шапке дата сверки"], "tools": ["/product-inventory", "параллельные агенты по частям продукта"], "done": ["Все экраны и фон описаны", "Статусы сверены с кодом", "Расхождения выписаны", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Фичи по экранам", "out": "features"}, {"kind": "missing", "t": "Расхождения со спекой", "out": "drift"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 2}, {"id": "priorities", "n": "10", "part": "Решения", "title": "Приоритеты фич", "skill": "feature-priorities", "q": "Что делаем первым?", "needs": [{"id": "inventory", "title": "Инвентарь продукта"}, {"id": "jtbd", "title": "JTBD, функции и метрики"}, {"id": "benchmark", "title": "Бенчмарк и паттерны"}], "outputs": [{"key": "table", "title": "Таблица приоритетов", "hint": "P0 / P1 / P2 / Не делаем по письменным критериям. Переносится из данных /feature-priorities.", "blocks": [], "state": "empty"}, {"key": "decisions", "title": "Решения владельца", "hint": "Что менялось в таблице и почему.", "blocks": [], "state": "empty"}], "card": {"why": "Решить, что делаем первым: одна строка на фичу, корзины по письменным критериям.", "input": ["Инвентарь, JTBD, бенчмарк, ресёрч с уровнями"], "steps": ["Слить «что есть» и «что нашёл ресёрч» в строки", "Разложить по корзинам с письменным «почему»", "Показать черновик владельцу", "Написать подробности по конкурентам", "Перенести правки владельца и таблицу в атлас"], "rules": ["Корзины по критериям, а не выдуманные баллы", "Статус «сейчас» по коду, а не по спеке", "P0 держим узким", "Что не может решить агент, помечаем решением владельца", "Правки владельца читаем из базы, а не из файла", "Механику только у конкурентов добавляем строкой, если её поддерживает ресёрч"], "tools": ["/feature-priorities", "параллельные агенты для подробностей"], "done": ["Все фичи разложены с причиной", "Критерии записаны", "Подробности с источниками", "Решения владельца внесены", "Владелец подтвердил таблицу"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Таблица приоритетов", "out": "table"}, {"kind": "missing", "t": "Решения владельца", "out": "decisions"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 2}, {"id": "validation", "n": "×", "part": "Сквозной", "title": "Проверка на людях", "skill": "user-validation", "cross": true, "q": "Что из этого подтвердили реальные пользователи?", "needs": [{"id": "frame", "title": "Рамка исследования"}], "outputs": [{"key": "screener", "title": "Отбор участников", "hint": "Кого ищем, анкета отбора, где набираем.", "blocks": [], "state": "empty"}, {"key": "guide", "title": "Гайд", "hint": "Сценарий интервью или теста; какие допущения проверяем.", "blocks": [], "state": "empty"}, {"key": "sessions", "title": "Проведённые сессии", "hint": "Сколько людей, кто они, когда. Только реальные люди, без синтетики.", "blocks": [], "state": "empty"}, {"key": "findings", "title": "Что подтвердилось", "hint": "Вердикты по допущениям из этапа 00, уровень L5.", "blocks": [], "state": "empty"}], "card": {"why": "Проверить на реальных людях то, что иначе останется гипотезой. Единственный путь к уровню L5.", "input": ["Критические допущения из реестра"], "steps": ["Выбрать, что проверяем и каким методом", "Подготовить отбор и гайд", "Заранее записать, что считается подтверждением", "Провести сессии", "Внести вердикты в реестр"], "rules": ["Только реальные люди из целевого сегмента, синтетика не считается", "Спрашиваем о прошлом поведении, а не о будущем", "Решение не называем и к нему не ведём", "Критерии подтверждения пишем до сессий", "Данные участников обезличены", "На малой выборке не считаем проценты", "Опровержение важнее подтверждения: называем, что оно меняет"], "tools": ["/user-validation", "анкета, интервью, пилот"], "done": ["Отбор и гайд готовы", "Сессии проведены", "Вердикты внесены в реестр", "Названо, что изменилось", "Выводы для решения", "Владелец подтвердил этап"]}, "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Отбор участников", "out": "screener"}, {"kind": "missing", "t": "Гайд", "out": "guide"}, {"kind": "missing", "t": "Проведённые сессии", "out": "sessions"}, {"kind": "missing", "t": "Что подтвердилось", "out": "findings"}, {"kind": "missing", "t": "Выводы для решения"}], "filled": 0, "total": 4}, {"id": "reference", "n": "А", "part": "Справочники", "title": "Справочники", "skill": "research-atlas", "cross": true, "reference": true, "q": "На чём всё это стоит и как проверить?", "needs": [], "outputs": [{"key": "product", "title": "Что делает продукт", "hint": "Коротко для стороннего читателя: механизмы и правила.", "blocks": [], "state": "empty"}, {"key": "state", "title": "Состояние ресёрча", "hint": "Где знания много, где мало.", "blocks": [], "state": "empty"}, {"key": "levels", "title": "Уровни доказательности", "hint": "Шкала и как она применена.", "blocks": [], "state": "empty"}, {"key": "library", "title": "Все исследования и замеры", "hint": "Карточка на исследование: метод, результаты, ограничения, выводы.", "blocks": [], "state": "empty"}, {"key": "glossary", "title": "Термины", "hint": "Словарь проекта.", "blocks": [], "state": "empty"}, {"key": "materials", "title": "Для исследователя", "hint": "Данные, методики, персоны-гипотезы.", "blocks": [], "state": "empty"}], "conclusions": [], "confirmed": null, "skip": null, "status": "todo", "skillReady": true, "todo": [{"kind": "missing", "t": "Что делает продукт", "out": "product"}, {"kind": "missing", "t": "Состояние ресёрча", "out": "state"}, {"kind": "missing", "t": "Уровни доказательности", "out": "levels"}, {"kind": "missing", "t": "Все исследования и замеры", "out": "library"}, {"kind": "missing", "t": "Термины", "out": "glossary"}, {"kind": "missing", "t": "Для исследователя", "out": "materials"}], "filled": 0, "total": 6}];
+const NEXT = {"id": "frame", "n": "00", "title": "Рамка исследования", "action": "Запустить /research-frame"};
+const STATUS = {"todo": "Не начат", "work": "В работе", "review": "Ждёт подтверждения", "done": "Готов", "skip": "Пропущен"};
+const LABEL = {fact:"Подтверждено", external:"Внешний контекст", input:"Вводная проекта", inference:"Вывод", limit:"Ограничение", pattern:"Паттерн"};
+const KIND = {missing:"Нет материала", moved:"Не разобрано", review:"Подтвердить", decision:"Решение", question:"Вопрос"};
+const KIND_LONG = {missing:"Нет материала", moved:"Есть в другом месте, не разобрано", review:"Ждёт подтверждения",
+  decision:"Решение за: " + PROJECT.owner, question:"Открытые вопросы"};
+const main = document.getElementById("main"), nav = document.getElementById("nav"), q = document.getElementById("q");
+let kind = "all";
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const inline = s => esc(s)
+  .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+  .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+  .replace(/(^|[\s(«])\*([^*\s][^*]*?)\*(?=$|[\s.,:;)»])/g, "$1<em>$2</em>");
+const safeUrl = u => /^https?:\/\//i.test(u) ? esc(u) : "";
+const level = n => n ? `<span class="lv lv${Number(n)}" title="Уровень доказательности">L${Number(n)}</span>` : "";
+const pill = s => `<span class="pill p-${s.status}">${esc(STATUS[s.status])}</span>`;
+const dot = st => `<span class="dot s-${st}" aria-hidden="true"></span>`;
+
+function cell(c){
+  if (c && typeof c === "object") {
+    if (c.level) return level(c.level);
+    if (c.tip) return `<span title="${esc(c.tip)}">${inline(c.t ?? "")}</span>`;
+    return c.tone ? `<span class="pill t-${c.tone}">${esc(c.t)}</span>` : inline(c.t ?? "");
+  }
+  return inline(c ?? "");
+}
+function table(b){
+  const long = b.rows.map(r => r.map(c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "").length));
+  const wide = b.head.map((_, i) => Math.max(...long.map(r => r[i]), 0) > 40);
+  const plain = c => String(typeof c === "object" && c ? c.t ?? "" : c ?? "");
+  const opts = i => [...new Set(b.rows.map(r => plain(r[i])))].filter(Boolean);
+  const ctl = !b.filter ? "" : `<div class="ctl"><input type="search" data-tq placeholder="Найти в таблице" aria-label="Найти в таблице">${b.filter.map(f => f.kind === "chips"
+    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${opts(f.col).map(o => `<button type="button" class="chip" data-col="${Number(f.col)}" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>`
+    : `<select data-col="${Number(f.col)}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${opts(f.col).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-tc>${b.rows.length} из ${b.rows.length}</span></div>`;
+  const t = `${ctl}<div class="tbl"${b.filter ? " data-ft" : ""}><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
+    b.rows.map(r => `<tr${b.filter ? ` data-row="${esc(JSON.stringify(r.map(plain)))}"` : ""}>${r.map((c, i) => `<td${wide[i] ? ' class="wide"' : ""}>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  return b.fold ? `<details class="fold"><summary>${esc(b.fold)}</summary>${t}</details>` : t;
+}
+function block(b){
+  if (b.type === "text") return `<p>${inline(b.t)}</p>`;
+  if (b.type === "sub") return `<h3>${inline(b.t)}</h3>`;
+  if (b.type === "fold") return `<details class="fold"><summary>${inline(b.t)}</summary><div class="fin">${b.blocks.map(block).join("")}</div></details>`;
+  if (b.type === "shots") return `<div class="shots">${b.items.map((i, n) => `<figure>${i.img
+    ? `<button type="button" class="shot" data-img="${esc(i.img)}" data-cap="${esc(i.cap || "")}" aria-label="Открыть экран крупно"><img src="${esc(i.img)}" alt="" loading="lazy"></button>`
+    : `<div class="noshot"><span>Шаг ${n + 1}</span><span>экрана нет, по документации</span></div>`}<figcaption>${inline(i.cap || "")}</figcaption></figure>`).join("")}</div>`;
+  if (b.type === "prices") return priceChart(b);
+  if (b.type === "stack") return stack(b);
+  if (b.type === "cards") return `<div data-cards></div>`;
+  if (b.type === "prio") return `<div data-prio style="display:grid;gap:14px"></div>`;
+  if (b.type === "list") return `<ul>${b.items.map(i => `<li>${inline(i)}</li>`).join("")}</ul>`;
+  if (b.type === "table") return table(b);
+  if (b.type === "claims") return `<div class="claims">${b.items.map(c => `<div class="claim"><div class="lab">${LABEL[c.label]}${level(c.level)}</div><div>${inline(c.t)}${c.src ? `<div class="src">${esc(c.src)}</div>` : ""}</div></div>`).join("")}</div>`;
+  if (b.type === "link") {
+    const body = `<span>${inline(b.t)}</span>${b.note ? `<small>${esc(b.note)}</small>` : ""}${b.path ? `<small class="code">${esc(b.path)}</small>` : ""}`;
+    return b.url ? `<a class="linkrow" href="${safeUrl(b.url)}" target="_blank" rel="noopener">${body}</a>` : `<div class="linkrow">${body}</div>`;
+  }
+  return "";
+}
+
+function renderNav(current){
+  const parts = [...new Set(STAGES.map(s => s.part))];
+  const open = STAGES.reduce((n, s) => n + s.todo.length, 0);
+  nav.innerHTML = `<div class="ngroup"><a class="nitem nover" href="#overview"${current ? "" : ' aria-current="page"'}><span>Что не сделано</span><span class="cnt">${open}</span></a></div>` +
+    parts.map(p => `<div class="ngroup"><div class="nlabel">${esc(p)}</div>${STAGES.filter(s => s.part === p).map(s =>
+      `<a class="nitem" href="#s-${esc(s.id)}"${current === s.id ? ' aria-current="page"' : ""} title="${esc(STATUS[s.status])}">${dot(s.status)}<span class="num">${esc(s.n)}</span><span>${esc(s.title)}</span><span class="cnt">${s.filled}/${s.total}</span></a>`).join("")}</div>`).join("");
+}
+
+function overview(){
+  const tally = Object.keys(STATUS).map(k => [k, STAGES.filter(s => s.status === k).length]).filter(x => x[1]);
+  const color = {todo:"var(--none)", work:"var(--warn)", review:"var(--accent)", done:"var(--ok)", skip:"var(--muted)"};
+  const all = STAGES.flatMap(s => s.todo);
+  const kinds = Object.keys(KIND_LONG).map(k => [k, all.filter(t => t.kind === k).length]).filter(x => x[1]);
+  const shown = STAGES.map(s => ({s, items: s.todo.filter(t => kind === "all" || t.kind === kind)})).filter(x => x.items.length);
+  main.innerHTML = `<header><div class="eyebrow">${esc(PROJECT.eyebrow)}</div><h1>${esc(PROJECT.heading)}</h1><p class="lede">${inline(PROJECT.lede)}</p></header>
+  <div class="tally">${tally.map(([k, n]) => `<div style="--c:${color[k]}"><b>${n}</b><span>${esc(STATUS[k])}</span></div>`).join("")}</div>
+  ${NEXT ? `<div class="next"><p><strong>Следующий шаг.</strong> ${esc(NEXT.n)} ${esc(NEXT.title)}: ${esc(NEXT.action)}.</p><a href="#s-${esc(NEXT.id)}">Открыть этап</a></div>` : ""}
+  <h2>Что не сделано</h2>
+  <div class="chips" id="kinds"><button class="chip" type="button" data-k="all" aria-pressed="${kind === "all"}">Всё <b>${all.length}</b></button>${
+    kinds.map(([k, n]) => `<button class="chip" type="button" data-k="${k}" aria-pressed="${kind === k}">${esc(KIND_LONG[k])} <b>${n}</b></button>`).join("")}</div>
+  <div class="todo">${shown.length ? shown.map(({s, items}) => `<section class="tstage"><div class="th">${dot(s.status)}<a href="#s-${esc(s.id)}"><span class="code">${esc(s.n)}</span> ${esc(s.title)}</a>${pill(s)}</div>
+    <ul>${items.map(t => `<li><span class="k ${t.kind}">${esc(KIND[t.kind])}</span><span>${inline(t.t)}</span></li>`).join("")}</ul></section>`).join("") : `<p class="empty">Всё закрыто.</p>`}</div>
+  <p class="foot">Этапы с прописанным методом: ${STAGES.filter(s => !s.reference && s.card).length} из ${STAGES.filter(s => !s.reference).length}. Написано скиллов: ${STAGES.filter(s => !s.reference && s.skillReady).length}.</p>`;
+  document.getElementById("kinds").addEventListener("click", e => {
+    const b = e.target.closest("[data-k]");
+    if (b) { kind = b.dataset.k; overview(); }
+  });
+}
+
+function cardHtml(c){
+  const part = (t, a) => a && a.length ? `<h3>${t}</h3><ul>${a.map(x => `<li>${inline(x)}</li>`).join("")}</ul>` : "";
+  return `<details class="fold"><summary>Как проходит этап</summary><div class="fin"><p>${inline(c.why)}</p>${part("Вход", c.input)}${part("Шаги", c.steps)}${part("Правила", c.rules)}${part("Инструменты", c.tools)}${part("Готово, когда", c.done)}</div></details>`;
+}
+function stage(s){ main.innerHTML = stageHtml(s); mount(); }
+function stageHtml(s){
+  const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision" || t.kind === "review");
+  return `<header><div class="eyebrow">${esc(s.part)} · этап ${esc(s.n)}</div><h1>${esc(s.title)}</h1><p class="lede">${esc(s.q)}</p>
+    <div class="sh">${pill(s)}${s.confirmed ? `<span class="code">подтверждён ${esc(s.confirmed)}</span>` : ""}<span class="code">/${esc(s.skill)}${s.skillReady ? "" : " · скилл не написан"}</span>${s.optional ? `<span class="code">${esc(s.optional)}</span>` : ""}</div>
+    ${s.needs.length ? `<p class="muted">Опирается на: ${s.needs.map(n => `<a href="#s-${esc(n.id)}">${esc(n.title)}</a>`).join(", ")}</p>` : ""}</header>
+  ${s.card ? cardHtml(s.card) : ""}
+  ${s.skip ? `<div class="box"><h3>Этап пропущен</h3><p>${inline(s.skip)}</p></div>` : ""}
+  ${s.reference ? "" : `<div class="box"><h3>Выводы для решения</h3>${s.conclusions.length ? `<ul>${s.conclusions.map(c => `<li>${inline(c)}</li>`).join("")}</ul>` : `<p class="muted">Выводов пока нет.</p>`}</div>`}
+  ${s.outputs.map(o => `<section class="sec" id="o-${esc(o.key)}"><div class="sec-h"><h2>${esc(o.title)}</h2>${o.state === "linked" ? '<span class="pill t-warn">Не разобрано</span>' : ""}</div>
+    ${o.blocks.length ? o.blocks.map(block).join("") : `<div class="empty">${o.optional ? "Необязательный раздел." : "Пока пусто."} ${esc(o.hint)}</div>`}</section>`).join("")}
+  ${rest.length ? `<section class="sec"><h2>Открыто на этом этапе</h2><div class="claims">${rest.map(t => `<div class="claim"><div class="lab">${esc(KIND[t.kind])}</div><div>${inline(t.t)}</div></div>`).join("")}</div></section>` : ""}`;
+}
+
+function texts(b){
+  if (b.type === "text" || b.type === "sub") return [b.t];
+  if (b.type === "fold") return [b.t, ...b.blocks.flatMap(texts)];
+  if (b.type === "list") return b.items;
+  if (b.type === "shots") return b.items.map(i => i.cap || "");
+  if (b.type === "prices") return b.rows.map(r => [r[0], r[3]].join(" · "));
+  if (b.type === "stack") return [b.t, ...b.items.map(i => i.t)];
+  if (b.type === "cards") return b.items.flatMap(c => [c.t, c.q || "", ...c.blocks.flatMap(texts)]);
+  if (b.type === "prio") return b.rows.flatMap(r => [r.name, r.research || "", r.nowNote || "", r.why || "", detailText(b, r.id)]);
+  if (b.type === "claims") return b.items.map(c => c.t);
+  if (b.type === "link") return [[b.t, b.note].filter(Boolean).join(" · ")];
+  if (b.type === "table") return b.rows.map(r => r.map(c => typeof c === "object" && c ? c.t ?? "" : c ?? "").join(" · "));
+  return [];
+}
+const INDEX = STAGES.flatMap(s => [
+  ...s.conclusions.map(t => ({s, where:"Выводы для решения", t})),
+  ...s.outputs.flatMap(o => o.blocks.flatMap(b => texts(b).map(t => ({s, where:o.title, t})))),
+  ...s.todo.filter(t => t.kind === "question" || t.kind === "decision").map(t => ({s, where:KIND[t.kind], t:t.t})),
+]);
+function search(term){
+  const low = term.toLowerCase();
+  const hits = INDEX.filter(x => x.t.toLowerCase().includes(low));
+  const snip = t => {
+    const plain = t.replace(/\*\*/g, ""), i = plain.toLowerCase().indexOf(low);
+    const from = Math.max(0, i - 70), to = Math.min(plain.length, i + low.length + 110);
+    return (from ? "…" : "") + esc(plain.slice(from, Math.max(i, from))) + (i < 0 ? esc(plain.slice(0, 180)) : `<mark>${esc(plain.slice(i, i + low.length))}</mark>` + esc(plain.slice(i + low.length, to))) + (to < plain.length ? "…" : "");
+  };
+  main.innerHTML = `<header><div class="eyebrow">Поиск</div><h1>«${esc(term)}»</h1><p class="lede muted">Найдено: ${hits.length}</p></header>
+  <div>${hits.slice(0, 80).map(h => `<a class="hit" href="#s-${esc(h.s.id)}"><small>${esc(h.s.n)} ${esc(h.s.title)} · ${esc(h.where)}</small><span>${snip(h.t)}</span></a>`).join("")}</div>`;
+}
+
+function route(){
+  const card = /^#c-(.+)$/.exec(location.hash);
+  if (location.hash === "#all") return allView();
+  const m = /^#s-(.+)$/.exec(location.hash);
+  const owner = card && STAGES.find(x => x.outputs.some(o => o.blocks.some(b => b.type === "cards" && b.items.some(c => c.id === card[1]))));
+  const s = owner || (m && STAGES.find(x => x.id === m[1]));
+  renderNav(s ? s.id : null);
+  q.value = "";
+  if (card) { cState.q = ""; cState.sel = {}; cState.chips = {}; }
+  s ? stage(s) : overview();
+  if (card) return openCard(card[1]);
+  window.scrollTo(0, 0);
+}
+/* весь документ на одной странице: из него собирается PDF */
+function allView(){
+  printAll = true;
+  renderNav(null);
+  main.innerHTML = STAGES.map(s => `<section class="stage-all" style="display:grid;gap:22px">${stageHtml(s)}</section>`).join("");
+  mount();
+  main.querySelectorAll("details").forEach(d => { d.open = true; });
+}
+
+/* таблица с фильтрами */
+function applyTable(ctl){
+  const ft = ctl.nextElementSibling, cols = {}, term = ctl.querySelector("[data-tq]").value.trim().toLowerCase();
+  ctl.querySelectorAll("select").forEach(x => { if (x.value) cols[x.dataset.col] = new Set([x.value]); });
+  ctl.querySelectorAll('.chip[aria-pressed="true"]').forEach(x => { (cols[x.dataset.col] ||= new Set()).add(x.dataset.v); });
+  let shown = 0;
+  const rows = ft.querySelectorAll("tr[data-row]");
+  rows.forEach(tr => {
+    const v = JSON.parse(tr.dataset.row);
+    const ok = (!term || v.join(" ").toLowerCase().includes(term)) && Object.entries(cols).every(([c, set]) => set.has(v[c]));
+    tr.hidden = !ok; if (ok) shown++;
+  });
+  ctl.querySelector("[data-tc]").textContent = `${shown} из ${rows.length}`;
+}
+main.addEventListener("input", e => { const c = e.target.closest(".ctl"); if (c && e.target.matches("[data-tq]")) applyTable(c); });
+main.addEventListener("change", e => { const c = e.target.closest(".ctl"); if (c && e.target.matches("select[data-col]")) applyTable(c); });
+main.addEventListener("click", e => {
+  const b = e.target.closest(".chip[data-col]");
+  if (b) { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); applyTable(b.closest(".ctl")); }
+});
+
+/* график цен и полосы */
+function stack(b){
+  const sum = b.items.reduce((n, i) => n + i.n, 0) || 1, col = c => ({ok:"var(--ok)", bad:"var(--bad)", warn:"var(--warn)", none:"var(--none)", accent:"var(--accent)", l0:"var(--l0)", l2:"var(--l2)", l4:"var(--l4)", sunk:"var(--sunk)"}[c]);
+  return `<div class="stackbox"><h3>${esc(b.t)}</h3><div class="bar" role="img" aria-label="${esc(b.t)}">${b.items.map(i => `<i style="flex:${i.n} 0 0;background:${col(i.c)}" title="${esc(i.t)}: ${i.n} из ${sum}"></i>`).join("")}</div>
+    <div class="lg">${b.items.map(i => `<span><i style="background:${col(i.c)}"></i>${esc(i.t)} <b>${i.n}</b></span>`).join("")}</div></div>`;
+}
+function priceChart(b){
+  const rows = b.rows.slice().sort((x, y) => ((x[2] ?? x[1]) - (y[2] ?? y[1])));
+  const W = 640, L = 110, R = 96, rowH = 26, top = 26, H = top + rows.length * rowH + 24;
+  const max = Math.max(60, Math.ceil(Math.max(...rows.map(r => r[1] ?? r[2])) / 20) * 20), x = v => L + (W - L - R) * v / max;
+  let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(b.t || "Цены")}" style="font-family:var(--body)">`;
+  if (b.band) g += `<rect x="${x(b.band[0])}" y="${top - 14}" width="${x(b.band[1]) - x(b.band[0])}" height="${rows.length * rowH + 8}" fill="var(--accent-soft)"/><text x="${(x(b.band[0]) + x(b.band[1])) / 2}" y="${top - 17}" text-anchor="middle" font-size="11" fill="var(--accent)">${esc(b.bandLabel || "")}</text>`;
+  for (let t = 0; t <= max; t += max > 60 ? 20 : 10) g += `<line x1="${x(t)}" x2="${x(t)}" y1="${top - 8}" y2="${top + rows.length * rowH}" stroke="var(--line)" stroke-width="1"/><text x="${x(t)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--muted)">$${t}</text>`;
+  rows.forEach((r, i) => {
+    const [n, mon, ann, note] = r, y = top + i * rowH + 8;
+    g += `<g><title>${esc(n)}: ${mon != null ? "$" + mon + " помесячно" : ""}${mon != null && ann != null ? ", " : ""}${ann != null ? "$" + ann + " в месяц при оплате за год" : ""}. ${esc(note)}</title><rect x="0" y="${y - 12}" width="${W}" height="${rowH}" fill="transparent"/>`;
+    g += `<text x="${L - 10}" y="${y + 4}" text-anchor="end" font-size="12.5" fill="var(--fg)">${esc(n)}</text>`;
+    if (mon != null && ann != null) g += `<line x1="${x(ann)}" x2="${x(mon)}" y1="${y}" y2="${y}" stroke="var(--l0)" stroke-width="2"/>`;
+    if (ann != null) g += `<circle cx="${x(ann)}" cy="${y}" r="5" fill="var(--c-ann)" stroke="var(--surface)" stroke-width="2"/>`;
+    if (mon != null) g += `<circle cx="${x(mon)}" cy="${y}" r="5" fill="var(--c-mon)" stroke="var(--surface)" stroke-width="2"/>`;
+    g += `<text x="${W - R + 12}" y="${y + 4}" font-size="11.5" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${mon != null ? "$" + mon : "—"} / ${ann != null ? "$" + ann : "—"}</text></g>`;
+  });
+  return `<div class="lg"><span><i style="background:var(--c-ann)"></i>${esc(b.annLabel || "за год")}</span><span><i style="background:var(--c-mon)"></i>${esc(b.monLabel || "помесячно")}</span></div><div class="tbl pchart">${g}</svg></div>`;
+}
+
+/* карточки с фильтрами */
+const CARDS = STAGES.flatMap(s => s.outputs.flatMap(o => o.blocks)).find(b => b.type === "cards");
+const cState = {q:"", sel:{}, chips:{}};
+function cardsList(){
+  const term = cState.q.trim().toLowerCase();
+  return CARDS.items.filter(c => (!term || (c.t + " " + (c.q || "") + " " + c.blocks.flatMap(texts).join(" ")).toLowerCase().includes(term))
+    && Object.entries(cState.sel).every(([k, v]) => !v || c.tags[k] === v)
+    && Object.entries(cState.chips).every(([k, set]) => !set.size || set.has(c.tags[k])));
+}
+function renderCardList(el){
+  const list = cardsList();
+  el.querySelector("[data-cc]").textContent = `${list.length} из ${CARDS.items.length}`;
+  el.querySelector(".cards").innerHTML = list.map(c => `<details class="card" id="${esc(c.id)}"><summary>${c.level ? level(c.level) : '<span class="lv lvx">—</span>'}<strong>${inline(c.t)}</strong>${c.q ? `<span class="cq">${inline(c.q)}</span>` : ""}<span class="cm2">${(c.meta || []).map(esc).join(" · ")}</span></summary><div class="fin">${c.blocks.map(block).join("")}</div></details>`).join("") || `<p class="empty">Ничего не нашлось. Сбросьте часть фильтров.</p>`;
+}
+function mountCards(el){
+  el.innerHTML = `<div style="display:grid;gap:10px"><div class="ctl"><input type="search" data-cq placeholder="${esc(CARDS.placeholder || "Поиск по карточкам")}" aria-label="Поиск по карточкам" value="${esc(cState.q)}">${CARDS.filters.map(f => f.kind === "chips"
+    ? `<span class="lab">${esc(f.label)}</span><div class="chips">${Object.entries(f.options).map(([k, v]) => `<button type="button" class="chip" data-ck="${esc(f.key)}" data-cv="${esc(k)}" aria-pressed="${!!(cState.chips[f.key] && cState.chips[f.key].has(k))}">${esc(v)}</button>`).join("")}</div>`
+    : `<select data-ck="${esc(f.key)}" aria-label="${esc(f.label)}"><option value="">${esc(f.label)}: все</option>${Object.entries(f.options).map(([k, v]) => `<option value="${esc(k)}"${cState.sel[f.key] === k ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>`).join("")}<span class="cnt" data-cc></span></div><div class="cards"></div></div>`;
+  renderCardList(el);
+  el.addEventListener("input", e => { if (e.target.matches("[data-cq]")) { cState.q = e.target.value; renderCardList(el); } });
+  el.addEventListener("change", e => { if (e.target.matches("select[data-ck]")) { cState.sel[e.target.dataset.ck] = e.target.value; renderCardList(el); } });
+  el.addEventListener("click", e => {
+    const b = e.target.closest(".chip[data-ck]"); if (!b) return;
+    const set = cState.chips[b.dataset.ck] ||= new Set(), k = b.dataset.cv;
+    set.has(k) ? set.delete(k) : set.add(k);
+    b.setAttribute("aria-pressed", set.has(k)); renderCardList(el);
+  });
+}
+function openCard(id){
+  const d = document.getElementById(id);
+  if (d) { d.open = true; d.scrollIntoView({block:"start"}); }
+}
+
+/* таблица приоритетов */
+const PB = STAGES.flatMap(s => s.outputs.flatMap(o => o.blocks)).find(b => b.type === "prio");
+const ST = {have:"Есть", part:"Частично", broken:"Сломано", none:"Нет"};
+const over = Object.create(null), pOpen = new Set();
+const pState = {q:"", area:"", st:new Set(), bucket:"", group:"prio", only:false};
+let db = null, canWrite = false, syncMsg = "Приоритеты из базы загружаются…", printAll = false;
+function detailText(b, id){ const d = b.details[id]; if (!d) return ""; return [d.what, d.now, d.research, d.gap, d.note, d.compNote, ...(d.competitors || []).map(c => [c.name, c.how, c.users, c.take, c.dont].join(" "))].join(" "); }
+const prioKeys = () => PB.buckets.map(b => b.key);
+const okP = p => prioKeys().includes(p) ? p : undefined;
+const prioOf = r => okP(over[r.id] && over[r.id].p) || r.prio;
+const noteOf = r => (over[r.id] && over[r.id].note) || "";
+const isChanged = r => !!(over[r.id] && ((over[r.id].p && over[r.id].p !== r.prio) || over[r.id].note));
+const compOf = r => { const d = PB.details[r.id], n = d && (d.competitors || []).map(c => c.name); return n && n.length ? n.join(", ") : (d && d.compNote ? d.compNote : d && d.gap ? "Никто полностью" : r.comp || "—"); };
+const linkify = t => esc(t).replace(/https?:\/\/[^\s;,)]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//, "").slice(0, 60)}</a>`);
+const para = (l, t) => t ? `<div><div class="dlab">${esc(l)}</div><p>${esc(t)}</p></div>` : "";
+function prioDetail(r){
+  const d = PB.details[r.id]; if (!d) return "";
+  const comps = (d.competitors || []).map(c => `<article class="comp"><h3>${esc(c.name)}${c.checked ? ` <span class="chk ${c.checked === "vendor" ? "ok" : ""}">${c.checked === "vendor" ? "проверено у вендора" : "не проверено"}</span>` : ""}</h3>
+    <div class="dlab">Как работает у них</div><p>${esc(c.how)}</p>
+    ${c.users ? `<div class="dlab">Что говорят пользователи</div><p>${esc(c.users)}</p>` : ""}
+    ${c.take ? `<div class="kv"><span class="kk take">Взять</span><span>${esc(c.take)}</span></div>` : ""}
+    ${c.dont ? `<div class="kv"><span class="kk dont">Не брать</span><span>${esc(c.dont)}</span></div>` : ""}
+    ${c.src ? `<div class="srcs">Источник: ${linkify(c.src)}</div>` : ""}</article>`).join("");
+  return `<tr class="detail"><td colspan="5"><div class="dgrid">${para("Что это", d.what)}${para("Сейчас в " + PB.product, d.now)}${para("Что показал ресёрч", d.research)}</div>
+    <div class="dlab" style="margin-top:14px">Конкуренты · ${(d.competitors || []).length}</div>
+    ${comps ? `<div class="comps">${comps}</div>` : `<p class="note">${esc(d.compNote || "Близких решений у конкурентов нет.")}</p>`}
+    ${r.comp ? `<p class="note">Коротко: ${esc(r.comp)}</p>` : ""}
+    ${d.gap ? `<div class="gapnote"><b>Чего нет ни у кого.</b> ${esc(d.gap)}</div>` : ""}
+    ${d.note ? `<div style="margin-top:12px"><div class="dlab">Оговорка</div><p>${esc(d.note)}</p></div>` : ""}</td></tr>`;
+}
+const jobChips = s => String(s || "").split(/,\s*/).filter(x => x && x !== "—").map(j => { const t = PB.jobs[j]; return `<span class="job" title="${esc(t ? t[0] : "")}">${esc(j)}</span>`; }).join(" ");
+const refChips = ids => (ids || []).map(id => { const c = PB.refs[id]; if (!c) return ""; const lv = c[1]; return `<a class="ref" href="#c-${esc(id)}" title="${esc(c[0])}"><span class="lv ${lv ? "lv" + Number(lv) : "lvx"}">${lv ? "L" + Number(lv) : "—"}</span>${esc(c[0].length > 38 ? c[0].slice(0, 36) + "…" : c[0])}</a>`; }).join("");
+function prioRow(r){
+  const p = prioOf(r), PR = Object.fromEntries(PB.buckets.map(b => [b.key, b.label])), open = pOpen.has(r.id) || printAll;
+  return `<tr>
+    <td class="f" data-l="Фича"><div class="fname">${esc(r.name)}</div>${PB.details[r.id] ? `<button type="button" class="more" data-more="${esc(r.id)}" aria-expanded="${open}">${open ? "Свернуть" : "Подробнее"}</button>` : ""}<div class="meta"><span class="code">${esc(r.id)}</span>${jobChips(r.jobs)}<span>${esc(PB.areas[r.area] || "")}</span></div></td>
+    <td class="nw" data-l="Сейчас"><span class="pill ${{have:"t-ok", part:"t-warn", broken:"t-bad", none:"t-none"}[r.now]}">${esc(ST[r.now])}</span><div class="note">${esc(r.nowNote || "")}</div></td>
+    <td class="rs" data-l="Из ресёрча"><div>${esc(r.research || "")}</div>${(r.refs || []).length ? `<div class="refs">${refChips(r.refs)}</div>` : ""}</td>
+    <td class="cm" data-l="Конкуренты"><span class="note">${esc(compOf(r))}</span></td>
+    <td class="pr c-${esc(p)}" data-l="Приоритет"><select id="p-${esc(r.id)}" aria-label="Приоритет ${esc(r.name)}"${db && canWrite ? "" : " disabled"}>${Object.entries(PR).map(([k, v]) => `<option value="${esc(k)}"${k === p ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+      <div class="why">${esc(r.why || "")}</div>${r.decide ? `<span class="decide">${esc(PB.decideLabel)}</span>` : ""}
+      ${p !== r.prio ? `<div class="changed">Изменено · было ${esc(PR[r.prio])}</div>` : ""}
+      ${db && canWrite ? `<textarea id="n-${esc(r.id)}" rows="1" placeholder="Комментарий" aria-label="Комментарий к ${esc(r.name)}">${esc(noteOf(r))}</textarea>` : (noteOf(r) ? `<div class="note" style="margin-top:6px">${esc(noteOf(r))}</div>` : "")}
+    </td></tr>${open ? prioDetail(r) : ""}`;
+}
+function prioList(){
+  const t = pState.q.trim().toLowerCase();
+  return PB.rows.filter(r => (!t || [r.name, r.research, r.nowNote, r.id, r.comp, detailText(PB, r.id)].join(" ").toLowerCase().includes(t))
+    && (!pState.area || r.area === pState.area) && (!pState.st.size || pState.st.has(r.now))
+    && (!pState.bucket || prioOf(r) === pState.bucket) && (!pState.only || isChanged(r)));
+}
+function renderPrioList(){
+  const el = main.querySelector("[data-prio]"); if (!el) return;
+  const counts = Object.fromEntries(prioKeys().map(k => [k, 0])); for (const r of PB.rows) counts[prioOf(r)]++;
+  el.querySelector("#pbk").innerHTML = PB.buckets.map(b => `<button type="button" class="pb c-${esc(b.key)}" data-b="${esc(b.key)}" aria-pressed="${pState.bucket === b.key}"><b>${counts[b.key]}</b><strong>${esc(b.label)}</strong><span>${esc(b.short)}</span></button>`).join("");
+  const list = prioList();
+  el.querySelector("#pcnt").textContent = `${list.length} из ${PB.rows.length}`;
+  el.querySelector("#psync").textContent = syncMsg;
+  const groups = pState.group === "prio" ? PB.buckets.map(b => [b.label, list.filter(r => prioOf(r) === b.key), `c-${b.key}`]) : Object.keys(PB.areas).map(k => [PB.areas[k], list.filter(r => r.area === k), "c-p2"]);
+  const head = `<thead><tr><th>Фича</th><th>Сейчас</th><th>Из ресёрча</th><th>Конкуренты</th><th>Приоритет</th></tr></thead>`;
+  el.querySelector("#plist").innerHTML = list.length ? groups.filter(g => g[1].length).map(([t, rs, cls]) => `<section class="pgroup ${esc(cls)}"><div class="ph"><h2>${esc(t)}</h2><span class="tag">${rs.length}</span></div><div class="tbl"><table class="ptable">${head}<tbody>${rs.map(prioRow).join("")}</tbody></table></div></section>`).join("") : `<p class="empty">Ничего не найдено. Сбросьте фильтры или поиск.</p>`;
+}
+function mountPrio(el){
+  el.innerHTML = `<div class="pbuckets" id="pbk" role="group" aria-label="Корзины приоритета"></div>
+  <div class="ctl"><input type="search" id="pq" placeholder="Найти фичу" aria-label="Найти фичу" value="${esc(pState.q)}">
+    <select id="parea" aria-label="${esc(PB.areaLabel)}"><option value="">${esc(PB.areaAll)}</option>${Object.entries(PB.areas).map(([k, v]) => `<option value="${esc(k)}"${pState.area === k ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+    <div class="chips" id="pst">${Object.entries(ST).map(([k, v]) => `<button type="button" class="chip" data-st="${k}" aria-pressed="${pState.st.has(k)}">${v}</button>`).join("")}</div>
+    <select id="pgroup" aria-label="Группировать"><option value="prio">По приоритету</option><option value="area"${pState.group === "area" ? " selected" : ""}>По ${esc(PB.areaGroupBy)}</option></select>
+    <button type="button" class="chip" id="ponly" aria-pressed="${pState.only}">Только изменённые</button>
+    <button type="button" class="chip" id="pall">Раскрыть все</button><span class="cnt" id="pcnt"></span></div>
+  <div class="note" id="psync"></div><div id="plist" style="display:grid;gap:22px"></div>`;
+  renderPrioList();
+  el.addEventListener("input", e => { if (e.target.id === "pq") { pState.q = e.target.value; renderPrioList(); } });
+  el.addEventListener("change", e => {
+    if (e.target.id === "parea") { pState.area = e.target.value; renderPrioList(); }
+    else if (e.target.id === "pgroup") { pState.group = e.target.value; renderPrioList(); }
+    else if (e.target.matches("select[id^='p-']")) savePrio(e.target.id.slice(2), {p: e.target.value});
+  });
+  el.addEventListener("focusout", e => {
+    const t = e.target; if (!t.matches("textarea[id^='n-']")) return;
+    const id = t.id.slice(2); if ((t.value || "") !== ((over[id] && over[id].note) || "")) savePrio(id, {note: t.value.trim()});
+  });
+  el.addEventListener("click", e => {
+    const m = e.target.closest("[data-more]"), b = e.target.closest("[data-b]"), st = e.target.closest("[data-st]");
+    if (m) { const id = m.dataset.more; pOpen.has(id) ? pOpen.delete(id) : pOpen.add(id); renderPrioList(); }
+    else if (b) { pState.bucket = pState.bucket === b.dataset.b ? "" : b.dataset.b; renderPrioList(); }
+    else if (st) { const k = st.dataset.st; pState.st.has(k) ? pState.st.delete(k) : pState.st.add(k); st.setAttribute("aria-pressed", pState.st.has(k)); renderPrioList(); }
+    else if (e.target.id === "ponly") { pState.only = !pState.only; e.target.setAttribute("aria-pressed", pState.only); renderPrioList(); }
+    else if (e.target.id === "pall") { const all = prioList().filter(r => PB.details[r.id]), closed = all.some(r => !pOpen.has(r.id)); for (const r of all) closed ? pOpen.add(r.id) : pOpen.delete(r.id); e.target.textContent = closed ? "Свернуть все" : "Раскрыть все"; renderPrioList(); }
+  });
+}
+async function savePrio(id, patch){
+  const r = PB.rows.find(x => x.id === id); if (!r || !db) return;
+  const cur = over[id] || {};
+  const next = {p: okP(patch.p) ?? okP(cur.p) ?? r.prio, note: patch.note ?? cur.note ?? "", at: Date.now()};
+  over[id] = next; renderPrioList();
+  try { await db.collection(PB.collection).doc(id).set(next); syncMsg = "Сохранено."; }
+  catch (err) {
+    if (err && err.code === "invalid_argument") { canWrite = false; syncMsg = "У вас нет права менять приоритеты, таблица только для чтения."; }
+    else syncMsg = "Не удалось сохранить. Проверьте соединение и попробуйте ещё раз.";
+  }
+  renderPrioList();
+}
+async function connectPrio(){
+  if (!PB) return;
+  const cl = window.claude;
+  db = cl && cl.use ? await cl.use("db") : null;
+  if (!db) { syncMsg = "Приоритеты показаны из файла. Менять их можно в опубликованной странице."; renderPrioList(); return; }
+  const user = await cl.use("user");
+  const can = user && user.can ? await user.can("data.write") : null;
+  canWrite = can !== false;
+  let first = true;
+  const timer = setTimeout(() => { if (first) { syncMsg = "База пока не отвечает, показаны приоритеты из файла."; renderPrioList(); } }, 10000);
+  db.collection(PB.collection).onSnapshot(snap => {
+    const ids = new Set(PB.rows.map(r => r.id));
+    for (const k of Object.keys(over)) delete over[k];
+    for (const d of snap.docs) { if (!ids.has(d.id)) continue; const v = d.data() || {}, p = okP(v.p), note = typeof v.note === "string" ? v.note.slice(0, 2000) : ""; if (p || note) over[d.id] = {p, note}; }
+    if (!snap.metadata || !snap.metadata.fromCache) { first = false; clearTimeout(timer); }
+    const n = Object.keys(over).length;
+    syncMsg = canWrite ? (n ? `Изменённых строк: ${n}. Меняйте приоритет в строке, сохраняется сразу.` : "Меняйте приоритет в строке, сохраняется сразу для всех.") : "Таблица только для чтения.";
+    const a = document.activeElement; if (!(a && a.id && a.id.startsWith("n-"))) renderPrioList();
+  }, () => { clearTimeout(timer); syncMsg = "Не удалось загрузить сохранённые приоритеты, показаны приоритеты из файла."; canWrite = false; renderPrioList(); });
+}
+function mount(){
+  const c = main.querySelectorAll("[data-cards]"); c.forEach(mountCards);
+  const p = main.querySelectorAll("[data-prio]"); p.forEach(mountPrio);
+}
+
+/* экран крупно */
+const lb = document.getElementById("lb");
+document.addEventListener("click", e => {
+  const b = e.target.closest(".shot");
+  if (b) { document.getElementById("lbi").src = b.dataset.img; document.getElementById("lbc").textContent = b.dataset.cap.replace(/\*\*/g, ""); lb.hidden = false; return; }
+  if (e.target.id === "lbx" || e.target === lb) lb.hidden = true;
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+
+/* Markdown и PDF */
+function mdCell(c){ return String(typeof c === "object" && c ? (c.level ? "L" + c.level : c.t ?? "") : c ?? "").replace(/\|/g, "\\|").replace(/\n/g, " "); }
+function mdBlock(b, o){
+  if (b.type === "text") o.push(b.t, "");
+  else if (b.type === "sub") o.push("#### " + b.t, "");
+  else if (b.type === "list") o.push(...b.items.map(i => "- " + i), "");
+  else if (b.type === "claims") o.push(...b.items.map(c => `- *${LABEL[c.label]}${c.level ? " · L" + c.level : ""}.* ${c.t}${c.src ? ` (${c.src})` : ""}`), "");
+  else if (b.type === "table") o.push("| " + b.head.join(" | ") + " |", "|" + " --- |".repeat(b.head.length), ...b.rows.map(r => "| " + r.map(mdCell).join(" | ") + " |"), "");
+  else if (b.type === "link") o.push(`- ${b.t}${b.url ? " — " + b.url : ""}${b.path ? " — " + b.path : ""}`, "");
+  else if (b.type === "fold") { o.push("#### " + b.t, ""); b.blocks.forEach(x => mdBlock(x, o)); }
+  else if (b.type === "shots") o.push(...b.items.map((i, n) => `${n + 1}. ${i.cap || ""}`), "");
+  else if (b.type === "stack") o.push(`**${b.t}:** ` + b.items.map(i => `${i.t} ${i.n}`).join(" · "), "");
+  else if (b.type === "prices") o.push("| Продукт | Помесячно | За год, в месяц | Оговорки |", "| --- | --- | --- | --- |", ...b.rows.map(r => `| ${r[0]} | ${r[1] ?? "—"} | ${r[2] ?? "—"} | ${r[3]} |`), "");
+  else if (b.type === "cards") b.items.forEach(c => { o.push(`#### ${c.level ? "[L" + c.level + "] " : ""}${c.t}`, ""); if (c.q) o.push(c.q, ""); c.blocks.forEach(x => mdBlock(x, o)); });
+  else if (b.type === "prio") {
+    for (const k of b.buckets) {
+      const rs = b.rows.filter(r => prioOf(r) === k.key); if (!rs.length) continue;
+      o.push(`#### ${k.label} · ${rs.length}`, "");
+      for (const r of rs) {
+        o.push(`**${r.id} · ${r.name}.** Сейчас: ${ST[r.now]}. ${r.nowNote || ""} Ресёрч: ${r.research || "—"} Почему: ${r.why || "—"}${noteOf(r) ? " Комментарий: " + noteOf(r) : ""}`, "");
+        const d = b.details[r.id]; if (!d) continue;
+        o.push(d.what, "");
+        for (const c of d.competitors || []) o.push(`- **${c.name}.** ${c.how}${c.take ? " Взять: " + c.take : ""}${c.dont ? " Не брать: " + c.dont : ""}${c.src ? " Источник: " + c.src : ""}`);
+        o.push("");
+      }
+    }
+  }
+}
+window.atlasToMarkdown = function(){
+  const o = ["# " + PROJECT.heading, "", PROJECT.lede, ""];
+  for (const s of STAGES) {
+    o.push(`## ${s.n} · ${s.title}`, "", `*${s.q}* Статус: ${STATUS[s.status]}.`, "");
+    if (s.skip) o.push("Пропущен: " + s.skip, "");
+    if (s.conclusions.length) o.push("### Выводы для решения", "", ...s.conclusions.map(c => "- " + c), "");
+    for (const u of s.outputs) { o.push("### " + u.title, ""); u.blocks.length ? u.blocks.forEach(b => mdBlock(b, o)) : o.push("Пока пусто.", ""); }
+    const rest = s.todo.filter(t => t.kind === "question" || t.kind === "decision");
+    if (rest.length) o.push("### Открыто", "", ...rest.map(t => `- ${KIND[t.kind]}: ${t.t}`), "");
+  }
+  return o.join("\n");
+};
+(async () => {
+  const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  const box = document.getElementById("dl"), msg = document.getElementById("dlmsg"), link = document.getElementById("dlpdf");
+  if (!dl) { link.hidden = false; return; }
+  box.hidden = false;
+  const ERR = {declined:"Скачивание отменено.", rate_limited:"Подождите немного и попробуйте снова.", missing:"PDF не найден рядом со страницей."};
+  const stamp = new Date().toISOString().slice(0, 10), base = PROJECT.product.split(" ")[0].toLowerCase();
+  box.addEventListener("click", async e => {
+    const b = e.target.closest("[data-dl]"); if (!b) return;
+    msg.textContent = "Готовлю файл…";
+    try {
+      let data, filename;
+      if (b.dataset.dl === "md") { data = window.atlasToMarkdown(); filename = `${base}-atlas-${stamp}.md`; }
+      else {
+        const r = await fetch(new URL("atlas.pdf", location.href), {cache: "no-store"});
+        const buf = r.ok ? await r.arrayBuffer() : null;
+        if (!buf || buf.byteLength < 1024 || new TextDecoder().decode(new Uint8Array(buf, 0, 4)) !== "%PDF") throw {code:"missing"};
+        data = new Uint8Array(buf); filename = `${base}-atlas.pdf`;
+      }
+      await dl.save({filename, data});
+      msg.textContent = "Готово.";
+    } catch (err) {
+      msg.textContent = ERR[err && err.code] || "Скачивание сейчас недоступно.";
+      if (b.dataset.dl === "pdf" && !(err && err.code === "declined")) link.hidden = false;
+    }
+  });
+})();
+document.getElementById("brand").textContent = PROJECT.product;
+q.addEventListener("input", () => { const t = q.value.trim(); t.length > 1 ? search(t) : route(); });
+window.addEventListener("hashchange", route);
+route();
+connectPrio();
+</script>
