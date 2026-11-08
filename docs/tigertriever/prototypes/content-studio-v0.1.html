@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: a thin editing bar on top; below it the lesson fills the window exactly as the physician will see it;
-   the video panel, comments and publishing appear beside the thing you point at. The chrome is the same cool blue
+   the media panel, comments and publishing appear beside the thing you point at. The chrome is the same cool blue
    as the website editor prototype, so it never reads as training content. System font stack, as on the site. */
 :root{
   --ed:#1D5FE0;--ed-deep:#1646AB;--ed-soft:#E7EEFD;--on-ed:#FFFFFF;
@@ -30,15 +30,16 @@ html{height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--font);min-height:100%}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--paper)}
 *,*::before,*::after{box-sizing:border-box}
-h1,h2,h3,p,ul{margin:0}
+h1,h2,h3,p,ul,dl{margin:0}
 ul{padding:0;list-style:none}
 button{font:inherit;color:inherit}
 a{color:var(--ed)}
+select{font:inherit;color:inherit;background:var(--shade);border:1px solid var(--line);border-radius:7px;height:34px;padding:0 10px}
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .muted{color:var(--ink-2)}
 .hint{font-size:12.5px;color:var(--ink-2);line-height:1.4}
 .grow{flex:1 1 auto;min-width:0}
-button:focus-visible,a:focus-visible,input:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 
 /* bar */
@@ -57,7 +58,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[contenteditable]:focus
 .st.live{background:var(--ok-soft);color:var(--ok)}
 .st.dirty{background:var(--warn-soft);color:var(--warn)}
 .st.none{background:var(--shade-2);color:var(--ink-2)}
-.b{font:inherit;font-weight:500;height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap}
+.b{font:inherit;font-weight:500;height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap;text-decoration:none}
 .b:hover:not(:disabled){background:var(--shade)}
 .b:disabled{color:#A3A9B4;cursor:not-allowed}
 .b.pri{background:var(--ed);border-color:var(--ed);color:var(--on-ed)}
@@ -72,37 +73,40 @@ button:focus-visible,a:focus-visible,input:focus-visible,[contenteditable]:focus
 @media (max-width:760px){#bar .hide-s,#bar .st{display:none}#bar .b.txt-s span{display:none}#bar .b.txt-s{width:36px;padding:0;justify-content:center}.tabs a{padding:7px 8px}}
 
 /* home views */
-.page{max-width:1100px;margin:0 auto;padding-block:28px 72px;display:flex;flex-direction:column;gap:22px}
+.page{max-width:1140px;margin:0 auto;padding-block:28px 72px;display:flex;flex-direction:column;gap:22px}
 .page h1{font-size:24px;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
 .sub{color:var(--ink-2);margin-top:4px}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.pill-sel{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--shade);color:var(--ink-2);font-weight:500}
+.head .act{align-items:center}
 .att{border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .att h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);padding:10px 14px;background:var(--shade);border-bottom:1px solid var(--line)}
 .att li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
 .att li:first-of-type{border-top:0}
 .att li .dot{width:9px;height:9px;border-radius:50%;flex:none}
-.att li.bad .dot{background:var(--bad)}.att li.chg .dot{background:var(--warn)}.att li.ok .dot{background:var(--ok)}
+.att li.bad .dot{background:var(--bad)}.att li.chg .dot{background:var(--warn)}.att li.ok .dot{background:var(--ok)}.att li.rev .dot{background:var(--warn)}
 .att li .grow{min-width:0}
 .att .empty{padding:12px 14px;color:var(--ink-2)}
+.notebox{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--shade);color:var(--ink-2)}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table.mx{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums}
 .mx th,.mx td{text-align:left;padding:0;border-bottom:1px solid var(--line);vertical-align:top}
-.mx thead th{background:var(--shade);padding:12px 14px;font-weight:500;border-bottom:1px solid var(--line)}
+.mx thead th{background:var(--shade);padding:12px 14px;font-weight:500;border-bottom:1px solid var(--line);min-width:150px}
 .mx thead th b{display:block;font-weight:600}
 .mx thead th small{display:block;color:var(--ink-2);font-weight:400;margin-top:1px}
 .mx thead th .st{margin-top:8px}
 .mx tbody th{padding:0 14px;font-weight:500;white-space:nowrap;height:46px;vertical-align:middle;background:var(--paper)}
 .mx tbody th small{color:var(--ink-2);font-weight:400;margin-right:8px;display:inline-block;width:14px}
+.mx tbody th .cond{display:block;font-size:11.5px;color:var(--ink-2);font-weight:400;margin-top:-2px}
 .mx td{height:46px}
 .mx tr:last-child th,.mx tr:last-child td{border-bottom:0}
+.mx tr.sep th,.mx tr.sep td{border-top:2px solid var(--line)}
 .cell{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;height:46px;padding:0 14px;cursor:pointer;font-weight:500;white-space:nowrap}
 .cell:hover{background:var(--shade)}
 .cell:focus-visible{outline:2px solid var(--ed);outline-offset:-2px}
 .cell i{width:16px;height:16px;flex:none;display:inline-flex}
 .cell i svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.cell.ok{color:var(--ok)}.cell.ready{color:var(--ok)}.cell.chg{color:var(--warn)}.cell.bad{color:var(--bad)}.cell.none{color:var(--ink-2);cursor:default}
-.cell.none:hover{background:transparent}
+.cell.ok{color:var(--ok)}.cell.ready{color:var(--ok)}.cell.chg{color:var(--warn)}.cell.bad{color:var(--bad)}.cell.none{color:var(--ink-2)}.cell.na{color:var(--ink-2);cursor:default}
+.cell.na:hover{background:transparent}
 .ghost{color:var(--ink-2);font-weight:400}
 .ghost .lnkb{font-weight:500}
 .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink-2);font-size:12.5px}
@@ -132,27 +136,46 @@ table.mx{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeri
 .rail button[aria-current] .n{color:inherit;opacity:.7}
 .rail .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rail .mk{width:8px;height:8px;border-radius:50%;flex:none}
-.mk.ok{background:var(--ok)}.mk.chg{background:var(--warn)}.mk.bad{background:var(--bad)}.mk.ready{background:var(--ok)}
+.mk.ok{background:var(--ok)}.mk.chg{background:var(--warn)}.mk.bad{background:var(--bad)}.mk.ready{background:var(--ok)}.mk.none{background:transparent;border:1.5px solid var(--l-muted)}
 .rail .sep{height:1px;background:var(--l-line);margin:8px 10px}
 .lesson{max-width:760px;width:100%;margin:0 auto;padding-block:28px 96px;display:flex;flex-direction:column;gap:22px;padding-right:max(16px,env(safe-area-inset-right,0px));padding-left:24px}
 .ctx{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--l-muted)}
 .ctx b{color:var(--l-ink);font-weight:600}
 .ctx .demo{font-size:11px;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--l-line);border-radius:4px;padding:1px 6px}
 .stage-num{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted)}
-.lesson h1{font-size:30px;font-weight:600;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.lesson h1{font-size:30px;font-weight:600;line-height:1.15;letter-spacing:-.01em;text-wrap:balance;margin-top:6px}
+.condchip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--l-muted);border:1px dashed var(--l-muted);border-radius:999px;padding:3px 10px;align-self:flex-start}
 .media{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:6px;background:var(--video);color:var(--on-video);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.media.still{background:var(--l-surface);color:var(--l-muted);border:1px solid var(--l-line)}
+.media.still,.media.graphic{background:var(--l-surface);color:var(--l-muted);border:1px solid var(--l-line)}
+.media.anim{background:linear-gradient(135deg,var(--video),#3A4150)}
 .media.none{background:var(--l-surface);color:var(--l-muted);border:1.5px dashed var(--l-muted)}
+.media.filming{background:repeating-linear-gradient(45deg,var(--l-surface) 0 10px,var(--l-line) 10px 20px);color:var(--l-ink);border:1.5px dashed var(--l-muted)}
 .media .play{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center}
 .media .play::after{content:"";margin-left:5px;border-left:20px solid currentColor;border-top:12px solid transparent;border-bottom:12px solid transparent}
 .media .lab{position:absolute;left:14px;bottom:12px;right:14px;display:flex;justify-content:space-between;gap:12px;font-size:12.5px;opacity:.85;font-family:var(--mono)}
 .media .lab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .media .rep{position:absolute;top:12px;right:12px;background:var(--ed);color:var(--on-ed);font:500 12.5px var(--font);padding:5px 10px;border-radius:999px;opacity:0;transition:opacity .12s}
-.media .ctr{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:16px}
-.block h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted);margin-bottom:8px}
-.block p{font-size:17px;line-height:1.55;max-width:65ch}
+.media .ctr{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px}
+.media .ctr b{font-size:15px}
+.media .ctr span{font-size:13px;opacity:.85}
+.media .tag{position:absolute;top:12px;left:12px;font:500 11px var(--font);letter-spacing:.06em;text-transform:uppercase;background:rgba(0,0,0,.35);color:#fff;padding:3px 8px;border-radius:4px}
+.media.still .tag,.media.graphic .tag,.media.none .tag,.media.filming .tag{background:var(--l-line);color:var(--l-ink)}
+.graphics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.gcard{position:relative;border:1px solid var(--l-line);border-radius:6px;background:var(--l-surface);padding:12px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;color:var(--l-ink)}
+.gcard .kind{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--l-muted)}
+.gcard b{font-size:14px}
+.gcard small{color:var(--l-muted);font-family:var(--mono);font-size:11.5px}
+.gcard.add{border-style:dashed;justify-content:center;align-items:center;color:var(--l-muted);cursor:pointer;background:transparent}
+.gcard .bars{position:absolute;top:12px;right:12px;display:flex;gap:4px;align-items:flex-end;height:34px}
+.gcard .bars i{display:block;width:8px;background:var(--l-muted);opacity:.5;border-radius:2px 2px 0 0}
+.block h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted);margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.block h2 .chip{font-size:11px;letter-spacing:.04em;text-transform:none;border:1px solid var(--l-line);border-radius:999px;padding:1px 8px}
+.pts{padding-left:22px;list-style:disc;display:flex;flex-direction:column;gap:8px}
+.pts li{font-size:17px;line-height:1.5;max-width:65ch;padding-left:4px}
+.pts.notes li{font-size:15.5px}
+.addpt{all:unset;cursor:pointer;color:var(--ed);font:500 13px var(--font);margin-top:10px;display:inline-block}
 .warnb{border-left:3px solid var(--l-ink);padding:14px 18px;background:var(--l-surface);border-radius:0 6px 6px 0}
-.warnb p{font-size:15.5px}
+.warnb p{font-size:15.5px;line-height:1.5;max-width:65ch}
 .lnav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--l-line)}
 .lnav .nb{all:unset;cursor:pointer;font-weight:500;padding:9px 0;color:var(--l-ink)}
 .lnav .nb:hover{text-decoration:underline}
@@ -164,10 +187,11 @@ table.mx{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeri
 body.edit .lesson [data-t]{cursor:text;border-radius:2px}
 body.edit .lesson [data-t]:hover{outline:1.5px solid color-mix(in srgb,var(--ed) 50%,transparent);outline-offset:4px}
 [contenteditable=true]{outline:2px solid var(--ed)!important;outline-offset:4px}
-body.edit .media{cursor:pointer}
-body.edit .media:hover{outline:2px solid var(--ed);outline-offset:3px}
+body.edit .media,body.edit .gcard[data-media]{cursor:pointer}
+body.edit .media:hover,body.edit .gcard[data-media]:hover{outline:2px solid var(--ed);outline-offset:3px}
 body.edit .media:hover .rep{opacity:1}
 body.preview .lesson [data-t]:empty{display:none}
+body.preview .addpt,body.preview .gcard.add{display:none}
 @media (max-width:860px){.lwrap{grid-template-columns:1fr}.rail{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--l-line);display:flex;gap:6px;overflow-x:auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}.rail h2,.rail .sep{display:none}.rail button{width:auto;white-space:nowrap;padding:7px 10px;border:1px solid var(--l-line)}.rail .nm{overflow:visible}.lesson{padding-left:max(16px,env(safe-area-inset-left,0px))}.lesson h1{font-size:24px}}
 
 /* changes */
@@ -178,7 +202,7 @@ body.preview .lesson [data-t]:empty{display:none}
 .col .f{padding:12px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
 .col .f:first-of-type{border-top:0}
 .col .f small{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);display:flex;justify-content:space-between}
-.col .f .v{overflow-wrap:anywhere}
+.col .f .v{overflow-wrap:anywhere;white-space:pre-line}
 .col .f.chg{background:var(--warn-soft);box-shadow:inset 3px 0 0 var(--warn)}
 .col .f.chg small b{color:var(--warn);text-transform:none;letter-spacing:0;font-weight:600}
 .col .f .v.m{font-family:var(--mono);font-size:13px}
@@ -202,7 +226,7 @@ body.preview .lesson [data-t]:empty{display:none}
 .chip{all:unset;cursor:pointer;padding:6px 11px;border:1px solid var(--line);border-radius:999px;font-weight:500;font-size:13px}
 .chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .chip:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
-table.md{border-collapse:collapse;width:100%;min-width:720px}
+table.md{border-collapse:collapse;width:100%;min-width:860px}
 .md th,.md td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
 .md thead th{background:var(--shade);font-weight:500;color:var(--ink-2);font-size:12.5px}
 .md tr:last-child td{border-bottom:0}
@@ -212,7 +236,7 @@ table.md{border-collapse:collapse;width:100%;min-width:720px}
 .md details summary::-webkit-details-marker{display:none}
 .md details ul{margin-top:6px;color:var(--ink-2);font-size:13px}
 .rd{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.rd.ready{background:var(--ok-soft);color:var(--ok)}.rd.uploaded{background:var(--warn-soft);color:var(--warn)}.rd.filming{background:var(--bad-soft);color:var(--bad)}
+.rd.confirmed{background:var(--ok-soft);color:var(--ok)}.rd.review{background:var(--warn-soft);color:var(--warn)}.rd.filming{background:var(--bad-soft);color:var(--bad)}.rd.nofilm{background:var(--shade-2);color:var(--ink-2)}
 
 /* drawer */
 #drawer{position:fixed;z-index:48;top:calc(var(--bar) + env(safe-area-inset-top,0px));right:0;bottom:0;width:360px;max-width:100vw;background:var(--paper);border-left:1px solid var(--line);color:var(--ink);padding:16px max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) 16px;overflow:auto;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
@@ -221,11 +245,15 @@ table.md{border-collapse:collapse;width:100%;min-width:720px}
 #drawer h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin-bottom:8px}
 .file{display:flex;gap:12px;align-items:flex-start}
 .file .th{width:88px;aspect-ratio:16/9;border-radius:4px;background:var(--video);flex:none;position:relative}
-.file .th.still{background:var(--shade-2)}
+.file .th.still,.file .th.graphic{background:var(--shade-2)}
+.file .th.filming{background:repeating-linear-gradient(45deg,var(--shade-2) 0 6px,var(--shade) 6px 12px)}
 .file .th::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-40%,-50%);border-left:12px solid rgba(255,255,255,.8);border-top:7px solid transparent;border-bottom:7px solid transparent}
-.file .th.still::after{display:none}
+.file .th.still::after,.file .th.graphic::after,.file .th.filming::after{display:none}
 .file b{display:block;overflow-wrap:anywhere}
 .file .meta{color:var(--ink-2);font-size:12.5px;margin:2px 0 6px}
+.kvs{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.kvs dt{color:var(--ink-2)}
+.kvs dd{margin:0}
 .used li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
 .used li:first-child{border-top:0}
 .act{display:flex;gap:8px;flex-wrap:wrap}
@@ -253,9 +281,12 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 .opt.dis{opacity:.6;cursor:not-allowed}
 .opt .note{display:block;margin-top:4px;font-size:13px;color:var(--bad)}
 .opt .note.ok{color:var(--ok)}
+.optrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px}
+.optrow .opt+.opt{margin-top:0}
 .ck{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:8px}
 .ck.good{background:var(--ok-soft);color:var(--ok)}
 .ck.bad{background:var(--bad-soft);color:var(--bad)}
+.ck.rev{background:var(--warn-soft);color:var(--warn)}
 .ck .grow{min-width:0}
 .ck .lnkb{color:inherit;text-decoration:underline;margin-right:10px}
 .ck svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
@@ -266,7 +297,8 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 .pick:disabled{opacity:.55;cursor:not-allowed}
 .pick:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
 .pick .th{width:64px;aspect-ratio:16/9;border-radius:3px;background:var(--video);flex:none}
-.pick .th.still{background:var(--shade-2)}
+.pick .th.still,.pick .th.graphic{background:var(--shade-2)}
+.pick .th.anim{background:linear-gradient(135deg,var(--video),#3A4150)}
 .pick .th.filming{background:repeating-linear-gradient(45deg,var(--shade-2) 0 6px,var(--shade) 6px 12px)}
 .pick b{display:block;overflow-wrap:anywhere}
 .pick .m{font-size:12.5px;color:var(--ink-2)}
@@ -276,7 +308,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 .kv dt{color:var(--ink-2)}
 .kv dd{margin:0;font-variant-numeric:tabular-nums}
 .kv code{font-family:var(--mono);font-size:12.5px}
-.modal .act{justify-content:flex-start}
+.modal .act{justify-content:flex-start;align-items:center}
 
 /* toast, tip */
 #toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:9px;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);box-shadow:var(--shadow)}
@@ -325,11 +357,12 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 <div id="tip" hidden>
   <b>Try these</b>
   <ol>
-    <li>Open <em>Positioning</em> for Tiger 13 · Precision knob. Click the video and replace it for this handle only.</li>
+    <li>Open <em>Device preparation</em> for Tiger 13 · Legacy slider. Click the video and replace it for this handle only.</li>
     <li>Press <em>Changes</em> to see your draft next to package v1.2.</li>
-    <li>Press <em>Publish</em>. Try to include Tiger 17.</li>
+    <li>Press <em>Publish</em>. Try to include Tiger 13 · Precision knob.</li>
+    <li>Switch to <em>US</em> and add a configuration.</li>
   </ol>
-  <div class="hint" style="margin-bottom:8px">Nothing leaves your browser. Device names and media are stand-ins, not approved content.</div>
+  <div class="hint" style="margin-bottom:8px">Nothing leaves your browser. Texts, device names and files are stand-ins, not approved content.</div>
   <button type="button" class="lnkb" id="tipOk">Got it</button>
 </div>
 
@@ -338,7 +371,8 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const KEY = 'tt-studio-v01';
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const KEY = 'tt-studio-v02';
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 const today = () => new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 const ICON = {
@@ -347,10 +381,21 @@ const ICON = {
   bad: '<svg viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M15 9V7a1 1 0 0 0-1-1H6"/><path d="M3 9v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1l5 3V8l-4 2.4"/></svg>',
   none: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></svg>',
   ready: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m9 12 2 2 4-4"/></svg>',
+  na: '',
 };
 
-/* ---------- data (illustrative, not approved content) ---------- */
-const STAGES = [
+/* ---------- reference data (stand-ins, not approved content) ---------- */
+const MARKETS = [
+  { id: 'eu', name: 'Europe', knob: true },
+  { id: 'us', name: 'US', knob: true },
+  { id: 'ap', name: 'Asia Pacific', knob: false, note: 'The precision knob is not offered in Asia Pacific, so Tiger 13 has one handle here.' },
+];
+const MK = Object.fromEntries(MARKETS.map((m) => [m.id, m]));
+const MODELS = [{ id: 't13', name: 'Tiger 13', phase: 1 }, { id: 't17', name: 'Tiger 17', phase: 1 }, { id: 't21', name: 'Tiger 21', phase: 2 }, { id: 't25', name: 'Tiger 25', phase: 2 }];
+const MD = Object.fromEntries(MODELS.map((m) => [m.id, m]));
+const HANDLES = { slider: 'Legacy slider', knob: 'Precision knob' };
+const SECTIONS = [
+  { k: 'before', n: 'Before you begin', num: -1 },
   { k: 'opening', n: 'Opening', num: 0 },
   { k: 'prep', n: 'Device preparation', num: 1 },
   { k: 'pos', n: 'Positioning', num: 2 },
@@ -362,129 +407,134 @@ const STAGES = [
   { k: 'between', n: 'Between passes', num: 8 },
   { k: 'closing', n: 'Closing', num: 9 },
 ];
-const ST = Object.fromEntries(STAGES.map((s) => [s.k, s]));
-const isStage = (k) => ST[k].num >= 1 && ST[k].num <= 8;
-const CONFIGS = [
-  { id: 'c1', model: 'Tiger 13', handle: 'Legacy slider', market: 'Europe' },
-  { id: 'c2', model: 'Tiger 13', handle: 'Precision knob', market: 'Europe' },
-  { id: 'c3', model: 'Tiger 17', handle: 'Legacy slider', market: 'Europe' },
-];
-const CF = Object.fromEntries(CONFIGS.map((c) => [c.id, c]));
-const cfgName = (c) => `${c.model} · ${c.handle}`;
+const SC = Object.fromEntries(SECTIONS.map((s) => [s.k, s]));
+const isStage = (k) => SC[k].num >= 1 && SC[k].num <= 8;
+const isFraming = (k) => k === 'opening' || k === 'closing';
+const SHARED_STAGES = ['prep', 'asp', 'between']; // "All handles — same" in the client's draft
+const READY = { confirmed: 'Confirmed', review: 'Review first', filming: 'Filming needed', nofilm: 'No filming' };
+const KIND = { video: 'Video', anim: 'Animation', graphic: 'Graphic', still: 'Still' };
 const MEDIA = {
-  'open-still': { name: 'Opening_Tiger13.jpg', kind: 'still', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'open-still-t17': { name: 'Opening_Tiger17.jpg', kind: 'still', ready: 'ready', ver: 1, up: '28 Oct 2026' },
-  'prep-slider': { name: 'Preparation_slider.mp4', kind: 'video', dur: '1:12', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'prep-knob': { name: 'Preparation_knob.mp4', kind: 'video', dur: '1:20', ready: 'ready', ver: 1, up: '15 Oct 2026' },
-  'pos': { name: 'Positioning_T13-T17.mp4', kind: 'video', dur: '1:48', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'pos-v2': { name: 'Positioning_T13-T17_v2.mp4', kind: 'video', dur: '1:52', ready: 'ready', ver: 2, up: 'Today', note: 'Re-edit with the new angle at 0:40' },
-  'pos-knob-cut': { name: 'Positioning_knob_cut.mov', kind: 'video', dur: '0:58', ready: 'uploaded', ver: 1, up: 'Yesterday', note: 'Uploaded by Dana, not checked yet' },
-  'dep-slider': { name: 'Deployment_slider.mp4', kind: 'video', dur: '2:05', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'dep-knob': { name: 'Deployment_knob.mp4', kind: 'video', dur: '2:10', ready: 'ready', ver: 2, up: '1 Nov 2026' },
-  'clot-slider': { name: 'Clot_interaction_slider.mp4', kind: 'video', dur: '1:35', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'clot-knob': { name: 'Clot_interaction_knob.mp4', kind: 'video', dur: '1:40', ready: 'ready', ver: 1, up: '15 Oct 2026' },
-  'asp': { name: 'Aspiration_combination.mp4', kind: 'video', dur: '1:58', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'pre-slider': { name: 'Prepare_retrieve_slider.mp4', kind: 'video', dur: '1:05', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'pre-knob': { name: 'Prepare_retrieve_knob.mp4', kind: 'video', dur: '1:10', ready: 'ready', ver: 1, up: '15 Oct 2026' },
-  'pre-t17': { name: 'Prepare_retrieve_T17.mp4', kind: 'video', dur: '1:08', ready: 'ready', ver: 1, up: '28 Oct 2026' },
-  'ret-slider': { name: 'Retrieval_T13.mp4', kind: 'video', dur: '1:30', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'ret-knob': { name: 'Retrieval_T13_knob.mp4', kind: 'video', dur: '1:32', ready: 'ready', ver: 1, up: '15 Oct 2026' },
-  'ret-t17': { name: 'Retrieval_T17.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', note: 'Filming planned for November' },
-  'between': { name: 'Between_passes.mp4', kind: 'video', dur: '0:52', ready: 'ready', ver: 1, up: '2 Oct 2026' },
-  'between-t17': { name: 'Between_passes_T17.mp4', kind: 'video', dur: '0:55', ready: 'ready', ver: 1, up: '28 Oct 2026' },
-  'close-still': { name: 'Closing_card.jpg', kind: 'still', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'anim-tiger': { name: 'Tiger_Animation.mp4', kind: 'anim', dur: '0:40', ready: 'nofilm', ver: 1, up: '2 Oct 2026', source: 'Existing Tigertriever animation', need: 'Nothing to film' },
+  'g-tiger-trial': { name: 'Data_TIGER-trial_T17.png', kind: 'graphic', ready: 'review', ver: 1, up: '2 Oct 2026', source: 'TIGER trial (T17 / T17U) data', need: 'Build the graphic from confirmed trial data' },
+  'g-distals': { name: 'Data_DISTALS_T13.png', kind: 'graphic', ready: 'review', ver: 1, up: '2 Oct 2026', source: 'DISTALS trial data', need: 'Build the graphic from confirmed trial data' },
+  'prep-inservice': { name: 'Preparation_inservice.mp4', kind: 'video', dur: '1:12', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'In-service footage, 2021 OUS cut', need: '' },
+  'prep-inservice-v2': { name: 'Preparation_inservice_2026.mp4', kind: 'video', dur: '1:09', ready: 'confirmed', ver: 2, up: 'Today', source: 'In-service footage, Oct 2026 re-cut', need: '', note: 'Tighter cut, same sequence' },
+  'prep-raw': { name: 'Prep_cut_raw.mov', kind: 'video', dur: '2:31', ready: 'review', ver: 1, up: 'Yesterday', source: 'Uploaded by Dana', need: 'Not checked yet' },
+  'pos-abergel': { name: 'Positioning_Abergel.mp4', kind: 'video', dur: '1:48', ready: 'review', ver: 1, up: '2 Oct 2026', source: 'Abergel 4K (LVO case)', need: 'Review for marker placement' },
+  'pos-t13-mevo': { name: 'Positioning_T13_MeVO.mp4', kind: 'video', dur: '1:20', ready: 'review', ver: 1, up: '15 Oct 2026', source: 'T13 case library', need: 'Find distal vessel footage in the T13 case library' },
+  'dep-slider': { name: 'Deployment_slider.mp4', kind: 'video', dur: '2:05', ready: 'review', ver: 1, up: '2 Oct 2026', source: 'GC Retrieval, Olier', need: 'Review existing footage' },
+  'dep-knob': { name: 'Deployment_knob.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', source: 'To be filmed', need: 'Precision knob operation, bench, not under fluoro', who: 'Emily' },
+  'clot-slider': { name: 'Clot_interaction_slider.mp4', kind: 'video', dur: '1:35', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'Olier, GC Retrieval', need: '' },
+  'clot-knob': { name: 'Clot_interaction_knob.mp4', kind: 'video', dur: '1:10', ready: 'review', ver: 1, up: '15 Oct 2026', source: 'T13 cases', need: 'Check available T13 footage; bench demo if needed' },
+  'comb': { name: 'Combination_technique.mp4', kind: 'video', dur: '1:58', ready: 'review', ver: 1, up: '2 Oct 2026', source: 'Olier, GC Retrieval', need: 'Review the aspiration catheter advancement sequence' },
+  'pre-slider': { name: 'Prepare_retrieve_slider.mp4', kind: 'video', dur: '1:05', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'Old handle footage', need: '' },
+  'pre-knob': { name: 'Prepare_retrieve_knob.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', source: 'To be filmed', need: 'Partial relax with the precision knob, indicator window', who: 'Emily' },
+  'ret-slider': { name: 'Retrieval_slider.mp4', kind: 'video', dur: '1:30', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'GC Retrieval, Olier, Abergel', need: '' },
+  'ret-knob': { name: 'Retrieval_knob.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', source: 'To be filmed', need: 'Indicator window close-up during guide catheter entry', who: 'Emily' },
+  'between-inservice': { name: 'Between_passes_inservice.mp4', kind: 'video', dur: '0:52', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'In-service cleaning clip', need: '' },
 };
-const READY = { ready: 'Ready', uploaded: 'Uploaded, not checked', filming: 'Needs filming' };
-const PLAN = {
-  c1: { opening: 'open-still', prep: 'prep-slider', pos: 'pos', dep: 'dep-slider', clot: 'clot-slider', asp: 'asp', pre: 'pre-slider', ret: 'ret-slider', between: 'between', closing: 'close-still' },
-  c2: { opening: 'open-still', prep: 'prep-knob', pos: 'pos', dep: 'dep-knob', clot: 'clot-knob', asp: 'asp', pre: 'pre-knob', ret: 'ret-knob', between: 'between', closing: 'close-still' },
-  c3: { opening: 'open-still-t17', prep: 'prep-slider', pos: 'pos', dep: 'dep-slider', clot: 'clot-slider', asp: 'asp', pre: 'pre-t17', ret: 'ret-t17', between: 'between-t17', closing: 'close-still' },
-};
-const FIELD = { title: 'title', text: 'instruction text', warn: 'warning text', media: 'video' };
-
-function seedLessons() {
-  const out = {};
-  CONFIGS.forEach((c) => {
-    out[c.id] = {};
-    STAGES.forEach((s) => {
-      let text, warn = '';
-      if (s.k === 'opening') text = `What this programme covers for ${c.model} with the ${c.handle.toLowerCase()} handle, and how to use it on your own or with a representative. Stand-in text; Rapid Medical supplies the approved version.`;
-      else if (s.k === 'closing') text = `What to review before your first case and where to find support. Stand-in text; Rapid Medical supplies the approved version.`;
-      else { text = `Stand-in for the approved instruction for ${s.n.toLowerCase()} with ${c.model} and the ${c.handle.toLowerCase()} handle. Rapid Medical supplies and approves the real text.`; warn = 'Stand-in for the required warning for this stage. Rapid Medical supplies the real text.'; }
-      out[c.id][s.k] = { title: s.n, media: PLAN[c.id][s.k], text, warn };
-    });
-  });
-  return out;
+function planFor(c) {
+  const k = c.handle === 'knob';
+  return { opening: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] }, prep: { media: 'prep-inservice' }, pos: { media: k ? 'pos-t13-mevo' : 'pos-abergel' }, dep: { media: k ? 'dep-knob' : 'dep-slider' }, clot: { media: k ? 'clot-knob' : 'clot-slider' }, asp: { media: 'comb' }, pre: { media: k ? 'pre-knob' : 'pre-slider' }, ret: { media: k ? 'ret-knob' : 'ret-slider' }, between: { media: 'between-inservice' }, closing: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] } };
+}
+const emptyLesson = () => ({ head: '', points: [], notes: [], shared: false, media: null, graphics: [], warn: '' });
+function seedLesson(c, s) {
+  const l = emptyLesson(), p = planFor(c)[s.k] || {}, h = HANDLES[c.handle].toLowerCase(), m = MD[c.model].name;
+  l.media = p.media || null; l.graphics = p.graphics || [];
+  if (s.k === 'before') { l.head = 'Before you begin'; l.points = ['Stand-in for the pre-procedure guidance that applies to this configuration and market. Content owner to confirm.']; return l; }
+  if (s.k === 'opening') { l.head = `Stand-in headline for the opening of the ${m} programme`; l.points = ['Stand-in point: what the programme covers and how to use it alone or with a representative.', 'Stand-in point: the idea the whole programme comes back to.']; l.notes = [`Stand-in: the trial data shown for the ${h} group.`]; return l; }
+  if (s.k === 'closing') { l.head = 'Stand-in headline for the closing'; l.points = ['Stand-in point: what to review before the first case.', 'Stand-in point: where to find support.']; l.notes = [`Stand-in: the trial data shown for the ${h} group, mirroring the opening.`]; return l; }
+  l.head = `Stand-in headline for ${s.n.toLowerCase()}`;
+  l.points = [`Stand-in point 1: what the physician sees on screen next to the clip for ${s.n.toLowerCase()}.`, 'Stand-in point 2. Rapid Medical supplies and approves the real text.', 'Stand-in point 3.'];
+  if (SHARED_STAGES.includes(s.k)) l.shared = true; else l.notes = [`Stand-in note for the ${h}: how this step differs with this handle.`];
+  return l;
 }
 function seedState() {
-  const lessons = seedLessons();
+  const configs = [
+    { id: 'c1', model: 't13', handle: 'slider', market: 'eu', before: true },
+    { id: 'c2', model: 't13', handle: 'knob', market: 'eu', before: true },
+    { id: 'c3', model: 't17', handle: 'slider', market: 'eu', before: false },
+    { id: 'c4', model: 't13', handle: 'slider', market: 'us', before: false },
+    { id: 'c5', model: 't13', handle: 'knob', market: 'us', before: false },
+    { id: 'c6', model: 't13', handle: 'slider', market: 'ap', before: false },
+  ];
+  const lessons = {};
+  configs.forEach((c) => { lessons[c.id] = {}; sectionsOf(c).forEach((s) => { lessons[c.id][s.k] = c.market === 'eu' ? seedLesson(c, s) : emptyLesson(); }); });
   return {
-    lessons,
-    released: { c1: clone(lessons.c1), c2: clone(lessons.c2) },
-    scope: { c1: true, c2: true, c3: false, cmp: true },
-    pkgVersion: '1.2',
+    configs, lessons,
+    released: { c1: clone(lessons.c1), c3: clone(lessons.c3) },
+    scope: { eu: { c1: true, c3: true, c2: false, cmp: false }, us: {}, ap: {} },
+    market: 'eu',
     packages: [
-      { v: '1.2', date: '3 Nov 2026', status: 'sent', sentOn: '3 Nov 2026', configs: ['c1', 'c2'], cmp: true, size: '396 MB', sha: 'b81e4c90', changes: ['Deployment · Tiger 13 · Precision knob: video replaced (Deployment_knob.mp4, version 2)', 'Opening: text edited'] },
-      { v: '1.1', date: '20 Oct 2026', status: 'sent', sentOn: '21 Oct 2026', configs: ['c1', 'c2'], cmp: true, size: '391 MB', sha: '4d02a7f1', changes: ['Adds Tiger 13 · Precision knob', 'Adds comparison: Tiger 13 handles'] },
-      { v: '1.0', date: '2 Oct 2026', status: 'sent', sentOn: '2 Oct 2026', configs: ['c1'], cmp: false, size: '212 MB', sha: '9f3c11e8', changes: ['First package: Tiger 13 · Legacy slider'] },
+      { v: '1.2', market: 'eu', date: '3 Nov 2026', status: 'sent', sentOn: '3 Nov 2026', configs: ['c1', 'c3'], cmp: false, size: '318 MB', sha: 'b81e4c90', changes: ['Opening · Tiger 13 · Legacy slider: points edited', 'Retrieval · Tiger 17 · Legacy slider: video replaced (Retrieval_slider.mp4)'] },
+      { v: '1.1', market: 'eu', date: '20 Oct 2026', status: 'sent', sentOn: '21 Oct 2026', configs: ['c1', 'c3'], cmp: false, size: '312 MB', sha: '4d02a7f1', changes: ['Adds Tiger 17 · Legacy slider'] },
+      { v: '1.0', market: 'eu', date: '2 Oct 2026', status: 'sent', sentOn: '2 Oct 2026', configs: ['c1'], cmp: false, size: '198 MB', sha: '9f3c11e8', changes: ['First package: Tiger 13 · Legacy slider'] },
     ],
-    comments: { 'c2/pos': [{ who: 'Dana', when: '2 days ago', text: 'Can we show the knob from the other side here? The current clip is dark at 0:40.' }] },
+    comments: { 'c1/prep': [{ who: 'Dana', when: '2 days ago', text: 'The 2021 cut shows the old tray. Can we use the October re-cut here?' }] },
     past: [], future: [], tipDone: false,
   };
 }
+function sectionsOf(c) { return SECTIONS.filter((s) => s.k !== 'before' || c.before); }
 
 /* ---------- state ---------- */
-let S = seedState(), cur = { c: 'c2', s: 'pos' }, view = 'start', mode = 'edit', editing = null, before = '', mediaFilter = 'all', toastT = null, lastJson = '';
+let S = seedState(), cur = { c: 'c1', s: 'prep' }, view = 'start', mode = 'edit', editing = null, before = '', mediaFilter = 'all', toastT = null, lastJson = '';
 function persist() { try { localStorage.setItem(KEY, JSON.stringify({ S, cur })); $('#saved').textContent = 'Draft saved'; } catch (e) { $('#saved').textContent = ''; } }
-function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.S && s.S.lessons) { S = s.S; cur = s.cur || cur; } } catch (e) {} lastJson = JSON.stringify(S.lessons); }
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.S && s.S.lessons && s.S.configs) { S = s.S; cur = s.cur || cur; } } catch (e) {} lastJson = JSON.stringify(S.lessons); }
 
 /* ---------- derived ---------- */
+const CF = (id) => S.configs.find((c) => c.id === id);
+const cfgName = (c) => `${MD[c.model].name} · ${HANDLES[c.handle]}`;
+const cfgs = (m = S.market) => S.configs.filter((c) => c.market === m);
 const lesson = (c = cur.c, s = cur.s) => S.lessons[c][s];
 const mediaOf = (id) => (id ? MEDIA[id] : null);
-const hasVideo = (l) => { const m = mediaOf(l.media); return !!m && m.ready !== 'filming'; };
-function usedIn(id) { const out = []; if (!id) return out; CONFIGS.forEach((c) => STAGES.forEach((s) => { if (S.lessons[c.id][s.k].media === id) out.push({ c: c.id, s: s.k }); })); return out; }
-function diffs() {
+const hasMedia = (l) => { const m = mediaOf(l.media); return !!m && m.ready !== 'filming'; };
+const notStarted = (l) => !l.head && !l.points.length && !l.media;
+const complete = (c, k, l) => !!l.head && l.points.length > 0 && (!isStage(k) || hasMedia(l));
+function usedIn(id) { const out = []; if (!id) return out; S.configs.forEach((c) => sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; if (!l) return; if (l.media === id) out.push({ c: c.id, s: s.k, f: 'media' }); l.graphics.forEach((g, i) => { if (g === id) out.push({ c: c.id, s: s.k, f: 'graphics', i }); }); })); return out; }
+function pairFor(m = S.market) { const a = cfgs(m).find((c) => c.model === 't13' && c.handle === 'slider'), b = cfgs(m).find((c) => c.model === 't13' && c.handle === 'knob'); return a && b ? { a, b } : null; }
+function latestPkg(m = S.market) { return S.packages.find((p) => p.market === m) || null; }
+function nextVersion(m = S.market) { const p = latestPkg(m); if (!p) return '1.0'; const [a, b] = p.v.split('.').map(Number); return `${a}.${b + 1}`; }
+const FIELD = { head: 'headline', points: 'points', notes: 'handle notes', warn: 'warning', media: 'media', graphics: 'graphics' };
+function diffs(m = S.market) {
   const out = [];
-  CONFIGS.forEach((c) => { const r = S.released[c.id]; if (!r) return;
-    STAGES.forEach((s) => { const a = r[s.k], b = S.lessons[c.id][s.k];
-      ['media', 'title', 'text', 'warn'].forEach((f) => { if (a[f] !== b[f]) out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${f === 'media' ? (b.media ? `video replaced (${MEDIA[b.media].name})` : 'video removed') : FIELD[f] + ' edited'}` }); });
+  cfgs(m).forEach((c) => { const r = S.released[c.id]; if (!r) return;
+    sectionsOf(c).forEach((s) => { const a = r[s.k] || emptyLesson(), b = S.lessons[c.id][s.k];
+      ['media', 'graphics', 'head', 'points', 'notes', 'warn', 'shared'].forEach((f) => { if (!same(a[f], b[f])) { let what = FIELD[f] ? FIELD[f] + ' edited' : 'sharing changed'; if (f === 'media') what = b.media ? `${KIND[MEDIA[b.media].kind].toLowerCase()} replaced (${MEDIA[b.media].name})` : 'media removed'; out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${what}` }); } });
     }); });
   return out;
 }
-function cellState(c, s) {
-  const l = S.lessons[c][s], need = isStage(s), m = mediaOf(l.media), missing = need && !hasVideo(l);
-  const incomplete = missing || !l.title || !l.text || (need && !l.warn);
-  if (missing) return { k: 'bad', t: m && m.ready === 'filming' ? 'Needs filming' : 'No video' };
-  if (S.released[c]) { const same = JSON.stringify(S.released[c][s]) === JSON.stringify(l); if (incomplete) return { k: 'chg', t: 'Empty field' }; return same ? { k: 'ok', t: `In package` } : { k: 'chg', t: 'Changed' }; }
-  return incomplete ? { k: 'chg', t: 'Empty field' } : { k: 'ready', t: 'Ready' };
+function cellState(c, k) {
+  const cfg = CF(c), l = S.lessons[c][k]; if (!l) return { k: 'na', t: '—' };
+  const m = mediaOf(l.media), missing = isStage(k) && !hasMedia(l);
+  if (notStarted(l)) return { k: 'none', t: 'Not started' };
+  if (missing) return { k: 'bad', t: m && m.ready === 'filming' ? 'Filming needed' : 'No video' };
+  const inc = !complete(c, k, l);
+  if (S.released[c]) { if (inc) return { k: 'chg', t: 'Empty field' }; return same(S.released[c][k], l) ? { k: 'ok', t: 'In package' } : { k: 'chg', t: 'Changed' }; }
+  return inc ? { k: 'chg', t: 'Empty field' } : { k: 'ready', t: 'Ready' };
 }
-function cmpState(s) { if (!isStage(s)) return { k: 'none', t: '—' }; const a = hasVideo(lesson('c1', s)), b = hasVideo(lesson('c2', s)); return a && b ? { k: 'ok', t: 'Included' } : { k: 'bad', t: 'No video on one side' }; }
+function cmpState(k, m = S.market) { const p = pairFor(m); if (!p || !isStage(k)) return { k: 'na', t: '—' }; const la = lesson(p.a.id, k), lb = lesson(p.b.id, k); if (notStarted(la) || notStarted(lb)) return { k: 'none', t: 'Not started' }; const ma = hasMedia(la), mb = hasMedia(lb); if (ma && mb) return { k: 'ok', t: 'Both sides ready' }; return { k: 'bad', t: `${HANDLES[!ma ? p.a.handle : p.b.handle]} video needed` }; }
 function lessonStatus(c = cur.c, s = cur.s) {
-  if (!S.released[c]) return { cls: 'none', t: 'Not in any package' };
-  return JSON.stringify(S.released[c][s]) === JSON.stringify(lesson(c, s)) ? { cls: 'live', t: `In package v${S.pkgVersion}` } : { cls: 'dirty', t: 'Unpublished changes' };
+  const l = lesson(c, s); if (!S.released[c]) return { cls: 'none', t: notStarted(l) ? 'Not started' : 'Not in any package' };
+  return same(S.released[c][s], l) ? { cls: 'live', t: `In package v${latestPkg(CF(c).market).v}` } : { cls: 'dirty', t: 'Unpublished changes' };
 }
-function blockers(sel) {
+function blockers(sel, m = S.market) {
   const out = [];
-  CONFIGS.forEach((c) => { if (!sel[c.id]) return;
-    STAGES.forEach((s) => { const l = S.lessons[c.id][s.k], name = `${s.n} · ${cfgName(c)}`;
-      if (isStage(s.k) && !hasVideo(l)) { const m = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: no video yet${m && m.ready === 'filming' ? ` (${m.note[0].toLowerCase() + m.note.slice(1)})` : ''}.`, leave: c.id }); }
-      if (!l.title) out.push({ c: c.id, s: s.k, msg: `${name}: the title is empty.`, leave: c.id });
-      if (!l.text) out.push({ c: c.id, s: s.k, msg: `${name}: the instruction text is empty.`, leave: c.id });
-      if (isStage(s.k) && !l.warn) out.push({ c: c.id, s: s.k, msg: `${name}: the warning text is empty.`, leave: c.id });
+  cfgs(m).forEach((c) => { if (!sel[c.id]) return;
+    sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k], name = `${s.n} · ${cfgName(c)}`; if (s.k === 'before') return;
+      if (isStage(s.k) && !hasMedia(l)) { const md = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: ${md && md.ready === 'filming' ? `video not filmed yet (${md.who || 'owner'}: ${md.need.toLowerCase()})` : 'no video'}.`, leave: c.id }); }
+      if (!l.head) out.push({ c: c.id, s: s.k, msg: `${name}: the headline is empty.`, leave: c.id });
+      if (!l.points.length) out.push({ c: c.id, s: s.k, msg: `${name}: no on-screen points.`, leave: c.id });
     }); });
-  if (sel.cmp) {
-    if (!sel.c1 || !sel.c2) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' });
-    else STAGES.filter((s) => isStage(s.k)).forEach((s) => { ['c1', 'c2'].forEach((c) => { if (!hasVideo(lesson(c, s.k))) out.push({ c, s: s.k, msg: `Comparison, ${s.n}: ${CF[c].handle} has no video.`, leave: 'cmp' }); }); });
-  }
+  if (sel.cmp) { const p = pairFor(m); if (!p || !sel[p.a.id] || !sel[p.b.id]) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' }); else SECTIONS.filter((s) => isStage(s.k)).forEach((s) => { [p.a, p.b].forEach((c) => { if (!hasMedia(lesson(c.id, s.k))) out.push({ c: c.id, s: s.k, msg: `Comparison, ${s.n}: ${HANDLES[c.handle]} has no video.`, leave: 'cmp' }); }); }); }
   return out;
 }
-function scopeChanges(sel) {
-  const last = S.packages[0], out = [];
-  CONFIGS.forEach((c) => { const was = last.configs.includes(c.id); if (sel[c.id] && !was) out.push(`Adds ${cfgName(c)}`); if (!sel[c.id] && was) out.push(`Removes ${cfgName(c)}`); });
-  if (sel.cmp && !last.cmp) out.push('Adds comparison: Tiger 13 handles'); if (!sel.cmp && last.cmp) out.push('Removes comparison: Tiger 13 handles');
+function reviewItems(sel, m = S.market) { const set = new Map(); cfgs(m).forEach((c) => { if (!sel[c.id]) return; sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; [l.media, ...l.graphics].forEach((id) => { const md = mediaOf(id); if (md && md.ready === 'review') set.set(id, md); }); }); }); return [...set.values()]; }
+function scopeChanges(sel, m = S.market) {
+  const last = latestPkg(m), out = [];
+  cfgs(m).forEach((c) => { const was = last ? last.configs.includes(c.id) : false; if (sel[c.id] && !was) out.push(`Adds ${cfgName(c)}`); if (!sel[c.id] && was) out.push(`Removes ${cfgName(c)}`); });
+  const hadCmp = last ? last.cmp : false; if (sel.cmp && !hadCmp) out.push('Adds comparison: Tiger 13 handles'); if (!sel.cmp && hadCmp) out.push('Removes comparison: Tiger 13 handles');
   return out;
 }
-const nextVersion = () => { const [a, b] = S.pkgVersion.split('.').map(Number); return `${a}.${b + 1}`; };
 
 /* ---------- undo ---------- */
 function commit(label) { S.past.push({ label, before: lastJson }); S.future = []; lastJson = JSON.stringify(S.lessons); if (S.past.length > 60) S.past.shift(); persist(); syncBar(); }
@@ -501,75 +551,92 @@ function renderStart() {
         <h2>Website</h2><p>Therapy pages, Evidence, news, team and careers for the three regions.</p><span class="go">Open the website editor prototype ↗</span></a>
       <a class="card" href="#ready">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v10H4z"/><path d="m10 9 4 2-4 2z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg>
-        <h2>Training tool</h2><p>Tigertriever training for physicians: lessons for each device and handle, comparisons, offline packages.</p><span class="go">Open →</span></a>
+        <h2>Training tool</h2><p>Tigertriever training for physicians: lessons for each device, handle and market, comparisons, offline packages.</p><span class="go">Open →</span></a>
     </div>
-    <p class="hint">Prototype v0.1 of the Content Studio. Nothing here is approved training content; device names, markets and files are stand-ins.</p>
+    <p class="hint">Prototype v0.1 of the Content Studio, updated 8 Nov 2026 after the client's July content draft. Nothing here is approved training content; texts, device names, markets and files are stand-ins.</p>
   </div>`;
 }
 function renderReady() {
-  const pend = diffs(), att = [];
+  const m = S.market, mk = MK[m], list = cfgs(m), pair = pairFor(m), pend = diffs(m), att = [], last = latestPkg(m);
   if (pend.length) { const ls = new Set(pend.map((p) => p.c + '/' + p.s)).size; att.push({ cls: 'chg', html: `${plural(pend.length, 'unpublished change')} in ${plural(ls, 'lesson')}.`, act: `<button type="button" class="lnkb" data-publish>Review and publish</button>` }); }
-  const built = S.packages.find((p) => p.status === 'built'); if (built) att.push({ cls: 'ok', html: `Package v${built.v} is built and not sent yet.`, act: `<a href="#packages">Open packages</a>` });
-  CONFIGS.forEach((c) => STAGES.forEach((s) => { const l = S.lessons[c.id][s.k]; if (isStage(s.k) && !hasVideo(l)) { const m = mediaOf(l.media); att.push({ cls: 'bad', html: `${s.n} · ${cfgName(c)}: no video yet${m && m.ready === 'filming' ? '. ' + esc(m.note) : ''}.`, act: `<button type="button" class="lnkb" data-open="${c.id}/${s.k}">Open stage</button>` }); } }));
-  const head = CONFIGS.map((c) => { const st = S.released[c.id] ? (STAGES.every((s) => cellState(c.id, s.k).k === 'ok') ? { cls: 'live', t: `In package v${S.pkgVersion}` } : { cls: 'dirty', t: 'Unpublished changes' }) : { cls: 'none', t: 'Not in any package' }; return `<th><b>${esc(c.model)}</b><small>${esc(c.handle)} · ${esc(c.market)}</small><span class="st ${st.cls}">${st.t}</span></th>`; }).join('');
-  const rows = STAGES.map((s) => `<tr><th><small>${s.num >= 1 && s.num <= 8 ? s.num : ''}</small>${esc(s.n)}</th>${CONFIGS.map((c) => { const st = cellState(c.id, s.k); return `<td><button type="button" class="cell ${st.k}" data-open="${c.id}/${s.k}"><i>${ICON[st.k]}</i>${st.t}</button></td>`; }).join('')}${(() => { const st = cmpState(s.k); return `<td><button type="button" class="cell ${st.k}" data-cmp="${s.k}" ${st.k === 'none' ? 'tabindex="-1"' : ''}><i>${st.k === 'none' ? '' : ICON[st.k]}</i>${st.t}</button></td>`; })()}<td class="ghost"></td></tr>`).join('');
+  const built = S.packages.find((p) => p.status === 'built' && p.market === m); if (built) att.push({ cls: 'ok', html: `Package v${built.v} is built and not sent yet.`, act: `<a href="#packages">Open packages</a>` });
+  list.forEach((c) => sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; if (isStage(s.k) && !notStarted(l) && !hasMedia(l)) { const md = mediaOf(l.media); att.push({ cls: 'bad', html: `${s.n} · ${cfgName(c)}: ${md && md.ready === 'filming' ? `filming needed${md.who ? ', ' + esc(md.who) : ''}. ${esc(md.need)}` : 'no video'}.`, act: `<button type="button" class="lnkb" data-open="${c.id}/${s.k}">Open stage</button>` }); } }));
+  const rev = reviewItems(Object.fromEntries(list.map((c) => [c.id, true])), m); if (rev.length) att.push({ cls: 'rev', html: `${plural(rev.length, 'file')} marked “Review first”: existing footage to check before it ships.`, act: `<a href="#media">Open media</a>` });
+  const head = list.map((c) => { const inPkg = !!S.released[c.id]; const all = sectionsOf(c).map((s) => cellState(c.id, s.k)); const st = inPkg ? (all.every((x) => x.k === 'ok' || x.k === 'na') ? { cls: 'live', t: `In package v${last.v}` } : { cls: 'dirty', t: 'Unpublished changes' }) : (all.every((x) => x.k === 'none' || x.k === 'na') ? { cls: 'none', t: 'Not started' } : { cls: 'none', t: 'Not in any package' }); return `<th><b>${esc(MD[c.model].name)}</b><small>${esc(HANDLES[c.handle])} · ${esc(mk.name)}</small><span class="st ${st.cls}">${st.t}</span></th>`; }).join('');
+  const cmpHead = pair ? `<th><b>Comparison</b><small>Tiger 13: Legacy slider vs Precision knob</small></th>` : (mk.knob ? `<th class="ghost"><b style="font-weight:500">Comparison</b><small>Needs Tiger 13 with both handles</small></th>` : `<th class="ghost"><b style="font-weight:500">Comparison</b><small>Not available: one handle in ${esc(mk.name)}</small></th>`);
+  const anyBefore = list.some((c) => c.before);
+  const rows = SECTIONS.filter((s) => s.k !== 'before' || anyBefore).map((s) => `<tr class="${s.k === 'opening' && anyBefore ? 'sep' : ''}"><th><small>${isStage(s.k) ? s.num : ''}</small>${esc(s.n)}${s.k === 'before' ? '<span class="cond">Only where set up for the configuration</span>' : ''}</th>${list.map((c) => { const st = cellState(c.id, s.k); return st.k === 'na' ? `<td><span class="cell na">—</span></td>` : `<td><button type="button" class="cell ${st.k}" data-open="${c.id}/${s.k}"><i>${ICON[st.k]}</i>${st.t}</button></td>`; }).join('')}${(() => { const st = cmpState(s.k, m); return `<td><button type="button" class="cell ${st.k}" data-cmp="${s.k}" ${st.k === 'na' ? 'tabindex="-1"' : ''}><i>${ICON[st.k]}</i>${st.t}</button></td>`; })()}<td class="ghost"></td></tr>`).join('');
   return `<div class="page wrap">
-    <div class="head"><div><h1>What's ready</h1><p class="sub">Europe package · last published v${esc(S.pkgVersion)} on ${esc(S.packages[0].date)}</p></div><span class="pill-sel" title="Europe is the only market set up in this prototype">Showing: Europe</span></div>
-    <section class="att" aria-label="Needs your attention"><h2>Needs your attention</h2>${att.length ? `<ul>${att.map((a) => `<li class="${a.cls}"><span class="dot"></span><span class="grow">${a.html}</span>${a.act}</li>`).join('')}</ul>` : '<p class="empty">Everything is in the package. Nothing is waiting on you.</p>'}</section>
-    <div class="scroll"><table class="mx"><thead><tr><th>Stage</th>${head}<th><b>Comparison</b><small>Tiger 13: Legacy slider vs Precision knob</small></th><th class="ghost"><button type="button" class="lnkb" data-addcfg>+ Add configuration</button><small>Model, handle and market</small></th></tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="legend"><span><i style="background:var(--ok)"></i>In package / Ready</span><span><i style="background:var(--warn)"></i>Changed or empty field</span><span><i style="background:var(--bad)"></i>No video yet</span><span>Click a cell to open the lesson.</span></div>
+    <div class="head"><div><h1>What's ready</h1><p class="sub">${last ? `${esc(mk.name)} · last package v${esc(last.v)}, ${esc(last.date)}` : `${esc(mk.name)} · no packages yet`}</p></div><div class="act"><label for="mkSel" class="hint">Showing</label><select id="mkSel" aria-label="Market">${MARKETS.map((x) => `<option value="${x.id}" ${x.id === m ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div></div>
+    ${mk.note ? `<p class="notebox">${esc(mk.note)}</p>` : ''}
+    <section class="att" aria-label="Needs your attention"><h2>Needs your attention</h2>${att.length ? `<ul>${att.map((a) => `<li class="${a.cls}"><span class="dot"></span><span class="grow">${a.html}</span>${a.act}</li>`).join('')}</ul>` : `<p class="empty">${list.length ? 'Nothing is waiting on you.' : 'No configurations yet for this market.'}</p>`}</section>
+    <div class="scroll"><table class="mx"><thead><tr><th>Section</th>${head}${cmpHead}<th class="ghost"><button type="button" class="lnkb" data-addcfg>+ Add configuration</button><small>Model and handle for ${esc(mk.name)}</small></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="legend"><span><i style="background:var(--ok)"></i>In package / Ready</span><span><i style="background:var(--warn)"></i>Changed or empty field</span><span><i style="background:var(--bad)"></i>Filming needed</span><span><i style="border:1.5px solid var(--ink-2);background:transparent"></i>Not started</span><span>Click a cell to open the lesson.</span></div>
   </div>`;
 }
-function mediaBox(l, editable) {
-  const m = mediaOf(l.media);
-  if (!m) return `<div class="media none" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>No video in this stage</b><span>${editable ? 'Click to choose one from the media library' : ''}</span></div></div>`;
-  if (m.ready === 'filming') return `<div class="media none" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>${esc(m.name)}</b><span>Not filmed yet · ${esc(m.note)}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
-  if (m.kind === 'still') return `<div class="media still" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>Still image</b></div><div class="lab"><span>${esc(m.name)}</span><span>v${m.ver}</span></div>${editable ? '<span class="rep">Replace image</span>' : ''}</div>`;
-  return `<div class="media" ${editable ? 'data-media role="button" tabindex="0"' : ''}><span class="play" aria-hidden="true"></span><div class="lab"><span>${esc(m.name)}</span><span>${esc(m.dur)} · v${m.ver}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
+function mediaBox(l, k, editable) {
+  const m = mediaOf(l.media), ed = editable ? 'data-media="media" role="button" tabindex="0"' : '';
+  if (!m) return `<div class="media none" ${ed}><span class="tag">${isStage(k) ? 'Video' : 'Media'}</span><div class="ctr"><b>${isStage(k) ? 'No video in this stage' : 'No media'}</b><span>${editable ? 'Click to choose from the media library' : ''}</span></div></div>`;
+  if (m.ready === 'filming') return `<div class="media filming" ${ed}><span class="tag">Filming needed</span><div class="ctr"><b>${esc(m.name)}</b><span>${esc(m.need)}${m.who ? ' · ' + esc(m.who) : ''}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
+  if (m.kind === 'anim') return `<div class="media anim" ${ed}><span class="tag">Animation</span><span class="play" aria-hidden="true"></span><div class="lab"><span>${esc(m.name)}</span><span>${esc(m.dur)} · v${m.ver}</span></div>${editable ? '<span class="rep">Replace animation</span>' : ''}</div>`;
+  if (m.kind === 'still' || m.kind === 'graphic') return `<div class="media ${m.kind}" ${ed}><span class="tag">${KIND[m.kind]}</span><div class="ctr"><b>${esc(m.name)}</b></div>${editable ? '<span class="rep">Replace</span>' : ''}</div>`;
+  return `<div class="media" ${ed}><span class="play" aria-hidden="true"></span><div class="lab"><span>${esc(m.name)}</span><span>${esc(m.dur)} · v${m.ver}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
+}
+function graphicsRow(l, editable) {
+  const cards = l.graphics.map((id, i) => { const m = MEDIA[id]; return `<div class="gcard" ${editable ? `data-media="graphics:${i}" role="button" tabindex="0"` : ''}><span class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i></span><span class="kind">Data graphic</span><b>${esc(m.source)}</b><small>${esc(m.name)}${m.ready === 'review' ? ' · to build' : ''}</small></div>`; }).join('');
+  return `<div class="graphics">${cards}${editable ? `<button type="button" class="gcard add" data-addg>+ Add a graphic</button>` : ''}</div>`;
+}
+function list(l, f, cls, ph, ed) { return `<ul class="pts ${cls}" data-list="${f}">${l[f].map((t, i) => `<li ${ed ? 'data-t' : ''} data-f="${f}" data-i="${i}" data-ph="${ph}">${esc(t)}</li>`).join('')}</ul>${ed ? `<button type="button" class="addpt" data-addpt="${f}">+ Add a point</button>` : ''}`;
 }
 function renderLesson() {
-  const c = CF[cur.c], l = lesson(), s = ST[cur.s], i = STAGES.findIndex((x) => x.k === cur.s), prev = STAGES[i - 1], next = STAGES[i + 1], ed = mode === 'edit';
-  const rail = STAGES.map((x, j) => { const st = cellState(cur.c, x.k); return `${j === 1 || j === 9 ? '<div class="sep"></div>' : ''}<button type="button" data-stage="${x.k}" ${x.k === cur.s ? 'aria-current="page"' : ''}><span class="n">${isStage(x.k) ? x.num : ''}</span><span class="nm">${esc(x.n)}</span><span class="mk ${st.k}" title="${st.t}"></span></button>`; }).join('');
+  const c = CF(cur.c), secs = sectionsOf(c); if (!secs.some((s) => s.k === cur.s)) cur.s = secs[0].k;
+  const l = lesson(), s = SC[cur.s], i = secs.findIndex((x) => x.k === cur.s), prev = secs[i - 1], next = secs[i + 1], ed = mode === 'edit', mk = MK[c.market];
+  const rail = secs.map((x, j) => { const st = cellState(cur.c, x.k); return `${(x.k === 'prep' || x.k === 'closing') ? '<div class="sep"></div>' : ''}<button type="button" data-stage="${x.k}" ${x.k === cur.s ? 'aria-current="page"' : ''}><span class="n">${isStage(x.k) ? x.num : ''}</span><span class="nm">${esc(x.n)}</span><span class="mk ${st.k}" title="${st.t}"></span></button>`; }).join('');
+  const num = isStage(cur.s) ? `Stage ${s.num} of 8 · ${esc(s.n)}` : cur.s === 'before' ? 'Before you begin' : cur.s === 'opening' ? 'Opening' : 'Closing';
+  const pair = pairFor(c.market), inPair = pair && isStage(cur.s) && (cur.c === pair.a.id || cur.c === pair.b.id);
   return `${mode === 'preview' ? `<div class="banner">Preview of your draft. Physicians see this only after you publish a package.</div>` : ''}<div class="lwrap">
     <nav class="rail" aria-label="Programme"><h2>Programme</h2>${rail}</nav>
     <article class="lesson">
-      <div class="ctx">Tigertriever · <b>${esc(c.model)}</b> · ${esc(c.handle)} · ${esc(c.market)} <span class="demo">Demo market</span></div>
-      <div><p class="stage-num">${isStage(cur.s) ? `Stage ${s.num} of 8` : s.n === 'Opening' ? 'Before you start' : 'After the programme'}</p>
-      <h1 data-f="title" ${ed ? 'data-t' : ''} data-ph="Stage title">${esc(l.title)}</h1></div>
-      ${mediaBox(l, ed)}
-      <div class="block"><h2>Instruction</h2><p data-f="text" ${ed ? 'data-t' : ''} data-ph="Add the approved instruction text">${esc(l.text)}</p></div>
-      ${isStage(cur.s) || l.warn ? `<div class="block warnb"><h2>Important</h2><p data-f="warn" ${ed ? 'data-t' : ''} data-ph="Add the required warning text">${esc(l.warn)}</p></div>` : ''}
-      <div class="lnav"><button type="button" class="nb" data-stage="${prev ? prev.k : ''}" ${prev ? '' : 'disabled'}>← ${prev ? esc(prev.n) : ''}</button>${isStage(cur.s) && (cur.c === 'c1' || cur.c === 'c2') ? `<span class="cmp">Compare this stage: ${cmpState(cur.s).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</span>` : ''}<button type="button" class="nb" data-stage="${next ? next.k : ''}" ${next ? '' : 'disabled'}>${next ? esc(next.n) : ''} →</button></div>
+      <div class="ctx">Tigertriever · <b>${esc(MD[c.model].name)}</b> · ${esc(HANDLES[c.handle])} · ${esc(mk.name)} <span class="demo">Stand-in content</span></div>
+      ${cur.s === 'before' ? `<span class="condchip">Shown only for ${esc(mk.name)} · ${esc(MD[c.model].name)}</span>` : ''}
+      <div><p class="stage-num">${num}</p><h1 data-f="head" ${ed ? 'data-t' : ''} data-ph="Headline the physician reads first">${esc(l.head)}</h1></div>
+      ${cur.s === 'before' && !l.media && !ed ? '' : mediaBox(l, cur.s, ed)}
+      ${isFraming(cur.s) ? graphicsRow(l, ed) : ''}
+      <div class="block"><h2>On screen${l.shared ? '<span class="chip">Same for all handles</span>' : ''}</h2>${list(l, 'points', '', 'Add a point the physician reads next to the clip', ed)}</div>
+      ${l.shared ? (ed ? `<p class="hint"><button type="button" class="lnkb" data-unshare>This step differs by handle</button></p>` : '') : `<div class="block"><h2>${esc(HANDLES[c.handle])}${ed && !l.notes.length && isStage(cur.s) ? `<button type="button" class="lnkb" data-share style="font-size:12px;text-transform:none;letter-spacing:0">Same for all handles</button>` : ''}</h2>${list(l, 'notes', 'notes', `How this step differs with the ${HANDLES[c.handle].toLowerCase()}`, ed)}</div>`}
+      ${l.warn || (ed && l.warn === null) ? `<div class="block warnb"><h2>Important</h2><p data-f="warn" ${ed ? 'data-t' : ''} data-ph="Warning text, if marketing wants one here">${esc(l.warn || '')}</p></div>` : (ed && isStage(cur.s) ? `<p class="hint"><button type="button" class="lnkb" data-addwarn>+ Add a warning</button> · optional, not in the client's draft</p>` : '')}
+      <div class="lnav"><button type="button" class="nb" data-stage="${prev ? prev.k : ''}" ${prev ? '' : 'disabled'}>← ${prev ? esc(prev.n) : ''}</button>${inPair ? `<span class="cmp">Compare this stage: ${cmpState(cur.s, c.market).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</span>` : ''}<button type="button" class="nb" data-stage="${next ? next.k : ''}" ${next ? '' : 'disabled'}>${next ? esc(next.n) : ''} →</button></div>
     </article></div>`;
 }
 function renderChanges() {
-  const c = CF[cur.c], s = ST[cur.s], l = lesson(), r = S.released[cur.c] ? S.released[cur.c][cur.s] : null;
-  const fields = [['title', 'Title'], ['media', 'Video'], ['text', 'Instruction'], ['warn', 'Important']];
-  const val = (o, f) => { if (f === 'media') { const m = mediaOf(o.media); return m ? `<div class="v m">${esc(m.name)} · v${m.ver}${m.ready === 'filming' ? ' · not filmed yet' : ''}</div>` : '<div class="v e">No video</div>'; } return o[f] ? `<div class="v">${esc(o[f])}</div>` : '<div class="v e">Empty</div>'; };
-  const col = (o, mine) => fields.map(([f, lab]) => { const ch = r && o && r[f] !== l[f]; return `<div class="f ${ch && mine ? 'chg' : ''}"><small>${lab}${ch && mine ? '<b>Changed</b>' : ''}</small>${val(o, f)}</div>`; }).join('');
-  const changed = r ? fields.filter(([f]) => r[f] !== l[f]) : [];
-  const affects = [`${esc(s.n)} · ${esc(cfgName(c))}`]; if (isStage(cur.s) && (cur.c === 'c1' || cur.c === 'c2')) affects.push(`Comparison, ${esc(s.n)}: ${esc(c.handle)} side`);
+  const c = CF(cur.c), s = SC[cur.s], l = lesson(), r = S.released[cur.c] ? (S.released[cur.c][cur.s] || emptyLesson()) : null, mk = MK[c.market], last = latestPkg(c.market);
+  const fields = [['head', 'Headline'], ['media', isFraming(cur.s) ? 'Animation' : 'Video'], ['graphics', 'Graphics'], ['points', 'On screen'], ['notes', HANDLES[c.handle]], ['warn', 'Important']].filter(([f]) => f !== 'graphics' || isFraming(cur.s));
+  const val = (o, f) => { if (f === 'media') { const m = mediaOf(o.media); return m ? `<div class="v m">${esc(m.name)} · v${m.ver}${m.ready === 'filming' ? ' · not filmed yet' : ''}</div>` : '<div class="v e">No media</div>'; } if (f === 'graphics') return o.graphics.length ? `<div class="v m">${o.graphics.map((id) => esc(MEDIA[id].name)).join('\n')}</div>` : '<div class="v e">None</div>'; if (Array.isArray(o[f])) return o[f].length ? `<div class="v">${o[f].map((t) => '• ' + esc(t)).join('\n')}</div>` : '<div class="v e">Empty</div>'; return o[f] ? `<div class="v">${esc(o[f])}</div>` : '<div class="v e">Empty</div>'; };
+  const col = (o, mine) => fields.map(([f, lab]) => { const ch = r && !same(r[f], l[f]); return `<div class="f ${ch && mine ? 'chg' : ''}"><small>${esc(lab)}${ch && mine ? '<b>Changed</b>' : ''}</small>${val(o, f)}</div>`; }).join('');
+  const changed = r ? fields.filter(([f]) => !same(r[f], l[f])) : [];
+  const pair = pairFor(c.market), affects = [`${esc(s.n)} · ${esc(cfgName(c))} · ${esc(mk.name)}`]; if (pair && isStage(cur.s) && (cur.c === pair.a.id || cur.c === pair.b.id)) affects.push(`Comparison, ${esc(s.n)}: ${esc(HANDLES[c.handle])} side`);
   return `<div class="page wrap">
-    <div class="head"><div><h1>Changes · ${esc(s.n)}</h1><p class="sub">${esc(cfgName(c))} · ${esc(c.market)}</p></div><div class="act"><a class="b" href="#lesson">Back to the lesson</a><button type="button" class="b pri" data-publish>Publish</button></div></div>
-    ${r ? (changed.length ? `<p>${plural(changed.length, 'field')} changed since package v${esc(S.pkgVersion)}. Package v${esc(S.pkgVersion)} stays as it is until you publish.</p>` : `<p>No unpublished changes in this lesson. It is exactly what physicians have in package v${esc(S.pkgVersion)}.</p>`) : `<p>This configuration is not in any package yet, so everything here is new.</p>`}
-    <div class="cols"><div class="col"><h2>In package v${esc(S.pkgVersion)}<span class="st live">What physicians have</span></h2>${r ? col(r, false) : '<p class="nopkg">Not in any package yet.</p>'}</div><div class="col"><h2>Your draft<span class="st ${changed.length || !r ? 'dirty' : 'live'}">${changed.length || !r ? 'Unpublished' : 'Same as package'}</span></h2>${col(l, true)}</div></div>
+    <div class="head"><div><h1>Changes · ${esc(s.n)}</h1><p class="sub">${esc(cfgName(c))} · ${esc(mk.name)}</p></div><div class="act"><a class="b" href="#lesson">Back to the lesson</a><button type="button" class="b pri" data-publish>Publish</button></div></div>
+    ${r ? (changed.length ? `<p>${plural(changed.length, 'field')} changed since package v${esc(last.v)}. Package v${esc(last.v)} stays as it is until you publish.</p>` : `<p>No unpublished changes in this lesson. It is exactly what physicians have in package v${esc(last.v)}.</p>`) : `<p>This configuration is not in any package yet, so everything here is new.</p>`}
+    <div class="cols"><div class="col"><h2>In package ${r ? 'v' + esc(last.v) : ''}<span class="st live">What physicians have</span></h2>${r ? col(r, false) : '<p class="nopkg">Not in any package yet.</p>'}</div><div class="col"><h2>Your draft<span class="st ${changed.length || !r ? 'dirty' : 'live'}">${changed.length || !r ? 'Unpublished' : 'Same as package'}</span></h2>${col(l, true)}</div></div>
     <div class="aff"><h3>Where this lesson appears</h3><ul>${affects.map((a) => `<li>${a}</li>`).join('')}</ul></div>
   </div>`;
 }
 function renderPackages() {
-  return `<div class="page wrap"><div class="head"><div><h1>Packages</h1><p class="sub">Each package is a frozen ZIP. Publishing makes a new one; earlier packages stay available and unchanged.</p></div><button type="button" class="b pri" data-publish>Publish</button></div>
-    ${S.packages.map((p) => `<article class="pk"><div><h2>Package v${esc(p.v)} <span class="st ${p.status === 'sent' ? 'live' : 'dirty'}">${p.status === 'sent' ? 'Sent ' + esc(p.sentOn) : 'Built, not sent'}</span></h2>
-      <p class="meta">Built ${esc(p.date)} · Europe · ${p.configs.map((id) => esc(cfgName(CF[id]))).join(', ')}${p.cmp ? ' · comparison: Tiger 13 handles' : ''} · ${esc(p.size)} · <code>sha256 ${esc(p.sha)}…</code></p>
+  const m = S.market, mk = MK[m], list = S.packages.filter((p) => p.market === m);
+  return `<div class="page wrap"><div class="head"><div><h1>Packages</h1><p class="sub">Each package is a frozen ZIP for one market. Publishing makes a new one; earlier packages stay available and unchanged.</p></div><div class="act"><label for="mkSel" class="hint">Showing</label><select id="mkSel" aria-label="Market">${MARKETS.map((x) => `<option value="${x.id}" ${x.id === m ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select><button type="button" class="b pri" data-publish>Publish</button></div></div>
+    ${list.length ? list.map((p) => `<article class="pk"><div><h2>Package v${esc(p.v)} <span class="st ${p.status === 'sent' ? 'live' : 'dirty'}">${p.status === 'sent' ? 'Sent ' + esc(p.sentOn) : 'Built, not sent'}</span></h2>
+      <p class="meta">Built ${esc(p.date)} · ${esc(mk.name)} · ${p.configs.map((id) => esc(cfgName(CF(id)))).join(', ')}${p.cmp ? ' · comparison: Tiger 13 handles' : ''} · ${esc(p.size)} · <code>sha256 ${esc(p.sha)}…</code></p>
       <ul class="chgs">${p.changes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div class="acts"><button type="button" class="b sm" data-dl="${esc(p.v)}">Download ZIP</button>${p.status === 'built' ? `<button type="button" class="b sm pri" data-sent="${esc(p.v)}">Mark as sent</button>` : ''}</div></article>`).join('')}
+      <div class="acts"><button type="button" class="b sm" data-dl="${esc(p.v)}">Download ZIP</button>${p.status === 'built' ? `<button type="button" class="b sm pri" data-sent="${esc(p.v)}">Mark as sent</button>` : ''}</div></article>`).join('') : `<p class="notebox">No packages for ${esc(mk.name)} yet. Fill the lessons, then publish the first one.</p>`}
     <p class="hint">Before sending a package: unzip it, go offline, open index.html and check one stage and the comparison. The package must not need the internet.</p></div>`;
 }
 function renderMedia() {
   const ids = Object.keys(MEDIA).filter((id) => mediaFilter === 'all' || MEDIA[id].ready === mediaFilter).sort((a, b) => MEDIA[a].name.localeCompare(MEDIA[b].name));
-  const rows = ids.map((id) => { const m = MEDIA[id], u = usedIn(id); return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="hint">${esc(m.note)}</div>` : ''}</td><td>${m.kind === 'still' ? 'Still' : 'Video'}${m.dur ? ` · <span class="n">${esc(m.dur)}</span>` : ''}</td><td><span class="rd ${m.ready}">${READY[m.ready]}</span></td><td class="n">${m.ver ? 'v' + m.ver : '—'}</td><td>${u.length ? `<details><summary>${plural(u.length, 'lesson')}</summary><ul>${u.map((x) => `<li><button type="button" class="lnkb" data-open="${x.c}/${x.s}">${esc(ST[x.s].n)} · ${esc(cfgName(CF[x.c]))}</button></li>`).join('')}</ul></details>` : '<span class="muted">Not used</span>'}</td><td class="muted">${esc(m.up) || '—'}</td></tr>`; }).join('');
-  return `<div class="page wrap"><div class="head"><div><h1>Media</h1><p class="sub">Shared with the website. Videos and stills are filmed and supplied by Rapid Medical.</p></div><button type="button" class="b" data-upload>Upload…</button></div>
-    <div class="chips" role="group" aria-label="Filter">${[['all', 'All'], ['ready', 'Ready'], ['uploaded', 'Uploaded, not checked'], ['filming', 'Needs filming']].map(([k, t]) => `<button type="button" class="chip" data-filter="${k}" aria-pressed="${mediaFilter === k}">${t}</button>`).join('')}</div>
-    <div class="scroll"><table class="md"><thead><tr><th>File</th><th>Type</th><th>Status</th><th>Version</th><th>Used in</th><th>Uploaded</th></tr></thead><tbody>${rows || '<tr><td colspan="6" class="muted">Nothing here.</td></tr>'}</tbody></table></div></div>`;
+  const rows = ids.map((id) => { const m = MEDIA[id], u = usedIn(id); return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="hint">${esc(m.note)}</div>` : ''}</td><td>${KIND[m.kind]}${m.dur ? ` · <span class="n">${esc(m.dur)}</span>` : ''}</td><td>${esc(m.source)}</td><td><span class="rd ${m.ready}">${READY[m.ready]}${m.who ? ' · ' + esc(m.who) : ''}</span>${m.need && m.ready !== 'nofilm' ? `<div class="hint" style="margin-top:4px">${esc(m.need)}</div>` : ''}</td><td class="n">${m.ver ? 'v' + m.ver : '—'}</td><td>${u.length ? `<details><summary>${plural(u.length, 'lesson')}</summary><ul>${u.map((x) => `<li><button type="button" class="lnkb" data-open="${x.c}/${x.s}">${esc(SC[x.s].n)} · ${esc(cfgName(CF(x.c)))} · ${esc(MK[CF(x.c).market].name)}</button></li>`).join('')}</ul></details>` : '<span class="muted">Not used</span>'}</td><td class="muted">${esc(m.up) || '—'}</td></tr>`; }).join('');
+  return `<div class="page wrap"><div class="head"><div><h1>Media</h1><p class="sub">Shared with the website. Clips are cut from a few source recordings; Rapid Medical films and supplies them.</p></div><button type="button" class="b" data-upload>Upload…</button></div>
+    <div class="chips" role="group" aria-label="Filter">${[['all', 'All'], ['confirmed', 'Confirmed'], ['review', 'Review first'], ['filming', 'Filming needed'], ['nofilm', 'No filming']].map(([k, t]) => `<button type="button" class="chip" data-filter="${k}" aria-pressed="${mediaFilter === k}">${t}</button>`).join('')}</div>
+    <div class="scroll"><table class="md"><thead><tr><th>File</th><th>Type</th><th>From</th><th>Status · what's needed</th><th>Version</th><th>Used in</th><th>Uploaded</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="muted">Nothing here.</td></tr>'}</tbody></table></div></div>`;
 }
 
 /* ---------- render / route ---------- */
@@ -584,9 +651,9 @@ function rerender() { const y = window.scrollY; render(); window.scrollTo(0, y);
 function syncBar() {
   $('#barStart').hidden = view !== 'start'; $('#barHome').hidden = !(view === 'ready' || view === 'packages' || view === 'media'); $('#barLesson').hidden = !(view === 'lesson' || view === 'changes');
   $$('.tabs a').forEach((a) => { if (a.dataset.tab === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-  const pend = diffs(), sh = $('#stHome'); sh.className = 'st ' + (pend.length ? 'dirty' : 'live'); sh.textContent = pend.length ? plural(pend.length, 'unpublished change') : `Everything is in package v${S.pkgVersion}`;
-  const c = CF[cur.c], st = lessonStatus(), sl = $('#stLesson'); sl.className = 'st ' + st.cls; sl.textContent = st.t;
-  $('#lsName').textContent = ST[cur.s].n; $('#lsSub').textContent = `${cfgName(c)} · ${c.market}`;
+  const pend = diffs(), sh = $('#stHome'), last = latestPkg(); sh.className = 'st ' + (pend.length ? 'dirty' : last ? 'live' : 'none'); sh.textContent = pend.length ? plural(pend.length, 'unpublished change') : last ? `Everything is in package v${last.v}` : `${MK[S.market].name}: no package yet`;
+  const c = CF(cur.c), st = lessonStatus(), sl = $('#stLesson'); sl.className = 'st ' + st.cls; sl.textContent = st.t;
+  $('#lsName').textContent = SC[cur.s].n; $('#lsSub').textContent = `${cfgName(c)} · ${MK[c.market].name}`;
   $('#bUndo').disabled = !S.past.length; $('#bRedo').disabled = !S.future.length;
   const pv = mode === 'preview'; $('#editCtl').hidden = pv; $('#bBackEdit').hidden = !pv; $('#stLesson').hidden = pv; $('#saved').hidden = pv;
   $('#tip').hidden = view === 'start' || pv || S.tipDone;
@@ -598,28 +665,34 @@ function startEdit(el) { if (mode !== 'edit' || editing === el) return; endEdit(
 function endEdit(save = true) {
   if (!editing) return; const el = editing; editing = null; el.removeAttribute('contenteditable');
   if (!save) { el.textContent = before; return; }
-  const val = el.textContent.replace(/\s+/g, ' ').trim(); el.textContent = val;
-  if (val !== before) { const f = el.dataset.f; lesson()[f] = val; commit(`${ST[cur.s].n} · ${cfgName(CF[cur.c])}: ${FIELD[f]} ${val ? 'edited' : 'cleared'}`); refreshMarks(); if (!val) say(`${FIELD[f][0].toUpperCase() + FIELD[f].slice(1)} is empty now. The stage cannot be published until it has one.`); }
+  const val = el.textContent.replace(/\s+/g, ' ').trim(); el.textContent = val; const f = el.dataset.f, l = lesson(), label = `${SC[cur.s].n} · ${cfgName(CF(cur.c))}`;
+  if (f === 'points' || f === 'notes') { const arr = $$(`[data-list="${f}"] li`).map((li) => li.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean); if (!same(arr, l[f])) { l[f] = arr; commit(`${label}: ${FIELD[f]} edited`); } rerender(); return; }
+  if (val !== before) { l[f] = val; commit(`${label}: ${FIELD[f]} ${val ? 'edited' : 'cleared'}`); refreshMarks(); if (!val && f === 'head') say('The headline is empty now. The stage cannot be published until it has one.'); }
 }
 function refreshMarks() { $$('.rail [data-stage]').forEach((b) => { const st = cellState(cur.c, b.dataset.stage), mk = $('.mk', b); if (mk) { mk.className = 'mk ' + st.k; mk.title = st.t; } }); syncBar(); }
-function openLesson(c, s) { endEdit(); cur = { c, s }; persist(); if (view === 'lesson') { rerender(); } else location.hash = '#lesson'; if (view === 'lesson') window.scrollTo(0, 0); }
+function openLesson(c, s) { endEdit(); cur = { c, s }; const cfg = CF(c); if (cfg && S.market !== cfg.market) S.market = cfg.market; persist(); if (view === 'lesson') { rerender(); window.scrollTo(0, 0); } else location.hash = '#lesson'; }
+function addPoint(f) { endEdit(); lesson()[f].push(''); rerender(); const items = $$(`[data-list="${f}"] li`); const el = items[items.length - 1]; if (el) startEdit(el); }
 
 /* ---------- drawer ---------- */
 function openDrawer(html) { const d = $('#drawer'); d.innerHTML = html; d.hidden = false; }
 function closeDrawer() { $('#drawer').hidden = true; }
-function openMedia() {
-  const l = lesson(), m = mediaOf(l.media), used = usedIn(l.media), c = CF[cur.c];
-  openDrawer(`<div class="hd"><h2>${m && m.kind === 'still' ? 'Still image' : 'Video'}</h2><button type="button" class="b" data-done>Done</button></div>
-    ${m ? `<div class="file"><div class="th ${m.kind === 'still' ? 'still' : ''}"></div><div><b>${esc(m.name)}</b><div class="meta">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'version ' + m.ver + ' · ' : ''}${esc(m.up) || 'no file yet'}</div><span class="rd ${m.ready}">${READY[m.ready]}</span>${m.note ? `<div class="hint" style="margin-top:6px">${esc(m.note)}</div>` : ''}</div></div>` : `<p>No video in this stage yet.</p>`}
-    ${m ? `<div><h3>Used in ${plural(used.length, 'lesson')}</h3><ul class="used">${used.map((u) => `<li><span><b>${esc(ST[u.s].n)}</b> · ${esc(cfgName(CF[u.c]))}</span>${u.c === cur.c && u.s === cur.s ? '<span class="muted">this lesson</span>' : ''}</li>`).join('')}</ul>${used.length > 1 ? '<p class="hint" style="margin-top:8px">If you replace it, you choose whether the other lessons change too. Nothing changes on its own.</p>' : ''}</div>` : ''}
-    <div class="act"><button type="button" class="b pri" data-replace>${m ? (m.kind === 'still' ? 'Replace image…' : 'Replace video…') : 'Choose a video…'}</button>${m && isStage(cur.s) ? '<button type="button" class="b" data-remove>Remove</button>' : ''}</div>
-    <p class="hint">Rapid Medical films and supplies the videos. Uploading here only stores the file; it does not approve it.</p>`);
-  $('#drawer').onclick = (e) => { if (e.target.closest('[data-done]')) closeDrawer(); else if (e.target.closest('[data-replace]')) openPicker(); else if (e.target.closest('[data-remove]')) { const name = m.name; l.media = null; commit(`${ST[cur.s].n} · ${cfgName(c)}: video removed`); rerender(); closeDrawer(); say(`Removed ${name}. The stage needs a video before it can be published.`, 'Undo', undo); } };
+function slotOf(spec) { const [f, i] = spec.split(':'); return { f, i: i === undefined ? null : +i }; }
+function slotId(l, slot) { return slot.f === 'media' ? l.media : l.graphics[slot.i]; }
+function openMedia(spec = 'media') {
+  const slot = slotOf(spec), l = lesson(), id = slotId(l, slot), m = mediaOf(id), used = usedIn(id), c = CF(cur.c);
+  const what = slot.f === 'graphics' ? 'Graphic' : m ? KIND[m.kind] : (isStage(cur.s) ? 'Video' : 'Media');
+  openDrawer(`<div class="hd"><h2>${what}</h2><button type="button" class="b" data-done>Done</button></div>
+    ${m ? `<div class="file"><div class="th ${m.kind !== 'video' && m.kind !== 'anim' ? m.kind : ''} ${m.ready === 'filming' ? 'filming' : ''}"></div><div><b>${esc(m.name)}</b><div class="meta">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'version ' + m.ver + ' · ' : ''}${esc(m.up) || 'no file yet'}</div><span class="rd ${m.ready}">${READY[m.ready]}${m.who ? ' · ' + esc(m.who) : ''}</span></div></div>
+    <dl class="kvs"><dt>From</dt><dd>${esc(m.source)}</dd>${m.need && m.ready !== 'nofilm' ? `<dt>Needed</dt><dd>${esc(m.need)}</dd>` : ''}${m.note ? `<dt>Note</dt><dd>${esc(m.note)}</dd>` : ''}</dl>` : `<p>Nothing here yet.</p>`}
+    ${m ? `<div><h3>Used in ${plural(used.length, 'lesson')}</h3><ul class="used">${used.map((u) => `<li><span><b>${esc(SC[u.s].n)}</b> · ${esc(cfgName(CF(u.c)))} · ${esc(MK[CF(u.c).market].name)}</span>${u.c === cur.c && u.s === cur.s ? '<span class="muted">this lesson</span>' : ''}</li>`).join('')}</ul>${used.length > 1 ? '<p class="hint" style="margin-top:8px">If you replace it, you choose whether the other lessons change too. Nothing changes on its own.</p>' : ''}</div>` : ''}
+    <div class="act"><button type="button" class="b pri" data-replace>${m ? 'Replace…' : 'Choose…'}</button>${m && (slot.f === 'graphics' || isStage(cur.s)) ? '<button type="button" class="b" data-remove>Remove</button>' : ''}</div>
+    <p class="hint">Rapid Medical films and supplies the material. Uploading here only stores the file; it does not approve it.</p>`);
+  $('#drawer').onclick = (e) => { if (e.target.closest('[data-done]')) closeDrawer(); else if (e.target.closest('[data-replace]')) openPicker(slot); else if (e.target.closest('[data-remove]')) { const name = m.name; if (slot.f === 'media') l.media = null; else l.graphics.splice(slot.i, 1); commit(`${SC[cur.s].n} · ${cfgName(c)}: ${slot.f === 'media' ? 'media' : 'graphic'} removed`); rerender(); closeDrawer(); say(`Removed ${name}.${slot.f === 'media' && isStage(cur.s) ? ' The stage needs a video before it can be published.' : ''}`, 'Undo', undo); } };
 }
 function openComments() {
   const key = cur.c + '/' + cur.s, list = S.comments[key] || [];
   openDrawer(`<div class="hd"><h2>Comments</h2><button type="button" class="b" data-done>Done</button></div>
-    <p class="hint">${esc(ST[cur.s].n)} · ${esc(cfgName(CF[cur.c]))}. Comments stay with this lesson and never go into the package.</p>
+    <p class="hint">${esc(SC[cur.s].n)} · ${esc(cfgName(CF(cur.c)))}. Comments stay with this lesson and never go into the package.</p>
     <div class="cmt">${list.length ? list.map((x) => `<div class="c ${x.who === 'You' ? 'me' : ''}"><b>${esc(x.who)}</b><small>${esc(x.when)}</small><p>${esc(x.text)}</p></div>`).join('') : '<p class="muted">No comments yet.</p>'}</div>
     <div><label for="cmtIn" class="hint" style="display:block;margin-bottom:6px">Write a comment</label><textarea id="cmtIn" rows="3" placeholder="What should change here?"></textarea><div class="act" style="margin-top:8px"><button type="button" class="b pri" data-send>Send</button><button type="button" class="b" data-share>Ask a colleague</button></div></div>
     <p class="hint">“Ask a colleague” copies a link. They see this lesson with your draft and can comment. Publishing stays with you.</p>`);
@@ -631,62 +704,83 @@ function openComments() {
 }
 
 /* ---------- modal ---------- */
-function openModal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`; m.querySelector('.scrim').addEventListener('click', (e) => { if (e.target.classList.contains('scrim')) closeModal(); }); const f = m.querySelector('button:not(:disabled),input,[tabindex]'); if (f) f.focus(); }
+function openModal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`; m.querySelector('.scrim').addEventListener('click', (e) => { if (e.target.classList.contains('scrim')) closeModal(); }); const f = m.querySelector('button:not(:disabled),input,select,[tabindex]'); if (f) f.focus(); }
 function closeModal() { $('#modal').innerHTML = ''; }
-function openPicker() {
-  const l = lesson(), curId = l.media, old = mediaOf(curId), used = usedIn(curId), c = CF[cur.c];
-  const ids = Object.keys(MEDIA).filter((id) => id !== curId && (isStage(cur.s) ? MEDIA[id].kind === 'video' : true)).sort((a, b) => (MEDIA[a].ready === 'filming') - (MEDIA[b].ready === 'filming') || MEDIA[a].name.localeCompare(MEDIA[b].name));
-  const step1 = () => openModal(`<h2>Choose a ${isStage(cur.s) ? 'video' : 'file'} for ${esc(ST[cur.s].n)}</h2><p class="sub hint">${esc(cfgName(c))} · ${esc(c.market)}. Only files already in the media library. <button type="button" class="lnkb" data-upload>Upload a new one…</button></p>
-    <div>${ids.map((id) => { const m = MEDIA[id], u = usedIn(id).length; return `<button type="button" class="pick" data-pick="${id}" ${m.ready === 'filming' ? 'disabled' : ''}><span class="th ${m.kind === 'still' ? 'still' : ''} ${m.ready}"></span><span class="grow"><b>${esc(m.name)}</b><span class="m">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'v' + m.ver + ' · ' : ''}${u ? plural(u, 'lesson') : 'not used yet'}${m.note ? ' · ' + esc(m.note) : ''}</span></span><span class="rd ${m.ready}">${READY[m.ready]}</span></button>`; }).join('')}</div>
+function openPicker(slot) {
+  const l = lesson(), curId = slotId(l, slot), old = mediaOf(curId), used = usedIn(curId), c = CF(cur.c);
+  const kinds = slot.f === 'graphics' ? ['graphic', 'still'] : isStage(cur.s) ? ['video'] : ['anim', 'video', 'still'];
+  const ids = Object.keys(MEDIA).filter((id) => id !== curId && kinds.includes(MEDIA[id].kind)).sort((a, b) => (MEDIA[a].ready === 'filming') - (MEDIA[b].ready === 'filming') || MEDIA[a].name.localeCompare(MEDIA[b].name));
+  const label = slot.f === 'graphics' ? 'graphic' : isStage(cur.s) ? 'video' : 'file';
+  const step1 = () => openModal(`<h2>Choose a ${label} for ${esc(SC[cur.s].n)}</h2><p class="sub hint">${esc(cfgName(c))} · ${esc(MK[c.market].name)}. Only files already in the media library. <button type="button" class="lnkb" data-upload>Upload a new one…</button></p>
+    <div>${ids.map((id) => { const m = MEDIA[id], u = usedIn(id).length; return `<button type="button" class="pick" data-pick="${id}" ${m.ready === 'filming' ? 'disabled' : ''}><span class="th ${m.kind !== 'video' ? m.kind : ''} ${m.ready === 'filming' ? 'filming' : ''}"></span><span class="grow"><b>${esc(m.name)}</b><span class="m">${esc(m.source)}${m.dur ? ' · ' + esc(m.dur) : ''} · ${u ? plural(u, 'lesson') : 'not used yet'}${m.note ? ' · ' + esc(m.note) : ''}</span></span><span class="rd ${m.ready}">${READY[m.ready]}</span></button>`; }).join('') || '<p class="muted">Nothing suitable in the library yet.</p>'}</div>
     <div class="act"><button type="button" class="b" data-x>Cancel</button></div>`, 'wide');
   const step2 = (newId) => { const n = MEDIA[newId]; if (used.length <= 1) return apply(newId, false);
     openModal(`<h2>Where should ${esc(n.name)} go?</h2><p class="sub hint">${esc(old.name)} is used in ${plural(used.length, 'lesson')}. Nothing changes unless you say so.</p>
-      <div><label class="opt"><input type="radio" name="where" value="one" checked><span><b>Only this lesson</b><span class="d">${esc(ST[cur.s].n)} · ${esc(cfgName(c))}. The other lessons keep ${esc(old.name)}.</span></span></label>
-      <label class="opt"><input type="radio" name="where" value="all"><span><b>All ${used.length} lessons that use ${esc(old.name)}</b><span class="d">${used.map((u) => `${esc(ST[u.s].n)} · ${esc(cfgName(CF[u.c]))}`).join('<br>')}</span></span></label></div>
+      <div><label class="opt"><input type="radio" name="where" value="one" checked><span><b>Only this lesson</b><span class="d">${esc(SC[cur.s].n)} · ${esc(cfgName(c))} · ${esc(MK[c.market].name)}. The other lessons keep ${esc(old.name)}.</span></span></label>
+      <label class="opt"><input type="radio" name="where" value="all"><span><b>All ${used.length} lessons that use ${esc(old.name)}</b><span class="d">${used.map((u) => `${esc(SC[u.s].n)} · ${esc(cfgName(CF(u.c)))} · ${esc(MK[CF(u.c).market].name)}`).join('<br>')}</span></span></label></div>
       <div class="act"><button type="button" class="b pri" data-apply>Replace</button><button type="button" class="b" data-back>Back</button></div>`);
     $('#modal').onclick = (e) => { if (e.target.closest('[data-apply]')) apply(newId, $('input[name=where]:checked').value === 'all'); else if (e.target.closest('[data-back]')) { step1(); bind(); } }; };
-  const apply = (newId, all) => { const targets = all ? used : [cur]; targets.forEach((t) => { S.lessons[t.c][t.s].media = newId; }); commit(`${ST[cur.s].n} · ${all ? plural(targets.length, 'lesson') : cfgName(c)}: video replaced (${MEDIA[newId].name})`); closeModal(); closeDrawer(); rerender(); say(`Video replaced in ${plural(targets.length, 'lesson')}. ${all ? '' : 'The other lessons are unchanged. '}Publish when you are ready.`, 'Undo', undo); };
+  const apply = (newId, all) => { const targets = all ? used : [{ c: cur.c, s: cur.s, f: slot.f, i: slot.i }]; targets.forEach((t) => { const tl = S.lessons[t.c][t.s]; if (t.f === 'media') tl.media = newId; else if (t.i === null || t.i === undefined) tl.graphics.push(newId); else tl.graphics[t.i] = newId; }); commit(`${SC[cur.s].n} · ${all ? plural(targets.length, 'lesson') : cfgName(c)}: ${KIND[MEDIA[newId].kind].toLowerCase()} ${curId ? 'replaced' : 'added'} (${MEDIA[newId].name})`); closeModal(); closeDrawer(); rerender(); say(`${KIND[MEDIA[newId].kind]} ${curId ? 'replaced' : 'added'} in ${plural(targets.length, 'lesson')}. ${all || !curId ? '' : 'The other lessons are unchanged. '}Publish when you are ready.`, 'Undo', undo); };
   const bind = () => { $('#modal').onclick = (e) => { const p = e.target.closest('[data-pick]'); if (p) step2(p.dataset.pick); else if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-upload]')) say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); }; };
   step1(); bind();
 }
+function openAddConfig() {
+  const m = S.market, mk = MK[m]; let model = 't21', handle = 'slider';
+  const draw = () => {
+    const exists = (mo, h) => cfgs(m).some((c) => c.model === mo && c.handle === h);
+    const knobOk = model === 't13' && mk.knob; if (!knobOk) handle = 'slider';
+    const dup = exists(model, handle);
+    openModal(`<h2>Add a configuration for ${esc(mk.name)}</h2><p class="sub hint">Set up by an admin from the list Rapid Medical confirms. Editors then fill the lessons.</p>
+      <div><h3>Model</h3><div class="optrow">${MODELS.map((x) => `<label class="opt"><input type="radio" name="model" value="${x.id}" ${x.id === model ? 'checked' : ''}><span><b>${esc(x.name)}</b><span class="d">${x.phase === 1 ? 'Phase 1' : 'Phase 2, content later'}</span></span></label>`).join('')}</div></div>
+      <div><h3>Handle</h3><div class="optrow"><label class="opt"><input type="radio" name="handle" value="slider" ${handle === 'slider' ? 'checked' : ''}><span><b>Legacy slider</b><span class="d">All models</span></span></label><label class="opt ${knobOk ? '' : 'dis'}"><input type="radio" name="handle" value="knob" ${handle === 'knob' ? 'checked' : ''} ${knobOk ? '' : 'disabled'}><span><b>Precision knob</b><span class="d">${model !== 't13' ? 'Tiger 13 only' : !mk.knob ? `Not offered in ${esc(mk.name)}` : 'Tiger 13'}</span></span></label></div></div>
+      ${dup ? `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span>${esc(MD[model].name)} · ${esc(HANDLES[handle])} is already set up for ${esc(mk.name)}.</span></div>` : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>${esc(MD[model].name)} · ${esc(HANDLES[handle])} · ${esc(mk.name)}: a programme with Opening, 8 stages and Closing, all “Not started”.</span></div>`}
+      <div class="act"><button type="button" class="b pri" data-create ${dup ? 'disabled' : ''}>Add configuration</button><button type="button" class="b" data-x>Cancel</button></div>`);
+    $('#modal').onclick = (e) => { const r = e.target.closest('input[type=radio]'); if (r) { if (r.name === 'model') model = r.value; else handle = r.value; draw(); return; } if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-create]') && !dup) { const id = 'c' + (Math.max(0, ...S.configs.map((c) => +c.id.slice(1))) + 1); const cfg = { id, model, handle, market: m, before: false }; S.configs.push(cfg); S.lessons[id] = {}; sectionsOf(cfg).forEach((s) => { S.lessons[id][s.k] = emptyLesson(); }); S.scope[m][id] = false; lastJson = JSON.stringify(S.lessons); persist(); closeModal(); rerender(); say(`${cfgName(cfg)} added to ${mk.name}. 10 sections to fill.`); } };
+  };
+  draw();
+}
 function openPublish() {
   endEdit(); closeDrawer();
-  const sel = S.scope, next = nextVersion(), bl = blockers(sel), pend = diffs().filter((d) => sel[d.c]), scopeCh = scopeChanges(sel), changes = [...scopeCh, ...pend.map((d) => d.label)];
-  const sizeMB = (() => { const set = new Set(); CONFIGS.forEach((c) => { if (sel[c.id]) STAGES.forEach((s) => { const l = S.lessons[c.id][s.k]; if (hasVideo(l)) set.add(l.media); }); }); let mb = 0; set.forEach((id) => { mb += MEDIA[id].kind === 'still' ? 2 : 36; }); return mb; })();
-  const cfgOpt = (c) => { const b = blockers({ [c.id]: true }); const reason = b.length ? b[0].msg : ''; return `<label class="opt ${!sel[c.id] && b.length ? 'dis' : ''}"><input type="checkbox" data-cfg="${c.id}" ${sel[c.id] ? 'checked' : ''}><span><b>${esc(cfgName(c))}</b><span class="d">${S.released[c.id] ? `In package v${esc(S.pkgVersion)}` : 'New in this package'}</span>${reason ? `<span class="note">${esc(reason)} <button type="button" class="lnkb" data-open="${b[0].c}/${b[0].s}">Open stage</button></span>` : ''}</span></label>`; };
-  const can = !bl.length && changes.length > 0;
-  openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">Europe. Physicians download a new ZIP. Package v${esc(S.pkgVersion)} stays available and unchanged.</p>
-    <div><h3>What goes in</h3>${CONFIGS.map(cfgOpt).join('')}<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b><span class="d">Legacy slider vs Precision knob, stage by stage</span></span></label></div>
-    <div><h3>Changes since v${esc(S.pkgVersion)}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 8).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 8 ? `<li class="muted">and ${changes.length - 8} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
-    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF[b.leave])) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video and its text.${sel.cmp ? ' Both sides of the comparison are complete.' : ''}</span></div>`}</div>
+  const m = S.market, mk = MK[m], sel = S.scope[m], next = nextVersion(m), last = latestPkg(m), pair = pairFor(m), list = cfgs(m);
+  const bl = blockers(sel, m), rev = reviewItems(sel, m), pend = diffs(m).filter((d) => sel[d.c]), scopeCh = scopeChanges(sel, m), changes = [...scopeCh, ...pend.map((d) => d.label)];
+  const sizeMB = (() => { const set = new Set(); list.forEach((c) => { if (sel[c.id]) sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; [l.media, ...l.graphics].forEach((id) => { if (id && MEDIA[id].ready !== 'filming') set.add(id); }); }); }); let mb = 0; set.forEach((id) => { mb += MEDIA[id].kind === 'video' ? 36 : MEDIA[id].kind === 'anim' ? 18 : 2; }); return mb; })();
+  const cfgOpt = (c) => { const ns = sectionsOf(c).every((s) => notStarted(S.lessons[c.id][s.k])); const b = ns ? [] : blockers({ [c.id]: true }, m); const reason = ns ? 'Not started' : b.length ? b[0].msg : ''; return `<label class="opt ${!sel[c.id] && (b.length || ns) ? 'dis' : ''}"><input type="checkbox" data-cfg="${c.id}" ${sel[c.id] ? 'checked' : ''} ${ns ? 'disabled' : ''}><span><b>${esc(cfgName(c))}</b><span class="d">${S.released[c.id] ? `In package v${esc(last.v)}` : 'New in this package'}</span>${reason ? `<span class="note">${esc(reason)}${b.length ? ` <button type="button" class="lnkb" data-open="${b[0].c}/${b[0].s}">Open stage</button>` : ''}</span>` : ''}</span></label>`; };
+  const can = !bl.length && changes.length > 0 && list.some((c) => sel[c.id]);
+  openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">${esc(mk.name)}. Physicians download a new ZIP. ${last ? `Package v${esc(last.v)} stays available and unchanged.` : 'This is the first package for this market.'}</p>
+    <div><h3>What goes in</h3>${list.map(cfgOpt).join('')}${pair ? `<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b><span class="d">Legacy slider vs Precision knob, stage by stage</span></span></label>` : ''}</div>
+    <div><h3>Changes since ${last ? 'v' + esc(last.v) : 'the start'}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 8).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 8 ? `<li class="muted">and ${changes.length - 8} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
+    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF(b.leave))) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video, a headline and its points.${sel.cmp ? ' Both sides of the comparison are complete.' : ''}</span></div>`}
+    ${rev.length ? `<div class="ck rev" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16h.01"/></svg><span class="grow">${plural(rev.length, 'file')} still marked “Review first”: ${rev.map((x) => esc(x.name)).join(', ')}. They ship as they are unless you check them.</span></div>` : ''}</div>
     <div class="kv"><dt>Size</dt><dd>about ${sizeMB} MB</dd><dt>Then</dt><dd>Download, test it offline, mark it as sent.</dd></div>
-    <div class="act"><button type="button" class="b pri" data-build ${can ? '' : 'disabled'}>Publish package v${esc(next)}</button><button type="button" class="b" data-x>Cancel</button>${!can ? `<span class="hint" style="align-self:center">${bl.length ? `Fix ${plural(bl.length, 'issue')} or leave them out.` : `Nothing changed since v${esc(S.pkgVersion)}.`}</span>` : ''}</div>`);
+    <div class="act"><button type="button" class="b pri" data-build ${can ? '' : 'disabled'}>Publish package v${esc(next)}</button><button type="button" class="b" data-x>Cancel</button>${!can ? `<span class="hint">${bl.length ? `Fix ${plural(bl.length, 'issue')} or leave them out.` : !list.some((c) => sel[c.id]) ? 'Choose at least one configuration.' : `Nothing changed since v${esc(last.v)}.`}</span>` : ''}</div>`);
   $('#modal').onclick = (e) => {
-    const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[cb.dataset.cfg] = cb.checked; persist(); openPublish(); return; }
-    const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[lv.dataset.leave] = false; persist(); openPublish(); return; }
+    const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[m][cb.dataset.cfg] = cb.checked; persist(); openPublish(); return; }
+    const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[m][lv.dataset.leave] = false; persist(); openPublish(); return; }
     const op = e.target.closest('[data-open]'); if (op) { closeModal(); const [c, s] = op.dataset.open.split('/'); openLesson(c, s); return; }
     if (e.target.closest('[data-x]')) closeModal();
     else if (e.target.closest('[data-build]')) build(next, changes, sizeMB);
   };
 }
 function build(v, changes, mb) {
-  openModal(`<h2>Building package v${esc(v)}…</h2><p class="sub hint">Freezing the lessons and media you chose. Nothing can change in it after this.</p><div class="prog"><i id="prog"></i></div>`);
+  const m = S.market, mk = MK[m];
+  openModal(`<h2>Building package v${esc(v)}…</h2><p class="sub hint">Freezing the lessons and media you chose for ${esc(mk.name)}. Nothing can change in it after this.</p><div class="prog"><i id="prog"></i></div>`);
   requestAnimationFrame(() => { const p = $('#prog'); if (p) p.style.width = '100%'; });
   setTimeout(() => {
-    const sel = S.scope; CONFIGS.forEach((c) => { if (sel[c.id]) S.released[c.id] = clone(S.lessons[c.id]); else delete S.released[c.id]; });
+    const sel = S.scope[m]; cfgs(m).forEach((c) => { if (sel[c.id]) S.released[c.id] = clone(S.lessons[c.id]); else delete S.released[c.id]; });
     const sha = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((x) => x.toString(16).padStart(2, '0')).join('');
-    S.packages.unshift({ v, date: today(), status: 'built', configs: CONFIGS.filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
-    S.pkgVersion = v; persist(); rerender();
-    openModal(`<h2>Package v${esc(v)} is ready</h2><p class="sub hint">Built ${esc(today())}. Physicians get it when you send it; until then they keep using v${esc(S.packages[1].v)}.</p>
-      <dl class="kv"><dt>Contains</dt><dd>${CONFIGS.filter((c) => sel[c.id]).map((c) => esc(cfgName(c))).join(', ')}${sel.cmp ? ', comparison: Tiger 13 handles' : ''}</dd><dt>Size</dt><dd>${mb} MB</dd><dt>Checksum</dt><dd><code>sha256 ${esc(sha)}…</code></dd></dl>
+    const prev = latestPkg(m);
+    S.packages.unshift({ v, market: m, date: today(), status: 'built', configs: cfgs(m).filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
+    persist(); rerender();
+    openModal(`<h2>Package v${esc(v)} is ready</h2><p class="sub hint">Built ${esc(today())} for ${esc(mk.name)}. Physicians get it when you send it${prev ? `; until then they keep using v${esc(prev.v)}` : ''}.</p>
+      <dl class="kv"><dt>Contains</dt><dd>${cfgs(m).filter((c) => sel[c.id]).map((c) => esc(cfgName(c))).join(', ')}${sel.cmp ? ', comparison: Tiger 13 handles' : ''}</dd><dt>Size</dt><dd>${mb} MB</dd><dt>Checksum</dt><dd><code>sha256 ${esc(sha)}…</code></dd></dl>
       <div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Test before sending: unzip, go offline, open index.html, check one stage${sel.cmp ? ' and the comparison' : ''}.</span></div>
       <div class="act"><button type="button" class="b pri" data-dl="${esc(v)}">Download ZIP</button><button type="button" class="b" data-sent="${esc(v)}">Mark as sent</button><a class="b" href="#packages">All packages</a></div>`);
-    $('#modal').onclick = (e) => { if (e.target.closest('[data-dl]')) say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); else if (e.target.closest('[data-sent]')) { markSent(v); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
+    $('#modal').onclick = (e) => { if (e.target.closest('[data-dl]')) say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); else if (e.target.closest('[data-sent]')) { markSent(v, m); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
   }, 1700);
 }
-function markSent(v) { const p = S.packages.find((x) => x.v === v); if (!p) return; p.status = 'sent'; p.sentOn = today(); persist(); rerender(); say(`Package v${v} marked as sent on ${today()}.`); }
+function markSent(v, m = S.market) { const p = S.packages.find((x) => x.v === v && x.market === m); if (!p) return; p.status = 'sent'; p.sentOn = today(); persist(); rerender(); say(`Package v${v} for ${MK[m].name} marked as sent on ${today()}.`); }
 
-/* ---------- toast, tip ---------- */
+/* ---------- toast ---------- */
 function say(text, actLabel, act) { const t = $('#toast'); t.innerHTML = `<span>${esc(text)}</span>${actLabel ? `<button type="button">${esc(actLabel)}</button>` : ''}`; if (actLabel) t.querySelector('button').onclick = () => { t.hidden = true; act(); }; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, actLabel ? 7000 : 4500); }
 
 /* ---------- events ---------- */
@@ -695,20 +789,26 @@ $('#view').addEventListener('click', (e) => {
   const t = e.target;
   const open = t.closest('[data-open]'); if (open) { const [c, s] = open.dataset.open.split('/'); openLesson(c, s); return; }
   const stg = t.closest('[data-stage]'); if (stg && stg.dataset.stage) { endEdit(); cur.s = stg.dataset.stage; persist(); rerender(); window.scrollTo(0, 0); return; }
-  if (t.closest('[data-cmp]')) { const s = t.closest('[data-cmp]').dataset.cmp; if (!isStage(s)) return; const st = cmpState(s); say(st.k === 'ok' ? `${ST[s].n}: both handles have a video, so physicians can compare this stage.` : `${ST[s].n}: one side has no video, so this stage is left out of the comparison.`); return; }
-  if (t.closest('[data-addcfg]')) { say('An admin adds models, handles and markets from the list Rapid Medical confirms. Not part of this prototype.'); return; }
+  if (t.closest('[data-cmp]')) { const s = t.closest('[data-cmp]').dataset.cmp; const st = cmpState(s); if (st.k === 'na') return; say(st.k === 'ok' ? `${SC[s].n}: both handles have a video, so physicians can compare this stage.` : st.k === 'none' ? `${SC[s].n}: the lessons are not started yet.` : `${SC[s].n}: ${st.t.toLowerCase()}, so this stage stays out of the comparison.`); return; }
+  if (t.closest('[data-addcfg]')) { openAddConfig(); return; }
   if (t.closest('[data-publish]')) { openPublish(); return; }
   if (t.closest('[data-upload]')) { say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); return; }
   const fl = t.closest('[data-filter]'); if (fl) { mediaFilter = fl.dataset.filter; rerender(); return; }
-  const dl = t.closest('[data-dl]'); if (dl) { say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); return; }
+  if (t.closest('[data-dl]')) { say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); return; }
   const sn = t.closest('[data-sent]'); if (sn) { markSent(sn.dataset.sent); return; }
   if (view === 'lesson' && mode === 'edit') {
-    if (t.closest('[data-media]')) { endEdit(); openMedia(); return; }
+    const ap = t.closest('[data-addpt]'); if (ap) { addPoint(ap.dataset.addpt); return; }
+    if (t.closest('[data-addg]')) { endEdit(); openPicker({ f: 'graphics', i: null }); return; }
+    if (t.closest('[data-addwarn]')) { endEdit(); lesson().warn = null; rerender(); const el = $('[data-f="warn"]'); if (el) startEdit(el); return; }
+    if (t.closest('[data-share]')) { endEdit(); const l = lesson(); l.shared = true; l.notes = []; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: marked same for all handles`); rerender(); return; }
+    if (t.closest('[data-unshare]')) { endEdit(); const l = lesson(); l.shared = false; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: differs by handle`); rerender(); return; }
+    const md = t.closest('[data-media]'); if (md) { endEdit(); openMedia(md.dataset.media); return; }
     const f = t.closest('[data-t]'); if (f) { startEdit(f); return; }
   }
 });
-$('#view').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('[data-media]')) { e.preventDefault(); openMedia(); } if (editing && e.key === 'Enter' && editing.tagName === 'H1') { e.preventDefault(); editing.blur(); } });
-$('#view').addEventListener('focusout', (e) => { if (editing && e.target === editing) endEdit(); });
+$('#view').addEventListener('change', (e) => { if (e.target.id === 'mkSel') { S.market = e.target.value; persist(); rerender(); } });
+$('#view').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('[data-media]')) { e.preventDefault(); openMedia(e.target.dataset.media); } if (editing && e.key === 'Enter' && (editing.tagName === 'H1' || editing.tagName === 'LI')) { e.preventDefault(); if (editing.tagName === 'LI') { const f = editing.dataset.f; editing.blur(); setTimeout(() => addPoint(f), 0); } else editing.blur(); } });
+$('#view').addEventListener('focusout', (e) => { if (editing && e.target === editing) { if (e.target.dataset.f === 'warn' && !e.target.textContent.trim()) { const l = lesson(); editing = null; e.target.removeAttribute('contenteditable'); l.warn = ''; rerender(); return; } endEdit(); } });
 $('#view').addEventListener('paste', (e) => { if (!editing) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s*\n\s*/g, ' ')); });
 $('#bar').addEventListener('click', (e) => { if (e.target.closest('[data-publish]')) openPublish(); });
 $('#bBack').onclick = () => { location.hash = '#ready'; };
@@ -717,7 +817,7 @@ $('#bComment').onclick = () => { endEdit(); if (!$('#drawer').hidden && $('#cmtI
 $('#bChanges').onclick = () => { location.hash = '#changes'; };
 $('#bPrev').onclick = () => { endEdit(); closeDrawer(); mode = 'preview'; if (view !== 'lesson') location.hash = '#lesson'; else render(); };
 $('#bBackEdit').onclick = () => { mode = 'edit'; render(); };
-$('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c2', s: 'pos' }; lastJson = JSON.stringify(S.lessons); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
+$('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c1', s: 'prep' }; lastJson = JSON.stringify(S.lessons); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
 $('#tipOk').onclick = () => { S.tipDone = true; persist(); $('#tip').hidden = true; };
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { if (editing) { endEdit(false); return; } if ($('#modal').innerHTML) { closeModal(); return; } if (!$('#drawer').hidden) { closeDrawer(); return; } if (mode === 'preview') { mode = 'edit'; render(); } }
@@ -727,6 +827,7 @@ document.addEventListener('pointerdown', (e) => { if (!$('#drawer').hidden && !e
 
 /* ---------- boot ---------- */
 load();
+if (!CF(cur.c) || !S.lessons[cur.c] || !S.lessons[cur.c][cur.s]) cur = { c: 'c1', s: 'prep' };
 if (!VIEWS[location.hash.replace('#', '')]) history.replaceState(null, '', '#start');
 route();
 </script>
