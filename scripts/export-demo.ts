@@ -90,7 +90,7 @@ async function main() {
   // 1. public pages (from the sitemap) + redirect stubs
   const sm = await (await fetch(`${ORIGIN}${BASE}/sitemap.xml`)).text();
   const paths = Array.from(sm.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => new URL(m[1]).pathname.replace(new RegExp(`^${BASE}`), "") || "/");
-  for (const extra of ["/us", "/ous", "/apac", "/this-page-does-not-exist"]) paths.push(extra);
+  for (const extra of ["/us", "/ous", "/apac", "/style-guide", "/this-page-does-not-exist"]) paths.push(extra); // style guide is noindex, not in the sitemap
   for (const p of hiddenPages) paths.push(p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`); // noindex pages are not in the sitemap
   let n = 0;
   for (const p of paths) {

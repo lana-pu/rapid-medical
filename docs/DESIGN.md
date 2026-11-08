@@ -104,9 +104,34 @@
 | Offices and map | заголовок, подзаголовок, строка с кнопкой | Офисы — из настроек контактов |
 | Region chooser | заголовок, примечание | Регионы — из настроек |
 
+### В коде (2026-11-08)
+
+Реестр `src/blocks/`: один файл на блок — название, назначение, варианты, поля, пример, компонент; список — `registry.ts`.
+Витрина всех блоков и вариантов на примерных данных — `/style-guide` (noindex). Сейчас на блоках собраны страницы терапий;
+остальные страницы — следующий шаг.
+
+| Блок (`type`) | Варианты в коде | Где сейчас |
+|---|---|---|
+| Hero (`hero`) | `video` · `image` · `title` | терапии |
+| Text (`text`) | `default` · `lead` (медиа сбоку — по желанию) | терапии: вводный текст, текст во вкладке |
+| Text and media (`textMedia`) | `mediaRight` · `mediaLeft` · `threeColumn`; медиа — цифры, график, видео или картинка | терапии; ряды подряд стоят в одной серой полосе |
+| Key numbers (`keyNumbers`) | `circles` · `row` · `badge` | внутри Text and media; отдельно — витрина |
+| Columns (`columns`) | `steps` · `features` (+ картинка вместо списка, старый формат) | вкладки терапий |
+| Video (`video`) | `band` | терапии |
+| Call to action (`cta`) | `band` · `panel` · `buttons` | терапии: «Questions?», вебинары, кнопки вкладок |
+| Product details (`productDetails`) | `pills` · `underline` | терапии; внутри вкладки — блоки и группы с подзаголовком |
+| Device diagram (`deviceDiagram`) | `default` | вкладка терапии |
+| Spec table (`specTable`) | `table` · `images` (старый формат) | вкладка терапии |
+| People (`people`) | `physicians` | вкладка In-Practice |
+| Indications and references (`indications`) | `default`, закреплён | терапии |
+
+Отличия от таблиц выше, принятые при переносе без изменения вида: варианты фона у Text и светлый Call to action
+появятся с редизайном; Key numbers вставляется в Text and media как часть медиа. Rich text, Gallery, блоки списков
+(кроме People) и системные Form, Offices and map, Region chooser — при переводе остальных страниц.
+
 ## Отступления от токенов (хардкод, по коду)
-- Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — therapy page,
-  `Banner`, `VideoHero`.
+- Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — блоки Video,
+  Call to action (`src/blocks/`), `Banner`, `VideoHero`.
 - Ошибки формы: `bg-red-50`, `text-red-600/700`.
 - `WorldMap.tsx`: инлайн-хексы `#0b1420`, `#121b29`, `#26354d`, `#289988`, `#2fd17b`, `#fff`.
 - Редактор/админка: `amber`, `emerald`, `blue`, `green` из палитры Tailwind; `#a3a3a3`, `#2563eb`,

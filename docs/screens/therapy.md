@@ -12,6 +12,24 @@
 Поля — см. `docs/spec.md → Данные → solutions`. Метаданные: `metaTitle` || «{navLabel} – {REGION}»,
 `metaDescription` || первые 160 символов `heroBody`.
 
+## Блоки
+Страница — список блоков (`src/blocks/`), который `solutionToBlocks()` (`src/blocks/from-solution.ts`) собирает
+из полей записи при показе. Правила показа ниже реализованы в адаптере и компонентах блоков.
+
+| Порядок | Блок · вариант | Из полей |
+|---|---|---|
+| 1 | Hero · `video` (есть `heroVideoUrl`) или `image` | hero*, `breadcrumb`, регионы |
+| 2 | Text · `lead` | intro* |
+| 3 | Text and media · `mediaRight` / `mediaLeft` по очереди, `threeColumn` при `secondaryImageUrl` | `benefits[]`, по блоку на ряд; ряды подряд стоят в одной полосе |
+| 4 | Product details · `pills` | вкладки ниже |
+|  | — Product overview | Text (`overviewBody`), Columns · `features`, группа «Specifications»: Device diagram, Spec table · `table` / `images`; Call to action · `buttons` |
+|  | — How it works | Columns · `steps`, Call to action · `buttons` |
+|  | — In-Practice | Call to action · `panel` (вебинары), People · `physicians`, Call to action · `buttons` |
+|  | — Clinical evidence | вкладка-ссылка |
+| 5 | Video · `band` | `closingTitle`, `closingEmbedUrl` |
+| 6 | Call to action · `band` | `closingBody` |
+| 7 | Indications and references | `regulatoryHtml`, `referencesHtml` |
+
 ## Структура и правила показа
 | Блок | Условие / правило |
 |---|---|

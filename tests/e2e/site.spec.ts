@@ -66,3 +66,13 @@ test("contact form stores a submission", async ({ page }) => {
 test("unknown path returns 404", async ({ request }) => {
   expect((await request.get("/definitely-not-here")).status()).toBe(404);
 });
+
+test("style guide shows every block, is noindex and not in the sitemap", async ({ page, request }) => {
+  await page.goto("/style-guide");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  for (const name of ["Hero", "Text and media", "Product details", "Indications and references"]) {
+    await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
+  }
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).not.toContain("style-guide");
+});
