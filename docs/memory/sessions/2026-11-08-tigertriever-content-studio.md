@@ -31,6 +31,12 @@
   учебный прототип v0.3 — копия v0.2 с шагом рынка, секциями Opening/Closing, блоком Before you begin и новой формой текста.
   Оба прогнаны в Chromium.
 
+## Продолжение: подготовка к встрече
+- Список вопросов к маркетингу сведён из MVP v0.7 §6, реестра вопросов, сверки с клиентом и «Решений за владельцем»:
+  `docs/meetings/marketing-meeting-2026-11.md` + страница-чеклист (Artifact QYxhwLrB3hyNRGPS7ixDop).
+- Спайк S0: `docs/tigertriever/spike-s0/` — пакет, ZIP, README. Прогнан в Chrome for Testing 153 headless с диска при
+  выключенной сети: видео H.264 играют, наружных запросов нет. fetch() локального JSON блокируется — данные в content.js.
+
 ## Изменённые файлы
 - `docs/spec.md`, `docs/tigertriever/README.md`, `docs/tigertriever/prototypes/content-studio-v0.1.html` (новый, затем переписан),
   `docs/tigertriever/prototypes/training-app-v0.3.html` (новый), `docs/memory/findings/client-brief-lesson-content.md` (новый)
