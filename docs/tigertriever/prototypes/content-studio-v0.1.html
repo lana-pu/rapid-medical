@@ -1,0 +1,732 @@
+<title>Tigertriever Content Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a thin editing bar on top; below it the lesson fills the window exactly as the physician will see it;
+   the video panel, comments and publishing appear beside the thing you point at. The chrome is the same cool blue
+   as the website editor prototype, so it never reads as training content. System font stack, as on the site. */
+:root{
+  --ed:#1D5FE0;--ed-deep:#1646AB;--ed-soft:#E7EEFD;--on-ed:#FFFFFF;
+  --paper:#FFFFFF;--ink:#1B2230;--ink-2:#5B6474;--line:#DCE0E7;--shade:#F3F5F8;--shade-2:#E4E7EC;
+  --ok:#14633F;--ok-soft:#DFF3E8;--warn:#8A4B00;--warn-soft:#FFEFD9;--bad:#A3261E;--bad-soft:#FBE4E1;
+  --l-bg:#FFFFFF;--l-ink:#111111;--l-muted:#6B6B6B;--l-line:#E5E5E5;--l-surface:#F5F5F5;--video:#20242B;--on-video:#FFFFFF;
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --bar:52px;--shadow:0 6px 22px rgba(16,24,40,.16);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ed:#5B8DEF;--ed-deep:#7BA3F5;--ed-soft:#1D2A44;--on-ed:#0B1120;
+  --paper:#15181E;--ink:#E6E9EF;--ink-2:#9AA3B2;--line:#2A303A;--shade:#1C2129;--shade-2:#242A34;
+  --ok:#5CCB8F;--ok-soft:#153324;--warn:#F2B35C;--warn-soft:#3A2A12;--bad:#F08A80;--bad-soft:#3D1A17;
+  --l-bg:#111418;--l-ink:#ECEEF2;--l-muted:#9AA3B2;--l-line:#2A303A;--l-surface:#1A1E25;--video:#0B0D11;--on-video:#ECEEF2;
+  --shadow:0 6px 22px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ed:#5B8DEF;--ed-deep:#7BA3F5;--ed-soft:#1D2A44;--on-ed:#0B1120;
+  --paper:#15181E;--ink:#E6E9EF;--ink-2:#9AA3B2;--line:#2A303A;--shade:#1C2129;--shade-2:#242A34;
+  --ok:#5CCB8F;--ok-soft:#153324;--warn:#F2B35C;--warn-soft:#3A2A12;--bad:#F08A80;--bad-soft:#3D1A17;
+  --l-bg:#111418;--l-ink:#ECEEF2;--l-muted:#9AA3B2;--l-line:#2A303A;--l-surface:#1A1E25;--video:#0B0D11;--on-video:#ECEEF2;
+  --shadow:0 6px 22px rgba(0,0,0,.5);color-scheme:dark}
+
+html{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--font);min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--paper)}
+*,*::before,*::after{box-sizing:border-box}
+h1,h2,h3,p,ul{margin:0}
+ul{padding:0;list-style:none}
+button{font:inherit;color:inherit}
+a{color:var(--ed)}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--ink-2)}
+.hint{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.grow{flex:1 1 auto;min-width:0}
+button:focus-visible,a:focus-visible,input:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* bar */
+#bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;height:var(--bar);display:flex;align-items:center;gap:8px;background:var(--paper);border-bottom:1px solid var(--line);padding-block:0}
+.barset{display:flex;align-items:center;gap:8px;width:100%;min-width:0}
+#bar .ttl{min-width:0;display:flex;flex-direction:column;margin-right:auto}
+#bar .ttl b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bar .ttl span{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;white-space:nowrap}
+.brand i{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--ed)}
+.tabs{display:flex;gap:2px;margin-left:8px}
+.tabs a{color:var(--ink-2);text-decoration:none;padding:7px 10px;border-radius:7px;font-weight:500;white-space:nowrap}
+.tabs a:hover{background:var(--shade)}
+.tabs a[aria-current]{color:var(--ink);background:var(--shade-2)}
+.st{display:inline-block;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.st.live{background:var(--ok-soft);color:var(--ok)}
+.st.dirty{background:var(--warn-soft);color:var(--warn)}
+.st.none{background:var(--shade-2);color:var(--ink-2)}
+.b{font:inherit;font-weight:500;height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap}
+.b:hover:not(:disabled){background:var(--shade)}
+.b:disabled{color:#A3A9B4;cursor:not-allowed}
+.b.pri{background:var(--ed);border-color:var(--ed);color:var(--on-ed)}
+.b.pri:hover:not(:disabled){background:var(--ed-deep);border-color:var(--ed-deep)}
+.b.pri:disabled{opacity:.45}
+.b.ic{width:36px;padding:0;justify-content:center}
+.b.sm{height:30px;padding:0 10px;font-size:13px}
+.b svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lnkb{all:unset;cursor:pointer;color:var(--ed);font:inherit;font-weight:500}
+.lnkb:hover{text-decoration:underline}
+#saved{font-size:12px;color:var(--ink-2)}
+@media (max-width:760px){#bar .hide-s,#bar .st{display:none}#bar .b.txt-s span{display:none}#bar .b.txt-s{width:36px;padding:0;justify-content:center}.tabs a{padding:7px 8px}}
+
+/* home views */
+.page{max-width:1100px;margin:0 auto;padding-block:28px 72px;display:flex;flex-direction:column;gap:22px}
+.page h1{font-size:24px;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--ink-2);margin-top:4px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.pill-sel{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--shade);color:var(--ink-2);font-weight:500}
+.att{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.att h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);padding:10px 14px;background:var(--shade);border-bottom:1px solid var(--line)}
+.att li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+.att li:first-of-type{border-top:0}
+.att li .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.att li.bad .dot{background:var(--bad)}.att li.chg .dot{background:var(--warn)}.att li.ok .dot{background:var(--ok)}
+.att li .grow{min-width:0}
+.att .empty{padding:12px 14px;color:var(--ink-2)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table.mx{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums}
+.mx th,.mx td{text-align:left;padding:0;border-bottom:1px solid var(--line);vertical-align:top}
+.mx thead th{background:var(--shade);padding:12px 14px;font-weight:500;border-bottom:1px solid var(--line)}
+.mx thead th b{display:block;font-weight:600}
+.mx thead th small{display:block;color:var(--ink-2);font-weight:400;margin-top:1px}
+.mx thead th .st{margin-top:8px}
+.mx tbody th{padding:0 14px;font-weight:500;white-space:nowrap;height:46px;vertical-align:middle;background:var(--paper)}
+.mx tbody th small{color:var(--ink-2);font-weight:400;margin-right:8px;display:inline-block;width:14px}
+.mx td{height:46px}
+.mx tr:last-child th,.mx tr:last-child td{border-bottom:0}
+.cell{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;height:46px;padding:0 14px;cursor:pointer;font-weight:500;white-space:nowrap}
+.cell:hover{background:var(--shade)}
+.cell:focus-visible{outline:2px solid var(--ed);outline-offset:-2px}
+.cell i{width:16px;height:16px;flex:none;display:inline-flex}
+.cell i svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cell.ok{color:var(--ok)}.cell.ready{color:var(--ok)}.cell.chg{color:var(--warn)}.cell.bad{color:var(--bad)}.cell.none{color:var(--ink-2);cursor:default}
+.cell.none:hover{background:transparent}
+.ghost{color:var(--ink-2);font-weight:400}
+.ghost .lnkb{font-weight:500}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink-2);font-size:12.5px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+/* start */
+.start{max-width:760px;margin:0 auto;padding-block:48px 72px;display:flex;flex-direction:column;gap:28px}
+.start h1{font-size:26px;font-weight:600;text-wrap:balance}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:10px;text-align:left;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--paper);cursor:pointer;color:inherit;text-decoration:none;min-height:180px}
+.card:hover{border-color:var(--ed);box-shadow:var(--shadow)}
+.card h2{font-size:18px;font-weight:600}
+.card p{color:var(--ink-2)}
+.card .go{margin-top:auto;color:var(--ed);font-weight:500}
+.card svg{width:28px;height:28px;fill:none;stroke:var(--ed);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* lesson */
+.lwrap{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:calc(100vh - var(--bar));background:var(--l-bg);color:var(--l-ink)}
+.rail{border-right:1px solid var(--l-line);padding:20px 12px 20px max(16px,env(safe-area-inset-left,0px));background:var(--l-surface);position:sticky;top:calc(var(--bar) + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - var(--bar));overflow:auto}
+.rail h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted);padding:0 10px 10px}
+.rail button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--l-ink)}
+.rail button:hover{background:var(--l-line)}
+.rail button[aria-current]{background:var(--l-ink);color:var(--l-bg)}
+.rail button:focus-visible{outline:2px solid var(--ed);outline-offset:-2px}
+.rail .n{width:18px;flex:none;color:var(--l-muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+.rail button[aria-current] .n{color:inherit;opacity:.7}
+.rail .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail .mk{width:8px;height:8px;border-radius:50%;flex:none}
+.mk.ok{background:var(--ok)}.mk.chg{background:var(--warn)}.mk.bad{background:var(--bad)}.mk.ready{background:var(--ok)}
+.rail .sep{height:1px;background:var(--l-line);margin:8px 10px}
+.lesson{max-width:760px;width:100%;margin:0 auto;padding-block:28px 96px;display:flex;flex-direction:column;gap:22px;padding-right:max(16px,env(safe-area-inset-right,0px));padding-left:24px}
+.ctx{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--l-muted)}
+.ctx b{color:var(--l-ink);font-weight:600}
+.ctx .demo{font-size:11px;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--l-line);border-radius:4px;padding:1px 6px}
+.stage-num{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted)}
+.lesson h1{font-size:30px;font-weight:600;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.media{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:6px;background:var(--video);color:var(--on-video);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media.still{background:var(--l-surface);color:var(--l-muted);border:1px solid var(--l-line)}
+.media.none{background:var(--l-surface);color:var(--l-muted);border:1.5px dashed var(--l-muted)}
+.media .play{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center}
+.media .play::after{content:"";margin-left:5px;border-left:20px solid currentColor;border-top:12px solid transparent;border-bottom:12px solid transparent}
+.media .lab{position:absolute;left:14px;bottom:12px;right:14px;display:flex;justify-content:space-between;gap:12px;font-size:12.5px;opacity:.85;font-family:var(--mono)}
+.media .lab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.media .rep{position:absolute;top:12px;right:12px;background:var(--ed);color:var(--on-ed);font:500 12.5px var(--font);padding:5px 10px;border-radius:999px;opacity:0;transition:opacity .12s}
+.media .ctr{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:16px}
+.block h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--l-muted);margin-bottom:8px}
+.block p{font-size:17px;line-height:1.55;max-width:65ch}
+.warnb{border-left:3px solid var(--l-ink);padding:14px 18px;background:var(--l-surface);border-radius:0 6px 6px 0}
+.warnb p{font-size:15.5px}
+.lnav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--l-line)}
+.lnav .nb{all:unset;cursor:pointer;font-weight:500;padding:9px 0;color:var(--l-ink)}
+.lnav .nb:hover{text-decoration:underline}
+.lnav .nb:disabled{opacity:.35;cursor:default;text-decoration:none}
+.lnav .cmp{color:var(--l-muted);font-size:13px}
+.banner{background:var(--ed-soft);color:var(--ink);padding:10px 16px;text-align:center;font-weight:500}
+/* editing affordances */
+[data-t]:empty::before{content:attr(data-ph);opacity:.5}
+body.edit .lesson [data-t]{cursor:text;border-radius:2px}
+body.edit .lesson [data-t]:hover{outline:1.5px solid color-mix(in srgb,var(--ed) 50%,transparent);outline-offset:4px}
+[contenteditable=true]{outline:2px solid var(--ed)!important;outline-offset:4px}
+body.edit .media{cursor:pointer}
+body.edit .media:hover{outline:2px solid var(--ed);outline-offset:3px}
+body.edit .media:hover .rep{opacity:1}
+body.preview .lesson [data-t]:empty{display:none}
+@media (max-width:860px){.lwrap{grid-template-columns:1fr}.rail{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--l-line);display:flex;gap:6px;overflow-x:auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}.rail h2,.rail .sep{display:none}.rail button{width:auto;white-space:nowrap;padding:7px 10px;border:1px solid var(--l-line)}.rail .nm{overflow:visible}.lesson{padding-left:max(16px,env(safe-area-inset-left,0px))}.lesson h1{font-size:24px}}
+
+/* changes */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.col{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.col h2{font-size:13px;padding:10px 14px;background:var(--shade);border-bottom:1px solid var(--line);font-weight:600;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.col .f{padding:12px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
+.col .f:first-of-type{border-top:0}
+.col .f small{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);display:flex;justify-content:space-between}
+.col .f .v{overflow-wrap:anywhere}
+.col .f.chg{background:var(--warn-soft);box-shadow:inset 3px 0 0 var(--warn)}
+.col .f.chg small b{color:var(--warn);text-transform:none;letter-spacing:0;font-weight:600}
+.col .f .v.m{font-family:var(--mono);font-size:13px}
+.col .f .v.e{color:var(--ink-2);font-style:italic}
+.col .nopkg{padding:18px 14px;color:var(--ink-2)}
+.aff{border:1px solid var(--line);border-radius:10px;padding:14px}
+.aff h3{font-size:13px;font-weight:600;margin-bottom:6px}
+.aff li{padding:3px 0}
+
+/* packages */
+.pk{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:start}
+.pk h2{font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pk .meta{color:var(--ink-2);font-size:13px}
+.pk .chgs{margin-top:8px;padding-left:16px;list-style:disc;color:var(--ink);font-size:13.5px}
+.pk .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pk code{font-family:var(--mono);font-size:12px;background:var(--shade);padding:1px 5px;border-radius:4px}
+@media (max-width:640px){.pk{grid-template-columns:1fr}.pk .acts{justify-content:flex-start}}
+
+/* media */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{all:unset;cursor:pointer;padding:6px 11px;border:1px solid var(--line);border-radius:999px;font-weight:500;font-size:13px}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
+table.md{border-collapse:collapse;width:100%;min-width:720px}
+.md th,.md td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.md thead th{background:var(--shade);font-weight:500;color:var(--ink-2);font-size:12.5px}
+.md tr:last-child td{border-bottom:0}
+.md td b{font-weight:600}
+.md td .n{font-family:var(--mono);font-size:12.5px}
+.md details summary{cursor:pointer;color:var(--ed);font-weight:500;list-style:none}
+.md details summary::-webkit-details-marker{display:none}
+.md details ul{margin-top:6px;color:var(--ink-2);font-size:13px}
+.rd{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.rd.ready{background:var(--ok-soft);color:var(--ok)}.rd.uploaded{background:var(--warn-soft);color:var(--warn)}.rd.filming{background:var(--bad-soft);color:var(--bad)}
+
+/* drawer */
+#drawer{position:fixed;z-index:48;top:calc(var(--bar) + env(safe-area-inset-top,0px));right:0;bottom:0;width:360px;max-width:100vw;background:var(--paper);border-left:1px solid var(--line);color:var(--ink);padding:16px max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) 16px;overflow:auto;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+#drawer .hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#drawer h2{font-size:16px;font-weight:600}
+#drawer h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin-bottom:8px}
+.file{display:flex;gap:12px;align-items:flex-start}
+.file .th{width:88px;aspect-ratio:16/9;border-radius:4px;background:var(--video);flex:none;position:relative}
+.file .th.still{background:var(--shade-2)}
+.file .th::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-40%,-50%);border-left:12px solid rgba(255,255,255,.8);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.file .th.still::after{display:none}
+.file b{display:block;overflow-wrap:anywhere}
+.file .meta{color:var(--ink-2);font-size:12.5px;margin:2px 0 6px}
+.used li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.used li:first-child{border-top:0}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.cmt{display:flex;flex-direction:column;gap:10px}
+.cmt .c{padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.cmt .c b{font-weight:600}
+.cmt .c small{color:var(--ink-2);margin-left:6px}
+.cmt .c p{margin-top:4px}
+.cmt .c.me{background:var(--ed-soft);border-color:transparent}
+textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:var(--paper);color:var(--ink);resize:vertical}
+@media (max-width:760px){#drawer{width:100vw;border-left:0}}
+
+/* modal */
+.scrim{position:fixed;inset:0;z-index:70;background:rgba(16,24,40,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.modal{width:100%;max-width:560px;background:var(--paper);color:var(--ink);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow);margin:auto 0}
+.modal.wide{max-width:680px}
+.modal h2{font-size:18px;font-weight:600}
+.modal h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin-bottom:8px}
+.modal .sub{margin-top:-10px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.opt+.opt{margin-top:6px}
+.opt input{margin-top:3px;flex:none;accent-color:var(--ed)}
+.opt b{font-weight:600;display:block}
+.opt .d{color:var(--ink-2);font-size:13px}
+.opt.dis{opacity:.6;cursor:not-allowed}
+.opt .note{display:block;margin-top:4px;font-size:13px;color:var(--bad)}
+.opt .note.ok{color:var(--ok)}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:8px}
+.ck.good{background:var(--ok-soft);color:var(--ok)}
+.ck.bad{background:var(--bad-soft);color:var(--bad)}
+.ck .grow{min-width:0}
+.ck .lnkb{color:inherit;text-decoration:underline;margin-right:10px}
+.ck svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.chg-list{padding-left:18px;list-style:disc;color:var(--ink);display:flex;flex-direction:column;gap:3px}
+.pick{all:unset;box-sizing:border-box;display:flex;gap:12px;align-items:center;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.pick+.pick{margin-top:6px}
+.pick:hover:not(:disabled){border-color:var(--ed);background:var(--shade)}
+.pick:disabled{opacity:.55;cursor:not-allowed}
+.pick:focus-visible{outline:2px solid var(--ed);outline-offset:2px}
+.pick .th{width:64px;aspect-ratio:16/9;border-radius:3px;background:var(--video);flex:none}
+.pick .th.still{background:var(--shade-2)}
+.pick .th.filming{background:repeating-linear-gradient(45deg,var(--shade-2) 0 6px,var(--shade) 6px 12px)}
+.pick b{display:block;overflow-wrap:anywhere}
+.pick .m{font-size:12.5px;color:var(--ink-2)}
+.prog{height:6px;border-radius:3px;background:var(--shade-2);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ed);transition:width 1.5s ease-out}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13.5px}
+.kv dt{color:var(--ink-2)}
+.kv dd{margin:0;font-variant-numeric:tabular-nums}
+.kv code{font-family:var(--mono);font-size:12.5px}
+.modal .act{justify-content:flex-start}
+
+/* toast, tip */
+#toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:9px;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);box-shadow:var(--shadow)}
+#toast button{all:unset;cursor:pointer;font-weight:600;color:var(--paper);text-decoration:underline}
+#tip{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:42;width:300px;max-width:calc(100vw - 32px);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:13px 14px;box-shadow:var(--shadow);font-size:13.5px;line-height:1.45}
+#tip b{display:block;margin-bottom:5px}
+#tip ol{margin:0 0 9px;padding-left:18px}
+#tip li+li{margin-top:3px}
+</style>
+
+<div id="bar" class="wrap">
+  <div class="barset" id="barStart">
+    <span class="brand"><i></i>Rapid Medical admin</span>
+    <span class="grow"></span>
+    <span class="muted hide-s" style="font-size:12.5px">Signed in as Dana · Marketing</span>
+  </div>
+  <div class="barset" id="barHome" hidden>
+    <a href="#start" class="brand" style="text-decoration:none;color:inherit"><i></i><span class="hide-s">Training tool</span></a>
+    <nav class="tabs" aria-label="Sections"><a href="#ready" data-tab="ready">What's ready</a><a href="#packages" data-tab="packages">Packages</a><a href="#media" data-tab="media">Media</a></nav>
+    <span class="grow"></span>
+    <span class="st" id="stHome"></span>
+    <button type="button" class="b pri" data-publish>Publish</button>
+  </div>
+  <div class="barset" id="barLesson" hidden>
+    <button type="button" class="b ic" id="bBack" aria-label="Back to What's ready" title="Back to What's ready"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg></button>
+    <div class="ttl"><b id="lsName"></b><span id="lsSub"></span></div>
+    <span class="st" id="stLesson"></span>
+    <span id="saved" class="hide-s"></span>
+    <span id="editCtl" style="display:contents">
+      <button type="button" class="lnkb hide-s" id="reset" style="font-size:12px;margin-right:4px" title="Prototype only: discard every change and return to the starting state">Start over</button>
+      <button type="button" class="b ic" id="bUndo" aria-label="Undo" title="Undo"><svg viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 5 5v1"/></svg></button>
+      <button type="button" class="b ic" id="bRedo" aria-label="Redo" title="Redo"><svg viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M20 12H9a5 5 0 0 0-5 5v1"/></svg></button>
+      <button type="button" class="b txt-s" id="bComment" aria-label="Comments"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.5-4.5A8 8 0 1 1 21 12Z"/></svg><span>Comment</span></button>
+      <button type="button" class="b txt-s" id="bChanges" aria-label="Changes"><svg viewBox="0 0 24 24"><path d="M4 6h7v12H4z"/><path d="M13 6h7v12h-7z"/></svg><span>Changes</span></button>
+      <button type="button" class="b txt-s" id="bPrev" aria-label="Preview"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Preview</span></button>
+      <button type="button" class="b pri" data-publish><span>Publish</span></button>
+    </span>
+    <button type="button" class="b pri" id="bBackEdit" hidden>Back to editing</button>
+  </div>
+</div>
+
+<main id="view"></main>
+<aside id="drawer" hidden aria-label="Panel"></aside>
+<div id="modal"></div>
+<div id="toast" hidden role="status"></div>
+<div id="tip" hidden>
+  <b>Try these</b>
+  <ol>
+    <li>Open <em>Positioning</em> for Tiger 13 · Precision knob. Click the video and replace it for this handle only.</li>
+    <li>Press <em>Changes</em> to see your draft next to package v1.2.</li>
+    <li>Press <em>Publish</em>. Try to include Tiger 17.</li>
+  </ol>
+  <div class="hint" style="margin-bottom:8px">Nothing leaves your browser. Device names and media are stand-ins, not approved content.</div>
+  <button type="button" class="lnkb" id="tipOk">Got it</button>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const KEY = 'tt-studio-v01';
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const today = () => new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const ICON = {
+  ok: '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>',
+  chg: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/></svg>',
+  bad: '<svg viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M15 9V7a1 1 0 0 0-1-1H6"/><path d="M3 9v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1l5 3V8l-4 2.4"/></svg>',
+  none: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></svg>',
+  ready: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m9 12 2 2 4-4"/></svg>',
+};
+
+/* ---------- data (illustrative, not approved content) ---------- */
+const STAGES = [
+  { k: 'opening', n: 'Opening', num: 0 },
+  { k: 'prep', n: 'Device preparation', num: 1 },
+  { k: 'pos', n: 'Positioning', num: 2 },
+  { k: 'dep', n: 'Deployment', num: 3 },
+  { k: 'clot', n: 'Optimising clot interaction', num: 4 },
+  { k: 'asp', n: 'Aspiration & combination technique', num: 5 },
+  { k: 'pre', n: 'Prepare to retrieve', num: 6 },
+  { k: 'ret', n: 'Retrieval', num: 7 },
+  { k: 'between', n: 'Between passes', num: 8 },
+  { k: 'closing', n: 'Closing', num: 9 },
+];
+const ST = Object.fromEntries(STAGES.map((s) => [s.k, s]));
+const isStage = (k) => ST[k].num >= 1 && ST[k].num <= 8;
+const CONFIGS = [
+  { id: 'c1', model: 'Tiger 13', handle: 'Legacy slider', market: 'Europe' },
+  { id: 'c2', model: 'Tiger 13', handle: 'Precision knob', market: 'Europe' },
+  { id: 'c3', model: 'Tiger 17', handle: 'Legacy slider', market: 'Europe' },
+];
+const CF = Object.fromEntries(CONFIGS.map((c) => [c.id, c]));
+const cfgName = (c) => `${c.model} · ${c.handle}`;
+const MEDIA = {
+  'open-still': { name: 'Opening_Tiger13.jpg', kind: 'still', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'open-still-t17': { name: 'Opening_Tiger17.jpg', kind: 'still', ready: 'ready', ver: 1, up: '28 Oct 2026' },
+  'prep-slider': { name: 'Preparation_slider.mp4', kind: 'video', dur: '1:12', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'prep-knob': { name: 'Preparation_knob.mp4', kind: 'video', dur: '1:20', ready: 'ready', ver: 1, up: '15 Oct 2026' },
+  'pos': { name: 'Positioning_T13-T17.mp4', kind: 'video', dur: '1:48', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'pos-v2': { name: 'Positioning_T13-T17_v2.mp4', kind: 'video', dur: '1:52', ready: 'ready', ver: 2, up: 'Today', note: 'Re-edit with the new angle at 0:40' },
+  'pos-knob-cut': { name: 'Positioning_knob_cut.mov', kind: 'video', dur: '0:58', ready: 'uploaded', ver: 1, up: 'Yesterday', note: 'Uploaded by Dana, not checked yet' },
+  'dep-slider': { name: 'Deployment_slider.mp4', kind: 'video', dur: '2:05', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'dep-knob': { name: 'Deployment_knob.mp4', kind: 'video', dur: '2:10', ready: 'ready', ver: 2, up: '1 Nov 2026' },
+  'clot-slider': { name: 'Clot_interaction_slider.mp4', kind: 'video', dur: '1:35', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'clot-knob': { name: 'Clot_interaction_knob.mp4', kind: 'video', dur: '1:40', ready: 'ready', ver: 1, up: '15 Oct 2026' },
+  'asp': { name: 'Aspiration_combination.mp4', kind: 'video', dur: '1:58', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'pre-slider': { name: 'Prepare_retrieve_slider.mp4', kind: 'video', dur: '1:05', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'pre-knob': { name: 'Prepare_retrieve_knob.mp4', kind: 'video', dur: '1:10', ready: 'ready', ver: 1, up: '15 Oct 2026' },
+  'pre-t17': { name: 'Prepare_retrieve_T17.mp4', kind: 'video', dur: '1:08', ready: 'ready', ver: 1, up: '28 Oct 2026' },
+  'ret-slider': { name: 'Retrieval_T13.mp4', kind: 'video', dur: '1:30', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'ret-knob': { name: 'Retrieval_T13_knob.mp4', kind: 'video', dur: '1:32', ready: 'ready', ver: 1, up: '15 Oct 2026' },
+  'ret-t17': { name: 'Retrieval_T17.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', note: 'Filming planned for November' },
+  'between': { name: 'Between_passes.mp4', kind: 'video', dur: '0:52', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+  'between-t17': { name: 'Between_passes_T17.mp4', kind: 'video', dur: '0:55', ready: 'ready', ver: 1, up: '28 Oct 2026' },
+  'close-still': { name: 'Closing_card.jpg', kind: 'still', ready: 'ready', ver: 1, up: '2 Oct 2026' },
+};
+const READY = { ready: 'Ready', uploaded: 'Uploaded, not checked', filming: 'Needs filming' };
+const PLAN = {
+  c1: { opening: 'open-still', prep: 'prep-slider', pos: 'pos', dep: 'dep-slider', clot: 'clot-slider', asp: 'asp', pre: 'pre-slider', ret: 'ret-slider', between: 'between', closing: 'close-still' },
+  c2: { opening: 'open-still', prep: 'prep-knob', pos: 'pos', dep: 'dep-knob', clot: 'clot-knob', asp: 'asp', pre: 'pre-knob', ret: 'ret-knob', between: 'between', closing: 'close-still' },
+  c3: { opening: 'open-still-t17', prep: 'prep-slider', pos: 'pos', dep: 'dep-slider', clot: 'clot-slider', asp: 'asp', pre: 'pre-t17', ret: 'ret-t17', between: 'between-t17', closing: 'close-still' },
+};
+const FIELD = { title: 'title', text: 'instruction text', warn: 'warning text', media: 'video' };
+
+function seedLessons() {
+  const out = {};
+  CONFIGS.forEach((c) => {
+    out[c.id] = {};
+    STAGES.forEach((s) => {
+      let text, warn = '';
+      if (s.k === 'opening') text = `What this programme covers for ${c.model} with the ${c.handle.toLowerCase()} handle, and how to use it on your own or with a representative. Stand-in text; Rapid Medical supplies the approved version.`;
+      else if (s.k === 'closing') text = `What to review before your first case and where to find support. Stand-in text; Rapid Medical supplies the approved version.`;
+      else { text = `Stand-in for the approved instruction for ${s.n.toLowerCase()} with ${c.model} and the ${c.handle.toLowerCase()} handle. Rapid Medical supplies and approves the real text.`; warn = 'Stand-in for the required warning for this stage. Rapid Medical supplies the real text.'; }
+      out[c.id][s.k] = { title: s.n, media: PLAN[c.id][s.k], text, warn };
+    });
+  });
+  return out;
+}
+function seedState() {
+  const lessons = seedLessons();
+  return {
+    lessons,
+    released: { c1: clone(lessons.c1), c2: clone(lessons.c2) },
+    scope: { c1: true, c2: true, c3: false, cmp: true },
+    pkgVersion: '1.2',
+    packages: [
+      { v: '1.2', date: '3 Nov 2026', status: 'sent', sentOn: '3 Nov 2026', configs: ['c1', 'c2'], cmp: true, size: '396 MB', sha: 'b81e4c90', changes: ['Deployment · Tiger 13 · Precision knob: video replaced (Deployment_knob.mp4, version 2)', 'Opening: text edited'] },
+      { v: '1.1', date: '20 Oct 2026', status: 'sent', sentOn: '21 Oct 2026', configs: ['c1', 'c2'], cmp: true, size: '391 MB', sha: '4d02a7f1', changes: ['Adds Tiger 13 · Precision knob', 'Adds comparison: Tiger 13 handles'] },
+      { v: '1.0', date: '2 Oct 2026', status: 'sent', sentOn: '2 Oct 2026', configs: ['c1'], cmp: false, size: '212 MB', sha: '9f3c11e8', changes: ['First package: Tiger 13 · Legacy slider'] },
+    ],
+    comments: { 'c2/pos': [{ who: 'Dana', when: '2 days ago', text: 'Can we show the knob from the other side here? The current clip is dark at 0:40.' }] },
+    past: [], future: [], tipDone: false,
+  };
+}
+
+/* ---------- state ---------- */
+let S = seedState(), cur = { c: 'c2', s: 'pos' }, view = 'start', mode = 'edit', editing = null, before = '', mediaFilter = 'all', toastT = null, lastJson = '';
+function persist() { try { localStorage.setItem(KEY, JSON.stringify({ S, cur })); $('#saved').textContent = 'Draft saved'; } catch (e) { $('#saved').textContent = ''; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.S && s.S.lessons) { S = s.S; cur = s.cur || cur; } } catch (e) {} lastJson = JSON.stringify(S.lessons); }
+
+/* ---------- derived ---------- */
+const lesson = (c = cur.c, s = cur.s) => S.lessons[c][s];
+const mediaOf = (id) => (id ? MEDIA[id] : null);
+const hasVideo = (l) => { const m = mediaOf(l.media); return !!m && m.ready !== 'filming'; };
+function usedIn(id) { const out = []; if (!id) return out; CONFIGS.forEach((c) => STAGES.forEach((s) => { if (S.lessons[c.id][s.k].media === id) out.push({ c: c.id, s: s.k }); })); return out; }
+function diffs() {
+  const out = [];
+  CONFIGS.forEach((c) => { const r = S.released[c.id]; if (!r) return;
+    STAGES.forEach((s) => { const a = r[s.k], b = S.lessons[c.id][s.k];
+      ['media', 'title', 'text', 'warn'].forEach((f) => { if (a[f] !== b[f]) out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${f === 'media' ? (b.media ? `video replaced (${MEDIA[b.media].name})` : 'video removed') : FIELD[f] + ' edited'}` }); });
+    }); });
+  return out;
+}
+function cellState(c, s) {
+  const l = S.lessons[c][s], need = isStage(s), m = mediaOf(l.media), missing = need && !hasVideo(l);
+  const incomplete = missing || !l.title || !l.text || (need && !l.warn);
+  if (missing) return { k: 'bad', t: m && m.ready === 'filming' ? 'Needs filming' : 'No video' };
+  if (S.released[c]) { const same = JSON.stringify(S.released[c][s]) === JSON.stringify(l); if (incomplete) return { k: 'chg', t: 'Empty field' }; return same ? { k: 'ok', t: `In package` } : { k: 'chg', t: 'Changed' }; }
+  return incomplete ? { k: 'chg', t: 'Empty field' } : { k: 'ready', t: 'Ready' };
+}
+function cmpState(s) { if (!isStage(s)) return { k: 'none', t: '—' }; const a = hasVideo(lesson('c1', s)), b = hasVideo(lesson('c2', s)); return a && b ? { k: 'ok', t: 'Included' } : { k: 'bad', t: 'No video on one side' }; }
+function lessonStatus(c = cur.c, s = cur.s) {
+  if (!S.released[c]) return { cls: 'none', t: 'Not in any package' };
+  return JSON.stringify(S.released[c][s]) === JSON.stringify(lesson(c, s)) ? { cls: 'live', t: `In package v${S.pkgVersion}` } : { cls: 'dirty', t: 'Unpublished changes' };
+}
+function blockers(sel) {
+  const out = [];
+  CONFIGS.forEach((c) => { if (!sel[c.id]) return;
+    STAGES.forEach((s) => { const l = S.lessons[c.id][s.k], name = `${s.n} · ${cfgName(c)}`;
+      if (isStage(s.k) && !hasVideo(l)) { const m = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: no video yet${m && m.ready === 'filming' ? ` (${m.note[0].toLowerCase() + m.note.slice(1)})` : ''}.`, leave: c.id }); }
+      if (!l.title) out.push({ c: c.id, s: s.k, msg: `${name}: the title is empty.`, leave: c.id });
+      if (!l.text) out.push({ c: c.id, s: s.k, msg: `${name}: the instruction text is empty.`, leave: c.id });
+      if (isStage(s.k) && !l.warn) out.push({ c: c.id, s: s.k, msg: `${name}: the warning text is empty.`, leave: c.id });
+    }); });
+  if (sel.cmp) {
+    if (!sel.c1 || !sel.c2) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' });
+    else STAGES.filter((s) => isStage(s.k)).forEach((s) => { ['c1', 'c2'].forEach((c) => { if (!hasVideo(lesson(c, s.k))) out.push({ c, s: s.k, msg: `Comparison, ${s.n}: ${CF[c].handle} has no video.`, leave: 'cmp' }); }); });
+  }
+  return out;
+}
+function scopeChanges(sel) {
+  const last = S.packages[0], out = [];
+  CONFIGS.forEach((c) => { const was = last.configs.includes(c.id); if (sel[c.id] && !was) out.push(`Adds ${cfgName(c)}`); if (!sel[c.id] && was) out.push(`Removes ${cfgName(c)}`); });
+  if (sel.cmp && !last.cmp) out.push('Adds comparison: Tiger 13 handles'); if (!sel.cmp && last.cmp) out.push('Removes comparison: Tiger 13 handles');
+  return out;
+}
+const nextVersion = () => { const [a, b] = S.pkgVersion.split('.').map(Number); return `${a}.${b + 1}`; };
+
+/* ---------- undo ---------- */
+function commit(label) { S.past.push({ label, before: lastJson }); S.future = []; lastJson = JSON.stringify(S.lessons); if (S.past.length > 60) S.past.shift(); persist(); syncBar(); }
+function undo() { endEdit(); const s = S.past.pop(); if (!s) return; S.future.push({ label: s.label, before: lastJson }); S.lessons = JSON.parse(s.before); lastJson = s.before; persist(); rerender(); say('Undid: ' + s.label); }
+function redo() { endEdit(); const s = S.future.pop(); if (!s) return; S.past.push({ label: s.label, before: lastJson }); S.lessons = JSON.parse(s.before); lastJson = s.before; persist(); rerender(); say('Redid: ' + s.label); }
+
+/* ---------- views ---------- */
+function renderStart() {
+  return `<div class="start wrap">
+    <div><h1>What would you like to work on?</h1><p class="sub">One sign-in for both products. Your drafts stay where you left them.</p></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/9o31C5ccVdxUV52w2JKZxv" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M7 13h6"/></svg>
+        <h2>Website</h2><p>Therapy pages, Evidence, news, team and careers for the three regions.</p><span class="go">Open the website editor prototype ↗</span></a>
+      <a class="card" href="#ready">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v10H4z"/><path d="m10 9 4 2-4 2z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg>
+        <h2>Training tool</h2><p>Tigertriever training for physicians: lessons for each device and handle, comparisons, offline packages.</p><span class="go">Open →</span></a>
+    </div>
+    <p class="hint">Prototype v0.1 of the Content Studio. Nothing here is approved training content; device names, markets and files are stand-ins.</p>
+  </div>`;
+}
+function renderReady() {
+  const pend = diffs(), att = [];
+  if (pend.length) { const ls = new Set(pend.map((p) => p.c + '/' + p.s)).size; att.push({ cls: 'chg', html: `${plural(pend.length, 'unpublished change')} in ${plural(ls, 'lesson')}.`, act: `<button type="button" class="lnkb" data-publish>Review and publish</button>` }); }
+  const built = S.packages.find((p) => p.status === 'built'); if (built) att.push({ cls: 'ok', html: `Package v${built.v} is built and not sent yet.`, act: `<a href="#packages">Open packages</a>` });
+  CONFIGS.forEach((c) => STAGES.forEach((s) => { const l = S.lessons[c.id][s.k]; if (isStage(s.k) && !hasVideo(l)) { const m = mediaOf(l.media); att.push({ cls: 'bad', html: `${s.n} · ${cfgName(c)}: no video yet${m && m.ready === 'filming' ? '. ' + esc(m.note) : ''}.`, act: `<button type="button" class="lnkb" data-open="${c.id}/${s.k}">Open stage</button>` }); } }));
+  const head = CONFIGS.map((c) => { const st = S.released[c.id] ? (STAGES.every((s) => cellState(c.id, s.k).k === 'ok') ? { cls: 'live', t: `In package v${S.pkgVersion}` } : { cls: 'dirty', t: 'Unpublished changes' }) : { cls: 'none', t: 'Not in any package' }; return `<th><b>${esc(c.model)}</b><small>${esc(c.handle)} · ${esc(c.market)}</small><span class="st ${st.cls}">${st.t}</span></th>`; }).join('');
+  const rows = STAGES.map((s) => `<tr><th><small>${s.num >= 1 && s.num <= 8 ? s.num : ''}</small>${esc(s.n)}</th>${CONFIGS.map((c) => { const st = cellState(c.id, s.k); return `<td><button type="button" class="cell ${st.k}" data-open="${c.id}/${s.k}"><i>${ICON[st.k]}</i>${st.t}</button></td>`; }).join('')}${(() => { const st = cmpState(s.k); return `<td><button type="button" class="cell ${st.k}" data-cmp="${s.k}" ${st.k === 'none' ? 'tabindex="-1"' : ''}><i>${st.k === 'none' ? '' : ICON[st.k]}</i>${st.t}</button></td>`; })()}<td class="ghost"></td></tr>`).join('');
+  return `<div class="page wrap">
+    <div class="head"><div><h1>What's ready</h1><p class="sub">Europe package · last published v${esc(S.pkgVersion)} on ${esc(S.packages[0].date)}</p></div><span class="pill-sel" title="Europe is the only market set up in this prototype">Showing: Europe</span></div>
+    <section class="att" aria-label="Needs your attention"><h2>Needs your attention</h2>${att.length ? `<ul>${att.map((a) => `<li class="${a.cls}"><span class="dot"></span><span class="grow">${a.html}</span>${a.act}</li>`).join('')}</ul>` : '<p class="empty">Everything is in the package. Nothing is waiting on you.</p>'}</section>
+    <div class="scroll"><table class="mx"><thead><tr><th>Stage</th>${head}<th><b>Comparison</b><small>Tiger 13: Legacy slider vs Precision knob</small></th><th class="ghost"><button type="button" class="lnkb" data-addcfg>+ Add configuration</button><small>Model, handle and market</small></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="legend"><span><i style="background:var(--ok)"></i>In package / Ready</span><span><i style="background:var(--warn)"></i>Changed or empty field</span><span><i style="background:var(--bad)"></i>No video yet</span><span>Click a cell to open the lesson.</span></div>
+  </div>`;
+}
+function mediaBox(l, editable) {
+  const m = mediaOf(l.media);
+  if (!m) return `<div class="media none" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>No video in this stage</b><span>${editable ? 'Click to choose one from the media library' : ''}</span></div></div>`;
+  if (m.ready === 'filming') return `<div class="media none" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>${esc(m.name)}</b><span>Not filmed yet · ${esc(m.note)}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
+  if (m.kind === 'still') return `<div class="media still" ${editable ? 'data-media role="button" tabindex="0"' : ''}><div class="ctr"><b>Still image</b></div><div class="lab"><span>${esc(m.name)}</span><span>v${m.ver}</span></div>${editable ? '<span class="rep">Replace image</span>' : ''}</div>`;
+  return `<div class="media" ${editable ? 'data-media role="button" tabindex="0"' : ''}><span class="play" aria-hidden="true"></span><div class="lab"><span>${esc(m.name)}</span><span>${esc(m.dur)} · v${m.ver}</span></div>${editable ? '<span class="rep">Replace video</span>' : ''}</div>`;
+}
+function renderLesson() {
+  const c = CF[cur.c], l = lesson(), s = ST[cur.s], i = STAGES.findIndex((x) => x.k === cur.s), prev = STAGES[i - 1], next = STAGES[i + 1], ed = mode === 'edit';
+  const rail = STAGES.map((x, j) => { const st = cellState(cur.c, x.k); return `${j === 1 || j === 9 ? '<div class="sep"></div>' : ''}<button type="button" data-stage="${x.k}" ${x.k === cur.s ? 'aria-current="page"' : ''}><span class="n">${isStage(x.k) ? x.num : ''}</span><span class="nm">${esc(x.n)}</span><span class="mk ${st.k}" title="${st.t}"></span></button>`; }).join('');
+  return `${mode === 'preview' ? `<div class="banner">Preview of your draft. Physicians see this only after you publish a package.</div>` : ''}<div class="lwrap">
+    <nav class="rail" aria-label="Programme"><h2>Programme</h2>${rail}</nav>
+    <article class="lesson">
+      <div class="ctx">Tigertriever · <b>${esc(c.model)}</b> · ${esc(c.handle)} · ${esc(c.market)} <span class="demo">Demo market</span></div>
+      <div><p class="stage-num">${isStage(cur.s) ? `Stage ${s.num} of 8` : s.n === 'Opening' ? 'Before you start' : 'After the programme'}</p>
+      <h1 data-f="title" ${ed ? 'data-t' : ''} data-ph="Stage title">${esc(l.title)}</h1></div>
+      ${mediaBox(l, ed)}
+      <div class="block"><h2>Instruction</h2><p data-f="text" ${ed ? 'data-t' : ''} data-ph="Add the approved instruction text">${esc(l.text)}</p></div>
+      ${isStage(cur.s) || l.warn ? `<div class="block warnb"><h2>Important</h2><p data-f="warn" ${ed ? 'data-t' : ''} data-ph="Add the required warning text">${esc(l.warn)}</p></div>` : ''}
+      <div class="lnav"><button type="button" class="nb" data-stage="${prev ? prev.k : ''}" ${prev ? '' : 'disabled'}>← ${prev ? esc(prev.n) : ''}</button>${isStage(cur.s) && (cur.c === 'c1' || cur.c === 'c2') ? `<span class="cmp">Compare this stage: ${cmpState(cur.s).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</span>` : ''}<button type="button" class="nb" data-stage="${next ? next.k : ''}" ${next ? '' : 'disabled'}>${next ? esc(next.n) : ''} →</button></div>
+    </article></div>`;
+}
+function renderChanges() {
+  const c = CF[cur.c], s = ST[cur.s], l = lesson(), r = S.released[cur.c] ? S.released[cur.c][cur.s] : null;
+  const fields = [['title', 'Title'], ['media', 'Video'], ['text', 'Instruction'], ['warn', 'Important']];
+  const val = (o, f) => { if (f === 'media') { const m = mediaOf(o.media); return m ? `<div class="v m">${esc(m.name)} · v${m.ver}${m.ready === 'filming' ? ' · not filmed yet' : ''}</div>` : '<div class="v e">No video</div>'; } return o[f] ? `<div class="v">${esc(o[f])}</div>` : '<div class="v e">Empty</div>'; };
+  const col = (o, mine) => fields.map(([f, lab]) => { const ch = r && o && r[f] !== l[f]; return `<div class="f ${ch && mine ? 'chg' : ''}"><small>${lab}${ch && mine ? '<b>Changed</b>' : ''}</small>${val(o, f)}</div>`; }).join('');
+  const changed = r ? fields.filter(([f]) => r[f] !== l[f]) : [];
+  const affects = [`${esc(s.n)} · ${esc(cfgName(c))}`]; if (isStage(cur.s) && (cur.c === 'c1' || cur.c === 'c2')) affects.push(`Comparison, ${esc(s.n)}: ${esc(c.handle)} side`);
+  return `<div class="page wrap">
+    <div class="head"><div><h1>Changes · ${esc(s.n)}</h1><p class="sub">${esc(cfgName(c))} · ${esc(c.market)}</p></div><div class="act"><a class="b" href="#lesson">Back to the lesson</a><button type="button" class="b pri" data-publish>Publish</button></div></div>
+    ${r ? (changed.length ? `<p>${plural(changed.length, 'field')} changed since package v${esc(S.pkgVersion)}. Package v${esc(S.pkgVersion)} stays as it is until you publish.</p>` : `<p>No unpublished changes in this lesson. It is exactly what physicians have in package v${esc(S.pkgVersion)}.</p>`) : `<p>This configuration is not in any package yet, so everything here is new.</p>`}
+    <div class="cols"><div class="col"><h2>In package v${esc(S.pkgVersion)}<span class="st live">What physicians have</span></h2>${r ? col(r, false) : '<p class="nopkg">Not in any package yet.</p>'}</div><div class="col"><h2>Your draft<span class="st ${changed.length || !r ? 'dirty' : 'live'}">${changed.length || !r ? 'Unpublished' : 'Same as package'}</span></h2>${col(l, true)}</div></div>
+    <div class="aff"><h3>Where this lesson appears</h3><ul>${affects.map((a) => `<li>${a}</li>`).join('')}</ul></div>
+  </div>`;
+}
+function renderPackages() {
+  return `<div class="page wrap"><div class="head"><div><h1>Packages</h1><p class="sub">Each package is a frozen ZIP. Publishing makes a new one; earlier packages stay available and unchanged.</p></div><button type="button" class="b pri" data-publish>Publish</button></div>
+    ${S.packages.map((p) => `<article class="pk"><div><h2>Package v${esc(p.v)} <span class="st ${p.status === 'sent' ? 'live' : 'dirty'}">${p.status === 'sent' ? 'Sent ' + esc(p.sentOn) : 'Built, not sent'}</span></h2>
+      <p class="meta">Built ${esc(p.date)} · Europe · ${p.configs.map((id) => esc(cfgName(CF[id]))).join(', ')}${p.cmp ? ' · comparison: Tiger 13 handles' : ''} · ${esc(p.size)} · <code>sha256 ${esc(p.sha)}…</code></p>
+      <ul class="chgs">${p.changes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="acts"><button type="button" class="b sm" data-dl="${esc(p.v)}">Download ZIP</button>${p.status === 'built' ? `<button type="button" class="b sm pri" data-sent="${esc(p.v)}">Mark as sent</button>` : ''}</div></article>`).join('')}
+    <p class="hint">Before sending a package: unzip it, go offline, open index.html and check one stage and the comparison. The package must not need the internet.</p></div>`;
+}
+function renderMedia() {
+  const ids = Object.keys(MEDIA).filter((id) => mediaFilter === 'all' || MEDIA[id].ready === mediaFilter).sort((a, b) => MEDIA[a].name.localeCompare(MEDIA[b].name));
+  const rows = ids.map((id) => { const m = MEDIA[id], u = usedIn(id); return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="hint">${esc(m.note)}</div>` : ''}</td><td>${m.kind === 'still' ? 'Still' : 'Video'}${m.dur ? ` · <span class="n">${esc(m.dur)}</span>` : ''}</td><td><span class="rd ${m.ready}">${READY[m.ready]}</span></td><td class="n">${m.ver ? 'v' + m.ver : '—'}</td><td>${u.length ? `<details><summary>${plural(u.length, 'lesson')}</summary><ul>${u.map((x) => `<li><button type="button" class="lnkb" data-open="${x.c}/${x.s}">${esc(ST[x.s].n)} · ${esc(cfgName(CF[x.c]))}</button></li>`).join('')}</ul></details>` : '<span class="muted">Not used</span>'}</td><td class="muted">${esc(m.up) || '—'}</td></tr>`; }).join('');
+  return `<div class="page wrap"><div class="head"><div><h1>Media</h1><p class="sub">Shared with the website. Videos and stills are filmed and supplied by Rapid Medical.</p></div><button type="button" class="b" data-upload>Upload…</button></div>
+    <div class="chips" role="group" aria-label="Filter">${[['all', 'All'], ['ready', 'Ready'], ['uploaded', 'Uploaded, not checked'], ['filming', 'Needs filming']].map(([k, t]) => `<button type="button" class="chip" data-filter="${k}" aria-pressed="${mediaFilter === k}">${t}</button>`).join('')}</div>
+    <div class="scroll"><table class="md"><thead><tr><th>File</th><th>Type</th><th>Status</th><th>Version</th><th>Used in</th><th>Uploaded</th></tr></thead><tbody>${rows || '<tr><td colspan="6" class="muted">Nothing here.</td></tr>'}</tbody></table></div></div>`;
+}
+
+/* ---------- render / route ---------- */
+const VIEWS = { start: renderStart, ready: renderReady, lesson: renderLesson, changes: renderChanges, packages: renderPackages, media: renderMedia };
+function route() { const h = location.hash.replace('#', '') || 'start'; view = VIEWS[h] ? h : 'start'; endEdit(); closeDrawer(); closeModal(); if (view !== 'lesson' && mode === 'preview') mode = 'edit'; render(); window.scrollTo(0, 0); }
+function render() {
+  $('#view').innerHTML = VIEWS[view]();
+  document.body.classList.toggle('edit', view === 'lesson' && mode === 'edit'); document.body.classList.toggle('preview', mode === 'preview');
+  syncBar();
+}
+function rerender() { const y = window.scrollY; render(); window.scrollTo(0, y); }
+function syncBar() {
+  $('#barStart').hidden = view !== 'start'; $('#barHome').hidden = !(view === 'ready' || view === 'packages' || view === 'media'); $('#barLesson').hidden = !(view === 'lesson' || view === 'changes');
+  $$('.tabs a').forEach((a) => { if (a.dataset.tab === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  const pend = diffs(), sh = $('#stHome'); sh.className = 'st ' + (pend.length ? 'dirty' : 'live'); sh.textContent = pend.length ? plural(pend.length, 'unpublished change') : `Everything is in package v${S.pkgVersion}`;
+  const c = CF[cur.c], st = lessonStatus(), sl = $('#stLesson'); sl.className = 'st ' + st.cls; sl.textContent = st.t;
+  $('#lsName').textContent = ST[cur.s].n; $('#lsSub').textContent = `${cfgName(c)} · ${c.market}`;
+  $('#bUndo').disabled = !S.past.length; $('#bRedo').disabled = !S.future.length;
+  const pv = mode === 'preview'; $('#editCtl').hidden = pv; $('#bBackEdit').hidden = !pv; $('#stLesson').hidden = pv; $('#saved').hidden = pv;
+  $('#tip').hidden = view === 'start' || pv || S.tipDone;
+  $('#bChanges').disabled = view === 'changes';
+}
+
+/* ---------- editing ---------- */
+function startEdit(el) { if (mode !== 'edit' || editing === el) return; endEdit(); editing = el; before = el.textContent; el.setAttribute('contenteditable', 'true'); el.focus(); const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+function endEdit(save = true) {
+  if (!editing) return; const el = editing; editing = null; el.removeAttribute('contenteditable');
+  if (!save) { el.textContent = before; return; }
+  const val = el.textContent.replace(/\s+/g, ' ').trim(); el.textContent = val;
+  if (val !== before) { const f = el.dataset.f; lesson()[f] = val; commit(`${ST[cur.s].n} · ${cfgName(CF[cur.c])}: ${FIELD[f]} ${val ? 'edited' : 'cleared'}`); refreshMarks(); if (!val) say(`${FIELD[f][0].toUpperCase() + FIELD[f].slice(1)} is empty now. The stage cannot be published until it has one.`); }
+}
+function refreshMarks() { $$('.rail [data-stage]').forEach((b) => { const st = cellState(cur.c, b.dataset.stage), mk = $('.mk', b); if (mk) { mk.className = 'mk ' + st.k; mk.title = st.t; } }); syncBar(); }
+function openLesson(c, s) { endEdit(); cur = { c, s }; persist(); if (view === 'lesson') { rerender(); } else location.hash = '#lesson'; if (view === 'lesson') window.scrollTo(0, 0); }
+
+/* ---------- drawer ---------- */
+function openDrawer(html) { const d = $('#drawer'); d.innerHTML = html; d.hidden = false; }
+function closeDrawer() { $('#drawer').hidden = true; }
+function openMedia() {
+  const l = lesson(), m = mediaOf(l.media), used = usedIn(l.media), c = CF[cur.c];
+  openDrawer(`<div class="hd"><h2>${m && m.kind === 'still' ? 'Still image' : 'Video'}</h2><button type="button" class="b" data-done>Done</button></div>
+    ${m ? `<div class="file"><div class="th ${m.kind === 'still' ? 'still' : ''}"></div><div><b>${esc(m.name)}</b><div class="meta">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'version ' + m.ver + ' · ' : ''}${esc(m.up) || 'no file yet'}</div><span class="rd ${m.ready}">${READY[m.ready]}</span>${m.note ? `<div class="hint" style="margin-top:6px">${esc(m.note)}</div>` : ''}</div></div>` : `<p>No video in this stage yet.</p>`}
+    ${m ? `<div><h3>Used in ${plural(used.length, 'lesson')}</h3><ul class="used">${used.map((u) => `<li><span><b>${esc(ST[u.s].n)}</b> · ${esc(cfgName(CF[u.c]))}</span>${u.c === cur.c && u.s === cur.s ? '<span class="muted">this lesson</span>' : ''}</li>`).join('')}</ul>${used.length > 1 ? '<p class="hint" style="margin-top:8px">If you replace it, you choose whether the other lessons change too. Nothing changes on its own.</p>' : ''}</div>` : ''}
+    <div class="act"><button type="button" class="b pri" data-replace>${m ? (m.kind === 'still' ? 'Replace image…' : 'Replace video…') : 'Choose a video…'}</button>${m && isStage(cur.s) ? '<button type="button" class="b" data-remove>Remove</button>' : ''}</div>
+    <p class="hint">Rapid Medical films and supplies the videos. Uploading here only stores the file; it does not approve it.</p>`);
+  $('#drawer').onclick = (e) => { if (e.target.closest('[data-done]')) closeDrawer(); else if (e.target.closest('[data-replace]')) openPicker(); else if (e.target.closest('[data-remove]')) { const name = m.name; l.media = null; commit(`${ST[cur.s].n} · ${cfgName(c)}: video removed`); rerender(); closeDrawer(); say(`Removed ${name}. The stage needs a video before it can be published.`, 'Undo', undo); } };
+}
+function openComments() {
+  const key = cur.c + '/' + cur.s, list = S.comments[key] || [];
+  openDrawer(`<div class="hd"><h2>Comments</h2><button type="button" class="b" data-done>Done</button></div>
+    <p class="hint">${esc(ST[cur.s].n)} · ${esc(cfgName(CF[cur.c]))}. Comments stay with this lesson and never go into the package.</p>
+    <div class="cmt">${list.length ? list.map((x) => `<div class="c ${x.who === 'You' ? 'me' : ''}"><b>${esc(x.who)}</b><small>${esc(x.when)}</small><p>${esc(x.text)}</p></div>`).join('') : '<p class="muted">No comments yet.</p>'}</div>
+    <div><label for="cmtIn" class="hint" style="display:block;margin-bottom:6px">Write a comment</label><textarea id="cmtIn" rows="3" placeholder="What should change here?"></textarea><div class="act" style="margin-top:8px"><button type="button" class="b pri" data-send>Send</button><button type="button" class="b" data-share>Ask a colleague</button></div></div>
+    <p class="hint">“Ask a colleague” copies a link. They see this lesson with your draft and can comment. Publishing stays with you.</p>`);
+  $('#drawer').onclick = (e) => {
+    if (e.target.closest('[data-done]')) closeDrawer();
+    else if (e.target.closest('[data-send]')) { const t = $('#cmtIn').value.trim(); if (!t) return; (S.comments[key] = S.comments[key] || []).push({ who: 'You', when: 'Just now', text: t }); persist(); openComments(); }
+    else if (e.target.closest('[data-share]')) { const link = location.href.split('#')[0] + '#lesson'; const done = () => say('Link copied. Your colleague sees this lesson with your draft and can comment.'); try { navigator.clipboard.writeText(link).then(done, () => say('Copy the address from the browser bar to share this lesson.')); } catch (err) { say('Copy the address from the browser bar to share this lesson.'); } }
+  };
+}
+
+/* ---------- modal ---------- */
+function openModal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`; m.querySelector('.scrim').addEventListener('click', (e) => { if (e.target.classList.contains('scrim')) closeModal(); }); const f = m.querySelector('button:not(:disabled),input,[tabindex]'); if (f) f.focus(); }
+function closeModal() { $('#modal').innerHTML = ''; }
+function openPicker() {
+  const l = lesson(), curId = l.media, old = mediaOf(curId), used = usedIn(curId), c = CF[cur.c];
+  const ids = Object.keys(MEDIA).filter((id) => id !== curId && (isStage(cur.s) ? MEDIA[id].kind === 'video' : true)).sort((a, b) => (MEDIA[a].ready === 'filming') - (MEDIA[b].ready === 'filming') || MEDIA[a].name.localeCompare(MEDIA[b].name));
+  const step1 = () => openModal(`<h2>Choose a ${isStage(cur.s) ? 'video' : 'file'} for ${esc(ST[cur.s].n)}</h2><p class="sub hint">${esc(cfgName(c))} · ${esc(c.market)}. Only files already in the media library. <button type="button" class="lnkb" data-upload>Upload a new one…</button></p>
+    <div>${ids.map((id) => { const m = MEDIA[id], u = usedIn(id).length; return `<button type="button" class="pick" data-pick="${id}" ${m.ready === 'filming' ? 'disabled' : ''}><span class="th ${m.kind === 'still' ? 'still' : ''} ${m.ready}"></span><span class="grow"><b>${esc(m.name)}</b><span class="m">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'v' + m.ver + ' · ' : ''}${u ? plural(u, 'lesson') : 'not used yet'}${m.note ? ' · ' + esc(m.note) : ''}</span></span><span class="rd ${m.ready}">${READY[m.ready]}</span></button>`; }).join('')}</div>
+    <div class="act"><button type="button" class="b" data-x>Cancel</button></div>`, 'wide');
+  const step2 = (newId) => { const n = MEDIA[newId]; if (used.length <= 1) return apply(newId, false);
+    openModal(`<h2>Where should ${esc(n.name)} go?</h2><p class="sub hint">${esc(old.name)} is used in ${plural(used.length, 'lesson')}. Nothing changes unless you say so.</p>
+      <div><label class="opt"><input type="radio" name="where" value="one" checked><span><b>Only this lesson</b><span class="d">${esc(ST[cur.s].n)} · ${esc(cfgName(c))}. The other lessons keep ${esc(old.name)}.</span></span></label>
+      <label class="opt"><input type="radio" name="where" value="all"><span><b>All ${used.length} lessons that use ${esc(old.name)}</b><span class="d">${used.map((u) => `${esc(ST[u.s].n)} · ${esc(cfgName(CF[u.c]))}`).join('<br>')}</span></span></label></div>
+      <div class="act"><button type="button" class="b pri" data-apply>Replace</button><button type="button" class="b" data-back>Back</button></div>`);
+    $('#modal').onclick = (e) => { if (e.target.closest('[data-apply]')) apply(newId, $('input[name=where]:checked').value === 'all'); else if (e.target.closest('[data-back]')) { step1(); bind(); } }; };
+  const apply = (newId, all) => { const targets = all ? used : [cur]; targets.forEach((t) => { S.lessons[t.c][t.s].media = newId; }); commit(`${ST[cur.s].n} · ${all ? plural(targets.length, 'lesson') : cfgName(c)}: video replaced (${MEDIA[newId].name})`); closeModal(); closeDrawer(); rerender(); say(`Video replaced in ${plural(targets.length, 'lesson')}. ${all ? '' : 'The other lessons are unchanged. '}Publish when you are ready.`, 'Undo', undo); };
+  const bind = () => { $('#modal').onclick = (e) => { const p = e.target.closest('[data-pick]'); if (p) step2(p.dataset.pick); else if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-upload]')) say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); }; };
+  step1(); bind();
+}
+function openPublish() {
+  endEdit(); closeDrawer();
+  const sel = S.scope, next = nextVersion(), bl = blockers(sel), pend = diffs().filter((d) => sel[d.c]), scopeCh = scopeChanges(sel), changes = [...scopeCh, ...pend.map((d) => d.label)];
+  const sizeMB = (() => { const set = new Set(); CONFIGS.forEach((c) => { if (sel[c.id]) STAGES.forEach((s) => { const l = S.lessons[c.id][s.k]; if (hasVideo(l)) set.add(l.media); }); }); let mb = 0; set.forEach((id) => { mb += MEDIA[id].kind === 'still' ? 2 : 36; }); return mb; })();
+  const cfgOpt = (c) => { const b = blockers({ [c.id]: true }); const reason = b.length ? b[0].msg : ''; return `<label class="opt ${!sel[c.id] && b.length ? 'dis' : ''}"><input type="checkbox" data-cfg="${c.id}" ${sel[c.id] ? 'checked' : ''}><span><b>${esc(cfgName(c))}</b><span class="d">${S.released[c.id] ? `In package v${esc(S.pkgVersion)}` : 'New in this package'}</span>${reason ? `<span class="note">${esc(reason)} <button type="button" class="lnkb" data-open="${b[0].c}/${b[0].s}">Open stage</button></span>` : ''}</span></label>`; };
+  const can = !bl.length && changes.length > 0;
+  openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">Europe. Physicians download a new ZIP. Package v${esc(S.pkgVersion)} stays available and unchanged.</p>
+    <div><h3>What goes in</h3>${CONFIGS.map(cfgOpt).join('')}<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b><span class="d">Legacy slider vs Precision knob, stage by stage</span></span></label></div>
+    <div><h3>Changes since v${esc(S.pkgVersion)}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 8).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 8 ? `<li class="muted">and ${changes.length - 8} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
+    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF[b.leave])) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video and its text.${sel.cmp ? ' Both sides of the comparison are complete.' : ''}</span></div>`}</div>
+    <div class="kv"><dt>Size</dt><dd>about ${sizeMB} MB</dd><dt>Then</dt><dd>Download, test it offline, mark it as sent.</dd></div>
+    <div class="act"><button type="button" class="b pri" data-build ${can ? '' : 'disabled'}>Publish package v${esc(next)}</button><button type="button" class="b" data-x>Cancel</button>${!can ? `<span class="hint" style="align-self:center">${bl.length ? `Fix ${plural(bl.length, 'issue')} or leave them out.` : `Nothing changed since v${esc(S.pkgVersion)}.`}</span>` : ''}</div>`);
+  $('#modal').onclick = (e) => {
+    const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[cb.dataset.cfg] = cb.checked; persist(); openPublish(); return; }
+    const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[lv.dataset.leave] = false; persist(); openPublish(); return; }
+    const op = e.target.closest('[data-open]'); if (op) { closeModal(); const [c, s] = op.dataset.open.split('/'); openLesson(c, s); return; }
+    if (e.target.closest('[data-x]')) closeModal();
+    else if (e.target.closest('[data-build]')) build(next, changes, sizeMB);
+  };
+}
+function build(v, changes, mb) {
+  openModal(`<h2>Building package v${esc(v)}…</h2><p class="sub hint">Freezing the lessons and media you chose. Nothing can change in it after this.</p><div class="prog"><i id="prog"></i></div>`);
+  requestAnimationFrame(() => { const p = $('#prog'); if (p) p.style.width = '100%'; });
+  setTimeout(() => {
+    const sel = S.scope; CONFIGS.forEach((c) => { if (sel[c.id]) S.released[c.id] = clone(S.lessons[c.id]); else delete S.released[c.id]; });
+    const sha = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((x) => x.toString(16).padStart(2, '0')).join('');
+    S.packages.unshift({ v, date: today(), status: 'built', configs: CONFIGS.filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
+    S.pkgVersion = v; persist(); rerender();
+    openModal(`<h2>Package v${esc(v)} is ready</h2><p class="sub hint">Built ${esc(today())}. Physicians get it when you send it; until then they keep using v${esc(S.packages[1].v)}.</p>
+      <dl class="kv"><dt>Contains</dt><dd>${CONFIGS.filter((c) => sel[c.id]).map((c) => esc(cfgName(c))).join(', ')}${sel.cmp ? ', comparison: Tiger 13 handles' : ''}</dd><dt>Size</dt><dd>${mb} MB</dd><dt>Checksum</dt><dd><code>sha256 ${esc(sha)}…</code></dd></dl>
+      <div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Test before sending: unzip, go offline, open index.html, check one stage${sel.cmp ? ' and the comparison' : ''}.</span></div>
+      <div class="act"><button type="button" class="b pri" data-dl="${esc(v)}">Download ZIP</button><button type="button" class="b" data-sent="${esc(v)}">Mark as sent</button><a class="b" href="#packages">All packages</a></div>`);
+    $('#modal').onclick = (e) => { if (e.target.closest('[data-dl]')) say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); else if (e.target.closest('[data-sent]')) { markSent(v); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
+  }, 1700);
+}
+function markSent(v) { const p = S.packages.find((x) => x.v === v); if (!p) return; p.status = 'sent'; p.sentOn = today(); persist(); rerender(); say(`Package v${v} marked as sent on ${today()}.`); }
+
+/* ---------- toast, tip ---------- */
+function say(text, actLabel, act) { const t = $('#toast'); t.innerHTML = `<span>${esc(text)}</span>${actLabel ? `<button type="button">${esc(actLabel)}</button>` : ''}`; if (actLabel) t.querySelector('button').onclick = () => { t.hidden = true; act(); }; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, actLabel ? 7000 : 4500); }
+
+/* ---------- events ---------- */
+window.addEventListener('hashchange', route);
+$('#view').addEventListener('click', (e) => {
+  const t = e.target;
+  const open = t.closest('[data-open]'); if (open) { const [c, s] = open.dataset.open.split('/'); openLesson(c, s); return; }
+  const stg = t.closest('[data-stage]'); if (stg && stg.dataset.stage) { endEdit(); cur.s = stg.dataset.stage; persist(); rerender(); window.scrollTo(0, 0); return; }
+  if (t.closest('[data-cmp]')) { const s = t.closest('[data-cmp]').dataset.cmp; if (!isStage(s)) return; const st = cmpState(s); say(st.k === 'ok' ? `${ST[s].n}: both handles have a video, so physicians can compare this stage.` : `${ST[s].n}: one side has no video, so this stage is left out of the comparison.`); return; }
+  if (t.closest('[data-addcfg]')) { say('An admin adds models, handles and markets from the list Rapid Medical confirms. Not part of this prototype.'); return; }
+  if (t.closest('[data-publish]')) { openPublish(); return; }
+  if (t.closest('[data-upload]')) { say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); return; }
+  const fl = t.closest('[data-filter]'); if (fl) { mediaFilter = fl.dataset.filter; rerender(); return; }
+  const dl = t.closest('[data-dl]'); if (dl) { say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); return; }
+  const sn = t.closest('[data-sent]'); if (sn) { markSent(sn.dataset.sent); return; }
+  if (view === 'lesson' && mode === 'edit') {
+    if (t.closest('[data-media]')) { endEdit(); openMedia(); return; }
+    const f = t.closest('[data-t]'); if (f) { startEdit(f); return; }
+  }
+});
+$('#view').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('[data-media]')) { e.preventDefault(); openMedia(); } if (editing && e.key === 'Enter' && editing.tagName === 'H1') { e.preventDefault(); editing.blur(); } });
+$('#view').addEventListener('focusout', (e) => { if (editing && e.target === editing) endEdit(); });
+$('#view').addEventListener('paste', (e) => { if (!editing) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s*\n\s*/g, ' ')); });
+$('#bar').addEventListener('click', (e) => { if (e.target.closest('[data-publish]')) openPublish(); });
+$('#bBack').onclick = () => { location.hash = '#ready'; };
+$('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
+$('#bComment').onclick = () => { endEdit(); if (!$('#drawer').hidden && $('#cmtIn')) closeDrawer(); else openComments(); };
+$('#bChanges').onclick = () => { location.hash = '#changes'; };
+$('#bPrev').onclick = () => { endEdit(); closeDrawer(); mode = 'preview'; if (view !== 'lesson') location.hash = '#lesson'; else render(); };
+$('#bBackEdit').onclick = () => { mode = 'edit'; render(); };
+$('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c2', s: 'pos' }; lastJson = JSON.stringify(S.lessons); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
+$('#tipOk').onclick = () => { S.tipDone = true; persist(); $('#tip').hidden = true; };
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { if (editing) { endEdit(false); return; } if ($('#modal').innerHTML) { closeModal(); return; } if (!$('#drawer').hidden) { closeDrawer(); return; } if (mode === 'preview') { mode = 'edit'; render(); } }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !editing && !e.target.closest('input,textarea')) { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+});
+document.addEventListener('pointerdown', (e) => { if (!$('#drawer').hidden && !e.target.closest('#drawer,#bar,#modal,[data-media],#toast')) closeDrawer(); });
+
+/* ---------- boot ---------- */
+load();
+if (!VIEWS[location.hash.replace('#', '')]) history.replaceState(null, '', '#start');
+route();
+</script>
