@@ -20,11 +20,12 @@
 - [admin-ux-review](findings/admin-ux-review.md) — разбор текущей админки, основа для единой (2026-11-06)
 - [admin-editor-best-practices](findings/admin-editor-best-practices.md) — практики для нетехнических редакторов, разбор прототипа v0.1 (2026-11-07)
 - [block-inventory](findings/block-inventory.md) — все секции сайта, состав коллекции блоков (2026-11-07)
+- [client-brief-lesson-content](findings/client-brief-lesson-content.md) — что клиент сказал о содержимом урока инструмента: структура секции, материал по этапам, статусы (2026-11-08)
 
 ## Сессии — `sessions/`
 
 | Дата | Задача | Файл |
 |---|---|---|
-| 2026-11-08 | Инструмент Tigertriever: модель контента в спеке, прототип Content Studio v0.1 | [2026-11-08-tigertriever-content-studio.md](sessions/2026-11-08-tigertriever-content-studio.md) |
+| 2026-11-08 | Инструмент Tigertriever: модель контента в спеке, прототип Content Studio v0.1, сверка с материалами клиента, учебный прототип v0.3 | [2026-11-08-tigertriever-content-studio.md](sessions/2026-11-08-tigertriever-content-studio.md) |
 | 2026-11-08 | Единая админка: модель работы, правка на странице, коллекция блоков | [2026-11-08-unified-admin-blocks.md](sessions/2026-11-08-unified-admin-blocks.md) |
 | 2026-11-06 | Ревизия, чистка, добор с Duda | [2026-11-06-revision-duda-tails.md](sessions/2026-11-06-revision-duda-tails.md) |
