@@ -20,6 +20,7 @@
 - [admin-ux-review](findings/admin-ux-review.md) — разбор текущей админки, основа для единой (2026-11-06)
 - [admin-editor-best-practices](findings/admin-editor-best-practices.md) — практики для нетехнических редакторов, разбор прототипа v0.1 (2026-11-07)
 - [block-inventory](findings/block-inventory.md) — все секции сайта, состав коллекции блоков (2026-11-07)
+- Атлас исследования инструмента — `docs/research/` (этап 07 бенчмарк, 2026-11-08)
 - [client-brief-lesson-content](findings/client-brief-lesson-content.md) — что клиент сказал о содержимом урока инструмента: структура секции, материал по этапам, статусы (2026-11-08)
 
 ## Сессии — `sessions/`
