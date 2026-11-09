@@ -174,7 +174,7 @@ const src = (id) => `media/${id}.mp4`;
 const stageIdx = (k) => STAGES.findIndex((s) => s.k === k);
 const num = (k) => { const s = STAGES[stageIdx(k)]; return s.f ? '' : stageIdx(k); };
 
-let S = { screen: 'choose', market: null, model: null, handle: null, stage: 'opening', auto: false, present: false, side: 'a', ts: 1, watched: {}, last: {} };
+let S = { screen: 'choose', market: 'eu', model: null, handle: null, stage: 'opening', auto: false, present: false, side: 'a', ts: 1, watched: {}, last: {} };
 let playNext = false, stopped = false, timer = null, count = 0, DUR = {};
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { S.auto = !!s.auto; S.watched = s.watched || {}; S.last = s.last || {}; } } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last })); } catch (e) {} };
@@ -214,10 +214,10 @@ function renderBar() {
 }
 function vChoose() {
   const mk = S.market;
-  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Content and handles differ by market, so start there.</p></div>
-  <div><div class="label">Market</div><div class="seg" role="group" aria-label="Market">${Object.entries(MARKETS).map(([k, m]) => `<button aria-pressed="${k === mk}" data-do="market" data-m="${k}">${esc(m.n)}</button>`).join('')}</div></div>
-  <div><div class="label">Device and handle</div><div class="models">${MODELS.map((m) => { const hs = m.handles.filter((h) => h !== 'knob' || (mk && MARKETS[mk].knob)); return `<div class="model"><b>${esc(m.n)}</b><div class="opts">${m.later ? '<span class="tag">No training yet</span>' : hs.map((h) => `<button class="btn" data-do="pick" data-model="${m.id}" data-h="${h}" ${mk ? '' : 'disabled'}>${esc(HANDLES[h])} →</button>`).join('')}</div></div>`; }).join('')}</div>${mk ? (mk === 'ap' ? '<p class="fine" style="margin-top:8px">The precision knob is not offered in Asia Pacific, so Tiger 13 has one handle here.</p>' : '') : '<p class="fine" style="margin-top:8px">Choose your market first.</p>'}</div>
-  <p class="fine">Concept v0.4. Texts are stand-ins and clips come from the public Rapid Medical website. Not for clinical use.</p></div>`;
+  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Training for ${esc(MARKETS[mk].n)}.</p></div>
+  <div><div class="label">Device and handle</div><div class="models">${MODELS.map((m) => { const hs = m.handles.filter((h) => h !== 'knob' || MARKETS[mk].knob); return `<div class="model"><b>${esc(m.n)}</b><div class="opts">${m.later ? '<span class="tag">No training yet</span>' : hs.map((h) => `<button class="btn" data-do="pick" data-model="${m.id}" data-h="${h}">${esc(HANDLES[h])} →</button>`).join('')}</div></div>`; }).join('')}</div>${mk === 'ap' ? '<p class="fine" style="margin-top:8px">The precision knob is not offered in Asia Pacific, so Tiger 13 has one handle here.</p>' : ''}</div>
+  <p class="fine">Concept v0.4. Texts are stand-ins and clips come from the public Rapid Medical website. Not for clinical use.</p>
+  <div class="note"><div class="fine">Prototype only, not part of the product: which market this package was built for. In the product it comes from the client's geolocation.</div><div class="seg" role="group" aria-label="Prototype market">${Object.entries(MARKETS).map(([k, m]) => `<button aria-pressed="${k === mk}" data-do="market" data-m="${k}">${esc(m.n)}</button>`).join('')}</div></div></div>`;
 }
 function vOverview() {
   const last = S.last[cfgKey()], m = model();

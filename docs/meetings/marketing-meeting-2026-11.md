@@ -16,7 +16,7 @@ open-questions register v0.3, website owner decisions in `BACKLOG.md`. IDs in br
 | # | Question | Why we ask | Ask for |
 |---|---|---|---|
 | T1 | Which models, handles and markets go in the first package? Is Tiger 17U included? When do Tiger 21 and 25 follow? | The July draft lists T17U; the October wireframe does not. This sets the configurations we build. (SCOPE-07, MED-01) | Release list |
-| T2 | Is the precision knob offered in the US and Europe and not in Asia Pacific, as the wireframe shows? One package per market, or one for all? | Sets the market rules and whether a physician picks a market at all. (MED-02, OPS-04) | Market × handle list |
+| T2 | Is the precision knob offered in the US and Europe and not in Asia Pacific, as the wireframe shows? | Sets which handles each market gets. (MED-02) | Market × handle list |
 | T3 | Who enters the content, who checks it, and who may release a new package? Does medical or regulatory see it before release? | We have no separate approval step; publishing is the release. (MED-08) | Names and roles |
 | T4 | What is the current state of the filming table on page 14 of the July draft? When will Emily film the precision-knob clips? | Deployment, Prepare to retrieve and Retrieval cannot ship for the knob until then. (SCOPE-08) | Updated asset table |
 | T5 | The July draft has no warnings on screen. Do any stages need approved warning or IFU text? Who supplies it? | We made the warning field optional; it stays out unless you need it. (MED-04) | Approved text, owner |
