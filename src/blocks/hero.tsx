@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { ActionLink } from "@/db/schema";
-import { Container, H1, Btn, Img, Eyebrow } from "@/components/site/primitives";
+import { Container, Section, H1, Btn, Img, Eyebrow } from "@/components/site/primitives";
 import { VideoHero } from "@/components/site/Media";
 import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type HeroVariant = "video" | "image" | "title";
+export type HeroVariant = "video" | "image" | "title" | "page";
 
 export type HeroData = {
   /** Breadcrumb line above the title. */
@@ -20,7 +20,17 @@ export type HeroData = {
   videoUrl?: string | null;
 };
 
-function Hero({ variant, data: d, edit: e }: BlockProps<"hero">) {
+function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
+  if (variant === "page") {
+    const inner = (
+      <>
+        {d.eyebrow && <Eyebrow>{d.eyebrow}</Eyebrow>}
+        <H1><F e={e} k="title">{d.title}</F></H1>
+        {d.body && <p className="mt-3 text-muted"><F e={e} k="body">{d.body}</F></p>}
+      </>
+    );
+    return nested ? inner : <Section>{inner}</Section>;
+  }
   const video = variant === "video" ? d.videoUrl : null;
   const links = d.eyebrowLinks ?? [];
   return (
@@ -53,7 +63,8 @@ export const hero: BlockDef<"hero"> = {
   variants: [
     { id: "video", label: "Background video", description: "Dark, video plays in the background, the image is its poster" },
     { id: "image", label: "Image beside", description: "Light, text on the left, image on the right" },
-    { id: "title", label: "Title only", description: "No media" },
+    { id: "title", label: "Title band", description: "Own band with a line under it, no media" },
+    { id: "page", label: "Page title", description: "Compact title and short intro, flows into the content below" },
   ],
   fields: [
     { key: "eyebrow", label: "Breadcrumb", kind: "text", note: "filled in automatically" },
@@ -73,4 +84,5 @@ export const hero: BlockDef<"hero"> = {
     videoUrl: "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
   },
   Component: Hero,
+  flow: (v) => v === "page",
 };

@@ -314,10 +314,10 @@ ZIP: `index.html` + `manifest.json` (версия, рынок, конфигур�
 | `/{region}/therapies/{slug}` | Страница терапии | [therapy](screens/therapy.md) |
 | `/{region}/evidence` | Публикации по региону, вкладки по продуктам | [evidence](screens/evidence.md) |
 | `/{region}/webinars` | Список вебинаров + форма-запрос записи | спека не написана |
-| `/{region}/{slug}` | Региональная страница из `pages` (лендинги) | спека не написана |
-| `/{slug}` | Глобальная страница из `pages` (privacy, terms, …); промах → redirects / 404 | спека не написана |
+| `/{region}/{slug}` | Региональная страница из `pages` (лендинги) | [pages](screens/pages.md) |
+| `/{slug}` | Глобальная страница из `pages` (privacy, terms, …); промах → redirects / 404 | [pages](screens/pages.md) |
 | `/news-events` | Внешние новости | спека не написана |
-| `/about-us` | О компании, руководство, офисы, интерактивная карта | спека не написана |
+| `/about-us` | О компании, руководство, офисы, интерактивная карта | [about-us](screens/about-us.md) |
 | `/team/{slug}` | Профиль руководителя | спека не написана |
 | `/careers` | Карьера, цитаты, принципы, форма | спека не написана |
 | `/open-positions`, `/open-positions/{slug}` | Вакансии и вакансия с формой | спека не написана |

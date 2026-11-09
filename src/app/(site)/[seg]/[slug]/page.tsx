@@ -2,11 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getPage } from "@/lib/content";
-import { safeHtml } from "@/lib/html";
 import { redirectIfLegacy } from "@/lib/redirects";
-import { Section, H1, Prose, Eyebrow } from "@/components/site/primitives";
 import { REGION_LABELS } from "@/lib/regions";
-import { E } from "@/components/site/editable";
+import { BlockList } from "@/blocks/render";
+import { pageToBlocks } from "@/blocks/from-pages";
 
 /** Regional landing pages, e.g. /us/success-study-final-results */
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
@@ -30,11 +29,5 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
     notFound();
   }
 
-  return (
-    <Section>
-      <Eyebrow>{REGION_LABELS[region]}</Eyebrow>
-      <H1><E r="pages" id={page.id} f="title">{page.title}</E></H1>
-      <E r="pages" id={page.id} f="bodyHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(page.bodyHtml)} /></E>
-    </Section>
-  );
+  return <BlockList blocks={pageToBlocks(page, REGION_LABELS[region])} />;
 }

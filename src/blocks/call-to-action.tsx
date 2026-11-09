@@ -1,9 +1,9 @@
 import type { ActionLink } from "@/db/schema";
-import { Section, Container, Btn } from "@/components/site/primitives";
+import { Section, Container, Btn, H2 } from "@/components/site/primitives";
 import { F } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type CtaVariant = "band" | "panel" | "buttons";
+export type CtaVariant = "band" | "panel" | "buttons" | "light";
 
 export type CtaData = {
   title?: string | null;
@@ -27,6 +27,15 @@ function Cta({ variant, data: d, edit: e, nested }: BlockProps<"cta">) {
           {buttons}
         </Container>
       </section>
+    );
+  }
+  if (variant === "light") {
+    return (
+      <Section className="bg-surface">
+        {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
+        {d.body && <p className="mt-3 text-muted"><F e={e} k="body">{d.body}</F></p>}
+        {buttons.length > 0 && <div className="mt-6">{buttons}</div>}
+      </Section>
     );
   }
   const inner =
@@ -53,6 +62,7 @@ export const cta: BlockDef<"cta"> = {
   nestable: true,
   variants: [
     { id: "band", label: "Dark band", description: "Full width: title, text and button in one line" },
+    { id: "light", label: "Grey band", description: "Full width on a grey band: title, text, button" },
     { id: "panel", label: "Dark panel", description: "A panel inside a section, centred" },
     { id: "buttons", label: "Button row", description: "Buttons and a short note" },
   ],

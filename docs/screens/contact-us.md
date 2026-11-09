@@ -3,6 +3,10 @@
 Код: `src/app/(site)/contact-us/page.tsx`, форма `src/components/site/ContactForm.tsx`,
 сервер `src/lib/forms.ts` (`submitForm`). Восстановлено по коду `59169da`.
 
+## Блоки
+Страница — список блоков, собирает `contactToBlocks()` (`src/blocks/from-pages.ts`), в одной секции:
+Hero · `page` («Let’s connect», текст не редактируется) и Form · `default` (тема и регион — из параметров URL).
+
 ## Доступ
 Публичный. `/{region}/contact-us` → редирект сюда с `?region={region}`.
 

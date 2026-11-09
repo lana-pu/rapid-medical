@@ -12,6 +12,10 @@ import type { PeopleData, PeopleVariant } from "./people";
 import type { VideoData, VideoVariant } from "./video";
 import type { ProductDetailsData, ProductDetailsVariant } from "./product-details";
 import type { IndicationsData, IndicationsVariant } from "./indications";
+import type { RichTextData, RichTextVariant } from "./rich-text";
+import type { MediaData, MediaVariant } from "./media";
+import type { FormBlockData, FormVariant } from "./form";
+import type { OfficesMapData, OfficesMapVariant } from "./offices-map";
 
 /**
  * Page blocks. A page is an ordered list of blocks; a block is
@@ -32,6 +36,10 @@ export type BlockMap = {
   video: { variant: VideoVariant; data: VideoData };
   productDetails: { variant: ProductDetailsVariant; data: ProductDetailsData };
   indications: { variant: IndicationsVariant; data: IndicationsData };
+  richText: { variant: RichTextVariant; data: RichTextData };
+  media: { variant: MediaVariant; data: MediaData };
+  form: { variant: FormVariant; data: FormBlockData };
+  officesMap: { variant: OfficesMapVariant; data: OfficesMapData };
 };
 
 export type BlockType = keyof BlockMap;
@@ -84,4 +92,6 @@ export type BlockDef<T extends BlockType> = {
   Component: (props: BlockProps<T>) => ReactNode | Promise<ReactNode>;
   /** Consecutive top-level blocks of this type share one wrapper (one band). */
   stack?: (children: ReactNode) => ReactNode;
+  /** No band of its own: consecutive flow blocks share one plain section (rendered as `nested`). */
+  flow?: (variant: BlockMap[T]["variant"]) => boolean;
 };

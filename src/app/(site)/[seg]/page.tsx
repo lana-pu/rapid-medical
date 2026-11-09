@@ -2,10 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { isRegion } from "@/lib/regions";
 import { getPage } from "@/lib/content";
-import { safeHtml } from "@/lib/html";
 import { redirectIfLegacy } from "@/lib/redirects";
-import { Section, H1, Prose } from "@/components/site/primitives";
-import { E } from "@/components/site/editable";
+import { BlockList } from "@/blocks/render";
+import { pageToBlocks } from "@/blocks/from-pages";
 
 /**
  * /us and /ous  → region landing (therapies index)
@@ -29,10 +28,5 @@ export default async function GlobalPage({ params }: { params: Promise<{ seg: st
     notFound();
   }
 
-  return (
-    <Section>
-      <H1><E r="pages" id={page.id} f="title">{page.title}</E></H1>
-      <E r="pages" id={page.id} f="bodyHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(page.bodyHtml)} /></E>
-    </Section>
-  );
+  return <BlockList blocks={pageToBlocks(page)} />;
 }

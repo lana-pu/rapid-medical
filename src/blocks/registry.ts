@@ -11,6 +11,10 @@ import { deviceDiagram } from "./device-diagram";
 import { specTable } from "./spec-table";
 import { people } from "./people";
 import { indications } from "./indications";
+import { richText } from "./rich-text";
+import { media } from "./media";
+import { form } from "./form";
+import { officesMap } from "./offices-map";
 
 /**
  * All page blocks. Adding a block = a file next to this one + a line here
@@ -20,7 +24,9 @@ import { indications } from "./indications";
 export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   hero,
   text,
+  richText,
   textMedia,
+  media,
   keyNumbers,
   columns,
   video,
@@ -29,6 +35,8 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   deviceDiagram,
   specTable,
   people,
+  form,
+  officesMap,
   indications,
 };
 

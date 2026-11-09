@@ -1,0 +1,77 @@
+import type { Page, TeamMember } from "@/db/schema";
+import type { Block } from "./types";
+import type { Office } from "./offices-map";
+
+/**
+ * Block lists for the pages that are stored as records or settings:
+ * text pages, Contact, About. Storage does not change; the lists are built on render.
+ * Specs: docs/screens/pages.md, about-us.md, contact-us.md.
+ */
+
+export function pageToBlocks(page: Page, regionLabel?: string): Block[] {
+  const edit = { r: "pages", id: page.id, map: { title: "title", html: "bodyHtml" } };
+  return [
+    { type: "hero", variant: "page", data: { eyebrow: regionLabel, title: page.title }, edit },
+    { type: "richText", variant: "default", data: { html: page.bodyHtml }, edit },
+  ];
+}
+
+const TOPICS = ["Request a demo", "Product question / Support", "Customer Service / Orders", "Meetings & Events", "Investor relations", "Other"];
+const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac: "Asia Pacific" };
+const TOPIC_MAP: Record<string, string> = { demo: "Request a demo", support: "Product question / Support", orders: "Customer Service / Orders" };
+
+export function contactToBlocks({ region, topic }: { region?: string; topic?: string }): Block[] {
+  return [
+    { type: "hero", variant: "page", data: { title: "Let’s connect", body: "Please provide a few contact details below." } },
+    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: topic ? TOPIC_MAP[topic] : undefined, defaultRegion: region ? REGION_MAP[region] : undefined } },
+  ];
+}
+
+export type AboutSettings = { intro?: string; whatWeDoTitle?: string; whatWeDoBody?: string; leadershipIntro?: string; heroImageUrl?: string; mapTitle?: string; mapSub?: string; mapFallbackImageUrl?: string; closingLine?: string };
+
+export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; offices: Office[]; team: TeamMember[] }): Block[] {
+  const r = "settings:about";
+  const blocks: Block[] = [{ type: "hero", variant: "page", data: { title: "About Us" } }];
+  if (about.intro || about.heroImageUrl) {
+    blocks.push({ type: "text", variant: "large", data: { body: about.intro, imageUrl: about.heroImageUrl }, edit: { r, map: { body: "intro", imageUrl: "heroImageUrl" } } });
+  }
+  blocks.push({ type: "text", variant: "surface", data: { title: about.whatWeDoTitle ?? "What we do", body: about.whatWeDoBody }, edit: { r, map: { title: "whatWeDoTitle", body: "whatWeDoBody" } } });
+  blocks.push({
+    type: "people",
+    variant: "team",
+    data: {
+      anchor: "leadership",
+      title: "Leadership Team",
+      intro: about.leadershipIntro,
+      members: team.map((m) => ({ name: m.name, title: m.title, photoUrl: m.photoUrl, href: `/team/${m.slug}`, edit: { r: "team", id: m.id, prefix: "" } })),
+    },
+    edit: { r, map: { intro: "leadershipIntro" } },
+  });
+  if (offices.length > 0) {
+    blocks.push({ type: "officesMap", variant: "offices", data: { anchor: "offices", title: "Global Offices", offices }, edit: { r: "settings:contact", map: { offices: "offices" } } });
+  }
+  blocks.push({
+    type: "officesMap",
+    variant: "map",
+    data: {
+      anchor: "map",
+      title: about.mapTitle,
+      subtitle: about.mapSub,
+      offices,
+      regionLinks: {
+        usa: "/contact-us?region=us",
+        canada: "/contact-us?region=us",
+        latam: "/contact-us?region=ous",
+        europe: "/contact-us?region=ous",
+        australia: "/contact-us?region=ous",
+        middleeast: "/contact-us?region=apac",
+        asia: "/contact-us?region=apac",
+      },
+      fallbackImageUrl: about.mapFallbackImageUrl,
+      closingLine: about.closingLine ?? "Have a question? We’d love to hear from you.",
+      button: { label: "Contact us", href: "/contact-us" },
+    },
+    edit: { r, map: { title: "mapTitle", subtitle: "mapSub", closingLine: "closingLine" } },
+  });
+  return blocks;
+}
