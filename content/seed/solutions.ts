@@ -395,6 +395,7 @@ const ACTIONS: Record<Region, ActionLink[]> = {
 
 const demo = (r: Region): ActionLink => ({ label: "Request a demo", href: `/contact-us?region=${r}&topic=demo` });
 const CLOSING_Q = "Questions? Reach out to learn more about our company and devices.";
+const CLOSING_Q_APAC = "Questions? Reach out to learn more about our company and stroke solutions."; // APAC Duda site not updated yet
 
 const samaniego = (site: string, img: string): InPracticeItem => ({
   kind: "recording",
@@ -413,7 +414,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== US ============================== */
   {
     slug: "lvo", region: "us", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "Therapies / Large vessel stroke",
     metaTitle: "TIGERTRIEVER™ Adjustable Stent Retriever | Rapid Medical",
     metaDescription: "TIGERTRIEVER™ is the only adjustable stent retriever, engineered to adapt to patient anatomy for large vessel occlusion stroke thrombectomy.",
     heroTitle: "A patient-centric approach to AIS",
@@ -440,7 +441,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "us", product: "comaneci", sortOrder: 2,
-    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "Therapies / Aneurysm",
     metaTitle: "COMANECI™ Aneurysm Assist Device | Rapid Medical",
     metaDescription: "COMANECI™ is a non-occlusive, adjustable assist device for wide-neck aneurysms, without occluding blood flow or leaving a permanent implant.",
     heroTitle: "Bridging the gap in assist devices",
@@ -470,7 +471,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "drivewire", region: "us", product: "drivewire", sortOrder: 3,
-    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
+    navLabel: "Access", breadcrumb: "Therapies / Access",
     metaTitle: "DRIVEWIRE™ & HYPERDRIVE™ Access Devices | Rapid Medical",
     metaDescription: "DRIVEWIRE™ (neurovascular and peripheral) and HYPERDRIVE™ (peripheral) help select vessels and support a wide range of catheters.",
     heroTitle: "Active access",
@@ -497,7 +498,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== OUS ============================= */
   {
     slug: "lvo", region: "ous", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "Therapies / Large vessel stroke",
     metaTitle: "TIGERTRIEVER™ Adjustable Stent Retriever | Rapid Medical",
     metaDescription: "TIGERTRIEVER™ is the only adjustable stent retriever, engineered to adapt to patient anatomy for large vessel occlusion thrombectomy.",
     heroTitle: "A patient-centric approach to AIS",
@@ -522,7 +523,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "mvo", region: "ous", product: "tigertriever-13", sortOrder: 2,
-    navLabel: "Medium vessel stroke", breadcrumb: "THERAPIES / MEDIUM VESSEL STROKE",
+    navLabel: "Medium vessel stroke", breadcrumb: "Therapies / Medium vessel stroke",
     metaTitle: "TIGERTRIEVER™ 13 Medium Vessel Thrombectomy | Rapid Medical",
     metaDescription: "TIGERTRIEVER™ 13, an adjustable stent retriever sized for thrombectomy in medium and distal vessel occlusions.",
     heroTitle: "The only device designed for distals",
@@ -555,7 +556,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "ous", product: "comaneci", sortOrder: 3,
-    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "Therapies / Aneurysm",
     metaTitle: "COMANECI™ Aneurysm Assist Device | Rapid Medical",
     metaDescription: "COMANECI™ is a non-occlusive, adjustable assist device for wide-neck aneurysms, without occluding blood flow or leaving a permanent implant.",
     heroTitle: "Bridging the gap in assist devices",
@@ -584,7 +585,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "vasospasm", region: "ous", product: "comaneci", sortOrder: 4,
-    navLabel: "Vasospasm", breadcrumb: "THERAPIES / VASOSPASM",
+    navLabel: "Vasospasm", breadcrumb: "Therapies / Vasospasm",
     metaTitle: "COMANECI™ for Cerebral Vasospasm | Rapid Medical",
     metaDescription: "COMANECI™ provides controlled mechanical dilation for cerebral vasospasm, without a permanent implant.",
     heroTitle: "Take command in vasospasm",
@@ -611,7 +612,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "drivewire", region: "ous", product: "drivewire", sortOrder: 5,
-    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
+    navLabel: "Access", breadcrumb: "Therapies / Access",
     metaTitle: "DRIVEWIRE™ Steerable Guidewire | Rapid Medical",
     metaDescription: "DRIVEWIRE™ steerable guidewires for selective catheter placement in the neuro and peripheral vasculature. Not for use in the coronary arteries.",
     heroTitle: "Active access",
@@ -637,7 +638,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== APAC ============================ */
   {
     slug: "lvo", region: "apac", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "Therapies / Large vessel stroke",
     metaTitle: "Neurovascular Therapy | Rapid Medical™ | APAC",
     metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment.",
     heroTitle: "A patient-centric approach to AIS",
@@ -657,13 +658,13 @@ export const SOLUTIONS: SolutionSeed[] = [
     ],
     actionLinks: ACTIONS.apac,
     closingTitle: "Active thrombectomy tailors the procedure to the patient.",
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     closingEmbedUrl: TIGER_YOUTUBE,
     regulatoryHtml: "", referencesHtml: TIGER_REFERENCES,
   },
   {
     slug: "mvo", region: "apac", product: "tigertriever-13", sortOrder: 2,
-    navLabel: "Medium vessel stroke", breadcrumb: "THERAPIES / MVO (TIGERTRIEVER™ 13)",
+    navLabel: "Medium vessel stroke", breadcrumb: "Therapies / MVO (TIGERTRIEVER™ 13)",
     metaTitle: "Medium Vessel Stroke | TIGERTRIEVER™ 13 | Rapid Medical™ | APAC",
     metaDescription: "TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.",
     heroTitle: "The only device designed for distals",
@@ -692,13 +693,13 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "\\*TIGERTRIEVER™ 13 is indicated for LVOs in the US. Refer to Instructions for Use for detailed indications.",
     referencesHtml: MVO_REFERENCES,
   },
   {
     slug: "aneurysm", region: "apac", product: "comaneci", sortOrder: 3,
-    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "Therapies / Aneurysm",
     metaTitle: "Aneurysm Treatment | COMANECI™ | Rapid Medical™ | APAC",
     metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
     heroTitle: "Bridging the gap in assist devices",
@@ -720,12 +721,12 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "", referencesHtml: COMANECI_REFERENCES,
   },
   {
     slug: "vasospasm", region: "apac", product: "comaneci", sortOrder: 4,
-    navLabel: "Vasospasm", breadcrumb: "THERAPIES / VASOSPASM",
+    navLabel: "Vasospasm", breadcrumb: "Therapies / Vasospasm",
     metaTitle: "Vasospasm Treatment | Rapid Medical™ | APAC",
     metaDescription: "COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm.",
     heroTitle: "Take command in vasospasm",
@@ -744,12 +745,12 @@ export const SOLUTIONS: SolutionSeed[] = [
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
-    closingBody: CLOSING_Q,
+    closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
     slug: "drivewire", region: "apac", product: "drivewire", sortOrder: 5,
-    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
+    navLabel: "Access", breadcrumb: "Therapies / Access",
     metaTitle: "Active Access | DRIVEWIRE™ Steerable Guidewire | Rapid Medical™ | APAC",
     metaDescription: "DRIVEWIRE™ – the world's first steerable neurovascular guidewire.",
     heroTitle: "Active access",

@@ -154,7 +154,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   const h1 = page.locator("h1 [data-e]");
   await h1.click();
   await expect(h1).toHaveAttribute("contenteditable", /plaintext-only|true/);
-  await page.keyboard.press("Control+A");
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("Inline edited title");
   await page.keyboard.press("Enter");
   await expect(page.getByText("1 pending change on this page")).toBeVisible();
@@ -172,7 +172,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
 
   // restore via the editor
   await page.locator("h1 [data-e]").click();
-  await page.keyboard.press("Control+A");
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("A patient-centric approach to AIS");
   await page.keyboard.press("Enter");
   await expect(page.getByText("1 pending change on this page")).toBeVisible();
@@ -183,7 +183,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.goto("/");
   const stat = page.locator('[data-e*="stats.0.value"]');
   await stat.click();
-  await page.keyboard.press("Control+A");
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
   await expect(page.getByText("1 pending change on this page")).toBeVisible();

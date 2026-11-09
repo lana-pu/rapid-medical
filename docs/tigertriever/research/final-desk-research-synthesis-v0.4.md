@@ -3,7 +3,7 @@
 
 **Version:** v0.4 · **Date:** 2 November 2026  
 **Document owner:** UX / Product Design  
-**Status:** Targeted desk-research synthesis complete for the first UX-design cycle. Working UX baseline, **not** a manufacturer-approved medical, regulatory, budget or engineering specification.
+**Status:** Targeted desk-research synthesis complete for the first UX-design cycle. Working UX baseline, **not** a manufacturer-approved medical, regulatory or engineering specification.
 
 > **Research closure statement.** This closes the *targeted secondary desk-research cycle* covering context of use, learning science, comparison design, external interface benchmarking, information architecture, content taxonomy, regional product context and Content Studio workflows. It does **not** mean user research, medical-content approval, offline technical validation, regulatory assessment or implementation estimation are complete. The decisions below supersede conflicting **working UX recommendations** in earlier addenda. Earlier reports remain preserved as source evidence, not competing active specifications.
 
@@ -218,7 +218,7 @@ Published content online, approved content, and already installed ZIPs are **dif
 | Desktop web prototype assumed to run from `file://` | Offline ZIP launch requires real platform spike; browser/local-server/wrapped desktop options remain open | T: not resolved |
 | Marketing site `Product overview` pages copied as lesson navigation | Take **content types**, not tab structure, clinical claims or promotional text | P/D |
 | Development phase names (T13/17 first; T21/25 later) shown as training steps | Rollout is editorial/development readiness only; not learner procedure navigation | C/D |
-| $950 proof-of-concept budget treated as full product scope | Proof-of-concept slice distinguished from production tooling; obtain explicit scoped estimate for production | Project constraint; no fabricated hours |
+| Proof-of-concept scope treated as full product scope | Proof-of-concept slice distinguished from production tooling; obtain explicit scoped estimate for production | Project constraint; no fabricated hours |
 
 ## 7. Consolidated priorities and scope gates
 
@@ -234,7 +234,7 @@ Published content online, approved content, and already installed ZIPs are **dif
 | Governance | Fake/synthetic roles for design experiments | Permission model matched to actual staff and sign-off | Complex approval/signature chains |
 | Platform | Test real `file://` and alternative packaging on target OS | Supported offline delivery path with bundled video | More environments only with justification |
 
-**Budget safeguard:** The earlier small fixed fee is not evidence that a full self-service studio, custom content governance, build pipeline and supported offline distribution can be completed for that fee. Do not commit to production scope/effort before the technical spike and content audit.
+**Scope safeguard:** The earlier proposal is not evidence that a full self-service studio, custom content governance, build pipeline and supported offline distribution are included in it. Do not commit to production scope/effort before the technical spike and content audit.
 
 ### Candidate implementation slice for the first prototype
 
@@ -271,7 +271,7 @@ Published content online, approved content, and already installed ZIPs are **dif
 | D21 | Standalone ZIP packaging path TBD | Open technical decision | T | Compatibility spike |
 | D22 | Marketing/site facts not automatic medical guidance | Fixed sourcing boundary | C/P | Content intake audit |
 | D23 | Release phases kept out of clinician navigation | Fixed IA principle | C/D | Review stage sitemap |
-| D24 | No scope claim about earlier budget for production system | Fixed project constraint | Project | Re-estimate after P0 |
+| D24 | No scope claim from the earlier proposal for production system | Fixed project constraint | Project | Re-estimate after P0 |
 
 ## 9. Validation plan: what happens after desk research
 
@@ -310,7 +310,7 @@ Published content online, approved content, and already installed ZIPs are **dif
 
 ### 9.4 Gate to move into design
 
-Desk research supports **beginning low-fidelity concept development now**. It does not support finalizing the interaction design without testing. Before production sign-off, there must be (a) approved content/configuration mapping, (b) task-based comprehension checks for high-risk screens, (c) verified offline packaging on target systems, and (d) credible project scope/budget.
+Desk research supports **beginning low-fidelity concept development now**. It does not support finalizing the interaction design without testing. Before production sign-off, there must be (a) approved content/configuration mapping, (b) task-based comprehension checks for high-risk screens, (c) verified offline packaging on target systems, and (d) credible project scope.
 
 ## 10. Information needed from Rapid Medical, without delegating UX decisions
 

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tigertriever offline package test</title>
+<style>
+:root{--ink:#1B2230;--ink-2:#5B6474;--line:#DCE0E7;--paper:#fff;--shade:#F3F5F8;--ok:#14633F;--ok-soft:#DFF3E8;--bad:#A3261E;--bad-soft:#FBE4E1;--wait:#8A4B00;--wait-soft:#FFEFD9;--accent:#174C5A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 64px;display:flex;flex-direction:column;gap:24px}
+h1{font-size:24px;margin:0}
+h2{font-size:17px;margin:0 0 10px}
+p{margin:0}
+.muted{color:var(--ink-2)}
+.panel{border:1px solid var(--line);border-radius:10px;padding:16px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-radius:8px;background:var(--wait-soft);color:var(--wait)}
+.ck.ok{background:var(--ok-soft);color:var(--ok)}
+.ck.bad{background:var(--bad-soft);color:var(--bad)}
+.ck.info{background:var(--shade);color:var(--ink-2)}
+.ck b{min-width:64px}
+.result{font-size:18px;font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-weight:600;padding:9px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:#fff;color:var(--accent)}
+textarea{width:100%;min-height:150px;font:12.5px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;padding:10px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.pair{grid-template-columns:1fr}}
+.side{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.side header{padding:10px 14px;background:var(--shade);border-bottom:1px solid var(--line)}
+.side header small{display:block;color:var(--ink-2)}
+.side .body{padding:14px;display:flex;flex-direction:column;gap:10px}
+video{width:100%;max-width:100%;aspect-ratio:16/9;background:#000;border-radius:6px;display:block}
+ul{margin:0;padding-left:20px}
+.note{border-left:3px solid var(--accent);padding:8px 12px;background:var(--shade);border-radius:0 6px 6px 0;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <p class="muted">Rapid Medical · Tigertriever training</p>
+    <h1>Offline package test</h1>
+    <p class="muted" id="note"></p>
+  </div>
+
+  <section class="panel" aria-labelledby="ckTitle">
+    <h2 id="ckTitle">Check on this computer</h2>
+    <p class="muted" style="margin-bottom:10px">Turn off Wi-Fi or unplug the network first. Then press Play on both videos below. The checks update by themselves.</p>
+    <div class="checks" id="checks"></div>
+    <p class="result" id="result" style="margin-top:12px"></p>
+    <div class="row" style="margin-top:12px"><button type="button" id="copy">Copy results</button><span class="muted" id="copied"></span></div>
+    <label for="report" class="muted" style="display:block;margin-top:12px">Results to send back to us</label>
+    <textarea id="report" readonly></textarea>
+  </section>
+
+  <section aria-labelledby="stTitle">
+    <h2 id="stTitle"></h2>
+    <div class="pair" id="pair"></div>
+  </section>
+</div>
+
+<script src="content.js"></script>
+<script>
+(function () {
+  var P = window.TT_PACKAGE;
+  var state = { checks: {}, videos: {} };
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function set(key, status, label, detail) { state.checks[key] = { status: status, label: label, detail: detail || '' }; draw(); }
+
+  function draw() {
+    var order = ['file', 'data', 'video-a', 'video-b', 'network', 'online', 'fetch', 'browser'];
+    var html = '';
+    order.forEach(function (k) {
+      var c = state.checks[k]; if (!c) return;
+      var word = c.status === 'ok' ? 'OK' : c.status === 'bad' ? 'Problem' : c.status === 'info' ? 'Info' : 'Waiting';
+      html += '<div class="ck ' + c.status + '"><b>' + word + '</b><span>' + esc(c.label) + (c.detail ? ' · ' + esc(c.detail) : '') + '</span></div>';
+    });
+    $('checks').innerHTML = html;
+    var must = ['file', 'data', 'video-a', 'video-b', 'network'];
+    var bad = must.filter(function (k) { return state.checks[k] && state.checks[k].status === 'bad'; });
+    var done = must.every(function (k) { return state.checks[k] && state.checks[k].status === 'ok'; });
+    $('result').textContent = bad.length ? 'The package does not work fully on this computer. Please send us the results.' : done ? 'The package works on this computer.' : 'Press Play on both videos to finish the check.';
+    $('report').value = report();
+  }
+
+  function report() {
+    var lines = ['Tigertriever offline package test', 'Package: ' + (P ? P.package + ' ' + P.version : 'not loaded'), 'Date: ' + new Date().toISOString(), 'Browser: ' + navigator.userAgent, 'Opened as: ' + location.protocol + '//…/' + location.pathname.split('/').slice(-2).join('/'), ''];
+    Object.keys(state.checks).forEach(function (k) { var c = state.checks[k]; lines.push('[' + c.status.toUpperCase() + '] ' + c.label + (c.detail ? ' · ' + c.detail : '')); });
+    return lines.join('\n');
+  }
+
+  // 1. Opened from disk
+  set('file', location.protocol === 'file:' ? 'ok' : 'info', 'Opened from this computer', location.protocol === 'file:' ? 'file://' : 'opened from ' + location.protocol + ' (fine for a preview, not the real test)');
+  // 2. Package data
+  if (!P) { set('data', 'bad', 'Package data', 'content.js did not load. Was the ZIP fully extracted?'); return; }
+  set('data', 'ok', 'Package data loaded', P.configs.length + ' configurations, stage ' + P.stage.num);
+  $('note').textContent = P.note;
+  // 5. Online status (informational)
+  set('online', navigator.onLine ? 'info' : 'ok', navigator.onLine ? 'This computer is online' : 'This computer is offline', navigator.onLine ? 'turn the network off for the real test' : 'good, this is the real test');
+  window.addEventListener('online', function () { set('online', 'info', 'This computer is online', 'turn the network off for the real test'); });
+  window.addEventListener('offline', function () { set('online', 'ok', 'This computer is offline', 'good, this is the real test'); });
+  // 6. Can the browser read local files directly? (informational, explains why data is in content.js)
+  try {
+    fetch('manifest.json').then(function (r) { set('fetch', 'info', 'Browser reads local files directly', 'yes, status ' + r.status); }, function () { set('fetch', 'info', 'Browser reads local files directly', 'no, blocked; the package does not need it'); });
+  } catch (e) { set('fetch', 'info', 'Browser reads local files directly', 'no fetch support'); }
+  set('browser', 'info', 'Browser', navigator.userAgent.replace(/^Mozilla\/5\.0 /, ''));
+
+  // Render stage and comparison
+  $('stTitle').textContent = 'Stage ' + P.stage.num + ' · ' + P.stage.name + ' · compare handles';
+  $('pair').innerHTML = P.configs.map(function (c, i) {
+    return '<article class="side"><header><b>' + (i ? 'B' : 'A') + ' · ' + esc(c.handle) + '</b><small>' + esc(c.model) + ' · ' + esc(P.market) + '</small></header><div class="body">' +
+      '<video id="v-' + c.id + '" src="' + esc(c.video) + '" controls muted playsinline preload="metadata"></video>' +
+      '<strong>' + esc(c.headline) + '</strong><ul>' + c.points.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' +
+      '<div class="note"><b>' + esc(c.handle) + '</b><ul>' + c.handleNotes.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div></div></article>';
+  }).join('');
+
+  // 3–4. Videos
+  P.configs.forEach(function (c) {
+    var key = 'video-' + c.id, v = $('v-' + c.id), label = 'Video ' + c.id.toUpperCase() + ' (' + c.handle + ')';
+    set(key, 'wait', label, 'not played yet');
+    v.addEventListener('loadedmetadata', function () { if (state.checks[key].status !== 'ok') set(key, 'wait', label, 'file found, ' + Math.round(v.duration) + ' s, press Play'); });
+    v.addEventListener('playing', function () { set(key, 'ok', label, 'plays'); });
+    v.addEventListener('timeupdate', function () { if (v.currentTime > 0.5 && state.checks[key].status !== 'ok') set(key, 'ok', label, 'plays'); });
+    v.addEventListener('error', function () { var e = v.error; set(key, 'bad', label, e ? (['', 'aborted', 'network error', 'cannot decode this video format', 'file not found or format not supported'][e.code] || 'error ' + e.code) : 'error'); });
+  });
+
+  // 7. Nothing but local files was requested
+  function checkNetwork() {
+    var entries = (performance.getEntriesByType && performance.getEntriesByType('resource')) || [];
+    var remote = entries.filter(function (e) { return !/^(file:|data:|blob:)/.test(e.name); }).map(function (e) { return e.name; });
+    if (location.protocol !== 'file:') { set('network', 'info', 'Only files from the package were used', 'checked only when opened from disk'); return; }
+    set('network', remote.length ? 'bad' : 'ok', 'Only files from the package were used', remote.length ? 'requested: ' + remote.slice(0, 3).join(', ') : 'no internet requests');
+  }
+  checkNetwork();
+  setInterval(checkNetwork, 2000);
+
+  // Copy
+  $('copy').addEventListener('click', function () {
+    var t = report();
+    function fallback() { var a = $('report'); a.focus(); a.select(); try { document.execCommand('copy'); $('copied').textContent = 'Copied. Paste it into an email to us.'; } catch (e) { $('copied').textContent = 'Select the text below and copy it.'; } }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { $('copied').textContent = 'Copied. Paste it into an email to us.'; }, fallback); else fallback();
+  });
+  draw();
+})();
+</script>
+</body>
+</html>

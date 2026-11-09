@@ -1,0 +1,23 @@
+Tigertriever training: offline package test
+============================================
+
+This is a technical test, not training content. It checks whether a training package
+can open and play on your hospital computers without the internet.
+
+Please try it on each type of computer the physicians and representatives will use.
+
+1. Copy the ZIP to the computer and extract it (right-click > Extract All on Windows,
+   double-click on a Mac). Do not open the files from inside the ZIP.
+2. Turn off Wi-Fi or unplug the network cable.
+3. Open the extracted folder and double-click index.html.
+   Press Play on both videos.
+
+The page shows a list of checks. When it says "The package works on this computer",
+it works. In any case, press "Copy results" and paste the text into an email to us.
+
+If something is blocked, please also tell us:
+- Was the ZIP allowed onto the computer (email, USB stick, download)?
+- Did a security warning appear? What did it say?
+- Which browser opened the page?
+
+The two clips are stand-ins taken from the public Rapid Medical website.

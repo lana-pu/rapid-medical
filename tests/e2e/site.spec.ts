@@ -9,6 +9,13 @@ for (const path of PUBLIC) {
   });
 }
 
+test("seeded pages and bios keep their text", async ({ page }) => {
+  await page.goto("/terms");
+  await expect(page.getByRole("heading", { name: "1. Acceptance of the Terms" })).toBeVisible();
+  await page.goto("/team/ronen");
+  await expect(page.getByText("Ronen Eckhouse is the co-founder")).toBeVisible();
+});
+
 test("legacy URLs redirect", async ({ request }) => {
   for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"], ["/us/therapies/access", "/us/therapies/drivewire"]]) {
     const res = await request.get(from, { maxRedirects: 0 });
@@ -58,4 +65,14 @@ test("contact form stores a submission", async ({ page }) => {
 
 test("unknown path returns 404", async ({ request }) => {
   expect((await request.get("/definitely-not-here")).status()).toBe(404);
+});
+
+test("style guide shows every block, is noindex and not in the sitemap", async ({ page, request }) => {
+  await page.goto("/style-guide");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  for (const name of ["Hero", "Text and media", "Product details", "Indications and references"]) {
+    await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
+  }
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).not.toContain("style-guide");
 });

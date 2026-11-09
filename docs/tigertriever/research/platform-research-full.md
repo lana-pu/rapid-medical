@@ -1,5 +1,7 @@
 # Tigertriever training platform research: UX patterns, architecture and MVP plan
 
+> **Superseded.** This is the early platform research (October 2026). The current sources are `../product/mvp-definition-v0.7.md`, `../product/active-product-ux-baseline-v0.4.md` and `final-desk-research-synthesis-v0.4.md`; where they differ, they win. The stage names, procedural wording and warnings shown here are illustrative placeholders, not client or clinical content. The stack recommendation predates the decision to build one admin shared with the Rapid Medical website.
+
 Research synthesis prepared for the UX designer / product lead who will proceed to wireframing and implementation planning. Research date of the underlying notes: 2026-10-16. Citations are given as [n] and resolve to the numbered Sources list in Section 12. Every screenshot or video URL carries the evidence label assigned by the researcher who found it; see Section 12 for what each label actually means (several "verified screenshot" labels were confirmed from page captions, not by opening the image).
 
 ---
@@ -16,7 +18,7 @@ Research synthesis prepared for the UX designer / product lead who will proceed 
 
 **MVP scope.** Taxonomy + one program + rigid lesson editor + draft/approve + preview iframe + release builder + offline shell. Defer blocks, quizzes, desktop wrapper, delta packages, e-signatures.
 
-**Cost.** Recurring ≈ $25–36/month. Development effort ESTIMATE 270–460 hours total. The $950 budget realistically covers 12 months of hosting plus AI tooling and a cross-OS test spike; it does not buy contractor hours, so the build must be in-house, AI-assisted.
+**Cost.** Recurring ≈ $25–36/month. Development effort ESTIMATE 270–460 hours total.
 
 ---
 
@@ -258,7 +260,7 @@ Ten product groups are profiled. Evidence labels in this part: "verified screens
 - **Access:** self-hosted; hosted demo credentials — inferred-not-seen.
 - **Interaction patterns:** three-state status Draft / Published / **Changed**; sidebar Unpublish and Revert to published; drafts skip required-field validation; `schedulePublish` needs a Jobs queue [56]; full-copy versions with diff and restore, `maxPerDoc` 100 [57]; Live Preview button, iframe, named breakpoints (e.g., Mobile 375×667), Responsive/Custom, pop-out, `postMessage` of unsaved data [58]; per-field `localized: true`, per-locale `fallbackLocale`, `filterAvailableLocales` [59]; "Add Block" drawer with grouped thumbnails, collapsible/sortable rows, Duplicate below [60].
 - **Strengths:** the exact pattern set (blocks + drafts/versions + locale fallback + breakpoint preview) in one MIT codebase.
-- **Weaknesses:** Next.js/Node lock-in; heavy to adopt wholesale on a $950 build.
+- **Weaknesses:** Next.js/Node lock-in; heavy to adopt wholesale for this project.
 - **Applicability:** copy the status pill, Add-block drawer and breakpoint toolbar even if Payload itself is not adopted.
 
 ### 3.3 Directus (Monospace Inc.)
@@ -603,11 +605,11 @@ Rows carry media-type + duration tags (Philips) [7], completion ticks, a regiona
 |  numbered markers ①② on frame; scrub bar; ⤢ fullscreen; A-/A+    |
 |------------------------------------------------------------------|
 | TEXT SHEET (drag-up)                                              |
-|  ① Action (IFU wording): "Advance the delivery wire until the     |
-|     distal marker is ≥ … beyond the clot."                        |
-|  ② Rationale: "Positions the cage to penetrate rather than …"     |
-|  ⚠ WARNING (red, icon) "Do not …" — source: IFU §7.2              |
-|  △ CAUTION (amber, icon) "…" — source: IFU §7.3                    |
+|  ① Action (IFU wording): [approved action text]                 |
+|                                                                    |
+|  ② Rationale: [approved rationale text]                           |
+|  ⚠ WARNING (red, icon) [approved warning] — source: [approved ref]  |
+|  △ CAUTION (amber, icon) [approved caution] — source: [approved ref] |
 |  ⓘ More: evidence, physician video (opens drawer, returns here)   |
 |------------------------------------------------------------------|
 | STAGE STRIP: [1][2][3] · [4][5][6] · [7][8]  (current highlighted)|
@@ -915,24 +917,24 @@ Structure and resources are separated (IMS CP/SCORM `imsmanifest.xml` pattern: a
     "created_by": "user.editor1", "created_at": "2026-09-30T14:02:11Z",
     "content": {
       "title": {"base": "Prepare the device"},
-      "objective": {"base": "Learner can unpack, inspect and flush the device."},
+      "objective": {"base": "[approved learning objective]"},
       "steps": [
-        {"id": "s1", "cmd": {"base": "Inspect packaging for damage."}, "media": [{"base": "asset.sha256:ab12..."}]},
+        {"id": "s1", "cmd": {"base": "[approved step text]"}, "media": [{"base": "asset.sha256:ab12..."}]},
         {"id": "s2",
-         "cmd": {"base": "Flush the microcatheter with heparinized saline.",
+         "cmd": {"base": "[approved step text]",
                  "overrides": [
                    {"applies_to": {"devices": ["dev.tiger17"], "configs": ["cfg.ext"]},
-                    "value": "Flush the microcatheter and the extended handle lumen with heparinized saline."}
+                    "value": "[approved variant-specific step text]"}
                  ]}},
-        {"id": "s3", "cmd": {"base": "Connect to the handle."},
+        {"id": "s3", "cmd": {"base": "[approved step text]"},
          "applies_to": {"devices": ["dev.tiger13", "dev.tiger17"], "configs": ["cfg.std"], "regions": ["reg.eu", "reg.us"]}}
       ],
       "warnings": [
         {"id": "w1", "severity": "warning",
-         "text": {"base": "Do not use if sterile barrier is breached."},
+         "text": {"base": "[approved warning text]"},
          "applies_to": {"devices": ["dev.tiger13", "dev.tiger17"], "configs": ["cfg.std", "cfg.ext"], "regions": ["reg.eu", "reg.us"]}},
         {"id": "w2", "severity": "caution",
-         "text": {"base": "US: refer to IFU section 7 for MRI conditions."},
+         "text": {"base": "[approved region-specific caution text]"},
          "applies_to": {"devices": ["dev.tiger13", "dev.tiger17"], "configs": ["cfg.std", "cfg.ext"], "regions": ["reg.us"]}}
       ],
       "video": {"base": "asset.sha256:cd34...",
@@ -1028,7 +1030,7 @@ Three approaches are compared: **A — fully custom** (own API + Postgres on a V
 | C4 | Sanity Free + static admin | **$0** (3-day draft retention, 2 roles, 100 GB bandwidth) | VERIFIED [121] |
 | A1 | Hono/Node API + Postgres on Hetzner CPX02 · R2 · GitHub Actions | **≈ $8** | VERIFIED prices; total ESTIMATE |
 
-Hosting is not the constraint in any approach — even the worst realistic case (Strapi Growth, 5 seats) is ≈ $90/month; the budget is consumed by development time.
+Hosting is not the constraint in any approach — even the worst realistic case (Strapi Growth, 5 seats) is ≈ $90/month; the main effort is development time.
 
 ### 9.4 Recommendation
 
@@ -1217,11 +1219,9 @@ Assumptions: one experienced full-stack developer (or designer-developer) workin
 | Cross-OS validation spike, QA, security review, documentation | 30–50 | Windows/Edge, macOS/Safari, Firefox; penetration checklist |
 | **Total** | **≈ 283–485 h** (central ≈ 350–380 h) | Rounded elsewhere to 270–460 h |
 
-### 11.3 Budget fit against $950
+### 11.3 Scope fallback
 
-- **What the budget buys:** 12 months of B1 hosting (Supabase Pro $25 × 12 = $300 [87]; R2 ≈ $12/yr [127]; GitHub Actions $0 [140]; domain ≈ $15, ESTIMATE) ≈ **$330**; an AI coding assistant subscription for the build period (ESTIMATE $20–200/month depending on tier → $60–600 for 3 months); a Windows 11 + macOS test spike using existing hardware ($0). Total ≈ **$400–950** with no money left for contractors, and none for Apple/Windows signing ($99/yr + ~$100–130/yr), which the static-zip approach avoids [164][172].
-- **What it does not buy:** development labour. At typical contract rates the $950 equals roughly 10–25 developer hours (ESTIMATE), against a ≈ 300–480 hour build. The build must therefore be in-house (the product lead/designer plus one developer or a developer-capable designer) with AI assistance; otherwise the scope must shrink to "offline shell + hand-authored content.js" first (≈ 60–100 h) and the admin later.
-- **Cheaper hosting variant:** PocketBase on Fly (≈ $7/mo) halves hosting but adds pre-1.0 upgrade labour [94]; not recommended for a regulated workflow in year one.
+If a full build is not feasible at first, the scope shrinks to "offline shell + hand-authored content.js" (≈ 60–100 h, ESTIMATE) and the admin comes later.
 
 ### 11.4 Top risks and mitigations
 
@@ -1268,7 +1268,7 @@ Assumptions: one experienced full-stack developer (or designer-developer) workin
 
 ### 12.2 Products that could not be inspected
 
-Login walls: Stryker SKILL e-Lab (rep-provisioned), Boston Scientific EDUCARE (HCP registration), Mako Training beyond the sign-in and case list, Dozuki admin, SwipeGuide, R&S IETDView (guest demo not entered), ADAM Viewer, Osso Loop, Sanity/Directus/Strapi/Storyblok/Contentful/Open edX/Frappe (no public demos found). Bot walls / fetch failures: Medtronic Academy ("Incorrect Browser"), J&J Institute (redirect loop, robots), tigertriever.com (proxy 502), help.dozuki.com, iFixit and SwipeGuide store listings, Cortona3D demo (JS app), Mazda owner's manuals, Rapid Medical YouTube channel list, MDN `History.pushState`, trac.ffmpeg.org, FDA QMSR page, Contentful Personalization core concepts, Sanity in-body images (lazy-load placeholders). Not researched for budget: VirtaMed, Orsi Academy, Proximie, Inmedius, WalkMe/Userlane, Instructables, iSpring, Pake/Wails, Keystatic/TinaCMS pricing.
+Login walls: Stryker SKILL e-Lab (rep-provisioned), Boston Scientific EDUCARE (HCP registration), Mako Training beyond the sign-in and case list, Dozuki admin, SwipeGuide, R&S IETDView (guest demo not entered), ADAM Viewer, Osso Loop, Sanity/Directus/Strapi/Storyblok/Contentful/Open edX/Frappe (no public demos found). Bot walls / fetch failures: Medtronic Academy ("Incorrect Browser"), J&J Institute (redirect loop, robots), tigertriever.com (proxy 502), help.dozuki.com, iFixit and SwipeGuide store listings, Cortona3D demo (JS app), Mazda owner's manuals, Rapid Medical YouTube channel list, MDN `History.pushState`, trac.ffmpeg.org, FDA QMSR page, Contentful Personalization core concepts, Sanity in-body images (lazy-load placeholders). Not researched: VirtaMed, Orsi Academy, Proximie, Inmedius, WalkMe/Userlane, Instructables, iSpring, Pake/Wails, Keystatic/TinaCMS pricing.
 
 ### 12.3 Sources
 
