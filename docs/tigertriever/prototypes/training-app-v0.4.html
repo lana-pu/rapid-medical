@@ -1,0 +1,316 @@
+<title>Tigertriever Training</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a player, not a page. One thin context bar, the clip as large as the window allows, the text beside it,
+   one stage strip at the bottom. System fonts on purpose: the real package runs offline. */
+:root{
+  --bg:#FFFFFF;--fg:#16232B;--muted:#5C6C76;--line:#DAE2E6;--soft:#F1F5F6;
+  --accent:#174C5A;--on-accent:#FFFFFF;--accent-soft:#E2EEF1;--ok:#1E6B45;--warn:#8A4B00;--warn-soft:#FFF1DE;
+  --stage:#0E1417;--on-stage:#F2F5F6;
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --top:52px;--ts:1;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11181C;--fg:#E6ECEF;--muted:#9AA9B3;--line:#2A363D;--soft:#1A2329;--accent:#7FBBCA;--on-accent:#0C1417;--accent-soft:#1C2E35;--ok:#6FCF97;--warn:#F2B35C;--warn-soft:#3A2A12;--stage:#07090B;--on-stage:#EEF2F4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11181C;--fg:#E6ECEF;--muted:#9AA9B3;--line:#2A363D;--soft:#1A2329;--accent:#7FBBCA;--on-accent:#0C1417;--accent-soft:#1C2E35;--ok:#6FCF97;--warn:#F2B35C;--warn-soft:#3A2A12;--stage:#07090B;--on-stage:#EEF2F4;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--font)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+h1,h2,p,ul{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:8px;font-weight:600;white-space:nowrap;background:var(--bg)}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.4}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+/* context bar */
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:var(--top);display:flex;align-items:center;gap:12px;background:var(--bg);border-bottom:1px solid var(--line)}
+#top .brand{font-weight:700;white-space:nowrap}
+#top .chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:var(--accent-soft);font-weight:600;min-width:0;max-width:100%}
+#top .chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#top .grow{flex:1 1 auto;min-width:0}
+@media (max-width:760px){#top .brand{display:none}}
+
+/* choose, overview */
+.page{max-width:760px;margin:0 auto;padding-block:32px 56px;display:flex;flex-direction:column;gap:24px}
+.page h1{font-size:28px;line-height:1.2;text-wrap:balance}
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px;background:var(--soft);max-width:100%;flex-wrap:wrap}
+.seg button{height:34px;padding:0 14px;border-radius:6px;font-weight:600;white-space:nowrap;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
+.models{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.model{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--line)}
+.model b{font-size:17px}
+.model .opts{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:4px 12px}
+.prog{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.prog button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 0;border-bottom:1px solid var(--line)}
+.prog button:hover .nm{color:var(--accent)}
+.prog .n{width:22px;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+.prog .nm{flex:1;min-width:0;font-weight:600}
+.prog .d{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.prog .w{color:var(--ok);font-size:13px}
+.prog .nov{color:var(--warn);font-size:13px}
+.note{border:1px dashed var(--line);border-radius:9px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fine{font-size:12.5px;color:var(--muted)}
+
+/* player */
+.player{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,30%);height:calc(100dvh - var(--top) - 64px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:320px}
+.vcol{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--stage)}
+.vtools{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;flex:none}
+.vtools .seg{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+.vtools .seg button{color:var(--on-stage);opacity:.75}
+.vtools .seg button[aria-pressed=true]{background:var(--on-stage);color:var(--stage);opacity:1}
+.vtools .single{color:var(--on-stage);font-weight:700}
+.vtools .ghost{color:var(--on-stage);border:1px solid rgba(255,255,255,.24);height:34px;padding:0 12px;border-radius:7px;font-weight:600;white-space:nowrap}
+.vbox{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.vbox video{width:100%;height:100%;object-fit:contain;display:block;background:var(--stage)}
+.none{color:var(--on-stage);text-align:center;padding:24px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.none b{font-size:18px}
+.none span{opacity:.75;max-width:40ch}
+.overlay{position:absolute;right:14px;bottom:56px;background:rgba(10,16,20,.88);color:#F2F5F6;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;max-width:calc(100% - 28px)}
+.overlay .row button{height:32px;padding:0 12px;border-radius:7px;border:1px solid rgba(255,255,255,.3);font-weight:600;color:#F2F5F6}
+.overlay .row button.go{background:#F2F5F6;color:#10181C;border-color:#F2F5F6}
+.side{overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;border-left:1px solid var(--line);font-size:calc(15px * var(--ts))}
+.kick{font-size:calc(12px * var(--ts));font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.side h1{font-size:calc(24px * var(--ts));line-height:1.2;text-wrap:balance}
+.side .head{font-weight:600;font-size:calc(16px * var(--ts))}
+.side ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.handle{border-radius:9px;background:var(--accent-soft);padding:11px 13px}
+.handle b{display:block;margin-bottom:3px}
+.same{border:1px dashed var(--line);border-radius:9px;padding:9px 13px;color:var(--muted)}
+.graphic{border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+
+/* stage strip */
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:30;min-height:64px;padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;background:var(--bg);border-top:1px solid var(--line)}
+.strip{flex:1 1 auto;min-width:0;display:flex;gap:4px}
+.strip button{flex:1 1 0;min-width:34px;height:40px;border-radius:7px;background:var(--soft);font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.strip button:hover{color:var(--fg)}
+.strip button.cur{flex:3 1 0;background:var(--accent);color:var(--on-accent)}
+.strip button.seen:not(.cur){color:var(--ok)}
+.strip button.nov:not(.cur){color:var(--warn)}
+.strip .t{overflow:hidden;text-overflow:ellipsis}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;white-space:nowrap}
+.switch i{width:34px;height:20px;border-radius:999px;background:var(--line);position:relative;display:block;flex:none;transition:background .15s}
+.switch i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--bg);transition:left .15s}
+.switch[aria-checked=true] i{background:var(--accent)}
+.switch[aria-checked=true] i::after{left:16px}
+
+/* compare */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);padding-bottom:64px}
+.cside{background:var(--bg);min-width:0;display:flex;flex-direction:column}
+.chead{padding:10px 14px;font-weight:700;display:flex;gap:8px;align-items:center;background:var(--accent-soft)}
+.chead em{font-style:normal;background:var(--accent);color:var(--on-accent);border-radius:5px;padding:0 7px}
+.cside .vbox{flex:none;aspect-ratio:16/9;background:var(--stage)}
+.cside .txt{padding:14px;display:flex;flex-direction:column;gap:10px}
+.cside .txt ul{padding-left:20px}
+.ctabs{display:none}
+
+/* present */
+body.present #top{display:none}
+body.present .player{height:calc(100dvh - 64px - env(safe-area-inset-bottom,0px));grid-template-columns:minmax(0,1fr) minmax(320px,34%)}
+body.present .vtools .ghost{display:none}
+.ts{display:none}
+body.present .ts{display:inline-flex;gap:4px}
+
+@media (max-width:760px){
+  .player,body.present .player{display:block;height:auto;padding-bottom:128px}
+  .vcol{display:flex}
+  .vbox{order:1;flex:none;aspect-ratio:16/9}
+  .vtools{order:2;padding:8px max(10px,env(safe-area-inset-right,0px)) 8px max(10px,env(safe-area-inset-left,0px))}
+  .vtools .seg{flex:1 1 auto;flex-wrap:nowrap;min-width:0}
+  .vtools .seg button{flex:1 1 0;padding:0 6px;font-size:13px}
+  .vtools .ghost{padding:0 10px;font-size:13px}
+  .side{border-left:0;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));overflow:visible}
+  #bar{flex-wrap:wrap;gap:8px}
+  .strip{order:-1;flex:1 0 100%;overflow-x:auto}
+  .strip button{flex:none}
+  .strip button.cur{flex:none}
+  .barsp{flex:1 1 auto}
+  .cmp{grid-template-columns:1fr;padding-bottom:128px}
+  .ctabs{display:flex;padding-block:8px}
+  .cside.off{display:none}
+}
+</style>
+
+<div id="top" class="gut" hidden></div>
+<main id="view"></main>
+<nav id="bar" class="gut" aria-label="Stages" hidden></nav>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const KEY = 'tt-learner-v04';
+
+/* Stand-in data. No clinical content: names and rules come from the client's draft and wireframe. */
+const MARKETS = { eu: { n: 'Europe', knob: true }, us: { n: 'US', knob: true }, ap: { n: 'Asia Pacific', knob: false } };
+const HANDLES = { knob: 'Precision knob', slider: 'Legacy slider' };
+const MODELS = [
+  { id: 't13', n: 'Tiger 13', handles: ['knob', 'slider'] },
+  { id: 't17', n: 'Tiger 17', handles: ['slider'] },
+  { id: 't21', n: 'Tiger 21', handles: [], later: true },
+  { id: 't25', n: 'Tiger 25', handles: [], later: true },
+];
+const STAGES = [
+  { k: 'opening', n: 'Opening', f: true }, { k: 'prep', n: 'Device preparation', same: true }, { k: 'pos', n: 'Positioning' },
+  { k: 'dep', n: 'Deployment' }, { k: 'clot', n: 'Optimising clot interaction' }, { k: 'asp', n: 'Aspiration & combination technique', same: true },
+  { k: 'pre', n: 'Prepare to retrieve' }, { k: 'ret', n: 'Retrieval' }, { k: 'between', n: 'Between passes', same: true }, { k: 'closing', n: 'Closing', f: true },
+];
+const CLIPS = {
+  opening: { slider: 'animation', knob: 'animation' }, closing: { slider: 'animation', knob: 'animation' },
+  prep: { slider: 'clip-b', knob: 'clip-b' }, asp: { slider: 'clip-a', knob: 'clip-a' }, between: { slider: 'clip-b', knob: 'clip-b' },
+  pos: { slider: 'clip-a', knob: 'knob' }, clot: { slider: 'clip-a', knob: 'knob' },
+  dep: { slider: 'clip-b', knob: null }, pre: { slider: 'clip-b', knob: null }, ret: { slider: 'clip-a', knob: null },
+};
+const clipOf = (h, s) => CLIPS[s][h];
+const src = (id) => `media/${id}.mp4`;
+const stageIdx = (k) => STAGES.findIndex((s) => s.k === k);
+const num = (k) => { const s = STAGES[stageIdx(k)]; return s.f ? '' : stageIdx(k); };
+
+let S = { screen: 'choose', market: null, model: null, handle: null, stage: 'opening', auto: false, present: false, side: 'a', ts: 1, watched: {}, last: {} };
+let playNext = false, stopped = false, timer = null, count = 0, DUR = {};
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { S.auto = !!s.auto; S.watched = s.watched || {}; S.last = s.last || {}; } } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last })); } catch (e) {} };
+const cfgKey = (h = S.handle) => `${S.market}/${S.model}/${h}`;
+const model = () => MODELS.find((m) => m.id === S.model);
+const hasPair = () => S.model === 't13' && S.market && MARKETS[S.market].knob;
+const fmt = (d) => (d ? `${Math.floor(d / 60)}:${String(Math.round(d % 60)).padStart(2, '0')}` : '');
+const seen = (k) => !!S.watched[`${cfgKey()}/${k}`];
+const hasBefore = () => S.market === 'eu' && S.model === 't13';
+
+Object.values(CLIPS).flatMap((c) => Object.values(c)).filter((v, i, a) => v && a.indexOf(v) === i).forEach((id) => {
+  const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = src(id);
+  v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen === 'overview') render(); };
+});
+
+function text(k, h) {
+  const s = STAGES[stageIdx(k)];
+  return { head: `Stand-in headline for ${s.n.toLowerCase()}`, points: ['Stand-in point 1, read next to the clip.', 'Stand-in point 2.', 'Stand-in point 3.'], note: s.same ? null : `Stand-in note: how this step differs with the ${HANDLES[h].toLowerCase()}.` };
+}
+function media(h, k, id) {
+  const c = clipOf(h, k);
+  if (!c) return `<div class="none"><b>Video not filmed yet</b><span>${stopped ? 'Auto-advance stopped here. ' : ''}${esc(HANDLES[h])} footage for this stage is still to come. No other handle's video is shown instead.</span></div>`;
+  return `<video id="${id}" src="${src(c)}" controls muted playsinline preload="metadata" aria-label="${esc(STAGES[stageIdx(k)].n)}, ${esc(HANDLES[h])}"></video>`;
+}
+
+function renderTop() {
+  const t = $('#top'); const show = S.screen !== 'choose' && S.model; t.hidden = !show; if (!show) return;
+  const m = model();
+  t.innerHTML = `<span class="brand">Tigertriever training</span><button class="chip" data-do="choose" title="Change device, handle or market"><span>${esc(m.n)} · ${esc(HANDLES[S.handle])} · ${esc(MARKETS[S.market].n)}</span> ▾</button><span class="grow"></span>${S.screen !== 'overview' ? '<button class="btn" data-do="overview">Programme</button>' : ''}`;
+}
+function renderBar() {
+  const b = $('#bar'), on = S.screen === 'stage' || S.screen === 'compare'; b.hidden = !on; if (!on) return;
+  const i = stageIdx(S.stage), cmp = S.screen === 'compare', list = cmp ? STAGES.filter((s) => !s.f) : STAGES;
+  const firstI = cmp ? 1 : 0, lastI = cmp ? 8 : 9;
+  const strip = list.map((s) => { const nv = !cmp && !clipOf(S.handle, s.k), cur = s.k === S.stage; return `<button class="${cur ? 'cur' : ''} ${seen(s.k) ? 'seen' : ''} ${nv ? 'nov' : ''}" data-do="go" data-k="${s.k}" title="${esc(s.n)}${nv ? ', video not filmed yet' : ''}" ${cur ? 'aria-current="step"' : ''}><span class="t">${s.f ? (cur ? '' : s.n.slice(0, 2)) : stageIdx(s.k)}${cur ? (s.f ? '' : ' · ') + esc(s.n) : ''}</span>${seen(s.k) && !cur ? ' ✓' : ''}${nv && !cur ? ' ○' : ''}</button>`; }).join('');
+  b.innerHTML = `<button class="btn" data-do="prev" ${i <= firstI ? 'disabled' : ''} aria-label="Previous stage">←</button><div class="strip">${strip}</div><button class="btn pri" data-do="next" ${i >= lastI ? 'disabled' : ''} aria-label="Next stage">→</button>${cmp ? '' : `<span class="barsp"></span><button class="switch" role="switch" aria-checked="${S.auto}" data-do="auto"><i></i>Auto-advance</button><span class="ts"><button class="btn" data-do="ts" data-d="-0.15" aria-label="Smaller text">A−</button><button class="btn" data-do="ts" data-d="0.15" aria-label="Larger text">A+</button></span><button class="btn" data-do="present">${S.present ? 'Exit' : 'Present'}</button>`}`;
+}
+function vChoose() {
+  const mk = S.market;
+  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Content and handles differ by market, so start there.</p></div>
+  <div><div class="label">Market</div><div class="seg" role="group" aria-label="Market">${Object.entries(MARKETS).map(([k, m]) => `<button aria-pressed="${k === mk}" data-do="market" data-m="${k}">${esc(m.n)}</button>`).join('')}</div></div>
+  <div><div class="label">Device and handle</div><div class="models">${MODELS.map((m) => { const hs = m.handles.filter((h) => h !== 'knob' || (mk && MARKETS[mk].knob)); return `<div class="model"><b>${esc(m.n)}</b><div class="opts">${m.later ? '<span class="tag">No training yet</span>' : hs.map((h) => `<button class="btn" data-do="pick" data-model="${m.id}" data-h="${h}" ${mk ? '' : 'disabled'}>${esc(HANDLES[h])} →</button>`).join('')}</div></div>`; }).join('')}</div>${mk ? (mk === 'ap' ? '<p class="fine" style="margin-top:8px">The precision knob is not offered in Asia Pacific, so Tiger 13 has one handle here.</p>' : '') : '<p class="fine" style="margin-top:8px">Choose your market first.</p>'}</div>
+  <p class="fine">Concept v0.4. Texts are stand-ins and clips come from the public Rapid Medical website. Not for clinical use.</p></div>`;
+}
+function vOverview() {
+  const last = S.last[cfgKey()], m = model();
+  const row = (s) => { const c = clipOf(S.handle, s.k); return `<button data-do="go" data-k="${s.k}"><span class="n">${s.f ? '' : stageIdx(s.k)}</span><span class="nm">${esc(s.n)}</span>${seen(s.k) ? '<span class="w">✓ Watched</span>' : ''}${c ? `<span class="d">${fmt(DUR[c])}</span>` : '<span class="nov">Video not filmed yet</span>'}</button>`; };
+  return `<div class="page gut"><div><h1>${esc(m.n)} training</h1><p class="muted">${esc(HANDLES[S.handle])} · ${esc(MARKETS[S.market].n)}</p></div>
+  <div class="row"><button class="btn pri" data-do="go" data-k="${last || 'opening'}">${last ? `Continue: ${esc(STAGES[stageIdx(last)].n)}` : 'Start training'}</button>${last ? '<button class="btn" data-do="go" data-k="opening">Start over</button>' : ''}${hasPair() ? '<button class="btn" data-do="compare">Compare handles</button>' : ''}</div>
+  ${hasBefore() ? '<div class="note"><div><div class="label" style="margin:0">Before you begin</div><b>Anesthesia guidance for Tiger 13 in Europe</b></div><button class="btn" data-do="before">Read first</button></div>' : ''}
+  <div><div class="label">Programme</div><div class="prog">${STAGES.map(row).join('')}</div></div></div>`;
+}
+function vBefore() {
+  return `<div class="page gut"><div><div class="label">Before you begin · ${esc(MARKETS[S.market].n)} · ${esc(model().n)}</div><h1>Anesthesia</h1></div><ul style="padding-left:20px"><li>Stand-in point. The client's wireframe has a placeholder here; the content owner is to confirm.</li></ul><div class="row"><button class="btn" data-do="overview">Back</button><button class="btn pri" data-do="go" data-k="opening">Start training</button></div></div>`;
+}
+function vStage() {
+  const s = STAGES[stageIdx(S.stage)], t = text(S.stage, S.handle), i = stageIdx(S.stage), pair = hasPair();
+  const tools = pair ? `<div class="seg" role="group" aria-label="Handle">${['knob', 'slider'].map((h) => `<button aria-pressed="${h === S.handle}" data-do="handle" data-h="${h}">${esc(HANDLES[h])}</button>`).join('')}</div>${s.f ? '' : '<button class="ghost" data-do="compare">Show both</button>'}` : `<span class="single">${esc(HANDLES[S.handle])}</span>`;
+  const kicker = s.f ? (S.stage === 'opening' ? 'Before the stages' : 'After the stages') : `Stage ${i} of 8`;
+  return `<div class="player"><section class="vcol"><div class="vtools">${tools}</div><div class="vbox" id="vbox">${media(S.handle, S.stage, 'v')}</div></section>
+  <aside class="side"><p class="kick">${kicker}</p><h1>${esc(s.n)}</h1><p class="head">${esc(t.head)}</p><ul>${t.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+  ${s.f ? `<div class="graphic"><b>Data graphic</b><div class="small muted">Stand-in for the ${S.handle === 'knob' ? 'DISTALS' : 'TIGER'} trial graphic, shown for this handle group.</div></div>` : (s.same ? '<div class="same">Same for both handles.</div>' : `<div class="handle"><b>${esc(HANDLES[S.handle])}</b>${esc(t.note)}</div>`)}
+  <p class="fine">Stand-in text and clips. Not for clinical use.</p></aside></div>`;
+}
+function vCompare() {
+  const s = STAGES[stageIdx(S.stage)];
+  const col = (h, tag) => { const t = text(S.stage, h); return `<section class="cside ${S.side !== tag ? 'off' : ''}"><div class="chead"><em>${tag.toUpperCase()}</em>${esc(HANDLES[h])}</div><div class="vbox">${media(h, S.stage, 'v' + tag)}</div><div class="txt"><b>${esc(t.head)}</b><ul>${t.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>${s.same ? '<div class="same">Same for both handles.</div>' : `<div class="handle"><b>${esc(HANDLES[h])}</b>${esc(t.note)}</div>`}</div></section>`; };
+  return `<div class="gut row" style="padding-block:10px;justify-content:space-between"><div><div class="label" style="margin:0">Compare handles · Stage ${stageIdx(S.stage)} of 8</div><b>${esc(s.n)}</b></div><button class="btn" data-do="exitcmp">Back to the lesson</button></div>
+  <div class="ctabs gut"><div class="seg"><button aria-pressed="${S.side === 'a'}" data-do="side" data-s="a">A · Precision knob</button><button aria-pressed="${S.side === 'b'}" data-do="side" data-s="b">B · Legacy slider</button></div></div>
+  <div class="cmp">${col('knob', 'a')}${col('slider', 'b')}</div>`;
+}
+const VIEWS = { choose: vChoose, overview: vOverview, before: vBefore, stage: vStage, compare: vCompare };
+
+function clearTimer() { clearInterval(timer); timer = null; const o = $('#ov'); if (o) o.remove(); }
+function render() {
+  clearTimer();
+  document.documentElement.style.setProperty('--ts', S.ts);
+  document.body.classList.toggle('present', S.present && S.screen === 'stage');
+  $('#view').innerHTML = VIEWS[S.screen]();
+  renderTop(); renderBar();
+  const v = $('#v');
+  if (v) {
+    v.addEventListener('timeupdate', () => { if (v.duration && v.currentTime / v.duration > 0.85) mark(); });
+    v.addEventListener('ended', onEnded);
+    if (playNext) v.play().catch(() => {});
+  }
+  playNext = false;
+}
+function mark() { const k = `${cfgKey()}/${S.stage}`; if (S.watched[k]) return; S.watched[k] = 1; save(); renderBar(); }
+function nextStage() { const i = stageIdx(S.stage); return i < STAGES.length - 1 ? STAGES[i + 1] : null; }
+function overlay(html) { clearTimer(); const b = $('#vbox'); if (!b) return; b.insertAdjacentHTML('beforeend', `<div class="overlay" id="ov">${html}</div>`); }
+function onEnded() {
+  mark();
+  const n = nextStage();
+  if (S.auto && n) {
+    count = 3;
+    const draw = () => overlay(`<div>Next: <b>${esc(n.n)}</b> in ${count}</div><div class="row"><button data-do="cancel">Cancel</button><button class="go" data-do="now">Play now</button></div>`);
+    draw();
+    timer = setInterval(() => { count -= 1; if (count <= 0) { clearInterval(timer); advance(); } else { const o = $('#ov'); if (o) o.firstChild.innerHTML = `Next: <b>${esc(n.n)}</b> in ${count}`; } }, 1000);
+  } else overlay(`<div class="row"><button class="go" data-do="replay">Replay</button>${n ? `<button data-do="next">Next: ${esc(n.n)}</button>` : ''}</div>`);
+}
+function advance() { const n = nextStage(); if (!n) return; const has = clipOf(S.handle, n.k); stopped = !has; go(n.k, !!has); }
+function go(k, play) { S.stage = k; if (S.screen !== 'compare') S.screen = 'stage'; if (S.screen === 'stage') { S.last[cfgKey()] = k; save(); } playNext = !!play; const keep = stopped; render(); stopped = false; window.scrollTo(0, 0); return keep; }
+function step(d) { const i = stageIdx(S.stage) + d, lo = S.screen === 'compare' ? 1 : 0, hi = S.screen === 'compare' ? 8 : 9; if (i >= lo && i <= hi) { stopped = false; go(STAGES[i].k, false); } }
+function setPresent(on) { S.present = on; if (on) { try { document.documentElement.requestFullscreen?.().catch(() => {}); } catch (e) {} } else { try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {} } render(); }
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-do]'); if (!b) return;
+  const a = b.dataset.do;
+  if (a === 'market') { S.market = b.dataset.m; S.model = null; render(); }
+  else if (a === 'pick') { S.model = b.dataset.model; S.handle = b.dataset.h; S.screen = 'overview'; render(); window.scrollTo(0, 0); }
+  else if (a === 'choose') { S.screen = 'choose'; S.present = false; render(); }
+  else if (a === 'overview') { S.screen = 'overview'; S.present = false; render(); }
+  else if (a === 'before') { S.screen = 'before'; render(); }
+  else if (a === 'go') { stopped = false; if (STAGES[stageIdx(b.dataset.k)].f && S.screen === 'compare') return; go(b.dataset.k, false); }
+  else if (a === 'prev') step(-1);
+  else if (a === 'next') step(1);
+  else if (a === 'handle') { S.handle = b.dataset.h; stopped = false; render(); }
+  else if (a === 'compare') { if (STAGES[stageIdx(S.stage)].f || S.screen === 'overview') S.stage = S.screen === 'overview' ? (S.last[cfgKey()] && !STAGES[stageIdx(S.last[cfgKey()])].f ? S.last[cfgKey()] : 'prep') : 'prep'; S.origin = S.screen; S.screen = 'compare'; S.present = false; render(); window.scrollTo(0, 0); }
+  else if (a === 'exitcmp') { S.screen = S.origin === 'overview' ? 'overview' : 'stage'; render(); }
+  else if (a === 'side') { S.side = b.dataset.s; render(); }
+  else if (a === 'auto') { S.auto = !S.auto; save(); renderBar(); }
+  else if (a === 'present') setPresent(!S.present);
+  else if (a === 'ts') { S.ts = Math.min(1.75, Math.max(0.85, S.ts + Number(b.dataset.d))); document.documentElement.style.setProperty('--ts', S.ts); }
+  else if (a === 'cancel') { clearTimer(); }
+  else if (a === 'now') { clearInterval(timer); advance(); }
+  else if (a === 'replay') { clearTimer(); const v = $('#v'); if (v) { v.currentTime = 0; v.play().catch(() => {}); } }
+});
+document.addEventListener('keydown', (e) => {
+  if (S.screen !== 'stage' && S.screen !== 'compare') return;
+  if (e.target.tagName === 'VIDEO' && !S.present) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+  else if (e.key === 'Escape' && S.present) setPresent(false);
+  else if (e.key === ' ' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'VIDEO') { const v = $('#v'); if (v) { e.preventDefault(); v.paused ? v.play().catch(() => {}) : v.pause(); } }
+});
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.present) { S.present = false; render(); } });
+render();
+</script>
