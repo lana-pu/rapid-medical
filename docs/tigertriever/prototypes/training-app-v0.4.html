@@ -117,8 +117,11 @@ button:disabled{cursor:not-allowed}
 body.present #top{display:none}
 body.present .player{height:calc(100dvh - 64px - env(safe-area-inset-bottom,0px));grid-template-columns:minmax(0,1fr) minmax(320px,34%)}
 body.present .vtools .ghost{display:none}
-.ts{display:none}
-body.present .ts{display:inline-flex;gap:4px}
+body.present .strip{display:none}
+.nowname{display:none;flex:1 1 auto;text-align:center;font-weight:700}
+body.present .nowname{display:block}
+.player.textonly{grid-template-columns:minmax(0,1fr)}
+.player.textonly .side{border-left:0;max-width:720px;margin:0 auto;width:100%;padding-top:40px}
 
 @media (max-width:760px){
   .player,body.present .player{display:block;height:auto;padding-bottom:128px}
@@ -134,6 +137,7 @@ body.present .ts{display:inline-flex;gap:4px}
   .strip button{flex:none}
   .strip button.cur{flex:none}
   .barsp{flex:1 1 auto}
+  [data-do="present"]{display:none}
   .cmp{grid-template-columns:1fr;padding-bottom:128px}
   .ctabs{display:flex;padding-block:8px}
   .cside.off{display:none}
@@ -163,7 +167,11 @@ const STAGES = [
   { k: 'dep', n: 'Deployment' }, { k: 'clot', n: 'Optimising clot interaction' }, { k: 'asp', n: 'Aspiration & combination technique', same: true },
   { k: 'pre', n: 'Prepare to retrieve' }, { k: 'ret', n: 'Retrieval' }, { k: 'between', n: 'Between passes', same: true }, { k: 'closing', n: 'Closing', f: true },
 ];
+const BEFORE = { k: 'before', n: 'Before you begin', f: true, txt: true };
+const sec = (k) => (k === 'before' ? BEFORE : STAGES.find((s) => s.k === k));
+const seq = () => (hasBefore() ? [BEFORE, ...STAGES] : STAGES);
 const CLIPS = {
+  before: { slider: null, knob: null },
   opening: { slider: 'animation', knob: 'animation' }, closing: { slider: 'animation', knob: 'animation' },
   prep: { slider: 'clip-b', knob: 'clip-b' }, asp: { slider: 'clip-a', knob: 'clip-a' }, between: { slider: 'clip-b', knob: 'clip-b' },
   pos: { slider: 'clip-a', knob: 'knob' }, clot: { slider: 'clip-a', knob: 'knob' },
@@ -172,9 +180,8 @@ const CLIPS = {
 const clipOf = (h, s) => CLIPS[s][h];
 const src = (id) => `media/${id}.mp4`;
 const stageIdx = (k) => STAGES.findIndex((s) => s.k === k);
-const num = (k) => { const s = STAGES[stageIdx(k)]; return s.f ? '' : stageIdx(k); };
 
-let S = { screen: 'choose', market: 'eu', model: null, handle: null, stage: 'opening', auto: false, present: false, side: 'a', ts: 1, watched: {}, last: {} };
+let S = { screen: 'choose', market: 'eu', model: null, handle: null, stage: 'opening', auto: false, present: false, side: 'a', watched: {}, last: {} };
 let playNext = false, stopped = false, timer = null, count = 0, DUR = {};
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { S.auto = !!s.auto; S.watched = s.watched || {}; S.last = s.last || {}; } } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last })); } catch (e) {} };
@@ -187,30 +194,31 @@ const hasBefore = () => S.market === 'eu' && S.model === 't13';
 
 Object.values(CLIPS).flatMap((c) => Object.values(c)).filter((v, i, a) => v && a.indexOf(v) === i).forEach((id) => {
   const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = src(id);
-  v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen === 'overview') render(); };
+  v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen === 'stage') renderBar(); };
 });
 
 function text(k, h) {
-  const s = STAGES[stageIdx(k)];
+  const s = sec(k);
   return { head: `Stand-in headline for ${s.n.toLowerCase()}`, points: ['Stand-in point 1, read next to the clip.', 'Stand-in point 2.', 'Stand-in point 3.'], note: s.same ? null : `Stand-in note: how this step differs with the ${HANDLES[h].toLowerCase()}.` };
 }
 function media(h, k, id) {
   const c = clipOf(h, k);
   if (!c) return `<div class="none"><b>Video not filmed yet</b><span>${stopped ? 'Auto-advance stopped here. ' : ''}${esc(HANDLES[h])} footage for this stage is still to come. No other handle's video is shown instead.</span></div>`;
-  return `<video id="${id}" src="${src(c)}" controls muted playsinline preload="metadata" aria-label="${esc(STAGES[stageIdx(k)].n)}, ${esc(HANDLES[h])}"></video>`;
+  return `<video id="${id}" src="${src(c)}" controls ${innerWidth > 760 ? 'controlslist="nofullscreen"' : ''} muted playsinline preload="metadata" aria-label="${esc(sec(k).n)}, ${esc(HANDLES[h])}"></video>`;
 }
 
 function renderTop() {
   const t = $('#top'); const show = S.screen !== 'choose' && S.model; t.hidden = !show; if (!show) return;
-  const m = model();
-  t.innerHTML = `<span class="brand">Tigertriever training</span><button class="chip" data-do="choose" title="Change device, handle or market"><span>${esc(m.n)} · ${esc(HANDLES[S.handle])} · ${esc(MARKETS[S.market].n)}</span> ▾</button><span class="grow"></span>${S.screen !== 'overview' ? '<button class="btn" data-do="overview">Programme</button>' : ''}`;
+  const ctx = `${esc(model().n)} · ${esc(HANDLES[S.handle])} · ${esc(MARKETS[S.market].n)}`;
+  t.innerHTML = `<span class="brand">Tigertriever training</span>${S.screen === 'compare' ? `<span class="chip"><span>${ctx}</span></span>` : `<button class="chip" data-do="choose" title="Change device or handle"><span>${ctx}</span> ▾</button>`}<span class="grow"></span>`;
 }
 function renderBar() {
   const b = $('#bar'), on = S.screen === 'stage' || S.screen === 'compare'; b.hidden = !on; if (!on) return;
-  const i = stageIdx(S.stage), cmp = S.screen === 'compare', list = cmp ? STAGES.filter((s) => !s.f) : STAGES;
-  const firstI = cmp ? 1 : 0, lastI = cmp ? 8 : 9;
-  const strip = list.map((s) => { const nv = !cmp && !clipOf(S.handle, s.k), cur = s.k === S.stage; return `<button class="${cur ? 'cur' : ''} ${seen(s.k) ? 'seen' : ''} ${nv ? 'nov' : ''}" data-do="go" data-k="${s.k}" title="${esc(s.n)}${nv ? ', video not filmed yet' : ''}" ${cur ? 'aria-current="step"' : ''}><span class="t">${s.f ? (cur ? '' : s.n.slice(0, 2)) : stageIdx(s.k)}${cur ? (s.f ? '' : ' · ') + esc(s.n) : ''}</span>${seen(s.k) && !cur ? ' ✓' : ''}${nv && !cur ? ' ○' : ''}</button>`; }).join('');
-  b.innerHTML = `<button class="btn" data-do="prev" ${i <= firstI ? 'disabled' : ''} aria-label="Previous stage">←</button><div class="strip">${strip}</div><button class="btn pri" data-do="next" ${i >= lastI ? 'disabled' : ''} aria-label="Next stage">→</button>${cmp ? '' : `<span class="barsp"></span><button class="switch" role="switch" aria-checked="${S.auto}" data-do="auto"><i></i>Auto-advance</button><span class="ts"><button class="btn" data-do="ts" data-d="-0.15" aria-label="Smaller text">A−</button><button class="btn" data-do="ts" data-d="0.15" aria-label="Larger text">A+</button></span><button class="btn" data-do="present">${S.present ? 'Exit' : 'Present'}</button>`}`;
+  const cmp = S.screen === 'compare', list = cmp ? STAGES.filter((s) => !s.f) : seq(), i = list.findIndex((s) => s.k === S.stage);
+  const mark = (s) => (s.f ? s.n.slice(0, 2) : stageIdx(s.k));
+  const strip = list.map((s) => { const c = clipOf(S.handle, s.k), nv = !cmp && !s.txt && !c, cur = s.k === S.stage; return `<button class="${cur ? 'cur' : ''} ${seen(s.k) ? 'seen' : ''} ${nv ? 'nov' : ''}" data-do="go" data-k="${s.k}" title="${esc(s.n)}${nv ? ', video not filmed yet' : (c && DUR[c] ? ', ' + fmt(DUR[c]) : '')}" ${cur ? 'aria-current="step"' : ''}><span class="t">${cur ? (s.f ? '' : stageIdx(s.k) + ' · ') + esc(s.n) + (c && DUR[c] ? ' · ' + fmt(DUR[c]) : '') : mark(s)}</span>${seen(s.k) && !cur ? ' ✓' : ''}${nv && !cur ? ' ○' : ''}</button>`; }).join('');
+  const now = list[i], name = now ? (now.f ? '' : stageIdx(now.k) + ' · ') + esc(now.n) : '';
+  b.innerHTML = `<button class="btn" data-do="prev" ${i <= 0 ? 'disabled' : ''} aria-label="Previous stage">←</button><div class="strip">${strip}</div><div class="nowname">${name}</div><button class="btn pri" data-do="next" ${i >= list.length - 1 ? 'disabled' : ''} aria-label="Next stage">→</button>${cmp ? '' : `<span class="barsp"></span><button class="switch" role="switch" aria-checked="${S.auto}" data-do="auto"><i></i>Auto-advance</button><button class="btn" data-do="present">${S.present ? 'Exit' : 'Present'}</button>`}`;
 }
 function vChoose() {
   const mk = S.market;
@@ -219,39 +227,29 @@ function vChoose() {
   <p class="fine">Concept v0.4. Texts are stand-ins and clips come from the public Rapid Medical website. Not for clinical use.</p>
   <div class="note"><div class="fine">Prototype only, not part of the product: which market this package was built for. In the product it comes from the client's geolocation.</div><div class="seg" role="group" aria-label="Prototype market">${Object.entries(MARKETS).map(([k, m]) => `<button aria-pressed="${k === mk}" data-do="market" data-m="${k}">${esc(m.n)}</button>`).join('')}</div></div></div>`;
 }
-function vOverview() {
-  const last = S.last[cfgKey()], m = model();
-  const row = (s) => { const c = clipOf(S.handle, s.k); return `<button data-do="go" data-k="${s.k}"><span class="n">${s.f ? '' : stageIdx(s.k)}</span><span class="nm">${esc(s.n)}</span>${seen(s.k) ? '<span class="w">✓ Watched</span>' : ''}${c ? `<span class="d">${fmt(DUR[c])}</span>` : '<span class="nov">Video not filmed yet</span>'}</button>`; };
-  return `<div class="page gut"><div><h1>${esc(m.n)} training</h1><p class="muted">${esc(HANDLES[S.handle])} · ${esc(MARKETS[S.market].n)}</p></div>
-  <div class="row"><button class="btn pri" data-do="go" data-k="${last || 'opening'}">${last ? `Continue: ${esc(STAGES[stageIdx(last)].n)}` : 'Start training'}</button>${last ? '<button class="btn" data-do="go" data-k="opening">Start over</button>' : ''}${hasPair() ? '<button class="btn" data-do="compare">Compare handles</button>' : ''}</div>
-  ${hasBefore() ? '<div class="note"><div><div class="label" style="margin:0">Before you begin</div><b>Anesthesia guidance for Tiger 13 in Europe</b></div><button class="btn" data-do="before">Read first</button></div>' : ''}
-  <div><div class="label">Programme</div><div class="prog">${STAGES.map(row).join('')}</div></div></div>`;
-}
-function vBefore() {
-  return `<div class="page gut"><div><div class="label">Before you begin · ${esc(MARKETS[S.market].n)} · ${esc(model().n)}</div><h1>Anesthesia</h1></div><ul style="padding-left:20px"><li>Stand-in point. The client's wireframe has a placeholder here; the content owner is to confirm.</li></ul><div class="row"><button class="btn" data-do="overview">Back</button><button class="btn pri" data-do="go" data-k="opening">Start training</button></div></div>`;
-}
 function vStage() {
-  const s = STAGES[stageIdx(S.stage)], t = text(S.stage, S.handle), i = stageIdx(S.stage), pair = hasPair();
+  const s = sec(S.stage), t = text(S.stage, S.handle), pair = hasPair();
+  const list = `<h1>${esc(s.n)}</h1><p class="head">${esc(t.head)}</p><ul>${t.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`;
+  if (s.txt) return `<div class="player textonly"><aside class="side"><h1>${esc(s.n)}</h1><p class="muted">Anesthesia guidance for ${esc(model().n)} in ${esc(MARKETS[S.market].n)}. Shown only for this market and device.</p><ul><li>Stand-in point. The client's wireframe has a placeholder here; the content owner is to confirm.</li></ul><p class="fine">Stand-in text. Not for clinical use.</p></aside></div>`;
   const tools = pair ? `<div class="seg" role="group" aria-label="Handle">${['knob', 'slider'].map((h) => `<button aria-pressed="${h === S.handle}" data-do="handle" data-h="${h}">${esc(HANDLES[h])}</button>`).join('')}</div>${s.f ? '' : '<button class="ghost" data-do="compare">Show both</button>'}` : `<span class="single">${esc(HANDLES[S.handle])}</span>`;
-  const kicker = s.f ? (S.stage === 'opening' ? 'Before the stages' : 'After the stages') : `Stage ${i} of 8`;
   return `<div class="player"><section class="vcol"><div class="vtools">${tools}</div><div class="vbox" id="vbox">${media(S.handle, S.stage, 'v')}</div></section>
-  <aside class="side"><p class="kick">${kicker}</p><h1>${esc(s.n)}</h1><p class="head">${esc(t.head)}</p><ul>${t.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+  <aside class="side">${list}
   ${s.f ? `<div class="graphic"><b>Data graphic</b><div class="small muted">Stand-in for the ${S.handle === 'knob' ? 'DISTALS' : 'TIGER'} trial graphic, shown for this handle group.</div></div>` : (s.same ? '<div class="same">Same for both handles.</div>' : `<div class="handle"><b>${esc(HANDLES[S.handle])}</b>${esc(t.note)}</div>`)}
   <p class="fine">Stand-in text and clips. Not for clinical use.</p></aside></div>`;
 }
 function vCompare() {
-  const s = STAGES[stageIdx(S.stage)];
+  const s = sec(S.stage);
   const col = (h, tag) => { const t = text(S.stage, h); return `<section class="cside ${S.side !== tag ? 'off' : ''}"><div class="chead"><em>${tag.toUpperCase()}</em>${esc(HANDLES[h])}</div><div class="vbox">${media(h, S.stage, 'v' + tag)}</div><div class="txt"><b>${esc(t.head)}</b><ul>${t.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>${s.same ? '<div class="same">Same for both handles.</div>' : `<div class="handle"><b>${esc(HANDLES[h])}</b>${esc(t.note)}</div>`}</div></section>`; };
   return `<div class="gut row" style="padding-block:10px;justify-content:space-between"><div><div class="label" style="margin:0">Compare handles · Stage ${stageIdx(S.stage)} of 8</div><b>${esc(s.n)}</b></div><button class="btn" data-do="exitcmp">Back to the lesson</button></div>
   <div class="ctabs gut"><div class="seg"><button aria-pressed="${S.side === 'a'}" data-do="side" data-s="a">A · Precision knob</button><button aria-pressed="${S.side === 'b'}" data-do="side" data-s="b">B · Legacy slider</button></div></div>
   <div class="cmp">${col('knob', 'a')}${col('slider', 'b')}</div>`;
 }
-const VIEWS = { choose: vChoose, overview: vOverview, before: vBefore, stage: vStage, compare: vCompare };
+const VIEWS = { choose: vChoose, stage: vStage, compare: vCompare };
 
 function clearTimer() { clearInterval(timer); timer = null; const o = $('#ov'); if (o) o.remove(); }
 function render() {
   clearTimer();
-  document.documentElement.style.setProperty('--ts', S.ts);
+  document.documentElement.style.setProperty('--ts', S.present && S.screen === 'stage' ? 1.4 : 1);
   document.body.classList.toggle('present', S.present && S.screen === 'stage');
   $('#view').innerHTML = VIEWS[S.screen]();
   renderTop(); renderBar();
@@ -264,7 +262,7 @@ function render() {
   playNext = false;
 }
 function mark() { const k = `${cfgKey()}/${S.stage}`; if (S.watched[k]) return; S.watched[k] = 1; save(); renderBar(); }
-function nextStage() { const i = stageIdx(S.stage); return i < STAGES.length - 1 ? STAGES[i + 1] : null; }
+function nextStage() { const l = seq(), i = l.findIndex((s) => s.k === S.stage); return i < l.length - 1 ? l[i + 1] : null; }
 function overlay(html) { clearTimer(); const b = $('#vbox'); if (!b) return; b.insertAdjacentHTML('beforeend', `<div class="overlay" id="ov">${html}</div>`); }
 function onEnded() {
   mark();
@@ -274,34 +272,30 @@ function onEnded() {
     const draw = () => overlay(`<div>Next: <b>${esc(n.n)}</b> in ${count}</div><div class="row"><button data-do="cancel">Cancel</button><button class="go" data-do="now">Play now</button></div>`);
     draw();
     timer = setInterval(() => { count -= 1; if (count <= 0) { clearInterval(timer); advance(); } else { const o = $('#ov'); if (o) o.firstChild.innerHTML = `Next: <b>${esc(n.n)}</b> in ${count}`; } }, 1000);
-  } else overlay(`<div class="row"><button class="go" data-do="replay">Replay</button>${n ? `<button data-do="next">Next: ${esc(n.n)}</button>` : ''}</div>`);
+  }
 }
 function advance() { const n = nextStage(); if (!n) return; const has = clipOf(S.handle, n.k); stopped = !has; go(n.k, !!has); }
 function go(k, play) { S.stage = k; if (S.screen !== 'compare') S.screen = 'stage'; if (S.screen === 'stage') { S.last[cfgKey()] = k; save(); } playNext = !!play; const keep = stopped; render(); stopped = false; window.scrollTo(0, 0); return keep; }
-function step(d) { const i = stageIdx(S.stage) + d, lo = S.screen === 'compare' ? 1 : 0, hi = S.screen === 'compare' ? 8 : 9; if (i >= lo && i <= hi) { stopped = false; go(STAGES[i].k, false); } }
+function step(d) { const l = S.screen === 'compare' ? STAGES.filter((s) => !s.f) : seq(), i = l.findIndex((s) => s.k === S.stage) + d; if (i >= 0 && i < l.length) { stopped = false; go(l[i].k, false); } }
 function setPresent(on) { S.present = on; if (on) { try { document.documentElement.requestFullscreen?.().catch(() => {}); } catch (e) {} } else { try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {} } render(); }
 
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-do]'); if (!b) return;
   const a = b.dataset.do;
   if (a === 'market') { S.market = b.dataset.m; S.model = null; render(); }
-  else if (a === 'pick') { S.model = b.dataset.model; S.handle = b.dataset.h; S.screen = 'overview'; render(); window.scrollTo(0, 0); }
+  else if (a === 'pick') { S.model = b.dataset.model; S.handle = b.dataset.h; S.screen = 'stage'; stopped = false; go(S.last[cfgKey()] || seq()[0].k, false); }
   else if (a === 'choose') { S.screen = 'choose'; S.present = false; render(); }
-  else if (a === 'overview') { S.screen = 'overview'; S.present = false; render(); }
-  else if (a === 'before') { S.screen = 'before'; render(); }
-  else if (a === 'go') { stopped = false; if (STAGES[stageIdx(b.dataset.k)].f && S.screen === 'compare') return; go(b.dataset.k, false); }
+  else if (a === 'go') { stopped = false; if (sec(b.dataset.k).f && S.screen === 'compare') return; go(b.dataset.k, false); }
   else if (a === 'prev') step(-1);
   else if (a === 'next') step(1);
   else if (a === 'handle') { S.handle = b.dataset.h; stopped = false; render(); }
-  else if (a === 'compare') { if (STAGES[stageIdx(S.stage)].f || S.screen === 'overview') S.stage = S.screen === 'overview' ? (S.last[cfgKey()] && !STAGES[stageIdx(S.last[cfgKey()])].f ? S.last[cfgKey()] : 'prep') : 'prep'; S.origin = S.screen; S.screen = 'compare'; S.present = false; render(); window.scrollTo(0, 0); }
-  else if (a === 'exitcmp') { S.screen = S.origin === 'overview' ? 'overview' : 'stage'; render(); }
+  else if (a === 'compare') { if (sec(S.stage).f) S.stage = 'prep'; S.screen = 'compare'; S.present = false; render(); window.scrollTo(0, 0); }
+  else if (a === 'exitcmp') { S.screen = 'stage'; render(); }
   else if (a === 'side') { S.side = b.dataset.s; render(); }
   else if (a === 'auto') { S.auto = !S.auto; save(); renderBar(); }
   else if (a === 'present') setPresent(!S.present);
-  else if (a === 'ts') { S.ts = Math.min(1.75, Math.max(0.85, S.ts + Number(b.dataset.d))); document.documentElement.style.setProperty('--ts', S.ts); }
   else if (a === 'cancel') { clearTimer(); }
   else if (a === 'now') { clearInterval(timer); advance(); }
-  else if (a === 'replay') { clearTimer(); const v = $('#v'); if (v) { v.currentTime = 0; v.play().catch(() => {}); } }
 });
 document.addEventListener('keydown', (e) => {
   if (S.screen !== 'stage' && S.screen !== 'compare') return;

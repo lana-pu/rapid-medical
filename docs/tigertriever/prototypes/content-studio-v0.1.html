@@ -88,7 +88,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[c
 .att .empty{padding:12px 14px;color:var(--ink-2)}
 .notebox{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--shade);color:var(--ink-2)}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
-table.mx{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums}
+table.mx{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
 .mx th,.mx td{text-align:left;padding:0;border-bottom:1px solid var(--line);vertical-align:top}
 .mx thead th{background:var(--shade);padding:12px 14px;font-weight:500;border-bottom:1px solid var(--line);min-width:150px}
 .mx thead th b{display:block;font-weight:600}
@@ -291,6 +291,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
 .ck .lnkb{color:inherit;text-decoration:underline;margin-right:10px}
 .ck svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
 .chg-list{padding-left:18px;list-style:disc;color:var(--ink);display:flex;flex-direction:column;gap:3px}
+.picks{max-height:270px;overflow:auto;padding:2px}
 .pick{all:unset;box-sizing:border-box;display:flex;gap:12px;align-items:center;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .pick+.pick{margin-top:6px}
 .pick:hover:not(:disabled){border-color:var(--ed);background:var(--shade)}
@@ -342,7 +343,6 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
       <button type="button" class="b ic" id="bUndo" aria-label="Undo" title="Undo"><svg viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h11a5 5 0 0 1 5 5v1"/></svg></button>
       <button type="button" class="b ic" id="bRedo" aria-label="Redo" title="Redo"><svg viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M20 12H9a5 5 0 0 0-5 5v1"/></svg></button>
       <button type="button" class="b txt-s" id="bComment" aria-label="Comments"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.5-4.5A8 8 0 1 1 21 12Z"/></svg><span>Comment</span></button>
-      <button type="button" class="b txt-s" id="bChanges" aria-label="Changes"><svg viewBox="0 0 24 24"><path d="M4 6h7v12H4z"/><path d="M13 6h7v12h-7z"/></svg><span>Changes</span></button>
       <button type="button" class="b txt-s" id="bPrev" aria-label="Preview"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Preview</span></button>
       <button type="button" class="b pri" data-publish><span>Publish</span></button>
     </span>
@@ -358,7 +358,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
   <b>Try these</b>
   <ol>
     <li>Open <em>Device preparation</em> for Tiger 13 · Legacy slider. Click the video and replace it for this handle only.</li>
-    <li>Press <em>Changes</em> to see your draft next to package v1.2.</li>
+    <li>Press <em>Preview</em>, then <em>Compare with package</em> to see your draft next to v1.2.</li>
     <li>Press <em>Publish</em>. Try to include Tiger 13 · Precision knob.</li>
     <li>Switch to <em>US</em> and add a configuration.</li>
   </ol>
@@ -560,18 +560,23 @@ function renderReady() {
   const m = S.market, mk = MK[m], list = cfgs(m), pair = pairFor(m), pend = diffs(m), att = [], last = latestPkg(m);
   if (pend.length) { const ls = new Set(pend.map((p) => p.c + '/' + p.s)).size; att.push({ cls: 'chg', html: `${plural(pend.length, 'unpublished change')} in ${plural(ls, 'lesson')}.`, act: `<button type="button" class="lnkb" data-publish>Review and publish</button>` }); }
   const built = S.packages.find((p) => p.status === 'built' && p.market === m); if (built) att.push({ cls: 'ok', html: `Package v${built.v} is built and not sent yet.`, act: `<a href="#packages">Open packages</a>` });
-  list.forEach((c) => sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; if (isStage(s.k) && !notStarted(l) && !hasMedia(l)) { const md = mediaOf(l.media); att.push({ cls: 'bad', html: `${s.n} · ${cfgName(c)}: ${md && md.ready === 'filming' ? `filming needed${md.who ? ', ' + esc(md.who) : ''}. ${esc(md.need)}` : 'no video'}.`, act: `<button type="button" class="lnkb" data-open="${c.id}/${s.k}">Open stage</button>` }); } }));
+  list.forEach((c) => {
+    const waiting = sectionsOf(c).filter((s) => { const l = S.lessons[c.id][s.k]; return isStage(s.k) && !notStarted(l) && !hasMedia(l); }); if (!waiting.length) return;
+    const who = [...new Set(waiting.map((s) => (mediaOf(S.lessons[c.id][s.k].media) || {}).who).filter(Boolean))].join(', ');
+    const inPair = pair && (c.id === pair.a.id || c.id === pair.b.id);
+    att.push({ cls: 'bad', html: `${esc(cfgName(c))}: filming needed for ${waiting.map((s) => esc(s.n)).join(', ')}${who ? ` (${esc(who)})` : ''}.${inPair ? ' The handle comparison waits for these too.' : ''}`, act: `<button type="button" class="lnkb" data-filming>See what's needed</button>` });
+  });
   const rev = reviewItems(Object.fromEntries(list.map((c) => [c.id, true])), m); if (rev.length) att.push({ cls: 'rev', html: `${plural(rev.length, 'file')} marked “Review first”: existing footage to check before it ships.`, act: `<a href="#media">Open media</a>` });
-  const head = list.map((c) => { const inPkg = !!S.released[c.id]; const all = sectionsOf(c).map((s) => cellState(c.id, s.k)); const st = inPkg ? (all.every((x) => x.k === 'ok' || x.k === 'na') ? { cls: 'live', t: `In package v${last.v}` } : { cls: 'dirty', t: 'Unpublished changes' }) : (all.every((x) => x.k === 'none' || x.k === 'na') ? { cls: 'none', t: 'Not started' } : { cls: 'none', t: 'Not in any package' }); return `<th><b>${esc(MD[c.model].name)}</b><small>${esc(HANDLES[c.handle])} · ${esc(mk.name)}</small><span class="st ${st.cls}">${st.t}</span></th>`; }).join('');
-  const cmpHead = pair ? `<th><b>Comparison</b><small>Tiger 13: Legacy slider vs Precision knob</small></th>` : (mk.knob ? `<th class="ghost"><b style="font-weight:500">Comparison</b><small>Needs Tiger 13 with both handles</small></th>` : `<th class="ghost"><b style="font-weight:500">Comparison</b><small>Not available: one handle in ${esc(mk.name)}</small></th>`);
+  const head = list.map((c) => { const inPkg = !!S.released[c.id]; const all = sectionsOf(c).map((s) => cellState(c.id, s.k)); const st = inPkg ? (all.every((x) => x.k === 'ok' || x.k === 'na') ? { cls: 'live', t: `In package v${last.v}` } : { cls: 'dirty', t: 'Unpublished changes' }) : (all.every((x) => x.k === 'none' || x.k === 'na') ? { cls: 'none', t: 'Not started' } : { cls: 'none', t: 'Not in any package' }); return `<th><b>${esc(MD[c.model].name)}</b><small>${esc(HANDLES[c.handle])}</small><span class="st ${st.cls}">${st.t}</span></th>`; }).join('');
   const anyBefore = list.some((c) => c.before);
-  const rows = SECTIONS.filter((s) => s.k !== 'before' || anyBefore).map((s) => `<tr class="${s.k === 'opening' && anyBefore ? 'sep' : ''}"><th><small>${isStage(s.k) ? s.num : ''}</small>${esc(s.n)}${s.k === 'before' ? '<span class="cond">Only where set up for the configuration</span>' : ''}</th>${list.map((c) => { const st = cellState(c.id, s.k); return st.k === 'na' ? `<td><span class="cell na">—</span></td>` : `<td><button type="button" class="cell ${st.k}" data-open="${c.id}/${s.k}"><i>${ICON[st.k]}</i>${st.t}</button></td>`; }).join('')}${(() => { const st = cmpState(s.k, m); return `<td><button type="button" class="cell ${st.k}" data-cmp="${s.k}" ${st.k === 'na' ? 'tabindex="-1"' : ''}><i>${ICON[st.k]}</i>${st.t}</button></td>`; })()}<td class="ghost"></td></tr>`).join('');
+  const cell = (c, k) => { const st = cellState(c.id, k); if (st.k === 'na') return `<td><span class="cell na">—</span></td>`; const quiet = st.k === 'ok' || st.k === 'ready'; return `<td><button type="button" class="cell ${st.k}" data-open="${c.id}/${k}" ${quiet ? `aria-label="${st.t}" title="${st.t}"` : ''}><i>${ICON[st.k]}</i>${quiet ? '' : st.t}</button></td>`; };
+  const rows = SECTIONS.filter((s) => s.k !== 'before' || anyBefore).map((s) => `<tr class="${s.k === 'opening' && anyBefore ? 'sep' : ''}"><th><small>${isStage(s.k) ? s.num : ''}</small>${esc(s.n)}${s.k === 'before' ? '<span class="cond">Only where set up for the configuration</span>' : ''}</th>${list.map((c) => cell(c, s.k)).join('')}</tr>`).join('');
   return `<div class="page wrap">
-    <div class="head"><div><h1>What's ready</h1><p class="sub">${last ? `${esc(mk.name)} · last package v${esc(last.v)}, ${esc(last.date)}` : `${esc(mk.name)} · no packages yet`}</p></div><div class="act"><label for="mkSel" class="hint">Showing</label><select id="mkSel" aria-label="Market">${MARKETS.map((x) => `<option value="${x.id}" ${x.id === m ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div></div>
+    <div class="head"><div><h1>What's ready</h1><p class="sub">${last ? `${esc(mk.name)} · last package v${esc(last.v)}, ${esc(last.date)}` : `${esc(mk.name)} · no packages yet`}</p></div><div class="act"><button type="button" class="b" data-addcfg>+ Add configuration</button><label for="mkSel" class="hint">Showing</label><select id="mkSel" aria-label="Market">${MARKETS.map((x) => `<option value="${x.id}" ${x.id === m ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div></div>
     ${mk.note ? `<p class="notebox">${esc(mk.note)}</p>` : ''}
     <section class="att" aria-label="Needs your attention"><h2>Needs your attention</h2>${att.length ? `<ul>${att.map((a) => `<li class="${a.cls}"><span class="dot"></span><span class="grow">${a.html}</span>${a.act}</li>`).join('')}</ul>` : `<p class="empty">${list.length ? 'Nothing is waiting on you.' : 'No configurations yet for this market.'}</p>`}</section>
-    <div class="scroll"><table class="mx"><thead><tr><th>Section</th>${head}${cmpHead}<th class="ghost"><button type="button" class="lnkb" data-addcfg>+ Add configuration</button><small>Model and handle for ${esc(mk.name)}</small></th></tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="legend"><span><i style="background:var(--ok)"></i>In package / Ready</span><span><i style="background:var(--warn)"></i>Changed or empty field</span><span><i style="background:var(--bad)"></i>Filming needed</span><span><i style="border:1.5px solid var(--ink-2);background:transparent"></i>Not started</span><span>Click a cell to open the lesson.</span></div>
+    <div class="scroll"><table class="mx"><thead><tr><th>Section</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="hint">A tick means nothing to do here. Click any cell to open the lesson.</p>
   </div>`;
 }
 function mediaBox(l, k, editable) {
@@ -590,11 +595,11 @@ function list(l, f, cls, ph, ed) { return `<ul class="pts ${cls}" data-list="${f
 }
 function renderLesson() {
   const c = CF(cur.c), secs = sectionsOf(c); if (!secs.some((s) => s.k === cur.s)) cur.s = secs[0].k;
-  const l = lesson(), s = SC[cur.s], i = secs.findIndex((x) => x.k === cur.s), prev = secs[i - 1], next = secs[i + 1], ed = mode === 'edit', mk = MK[c.market];
+  const l = lesson(), s = SC[cur.s], ed = mode === 'edit', mk = MK[c.market];
   const rail = secs.map((x, j) => { const st = cellState(cur.c, x.k); return `${(x.k === 'prep' || x.k === 'closing') ? '<div class="sep"></div>' : ''}<button type="button" data-stage="${x.k}" ${x.k === cur.s ? 'aria-current="page"' : ''}><span class="n">${isStage(x.k) ? x.num : ''}</span><span class="nm">${esc(x.n)}</span><span class="mk ${st.k}" title="${st.t}"></span></button>`; }).join('');
   const num = isStage(cur.s) ? `Stage ${s.num} of 8 · ${esc(s.n)}` : cur.s === 'before' ? 'Before you begin' : cur.s === 'opening' ? 'Opening' : 'Closing';
   const pair = pairFor(c.market), inPair = pair && isStage(cur.s) && (cur.c === pair.a.id || cur.c === pair.b.id);
-  return `${mode === 'preview' ? `<div class="banner">Preview of your draft. Physicians see this only after you publish a package.</div>` : ''}<div class="lwrap">
+  return `${mode === 'preview' ? `<div class="banner">Preview of your draft. Physicians see this only after you publish a package. <a href="#changes">Compare with package</a></div>` : ''}<div class="lwrap">
     <nav class="rail" aria-label="Programme"><h2>Programme</h2>${rail}</nav>
     <article class="lesson">
       <div class="ctx">Tigertriever · <b>${esc(MD[c.model].name)}</b> · ${esc(HANDLES[c.handle])} · ${esc(mk.name)} <span class="demo">Stand-in content</span></div>
@@ -605,7 +610,7 @@ function renderLesson() {
       <div class="block"><h2>On screen${l.shared ? '<span class="chip">Same for all handles</span>' : ''}</h2>${list(l, 'points', '', 'Add a point the physician reads next to the clip', ed)}</div>
       ${l.shared ? (ed ? `<p class="hint"><button type="button" class="lnkb" data-unshare>This step differs by handle</button></p>` : '') : `<div class="block"><h2>${esc(HANDLES[c.handle])}${ed && !l.notes.length && isStage(cur.s) ? `<button type="button" class="lnkb" data-share style="font-size:12px;text-transform:none;letter-spacing:0">Same for all handles</button>` : ''}</h2>${list(l, 'notes', 'notes', `How this step differs with the ${HANDLES[c.handle].toLowerCase()}`, ed)}</div>`}
       ${l.warn || (ed && l.warn === null) ? `<div class="block warnb"><h2>Important</h2><p data-f="warn" ${ed ? 'data-t' : ''} data-ph="Warning text, if marketing wants one here">${esc(l.warn || '')}</p></div>` : (ed && isStage(cur.s) ? `<p class="hint"><button type="button" class="lnkb" data-addwarn>+ Add a warning</button> · optional, not in the client's draft</p>` : '')}
-      <div class="lnav"><button type="button" class="nb" data-stage="${prev ? prev.k : ''}" ${prev ? '' : 'disabled'}>← ${prev ? esc(prev.n) : ''}</button>${inPair ? `<span class="cmp">Compare this stage: ${cmpState(cur.s, c.market).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</span>` : ''}<button type="button" class="nb" data-stage="${next ? next.k : ''}" ${next ? '' : 'disabled'}>${next ? esc(next.n) : ''} →</button></div>
+      ${inPair ? `<p class="hint">Compare this stage: ${cmpState(cur.s, c.market).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</p>` : ''}
     </article></div>`;
 }
 function renderChanges() {
@@ -655,9 +660,8 @@ function syncBar() {
   const c = CF(cur.c), st = lessonStatus(), sl = $('#stLesson'); sl.className = 'st ' + st.cls; sl.textContent = st.t;
   $('#lsName').textContent = SC[cur.s].n; $('#lsSub').textContent = `${cfgName(c)} · ${MK[c.market].name}`;
   $('#bUndo').disabled = !S.past.length; $('#bRedo').disabled = !S.future.length;
-  const pv = mode === 'preview'; $('#editCtl').hidden = pv; $('#bBackEdit').hidden = !pv; $('#stLesson').hidden = pv; $('#saved').hidden = pv;
+  const pv = mode === 'preview'; $('#editCtl').hidden = pv || view === 'changes'; $('#bBackEdit').hidden = !pv; $('#stLesson').hidden = pv; $('#saved').hidden = pv;
   $('#tip').hidden = view === 'start' || pv || S.tipDone;
-  $('#bChanges').disabled = view === 'changes';
 }
 
 /* ---------- editing ---------- */
@@ -678,17 +682,7 @@ function openDrawer(html) { const d = $('#drawer'); d.innerHTML = html; d.hidden
 function closeDrawer() { $('#drawer').hidden = true; }
 function slotOf(spec) { const [f, i] = spec.split(':'); return { f, i: i === undefined ? null : +i }; }
 function slotId(l, slot) { return slot.f === 'media' ? l.media : l.graphics[slot.i]; }
-function openMedia(spec = 'media') {
-  const slot = slotOf(spec), l = lesson(), id = slotId(l, slot), m = mediaOf(id), used = usedIn(id), c = CF(cur.c);
-  const what = slot.f === 'graphics' ? 'Graphic' : m ? KIND[m.kind] : (isStage(cur.s) ? 'Video' : 'Media');
-  openDrawer(`<div class="hd"><h2>${what}</h2><button type="button" class="b" data-done>Done</button></div>
-    ${m ? `<div class="file"><div class="th ${m.kind !== 'video' && m.kind !== 'anim' ? m.kind : ''} ${m.ready === 'filming' ? 'filming' : ''}"></div><div><b>${esc(m.name)}</b><div class="meta">${m.dur ? esc(m.dur) + ' · ' : ''}${m.ver ? 'version ' + m.ver + ' · ' : ''}${esc(m.up) || 'no file yet'}</div><span class="rd ${m.ready}">${READY[m.ready]}${m.who ? ' · ' + esc(m.who) : ''}</span></div></div>
-    <dl class="kvs"><dt>From</dt><dd>${esc(m.source)}</dd>${m.need && m.ready !== 'nofilm' ? `<dt>Needed</dt><dd>${esc(m.need)}</dd>` : ''}${m.note ? `<dt>Note</dt><dd>${esc(m.note)}</dd>` : ''}</dl>` : `<p>Nothing here yet.</p>`}
-    ${m ? `<div><h3>Used in ${plural(used.length, 'lesson')}</h3><ul class="used">${used.map((u) => `<li><span><b>${esc(SC[u.s].n)}</b> · ${esc(cfgName(CF(u.c)))} · ${esc(MK[CF(u.c).market].name)}</span>${u.c === cur.c && u.s === cur.s ? '<span class="muted">this lesson</span>' : ''}</li>`).join('')}</ul>${used.length > 1 ? '<p class="hint" style="margin-top:8px">If you replace it, you choose whether the other lessons change too. Nothing changes on its own.</p>' : ''}</div>` : ''}
-    <div class="act"><button type="button" class="b pri" data-replace>${m ? 'Replace…' : 'Choose…'}</button>${m && (slot.f === 'graphics' || isStage(cur.s)) ? '<button type="button" class="b" data-remove>Remove</button>' : ''}</div>
-    <p class="hint">Rapid Medical films and supplies the material. Uploading here only stores the file; it does not approve it.</p>`);
-  $('#drawer').onclick = (e) => { if (e.target.closest('[data-done]')) closeDrawer(); else if (e.target.closest('[data-replace]')) openPicker(slot); else if (e.target.closest('[data-remove]')) { const name = m.name; if (slot.f === 'media') l.media = null; else l.graphics.splice(slot.i, 1); commit(`${SC[cur.s].n} · ${cfgName(c)}: ${slot.f === 'media' ? 'media' : 'graphic'} removed`); rerender(); closeDrawer(); say(`Removed ${name}.${slot.f === 'media' && isStage(cur.s) ? ' The stage needs a video before it can be published.' : ''}`, 'Undo', undo); } };
-}
+function openMedia(spec = 'media') { openPicker(slotOf(spec)); }
 function openComments() {
   const key = cur.c + '/' + cur.s, list = S.comments[key] || [];
   openDrawer(`<div class="hd"><h2>Comments</h2><button type="button" class="b" data-done>Done</button></div>
@@ -707,22 +701,26 @@ function openComments() {
 function openModal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`; m.querySelector('.scrim').addEventListener('click', (e) => { if (e.target.classList.contains('scrim')) closeModal(); }); const f = m.querySelector('button:not(:disabled),input,select,[tabindex]'); if (f) f.focus(); }
 function closeModal() { $('#modal').innerHTML = ''; }
 function openPicker(slot) {
-  const l = lesson(), curId = slotId(l, slot), old = mediaOf(curId), used = usedIn(curId), c = CF(cur.c);
+  const l = lesson(), curId = slot.f === 'media' ? l.media : (slot.i === null ? null : l.graphics[slot.i]), old = mediaOf(curId), used = usedIn(curId), c = CF(cur.c);
   const kinds = slot.f === 'graphics' ? ['graphic', 'still'] : isStage(cur.s) ? ['video'] : ['anim', 'video', 'still'];
   const ids = Object.keys(MEDIA).filter((id) => id !== curId && kinds.includes(MEDIA[id].kind)).sort((a, b) => (MEDIA[a].ready === 'filming') - (MEDIA[b].ready === 'filming') || MEDIA[a].name.localeCompare(MEDIA[b].name));
   const label = slot.f === 'graphics' ? 'graphic' : isStage(cur.s) ? 'video' : 'file';
-  const step1 = () => openModal(`<h2>Choose a ${label} for ${esc(SC[cur.s].n)}</h2><p class="sub hint">${esc(cfgName(c))} · ${esc(MK[c.market].name)}. Only files already in the media library. <button type="button" class="lnkb" data-upload>Upload a new one…</button></p>
-    <div>${ids.map((id) => { const m = MEDIA[id], u = usedIn(id).length; return `<button type="button" class="pick" data-pick="${id}" ${m.ready === 'filming' ? 'disabled' : ''}><span class="th ${m.kind !== 'video' ? m.kind : ''} ${m.ready === 'filming' ? 'filming' : ''}"></span><span class="grow"><b>${esc(m.name)}</b><span class="m">${esc(m.source)}${m.dur ? ' · ' + esc(m.dur) : ''} · ${u ? plural(u, 'lesson') : 'not used yet'}${m.note ? ' · ' + esc(m.note) : ''}</span></span><span class="rd ${m.ready}">${READY[m.ready]}</span></button>`; }).join('') || '<p class="muted">Nothing suitable in the library yet.</p>'}</div>
-    <div class="act"><button type="button" class="b" data-x>Cancel</button></div>`, 'wide');
-  const step2 = (newId) => { const n = MEDIA[newId]; if (used.length <= 1) return apply(newId, false);
-    openModal(`<h2>Where should ${esc(n.name)} go?</h2><p class="sub hint">${esc(old.name)} is used in ${plural(used.length, 'lesson')}. Nothing changes unless you say so.</p>
-      <div><label class="opt"><input type="radio" name="where" value="one" checked><span><b>Only this lesson</b><span class="d">${esc(SC[cur.s].n)} · ${esc(cfgName(c))} · ${esc(MK[c.market].name)}. The other lessons keep ${esc(old.name)}.</span></span></label>
-      <label class="opt"><input type="radio" name="where" value="all"><span><b>All ${used.length} lessons that use ${esc(old.name)}</b><span class="d">${used.map((u) => `${esc(SC[u.s].n)} · ${esc(cfgName(CF(u.c)))} · ${esc(MK[CF(u.c).market].name)}`).join('<br>')}</span></span></label></div>
-      <div class="act"><button type="button" class="b pri" data-apply>Replace</button><button type="button" class="b" data-back>Back</button></div>`);
-    $('#modal').onclick = (e) => { if (e.target.closest('[data-apply]')) apply(newId, $('input[name=where]:checked').value === 'all'); else if (e.target.closest('[data-back]')) { step1(); bind(); } }; };
-  const apply = (newId, all) => { const targets = all ? used : [{ c: cur.c, s: cur.s, f: slot.f, i: slot.i }]; targets.forEach((t) => { const tl = S.lessons[t.c][t.s]; if (t.f === 'media') tl.media = newId; else if (t.i === null || t.i === undefined) tl.graphics.push(newId); else tl.graphics[t.i] = newId; }); commit(`${SC[cur.s].n} · ${all ? plural(targets.length, 'lesson') : cfgName(c)}: ${KIND[MEDIA[newId].kind].toLowerCase()} ${curId ? 'replaced' : 'added'} (${MEDIA[newId].name})`); closeModal(); closeDrawer(); rerender(); say(`${KIND[MEDIA[newId].kind]} ${curId ? 'replaced' : 'added'} in ${plural(targets.length, 'lesson')}. ${all || !curId ? '' : 'The other lessons are unchanged. '}Publish when you are ready.`, 'Undo', undo); };
-  const bind = () => { $('#modal').onclick = (e) => { const p = e.target.closest('[data-pick]'); if (p) step2(p.dataset.pick); else if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-upload]')) say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); }; };
-  step1(); bind();
+  const canRemove = old && (slot.f === 'graphics' || isStage(cur.s));
+  let all = false;
+  const where = used.length > 1 ? `<div><h3>Used in ${plural(used.length, 'lesson')}</h3><label class="opt"><input type="radio" name="where" value="one" checked><span><b>Only this lesson</b><span class="d">${esc(SC[cur.s].n)} · ${esc(cfgName(c))} · ${esc(MK[c.market].name)}</span></span></label><label class="opt"><input type="radio" name="where" value="all"><span><b>All ${used.length} lessons</b><span class="d">${used.map((u) => `${esc(SC[u.s].n)} · ${esc(cfgName(CF(u.c)))} · ${esc(MK[CF(u.c).market].name)}`).join('<br>')}</span></span></label></div>` : '';
+  openModal(`<h2>${old ? 'Replace' : 'Choose'} ${label} · ${esc(SC[cur.s].n)}</h2><p class="sub hint">${esc(cfgName(c))} · ${esc(MK[c.market].name)}</p>
+    ${old ? `<div class="file"><div class="th ${old.kind !== 'video' && old.kind !== 'anim' ? old.kind : ''} ${old.ready === 'filming' ? 'filming' : ''}"></div><div><b>${esc(old.name)}</b><div class="meta">${esc(old.source)}${old.need && old.ready !== 'nofilm' ? ' · ' + esc(old.need) : ''}</div><span class="rd ${old.ready}">${READY[old.ready]}${old.who ? ' · ' + esc(old.who) : ''}</span></div></div>` : ''}
+    ${where}
+    <div><h3>Pick the new file</h3><div class="picks">${ids.map((id) => { const m = MEDIA[id], u = usedIn(id).length; return `<button type="button" class="pick" data-pick="${id}" ${m.ready === 'filming' ? 'disabled' : ''}><span class="th ${m.kind !== 'video' ? m.kind : ''} ${m.ready === 'filming' ? 'filming' : ''}"></span><span class="grow"><b>${esc(m.name)}</b><span class="m">${esc(m.source)}${m.dur ? ' · ' + esc(m.dur) : ''} · ${u ? plural(u, 'lesson') : 'not used yet'}</span></span><span class="rd ${m.ready}">${READY[m.ready]}</span></button>`; }).join('') || '<p class="muted">Nothing suitable in the library yet.</p>'}</div></div>
+    <div class="act"><button type="button" class="b" data-x>Cancel</button><button type="button" class="b" data-upload>Upload a new one…</button>${canRemove ? '<button type="button" class="b" data-remove>Remove</button>' : ''}</div>`, 'wide');
+  const apply = (newId) => { const targets = all ? used : [{ c: cur.c, s: cur.s, f: slot.f, i: slot.i }]; targets.forEach((t) => { const tl = S.lessons[t.c][t.s]; if (t.f === 'media') tl.media = newId; else if (t.i === null || t.i === undefined) tl.graphics.push(newId); else tl.graphics[t.i] = newId; }); commit(`${SC[cur.s].n} · ${all ? plural(targets.length, 'lesson') : cfgName(c)}: ${KIND[MEDIA[newId].kind].toLowerCase()} ${curId ? 'replaced' : 'added'} (${MEDIA[newId].name})`); closeModal(); rerender(); say(`${KIND[MEDIA[newId].kind]} ${curId ? 'replaced' : 'added'} in ${plural(targets.length, 'lesson')}.${used.length > 1 && !all ? ' The other lessons are unchanged.' : ''}`, 'Undo', undo); };
+  $('#modal').onclick = (e) => {
+    const r = e.target.closest('input[name=where]'); if (r) { all = r.value === 'all'; return; }
+    const p = e.target.closest('[data-pick]'); if (p) { apply(p.dataset.pick); return; }
+    if (e.target.closest('[data-x]')) closeModal();
+    else if (e.target.closest('[data-upload]')) say('Uploads are switched off in this prototype. Rapid Medical supplies the files.');
+    else if (e.target.closest('[data-remove]')) { const name = old.name; if (slot.f === 'media') l.media = null; else l.graphics.splice(slot.i, 1); commit(`${SC[cur.s].n} · ${cfgName(c)}: ${slot.f === 'media' ? 'media' : 'graphic'} removed`); closeModal(); rerender(); say(`Removed ${name}.${slot.f === 'media' && isStage(cur.s) ? ' The stage needs a video before it can be published.' : ''}`, 'Undo', undo); }
+  };
 }
 function openAddConfig() {
   const m = S.market, mk = MK[m]; let model = 't21', handle = 'slider';
@@ -739,23 +737,25 @@ function openAddConfig() {
   };
   draw();
 }
-function openPublish() {
-  endEdit(); closeDrawer();
+let pubOpen = false;
+function openPublish(keep) {
+  endEdit(); closeDrawer(); $('#toast').hidden = true; if (keep !== true) pubOpen = false;
   const m = S.market, mk = MK[m], sel = S.scope[m], next = nextVersion(m), last = latestPkg(m), pair = pairFor(m), list = cfgs(m);
   const bl = blockers(sel, m), rev = reviewItems(sel, m), pend = diffs(m).filter((d) => sel[d.c]), scopeCh = scopeChanges(sel, m), changes = [...scopeCh, ...pend.map((d) => d.label)];
   const sizeMB = (() => { const set = new Set(); list.forEach((c) => { if (sel[c.id]) sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; [l.media, ...l.graphics].forEach((id) => { if (id && MEDIA[id].ready !== 'filming') set.add(id); }); }); }); let mb = 0; set.forEach((id) => { mb += MEDIA[id].kind === 'video' ? 36 : MEDIA[id].kind === 'anim' ? 18 : 2; }); return mb; })();
-  const cfgOpt = (c) => { const ns = sectionsOf(c).every((s) => notStarted(S.lessons[c.id][s.k])); const b = ns ? [] : blockers({ [c.id]: true }, m); const reason = ns ? 'Not started' : b.length ? b[0].msg : ''; return `<label class="opt ${!sel[c.id] && (b.length || ns) ? 'dis' : ''}"><input type="checkbox" data-cfg="${c.id}" ${sel[c.id] ? 'checked' : ''} ${ns ? 'disabled' : ''}><span><b>${esc(cfgName(c))}</b><span class="d">${S.released[c.id] ? `In package v${esc(last.v)}` : 'New in this package'}</span>${reason ? `<span class="note">${esc(reason)}${b.length ? ` <button type="button" class="lnkb" data-open="${b[0].c}/${b[0].s}">Open stage</button>` : ''}</span>` : ''}</span></label>`; };
+  const cfgOpt = (c) => { const ns = sectionsOf(c).every((s) => notStarted(S.lessons[c.id][s.k])); const b = ns ? [] : blockers({ [c.id]: true }, m); const reason = ns ? 'Not started' : b.length ? `${plural(b.length, 'stage')} not ready` : ''; return `<label class="opt ${!sel[c.id] && (b.length || ns) ? 'dis' : ''}"><input type="checkbox" data-cfg="${c.id}" ${sel[c.id] ? 'checked' : ''} ${ns ? 'disabled' : ''}><span><b>${esc(cfgName(c))}</b>${reason ? `<span class="note">${esc(reason)}${b.length ? ` <button type="button" class="lnkb" data-open="${b[0].c}/${b[0].s}">Open stage</button>` : ''}</span>` : ''}</span></label>`; };
   const can = !bl.length && changes.length > 0 && list.some((c) => sel[c.id]);
-  openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">${esc(mk.name)}. Physicians download a new ZIP. ${last ? `Package v${esc(last.v)} stays available and unchanged.` : 'This is the first package for this market.'}</p>
-    <div><h3>What goes in</h3>${list.map(cfgOpt).join('')}${pair ? `<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b><span class="d">Legacy slider vs Precision knob, stage by stage</span></span></label>` : ''}</div>
-    <div><h3>Changes since ${last ? 'v' + esc(last.v) : 'the start'}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 8).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 8 ? `<li class="muted">and ${changes.length - 8} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
-    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF(b.leave))) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video, a headline and its points.${sel.cmp ? ' Both sides of the comparison are complete.' : ''}</span></div>`}
-    ${rev.length ? `<div class="ck rev" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16h.01"/></svg><span class="grow">${plural(rev.length, 'file')} still marked “Review first”: ${rev.map((x) => esc(x.name)).join(', ')}. They ship as they are unless you check them.</span></div>` : ''}</div>
-    <div class="kv"><dt>Size</dt><dd>about ${sizeMB} MB</dd><dt>Then</dt><dd>Download, test it offline, mark it as sent.</dd></div>
+  const names = [...list.filter((c) => sel[c.id]).map((c) => cfgName(c)), ...(sel.cmp ? ['comparison'] : [])];
+  openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">${esc(mk.name)}. ${last ? `Package v${esc(last.v)} stays available and unchanged.` : 'This is the first package for this market.'}</p>
+    <div><h3>What goes in</h3>${pubOpen ? `${list.map(cfgOpt).join('')}${pair ? `<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b></span></label>` : ''}` : `<p>${names.length ? names.map(esc).join(', ') : 'Nothing yet'} · <button type="button" class="lnkb" data-expand>Change</button></p>`}</div>
+    <div><h3>Changes since ${last ? 'v' + esc(last.v) : 'the start'}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 4).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 4 ? `<li class="muted">and ${changes.length - 4} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
+    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF(b.leave))) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video, a headline and its points.</span></div>`}
+    ${rev.length ? `<div class="ck rev" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16h.01"/></svg><span class="grow">${plural(rev.length, 'file')} still marked “Review first”. They ship as they are unless you check them.</span></div>` : ''}</div>
     <div class="act"><button type="button" class="b pri" data-build ${can ? '' : 'disabled'}>Publish package v${esc(next)}</button><button type="button" class="b" data-x>Cancel</button>${!can ? `<span class="hint">${bl.length ? `Fix ${plural(bl.length, 'issue')} or leave them out.` : !list.some((c) => sel[c.id]) ? 'Choose at least one configuration.' : `Nothing changed since v${esc(last.v)}.`}</span>` : ''}</div>`);
   $('#modal').onclick = (e) => {
-    const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[m][cb.dataset.cfg] = cb.checked; persist(); openPublish(); return; }
-    const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[m][lv.dataset.leave] = false; persist(); openPublish(); return; }
+    const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[m][cb.dataset.cfg] = cb.checked; persist(); openPublish(true); return; }
+    if (e.target.closest('[data-expand]')) { pubOpen = true; openPublish(true); return; }
+    const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[m][lv.dataset.leave] = false; persist(); openPublish(true); return; }
     const op = e.target.closest('[data-open]'); if (op) { closeModal(); const [c, s] = op.dataset.open.split('/'); openLesson(c, s); return; }
     if (e.target.closest('[data-x]')) closeModal();
     else if (e.target.closest('[data-build]')) build(next, changes, sizeMB);
@@ -774,7 +774,7 @@ function build(v, changes, mb) {
     openModal(`<h2>Package v${esc(v)} is ready</h2><p class="sub hint">Built ${esc(today())} for ${esc(mk.name)}. Physicians get it when you send it${prev ? `; until then they keep using v${esc(prev.v)}` : ''}.</p>
       <dl class="kv"><dt>Contains</dt><dd>${cfgs(m).filter((c) => sel[c.id]).map((c) => esc(cfgName(c))).join(', ')}${sel.cmp ? ', comparison: Tiger 13 handles' : ''}</dd><dt>Size</dt><dd>${mb} MB</dd><dt>Checksum</dt><dd><code>sha256 ${esc(sha)}…</code></dd></dl>
       <div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Test before sending: unzip, go offline, open index.html, check one stage${sel.cmp ? ' and the comparison' : ''}.</span></div>
-      <div class="act"><button type="button" class="b pri" data-dl="${esc(v)}">Download ZIP</button><button type="button" class="b" data-sent="${esc(v)}">Mark as sent</button><a class="b" href="#packages">All packages</a></div>`);
+      <div class="act"><button type="button" class="b pri" data-dl="${esc(v)}">Download ZIP</button><a class="b" href="#packages">All packages</a></div>`);
     $('#modal').onclick = (e) => { if (e.target.closest('[data-dl]')) say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); else if (e.target.closest('[data-sent]')) { markSent(v, m); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
   }, 1700);
 }
@@ -791,6 +791,7 @@ $('#view').addEventListener('click', (e) => {
   const stg = t.closest('[data-stage]'); if (stg && stg.dataset.stage) { endEdit(); cur.s = stg.dataset.stage; persist(); rerender(); window.scrollTo(0, 0); return; }
   if (t.closest('[data-cmp]')) { const s = t.closest('[data-cmp]').dataset.cmp; const st = cmpState(s); if (st.k === 'na') return; say(st.k === 'ok' ? `${SC[s].n}: both handles have a video, so physicians can compare this stage.` : st.k === 'none' ? `${SC[s].n}: the lessons are not started yet.` : `${SC[s].n}: ${st.t.toLowerCase()}, so this stage stays out of the comparison.`); return; }
   if (t.closest('[data-addcfg]')) { openAddConfig(); return; }
+  if (t.closest('[data-filming]')) { mediaFilter = 'filming'; location.hash = '#media'; return; }
   if (t.closest('[data-publish]')) { openPublish(); return; }
   if (t.closest('[data-upload]')) { say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); return; }
   const fl = t.closest('[data-filter]'); if (fl) { mediaFilter = fl.dataset.filter; rerender(); return; }
@@ -814,7 +815,6 @@ $('#bar').addEventListener('click', (e) => { if (e.target.closest('[data-publish
 $('#bBack').onclick = () => { location.hash = '#ready'; };
 $('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
 $('#bComment').onclick = () => { endEdit(); if (!$('#drawer').hidden && $('#cmtIn')) closeDrawer(); else openComments(); };
-$('#bChanges').onclick = () => { location.hash = '#changes'; };
 $('#bPrev').onclick = () => { endEdit(); closeDrawer(); mode = 'preview'; if (view !== 'lesson') location.hash = '#lesson'; else render(); };
 $('#bBackEdit').onclick = () => { mode = 'edit'; render(); };
 $('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c1', s: 'prep' }; lastJson = JSON.stringify(S.lessons); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
