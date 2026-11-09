@@ -16,6 +16,8 @@ Hero · `page` («Let’s connect», текст не редактируется)
 | `region` | `us` → Americas, `ous` → Europe, `apac` → Asia Pacific |
 | `topic` | `demo` → Request a demo, `support` → Product question / Support, `orders` → Customer Service / Orders |
 
+Другие значения параметров ничего не предвыбирают.
+
 ## Поля формы
 | Поле | Клиент | Сервер (zod) |
 |---|---|---|

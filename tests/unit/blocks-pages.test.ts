@@ -34,6 +34,11 @@ describe("contactToBlocks", () => {
     expect(f.data.defaultRegion).toBeUndefined();
     expect(h.edit).toBeUndefined();
   });
+  it("names of built-in object properties preselect nothing", () => {
+    const f = contactToBlocks({ topic: "constructor", region: "__proto__" })[1] as BlockOf<"form">;
+    expect(f.data.defaultTopic).toBeUndefined();
+    expect(f.data.defaultRegion).toBeUndefined();
+  });
 });
 
 describe("aboutToBlocks", () => {

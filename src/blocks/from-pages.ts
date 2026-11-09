@@ -20,10 +20,13 @@ const TOPICS = ["Request a demo", "Product question / Support", "Customer Servic
 const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac: "Asia Pacific" };
 const TOPIC_MAP: Record<string, string> = { demo: "Request a demo", support: "Product question / Support", orders: "Customer Service / Orders" };
 
+/** URL parameters are arbitrary: only the map's own keys count ("constructor" is not a topic). */
+const pick = (map: Record<string, string>, key?: string) => (key && Object.hasOwn(map, key) ? map[key] : undefined);
+
 export function contactToBlocks({ region, topic }: { region?: string; topic?: string }): Block[] {
   return [
     { type: "hero", variant: "page", data: { title: "Let’s connect", body: "Please provide a few contact details below." } },
-    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: topic ? TOPIC_MAP[topic] : undefined, defaultRegion: region ? REGION_MAP[region] : undefined } },
+    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: pick(TOPIC_MAP, topic), defaultRegion: pick(REGION_MAP, region) } },
   ];
 }
 
