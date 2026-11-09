@@ -27,14 +27,15 @@ export function BlockList({ blocks }: { blocks: Block[] }) {
       continue;
     }
     const { stack } = def(blocks[i]);
-    if (!stack) {
+    const group = stack?.group(blocks[i].variant as never) ?? null;
+    if (!stack || group === null) {
       out.push(renderBlock(blocks[i], false, i));
       i++;
       continue;
     }
     let j = i + 1;
-    while (j < blocks.length && blocks[j].type === blocks[i].type) j++;
-    out.push(<Fragment key={i}>{stack(blocks.slice(i, j).map((b, k) => renderBlock(b, false, k)))}</Fragment>);
+    while (j < blocks.length && blocks[j].type === blocks[i].type && stack.group(blocks[j].variant as never) === group) j++;
+    out.push(<Fragment key={i}>{stack.wrap(blocks.slice(i, j).map((b, k) => renderBlock(b, false, k)), group)}</Fragment>);
     i = j;
   }
   return <>{out}</>;

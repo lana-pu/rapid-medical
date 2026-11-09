@@ -1,20 +1,51 @@
-import { Section, Img } from "@/components/site/primitives";
+import Link from "next/link";
+import { Section, H2, Img } from "@/components/site/primitives";
 import { MediaBlock } from "@/components/site/Media";
-import { FeatureGrid } from "@/components/site/blocks/Blocks";
+import { FeatureGrid, Principles } from "@/components/site/blocks/Blocks";
 import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type ColumnsVariant = "steps" | "features";
+export type ColumnsVariant = "steps" | "features" | "principles" | "cards";
 
-export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string };
+export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string; /** `cards` */ eyebrow?: string; href?: string };
 
 export type ColumnsData = {
+  /** `principles`: heading, text and a picture above the columns. */
+  title?: string | null;
+  intro?: string | null;
+  imageUrl?: string | null;
   items: ColumnItem[];
   /** `features`, old format: one picture with the features baked in, shown when there are no items. */
   legacyImageUrl?: string | null;
 };
 
 function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
+  if (variant === "principles") {
+    return (
+      <Section className="bg-surface">
+        {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
+        {d.intro && <p className="mt-3 text-muted"><F e={e} k="intro">{d.intro}</F></p>}
+        {d.imageUrl && <FM e={e} k="imageUrl" className="mx-auto mt-8 max-w-xl"><Img src={d.imageUrl} className="w-full" /></FM>}
+        {d.items.length > 0 && <div className="mt-10"><Principles items={d.items.map((p) => ({ title: p.title, body: p.body ?? "" }))} render={(i, part) => <F e={e} k={`items.${i}.${part}`}>{d.items[i][part]}</F>} /></div>}
+      </Section>
+    );
+  }
+  if (variant === "cards") {
+    return (
+      <Section>
+        <ul className="grid gap-6 md:grid-cols-2">
+          {d.items.map((c, i) => (
+            <li key={i}>
+              <Link href={c.href ?? "#"} className="group block rounded border border-border p-6 hover:bg-surface">
+                <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>
+                <h2 className="mt-1 text-xl font-medium group-hover:underline">{c.title}</h2>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    );
+  }
   let inner;
   if (variant === "steps") {
     inner = (
@@ -41,14 +72,19 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
 export const columns: BlockDef<"columns"> = {
   type: "columns",
   name: "Columns",
-  description: "Several similar items in columns: steps, features.",
+  description: "Several similar items in columns: steps, features, principles, link cards.",
   category: "content",
   nestable: true,
   variants: [
     { id: "steps", label: "Steps with media", description: "Numbered automatically, video or image under each step, 3 columns" },
     { id: "features", label: "Features with icons", description: "Icon, title, text, 2 columns" },
+    { id: "principles", label: "Principles", description: "Grey band, first letter highlighted, optional picture above" },
+    { id: "cards", label: "Link cards", description: "Bordered cards that link to a page, 2 columns" },
   ],
   fields: [
+    { key: "title", label: "Title (principles)", kind: "text" },
+    { key: "intro", label: "Intro (principles)", kind: "longText" },
+    { key: "imageUrl", label: "Picture (principles)", kind: "media" },
     { key: "items", label: "Items: title (required), text, icon or media", kind: "items", required: true },
     { key: "legacyImageUrl", label: "Image instead of the list (old format)", kind: "media" },
   ],
@@ -60,6 +96,23 @@ export const columns: BlockDef<"columns"> = {
     ],
   },
   examples: {
+    principles: {
+      title: "Sample principles",
+      intro: "A short line above the columns.",
+      items: [
+        { title: "Respect", body: "Sample text." },
+        { title: "Agility", body: "Sample text." },
+        { title: "Passion", body: "Sample text." },
+        { title: "Integrity", body: "Sample text." },
+        { title: "Drive", body: "Sample text." },
+      ],
+    },
+    cards: {
+      items: [
+        { eyebrow: "Sample area", title: "Sample card title", href: "/style-guide#columns" },
+        { eyebrow: "Sample area", title: "Another card title", href: "/style-guide#columns" },
+      ],
+    },
     features: {
       items: [
         { title: "Active technology", body: "Adjustable radial force during the procedure.", iconUrl: "/uploads/features/comaneci-active-technology.jpg" },

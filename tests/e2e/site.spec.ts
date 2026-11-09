@@ -73,7 +73,7 @@ test("style guide shows every block, is noindex and not in the sitemap", async (
   for (const name of ["Hero", "Text and media", "Product details", "Indications and references"]) {
     await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
   }
-  for (const name of ["Rich text", "Media", "Form", "Offices and map"]) {
+  for (const name of ["Rich text", "Media", "Form", "Offices and map", "Gallery", "News", "Publications", "Webinars", "Jobs", "Region chooser"]) {
     await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
   }
   // sample forms cannot be sent

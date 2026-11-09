@@ -1,6 +1,7 @@
 /**
  * Links block fields to the stored record for the on-page editor.
  * A block field key ("title", "items.0.body") becomes a record path:
+ *  - `map[key]` when the whole key is mapped ("cta.label" → "heroCtaLabel", for flat records);
  *  - `map[head]` when the first segment is mapped (`null` = not editable on the page);
  *  - otherwise `prefix + key` when a prefix is set ("benefits.2." → "benefits.2.title");
  *  - otherwise not editable.
@@ -10,6 +11,7 @@ export type EditBinding = { r: string; id?: number; prefix?: string; map?: Recor
 
 export function fieldPath(e: EditBinding | undefined, key: string): string | null {
   if (!e) return null;
+  if (e.map && Object.hasOwn(e.map, key)) return e.map[key];
   const dot = key.indexOf(".");
   const head = dot < 0 ? key : key.slice(0, dot);
   const rest = dot < 0 ? "" : key.slice(dot);

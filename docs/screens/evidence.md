@@ -2,6 +2,16 @@
 
 Код: `src/app/(site)/[seg]/evidence/page.tsx`. Восстановлено по коду `59169da`.
 
+## Блоки
+Страница — список блоков, собирает `evidenceToBlocks()` (`src/blocks/from-settings.ts`).
+
+| Порядок | Блок · вариант | Из полей |
+|---|---|---|
+| 1 | Hero · `bannerCompact` | регион и ссылка «change», `title`, `intro`, `heroVideoUrl` |
+| 2 | Publications · `spotlight` | цифра (`statValue` или число публикаций), `statLabel`, `forefrontText`, карусель избранных (до 6) |
+| 3 | Publications · `cards` | `featuredTitle`, 3 последние с картинкой; есть такие публикации |
+| 4 | Publications · `byProduct`, якорь `#browse-by-product` | `browseTitle`, вкладки по продуктам |
+
 ## Доступ
 Публичный. Регион не из `us|ous|apac` → 404.
 

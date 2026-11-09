@@ -107,8 +107,8 @@
 ### В коде (2026-11-08)
 
 Реестр `src/blocks/`: один файл на блок — название, назначение, варианты, поля, пример, компонент; список — `registry.ts`.
-Витрина всех блоков и вариантов на примерных данных — `/style-guide` (noindex). Сейчас на блоках собраны страницы терапий,
-About, Contact и текстовые страницы из `pages`; остальные страницы — следующий шаг.
+Витрина всех блоков и вариантов на примерных данных — `/style-guide` (noindex). На блоках собран весь сайт, кроме двух шаблонов записей
+(человек, вакансия) и страницы 404; меню и футер общие.
 
 **Простые блоки идут одним потоком.** Заголовок страницы (Hero · `page`), Text (`default`, `large`), Rich text, Media и Form
 не имеют своей полосы: если стоят подряд, они попадают в одну белую секцию, без двойных отступов. Остальные блоки — каждый
@@ -117,25 +117,33 @@ About, Contact и текстовые страницы из `pages`; осталь
 | Блок (`type`) | Варианты в коде | Где сейчас |
 |---|---|---|
 | Hero (`hero`) | `video` · `image` · `title` | терапии |
-| Hero, заголовок страницы | `page` — компактный, в одной секции с содержимым; `title` — отдельная полоса с линией снизу | About, Contact, текстовые страницы |
-| Text (`text`) | `default` · `lead` (медиа сбоку — по желанию) · `large` (крупный текст, широкая картинка под ним) · `surface` (серая полоса) · `dark` (тёмная полоса с фоновой картинкой или видео) | терапии; About: вступление и «What we do»; `dark` — витрина |
-| Text and media (`textMedia`) | `mediaRight` · `mediaLeft` · `threeColumn`; медиа — цифры, график, видео или картинка | терапии; ряды подряд стоят в одной серой полосе |
+| Hero (`hero`) | `video`, `image` — с медиа в две колонки (терапии) · `banner` — большой на всю ширину (главная) · `bannerCompact` — меньше, с подзаголовком и примечанием (Careers, Evidence, список терапий) · `title` — полоса с линией снизу (News & Events) · `page` — компактный заголовок в одной секции с содержимым | все страницы |
+| Text (`text`) | `default` · `lead` (медиа сбоку — по желанию) · `large` (крупный текст, широкая картинка под ним) · `surface` (серая полоса) · `dark` (тёмная полоса с фоновой картинкой или видео) | терапии; About: вступление и «What we do»; главная: `dark` |
+| Text and media (`textMedia`) | `mediaRight` · `mediaLeft` · `threeColumn`; медиа — цифры, график, видео или картинка · `links` (на белом, кнопки-ссылки) · `statement` (заголовок и видео, под ними цифры, фраза и кнопка) | терапии; список терапий; главная |
 | Key numbers (`keyNumbers`) | `circles` · `row` · `badge` | внутри Text and media; отдельно — витрина |
-| Columns (`columns`) | `steps` · `features` (+ картинка вместо списка, старый формат) | вкладки терапий |
+| Columns (`columns`) | `steps` · `features` (+ картинка вместо списка, старый формат) · `principles` (первая буква выделена, картинка над колонками) · `cards` (карточки-ссылки) | вкладки терапий; Careers; список терапий |
 | Video (`video`) | `band` | терапии |
-| Call to action (`cta`) | `band` · `panel` · `buttons` · `light` (серая полоса) | терапии: «Questions?», вебинары, кнопки вкладок; `light` — витрина |
+| Call to action (`cta`) | `band` · `panel` · `buttons` · `light` (серая полоса) | терапии: «Questions?», вебинары, кнопки вкладок; список терапий: `light` |
 | Product details (`productDetails`) | `pills` · `underline` | терапии; внутри вкладки — блоки и группы с подзаголовком |
 | Device diagram (`deviceDiagram`) | `default` | вкладка терапии |
 | Spec table (`specTable`) | `table` · `images` (старый формат) | вкладка терапии |
 | People (`people`) | `physicians` · `team` (сетка со ссылкой на карточку человека) | вкладка In-Practice; About |
 | Rich text (`richText`) | `default` | текстовые страницы из `pages`. Заголовок страницы — отдельный блок Hero · `page` |
 | Media (`media`) | `image` · `video` · `document` (кнопка на PDF) | витрина; постеры и видео в `pages` пока хранятся внутри текста |
-| Form (`form`) | `default` · `compact` (тип формы — поле блока) | Contact |
+| Form (`form`) | `default` · `compact` · `section` (своя секция с заголовком и примечанием); тип формы — поле блока | Contact, Webinars, Careers |
+| Gallery (`gallery`) | `quotes` | Careers |
+| News (`news`) | `cards` · `carousel` · `timeline` | главная, News & Events |
+| Publications (`publications`) | `spotlight` (цифра и карусель) · `cards` · `byProduct` (вкладки) | Evidence |
+| Webinars (`webinars`) | `cards` | Webinars |
+| Jobs (`jobs`) | `list` | Open positions |
+| Region chooser (`regionChooser`) | `default` | выбор региона |
 | Offices and map (`officesMap`) | `offices` · `map` (карта, строка с кнопкой) | About |
 | Indications and references (`indications`) | `default`, закреплён | терапии |
 
 Отличия от таблиц выше, принятые при переносе без изменения вида: Key numbers вставляется в Text and media как часть
-медиа. Gallery, блоки News, Publications, Webinars, Jobs и Region chooser — при переводе остальных страниц.
+медиа. 
+
+Ряды Text and media подряд стоят в одной полосе: с медиа — в серой, `links` — в белой секции.
 
 ## Отступления от токенов (хардкод, по коду)
 - Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — блоки Video,

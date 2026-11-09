@@ -2,6 +2,16 @@
 
 Код: `src/app/(site)/page.tsx`. Восстановлено по коду `59169da`.
 
+## Блоки
+Страница — список блоков, собирает `homeToBlocks()` (`src/blocks/from-settings.ts`).
+
+| Порядок | Блок · вариант | Из полей |
+|---|---|---|
+| 1 | Hero · `banner` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, кнопка, `heroVideoUrl` |
+| 2 | Text and media · `statement` | `problemTitle`, `problemVideoUrl`, `stats[]`, `solutionLine`, кнопка «Request a demo» |
+| 3 | Text · `dark` | `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`; есть заголовок или текст |
+| 4 | News · `cards` | `newsTitle`, 4 новости, кнопка «View all news» |
+
 ## Доступ
 Публичный. В preview / editor-режиме поверх live-настроек накладывается `setting_drafts.home`.
 

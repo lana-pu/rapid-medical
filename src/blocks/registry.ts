@@ -15,6 +15,12 @@ import { richText } from "./rich-text";
 import { media } from "./media";
 import { form } from "./form";
 import { officesMap } from "./offices-map";
+import { gallery } from "./gallery";
+import { news } from "./news";
+import { publications } from "./publications";
+import { webinars } from "./webinars";
+import { jobs } from "./jobs";
+import { regionChooser } from "./region-chooser";
 
 /**
  * All page blocks. Adding a block = a file next to this one + a line here
@@ -34,9 +40,15 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   productDetails,
   deviceDiagram,
   specTable,
+  gallery,
   people,
+  news,
+  publications,
+  webinars,
+  jobs,
   form,
   officesMap,
+  regionChooser,
   indications,
 };
 

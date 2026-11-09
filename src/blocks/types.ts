@@ -16,6 +16,12 @@ import type { RichTextData, RichTextVariant } from "./rich-text";
 import type { MediaData, MediaVariant } from "./media";
 import type { FormBlockData, FormVariant } from "./form";
 import type { OfficesMapData, OfficesMapVariant } from "./offices-map";
+import type { GalleryData, GalleryVariant } from "./gallery";
+import type { NewsData, NewsVariant } from "./news";
+import type { PublicationsData, PublicationsVariant } from "./publications";
+import type { WebinarsData, WebinarsVariant } from "./webinars";
+import type { JobsData, JobsVariant } from "./jobs";
+import type { RegionChooserData, RegionChooserVariant } from "./region-chooser";
 
 /**
  * Page blocks. A page is an ordered list of blocks; a block is
@@ -40,6 +46,12 @@ export type BlockMap = {
   media: { variant: MediaVariant; data: MediaData };
   form: { variant: FormVariant; data: FormBlockData };
   officesMap: { variant: OfficesMapVariant; data: OfficesMapData };
+  gallery: { variant: GalleryVariant; data: GalleryData };
+  news: { variant: NewsVariant; data: NewsData };
+  publications: { variant: PublicationsVariant; data: PublicationsData };
+  webinars: { variant: WebinarsVariant; data: WebinarsData };
+  jobs: { variant: JobsVariant; data: JobsData };
+  regionChooser: { variant: RegionChooserVariant; data: RegionChooserData };
 };
 
 export type BlockType = keyof BlockMap;
@@ -90,8 +102,8 @@ export type BlockDef<T extends BlockType> = {
   example: BlockMap[T]["data"];
   examples?: Partial<Record<BlockMap[T]["variant"], BlockMap[T]["data"]>>;
   Component: (props: BlockProps<T>) => ReactNode | Promise<ReactNode>;
-  /** Consecutive top-level blocks of this type share one wrapper (one band). */
-  stack?: (children: ReactNode) => ReactNode;
+  /** Consecutive top-level blocks of this type and group share one wrapper (one band). `null` group = on its own. */
+  stack?: { group: (variant: BlockMap[T]["variant"]) => string | null; wrap: (children: ReactNode, group: string) => ReactNode };
   /** No band of its own: consecutive flow blocks share one plain section (rendered as `nested`). */
   flow?: (variant: BlockMap[T]["variant"]) => boolean;
 };
