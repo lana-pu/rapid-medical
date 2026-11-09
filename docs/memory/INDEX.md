@@ -27,6 +27,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-09 | Весь сайт на блоках: списки, Gallery, Region chooser, варианты | [2026-11-09-whole-site-on-blocks.md](sessions/2026-11-09-whole-site-on-blocks.md) |
 | 2026-11-09 | Сверка библиотеки блоков с сайтом; текстовые страницы, Contact и About на блоках | [2026-11-09-blocks-pages.md](sessions/2026-11-09-blocks-pages.md) |
 | 2026-11-08 | Механизм блоков: реестр с вариантами, страницы терапий на блоках, витрина `/style-guide` | [2026-11-08-blocks-foundation.md](sessions/2026-11-08-blocks-foundation.md) |
 | 2026-11-08 | Инструмент Tigertriever: модель контента в спеке, прототип Content Studio v0.1, сверка с материалами клиента, учебный прототип v0.3 | [2026-11-08-tigertriever-content-studio.md](sessions/2026-11-08-tigertriever-content-studio.md) |

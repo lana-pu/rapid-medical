@@ -12,10 +12,8 @@
    Прототип редактора на странице Large vessel stroke (приватная ссылка): https://claude.ai/artifact/9o31C5ccVdxUV52w2JKZxv.
    Дальше её обратная связь по нему, потом модель регионов и какая версия базовая.
    Коллекция блоков: инвентарь — `findings/block-inventory.md`, контракт блоков — `DESIGN.md → Коллекция блоков`
-   (рабочий набор). **В коде (2026-11-09):** реестр `src/blocks/`, витрина `/style-guide`; на блоках терапии, текстовые
-   страницы, About, Contact. Дальше: Gallery, News, Publications, Webinars, Jobs, Region chooser, варианты Text and media и
-   Columns — и на них главная, Careers, Evidence, список терапий, News & Events, Webinars, выбор региона, вакансии (таблицы в
-   `findings/block-inventory.md`), затем хранение страницы списком блоков — после модели регионов.
+   (рабочий набор). **В коде (2026-11-09):** реестр `src/blocks/` (22 блока), витрина `/style-guide`; на блоках весь сайт, кроме шаблонов
+   записей и 404. Дальше: хранение страницы списком блоков — после модели регионов.
    **Инструмент (2026-11-08):** модель контента — `spec.md → Инструмент Tigertriever` (предложение); прототип Content
    Studio v0.1 (приватная ссылка): https://claude.ai/artifact/CooGVX5Pkxw6zA7zj8bmKs, файл
    `docs/tigertriever/prototypes/content-studio-v0.1.html`; учебный прототип v0.3 с шагом рынка (приватная ссылка):
