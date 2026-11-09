@@ -4,10 +4,18 @@ import { getWebinars } from "@/lib/content";
 import { Section, H1, Img } from "@/components/site/primitives";
 import { ContactForm } from "@/components/site/ContactForm";
 import { E, EMedia } from "@/components/site/editable";
+import { getSetting } from "@/lib/settings";
+import { regionalAlternates, absoluteTitle } from "@/lib/seo";
+import { REGIONS } from "@/lib/regions";
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string }> }) {
-  regionOr404((await params).seg);
-  return { title: "Webinars" };
+  const region = regionOr404((await params).seg);
+  const seo = await getSetting<Record<string, string>>("seo");
+  return {
+    title: absoluteTitle(seo.webinarsTitle, "Webinars"),
+    description: seo.webinarsDescription || undefined,
+    alternates: regionalAlternates((r) => `/${r}/webinars`, [...REGIONS], region),
+  };
 }
 
 export default async function WebinarsPage({ params }: { params: Promise<{ seg: string }> }) {

@@ -6,7 +6,7 @@ export type MediaUsage = { table: string; id: number | string; label: string; ad
 
 /** Tables/columns that can contain a media URL, and how to link back to the record in the admin. */
 const SOURCES: { table: string; cols: string[]; label: string; admin: string; idCol?: string }[] = [
-  { table: "solutions", cols: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"], label: "nav_label", admin: "solutions" },
+  { table: "solutions", cols: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "share_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"], label: "nav_label", admin: "solutions" },
   { table: "publications", cols: ["pdf_url", "image_url"], label: "title", admin: "publications" },
   { table: "news_items", cols: ["image_url"], label: "title", admin: "news" },
   { table: "webinars", cols: ["image_url", "video_url"], label: "title", admin: "webinars" },

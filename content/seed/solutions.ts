@@ -32,6 +32,7 @@ export type SolutionSeed = {
   annotatedImage?: AnnotatedImage | null;
   specs?: SpecTable | null;
   specImageUrls: string[];
+  shareImageUrl?: string;
   specNote?: string;
   howItWorks: Step[];
   inPractice: InPracticeItem[];
@@ -115,28 +116,35 @@ const DRIVEWIRE_DIAGRAM = (site: string, img: string): AnnotatedImage => ({
   ],
 });
 
-/** Specification tables transcribed from the Duda images – to be confirmed against the IFU / catalogue by Rapid Medical. */
-const TT_COLS = ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Recommended vessel size (mm)", "Minimum microcatheter compatibility ID (in)", "Total length excluding handle (cm)"];
+/** Specification tables – source: client deck "Edits_Oct_2026.pptx" (Website Fix List A.1), replacing the Duda images. */
+const TT_COLS_OUS = ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Minimum microcatheter compatibility ID (in)", "Total length excluding handle (cm)"];
+const TT_COLS_US = ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Recommended vessel size (mm)", "Minimum microcatheter compatibility ID (in)", "Total length excluding handle (cm)"];
+const TT_NOTE = "Not all products are available in all countries.";
 const TT_SPECS_OUS: SpecTable = {
-  columns: TT_COLS,
+  columns: TT_COLS_OUS,
   rows: [
-    ["TIGERTRIEVER™ 13", "TRPP3144", "0.5 – 2.5", "20.5", "1.5 – 2.5", "0.0165″ / 0.013″", "233"],
-    ["TIGERTRIEVER™ 17", "TRPP3166", "0.5 – 3.0", "23", "1.5 – 3.0", "0.017″", "223"],
-    ["TIGERTRIEVER™ 17 ULTRA", "TRPP3266", "0.5 – 3.0", "32", "—", "0.017″", "224"],
-    ["TIGERTRIEVER™ 21", "TRPP3155", "1.5 – 6.0", "32", "2.5 – 6.0", "0.021″", "224"],
-    ["TIGERTRIEVER™ 25", "TRPP3125", "1.5 – 7.5", "53", "2.5 – 7.5", "0.025″", "226"],
+    ["TIGERTRIEVER™ 13", "TRPP3144", "0.5 – 2.5", "20.5", "0.0165″ / 0.013″", "233"],
+    ["TIGERTRIEVER™ 17", "TRPP3166", "0.5 – 3.0", "23", "0.017″", "223"],
+    ["TIGERTRIEVER™ 17 ULTRA", "TRPP3266", "0.5 – 3.0", "32", "0.017″", "224"],
+    ["TIGERTRIEVER™ 21", "TRPP3155", "1.5 – 6.0", "32", "0.021″", "224"],
+    ["TIGERTRIEVER™ 25", "TRPP3125", "1.5 – 7.5", "53", "0.025″", "226"],
   ],
-  note: "Not all products are available in all countries.",
+  note: TT_NOTE,
 };
-const TT_SPECS_MVO_OUS: SpecTable = { columns: TT_COLS, rows: TT_SPECS_OUS.rows.slice(0, 2), note: TT_SPECS_OUS.note };
+const TT_SPECS_MVO_OUS: SpecTable = { columns: TT_COLS_OUS, rows: TT_SPECS_OUS.rows.slice(0, 3), note: TT_NOTE };
 const TT_SPECS_US: SpecTable = {
-  columns: TT_COLS,
+  columns: TT_COLS_US,
   rows: [
     ["TIGERTRIEVER™ 13", "TRPP7144", "0.5 – 2.5", "20.5", "1.5 – 2.5", "0.0165″ / 0.013″", "233"],
+    ["TIGERTRIEVER™ 13 Micro", "TRPP7244", "0.5 – 2.5", "20.5", "1.5 – 2.5", "0.0165″ / 0.013″", "233"],
     ["TIGERTRIEVER™ 17", "TRPP7166", "0.5 – 3", "23", "1.5 – 2.5", "0.0165″", "223"],
+    ["TIGERTRIEVER™ 17 ULTRA", "TRPP7266", "0.5 – 3", "32", "1.5 – 2.5", "0.017″", "224"],
     ["TIGERTRIEVER™ 21", "TRPP7155", "1.5 – 6", "32", "2.5 – 6", "0.021″", "224"],
+    ["TIGERTRIEVER™ 25", "TRPP7125", "1.5 – 7.5", "53", "2.5 – 6", "0.025″", "226"],
   ],
+  note: TT_NOTE,
 };
+/** COMANECI – transcribed from the OUS/APAC chart image; the US-approved version is still to be supplied (Fix List A.8). */
 const COMANECI_SPECS: SpecTable = {
   columns: ["Product", "Catalog number", "Cage diameter (mm)", "Cage length (mm)", "Distal tip length (mm)", "Minimum microcatheter ID compatibility (in)", "Total length excluding handle (cm)"],
   rows: [
@@ -151,9 +159,11 @@ const DRIVEWIRE_SPECS_OUS: SpecTable = {
   rows: [["0.024", "192", "40", "5", "100", "15.7", "5", "10", "42", "0.027″"]],
 };
 const DRIVEWIRE_SPECS_US: SpecTable = {
-  caption: "DRIVEWIRE™ 24 – catalog number DRPP2411",
-  columns: ["OD (in)", "Total length including handle (cm)", "Length from distal end to fluorosafe marker (cm)", "Effective length (cm)", "Radiopaque length (cm)", "Hydrophilic coating length (cm)", "Distal tip length (mm)", "Tip bend diameter (mm)", "Microcatheter ID compatibility (in)"],
-  rows: [["0.024″", "202", "100", "192", "40", "42", "15.7", "10", "0.027″"]],
+  columns: ["Product", "Catalog number (single unit)", "OD (in)", "Effective length (cm)", "Radiopaque length (cm)", "Hydrophilic coating length (cm)", "Distal tip length (mm)", "Tip bend diameter (mm)", "Microcatheter ID compatibility (in)"],
+  rows: [
+    ["DRIVEWIRE™ 24", "DRPP2411", "0.024″", "192", "40", "42", "15.7", "10", "0.027″"],
+    ["DRIVEWIRE™ 35", "DRPP3511", "0.035″", "180", "44", "42", "15.7", "10", "0.043″"],
+  ],
 };
 
 /** Proof points and charts – numbers as shown on the current site. */
@@ -356,6 +366,10 @@ const VASO_REFERENCES = `1. Kassell NF, Sasaki T, Colohan AR, Nazar G. Cerebral 
 const DRIVEWIRE_IFU = `**Indications for Use.** The Drivewire 24 Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
 
 **Contraindications.** Drivewire™ 24 Guidewire is contraindicated for patients with known hypersensitivity to nickel-titanium and patients with stenosis and/or pre-existing stent proximal to the target site that may preclude safe navigation of the device.`;
+const DRIVEWIRE_IFU_US = `**Indications for Use:** The Drivewire Guidewire is intended for general intravascular use, including the neuro and peripheral vasculature. The Drivewire Guidewire is intended to facilitate the selective placement of diagnostic or therapeutic catheters. This device is not intended for use in the coronary arteries.
+
+**Contraindications:** Drivewire™ Guidewire is contraindicated for patients with known hypersensitivity to nickel-titanium and patients with stenosis and/or pre-existing stent proximal to the target site that may preclude safe navigation of the device.`;
+
 
 /* ------------------------------------------------------------------ */
 /*  Actions per region                                                   */
@@ -380,7 +394,7 @@ const ACTIONS: Record<Region, ActionLink[]> = {
 };
 
 const demo = (r: Region): ActionLink => ({ label: "Request a demo", href: `/contact-us?region=${r}&topic=demo` });
-const CLOSING_Q = "Questions? Reach out to learn more about our company and stroke solutions.";
+const CLOSING_Q = "Questions? Reach out to learn more about our company and devices.";
 
 const samaniego = (site: string, img: string): InPracticeItem => ({
   kind: "recording",
@@ -399,9 +413,9 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== US ============================== */
   {
     slug: "lvo", region: "us", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "OUR SOLUTIONS / LARGE VESSEL STROKE",
-    metaTitle: "Neurovascular Therapy | Rapid Medical™ | US",
-    metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment. Contact us to improve patient outcomes today!",
+    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
+    metaTitle: "TIGERTRIEVER™ Adjustable Stent Retriever | Rapid Medical",
+    metaDescription: "TIGERTRIEVER™ is the only adjustable stent retriever, engineered to adapt to patient anatomy for large vessel occlusion stroke thrombectomy.",
     heroTitle: "A patient-centric approach to AIS",
     heroBody: "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
     heroVideoUrl: VID(US, "i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4"),
@@ -426,9 +440,9 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "us", product: "comaneci", sortOrder: 2,
-    navLabel: "Aneurysm", breadcrumb: "OUR SOLUTIONS / ANEURYSM",
-    metaTitle: "Neurovascular Therapy for Aneurysms | Rapid Medical™ | US",
-    metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
+    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
+    metaTitle: "COMANECI™ Aneurysm Assist Device | Rapid Medical",
+    metaDescription: "COMANECI™ is a non-occlusive, adjustable assist device for wide-neck aneurysms, without occluding blood flow or leaving a permanent implant.",
     heroTitle: "Bridging the gap in assist devices",
     heroBody: "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
     heroImageUrl: IMG(US, "3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent.gif"),
@@ -455,10 +469,10 @@ export const SOLUTIONS: SolutionSeed[] = [
     referencesHtml: COMANECI_REFERENCES,
   },
   {
-    slug: "access", region: "us", product: "drivewire", sortOrder: 3,
-    navLabel: "Access", breadcrumb: "OUR SOLUTIONS / ACCESS",
-    metaTitle: "Active Access | DRIVEWIRE™ Steerable Guidewire | Rapid Medical™ | US",
-    metaDescription: "DRIVEWIRE™ – the world's first steerable neurovascular guidewire.",
+    slug: "drivewire", region: "us", product: "drivewire", sortOrder: 3,
+    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
+    metaTitle: "DRIVEWIRE™ & HYPERDRIVE™ Access Devices | Rapid Medical",
+    metaDescription: "DRIVEWIRE™ (neurovascular and peripheral) and HYPERDRIVE™ (peripheral) help select vessels and support a wide range of catheters.",
     heroTitle: "Active access",
     heroBody: "DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.",
     heroImageUrl: IMG(US, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png"),
@@ -477,15 +491,15 @@ export const SOLUTIONS: SolutionSeed[] = [
     howItWorks: [], inPractice: [],
     actionLinks: ACTIONS.us, actionNote: "Canada: orders.canada@rapid-medical.com",
     webinarCtaEnabled: false,
-    regulatoryHtml: DRIVEWIRE_IFU, referencesHtml: "",
+    regulatoryHtml: DRIVEWIRE_IFU_US, referencesHtml: "",
   },
 
   /* ============================== OUS ============================= */
   {
     slug: "lvo", region: "ous", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "OUR SOLUTIONS / LARGE VESSEL STROKE",
-    metaTitle: "Neurovascular Therapy | Rapid Medical™ | OUS",
-    metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment.",
+    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
+    metaTitle: "TIGERTRIEVER™ Adjustable Stent Retriever | Rapid Medical",
+    metaDescription: "TIGERTRIEVER™ is the only adjustable stent retriever, engineered to adapt to patient anatomy for large vessel occlusion thrombectomy.",
     heroTitle: "A patient-centric approach to AIS",
     heroBody: "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
     heroVideoUrl: VID(OUS, "636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"),
@@ -508,9 +522,9 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "mvo", region: "ous", product: "tigertriever-13", sortOrder: 2,
-    navLabel: "Medium vessel stroke", breadcrumb: "OUR SOLUTIONS / MEDIUM VESSEL STROKE",
-    metaTitle: "Medium Vessel Stroke | TIGERTRIEVER™ 13 | Rapid Medical™ | OUS",
-    metaDescription: "TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.",
+    navLabel: "Medium vessel stroke", breadcrumb: "THERAPIES / MEDIUM VESSEL STROKE",
+    metaTitle: "TIGERTRIEVER™ 13 Medium Vessel Thrombectomy | Rapid Medical",
+    metaDescription: "TIGERTRIEVER™ 13, an adjustable stent retriever sized for thrombectomy in medium and distal vessel occlusions.",
     heroTitle: "The only device designed for distals",
     heroBody: "TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.",
     heroVideoUrl: VID(OUS, "kyPILWv5TcOjXPybGxxQ_T13+Tiger+wireframe+walk+16x9-v.mp4"),
@@ -541,9 +555,9 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "ous", product: "comaneci", sortOrder: 3,
-    navLabel: "Aneurysm", breadcrumb: "OUR SOLUTIONS / ANEURYSM",
-    metaTitle: "Aneurysm Treatment | Rapid Medical™ | OUS",
-    metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
+    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
+    metaTitle: "COMANECI™ Aneurysm Assist Device | Rapid Medical",
+    metaDescription: "COMANECI™ is a non-occlusive, adjustable assist device for wide-neck aneurysms, without occluding blood flow or leaving a permanent implant.",
     heroTitle: "Bridging the gap in assist devices",
     heroBody: "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
     heroImageUrl: IMG(OUS, "3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent.gif"),
@@ -570,9 +584,9 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "vasospasm", region: "ous", product: "comaneci", sortOrder: 4,
-    navLabel: "Vasospasm", breadcrumb: "OUR SOLUTIONS / VASOSPASM",
-    metaTitle: "Cerebral Vasospasm Therapy | Rapid Medical™ | OUS",
-    metaDescription: "COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm.",
+    navLabel: "Vasospasm", breadcrumb: "THERAPIES / VASOSPASM",
+    metaTitle: "COMANECI™ for Cerebral Vasospasm | Rapid Medical",
+    metaDescription: "COMANECI™ provides controlled mechanical dilation for cerebral vasospasm, without a permanent implant.",
     heroTitle: "Take command in vasospasm",
     heroBody: "COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm, providing results without permanent implants.",
     heroVideoUrl: VID(OUS, "IVrIJ8XYRkCmpOUJNFsI_Hero_vessel+animation-v.mp4"),
@@ -596,10 +610,10 @@ export const SOLUTIONS: SolutionSeed[] = [
     regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
-    slug: "access", region: "ous", product: "drivewire", sortOrder: 5,
-    navLabel: "Access", breadcrumb: "OUR SOLUTIONS / ACCESS",
-    metaTitle: "Active Access | DRIVEWIRE™ Steerable Guidewire | Rapid Medical™ | OUS",
-    metaDescription: "DRIVEWIRE™ – the world's first steerable neurovascular guidewire.",
+    slug: "drivewire", region: "ous", product: "drivewire", sortOrder: 5,
+    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
+    metaTitle: "DRIVEWIRE™ Steerable Guidewire | Rapid Medical",
+    metaDescription: "DRIVEWIRE™ steerable guidewires for selective catheter placement in the neuro and peripheral vasculature. Not for use in the coronary arteries.",
     heroTitle: "Active access",
     heroBody: "DRIVEWIRE™ redefines access. Active technology enables distal steering to select vessels and navigate a large range of catheters with ease.",
     heroImageUrl: IMG(OUS, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png"),
@@ -623,7 +637,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   /* ============================== APAC ============================ */
   {
     slug: "lvo", region: "apac", product: "tigertriever", sortOrder: 1,
-    navLabel: "Large vessel stroke", breadcrumb: "OUR SOLUTIONS / LARGE VESSEL STROKE",
+    navLabel: "Large vessel stroke", breadcrumb: "THERAPIES / LARGE VESSEL STROKE",
     metaTitle: "Neurovascular Therapy | Rapid Medical™ | APAC",
     metaDescription: "Learn about the TIGERTRIEVER™, an advanced thrombectomy device for stroke treatment.",
     heroTitle: "A patient-centric approach to AIS",
@@ -649,7 +663,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "mvo", region: "apac", product: "tigertriever-13", sortOrder: 2,
-    navLabel: "Medium vessel stroke", breadcrumb: "OUR SOLUTIONS / MVO (TIGERTRIEVER™ 13)",
+    navLabel: "Medium vessel stroke", breadcrumb: "THERAPIES / MVO (TIGERTRIEVER™ 13)",
     metaTitle: "Medium Vessel Stroke | TIGERTRIEVER™ 13 | Rapid Medical™ | APAC",
     metaDescription: "TIGERTRIEVER™ 13 goes further in the brain to be tough on clots and gentle on the vessels.",
     heroTitle: "The only device designed for distals",
@@ -684,7 +698,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "aneurysm", region: "apac", product: "comaneci", sortOrder: 3,
-    navLabel: "Aneurysm", breadcrumb: "OUR SOLUTIONS / ANEURYSM",
+    navLabel: "Aneurysm", breadcrumb: "THERAPIES / ANEURYSM",
     metaTitle: "Aneurysm Treatment | COMANECI™ | Rapid Medical™ | APAC",
     metaDescription: "COMANECI™ is the only non-occlusive and temporary assist device for wide-neck aneurysm treatment.",
     heroTitle: "Bridging the gap in assist devices",
@@ -711,7 +725,7 @@ export const SOLUTIONS: SolutionSeed[] = [
   },
   {
     slug: "vasospasm", region: "apac", product: "comaneci", sortOrder: 4,
-    navLabel: "Vasospasm", breadcrumb: "OUR SOLUTIONS / VASOSPASM",
+    navLabel: "Vasospasm", breadcrumb: "THERAPIES / VASOSPASM",
     metaTitle: "Vasospasm Treatment | Rapid Medical™ | APAC",
     metaDescription: "COMANECI™ is the only active assist device with the versatility to treat wide-neck aneurysms and restore arteries in vasospasm.",
     heroTitle: "Take command in vasospasm",
@@ -734,8 +748,8 @@ export const SOLUTIONS: SolutionSeed[] = [
     regulatoryHtml: "", referencesHtml: VASO_REFERENCES,
   },
   {
-    slug: "access", region: "apac", product: "drivewire", sortOrder: 5,
-    navLabel: "Access", breadcrumb: "OUR SOLUTIONS / ACCESS",
+    slug: "drivewire", region: "apac", product: "drivewire", sortOrder: 5,
+    navLabel: "Access", breadcrumb: "THERAPIES / ACCESS",
     metaTitle: "Active Access | DRIVEWIRE™ Steerable Guidewire | Rapid Medical™ | APAC",
     metaDescription: "DRIVEWIRE™ – the world's first steerable neurovascular guidewire.",
     heroTitle: "Active access",
@@ -763,15 +777,18 @@ export const SOLUTIONS: SolutionSeed[] = [
 for (const s of SOLUTIONS) {
   const site = s.region === "us" ? US : s.region === "ous" ? OUS : APAC;
   if (s.product.startsWith("tigertriever")) {
+    s.shareImageUrl = IMG(APAC, "opt/TT_Revised-Base_V4-1920w.png");
     s.overviewFeatures = TIGER_FEATURES;
     s.annotatedImage = TIGER_DIAGRAM(site);
     s.specs = s.region === "us" ? TT_SPECS_US : s.slug === "mvo" ? TT_SPECS_MVO_OUS : TT_SPECS_OUS;
   } else if (s.product === "comaneci") {
     const vaso = s.slug === "vasospasm";
+    s.shareImageUrl = IMG(OUS, "opt/OUS-Aneurysm-Specifications-1920w.jpg");
     s.overviewFeatures = comaneciFeatures(vaso);
     s.annotatedImage = COMANECI_DIAGRAM(OUS, vaso ? "opt/COMANEC-Specs-1920w.jpg" : "opt/OUS-Aneurysm-Specifications-1920w.jpg");
     s.specs = COMANECI_SPECS;
   } else if (s.product === "drivewire") {
+    s.shareImageUrl = IMG(US, "opt/RM_Drivewire-Ad_Graphic-V2-1920w.png");
     s.overviewFeatures = DRIVEWIRE_FEATURES;
     s.annotatedImage = DRIVEWIRE_DIAGRAM(s.region === "us" ? US : OUS, s.region === "us" ? "opt/Drivewire_middle-diagram-1920w.png" : "opt/Drivewire_middle+diagram-5944d55f-1920w.png");
     s.specs = s.region === "us" ? DRIVEWIRE_SPECS_US : DRIVEWIRE_SPECS_OUS;

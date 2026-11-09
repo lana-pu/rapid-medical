@@ -220,6 +220,8 @@ export const solutions = pgTable(
     breadcrumb: text("breadcrumb").notNull().default(""), // "OUR SOLUTIONS / LARGE VESSEL STROKE"
     metaTitle: text("meta_title").notNull().default(""),
     metaDescription: text("meta_description").notNull().default(""),
+    /** Social share (Open Graph) image; falls back to the hero image */
+    shareImageUrl: text("share_image_url"),
 
     heroTitle: text("hero_title").notNull(),
     heroBody: text("hero_body").notNull().default(""),
@@ -393,6 +395,8 @@ export const pages = pgTable(
     bodyHtml: text("body_html").notNull().default(""),
     metaTitle: text("meta_title").notNull().default(""),
     metaDescription: text("meta_description").notNull().default(""),
+    /** Social share (Open Graph) image; falls back to the hero image */
+    shareImageUrl: text("share_image_url"),
     /** Hide from sitemap/nav (landing pages used in campaigns) */
     noindex: boolean("noindex").notNull().default(false),
     status: statusEnum("status").notNull().default("draft"),

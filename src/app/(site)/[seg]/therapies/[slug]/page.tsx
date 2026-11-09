@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { redirectIfLegacy } from "@/lib/redirects";
 import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getSolution, getSolutionRegions } from "@/lib/content";
@@ -14,13 +15,20 @@ import { StatCircles } from "@/components/site/blocks/Stats";
 import { BarChart } from "@/components/site/blocks/BarChart";
 import { FeatureGrid, AnnotatedImage, PracticeList } from "@/components/site/blocks/Blocks";
 import type { Chart } from "@/db";
+import { regionalAlternates, absoluteTitle } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
   const { seg, slug } = await params;
   const region = regionOr404(seg);
-  const s = await getSolution(region, slug);
+  const [s, available] = await Promise.all([getSolution(region, slug), getSolutionRegions(slug)]);
   if (!s) return {};
-  return { title: s.metaTitle || `${s.navLabel} – ${REGION_SHORT[region]}`, description: s.metaDescription || s.heroBody.slice(0, 160) };
+  const image = s.shareImageUrl || s.heroImageUrl || s.benefits.find((b) => b.secondaryImageUrl)?.secondaryImageUrl || s.overviewImageUrl || undefined;
+  return {
+    title: absoluteTitle(s.metaTitle, `${s.navLabel} – ${REGION_SHORT[region]}`),
+    description: s.metaDescription || s.heroBody.slice(0, 160),
+    alternates: regionalAlternates((r) => `/${r}/therapies/${slug}`, available, region),
+    openGraph: image ? { images: [{ url: image }] } : undefined,
+  };
 }
 
 const isChart = (c: unknown): c is Chart => !!c && typeof c === "object" && Array.isArray((c as Chart).categories) && (c as Chart).categories.length > 0;
@@ -29,7 +37,10 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
   const { seg, slug } = await params;
   const region = regionOr404(seg);
   const [s, available] = await Promise.all([getSolution(region, slug), getSolutionRegions(slug)]);
-  if (!s) notFound();
+  if (!s) {
+    await redirectIfLegacy(`/${region}/therapies/${slug}`); // e.g. /us/therapies/access → /us/therapies/drivewire
+    notFound();
+  }
   const others = available.filter((r) => r !== region);
   const R = { r: "solutions", id: s.id } as const;
 
@@ -55,7 +66,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
         <Container className="grid items-center gap-8 py-16 md:grid-cols-2 md:py-24">
           <div>
             <Eyebrow>
-              {s.breadcrumb || `Our solutions / ${s.navLabel}`}
+              {s.breadcrumb || `Therapies / ${s.navLabel}`}
               {others.map((o) => (
                 <span key={o}> · <Link href={`/${o}/therapies/${slug}`} className="underline">{REGION_SHORT[o]} version</Link></span>
               ))}

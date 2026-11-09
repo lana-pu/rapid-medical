@@ -10,7 +10,7 @@ for (const path of PUBLIC) {
 }
 
 test("legacy URLs redirect", async ({ request }) => {
-  for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"]]) {
+  for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"], ["/us/therapies/access", "/us/therapies/drivewire"]]) {
     const res = await request.get(from, { maxRedirects: 0 });
     expect([301, 308]).toContain(res.status());
     expect(res.headers().location).toContain(to);

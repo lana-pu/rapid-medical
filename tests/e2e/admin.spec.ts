@@ -72,7 +72,7 @@ test("approval workflow blocks editors from publishing", async ({ page, browser 
 
 test("scheduled publishing via cron", async ({ page, request }) => {
   await login(page);
-  const id = sql("select id from solutions where region='apac' and slug='access'");
+  const id = sql("select id from solutions where region='apac' and slug='drivewire'");
   await page.goto(`/admin/solutions/${id}`);
   await page.fill("input[name=heroTitle]", "Scheduled title");
   await page.click('button:has-text("Save")');
@@ -82,7 +82,7 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await page.waitForURL(/scheduled=1/);
   const res = await (await request.get("/api/cron/publish")).json();
   expect(res.published).toContainEqual({ resource: "solutions", id: Number(id) });
-  const site = await request.get("/apac/therapies/access");
+  const site = await request.get("/apac/therapies/drivewire");
   expect(await site.text()).toContain("Scheduled title");
 });
 
@@ -188,7 +188,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.keyboard.press("Enter");
   await expect(page.getByText("1 pending change on this page")).toBeVisible();
   expect(sql("select value->'stats'->0->>'value' from setting_drafts where key='home'")).toBe("99K+");
-  expect(sql("select value->'stats'->0->>'value' from site_settings where key='home'")).toBe("40K+");
+  expect(sql("select value->'stats'->0->>'value' from site_settings where key='home'")).toBe("50K+");
   page.once("dialog", (d) => d.accept());
   await page.click('#rm-editor-ui button:has-text("Discard")');
   await expect(page.getByText("No pending changes on this page")).toBeVisible();

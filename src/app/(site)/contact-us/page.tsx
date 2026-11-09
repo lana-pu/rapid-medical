@@ -1,7 +1,18 @@
 import { Section, H1 } from "@/components/site/primitives";
 import { ContactForm } from "@/components/site/ContactForm";
+import type { Metadata } from "next";
+import { getSetting } from "@/lib/settings";
+import { absoluteTitle } from "@/lib/seo";
 
-export const metadata = { title: "Contact Us", description: "Connect with Rapid Medical™ for neurovascular therapy." };
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ region?: string }> }): Promise<Metadata> {
+  const { region } = await searchParams;
+  const seo = await getSetting<Record<string, string>>("seo");
+  const key = region === "us" ? "Us" : region === "ous" ? "Ous" : region === "apac" ? "Apac" : "";
+  return {
+    title: absoluteTitle(seo[`contactTitle${key}`] || seo.contactTitle, "Contact Us"),
+    description: seo[`contactDescription${key}`] || seo.contactDescription || "Connect with Rapid Medical™.",
+  };
+}
 
 const TOPICS = ["Request a demo", "Product question / Support", "Customer Service / Orders", "Meetings & Events", "Investor relations", "Other"];
 const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac: "Asia Pacific" };

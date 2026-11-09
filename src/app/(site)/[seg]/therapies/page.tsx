@@ -2,7 +2,8 @@ import Link from "next/link";
 import { regionOr404 } from "@/lib/region-param";
 import { getSolutionsNav } from "@/lib/content";
 import { getSetting } from "@/lib/settings";
-import { REGION_LABELS } from "@/lib/regions";
+import { REGION_LABELS, REGIONS } from "@/lib/regions";
+import { regionalAlternates, absoluteTitle } from "@/lib/seo";
 import { Section, Container, H1, H2, Btn, Img, Eyebrow } from "@/components/site/primitives";
 import { VideoHero } from "@/components/site/Media";
 import { E, EMedia } from "@/components/site/editable";
@@ -10,12 +11,17 @@ import { E, EMedia } from "@/components/site/editable";
 type Landing = {
   title?: string; intro?: string; heroVideoUrl?: string; note?: string;
   blocks?: { title: string; body: string; imageUrl?: string; links?: { label: string; href: string }[] }[];
-  closingTitle?: string; closingBody?: string;
+  closingTitle?: string; closingBody?: string; metaTitle?: string; metaDescription?: string;
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string }> }) {
   const region = regionOr404((await params).seg);
-  return { title: `Our Therapies – ${REGION_LABELS[region]}`, description: "Our devices enable real-time responses for stroke patients." };
+  const landing = await getSetting<Landing>(`therapies:${region}`);
+  return {
+    title: absoluteTitle(landing.metaTitle, `Therapies – ${REGION_LABELS[region]}`),
+    description: landing.metaDescription || "Adjustable endovascular devices that adapt to each patient's anatomy.",
+    alternates: regionalAlternates((r) => `/${r}/therapies`, [...REGIONS], region),
+  };
 }
 
 export default async function TherapiesIndex({ params }: { params: Promise<{ seg: string }> }) {
@@ -29,7 +35,7 @@ export default async function TherapiesIndex({ params }: { params: Promise<{ seg
       <VideoHero videoUrl={landing.heroVideoUrl}>
         <Container className="py-20 md:py-28">
           <Eyebrow>{REGION_LABELS[region]} · <Link href="/choose-your-location" className="underline">change</Link></Eyebrow>
-          <H1><E {...R} f="title">{landing.title ?? "Our Therapies"}</E></H1>
+          <H1><E {...R} f="title">{landing.title ?? "Therapies"}</E></H1>
           {landing.intro && <p className="mt-6 max-w-3xl text-lg"><E {...R} f="intro">{landing.intro}</E></p>}
           {landing.note && <p className="mt-3 text-sm opacity-80"><E {...R} f="note">{landing.note}</E></p>}
         </Container>
@@ -69,7 +75,7 @@ export default async function TherapiesIndex({ params }: { params: Promise<{ seg
 
       <Section className="bg-surface">
         <H2><E {...R} f="closingTitle">{landing.closingTitle ?? "Questions?"}</E></H2>
-        <p className="mt-3 text-muted"><E {...R} f="closingBody">{landing.closingBody ?? "Reach out to learn more about our company and stroke solutions."}</E></p>
+        <p className="mt-3 text-muted"><E {...R} f="closingBody">{landing.closingBody ?? "Reach out to learn more about our company and devices."}</E></p>
         <div className="mt-6"><Btn href={`/contact-us?region=${region}`}>Contact us</Btn></div>
       </Section>
     </>

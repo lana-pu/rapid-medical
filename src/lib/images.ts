@@ -60,7 +60,14 @@ export async function videoPoster(name: string, buf: Buffer, prefix: string): Pr
   const frame = path.join(dir, "frame.png");
   try {
     await writeFile(input, buf);
-    await run("ffmpeg", ["-y", "-ss", "0.5", "-i", input, "-frames:v", "1", "-vf", "scale='min(1600,iw)':-2", frame], { timeout: 30000 });
+    // Poster = a frame near the end: animated charts start on blank frames, loops end on the finished picture.
+    let at = 0.5;
+    try {
+      const { stdout } = await run("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", input], { timeout: 15000 });
+      const dur = Number(String(stdout).trim());
+      if (dur > 1) at = Math.max(0.5, dur - 0.4);
+    } catch { /* keep the early frame */ }
+    await run("ffmpeg", ["-y", "-ss", String(at), "-i", input, "-frames:v", "1", "-vf", "scale='min(1600,iw)':-2", frame], { timeout: 30000 });
     const png = await readFile(frame);
     const webp = await sharp(png).webp({ quality: 80 }).toBuffer();
     return await putObject(`${prefix}/${safeName(name).replace(/\.[^.]+$/, "")}-poster.webp`, webp, "image/webp");

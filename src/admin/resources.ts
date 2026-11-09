@@ -174,6 +174,7 @@ export const RESOURCES: Resource[] = [
 
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
+      { name: "shareImageUrl", label: "Social share image (Open Graph; falls back to the hero image)", type: "image", section: "SEO" },
     ],
   },
 

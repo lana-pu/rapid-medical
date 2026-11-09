@@ -1,5 +1,8 @@
 import type { Region } from "@/db/schema";
 
+export const REGIONS = ["us", "ous", "apac"] as const;
+export type { Region };
+
 export const REGION_LABELS: Record<Region, string> = {
   us: "Americas",
   ous: "Europe, Middle East, Latin America & Australia",

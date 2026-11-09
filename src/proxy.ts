@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LEGACY_HOSTS, regionForCountry } from "@/lib/regions";
 
-const SOLUTION_SLUGS = /^(lvo|mvo|aneurysm|vasospasm|access)$/;
+const SOLUTION_SLUGS = /^(lvo|mvo|aneurysm|vasospasm|access|drivewire)$/;
 
 /**
  * 1. Legacy regional subdomains (us./ous./apac.) → path-based regions on www.

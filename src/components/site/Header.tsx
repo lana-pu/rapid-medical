@@ -49,7 +49,7 @@ export function Header({
           <Link href="/">Welcome</Link>
           <div className="group relative">
             <Link href={therapiesHref} className="inline-flex items-center gap-1">
-              Our Therapies <span aria-hidden>▾</span>
+              Therapies <span aria-hidden>▾</span>
             </Link>
             {solutionsNav.length > 0 && region && (
               <div className="invisible absolute left-0 top-full z-20 min-w-52 rounded border border-border bg-background p-2 opacity-0 shadow-md transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">

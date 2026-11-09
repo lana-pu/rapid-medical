@@ -7,6 +7,8 @@ import { Section, Container, H1, H2, Eyebrow, Img, Btn, formatMonth } from "@/co
 import { VideoHero } from "@/components/site/Media";
 import { Tabs } from "@/components/site/Tabs";
 import { E, EMedia } from "@/components/site/editable";
+import { regionalAlternates, absoluteTitle } from "@/lib/seo";
+import { REGIONS } from "@/lib/regions";
 import { StatBadge } from "@/components/site/blocks/Stats";
 import { Carousel } from "@/components/site/blocks/Carousel";
 
@@ -16,8 +18,13 @@ type EvidenceSettings = {
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string }> }) {
-  regionOr404((await params).seg);
-  return { title: "Evidence", description: "Clinical research on neurovascular devices like Tigertriever, Comaneci & Drivewire." };
+  const region = regionOr404((await params).seg);
+  const seo = await getSetting<Record<string, string>>("seo");
+  return {
+    title: absoluteTitle(seo.evidenceTitle, "Evidence"),
+    description: seo.evidenceDescription || "Clinical research on neurovascular devices like Tigertriever, Comaneci & Drivewire.",
+    alternates: regionalAlternates((r) => `/${r}/evidence`, [...REGIONS], region),
+  };
 }
 
 export default async function EvidencePage({ params }: { params: Promise<{ seg: string }> }) {
