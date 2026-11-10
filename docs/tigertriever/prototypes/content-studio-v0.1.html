@@ -174,6 +174,9 @@ table.mx{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeri
 .pts li{font-size:17px;line-height:1.5;max-width:65ch;padding-left:4px}
 .pts.notes li{font-size:15.5px}
 .addpt{all:unset;cursor:pointer;color:var(--ed);font:500 13px var(--font);margin-top:10px;display:inline-block}
+.cue{font-family:var(--mono);font-size:12.5px;color:var(--l-muted);display:inline-block;min-width:38px;margin-right:6px}
+body.edit .lesson .cue{color:var(--ed);text-decoration:underline dotted}
+.diffb{border-left:3px solid var(--l-ink);padding:12px 16px;background:var(--l-surface);border-radius:0 6px 6px 0}
 .warnb{border-left:3px solid var(--l-ink);padding:14px 18px;background:var(--l-surface);border-radius:0 6px 6px 0}
 .warnb p{font-size:15.5px;line-height:1.5;max-width:65ch}
 .lnav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--l-line)}
@@ -360,7 +363,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
     <li>Open <em>Device preparation</em> for Tiger 13 · Legacy slider. Click the video and replace it for this handle only.</li>
     <li>Press <em>Preview</em>, then <em>Compare with package</em> to see your draft next to v1.2.</li>
     <li>Press <em>Publish</em>. Try to include Tiger 13 · Precision knob.</li>
-    <li>Switch to <em>US</em> and add a configuration.</li>
+    <li>Click a point's time (0:00) to set when it starts in the clip. In Positioning, edit <em>What's different</em>.</li>
   </ol>
   <div class="hint" style="margin-bottom:8px">Nothing leaves your browser. Texts, device names and files are stand-ins, not approved content.</div>
   <button type="button" class="lnkb" id="tipOk">Got it</button>
@@ -372,7 +375,7 @@ const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [..
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const KEY = 'tt-studio-v02';
+const KEY = 'tt-studio-v03';
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 const today = () => new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 const ICON = {
@@ -437,8 +440,13 @@ function planFor(c) {
   const k = c.handle === 'knob';
   return { opening: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] }, prep: { media: 'prep-inservice' }, pos: { media: k ? 'pos-t13-mevo' : 'pos-abergel' }, dep: { media: k ? 'dep-knob' : 'dep-slider' }, clot: { media: k ? 'clot-knob' : 'clot-slider' }, asp: { media: 'comb' }, pre: { media: k ? 'pre-knob' : 'pre-slider' }, ret: { media: k ? 'ret-knob' : 'ret-slider' }, between: { media: 'between-inservice' }, closing: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] } };
 }
-const emptyLesson = () => ({ head: '', points: [], notes: [], shared: false, media: null, graphics: [], warn: '' });
-function seedLesson(c, s) {
+const emptyLesson = () => ({ head: '', points: [], notes: [], shared: false, media: null, graphics: [], warn: '', cues: [] });
+const parseT = (txt) => { const v = String(txt).trim(); const m = v.match(/^(\d+):([0-5]?\d)$/); if (m) return +m[1] * 60 + +m[2]; const n = Number(v); return v !== '' && isFinite(n) && n >= 0 ? n : null; };
+const fmtT = (t) => (t == null ? '—:—' : `${Math.floor(t / 60)}:${String(Math.round(t % 60)).padStart(2, '0')}`);
+const durOf = (id) => { const m = id && MEDIA[id]; return m && m.dur ? parseT(m.dur) : null; };
+const withCues = (l) => { const d = durOf(l.media); l.cues = d ? l.points.map((_, i) => Math.round((i * d) / l.points.length)) : []; return l; };
+function seedLesson(c, s) { return withCues(seedLessonBase(c, s)); }
+function seedLessonBase(c, s) {
   const l = emptyLesson(), p = planFor(c)[s.k] || {}, h = HANDLES[c.handle].toLowerCase(), m = MD[c.model].name;
   l.media = p.media || null; l.graphics = p.graphics || [];
   if (s.k === 'before') { l.head = 'Before you begin'; l.points = ['Stand-in for the pre-procedure guidance that applies to this configuration and market. Content owner to confirm.']; return l; }
@@ -465,6 +473,8 @@ function seedState() {
     released: { c1: clone(lessons.c1), c3: clone(lessons.c3) },
     scope: { eu: { c1: true, c3: true, c2: false, cmp: false }, us: {}, ap: {} },
     market: 'eu',
+    pairDiffs: { eu: { pos: ['Stand-in: what the physician does with the knob that differs from the slider at this stage.', 'Stand-in: what to watch for on fluoroscopy with each handle.'], dep: ['Stand-in: how expansion is controlled with each handle.'], clot: ['Stand-in: how cycling feels with each handle.'], pre: ['Stand-in: how to relax the device with each handle.'], ret: ['Stand-in: what the indicator window shows with the knob.'] }, us: {}, ap: {} },
+    releasedPairDiffs: {},
     packages: [
       { v: '1.2', market: 'eu', date: '3 Nov 2026', status: 'sent', sentOn: '3 Nov 2026', configs: ['c1', 'c3'], cmp: false, size: '318 MB', sha: 'b81e4c90', changes: ['Opening · Tiger 13 · Legacy slider: points edited', 'Retrieval · Tiger 17 · Legacy slider: video replaced (Retrieval_slider.mp4)'] },
       { v: '1.1', market: 'eu', date: '20 Oct 2026', status: 'sent', sentOn: '21 Oct 2026', configs: ['c1', 'c3'], cmp: false, size: '312 MB', sha: '4d02a7f1', changes: ['Adds Tiger 17 · Legacy slider'] },
@@ -478,8 +488,12 @@ function sectionsOf(c) { return SECTIONS.filter((s) => s.k !== 'before' || c.bef
 
 /* ---------- state ---------- */
 let S = seedState(), cur = { c: 'c1', s: 'prep' }, view = 'start', mode = 'edit', editing = null, before = '', mediaFilter = 'all', toastT = null, lastJson = '';
+const snap = () => JSON.stringify({ lessons: S.lessons, pairDiffs: S.pairDiffs });
+const restore = (j) => { const o = JSON.parse(j); S.lessons = o.lessons; S.pairDiffs = o.pairDiffs; };
+const pd = () => (S.pairDiffs[S.market] || {})[cur.s] || [];
+const setPd = (arr) => { (S.pairDiffs[S.market] = S.pairDiffs[S.market] || {})[cur.s] = arr; };
 function persist() { try { localStorage.setItem(KEY, JSON.stringify({ S, cur })); $('#saved').textContent = 'Draft saved'; } catch (e) { $('#saved').textContent = ''; } }
-function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.S && s.S.lessons && s.S.configs) { S = s.S; cur = s.cur || cur; } } catch (e) {} lastJson = JSON.stringify(S.lessons); }
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.S && s.S.lessons && s.S.configs && s.S.pairDiffs) { S = s.S; cur = s.cur || cur; } } catch (e) {} lastJson = snap(); }
 
 /* ---------- derived ---------- */
 const CF = (id) => S.configs.find((c) => c.id === id);
@@ -494,13 +508,15 @@ function usedIn(id) { const out = []; if (!id) return out; S.configs.forEach((c)
 function pairFor(m = S.market) { const a = cfgs(m).find((c) => c.model === 't13' && c.handle === 'slider'), b = cfgs(m).find((c) => c.model === 't13' && c.handle === 'knob'); return a && b ? { a, b } : null; }
 function latestPkg(m = S.market) { return S.packages.find((p) => p.market === m) || null; }
 function nextVersion(m = S.market) { const p = latestPkg(m); if (!p) return '1.0'; const [a, b] = p.v.split('.').map(Number); return `${a}.${b + 1}`; }
-const FIELD = { head: 'headline', points: 'points', notes: 'handle notes', warn: 'warning', media: 'media', graphics: 'graphics' };
+const FIELD = { head: 'headline', points: 'points', notes: 'handle notes', warn: 'warning', media: 'media', graphics: 'graphics', cues: 'point times', diffs: 'differences' };
 function diffs(m = S.market) {
   const out = [];
   cfgs(m).forEach((c) => { const r = S.released[c.id]; if (!r) return;
     sectionsOf(c).forEach((s) => { const a = r[s.k] || emptyLesson(), b = S.lessons[c.id][s.k];
-      ['media', 'graphics', 'head', 'points', 'notes', 'warn', 'shared'].forEach((f) => { if (!same(a[f], b[f])) { let what = FIELD[f] ? FIELD[f] + ' edited' : 'sharing changed'; if (f === 'media') what = b.media ? `${KIND[MEDIA[b.media].kind].toLowerCase()} replaced (${MEDIA[b.media].name})` : 'media removed'; out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${what}` }); } });
+      ['media', 'graphics', 'head', 'points', 'cues', 'notes', 'warn', 'shared'].forEach((f) => { if (!same(a[f], b[f])) { let what = FIELD[f] ? FIELD[f] + ' edited' : 'sharing changed'; if (f === 'media') what = b.media ? `${KIND[MEDIA[b.media].kind].toLowerCase()} replaced (${MEDIA[b.media].name})` : 'media removed'; out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${what}` }); } });
     }); });
+  const rp = S.releasedPairDiffs[m], pr = pairFor(m);
+  if (rp && pr) { const now = S.pairDiffs[m] || {}; [...new Set([...Object.keys(rp), ...Object.keys(now)])].forEach((k) => { if (!same(rp[k] || [], now[k] || [])) out.push({ c: pr.a.id, s: k, f: 'diffs', label: `Comparison · ${SC[k].n}: differences edited` }); }); }
   return out;
 }
 function cellState(c, k) {
@@ -524,6 +540,7 @@ function blockers(sel, m = S.market) {
       if (isStage(s.k) && !hasMedia(l)) { const md = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: ${md && md.ready === 'filming' ? `video not filmed yet (${md.who || 'owner'}: ${md.need.toLowerCase()})` : 'no video'}.`, leave: c.id }); }
       if (!l.head) out.push({ c: c.id, s: s.k, msg: `${name}: the headline is empty.`, leave: c.id });
       if (!l.points.length) out.push({ c: c.id, s: s.k, msg: `${name}: no on-screen points.`, leave: c.id });
+      const cs = (l.cues || []).filter((x) => x != null); if (cs.some((x, j) => j && x <= cs[j - 1])) out.push({ c: c.id, s: s.k, msg: `${name}: point times are out of order.`, leave: c.id });
     }); });
   if (sel.cmp) { const p = pairFor(m); if (!p || !sel[p.a.id] || !sel[p.b.id]) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' }); else SECTIONS.filter((s) => isStage(s.k)).forEach((s) => { [p.a, p.b].forEach((c) => { if (!hasMedia(lesson(c.id, s.k))) out.push({ c: c.id, s: s.k, msg: `Comparison, ${s.n}: ${HANDLES[c.handle]} has no video.`, leave: 'cmp' }); }); }); }
   return out;
@@ -537,9 +554,9 @@ function scopeChanges(sel, m = S.market) {
 }
 
 /* ---------- undo ---------- */
-function commit(label) { S.past.push({ label, before: lastJson }); S.future = []; lastJson = JSON.stringify(S.lessons); if (S.past.length > 60) S.past.shift(); persist(); syncBar(); }
-function undo() { endEdit(); const s = S.past.pop(); if (!s) return; S.future.push({ label: s.label, before: lastJson }); S.lessons = JSON.parse(s.before); lastJson = s.before; persist(); rerender(); say('Undid: ' + s.label); }
-function redo() { endEdit(); const s = S.future.pop(); if (!s) return; S.past.push({ label: s.label, before: lastJson }); S.lessons = JSON.parse(s.before); lastJson = s.before; persist(); rerender(); say('Redid: ' + s.label); }
+function commit(label) { S.past.push({ label, before: lastJson }); S.future = []; lastJson = snap(); if (S.past.length > 60) S.past.shift(); persist(); syncBar(); }
+function undo() { endEdit(); const s = S.past.pop(); if (!s) return; S.future.push({ label: s.label, before: lastJson }); restore(s.before); lastJson = s.before; persist(); rerender(); say('Undid: ' + s.label); }
+function redo() { endEdit(); const s = S.future.pop(); if (!s) return; S.past.push({ label: s.label, before: lastJson }); restore(s.before); lastJson = s.before; persist(); rerender(); say('Redid: ' + s.label); }
 
 /* ---------- views ---------- */
 function renderStart() {
@@ -591,7 +608,9 @@ function graphicsRow(l, editable) {
   const cards = l.graphics.map((id, i) => { const m = MEDIA[id]; return `<div class="gcard" ${editable ? `data-media="graphics:${i}" role="button" tabindex="0"` : ''}><span class="bars" aria-hidden="true"><i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i></span><span class="kind">Data graphic</span><b>${esc(m.source)}</b><small>${esc(m.name)}${m.ready === 'review' ? ' · to build' : ''}</small></div>`; }).join('');
   return `<div class="graphics">${cards}${editable ? `<button type="button" class="gcard add" data-addg>+ Add a graphic</button>` : ''}</div>`;
 }
-function list(l, f, cls, ph, ed) { return `<ul class="pts ${cls}" data-list="${f}">${l[f].map((t, i) => `<li ${ed ? 'data-t' : ''} data-f="${f}" data-i="${i}" data-ph="${ph}">${esc(t)}</li>`).join('')}</ul>${ed ? `<button type="button" class="addpt" data-addpt="${f}">+ Add a point</button>` : ''}`;
+function list(l, f, cls, ph, ed) {
+  const cueOf = (i) => (l.cues || [])[i];
+  return `<ul class="pts ${cls}" data-list="${f}">${l[f].map((t, i) => `<li>${f === 'points' && (ed || cueOf(i) != null) ? `<span class="cue" ${ed ? 'data-t' : ''} data-f="cue" data-i="${i}" title="When this point starts in the clip, m:ss">${fmtT(cueOf(i))}</span>` : ''}<span ${ed ? 'data-t' : ''} data-f="${f}" data-i="${i}" data-ph="${ph}">${esc(t)}</span></li>`).join('')}</ul>${ed ? `<button type="button" class="addpt" data-addpt="${f}">+ Add a point</button>` : ''}`;
 }
 function renderLesson() {
   const c = CF(cur.c), secs = sectionsOf(c); if (!secs.some((s) => s.k === cur.s)) cur.s = secs[0].k;
@@ -609,14 +628,15 @@ function renderLesson() {
       ${isFraming(cur.s) ? graphicsRow(l, ed) : ''}
       <div class="block"><h2>On screen${l.shared ? '<span class="chip">Same for all handles</span>' : ''}</h2>${list(l, 'points', '', 'Add a point the physician reads next to the clip', ed)}</div>
       ${l.shared ? (ed ? `<p class="hint"><button type="button" class="lnkb" data-unshare>This step differs by handle</button></p>` : '') : `<div class="block"><h2>${esc(HANDLES[c.handle])}${ed && !l.notes.length && isStage(cur.s) ? `<button type="button" class="lnkb" data-share style="font-size:12px;text-transform:none;letter-spacing:0">Same for all handles</button>` : ''}</h2>${list(l, 'notes', 'notes', `How this step differs with the ${HANDLES[c.handle].toLowerCase()}`, ed)}</div>`}
+      ${inPair && !l.shared ? `<div class="block diffb"><h2>What's different<span class="chip">Shown in Compare · one text for both handles</span></h2>${list({ diffs: pd() }, 'diffs', '', 'What differs between the handles here, written by Rapid Medical', ed)}</div>` : ''}
       ${l.warn || (ed && l.warn === null) ? `<div class="block warnb"><h2>Important</h2><p data-f="warn" ${ed ? 'data-t' : ''} data-ph="Warning text, if marketing wants one here">${esc(l.warn || '')}</p></div>` : (ed && isStage(cur.s) ? `<p class="hint"><button type="button" class="lnkb" data-addwarn>+ Add a warning</button> · optional, not in the client's draft</p>` : '')}
       ${inPair ? `<p class="hint">Compare this stage: ${cmpState(cur.s, c.market).k === 'ok' ? 'available to physicians' : 'not available, one side has no video'}</p>` : ''}
     </article></div>`;
 }
 function renderChanges() {
   const c = CF(cur.c), s = SC[cur.s], l = lesson(), r = S.released[cur.c] ? (S.released[cur.c][cur.s] || emptyLesson()) : null, mk = MK[c.market], last = latestPkg(c.market);
-  const fields = [['head', 'Headline'], ['media', isFraming(cur.s) ? 'Animation' : 'Video'], ['graphics', 'Graphics'], ['points', 'On screen'], ['notes', HANDLES[c.handle]], ['warn', 'Important']].filter(([f]) => f !== 'graphics' || isFraming(cur.s));
-  const val = (o, f) => { if (f === 'media') { const m = mediaOf(o.media); return m ? `<div class="v m">${esc(m.name)} · v${m.ver}${m.ready === 'filming' ? ' · not filmed yet' : ''}</div>` : '<div class="v e">No media</div>'; } if (f === 'graphics') return o.graphics.length ? `<div class="v m">${o.graphics.map((id) => esc(MEDIA[id].name)).join('\n')}</div>` : '<div class="v e">None</div>'; if (Array.isArray(o[f])) return o[f].length ? `<div class="v">${o[f].map((t) => '• ' + esc(t)).join('\n')}</div>` : '<div class="v e">Empty</div>'; return o[f] ? `<div class="v">${esc(o[f])}</div>` : '<div class="v e">Empty</div>'; };
+  const fields = [['head', 'Headline'], ['media', isFraming(cur.s) ? 'Animation' : 'Video'], ['graphics', 'Graphics'], ['points', 'On screen'], ['cues', 'Point times'], ['notes', HANDLES[c.handle]], ['warn', 'Important']].filter(([f]) => f !== 'graphics' || isFraming(cur.s));
+  const val = (o, f) => { if (f === 'cues') return o.cues && o.cues.some((x) => x != null) ? `<div class="v m">${o.cues.map(fmtT).join(' · ')}</div>` : '<div class="v e">Not set</div>'; if (f === 'media') { const m = mediaOf(o.media); return m ? `<div class="v m">${esc(m.name)} · v${m.ver}${m.ready === 'filming' ? ' · not filmed yet' : ''}</div>` : '<div class="v e">No media</div>'; } if (f === 'graphics') return o.graphics.length ? `<div class="v m">${o.graphics.map((id) => esc(MEDIA[id].name)).join('\n')}</div>` : '<div class="v e">None</div>'; if (Array.isArray(o[f])) return o[f].length ? `<div class="v">${o[f].map((t) => '• ' + esc(t)).join('\n')}</div>` : '<div class="v e">Empty</div>'; return o[f] ? `<div class="v">${esc(o[f])}</div>` : '<div class="v e">Empty</div>'; };
   const col = (o, mine) => fields.map(([f, lab]) => { const ch = r && !same(r[f], l[f]); return `<div class="f ${ch && mine ? 'chg' : ''}"><small>${esc(lab)}${ch && mine ? '<b>Changed</b>' : ''}</small>${val(o, f)}</div>`; }).join('');
   const changed = r ? fields.filter(([f]) => !same(r[f], l[f])) : [];
   const pair = pairFor(c.market), affects = [`${esc(s.n)} · ${esc(cfgName(c))} · ${esc(mk.name)}`]; if (pair && isStage(cur.s) && (cur.c === pair.a.id || cur.c === pair.b.id)) affects.push(`Comparison, ${esc(s.n)}: ${esc(HANDLES[c.handle])} side`);
@@ -670,12 +690,13 @@ function endEdit(save = true) {
   if (!editing) return; const el = editing; editing = null; el.removeAttribute('contenteditable');
   if (!save) { el.textContent = before; return; }
   const val = el.textContent.replace(/\s+/g, ' ').trim(); el.textContent = val; const f = el.dataset.f, l = lesson(), label = `${SC[cur.s].n} · ${cfgName(CF(cur.c))}`;
-  if (f === 'points' || f === 'notes') { const arr = $$(`[data-list="${f}"] li`).map((li) => li.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean); if (!same(arr, l[f])) { l[f] = arr; commit(`${label}: ${FIELD[f]} edited`); } rerender(); return; }
+  if (f === 'cue') { const i = +el.dataset.i, t = parseT(val); if (val && val !== '—:—' && t === null) { el.textContent = before; say('Write the time as m:ss, for example 0:07.'); return; } const cs = (l.cues || []).slice(); cs[i] = val && val !== '—:—' ? t : null; if (!same(cs, l.cues || [])) { l.cues = cs; commit(`${label}: point ${i + 1} starts at ${fmtT(cs[i])}`); } rerender(); return; }
+  if (f === 'points' || f === 'notes' || f === 'diffs') { const arr = $$(`[data-list="${f}"] [data-f="${f}"]`).map((x) => x.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean); const was = f === 'diffs' ? pd() : l[f]; if (!same(arr, was)) { if (f === 'diffs') setPd(arr); else { l[f] = arr; if (f === 'points') l.cues = (l.cues || []).slice(0, arr.length); } commit(f === 'diffs' ? `Comparison · ${SC[cur.s].n}: differences edited` : `${label}: ${FIELD[f]} edited`); } rerender(); return; }
   if (val !== before) { l[f] = val; commit(`${label}: ${FIELD[f]} ${val ? 'edited' : 'cleared'}`); refreshMarks(); if (!val && f === 'head') say('The headline is empty now. The stage cannot be published until it has one.'); }
 }
 function refreshMarks() { $$('.rail [data-stage]').forEach((b) => { const st = cellState(cur.c, b.dataset.stage), mk = $('.mk', b); if (mk) { mk.className = 'mk ' + st.k; mk.title = st.t; } }); syncBar(); }
 function openLesson(c, s) { endEdit(); cur = { c, s }; const cfg = CF(c); if (cfg && S.market !== cfg.market) S.market = cfg.market; persist(); if (view === 'lesson') { rerender(); window.scrollTo(0, 0); } else location.hash = '#lesson'; }
-function addPoint(f) { endEdit(); lesson()[f].push(''); rerender(); const items = $$(`[data-list="${f}"] li`); const el = items[items.length - 1]; if (el) startEdit(el); }
+function addPoint(f) { endEdit(); if (f === 'diffs') setPd([...pd(), '']); else lesson()[f].push(''); rerender(); const items = $$(`[data-list="${f}"] [data-f="${f}"]`); const el = items[items.length - 1]; if (el) startEdit(el); }
 
 /* ---------- drawer ---------- */
 function openDrawer(html) { const d = $('#drawer'); d.innerHTML = html; d.hidden = false; }
@@ -733,7 +754,7 @@ function openAddConfig() {
       <div><h3>Handle</h3><div class="optrow"><label class="opt"><input type="radio" name="handle" value="slider" ${handle === 'slider' ? 'checked' : ''}><span><b>Legacy slider</b><span class="d">All models</span></span></label><label class="opt ${knobOk ? '' : 'dis'}"><input type="radio" name="handle" value="knob" ${handle === 'knob' ? 'checked' : ''} ${knobOk ? '' : 'disabled'}><span><b>Precision knob</b><span class="d">${model !== 't13' ? 'Tiger 13 only' : !mk.knob ? `Not offered in ${esc(mk.name)}` : 'Tiger 13'}</span></span></label></div></div>
       ${dup ? `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span>${esc(MD[model].name)} · ${esc(HANDLES[handle])} is already set up for ${esc(mk.name)}.</span></div>` : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>${esc(MD[model].name)} · ${esc(HANDLES[handle])} · ${esc(mk.name)}: a programme with Opening, 8 stages and Closing, all “Not started”.</span></div>`}
       <div class="act"><button type="button" class="b pri" data-create ${dup ? 'disabled' : ''}>Add configuration</button><button type="button" class="b" data-x>Cancel</button></div>`);
-    $('#modal').onclick = (e) => { const r = e.target.closest('input[type=radio]'); if (r) { if (r.name === 'model') model = r.value; else handle = r.value; draw(); return; } if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-create]') && !dup) { const id = 'c' + (Math.max(0, ...S.configs.map((c) => +c.id.slice(1))) + 1); const cfg = { id, model, handle, market: m, before: false }; S.configs.push(cfg); S.lessons[id] = {}; sectionsOf(cfg).forEach((s) => { S.lessons[id][s.k] = emptyLesson(); }); S.scope[m][id] = false; lastJson = JSON.stringify(S.lessons); persist(); closeModal(); rerender(); say(`${cfgName(cfg)} added to ${mk.name}. 10 sections to fill.`); } };
+    $('#modal').onclick = (e) => { const r = e.target.closest('input[type=radio]'); if (r) { if (r.name === 'model') model = r.value; else handle = r.value; draw(); return; } if (e.target.closest('[data-x]')) closeModal(); else if (e.target.closest('[data-create]') && !dup) { const id = 'c' + (Math.max(0, ...S.configs.map((c) => +c.id.slice(1))) + 1); const cfg = { id, model, handle, market: m, before: false }; S.configs.push(cfg); S.lessons[id] = {}; sectionsOf(cfg).forEach((s) => { S.lessons[id][s.k] = emptyLesson(); }); S.scope[m][id] = false; lastJson = snap(); persist(); closeModal(); rerender(); say(`${cfgName(cfg)} added to ${mk.name}. 10 sections to fill.`); } };
   };
   draw();
 }
@@ -767,6 +788,7 @@ function build(v, changes, mb) {
   requestAnimationFrame(() => { const p = $('#prog'); if (p) p.style.width = '100%'; });
   setTimeout(() => {
     const sel = S.scope[m]; cfgs(m).forEach((c) => { if (sel[c.id]) S.released[c.id] = clone(S.lessons[c.id]); else delete S.released[c.id]; });
+    if (sel.cmp) S.releasedPairDiffs[m] = clone(S.pairDiffs[m] || {}); else delete S.releasedPairDiffs[m];
     const sha = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((x) => x.toString(16).padStart(2, '0')).join('');
     const prev = latestPkg(m);
     S.packages.unshift({ v, market: m, date: today(), status: 'built', configs: cfgs(m).filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
@@ -808,7 +830,7 @@ $('#view').addEventListener('click', (e) => {
   }
 });
 $('#view').addEventListener('change', (e) => { if (e.target.id === 'mkSel') { S.market = e.target.value; persist(); rerender(); } });
-$('#view').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('[data-media]')) { e.preventDefault(); openMedia(e.target.dataset.media); } if (editing && e.key === 'Enter' && (editing.tagName === 'H1' || editing.tagName === 'LI')) { e.preventDefault(); if (editing.tagName === 'LI') { const f = editing.dataset.f; editing.blur(); setTimeout(() => addPoint(f), 0); } else editing.blur(); } });
+$('#view').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('[data-media]')) { e.preventDefault(); openMedia(e.target.dataset.media); } if (editing && e.key === 'Enter' && (editing.tagName === 'H1' || ['points', 'notes', 'diffs', 'cue'].includes(editing.dataset.f))) { e.preventDefault(); if (['points', 'notes', 'diffs'].includes(editing.dataset.f)) { const f = editing.dataset.f; editing.blur(); setTimeout(() => addPoint(f), 0); } else editing.blur(); } });
 $('#view').addEventListener('focusout', (e) => { if (editing && e.target === editing) { if (e.target.dataset.f === 'warn' && !e.target.textContent.trim()) { const l = lesson(); editing = null; e.target.removeAttribute('contenteditable'); l.warn = ''; rerender(); return; } endEdit(); } });
 $('#view').addEventListener('paste', (e) => { if (!editing) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s*\n\s*/g, ' ')); });
 $('#bar').addEventListener('click', (e) => { if (e.target.closest('[data-publish]')) openPublish(); });
@@ -817,7 +839,7 @@ $('#bUndo').onclick = undo; $('#bRedo').onclick = redo;
 $('#bComment').onclick = () => { endEdit(); if (!$('#drawer').hidden && $('#cmtIn')) closeDrawer(); else openComments(); };
 $('#bPrev').onclick = () => { endEdit(); closeDrawer(); mode = 'preview'; if (view !== 'lesson') location.hash = '#lesson'; else render(); };
 $('#bBackEdit').onclick = () => { mode = 'edit'; render(); };
-$('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c1', s: 'prep' }; lastJson = JSON.stringify(S.lessons); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
+$('#reset').onclick = () => { const keep = S.tipDone; S = seedState(); S.tipDone = keep; cur = { c: 'c1', s: 'prep' }; lastJson = snap(); try { localStorage.removeItem(KEY); } catch (e) {} rerender(); say('Back to the starting state.'); };
 $('#tipOk').onclick = () => { S.tipDone = true; persist(); $('#tip').hidden = true; };
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { if (editing) { endEdit(false); return; } if ($('#modal').innerHTML) { closeModal(); return; } if (!$('#drawer').hidden) { closeDrawer(); return; } if (mode === 'preview') { mode = 'edit'; render(); } }
