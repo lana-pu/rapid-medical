@@ -83,6 +83,19 @@ on-page editor (`data-e`), поэтому правка на странице п�
   … site / Stay here» (`RegionBanner`), отказ запоминается cookie `rm_geo_dismissed` (30 дней).
   Региональные страницы (терапии, лендинги, Evidence, вебинары) отдают `hreflang`: `en-US` → `/us/…`,
   `en` → `/ous/…`, `en-AU` → `/apac/…`, `x-default` → `/choose-your-location`.
+- **Решение 2026-11-10 (аудит Emily, кода ещё нет — заменяет баннер выше):**
+  - Регион по IP **применяется сразу** при первом заходе на любую страницу (пишется в `rm_region`), без
+    баннера-вопроса. Ручной выбор в переключателе шапки тоже пишется в `rm_region` и IP больше не перебивается.
+  - Страна не определилась (VPN, нет заголовка, страны нет в карте) → «Therapies» и «Evidence» ведут на
+    `/choose-your-location`; это единственный случай, когда посетитель видит выбор региона.
+  - «Therapies» в шапке — выпадающий список терапий текущего региона, сгруппированный по направлениям
+    (Ischemic stroke / Hemorrhagic stroke / Access), внизу «All therapies» → `/{region}/therapies`.
+    «Evidence» → `/{region}/evidence`. www-адреса `/our-solutions`, `/evidence` → в регион, при неизвестной
+    стране — выбор региона.
+  - Обзор `/{region}/therapies` остаётся **необязательной** страницей для тех, кто не знает линейку (инвесторы,
+    первый визит). Ведут на него: кнопка на главной, «All therapies», корень legacy-хостов и `/{region}`.
+    Собирается из записей терапий (название, подзаголовок, картинка, направление), своих текстов — только
+    заголовок; у терапии необязательное поле «одна цифра-доказательство» (заполняется после MLR).
 - **Legacy-хосты** (`us.` / `ous.` / `apac.rapid-medical.com`, `*-rapid-medical.juuced.co`) → 301 на
   `NEXT_PUBLIC_SITE_URL/{region}{path}`; корень → `/therapies`, `lvo|mvo|aneurysm|vasospasm|access|drivewire` →
   `/therapies/{slug}`.
