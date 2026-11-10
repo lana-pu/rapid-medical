@@ -92,6 +92,17 @@
 - 2 новых видео (Comaneci Blood Flow) без постеров: снимок обновлялся без ffmpeg. `npm run media:process` при наличии ffmpeg.
 - Новые картинки Duda (спецификации «Updated», T13 Tech Tour, «85+ publications») скачаны в медиатеку, но в контент не подставлены.
 
+## Сайт: найдено во флоу врача (2026-11-10)
+
+Флоу `docs/flows/visitor.json`, страница (приватная ссылка): https://claude.ai/artifact/UsCAqb3b5fYKEatPjjAsFg
+- **Вкладка по ссылке не открывается.** «Clinical evidence» ведёт на `/{region}/evidence#comaneci`, но `Tabs.tsx` не
+  читает якорь: открыта первая вкладка (TIGERTRIEVER™). Врач видит не те исследования.
+- **Коды регионов видны посетителю:** «OUS version · APAC version» над заголовком терапии (`REGION_SHORT` в
+  `from-solution.ts`). И три разных названия региона: чузер «Europe & Middle East», `REGION_LABELS` «Europe, Middle East,
+  Latin America & Australia», админка — коды.
+- Вопросы к владелице: кнопка героя главной — сразу в подсказанный регион; вкладка Clinical evidence — ссылка или 3
+  последних исследования во вкладке; текст после запроса вебинара (когда придёт запись); Country/State в контактной форме.
+
 ## Медиа
 
 - Медиа в git (~300 МБ), из них ~100 МБ точные дубли: в 25 из 38 групп используются сразу несколько копий.
