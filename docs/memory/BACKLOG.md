@@ -10,6 +10,8 @@
    Прототип v0.1 (приватная ссылка): https://claude.ai/artifact/KZ6xb3czzMdkpbAmxxjuMP. Владелица: удобства нет, нетехнический
    человек не разберётся. Практики и разбор: `findings/admin-editor-best-practices.md`. Владелица выбрала правку на странице, как в Webflow (ADR-006).
    Прототип редактора на странице Large vessel stroke (приватная ссылка): https://claude.ai/artifact/9o31C5ccVdxUV52w2JKZxv.
+   **Флоу редактора (2026-11-10):** `docs/flows/site-editor.json`, 12 экранов, страница (приватная ссылка):
+   https://claude.ai/artifact/LkArx5FdPAWQQqCvsigRP8 — ждёт оценки владелицы по заметкам.
    Дальше её обратная связь по нему, потом модель регионов и какая версия базовая.
    Коллекция блоков: инвентарь — `findings/block-inventory.md`, контракт блоков — `DESIGN.md → Коллекция блоков`
    (рабочий набор). **В коде (2026-11-09):** реестр `src/blocks/` (22 блока), витрина `/style-guide`; на блоках весь сайт, кроме шаблонов
