@@ -16,7 +16,10 @@ HERE = Path(__file__).resolve().parent.parent / 'assets'
 
 def known_components(packs):
     src = (HERE / 'kit.js').read_text(encoding='utf8') + ''.join(Path(p).read_text(encoding='utf8') for p in packs)
-    return set(re.findall(r"register\('([A-Za-z_][\w-]*)'", src))
+    names = set(re.findall(r"register\('([A-Za-z_][\w-]*)'", src))
+    for line in re.findall(r'@components\s+([^\n*]+)', src):  # packs that register in a loop list their names
+        names.update(line.split())
+    return names
 
 
 def walk(n, fn):
@@ -43,6 +46,8 @@ def check(flow, comps):
         def visit(n, s=s):
             c = n.get('c')
             if c not in comps: errors.append(f'{s["id"]}: unknown component "{c}"')
+            if 'note' in n and c and not c.startswith('rm-') and c in comps and c not in ('cta',):
+                warns.append(f'{s["id"]}: "note" on {c} — annotations are "annotation"')
             to = n.get('to')
             if to:
                 if to not in idset: errors.append(f'{s["id"]}: "to" points to missing screen "{to}"')

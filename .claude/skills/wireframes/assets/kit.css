@@ -114,6 +114,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .w-hov { outline: 1px dashed var(--sel); outline-offset: 3px }
 .w-tbar { position: absolute; z-index: 6; left: 0; bottom: calc(100% + 8px); display: flex; gap: 2px; align-items: center; padding: 3px; border-radius: 6px; background: var(--wf-dark); color: var(--wf-dark-ink); box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .5); white-space: nowrap; --wf-ink: var(--wf-dark-ink); --wf-btn: var(--wf-dark-ink); --wf-btn-ink: var(--wf-dark); --wf-line: var(--wf-dark-2) }
 .w-tbar.below { bottom: auto; top: calc(100% + 8px) }
+.w-tbar .w-seg { background: var(--wf-dark-2) } .w-tbar .w-seg span.on { background: var(--wf-dark-ink); color: var(--wf-dark); box-shadow: none }
 .w-pop { position: absolute; z-index: 7; top: calc(100% + 6px); left: 0; min-width: 240px; background: var(--wf-paper); border-radius: 8px; box-shadow: 0 0 0 1px var(--wf-line), 0 14px 32px -14px rgba(0, 0, 0, .45); padding: 6px }
 .w-pop.right { left: auto; right: 0 }
 .w-pop.up { top: auto; bottom: calc(100% + 6px) }
