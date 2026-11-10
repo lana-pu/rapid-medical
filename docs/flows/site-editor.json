@@ -78,7 +78,7 @@
            "text": "Sign in",
            "full": true,
            "to": "choose",
-           "note": "После входа и кода 2FA — экран выбора, а не список системных разделов (находка №9)."
+           "annotation": "После входа и кода 2FA — экран выбора, а не список системных разделов (находка №9)."
           }
          ]
         }
@@ -128,7 +128,7 @@
          "title": "Website",
          "text": "Pages, Evidence, News, Team, Jobs, Webinars",
          "meta": "2 pages need your attention",
-         "note": "Два больших выбора вместо переключателя в сайдбаре: так просила владелица (находка №9)."
+         "annotation": "Два больших выбора вместо переключателя в сайдбаре: так просила владелица (находка №9)."
         },
         {
          "c": "card",
@@ -236,7 +236,7 @@
          "c": "input",
          "v": "search",
          "placeholder": "Search pages, e.g. “Access” or “privacy”",
-         "note": "Частая задача «поменять текст на странице X» начинается с поиска, а не с дерева разделов."
+         "annotation": "Частая задача «поменять текст на странице X» начинается с поиска, а не с дерева разделов."
         },
         {
          "c": "alert",
@@ -254,7 +254,7 @@
            "tone": "warning",
            "thumb": "page",
            "to": "page",
-           "note": "Миниатюра и статус обычными словами: «Live, with unpublished changes» вместо «Published, has edits»."
+           "annotation": "Миниатюра и статус обычными словами: «Live, with unpublished changes» вместо «Published, has edits»."
           },
           {
            "title": "Medium vessel occlusion",
@@ -388,109 +388,55 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to AIS",
-         "hover": true,
-         "cursor": true,
-         "to": "edit-text",
-         "note": "Страница выглядит как на сайте. Пунктир при наведении показывает, что можно поменять. Клик — правка на месте."
-        },
-        {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4",
+       "to": "edit-text",
+       "annotation": "Страница выглядит как на сайте. Пунктир при наведении показывает, что можно поменять. Клик — правка на месте.",
+       "focus": {
+        "style": "hover",
+        "cursor": true,
+        "part": "title"
+       }
+      },
       {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
       {
-       "c": "grid",
-       "cols": 2,
-       "align": "center",
-       "items": [
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Accelerate"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "thrombectomy"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors."
-          }
-         ]
-        },
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "Tiger stair graph animated.mp4",
-         "ratio": "4/3"
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
       }
      ]
     }
@@ -596,128 +542,73 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke",
-         "selected": true,
-         "toolbar": [
-          {
-           "c": "text",
-           "v": "caption",
-           "text": "Title · same in all regions"
-          },
-          {
-           "c": "button",
-           "v": "primary",
-           "size": "s",
-           "text": "Done",
-           "to": "edit-video"
-          },
-          {
-           "c": "button",
-           "v": "ghost",
-           "size": "s",
-           "text": "Cancel"
-          }
-         ],
-         "toolbarPos": "below",
-         "note": "Текст правится прямо в заголовке. Шрифт, цвет и размер редактору недоступны: дизайн заперт (ADR-006)."
-        },
-        {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4",
+       "annotation": "Текст правится прямо в заголовке. Шрифт, цвет и размер редактору недоступны: дизайн заперт (ADR-006).",
+       "focus": {
+        "style": "selected",
+        "toolbar": [
+         {
+          "c": "text",
+          "v": "caption",
+          "text": "Title · same in all regions"
+         },
+         {
+          "c": "button",
+          "v": "primary",
+          "size": "s",
+          "text": "Done",
+          "to": "edit-video"
+         },
+         {
+          "c": "button",
+          "v": "ghost",
+          "size": "s",
+          "text": "Cancel"
+         }
+        ],
+        "part": "title"
+       }
+      },
       {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
       {
-       "c": "grid",
-       "cols": 2,
-       "align": "center",
-       "items": [
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Accelerate"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "thrombectomy"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors."
-          }
-         ]
-        },
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "Tiger stair graph animated.mp4",
-         "ratio": "4/3"
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
       }
      ]
     }
@@ -831,68 +722,40 @@
          "cta": "Get in touch"
         },
         {
-         "c": "section",
-         "tone": "dark",
-         "pad": "l",
-         "bg": "Background video · tigerface wide.mp4",
+         "c": "rm-page",
          "items": [
           {
-           "c": "stack",
-           "items": [
+           "c": "rm-hero",
+           "v": "video",
+           "eyebrow": "Therapies / Large vessel stroke",
+           "eyebrowLinks": [
             {
-             "c": "eyebrow",
-             "text": "Therapies / Large vessel stroke · US version · APAC version"
+             "label": "US version",
+             "href": "/us/therapies/lvo"
             },
             {
-             "c": "heading",
-             "level": 1,
-             "text": "A patient-centric approach to acute ischemic stroke"
-            },
-            {
-             "c": "text",
-             "v": "lead",
-             "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+             "label": "APAC version",
+             "href": "/apac/therapies/lvo"
             }
-           ]
-          }
-         ]
-        },
-        {
-         "c": "section",
-         "tone": "surface",
-         "items": [
+           ],
+           "title": "A patient-centric approach to acute ischemic stroke",
+           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+           "cta": {
+            "href": "/contact-us?region=ous&topic=demo",
+            "label": "Request a demo"
+           },
+           "imageUrl": null,
+           "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+          },
           {
-           "c": "grid",
-           "cols": "1.2fr 1fr",
-           "align": "center",
-           "items": [
-            {
-             "c": "media",
-             "kind": "video",
-             "label": "TIGERTRIEVER logo loop.mp4",
-             "ratio": "4/3",
-             "selected": true
-            },
-            {
-             "c": "stack",
-             "items": [
-              {
-               "c": "eyebrow",
-               "text": "Gain active"
-              },
-              {
-               "c": "heading",
-               "level": 2,
-               "text": "control"
-              },
-              {
-               "c": "text",
-               "v": "muted",
-               "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-              }
-             ]
-            }
-           ]
+           "c": "rm-textMedia",
+           "v": "threeColumn",
+           "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+           "title": "control",
+           "eyebrow": "Gain active",
+           "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+           "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png",
+           "selected": true
           }
          ]
         }
@@ -937,7 +800,7 @@
          "c": "switch",
          "label": "Same in all regions",
          "on": true,
-         "note": "Регион наследует общее, пока его не поменяли (Shopify, Webflow). Выключил — видео станет своим для Europe & Middle East."
+         "annotation": "Регион наследует общее, пока его не поменяли (Shopify, Webflow). Выключил — видео станет своим для Europe & Middle East."
         },
         {
          "c": "alert",
@@ -1058,105 +921,48 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
-        {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
       {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
       {
-       "c": "grid",
-       "cols": 2,
-       "align": "center",
-       "items": [
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Accelerate"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "thrombectomy"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors."
-          }
-         ]
-        },
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "Tiger stair graph animated.mp4",
-         "ratio": "4/3"
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
       }
      ]
     },
@@ -1220,7 +1026,7 @@
         "title": "Call to action",
         "text": "Short text and a button",
         "to": "section-added",
-        "note": "Пресеты — те же 22 блока, что уже в коде (src/blocks). Подписи — назначение, а не внутреннее имя."
+        "annotation": "Пресеты — те же 22 блока, что уже в коде (src/blocks). Подписи — назначение, а не внутреннее имя."
        },
        {
         "c": "card",
@@ -1351,155 +1157,98 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "buttons": [
+        {
+         "label": "Request to view",
+         "href": "/ous/webinars"
+        }
+       ],
+       "selected": true,
+       "toolbar": [
         {
          "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
-      {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
+         "v": "caption",
+         "text": "Call to action"
         },
         {
-         "c": "stack",
+         "c": "segmented",
          "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
+          "Dark band",
+          "Grey band",
+          "Panel"
+         ],
+         "active": 0
+        },
+        {
+         "c": "iconbutton",
+         "icon": "↑",
+         "label": "Move up"
+        },
+        {
+         "c": "iconbutton",
+         "icon": "↓",
+         "label": "Move down"
+        },
+        {
+         "c": "iconbutton",
+         "icon": "⧉",
+         "label": "Duplicate"
+        },
+        {
+         "c": "iconbutton",
+         "icon": "✕",
+         "label": "Delete"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "cta",
-     "v": "band",
-     "title": "Questions?",
-     "text": "Reach out to learn more about our company and devices.",
-     "actions": [
-      {
-       "v": "primary",
-       "text": "Contact us"
-      }
-     ],
-     "selected": true,
-     "toolbar": [
-      {
-       "c": "text",
-       "v": "caption",
-       "text": "Call to action"
-      },
-      {
-       "c": "segmented",
-       "items": [
-        "Dark band",
-        "Grey band",
-        "Panel"
        ],
-       "active": 0
+       "annotation": "Секция выделена: вариант, сдвиг, копия, удаление. Текст сразу правится кликом. Вариант выбирается из разрешённых дизайнером."
       },
       {
-       "c": "iconbutton",
-       "icon": "↑",
-       "label": "Move up"
-      },
-      {
-       "c": "iconbutton",
-       "icon": "↓",
-       "label": "Move down"
-      },
-      {
-       "c": "iconbutton",
-       "icon": "⧉",
-       "label": "Duplicate"
-      },
-      {
-       "c": "iconbutton",
-       "icon": "✕",
-       "label": "Delete"
-      }
-     ],
-     "note": "Секция выделена: вариант, сдвиг, копия, удаление. Текст сразу правится кликом. Вариант выбирается из разрешённых дизайнером."
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
-      {
-       "c": "grid",
-       "cols": 2,
-       "align": "center",
-       "items": [
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Accelerate"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "thrombectomy"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors."
-          }
-         ]
-        },
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "Tiger stair graph animated.mp4",
-         "ratio": "4/3"
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
       }
      ]
     },
@@ -1587,7 +1336,7 @@
          ]
         }
        ],
-       "note": "Регион — одно меню над страницей, страница показана как в нём (Shopify Markets). Отличия считаются сами."
+       "annotation": "Регион — одно меню над страницей, страница показана как в нём (Shopify Markets). Отличия считаются сами."
       }
      ],
      "right": [
@@ -1644,79 +1393,51 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "buttons": [
         {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "Request to view",
+         "href": "/ous/webinars"
         }
        ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
-      {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "cta",
-     "v": "band",
-     "title": "Questions?",
-     "text": "Reach out to learn more about our company and devices.",
-     "actions": [
-      {
-       "v": "primary",
-       "text": "Contact us"
       }
      ]
     }
@@ -1827,67 +1548,39 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
-        {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
       {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
       }
      ]
     }
@@ -1927,7 +1620,7 @@
         "All regions"
        ],
        [
-        "New section: Call to action “Questions?”",
+        "New section: Call to action “Webinars”",
         "Europe & Middle East"
        ]
       ]
@@ -1957,7 +1650,7 @@
         "on": true
        }
       ],
-      "note": "Проверка перед публикацией списком галочек (Mailchimp). Видно, что и в каких регионах станет живым."
+      "annotation": "Проверка перед публикацией списком галочек (Mailchimp). Видно, что и в каких регионах станет живым."
      }
     ],
     "actions": [
@@ -2079,7 +1772,7 @@
          "to": "history"
         }
        ],
-       "note": "Публикация заканчивается адресом и ссылкой на живую страницу, а не надписью на 3 секунды (находка №8)."
+       "annotation": "Публикация заканчивается адресом и ссылкой на живую страницу, а не надписью на 3 секунды (находка №8)."
       }
      ]
     },
@@ -2096,79 +1789,51 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "buttons": [
         {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "Request to view",
+         "href": "/ous/webinars"
         }
        ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
-      {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "cta",
-     "v": "band",
-     "title": "Questions?",
-     "text": "Reach out to learn more about our company and devices.",
-     "actions": [
-      {
-       "v": "primary",
-       "text": "Contact us"
       }
      ]
     }
@@ -2269,67 +1934,39 @@
      "cta": "Get in touch"
     },
     {
-     "c": "section",
-     "tone": "dark",
-     "pad": "l",
-     "bg": "Background video · tigerface wide.mp4",
+     "c": "rm-page",
      "items": [
       {
-       "c": "stack",
-       "items": [
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
         {
-         "c": "eyebrow",
-         "text": "Therapies / Large vessel stroke · US version · APAC version"
+         "label": "US version",
+         "href": "/us/therapies/lvo"
         },
         {
-         "c": "heading",
-         "level": 1,
-         "text": "A patient-centric approach to acute ischemic stroke"
-        },
-        {
-         "c": "text",
-         "v": "lead",
-         "text": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures."
+         "label": "APAC version",
+         "href": "/apac/therapies/lvo"
         }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "tone": "surface",
-     "items": [
+       ],
+       "title": "A patient-centric approach to acute ischemic stroke",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": null,
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+      },
       {
-       "c": "grid",
-       "cols": "1.2fr 1fr",
-       "align": "center",
-       "items": [
-        {
-         "c": "media",
-         "kind": "video",
-         "label": "TIGERTRIEVER logo loop.mp4",
-         "ratio": "4/3"
-        },
-        {
-         "c": "stack",
-         "items": [
-          {
-           "c": "eyebrow",
-           "text": "Gain active"
-          },
-          {
-           "c": "heading",
-           "level": 2,
-           "text": "control"
-          },
-          {
-           "c": "text",
-           "v": "muted",
-           "text": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force."
-          }
-         ]
-        }
-       ]
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
       }
      ]
     }
@@ -2364,7 +2001,7 @@
            "v": "secondary",
            "size": "s",
            "text": "Restore",
-           "note": "Откат одной кнопкой: ошибка после публикации не страшна (Fibery, «История с откатом»)."
+           "annotation": "Откат одной кнопкой: ошибка после публикации не страшна (Fibery, «История с откатом»)."
           }
          ]
         }
