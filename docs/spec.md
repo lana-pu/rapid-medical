@@ -120,6 +120,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `publications` | `publications` (Evidence) | `title`, `authors`, `journal`, `publishedOn` (месяц), `url`/`pdfUrl`/`doi`, `productId`, `regions[]` (пусто = все), `featured`, `imageUrl` | `published` | |
 | `news_items` | `news` | `title`, `publishedOn`, `url` (внешняя), `source`, `excerpt`, `featured` | `published` | Только внешние ссылки |
 | `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос |
+| `events` (**решение 2026-11-10, кода нет**) | `events` | `slug`, `title`, `subtitle`, `startsAt` (дата, время необязательно), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
 | `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `bodyHtml`, SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
@@ -348,9 +349,10 @@ ZIP: `index.html` + `manifest.json` (версия, рынок, конфигур�
 | `/{region}/webinars` | Список вебинаров + форма-запрос записи | [webinars](screens/webinars.md) |
 | `/{region}/{slug}` | Региональная страница из `pages` (лендинги) | [pages](screens/pages.md) |
 | `/{slug}` | Глобальная страница из `pages` (privacy, terms, …); промах → redirects / 404 | [pages](screens/pages.md) |
-| `/news-events` | Внешние новости | [news-events](screens/news-events.md) |
-| `/about-us` | О компании, руководство, офисы, интерактивная карта | [about-us](screens/about-us.md) |
-| `/team/{slug}` | Профиль руководителя | спека не написана |
+| `/news-events` | Внешние новости; **(решение 2026-11-10)** сверху предстоящие события, ниже архив прошедших | [news-events](screens/news-events.md) |
+| `/events/{slug}` | **(решение 2026-11-10, кода нет)** Событие: до даты — описание и регистрация, после — «прошло» и итоги | [events](screens/events.md) |
+| `/about-us` | О компании, руководство, офисы, интерактивная карта; **(решение 2026-11-10)** биографии руководства раскрываются здесь же | [about-us](screens/about-us.md) |
+| `/team/{slug}` | Профиль руководителя. **Решение 2026-11-10:** отдельные страницы убрать, 301 на `/about-us#{slug}` (аудит Emily: один абзац, 2 секунды) | спека не написана |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |
 | `/open-positions`, `/open-positions/{slug}` | Вакансии и вакансия с формой | [open-positions](screens/open-positions.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |
