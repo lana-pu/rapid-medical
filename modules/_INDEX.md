@@ -7,7 +7,7 @@
 |---|---|---|
 | Новый проект, подключить репозиторий, настройка AI, память, save-session, правила, скиллы, README, пополнение библиотеки | ai-config | `ai-config/AGENTS.md` |
 | Исследование продукта по этапам, что строим и для кого, спека продукта и экранов, PRD, правка спеки, бриф лендинга | product | `product/AGENTS.md` |
-| DESIGN.md, UI-кит, FSD, экраны, адаптив, UX-аудит, картинки, лендинг, правка визуала | design | `design/AGENTS.md` |
+| DESIGN.md, UI-кит, FSD, экраны, вайрфреймы и флоу, адаптив, UX-аудит, картинки, лендинг, правка визуала | design | `design/AGENTS.md` |
 | Код, БД, auth, письма, файлы, AI-фичи, админка, API, тесты, git, ENV, деплой, домен, security, хуки | development | `development/AGENTS.md` |
 | SEO-мета, robots/sitemap, GEO, аналитика, вычитка текстов | seo-geo | `seo-geo/AGENTS.md` |
 
