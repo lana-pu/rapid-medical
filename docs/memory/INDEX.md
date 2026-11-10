@@ -22,6 +22,7 @@
 - [block-inventory](findings/block-inventory.md) — все секции сайта, состав коллекции блоков (2026-11-07)
 - Атлас исследования инструмента — `docs/research/` (этап 07 бенчмарк, 2026-11-08)
 - [client-brief-lesson-content](findings/client-brief-lesson-content.md) — что клиент сказал о содержимом урока инструмента: структура секции, материал по этапам, статусы (2026-11-08)
+- [website-audit-ga4-oct-2026](findings/website-audit-ga4-oct-2026.md) — аудит Emily по GA4 (13.10.2026): что закрыто сборкой, что нет, предложения (2026-11-10)
 
 ## Сессии — `sessions/`
 
