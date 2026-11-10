@@ -11,7 +11,8 @@ This folder contains the UX work for the **Tigertriever interactive learning too
 | What | File |
 |---|---|
 | Content Studio prototype (editor side, v0.1, updated 2026-11-08) | [prototypes/content-studio-v0.1.html](prototypes/content-studio-v0.1.html) · content model: `../spec.md → Инструмент Tigertriever` · what the client specified: `../memory/findings/client-brief-lesson-content.md` |
-| Latest learner prototype (v0.4: stage player, handle switch, auto-advance, presenter mode, real stand-in clips) | [prototypes/training-app-v0.4.html](prototypes/training-app-v0.4.html) |
+| Latest learner prototype (v0.5: programme panel and resume, text follows the clip, compare mode with play-both and point-aligned slider) | [prototypes/training-app-v0.5.html](prototypes/training-app-v0.5.html) |
+| Previous learner prototype (v0.4) | [prototypes/training-app-v0.4.html](prototypes/training-app-v0.4.html) |
 | Previous learner prototype (v0.3) | [prototypes/training-app-v0.3.html](prototypes/training-app-v0.3.html) |
 | Previous learner prototype (v0.2) | [prototypes/training-app-v0.2.html](prototypes/training-app-v0.2.html) |
 | First learner prototype (v0.1) | [prototypes/training-app-v0.1.html](prototypes/training-app-v0.1.html) |
