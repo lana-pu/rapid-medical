@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getSolution, getSolutionRegions } from "@/lib/content";
 import { REGION_CHOICES } from "@/lib/regions";
-import { JsonLd, plain } from "@/components/site/JsonLd";
+import { JsonLd, plain, absUrl, siteUrl } from "@/components/site/JsonLd";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { regionalAlternates, absoluteTitle } from "@/lib/seo";
 import { BlockList } from "@/blocks/render";
@@ -33,7 +33,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
     notFound();
   }
   const others = available.filter((r) => r !== region);
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.rapid-medical.com";
+  const site = siteUrl();
   const p = s.product;
   const deviceName = (p && (p.aliases?.[region]?.fullName ?? p.fullName)) || s.navLabel;
   const image = s.heroImageUrl || s.annotatedImage?.imageUrl || undefined;
@@ -46,7 +46,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
           name: deviceName,
           description: plain(s.overviewBody || s.heroBody) || undefined,
           url: `${site}/${region}/therapies/${slug}`,
-          image: image ? new URL(image, site).toString() : undefined,
+          image: absUrl(image, site),
           manufacturer: { "@type": "Organization", name: "Rapid Medical", url: site },
         }}
       />

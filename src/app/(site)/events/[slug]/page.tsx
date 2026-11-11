@@ -7,7 +7,7 @@ import { day, formatEventDates, isPast, registrationOpen } from "@/lib/events";
 import { Section, H1, Btn, Prose, Img } from "@/components/site/primitives";
 import { ContactForm } from "@/components/site/ContactForm";
 import { E } from "@/components/site/editable";
-import { JsonLd, plain } from "@/components/site/JsonLd";
+import { JsonLd, plain, absUrl, siteUrl } from "@/components/site/JsonLd";
 
 /**
  * Event page (docs/screens/events.md): before the date — description and registration; after — "has taken place"
@@ -27,7 +27,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const open = registrationOpen(e);
   const place = [e.venue, e.city].filter(Boolean).join(", ");
   const showRecap = past && (e.recapHtml || e.recapPhotos.length > 0);
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.rapid-medical.com";
+  const site = siteUrl();
 
   return (
     <Section>
@@ -41,7 +41,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           eventStatus: "https://schema.org/EventScheduled",
           location: { "@type": "Place", name: e.venue || e.city || undefined, address: e.city || undefined },
           description: plain(e.descriptionHtml) || undefined,
-          image: e.imageUrl ? new URL(e.imageUrl, site).toString() : undefined,
+          image: absUrl(e.imageUrl, site),
           organizer: { "@type": "Organization", name: "Rapid Medical", url: site },
           url: `${site}/events/${e.slug}`,
         }}

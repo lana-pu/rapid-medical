@@ -3,7 +3,7 @@ import { getFeaturedNews } from "@/lib/content";
 import { getRememberedRegion } from "@/lib/region-cookie";
 import { BlockList } from "@/blocks/render";
 import { homeToBlocks, type HomeSettings } from "@/blocks/from-settings";
-import { JsonLd } from "@/components/site/JsonLd";
+import { JsonLd, absUrl, siteUrl } from "@/components/site/JsonLd";
 
 type Contact = { phoneHq?: string; email?: string; offices?: { name?: string; label?: string; address?: string }[] };
 type Social = Record<string, string | undefined>;
@@ -17,7 +17,7 @@ export default async function HomePage() {
     getSetting<Social>("social"),
     getSetting<{ logoUrl?: string }>("branding"),
   ]);
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.rapid-medical.com";
+  const site = siteUrl();
   const hq = contact.offices?.[0];
   return (
     <>
@@ -27,7 +27,7 @@ export default async function HomePage() {
           "@type": "Organization",
           name: "Rapid Medical",
           url: site,
-          logo: branding.logoUrl ? new URL(branding.logoUrl, site).toString() : undefined,
+          logo: absUrl(branding.logoUrl, site),
           email: contact.email || undefined,
           telephone: contact.phoneHq || undefined,
           address: hq?.address ? { "@type": "PostalAddress", streetAddress: hq.address.replace(/\n/g, ", ") } : undefined,

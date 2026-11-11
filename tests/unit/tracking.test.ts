@@ -28,3 +28,15 @@ describe("mediaKind", () => {
     expect(mediaKind("/ous/therapies/aneurysm")).toBeNull();
   });
 });
+
+import { absUrl } from "@/components/site/JsonLd";
+
+describe("absUrl", () => {
+  it("resolves relative paths, keeps http(s), drops malformed or other schemes without throwing", () => {
+    expect(absUrl("/logo.svg", "https://www.rapid-medical.com")).toBe("https://www.rapid-medical.com/logo.svg");
+    expect(absUrl("https://cdn.example.com/a.png", "https://www.rapid-medical.com")).toBe("https://cdn.example.com/a.png");
+    expect(absUrl("javascript:alert(1)", "https://www.rapid-medical.com")).toBeUndefined();
+    expect(absUrl("http://[bad", "https://www.rapid-medical.com")).toBeUndefined();
+    expect(absUrl("", "https://www.rapid-medical.com")).toBeUndefined();
+  });
+});
