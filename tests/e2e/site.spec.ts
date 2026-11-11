@@ -55,6 +55,8 @@ test("a product anchor opens its evidence tab", async ({ page }) => {
   await expect(page.getByRole("tab", { name: /COMANECI/ })).toHaveAttribute("aria-selected", "true");
   await page.goto("/us/evidence#drivewire");
   await expect(page.getByRole("tab", { name: /DRIVEWIRE/ })).toHaveAttribute("aria-selected", "true");
+  await page.goto("/us/evidence#%");
+  await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
 });
 
 test("about page renders the interactive map", async ({ page }) => {

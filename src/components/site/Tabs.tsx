@@ -13,15 +13,18 @@ export type Tab = { id: string; label: string; sublabel?: string; content: React
 export function Tabs({ tabs, hint, variant = "pills" }: { tabs: Tab[]; hint?: string; variant?: "pills" | "underline" }) {
   const [active, setActive] = useState(tabs[0]?.id);
   const pill = variant === "pills";
+  // Tab ids are plain slugs, so the hash is compared as is (no decoding: a malformed "%" must not throw).
+  const openable = tabs.filter((t) => !t.href).map((t) => t.id).join("\n");
   useEffect(() => {
+    const ids = openable.split("\n");
     const openFromHash = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1));
-      if (tabs.some((t) => t.id === id && !t.href)) setActive(id);
+      const id = window.location.hash.slice(1);
+      if (id && ids.includes(id)) setActive(id);
     };
     openFromHash();
     window.addEventListener("hashchange", openFromHash);
     return () => window.removeEventListener("hashchange", openFromHash);
-  }, [tabs]);
+  }, [openable]);
   return (
     <div>
       {hint && <p className="mb-4 text-center text-lg">{hint}</p>}
