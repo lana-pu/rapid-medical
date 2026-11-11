@@ -29,6 +29,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-11 | Инструмент Tigertriever: атлас 00–10, учебные v0.4–v0.5, Studio (время пунктов, различия), S0 с проверкой хранения | [2026-11-11-tigertriever-learner-v05.md](sessions/2026-11-11-tigertriever-learner-v05.md) |
 | 2026-11-10 | Набор для вайрфреймов (`/wireframes`), флоу редактора сайта | [2026-11-10-wireframes-kit.md](sessions/2026-11-10-wireframes-kit.md) |
 | 2026-11-09 | Весь сайт на блоках: списки, Gallery, Region chooser, варианты | [2026-11-09-whole-site-on-blocks.md](sessions/2026-11-09-whole-site-on-blocks.md) |
 | 2026-11-09 | Сверка библиотеки блоков с сайтом; текстовые страницы, Contact и About на блоках | [2026-11-09-blocks-pages.md](sessions/2026-11-09-blocks-pages.md) |
