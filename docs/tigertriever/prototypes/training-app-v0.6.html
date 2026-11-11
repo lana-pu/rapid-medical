@@ -195,12 +195,13 @@ function clean(p) {
   p.pairs.forEach((x) => { const d = x.diffs && typeof x.diffs === 'object' ? x.diffs : {}; x.diffs = {}; Object.keys(d).forEach((k) => { if (okId(k) && Array.isArray(d[k])) x.diffs[k] = d[k].map(String); }); });
   return p.configs.length && p.sections.length ? p : null;
 }
-let PKG = clean(window.TT_PACKAGE), FROM = 'sample';
-try { const raw = localStorage.getItem(PROTO_KEY); if (raw) { const p = clean(JSON.parse(raw)); if (p) { PKG = p; FROM = 'loaded'; } else localStorage.removeItem(PROTO_KEY); } } catch (e) {}
+/* #preview: Content Studio shows its draft through this same page; the draft arrives by postMessage and nothing is saved. */
+const PREVIEW = location.hash === '#preview';
+let PKG = PREVIEW ? null : clean(window.TT_PACKAGE), FROM = PREVIEW ? 'preview' : 'sample';
+if (!PREVIEW) try { const raw = localStorage.getItem(PROTO_KEY); if (raw) { const p = clean(JSON.parse(raw)); if (p) { PKG = p; FROM = 'loaded'; } else localStorage.removeItem(PROTO_KEY); } } catch (e) {}
 
 /* Saved place: one key per package, market and version — every file:// page shares one storage in Chrome. */
-const KEY = PKG ? `tt-learner:${PKG.package}:${PKG.market.id}:${PKG.version}` : 'tt-learner:none';
-const SECS = PKG ? PKG.sections : [];
+let KEY = 'tt-learner:none', SECS = [], MODELS = [];
 const CF = (id) => PKG.configs.find((c) => c.id === id) || null;
 const L = (k, id = S.cfg) => (PKG.lessons[id] || {})[k] || null;
 const sec = (k) => { const x = SECS.find((s) => s.k === k); return x ? { ...x, f: x.num < 1 || x.num > 8, txt: k === 'before' } : null; };
@@ -209,13 +210,22 @@ const clipOf = (id, k) => { const l = L(k, id); return l && l.media ? l.media : 
 const src = (m) => PKG.media[m].file;
 const cfg = () => CF(S.cfg);
 const pairOf = (id = S.cfg) => PKG.pairs.find((p) => p.configs.includes(id)) || null;
-const MODELS = PKG ? (() => { const out = []; PKG.configs.forEach((c) => { let m = out.find((x) => x.id === c.model); if (!m) out.push((m = { id: c.model, n: c.modelName, cfgs: [] })); m.cfgs.push(c); }); PKG.upcoming.forEach((u) => { if (!out.some((x) => x.id === u.model)) out.push({ id: u.model, n: u.name, cfgs: [], later: true }); }); return out; })() : [];
+const pkgLabel = () => (PREVIEW ? 'Draft from Content Studio, not published' : `Package v${PKG.version}, built ${PKG.built}`);
 const fmt = (d) => (d || d === 0 ? `${Math.floor(d / 60)}:${String(Math.floor(d % 60)).padStart(2, '0')}` : '');
 
-let S = { screen: 'choose', cfg: null, stage: null, auto: false, present: false, prog: false, watched: {}, last: {}, pos: {}, lastCfg: null };
+let S = {};
 let playNext = false, stopped = false, timer = null, count = 0, DUR = {}, saveT = 0;
-if (PKG) {
+function setup() {
+  S = { screen: 'choose', cfg: null, stage: null, auto: false, present: false, prog: false, watched: {}, last: {}, pos: {}, lastCfg: null };
+  DUR = {}; KEY = `tt-learner:${PKG.package}:${PKG.market.id}:${PKG.version}`; SECS = PKG.sections;
+  MODELS = []; PKG.configs.forEach((c) => { let m = MODELS.find((x) => x.id === c.model); if (!m) MODELS.push((m = { id: c.model, n: c.modelName, cfgs: [] })); m.cfgs.push(c); });
+  PKG.upcoming.forEach((u) => { if (!MODELS.some((x) => x.id === u.model)) MODELS.push({ id: u.model, n: u.name, cfgs: [], later: true }); });
   Object.keys(PKG.media).forEach((id) => { const d = Number(PKG.media[id].dur); if (d > 0) DUR[id] = d; });
+  Object.keys(PKG.media).forEach((id) => {
+    const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = src(id);
+    v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen !== 'choose') { renderBar(); if (!S.prog) refreshTimes(); else renderProg(); } };
+  });
+  if (PREVIEW) return;
   try {
     const s = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (s && typeof s === 'object') {
@@ -227,7 +237,7 @@ if (PKG) {
     }
   } catch (e) {}
 }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last, pos: S.pos, lastCfg: S.lastCfg })); } catch (e) {} };
+const save = () => { if (PREVIEW) return; try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last, pos: S.pos, lastCfg: S.lastCfg })); } catch (e) {} };
 const kk = (k, id = S.cfg) => `${id}/${k}`;
 const seen = (k, id = S.cfg) => !!S.watched[kk(k, id)];
 const posOf = (k, id = S.cfg) => S.pos[kk(k, id)] || 0;
@@ -235,10 +245,6 @@ const posOf = (k, id = S.cfg) => S.pos[kk(k, id)] || 0;
 const cuesOf = (id, k) => { const l = L(k, id), c = clipOf(id, k), d = c && DUR[c]; if (!l || !c || !l.points.length) return null; return l.points.map((_, i) => { const t = l.cues[i]; return typeof t === 'number' && isFinite(t) && t >= 0 ? t : d ? (i * d) / l.points.length : 0; }); };
 const pointAt = (id, k, t) => { const c = cuesOf(id, k); if (!c) return -1; let i = 0; c.forEach((x, j) => { if (t >= x) i = j; }); return i; };
 
-if (PKG) Object.keys(PKG.media).forEach((id) => {
-  const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = src(id);
-  v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen !== 'choose') { renderBar(); if (!S.prog) refreshTimes(); else renderProg(); } };
-});
 
 function media(id, k, vid, opts = {}) {
   const c = clipOf(id, k), cf = CF(id);
@@ -260,7 +266,7 @@ function renderProg() {
   const p = $('#prog'); p.hidden = !(S.prog && S.screen === 'stage'); if (p.hidden) return;
   p.innerHTML = `<div class="row" style="justify-content:space-between"><b>Programme</b><button class="btn" data-do="prog">Close</button></div>
   <div class="list">${seq().map((s) => { const c = clipOf(S.cfg, s.k), at = posOf(s.k), done = seen(s.k); return `<button data-do="go" data-k="${s.k}" ${s.k === S.stage ? 'aria-current="step"' : ''}><span class="n">${s.f ? '' : s.num}</span><span class="nm">${esc(s.n)}</span><span class="meta">${done ? '<span class="w">✓ Watched</span><br>' : ''}${!s.txt && !c ? '<span class="nov">Video not filmed yet</span>' : ''}${c ? (at > 1 && !done ? `Stopped at ${fmt(at)} of ${fmt(DUR[c])}` : fmt(DUR[c])) : ''}</span></button>`; }).join('')}</div>
-  <p class="fine">Package v${esc(PKG.version)} · ${esc(PKG.market.name)} · built ${esc(PKG.built)}. Your place is saved on this computer. Exit returns to device choice.</p>`;
+  <p class="fine">${esc(pkgLabel())} · ${esc(PKG.market.name)}. Your place is saved on this computer. Exit returns to device choice.</p>`;
 }
 function renderBar() {
   const b = $('#bar'), on = S.screen === 'stage'; b.hidden = !on; if (!on) return;
@@ -275,11 +281,11 @@ function renderBar() {
 function vChoose() {
   const lc = S.lastCfg && CF(S.lastCfg), k = lc && S.last[lc.id], at = k ? S.pos[kk(k, lc.id)] || 0 : 0;
   const resume = lc && k ? `<div class="resume"><div><b>Continue where you left off</b><span class="muted">${esc(lc.modelName)} · ${esc(lc.handleName)} · ${esc(sec(k).n)}${at > 1 ? ` at ${fmt(at)}` : ''}</span></div><button class="btn pri" data-do="continue">Continue</button></div>` : '';
-  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Training for ${esc(PKG.market.name)}. Package v${esc(PKG.version)}, built ${esc(PKG.built)}.</p></div>${resume}
+  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Training for ${esc(PKG.market.name)}. ${esc(pkgLabel())}.</p></div>${resume}
   <div><div class="label">Device and handle</div><div class="models">${MODELS.map((m) => `<div class="model"><b>${esc(m.n)}</b><div class="opts">${m.later ? '<span class="tag">No training yet</span>' : m.cfgs.map((c) => `<button class="btn" data-do="pick" data-c="${esc(c.id)}">${esc(c.handleName)} →</button>`).join('')}</div></div>`).join('')}</div></div>
   <p class="fine">Concept v0.6. ${esc(PKG.note || '')}</p>
-  <div class="note"><div class="fine"><b>Prototype only, not part of the product.</b> ${FROM === 'sample' ? 'You are looking at the sample package built by the Content Studio prototype.' : `Loaded from a Content Studio file: ${esc(PKG.package)} v${esc(PKG.version)}.`} Publish in Content Studio, download the package data and open it here.</div>
-  <div class="row"><label class="btn" for="pkgfile">Load a package from Content Studio (.json)</label><input type="file" id="pkgfile" accept=".json,application/json" hidden>${FROM === 'loaded' ? '<button class="btn" data-do="sample">Back to the sample package</button>' : ''}</div><div class="fine" id="pkgmsg" role="status"></div></div></div>`;
+  ${PREVIEW ? '<div class="note"><div class="fine"><b>Preview of the Content Studio draft.</b> Not published: physicians see this only after a package is built.</div></div>' : `<div class="note"><div class="fine"><b>Prototype only, not part of the product.</b> ${FROM === 'sample' ? 'You are looking at the sample package built by the Content Studio prototype.' : `Loaded from a Content Studio file: ${esc(PKG.package)} v${esc(PKG.version)}.`} Publish in Content Studio, download the package data and open it here.</div>
+  <div class="row"><label class="btn" for="pkgfile">Load a package from Content Studio (.json)</label><input type="file" id="pkgfile" accept=".json,application/json" hidden>${FROM === 'loaded' ? '<button class="btn" data-do="sample">Back to the sample package</button>' : ''}</div><div class="fine" id="pkgmsg" role="status"></div></div>`}</div>`;
 }
 function vStage() {
   const s = sec(S.stage), l = L(S.stage), cf = cfg(), pair = pairOf();
@@ -434,7 +440,16 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.present) { S.present = false; render(); } });
 
 /* Start: one configuration in the package skips the choice (spec → Путь врача). */
-if (!PKG) $('#view').innerHTML = vNoPackage();
-else if (PKG.configs.length === 1) open(PKG.configs[0].id);
-else render();
+if (PREVIEW) {
+  $('#view').innerHTML = '<div class="page gut"><p class="muted">Waiting for the draft from Content Studio…</p></div>';
+  window.addEventListener('message', (e) => {
+    if (e.source !== window.parent || !e.data || e.data.type !== 'tt-preview') return;
+    const p = clean(JSON.parse(JSON.stringify(e.data.pkg || null))); if (!p) { $('#view').innerHTML = vNoPackage(); return; }
+    PKG = p; setup();
+    const id = typeof e.data.cfg === 'string' && CF(e.data.cfg) ? e.data.cfg : null;
+    if (!id) render(); else { S.cfg = id; const k = typeof e.data.stage === 'string' && L(e.data.stage, id) ? e.data.stage : seq(id)[0].k; go(k, false); }
+  });
+  if (window.parent !== window) window.parent.postMessage({ type: 'tt-preview-ready' }, '*');
+} else if (!PKG) $('#view').innerHTML = vNoPackage();
+else { setup(); if (PKG.configs.length === 1) open(PKG.configs[0].id); else render(); }
 </script>

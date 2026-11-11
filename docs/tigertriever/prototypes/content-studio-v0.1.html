@@ -177,6 +177,7 @@ table.mx{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeri
 .cue{font-family:var(--mono);font-size:12.5px;color:var(--l-muted);display:inline-block;min-width:38px;margin-right:6px}
 body.edit .lesson .cue{color:var(--ed);text-decoration:underline dotted}
 .diffb{border-left:3px solid var(--l-ink);padding:12px 16px;background:var(--l-surface);border-radius:0 6px 6px 0}
+.pvframe{display:block;width:100%;height:calc(100dvh - 110px);min-height:560px;border:0;background:#fff}
 .warnb{border-left:3px solid var(--l-ink);padding:14px 18px;background:var(--l-surface);border-radius:0 6px 6px 0}
 .warnb p{font-size:15.5px;line-height:1.5;max-width:65ch}
 .lnav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--l-line)}
@@ -361,7 +362,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
   <b>Try these</b>
   <ol>
     <li>Open <em>Device preparation</em> for Tiger 13 · Legacy slider. Click the video and replace it for this handle only.</li>
-    <li>Press <em>Preview</em>, then <em>Compare with package</em> to see your draft next to v1.2.</li>
+    <li>Press <em>Preview</em>: your draft opens in the same page physicians get. <em>Compare with package</em> puts it next to v1.2.</li>
     <li>Press <em>Publish</em>. Include Tiger 13 · Precision knob and the comparison; for knob stages not filmed yet choose <em>Publish without this video</em>. Download the package data and open it in the training prototype.</li>
     <li>Click a point's time (0:00) to set when it starts in the clip. In Positioning, edit <em>What's different</em>.</li>
   </ol>
@@ -621,7 +622,8 @@ function renderLesson() {
   const rail = secs.map((x, j) => { const st = cellState(cur.c, x.k); return `${(x.k === 'prep' || x.k === 'closing') ? '<div class="sep"></div>' : ''}<button type="button" data-stage="${x.k}" ${x.k === cur.s ? 'aria-current="page"' : ''}><span class="n">${isStage(x.k) ? x.num : ''}</span><span class="nm">${esc(x.n)}</span><span class="mk ${st.k}" title="${st.t}"></span></button>`; }).join('');
   const num = isStage(cur.s) ? `Stage ${s.num} of 8 · ${esc(s.n)}` : cur.s === 'before' ? 'Before you begin' : cur.s === 'opening' ? 'Opening' : 'Closing';
   const pair = pairFor(c.market), inPair = pair && isStage(cur.s) && (cur.c === pair.a.id || cur.c === pair.b.id);
-  return `${mode === 'preview' ? `<div class="banner">Preview of your draft. Physicians see this only after you publish a package. <a href="#changes">Compare with package</a></div>` : ''}<div class="lwrap">
+  if (mode === 'preview') { const empty = secs.every((x) => notStarted(S.lessons[cur.c][x.k])); return `<div class="banner">Preview of your draft, drawn by the same page physicians get. Nothing is published. <a href="#changes">Compare with package</a></div>${empty ? '<p class="notebox" style="margin:24px">This configuration has no lessons yet, so there is nothing to preview.</p>' : '<iframe id="pvf" class="pvframe" src="training-app-v0.6.html#preview" title="Preview as physicians see it"></iframe>'}`; }
+  return `<div class="lwrap">
     <nav class="rail" aria-label="Programme"><h2>Programme</h2>${rail}</nav>
     <article class="lesson">
       <div class="ctx">Tigertriever · <b>${esc(MD[c.model].name)}</b> · ${esc(HANDLES[c.handle])} · ${esc(mk.name)} <span class="demo">Stand-in content</span></div>
@@ -808,15 +810,15 @@ function build(v, changes, mb) {
   }, 1700);
 }
 /* The package data: the same object goes into content.js inside the ZIP (window.TT_PACKAGE = …). Format: spec → Офлайн-пакет. */
-function packageData(m, v) {
-  const sel = S.scope[m], list = cfgs(m).filter((c) => sel[c.id]), used = new Set(), lessons = {};
+function packageData(m, v, draft) {
+  const sel = S.scope[m], list = cfgs(m).filter((c) => (draft ? !sectionsOf(c).every((s) => notStarted(S.lessons[c.id][s.k])) : sel[c.id])), used = new Set(), lessons = {};
   list.forEach((c) => { lessons[c.id] = {}; sectionsOf(c).forEach((s) => {
     const l = S.lessons[c.id][s.k], md = hasMedia(l) && MEDIA[l.media].kind !== 'graphic' ? l.media : null; if (md) used.add(md);
     const scale = md && STAND[md] && durOf(md) ? STAND_DUR[STAND[md]] / durOf(md) : 1;
     lessons[c.id][s.k] = { head: l.head, points: l.points.slice(), cues: md ? l.points.map((_, i) => { const t = (l.cues || [])[i]; return t == null ? null : Math.round(t * scale * 100) / 100; }) : [], notes: l.shared ? [] : l.notes.slice(), same: !!l.shared, media: md, graphics: l.graphics.map((g) => MEDIA[g].source), warn: l.warn || '' };
   }); });
   const media = {}; used.forEach((id) => { const x = MEDIA[id]; media[id] = { file: `media/${STAND[id] || id}.mp4`, name: x.name, kind: x.kind, ver: x.ver, dur: STAND[id] ? STAND_DUR[STAND[id]] : durOf(id) }; });
-  const p = pairFor(m), pairs = sel.cmp && p && sel[p.a.id] && sel[p.b.id] ? [{ model: p.a.model, configs: [p.b.id, p.a.id], diffs: clone(S.pairDiffs[m] || {}) }] : [];
+  const p = pairFor(m), pairs = (draft || sel.cmp) && p && list.includes(p.a) && list.includes(p.b) ? [{ model: p.a.model, configs: [p.b.id, p.a.id], diffs: clone(S.pairDiffs[m] || {}) }] : [];
   return { format: 1, product: 'Tigertriever training', package: `tigertriever-${m}`, version: v, market: { id: m, name: MK[m].name }, built: new Date().toISOString().slice(0, 10),
     note: 'Stand-in content from the Content Studio prototype. Clips are public Rapid Medical website clips standing in for training footage. Not for clinical use.',
     sections: SECTIONS.map((x) => ({ k: x.k, n: x.n, num: x.num })), configs: list.map((c) => ({ id: c.id, model: c.model, modelName: MD[c.model].name, handle: c.handle, handleName: HANDLES[c.handle] })),
@@ -836,6 +838,11 @@ function say(text, actLabel, act) { const t = $('#toast'); t.innerHTML = `<span>
 
 /* ---------- events ---------- */
 window.addEventListener('hashchange', route);
+/* Preview: the training page in the frame asks for the draft; it gets the same package data a build would make. */
+window.addEventListener('message', (e) => {
+  const f = $('#pvf'); if (!f || e.source !== f.contentWindow || !e.data || e.data.type !== 'tt-preview-ready') return;
+  const c = CF(cur.c); f.contentWindow.postMessage({ type: 'tt-preview', pkg: packageData(c.market, 'draft', true), cfg: cur.c, stage: cur.s }, '*');
+});
 $('#view').addEventListener('click', (e) => {
   const t = e.target;
   const open = t.closest('[data-open]'); if (open) { const [c, s] = open.dataset.open.split('/'); openLesson(c, s); return; }
