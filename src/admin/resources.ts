@@ -339,7 +339,7 @@ export const RESOURCES: Resource[] = [
     labelField: "name",
     sortBy: "sortOrder",
     revalidate: ["/about-us"],
-    previewUrl: (r) => `/team/${r.slug}`,
+    previewUrl: (r) => `/about-us#${r.slug}`,
     listColumns: [
       { name: "name", label: "Name" },
       { name: "title", label: "Title" },

@@ -1,5 +1,6 @@
 import type { Page, TeamMember } from "@/db/schema";
 import type { Block } from "./types";
+import { safeHtml } from "@/lib/html";
 import { TOPICS, TOPIC_KEYS } from "@/lib/contact-topics";
 import type { Office } from "./offices-map";
 
@@ -45,7 +46,7 @@ export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; 
       anchor: "leadership",
       title: "Leadership Team",
       intro: about.leadershipIntro,
-      members: team.map((m) => ({ name: m.name, title: m.title, photoUrl: m.photoUrl, href: `/team/${m.slug}`, edit: { r: "team", id: m.id, prefix: "" } })),
+      members: team.map((m) => ({ name: m.name, title: m.title, longTitle: m.longTitle, photoUrl: m.photoUrl, slug: m.slug, bioHtml: m.bioHtml ? safeHtml(m.bioHtml) : null, href: `/about-us#${m.slug}`, edit: { r: "team", id: m.id, prefix: "" } })),
     },
     edit: { r, map: { intro: "leadershipIntro" } },
   });

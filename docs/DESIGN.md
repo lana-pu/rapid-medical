@@ -39,6 +39,7 @@
 | `Container`, `Section` | primitives | Ширина `max-w-6xl`, вертикальный ритм секций |
 | `Eyebrow`, `H1`, `H2`, `Lead` | primitives | Заголовочная иерархия (H1 `text-3xl → md:text-5xl`, H2 `text-2xl → md:text-3xl`) |
 | `Btn` (`primary` / `secondary`, `onDark`) | primitives | primary — `bg-accent`; secondary — обводка `foreground`. `onDark` (на тёмной полосе): primary — фон `background`, текст `foreground`; secondary — обводка `background`. Внешние ссылки → `<a>` |
+| `MediaLightbox` | components/site | Ссылка на видео (`.mp4/.webm/.mov`) или картинку (`.jpg/.png/.webp/.gif`) открывает окно поверх страницы (`<dialog>`): фон `foreground` с прозрачностью, медиа по центру, кнопка «Close», Esc и клик по фону закрывают. Без JS — ссылка открывает файл. PDF открывается напрямую |
 | `Img` | primitives | `srcset` WebP-вариантов, размеры, blur-плейсхолдер для файлов медиатеки; пустой `src` → серый блок |
 | `Prose` (+ `.prose-rm`, `.prose-rm-sm`) | primitives, globals.css | Вывод санитизированного rich text |
 | `Video`, `MediaBlock`, `Embed`, `VideoHero` | Media.tsx | Фон-видео с затемнением `bg-black/50`, YouTube-embed, автопостер |
@@ -128,7 +129,7 @@
 | Product details (`productDetails`) | `pills` · `underline` | терапии; внутри вкладки — блоки и группы с подзаголовком |
 | Device diagram (`deviceDiagram`) | `default` | вкладка терапии |
 | Spec table (`specTable`) | `table` · `images` (старый формат) | вкладка терапии |
-| People (`people`) | `physicians` · `team` (сетка со ссылкой на карточку человека) | вкладка In-Practice; About |
+| People (`people`) | `physicians` · `team` (сетка: фото, имя, должность; биография раскрывается на месте, у карточки якорь `#{slug}`) | вкладка In-Practice; About |
 | Rich text (`richText`) | `default` | текстовые страницы из `pages`. Заголовок страницы — отдельный блок Hero · `page` |
 | Media (`media`) | `image` · `video` · `document` (кнопка на PDF) | витрина; постеры и видео в `pages` пока хранятся внутри текста |
 | Form (`form`) | `default` · `compact` · `section` (своя секция с заголовком и примечанием); тип формы — поле блока | Contact, Webinars, Careers |

@@ -180,10 +180,9 @@ export async function getPage(slug: string, region: Region | null) {
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {
-  const [sols, pgs, team, jb, ev] = await Promise.all([
+  const [sols, pgs, jb, ev] = await Promise.all([
     db.select({ slug: solutions.slug, region: solutions.region }).from(solutions).where(eq(solutions.status, "published")),
     db.select({ slug: pages.slug, region: pages.region, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
-    db.select({ slug: teamMembers.slug }).from(teamMembers).where(eq(teamMembers.status, "published")),
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
     db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
   ]);
@@ -192,7 +191,6 @@ export async function getAllPublicPaths(): Promise<string[]> {
     ...["us", "ous", "apac"].flatMap((r) => [`/${r}/therapies`, `/${r}/evidence`, `/${r}/webinars`]),
     ...sols.map((s) => `/${s.region}/therapies/${s.slug}`),
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
-    ...team.map((t) => `/team/${t.slug}`),
     ...jb.map((j) => `/open-positions/${j.slug}`),
     ...ev.map((e) => `/events/${e.slug}`),
   ];

@@ -62,7 +62,8 @@ describe("aboutToBlocks", () => {
     expect(fieldPath(people.edit, "intro")).toBe("leadershipIntro");
     expect(fieldPath(people.edit, "title")).toBeNull();
     const m = people.data.members![0];
-    expect(m.href).toBe("/team/jane");
+    expect(m.href).toBe("/about-us#jane"); // bios live on About (decision 2026-11-10)
+    expect(m.slug).toBe("jane");
     expect(m.edit).toMatchObject({ r: "team", id: 3 });
     expect(fieldPath(m.edit, "photoUrl")).toBe("photoUrl");
     expect(bs[4].edit?.r).toBe("settings:contact");

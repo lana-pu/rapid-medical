@@ -398,7 +398,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/news-events` | Внешние новости; **(решение 2026-11-10)** сверху предстоящие события, ниже архив прошедших | [news-events](screens/news-events.md) |
 | `/events/{slug}` | Событие (2026-11-10): до даты — описание и регистрация, после — «прошло» и итоги | [events](screens/events.md) |
 | `/about-us` | О компании, руководство, офисы, интерактивная карта; **(решение 2026-11-10)** биографии руководства раскрываются здесь же | [about-us](screens/about-us.md) |
-| `/team/{slug}` | Профиль руководителя. **Решение 2026-11-10:** отдельные страницы убрать, 301 на `/about-us#{slug}` (аудит Emily: один абзац, 2 секунды) | спека не написана |
+| `/team/{slug}` | Нет отдельной страницы (решение 2026-11-10, аудит Emily: один абзац, 2 секунды): 308 на `/about-us#{slug}`, биография раскрывается на About; в sitemap не входит | [about-us](screens/about-us.md) |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |
 | `/open-positions`, `/open-positions/{slug}` | Вакансии и вакансия с формой | [open-positions](screens/open-positions.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |

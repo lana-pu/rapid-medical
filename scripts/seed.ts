@@ -88,13 +88,13 @@ async function main() {
   }
 
   /* pages */
-  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyMd: string };
+  type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyMd: string; status?: "draft" | "published" };
   for (const p of await json<PageSeed[]>("pages")) {
     const existing = await db.query.pages.findFirst({ where: p.region ? sql`${pages.slug} = ${p.slug} AND ${pages.region} = ${p.region}` : sql`${pages.slug} = ${p.slug} AND ${pages.region} IS NULL` });
     const { bodyMd, ...page } = p;
     const pp = { ...page, bodyHtml: markdownToHtml(bodyMd) };
     if (existing) await db.update(pages).set({ ...pp, updatedAt: new Date() }).where(eq(pages.id, existing.id));
-    else await db.insert(pages).values({ ...pp, status: "published" });
+    else await db.insert(pages).values({ ...pp, status: pp.status ?? "published" });
   }
 
   /* media library snapshot (rows + variants/posters) – only rows not present yet */

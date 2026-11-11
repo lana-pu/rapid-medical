@@ -17,3 +17,14 @@ describe("eventForLink", () => {
     expect(eventForLink("https://example.com/x.pdf", ctx)).toBeNull();
   });
 });
+
+import { mediaKind } from "@/components/site/MediaLightbox";
+
+describe("mediaKind", () => {
+  it("videos and pictures open in the window; PDFs and pages do not", () => {
+    expect(mediaKind("https://vid.cdn-website.com/x/videos/a-v.mp4")).toBe("video");
+    expect(mediaKind("/uploads/duda/case.png?jxl&v=jxl")).toBe("image");
+    expect(mediaKind("/uploads/poster.pdf")).toBeNull();
+    expect(mediaKind("/ous/therapies/aneurysm")).toBeNull();
+  });
+});
