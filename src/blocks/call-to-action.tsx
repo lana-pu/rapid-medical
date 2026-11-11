@@ -16,7 +16,7 @@ export type CtaData = {
 
 function Cta({ variant, data: d, edit: e, nested }: BlockProps<"cta">) {
   const buttons = d.buttons.map((a, i) => (
-    <Btn key={i} href={a.href} variant={i === 0 ? "primary" : "secondary"}><F e={e} k={`buttons.${i}.label`} kh={`buttons.${i}.href`} kind="link">{a.label}</F></Btn>
+    <Btn key={i} href={a.href} variant={i === 0 ? "primary" : "secondary"} onDark={variant === "band"}><F e={e} k={`buttons.${i}.label`} kh={`buttons.${i}.href`} kind="link">{a.label}</F></Btn>
   ));
   if (variant === "band") {
     return (

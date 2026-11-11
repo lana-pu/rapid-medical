@@ -18,6 +18,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { name: "ordersEmailLtd", label: "Orders email (Ltd / OUS)", type: "text", half: true },
       { name: "ordersEmailInc", label: "Orders email (Inc / US)", type: "text", half: true },
       { name: "ordersEmailCanada", label: "Orders email (Canada)", type: "text", half: true },
+      { name: "ifuEmail", label: "IFU requests email", type: "text", half: true, help: "Contact form, topic “Instructions for Use (IFU)”. Orders go to the orders emails above by region; everything else to MAIL_TO." },
       {
         name: "offices",
         label: "Offices",

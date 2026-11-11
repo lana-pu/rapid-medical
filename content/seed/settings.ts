@@ -19,6 +19,7 @@ export const SETTINGS: Record<string, Record<string, unknown>> = {
     ordersEmailLtd: "customerservice.ltd@rapid-medical.com",
     ordersEmailInc: "orders.inc@rapid-medical.com",
     ordersEmailCanada: "orders.canada@rapid-medical.com",
+    ifuEmail: "customerservice@rapid-medical.com", // the old "Request an IFU" mailto on every product page
     offices: [
       { name: "Rapid Medical Ltd.", label: "Headquarters", address: "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL", phone: "+972-72-250-3331", fax: "+972-72-250-3332", ordersEmail: "customerservice.ltd@rapid-medical.com", lat: 32.659, lon: 35.104 },
       { name: "Rapid Medical Inc.", label: "USA", address: "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA", phone: "+1-469-991-7712", fax: "+1-469-914-9300", ordersEmail: "orders.inc@rapid-medical.com", lat: 32.9378, lon: -97.1246 },

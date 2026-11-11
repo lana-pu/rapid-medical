@@ -90,8 +90,8 @@ describe("solutionToBlocks", () => {
     expect(h.variant).toBe("video");
     expect(h.data.eyebrow).toBe("Our solutions / Large vessel stroke");
     expect(h.data.eyebrowLinks).toEqual([
-      { label: "US version", href: "/us/therapies/lvo" },
-      { label: "APAC version", href: "/apac/therapies/lvo" },
+      { label: "Americas version", href: "/us/therapies/lvo" },
+      { label: "Asia & Pacific version", href: "/apac/therapies/lvo" },
     ]);
     expect(fieldPath(h.edit, "title")).toBe("heroTitle");
     expect(fieldPath(h.edit, "cta.href")).toBe("heroCta.href");
@@ -112,17 +112,16 @@ describe("solutionToBlocks", () => {
     expect(fieldPath(bs[1].edit, "imageUrl")).toBe("introImageUrl");
   });
 
-  it("overview tab: text, features, specifications group, buttons", () => {
+  it("overview tab: text, features, specifications group; no buttons inside tabs", () => {
     const [overview] = tabsOf(blocks);
     expect(overview.title).toBe("Product overview");
     const parts = overview.blocks;
-    expect(parts.map((p) => ("group" in p ? `group:${p.group}` : `${p.type}:${p.variant}`))).toEqual(["text:default", "columns:features", "group:Specifications", "cta:buttons"]);
+    expect(parts.map((p) => ("group" in p ? `group:${p.group}` : `${p.type}:${p.variant}`))).toEqual(["text:default", "columns:features", "group:Specifications"]);
     const spec = (parts[2] as BlockGroup).blocks;
     expect(spec.map((b) => `${b.type}:${b.variant}`)).toEqual(["deviceDiagram:default", "specTable:images"]);
     expect(fieldPath(spec[0].edit, "markers.0.label")).toBe("annotatedImage.markers.0.label");
     // the diagram picture is not repeated among the old spec images
     expect((spec[1] as BlockOf<"specTable">).data.images).toEqual(["/spec.jpg"]);
-    expect(fieldPath((parts[3] as Block).edit, "buttons.0.href")).toBe("actionLinks.0.href");
   });
 
   it("spec table wins over old images and is not editable on the page", () => {
@@ -139,15 +138,18 @@ describe("solutionToBlocks", () => {
     const full = solutionToBlocks({ ...base, howItWorks: [{ title: "Go" }], webinarCtaEnabled: true, product: null }, ctx);
     const tabs = tabsOf(full);
     expect(tabs.map((t) => t.id)).toEqual(["overview", "how", "practice", "evidence"]);
-    expect(tabs[2].blocks.map((b) => ("group" in b ? "group" : `${b.type}:${b.variant}`))).toEqual(["cta:panel", "people:physicians", "cta:buttons"]);
+    expect(tabs[2].blocks.map((b) => ("group" in b ? "group" : `${b.type}:${b.variant}`))).toEqual(["cta:panel", "people:physicians"]);
     expect((tabs[2].blocks[0] as BlockOf<"cta">).data.buttons[0].href).toBe("/ous/webinars");
     expect(tabs[3].href).toBe("/ous/evidence#browse-by-product");
   });
 
-  it("closing: questions band strips the prefix; video band only with title or video", () => {
+  it("closing: demo + customer support, prefix stripped; video band only with title or video", () => {
     const [q] = of(blocks, "cta").filter((b) => b.variant === "band");
     expect(q.data.body).toBe("Call us");
-    expect(q.data.buttons[0].href).toBe("/contact-us?region=ous");
+    expect(q.data.buttons).toEqual([{ label: "Demo", href: "/contact-us" }, { label: "Customer support", href: "/contact-us?region=ous" }]);
+    const noCta = of(solutionToBlocks({ ...base, heroCta: null, closingBody: "" }, ctx), "cta").filter((b) => b.variant === "band")[0];
+    expect(noCta.data.body).toBeNull();
+    expect(noCta.data.buttons[0]).toEqual({ label: "Request a demo", href: "/contact-us?region=ous&topic=demo" });
     expect(fieldPath(q.edit, "body")).toBe("closingBody");
     expect(fieldPath(q.edit, "title")).toBeNull();
     expect(of(blocks, "video")).toHaveLength(0);

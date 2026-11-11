@@ -206,7 +206,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 
 | Событие | Кому | Тема | Код |
 |---|---|---|---|
-| Отправка любой формы (contact / webinar / careers) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10 (кода нет):** контактная форма разводится по теме и региону — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
+| Отправка любой формы (contact / webinar / careers) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
 | Черновик отправлен на ревью | `site_settings.workflow.notifyEmail` (если задан) | `[Website] Review requested: …` | `src/admin/workflow.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 

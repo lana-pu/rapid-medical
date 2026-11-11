@@ -38,7 +38,7 @@
 |---|---|---|
 | `Container`, `Section` | primitives | Ширина `max-w-6xl`, вертикальный ритм секций |
 | `Eyebrow`, `H1`, `H2`, `Lead` | primitives | Заголовочная иерархия (H1 `text-3xl → md:text-5xl`, H2 `text-2xl → md:text-3xl`) |
-| `Btn` (`primary` / `secondary`) | primitives | primary — `bg-accent`; secondary — обводка `foreground`. Внешние ссылки → `<a>` |
+| `Btn` (`primary` / `secondary`, `onDark`) | primitives | primary — `bg-accent`; secondary — обводка `foreground`. `onDark` (на тёмной полосе): primary — фон `background`, текст `foreground`; secondary — обводка `background`. Внешние ссылки → `<a>` |
 | `Img` | primitives | `srcset` WebP-вариантов, размеры, blur-плейсхолдер для файлов медиатеки; пустой `src` → серый блок |
 | `Prose` (+ `.prose-rm`, `.prose-rm-sm`) | primitives, globals.css | Вывод санитизированного rich text |
 | `Video`, `MediaBlock`, `Embed`, `VideoHero` | Media.tsx | Фон-видео с затемнением `bg-black/50`, YouTube-embed, автопостер |

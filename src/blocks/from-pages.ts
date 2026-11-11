@@ -1,5 +1,6 @@
 import type { Page, TeamMember } from "@/db/schema";
 import type { Block } from "./types";
+import { TOPICS, TOPIC_KEYS } from "@/lib/contact-topics";
 import type { Office } from "./offices-map";
 
 /**
@@ -16,9 +17,7 @@ export function pageToBlocks(page: Page, regionLabel?: string): Block[] {
   ];
 }
 
-const TOPICS = ["Request a demo", "Product question / Support", "Customer Service / Orders", "Meetings & Events", "Investor relations", "Other"];
 const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac: "Asia Pacific" };
-const TOPIC_MAP: Record<string, string> = { demo: "Request a demo", support: "Product question / Support", orders: "Customer Service / Orders" };
 
 /** URL parameters are arbitrary: only the map's own keys count ("constructor" is not a topic). */
 const pick = (map: Record<string, string>, key?: string) => (key && Object.hasOwn(map, key) ? map[key] : undefined);
@@ -26,7 +25,7 @@ const pick = (map: Record<string, string>, key?: string) => (key && Object.hasOw
 export function contactToBlocks({ region, topic }: { region?: string; topic?: string }): Block[] {
   return [
     { type: "hero", variant: "page", data: { title: "Let’s connect", body: "Please provide a few contact details below." } },
-    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: pick(TOPIC_MAP, topic), defaultRegion: pick(REGION_MAP, region) } },
+    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: pick(TOPIC_KEYS, topic), defaultRegion: pick(REGION_MAP, region) } },
   ];
 }
 

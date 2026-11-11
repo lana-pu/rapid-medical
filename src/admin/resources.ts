@@ -171,7 +171,7 @@ export const RESOURCES: Resource[] = [
         ],
       },
 
-      { name: "actionLinks", label: "Action links", type: "repeater", section: "Actions", fields: actionLinkFields, help: "Place an order / Ask a question / Request an IFU" },
+      { name: "actionLinks", label: "Action links", type: "repeater", section: "Actions", fields: actionLinkFields, help: "Not shown on the page since 2026-11 (two actions: Request a demo + Customer support → contact form). Kept for reference." },
       { name: "actionNote", label: "Action note", type: "text", section: "Actions", placeholder: "Canada: orders.canada@rapid-medical.com" },
       { name: "webinarCtaEnabled", label: "Show webinar CTA", type: "boolean", section: "Actions" },
 

@@ -1,8 +1,8 @@
 import type { Region, Solution } from "@/db/schema";
-import { REGION_SHORT } from "@/lib/regions";
+import { REGION_CHOICES } from "@/lib/regions";
 import type { EditBinding } from "./bind";
 import type { BlockGroup, DetailsTab } from "./product-details";
-import type { Block, BlockOf } from "./types";
+import type { Block } from "./types";
 
 /**
  * Therapy page as a block list, built from the fields of a `solutions` row.
@@ -23,7 +23,7 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     variant: s.heroVideoUrl ? "video" : "image",
     data: {
       eyebrow: s.breadcrumb || `Our solutions / ${s.navLabel}`,
-      eyebrowLinks: others.map((o) => ({ label: `${REGION_SHORT[o]} version`, href: `/${o}/therapies/${s.slug}` })),
+      eyebrowLinks: others.map((o) => ({ label: `${REGION_CHOICES.find((c) => c.region === o)?.label ?? o} version`, href: `/${o}/therapies/${s.slug}` })),
       title: s.heroTitle,
       body: s.heroBody,
       cta: s.heroCta,
@@ -51,13 +51,6 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     });
   });
 
-  const actions: BlockOf<"cta"> = {
-    type: "cta",
-    variant: "buttons",
-    data: { buttons: s.actionLinks, note: s.actionNote },
-    edit: bind({ buttons: "actionLinks", note: "actionNote" }),
-  };
-
   const overview: (Block | BlockGroup)[] = [
     { type: "text", variant: "default", data: { body: s.overviewBody }, edit: bind({ body: "overviewBody" }) },
     {
@@ -84,7 +77,6 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     );
     overview.push({ group: "Specifications", blocks: spec });
   }
-  overview.push(actions);
 
   const tabs: DetailsTab[] = [{ id: "overview", label: "Product overview", title: s.overviewTitle || "Product overview", blocks: overview }];
   if (s.howItWorks.length) {
@@ -92,7 +84,7 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
       id: "how",
       label: "How it works",
       title: "How it works",
-      blocks: [{ type: "columns", variant: "steps", data: { items: s.howItWorks }, edit: bind({ items: "howItWorks" }) }, actions],
+      blocks: [{ type: "columns", variant: "steps", data: { items: s.howItWorks }, edit: bind({ items: "howItWorks" }) }],
     });
   }
   if (s.inPractice.length || s.webinarCtaEnabled) {
@@ -108,7 +100,7 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
         },
       });
     }
-    practice.push({ type: "people", variant: "physicians", data: { items: s.inPractice }, edit: bind({ items: "inPractice" }) }, actions);
+    practice.push({ type: "people", variant: "physicians", data: { items: s.inPractice }, edit: bind({ items: "inPractice" }) });
     tabs.push({ id: "practice", label: "In-Practice", title: "In practice", blocks: practice });
   }
   tabs.push({ id: "evidence", label: "Clinical evidence", href: `/${region}/evidence#${s.product?.slug ?? "browse-by-product"}`, blocks: [] });
@@ -119,14 +111,19 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     blocks.push({ type: "video", variant: "band", data: { title: s.closingTitle, url: s.closingEmbedUrl }, edit: bind({ title: "closingTitle" }) });
   }
 
-  if (s.closingBody) {
-    blocks.push({
-      type: "cta",
-      variant: "band",
-      data: { title: "Questions?", body: s.closingBody.replace(/^questions\?\s*/i, ""), buttons: [{ label: "Contact us", href: `/contact-us?region=${region}` }] },
-      edit: bind({ body: "closingBody" }),
-    });
-  }
+  // Two actions for two audiences (decision 2026-11-10, docs/screens/therapy.md): a demo for those exploring the
+  // product, customer support (orders, IFU, questions) for those already using it. No buttons inside the tabs.
+  const demo = s.heroCta?.href ? s.heroCta : { label: "Request a demo", href: `/contact-us?region=${region}&topic=demo` };
+  blocks.push({
+    type: "cta",
+    variant: "band",
+    data: {
+      title: "Questions?",
+      body: s.closingBody ? s.closingBody.replace(/^questions\?\s*/i, "") : null,
+      buttons: [demo, { label: "Customer support", href: `/contact-us?region=${region}` }],
+    },
+    edit: bind({ body: "closingBody" }),
+  });
 
   if (s.regulatoryHtml || s.referencesHtml) {
     blocks.push({

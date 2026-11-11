@@ -14,7 +14,7 @@ Hero · `page` («Let’s connect», текст не редактируется)
 | Параметр | Значения → предвыбор |
 |---|---|
 | `region` | `us` → Americas, `ous` → Europe, `apac` → Asia Pacific |
-| `topic` | `demo` → Request a demo, `support` → Product question / Support, `orders` → Customer Service / Orders |
+| `topic` | `demo` → Request a demo, `support` → Product question / Support, `orders` → Customer Service / Orders, `ifu` → Instructions for Use (IFU). Темы и их порядок — `src/lib/contact-topics.ts` |
 
 Другие значения параметров ничего не предвыбирают.
 
@@ -45,8 +45,11 @@ Hero · `page` («Let’s connect», текст не редактируется)
 
 ## Что происходит при отправке
 1. Запись в `contact_submissions` (`status = new`, IP из `x-forwarded-for`, User-Agent).
-2. Письмо на `MAIL_TO` (тема `[Website] {form}: {topic} – {Имя Фамилия}`, `replyTo` = e-mail посетителя,
+2. Письмо (тема `[Website] {form}: {topic} – {Имя Фамилия}`, `replyTo` = e-mail посетителя,
    ссылка на `/admin/submissions/{id}`). Ошибка почты логируется; посетитель всё равно видит успех.
+   **Куда (2026-11-10):** тема «Customer Service / Orders» — регион Americas → `contact.ordersEmailInc` (страна
+   содержит «Canada» → `ordersEmailCanada`), остальные регионы → `ordersEmailLtd`; тема IFU → `contact.ifuEmail`;
+   всё остальное и пустой/неверный адрес → `MAIL_TO`. Адреса правятся в Settings → Contact details.
 3. Без `SMTP_HOST` — только лог в консоль.
 
 ## Переиспользование формы

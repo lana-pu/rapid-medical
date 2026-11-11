@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { db, contactSubmissions } from "@/db";
 import { sendMail } from "@/lib/mail";
+import { getSetting } from "@/lib/settings";
+import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
@@ -78,7 +80,8 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
     "", `View in admin: ${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions/${row.id}`,
   ];
   try {
-    await sendMail({ subject: `[Website] ${d.form}: ${d.topic || "new submission"} – ${d.firstName} ${d.lastName}`, text: lines.join("\n"), replyTo: d.email });
+    const to = recipientFor(d, await getSetting<RoutingSettings>("contact"));
+    await sendMail({ to, subject: `[Website] ${d.form}: ${d.topic || "new submission"} – ${d.firstName} ${d.lastName}`, text: lines.join("\n"), replyTo: d.email });
   } catch (e) {
     console.error("mail failed", e);
   }
