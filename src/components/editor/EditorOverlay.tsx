@@ -234,9 +234,13 @@ export default function EditorOverlay() {
     <div id="rm-editor-ui">
       <style>{STYLE}</style>
       {DEMO && (
-        <div className="fixed inset-x-0 top-0 z-[1000] bg-amber-400 px-4 py-1 text-center text-xs font-medium text-black">
-          Demo — edits are saved only in your browser (localStorage). No server, no database.
-        </div>
+        <>
+          {/* one line of fixed height, and the page moves down by it: the header's top strip (region switcher) stays clickable */}
+          <style>{"body{padding-top:1.5rem}"}</style>
+          <div className="fixed inset-x-0 top-0 z-[1000] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
+            Demo — edits are saved only in your browser (localStorage). No server, no database.
+          </div>
+        </>
       )}
 
       {/* bottom toolbar */}
