@@ -211,6 +211,9 @@ export const WEBINARS = [
 /** Legacy Duda URLs that don't map 1:1 to the new structure. Subdomains are handled in proxy.ts. */
 export const REDIRECTS = [
   { from: "/welcome_d", to: "/" },
+  { from: "/welcome", to: "/" }, // Emily's audit: second welcome page on Duda
+  // Emily's audit: us./ous.rapid-medical.com/contactus (old Contact link) → contact form with the region preselected
+  ...["us", "ous", "apac"].map((r) => ({ from: `/${r}/contactus`, to: `/contact-us?region=${r}` })),
   { from: "/our-solutions", to: "/choose-your-location" },
   { from: "/evidence", to: "/choose-your-location?next=evidence" },
   { from: "/privacy-policy", to: "/privacy-statement" },

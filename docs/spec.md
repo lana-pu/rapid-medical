@@ -225,6 +225,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | S3-совместимое хранилище | `@aws-sdk/client-s3`, `STORAGE_DRIVER=s3` | Код есть; не сконфигурировано (BACKLOG) |
 | SMTP | `nodemailer` | Не сконфигурировано по умолчанию |
 | Vercel Cron | `vercel.json` → `/api/cron/publish` 05:00 UTC | Не подключено (Vercel не настроен) |
+| Структурированные данные (schema.org, JSON-LD) | `JsonLd` (`src/components/site/JsonLd.tsx`), только из полей записей и настроек | `Organization` — главная (контакты, соцсети, логотип); `MedicalDevice` — страница терапии (полное имя продукта с учётом региона, описание, картинка); `Event` — страница события. Аудит Emily, 2026-11-11 |
 
 ### Аналитика (решение 2026-11-10, аудит Emily: варианты Б + Г)
 
