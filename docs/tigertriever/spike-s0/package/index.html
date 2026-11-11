@@ -71,7 +71,7 @@ ul{margin:0;padding-left:20px}
   function set(key, status, label, detail) { state.checks[key] = { status: status, label: label, detail: detail || '' }; draw(); }
 
   function draw() {
-    var order = ['file', 'data', 'video-a', 'video-b', 'network', 'online', 'fetch', 'browser'];
+    var order = ['file', 'data', 'video-a', 'video-b', 'network', 'storage', 'reopen', 'online', 'fetch', 'browser'];
     var html = '';
     order.forEach(function (k) {
       var c = state.checks[k]; if (!c) return;
@@ -107,6 +107,17 @@ ul{margin:0;padding-left:20px}
     fetch('manifest.json').then(function (r) { set('fetch', 'info', 'Browser reads local files directly', 'yes, status ' + r.status); }, function () { set('fetch', 'info', 'Browser reads local files directly', 'no, blocked; the package does not need it'); });
   } catch (e) { set('fetch', 'info', 'Browser reads local files directly', 'no fetch support'); }
   set('browser', 'info', 'Browser', navigator.userAgent.replace(/^Mozilla\/5\.0 /, ''));
+  // 8. Can the package remember where the viewer stopped? Training works without it, only "Continue where you left off" needs it.
+  (function () {
+    var KEY = 'tt-s0-openings', store = null, prev = null, now = new Date().toISOString();
+    try { store = window.localStorage; prev = JSON.parse(store.getItem(KEY) || 'null'); } catch (e) { store = null; }
+    if (!store) { set('storage', 'bad', 'Remembers where you stopped', 'blocked on this computer; training still works, "Continue where you left off" will not'); set('reopen', 'info', 'Remembered after reopening', 'cannot check, storage is blocked'); return; }
+    var rec = { count: (prev && prev.count || 0) + 1, first: prev && prev.first || now, last: now };
+    try { store.setItem(KEY, JSON.stringify(rec)); var back = JSON.parse(store.getItem(KEY)); set('storage', back && back.last === now ? 'ok' : 'bad', 'Remembers where you stopped', back && back.last === now ? 'browser storage works' : 'saved value did not come back'); }
+    catch (e) { set('storage', 'bad', 'Remembers where you stopped', 'saving failed: ' + (e && e.name || 'error')); }
+    if (prev && prev.last) set('reopen', 'ok', 'Remembered after reopening', 'yes, opening ' + rec.count + ', previous one ' + prev.last.slice(0, 16).replace('T', ' ') + ' UTC');
+    else set('reopen', 'wait', 'Remembered after reopening', 'first opening; close the browser, open index.html again and copy the results then');
+  })();
 
   // Render stage and comparison
   $('stTitle').textContent = 'Stage ' + P.stage.num + ' · ' + P.stage.name + ' · compare handles';

@@ -11,9 +11,11 @@ Please try it on each type of computer the physicians and representatives will u
 2. Turn off Wi-Fi or unplug the network cable.
 3. Open the extracted folder and double-click index.html.
    Press Play on both videos.
+4. Close the browser completely. Open index.html again the same way.
+   The check "Remembered after reopening" should now say yes.
 
 The page shows a list of checks. When it says "The package works on this computer",
-it works. In any case, press "Copy results" and paste the text into an email to us.
+it works. In any case, after step 4 press "Copy results" and paste the text into an email to us.
 
 If something is blocked, please also tell us:
 - Was the ZIP allowed onto the computer (email, USB stick, download)?
