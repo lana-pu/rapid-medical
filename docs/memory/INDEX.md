@@ -24,7 +24,7 @@
 - [client-brief-lesson-content](findings/client-brief-lesson-content.md) — что клиент сказал о содержимом урока инструмента: структура секции, материал по этапам, статусы (2026-11-08)
 - [website-audit-ga4-oct-2026](findings/website-audit-ga4-oct-2026.md) — аудит Emily по GA4 (13.10.2026): что закрыто сборкой, что нет, предложения (2026-11-10)
 - [client-email-2026-11-10](findings/client-email-2026-11-10.md) — письмо Emily: COMANECI US = только номера каталога, доступы, Mailchimp, лидов нет, запрос DAM, заголовок главной (2026-11-10)
-- [design-references](findings/design-references.md) — 12 медтех-сайтов как референсы визуала, главные: Imperative Care, Kardium, Terumo Neuro (2026-11-11)
+- [design-references](findings/design-references.md) — референсы визуала, v2: три направления (тёплая клиника / тёмная технология / светлый хай-тек), 12 сайтов нейро- и биотеха (2026-11-11)
 
 ## Сессии — `sessions/`
 
