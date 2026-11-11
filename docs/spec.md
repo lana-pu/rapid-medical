@@ -418,7 +418,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | спека не написана |
 | `/admin/settings?group=` | Site settings по группам | спека не написана |
-| `/admin/media` | Медиатека: загрузка, alt, где используется, удаление | спека не написана |
+| `/admin/media` | Медиатека: загрузка, alt, где используется, удаление. **Решение 2026-11-11, не сделано:** замена файла — черновиком во все страницы, где он стоит, на сайте после Publish (флоу `docs/flows/admin.json`) | спека не написана |
 | `/admin/submissions`, `/admin/submissions/{id}` | Заявки форм, статус, CSV | спека не написана |
 | `/admin/not-found-log` | Битые ссылки → редирект в один клик | спека не написана |
 | `/admin/activity` | Журнал действий | спека не написана |

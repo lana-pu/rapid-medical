@@ -196,7 +196,7 @@ flow = {
              {'c': 'text', 'text': 'The new file takes its place on 2 pages. The description stays.'},
              {'c': 'radio', 'label': 'Add as unpublished changes on both pages — publish them yourself', 'on': True},
              {'c': 'radio', 'label': 'Replace and publish on both pages now'}],
-          'annotation': 'Спорное: замена сразу в живом или черновиком на каждой странице. Предлагаю черновик по умолчанию — по ADR-006 одобрение = Publish. Решение за владелицей.',
+          'annotation': 'Решение владелицы 2026-11-11: замена файла идёт черновиком в каждую страницу, где он стоит; на сайте — после Publish (по ADR-006 одобрение = Publish).',
           'actions': [B('Cancel', 'ghost'), B('Replace', 'primary')]}},
 
         {'id': 'requests', 'title': 'Requests: one inbox, who answers', 'url': 'rapid-medical.com/admin/requests', 'body': shell('Requests', {'c': 'box', 'pad': 'l', 'gap': 'm', 'items': [
