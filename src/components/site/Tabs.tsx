@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { withBase } from "@/lib/demo";
 
 export type Tab = { id: string; label: string; sublabel?: string; content: ReactNode; href?: string };
 
@@ -32,7 +33,7 @@ export function Tabs({ tabs, hint, variant = "pills" }: { tabs: Tab[]; hint?: st
       <div role="tablist" className={`hidden md:flex ${pill ? "rounded-full border border-accent p-1" : "flex-wrap gap-2 border-b border-border"}`}>
         {tabs.map((t) =>
           t.href ? (
-            <a key={t.id} href={t.href} className={pill ? "flex-1 rounded-full px-4 py-2 text-center text-sm font-medium hover:bg-surface" : "-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted hover:text-foreground"}>
+            <a key={t.id} href={withBase(t.href)} className={pill ? "flex-1 rounded-full px-4 py-2 text-center text-sm font-medium hover:bg-surface" : "-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted hover:text-foreground"}>
               {t.label} ↗
             </a>
           ) : (
@@ -57,7 +58,7 @@ export function Tabs({ tabs, hint, variant = "pills" }: { tabs: Tab[]; hint?: st
       </div>
       {tabs.map((t) =>
         t.href ? (
-          <a key={t.id} href={t.href} className="flex items-center justify-between border-b border-border py-3 font-medium md:hidden">{t.label} <span>↗</span></a>
+          <a key={t.id} href={withBase(t.href)} className="flex items-center justify-between border-b border-border py-3 font-medium md:hidden">{t.label} <span>↗</span></a>
         ) : (
           <div key={t.id}>
             {/* mobile: accordion header */}
