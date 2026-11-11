@@ -38,11 +38,20 @@
 | Benefits | Для каждого блока: текст (eyebrow, title, body, footnote, link) + медиа. Приоритет медиа: `stats` (круги) → `chart` (SVG, только если `categories` не пусто) → видео/картинка. С `secondaryImageUrl` — раскладка в 3 колонки; иначе 2 колонки, чётные блоки зеркально |
 | Табы (pills; аккордеон на мобильном) | **Product overview** — всегда. **How it works** — если есть шаги. **In-Practice** — если есть элементы или `webinarCtaEnabled`. **Clinical evidence** — ссылка на `/{region}/evidence#{product.slug}` (без продукта — `#browse-by-product`) |
 | Overview | `overviewBody`; `overviewFeatures` (2×2) или, если их нет, legacy `overviewImageUrl`. Specifications: `annotatedImage` (маркеры); `specs` таблица, иначе `specImageUrls` (кроме совпадающей с диаграммой); сноска `specs.note` || `specNote` |
-| Action links | Под каждым табом: первая — primary, остальные — secondary; `actionNote` рядом |
+| Action links | Под каждым табом: первая — primary, остальные — secondary; `actionNote` рядом. **Решение 2026-11-10 (кода нет):** кнопок во вкладках нет — см. «Действия на странице» ниже |
 | Webinar CTA | В табе In-Practice при `webinarCtaEnabled`: «Request to view» → `/{region}/webinars` (текст захардкожен) |
 | Closing band | Если `closingTitle` или `closingEmbedUrl`. `.mp4` → фоновое видео, иначе iframe (YouTube → embed) |
 | Questions band | Если `closingBody`; префикс «Questions?» из текста срезается; кнопка «Contact us» → `/contact-us?region={region}` |
 | Regulatory / References | `regulatoryHtml`, `referencesHtml` через `safeHtml` (санитайзер) |
+
+## Действия на странице — решение 2026-11-10 (аудит Emily, кода нет)
+Два действия для двух аудиторий вместо шести:
+- **Request a demo** (главная, для тех, кто изучает продукт) — в hero и в финальном блоке → `/contact-us?region=&topic=demo`.
+- **Customer support** (второстепенная, для действующих клиентов) — только в финальном блоке → контактная форма,
+  где тема выбирается: заказ (`orders`), IFU (`ifu`, новая тема), вопрос по продукту (`support`).
+- Вкладки — только содержание, без кнопок. Полоса «Questions? Contact us» заменяется финальным блоком с этими двумя
+  кнопками. «Request to view» (вебинары) и ссылки на материалы в тексте остаются.
+- Открыто (вопрос клиенту, MLR): должна ли ссылка на IFU быть прямой; если да — ссылка рядом с показаниями, не кнопка.
 
 ## Действия посетителя
 Переключение табов; переход на версию другого региона; CTA / action links (URL, `mailto:`); Evidence;
