@@ -56,49 +56,14 @@
    "url": "rapid-medical.com",
    "body": [
     {
-     "c": "box",
-     "tone": "surface",
-     "pad": "s",
-     "items": [
-      {
-       "c": "row",
-       "gap": "s",
-       "wrap": true,
-       "items": [
-        {
-         "c": "text",
-         "v": "small",
-         "text": "It looks like you are in Americas. This site is intended for healthcare professionals in your region."
-        },
-        {
-         "c": "button",
-         "v": "primary",
-         "size": "s",
-         "text": "Go to the Americas site",
-         "to": "therapies",
-         "label": "плашка региона"
-        },
-        {
-         "c": "button",
-         "v": "link",
-         "text": "Stay here"
-        }
-       ]
-      }
-     ],
+     "c": "rm-regionBanner",
+     "suggested": "us",
+     "to": "therapies",
+     "label": "плашка региона",
      "annotation": "Плашка по IP, без автоматического редиректа (Fix List C.4): Google и врачи в поездках должны видеть любой регион. По коду: ведёт на список терапий региона, а не на ту же страницу."
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header"
     },
     {
      "c": "rm-page",
@@ -170,16 +135,7 @@
    "height": 560,
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header"
     },
     {
      "c": "rm-page",
@@ -223,16 +179,10 @@
    "url": "rapid-medical.com/us/therapies",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us",
+     "menuOpen": true,
+     "annotation": "По коду: в шапке метка «🌐 US» — код региона, а не название (REGION_SHORT). Меню Therapies раскрывает терапии выбранного региона."
     },
     {
      "c": "rm-page",
@@ -318,16 +268,8 @@
    "url": "rapid-medical.com/us/therapies/aneurysm",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -735,32 +677,8 @@
      ]
     },
     {
-     "c": "sitefooter",
-     "columns": [
-      {
-       "title": "Get in touch",
-       "items": [
-        "Contact us"
-       ]
-      },
-      {
-       "title": "Follow",
-       "items": [
-        "LinkedIn",
-        "Instagram",
-        "YouTube"
-       ]
-      },
-      {
-       "title": "Legal",
-       "items": [
-        "Privacy Statement",
-        "Terms of Use",
-        "Compliance Statement",
-        "Patents"
-       ]
-      }
-     ]
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },
@@ -770,16 +688,8 @@
    "url": "rapid-medical.com/us/evidence#comaneci",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1040,16 +950,8 @@
    "url": "rapid-medical.com/us/webinars",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1132,16 +1034,8 @@
    "url": "rapid-medical.com/us/webinars",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1234,16 +1128,8 @@
    "height": 900,
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1279,16 +1165,8 @@
    "url": "rapid-medical.com/contact-us?region=us&topic=demo",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1334,9 +1212,8 @@
    "device": "mobile",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "cta": "☰"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",
@@ -1396,9 +1273,8 @@
    "device": "mobile",
    "body": [
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "cta": "☰"
+     "c": "rm-header",
+     "region": "us"
     },
     {
      "c": "rm-page",

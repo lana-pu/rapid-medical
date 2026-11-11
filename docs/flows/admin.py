@@ -231,7 +231,7 @@ flow = {
             {'c': 'toolbar', 'left': [B('← Pages', 'ghost'), {'c': 'stack', 'gap': 'xs', 'items': [{'c': 'text', 'v': 'strong', 'text': 'DISTAL Summit 2027'}, {'c': 'text', 'v': 'caption', 'text': 'Event · /events/distal-summit-2027'}]}],
              'center': [B('Showing: All regions ▾', size='s')],
              'right': [{'c': 'badge', 'text': 'Draft', 'dot': True}, {'c': 'text', 'v': 'small', 'text': 'Not on the site yet'}, B('Comment', 'ghost'), B('Preview'), B('Publish', 'primary')]},
-            {'c': 'siteheader', 'logo': 'Rapid Medical', 'nav': ['Therapies', 'Evidence', 'News', 'About', 'Careers'], 'cta': 'Get in touch'},
+            {'c': 'rm-header'},
             dict(TEMPLATE_PAGE, annotation='Пустые места подписаны тем, что туда писать, а не «Lorem ipsum». Дальше всё как во флоу «Site editor».')]},
 
         {'id': 'people', 'title': 'People and roles', 'url': 'rapid-medical.com/admin/people', 'body': shell('People and roles', {'c': 'box', 'pad': 'l', 'gap': 'm', 'items': [

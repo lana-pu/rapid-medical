@@ -26,7 +26,7 @@ def hero(title=HERO_TITLE, tw=None):
     return rm(0, title=title, **tw, **({'focus':dict(focus, part='title')} if focus else {}))
 def row1(**wrap): return rm(1, **wrap)
 def row2(): return rm(2)
-HEADER={'c':'siteheader','logo':'Rapid Medical','nav':['Therapies','Evidence','News','About','Careers'],'cta':'Get in touch'}
+HEADER={'c':'rm-header','region':'ous'}
 ADD_ROW={'c':'row','justify':'center','items':[{'c':'button','v':'secondary','size':'s','text':'+ Add section'}]}
 CTA=dict(rm(6), title='Webinars', body='Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.', buttons=[{'label':'Request to view','href':'/ous/webinars'}])  # text of the real webinar panel on this page
 

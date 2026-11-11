@@ -1,0 +1,717 @@
+<title>Rapid Medical Wireframe Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a library shell (sidebar + working area); every wireframe sits in a "frame" (artboard) sized like the site container. */
+:root {
+  --bg: #eef0f2; --panel: #ffffff; --ink: #16191d; --muted: #5f6770; --line: #d7dbe0; --soft: #f5f6f7;
+  --redline: #e2560c; --redline-ink: #ffffff; --focus: #2f6fdb;
+  --wf-paper: #ffffff; --wf-surface: #eceef1; --wf-fill: #d6dade; --wf-fill-ink: #59616a; --wf-ink: #1c1f23; --wf-muted: #6a727b;
+  --wf-line: #cdd2d8; --wf-dark: #2b2f35; --wf-dark-2: #3a3f46; --wf-dark-ink: #f2f4f6; --wf-btn: #1c1f23; --wf-btn-ink: #ffffff;
+  --f-ui: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --nav-w: 264px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111315; --panel: #191c1f; --ink: #e7e9ec; --muted: #9aa2ab; --line: #2c3136; --soft: #1f2327;
+  --redline: #ff7a3d; --redline-ink: #16191d; --focus: #6d9bff;
+  --wf-paper: #1d2023; --wf-surface: #25292d; --wf-fill: #353a40; --wf-fill-ink: #aab1b9; --wf-ink: #e6e8eb; --wf-muted: #9aa1a9;
+  --wf-line: #3a4046; --wf-dark: #0d0e10; --wf-dark-2: #1a1c1f; --wf-dark-ink: #e6e8eb; --wf-btn: #e6e8eb; --wf-btn-ink: #16181a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111315; --panel: #191c1f; --ink: #e7e9ec; --muted: #9aa2ab; --line: #2c3136; --soft: #1f2327;
+  --redline: #ff7a3d; --redline-ink: #16191d; --focus: #6d9bff;
+  --wf-paper: #1d2023; --wf-surface: #25292d; --wf-fill: #353a40; --wf-fill-ink: #aab1b9; --wf-ink: #e6e8eb; --wf-muted: #9aa1a9;
+  --wf-line: #3a4046; --wf-dark: #0d0e10; --wf-dark-2: #1a1c1f; --wf-dark-ink: #e6e8eb; --wf-btn: #e6e8eb; --wf-btn-ink: #16181a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--f-ui); }
+a { color: inherit }
+button, select, input { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px }
+code, .mono { font-family: var(--f-mono); font-size: 12px }
+
+/* shell */
+.app { display: grid; grid-template-columns: var(--nav-w) minmax(0, 1fr); min-height: 100% }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; overflow-y: auto; border-right: 1px solid var(--line); background: var(--panel); padding: 20px 14px 40px max(14px, env(safe-area-inset-left, 0px)) }
+.brand { font-weight: 700; font-size: 15px; letter-spacing: -.01em }
+.brand small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; margin-top: 2px }
+.nav h4 { margin: 22px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600 }
+.nav a { display: flex; justify-content: space-between; gap: 8px; padding: 5px 8px; border-radius: 6px; text-decoration: none; color: var(--ink) }
+.nav a:hover { background: var(--soft) }
+.nav a[aria-current="page"] { background: var(--ink); color: var(--panel) }
+.nav a .n { color: var(--muted); font-family: var(--f-mono); font-size: 11px }
+.nav a[aria-current="page"] .n { color: inherit; opacity: .7 }
+.topbar { display: none }
+main { min-width: 0; padding-block: 28px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 12px }
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr) }
+  .nav { display: none }
+  .topbar { display: flex; gap: 10px; align-items: center; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+  .topbar select { flex: 1; min-width: 0; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel) }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel) }
+  .wrap { padding-inline: 0 }
+}
+.kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600 }
+.ttl { font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -.015em; margin: 4px 0 6px; text-wrap: balance }
+.lede { color: var(--muted); max-width: 68ch; margin: 0 }
+.meta-row { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 12px; align-items: center }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; background: var(--panel); text-decoration: none }
+a.chip:hover { border-color: var(--ink) }
+.chip.k { font-family: var(--f-mono); font-size: 11px }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px }
+.sec { margin-top: 28px }
+.sec > h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 10px; font-weight: 600 }
+
+/* property panel */
+.props { display: grid; gap: 14px; padding: 14px; margin-top: 18px }
+.prop { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px; align-items: start }
+.prop > label, .prop > span.l { color: var(--muted); font-size: 12px; padding-top: 6px }
+.seg { display: flex; flex-wrap: wrap; gap: 4px }
+.seg button { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink) }
+.seg button .real { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; margin-left: 6px; vertical-align: middle }
+.vdesc { color: var(--muted); font-size: 12px; margin-top: 6px }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px 14px }
+.toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer }
+.prop select { max-width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel) }
+.src-note { font-size: 12px; color: var(--muted); margin-top: 4px }
+@media (max-width: 640px) { .prop { grid-template-columns: minmax(0, 1fr); gap: 4px } .prop > label, .prop > span.l { padding-top: 0 } }
+
+/* artboard */
+.board { margin-top: 14px; background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 18px; overflow: hidden }
+.board-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: var(--muted) }
+.frame { position: relative; container: frame / inline-size; margin: 0 auto; width: 100%; max-width: 100%; background: var(--wf-paper); color: var(--wf-ink); box-shadow: 0 0 0 1px var(--wf-line); }
+.frame.mobile { width: min(390px, 100%) }
+.legend { margin-top: 14px; display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) }
+.legend li { list-style: none; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13px }
+.legend ol { margin: 0; padding: 0; display: contents }
+.legend .k { color: var(--muted); font-family: var(--f-mono); font-size: 11px }
+.pin { position: absolute; z-index: 3; width: 20px; height: 20px; border-radius: 50%; background: var(--redline); color: var(--redline-ink); font: 600 11px/20px var(--f-mono); text-align: center; pointer-events: none; box-shadow: 0 0 0 2px var(--wf-paper) }
+.num { display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: var(--redline); color: var(--redline-ink); font: 600 11px/20px var(--f-mono); text-align: center }
+.frame.anat [data-part]:not([data-nested] [data-part]) { outline: 1px dashed var(--redline); outline-offset: 2px }
+
+/* ---------- wireframe atoms ---------- */
+.frame { font-family: var(--f-ui); font-size: 15px; line-height: 1.55 }
+.a-band { position: relative; padding-block: 40px; }
+.a-band > .in { max-width: 1152px; margin: 0 auto; padding-inline: 20px; position: relative }
+@container frame (min-width: 720px) { .a-band { padding-block: 56px } .a-band.p-l { padding-block: 80px } .a-band.p-xl { padding-block: 120px } .a-band > .in { padding-inline: 32px } }
+.a-band.surface { background: var(--wf-surface) }
+.a-band.dark { background: var(--wf-dark); color: var(--wf-dark-ink); --wf-ink: var(--wf-dark-ink); --wf-muted: color-mix(in srgb, var(--wf-dark-ink) 72%, transparent); --wf-line: var(--wf-dark-2); --wf-fill: var(--wf-dark-2); --wf-fill-ink: color-mix(in srgb, var(--wf-dark-ink) 70%, transparent); --wf-btn: var(--wf-dark-ink); --wf-btn-ink: var(--wf-dark) }
+.a-band.rule { border-bottom: 1px solid var(--wf-line) }
+.a-band.top-rule { border-top: 1px solid var(--wf-line) }
+.bg-chip { position: absolute; top: 10px; right: 10px; z-index: 1; font: 500 11px/1.3 var(--f-mono); padding: 3px 8px; border-radius: 4px; background: var(--wf-dark-2); color: var(--wf-dark-ink); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.a-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--wf-muted); margin-bottom: 8px }
+.a-eyebrow u { text-underline-offset: 2px }
+.a-h { font-weight: 600; letter-spacing: -.015em; line-height: 1.15; text-wrap: balance; color: var(--wf-ink) }
+.a-h1 { font-size: 30px } .a-h2 { font-size: 24px } .a-h3 { font-size: 19px; font-weight: 500 } .a-h4 { font-size: 16px; font-weight: 600 }
+@container frame (min-width: 720px) { .a-h1 { font-size: 46px } .a-h2 { font-size: 30px } .a-h3 { font-size: 22px } }
+.a-h.upper { text-transform: uppercase; letter-spacing: .04em; font-weight: 300 }
+.a-t { margin: 0; color: var(--wf-ink); max-width: 68ch }
+.a-t.lead { font-size: 18px } .a-t.xl { font-size: 21px } .a-t.statement { font-size: 22px; font-weight: 500; line-height: 1.35 }
+.a-t.muted { color: var(--wf-muted) } .a-t.small { font-size: 13px; color: var(--wf-muted) } .a-t.italic { font-style: italic; font-size: 18px }
+.a-t.sub { font-size: 20px }
+.a-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 4px; font-size: 13px; font-weight: 500; white-space: normal; text-align: left }
+.a-btn.primary { background: var(--wf-btn); color: var(--wf-btn-ink) }
+.a-btn.secondary { box-shadow: inset 0 0 0 1px var(--wf-ink); color: var(--wf-ink) }
+.a-btn.link { padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: 13px }
+.a-media { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; padding: 10px; border-radius: 4px; background: var(--wf-fill); color: var(--wf-fill-ink); overflow: hidden; width: 100%; max-width: 100% }
+.a-media::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent calc(50% - .5px), color-mix(in srgb, var(--wf-fill-ink) 22%, transparent) 50%, transparent calc(50% + .5px)), linear-gradient(to bottom right, transparent calc(50% - .5px), color-mix(in srgb, var(--wf-fill-ink) 22%, transparent) 50%, transparent calc(50% + .5px)) }
+.a-media.video::before { background: none }
+.a-media.video::after { content: ""; position: absolute; left: 50%; top: 50%; translate: -40% -50%; border-style: solid; border-width: 13px 0 13px 22px; border-color: transparent transparent transparent var(--wf-fill-ink); opacity: .7 }
+.a-media .k { position: relative; font: 600 10px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase }
+.a-media .l { position: relative; font: 400 11px/1.3 var(--f-mono); overflow-wrap: anywhere }
+.a-media.round { border-radius: 50% }
+.a-media.round .k, .a-media.round .l, .a-media.tiny .l { display: none }
+.a-stat-circle { width: 168px; aspect-ratio: 1; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--wf-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 12px; max-width: 100% }
+.a-stat-circle .v { font-size: 38px; font-weight: 300; line-height: 1 }
+.a-stat-circle .lb { font-size: 16px; font-weight: 600; text-transform: uppercase; line-height: 1.15; margin-top: 4px }
+.a-stat-circle .nt { font-size: 11px; color: var(--wf-muted); margin-top: 2px }
+.a-stat-row { display: flex; gap: 12px; align-items: center }
+.a-stat-row .v, .a-stat-badge .v { font-size: 36px; font-weight: 600; letter-spacing: -.02em; line-height: 1.05 }
+.a-stat-row .lb, .a-stat-badge .lb { font-size: 13px; color: var(--wf-muted) }
+.a-stat-badge { display: inline-flex; gap: 12px; align-items: center; padding: 12px 20px; box-shadow: inset 0 0 0 1px var(--wf-line); border-radius: 4px; text-align: left }
+.a-card { box-shadow: inset 0 0 0 1px var(--wf-line); border-radius: 4px; padding: 16px; background: var(--wf-paper); min-width: 0 }
+.a-band.surface .a-card { background: var(--wf-paper) }
+.a-tabs { display: flex; flex-wrap: wrap; gap: 4px }
+.a-tabs.pills { box-shadow: inset 0 0 0 1px var(--wf-ink); border-radius: 999px; padding: 3px }
+.a-tabs.pills .tab { flex: 1 1 auto; text-align: center; border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .03em; cursor: pointer; background: none; border: 0 }
+.a-tabs.pills .tab[aria-selected="true"] { background: var(--wf-btn); color: var(--wf-btn-ink) }
+.a-tabs.underline { border-bottom: 1px solid var(--wf-line); gap: 18px }
+.a-tabs.underline .tab { padding: 8px 0; font-size: 13px; font-weight: 500; cursor: pointer; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px }
+.a-tabs.underline .tab[aria-selected="true"] { border-color: var(--wf-ink) }
+.tab small { display: block; font-size: 10px; opacity: .7; text-transform: none; letter-spacing: 0 }
+.a-field { display: grid; gap: 4px; font-size: 12px; color: var(--wf-muted); min-width: 0 }
+.a-field .box { height: 36px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--wf-line); background: var(--wf-paper); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; color: var(--wf-muted) }
+.a-field.area .box { height: 88px; align-items: flex-start; padding-top: 8px }
+.a-check { display: flex; gap: 8px; align-items: center; font-size: 13px }
+.a-check i { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--wf-ink); border-radius: 3px }
+.a-dots { display: flex; gap: 6px; justify-content: center }
+.a-dots i { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--wf-ink) }
+.a-dots i.on { background: var(--wf-ink) }
+.a-dots.left { flex-direction: column; justify-content: flex-start }
+.a-arrow { position: absolute; top: 50%; translate: 0 -50%; width: 30px; height: 30px; border-radius: 50%; background: var(--wf-paper); box-shadow: 0 0 0 1px var(--wf-line); display: grid; place-items: center; font-size: 14px; z-index: 1 }
+.a-table-wrap { overflow-x: auto; max-width: 100% }
+.a-table { border-collapse: collapse; font-size: 13px; min-width: 520px; width: 100% }
+.a-table th { text-align: left; font-weight: 600; padding: 8px 10px; border-bottom: 2px solid var(--wf-ink) }
+.a-table td { padding: 8px 10px; border-bottom: 1px solid var(--wf-line); vertical-align: top }
+.a-table tr:nth-child(odd) td { background: color-mix(in srgb, var(--wf-surface) 60%, transparent) }
+.a-prose { max-width: 68ch; display: grid; gap: 10px; font-size: 14px }
+.a-prose .hd { font-weight: 600; font-size: 17px; margin-top: 6px }
+.a-prose p, .a-prose ul, .a-prose ol { margin: 0 }
+.a-prose ul, .a-prose ol { padding-left: 20px; display: grid; gap: 4px }
+.a-prose u { text-underline-offset: 2px }
+.a-prose .more { color: var(--wf-muted); font-size: 12px; font-family: var(--f-mono) }
+
+/* layout helpers inside frames */
+.stack { display: grid; gap: 14px; align-content: start; min-width: 0 }
+.stack.s8 { gap: 8px } .stack.s24 { gap: 24px } .stack.s40 { gap: 40px }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+.g2, .g3, .g4, .g5, .g3c, .g23 { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); align-items: center }
+.g4 .a-card, .g3 .a-card { height: 100% }
+@container frame (min-width: 720px) {
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px }
+  .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+  .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)) }
+  .g5 { grid-template-columns: repeat(5, minmax(0, 1fr)) }
+  .g3c { grid-template-columns: 1.2fr 1fr .8fr; gap: 32px }
+  .g23 { grid-template-columns: 2fr 3fr; gap: 32px }
+  .rev > :first-child { order: 2 }
+}
+.top { align-items: start }
+.center { text-align: center; justify-items: center }
+.mw { max-width: 760px } .mx { margin-inline: auto }
+.panel-dark { background: var(--wf-dark); color: var(--wf-dark-ink); border-radius: 4px; padding: 32px 20px; text-align: center; --wf-ink: var(--wf-dark-ink); --wf-muted: color-mix(in srgb, var(--wf-dark-ink) 72%, transparent); --wf-btn: var(--wf-dark-ink); --wf-btn-ink: var(--wf-dark) }
+.diagram { position: relative }
+.diagram .mk { position: absolute; translate: -50% -50%; width: 22px; height: 22px; border-radius: 50%; background: var(--wf-ink); color: var(--wf-paper); font: 600 11px/22px var(--f-mono); text-align: center }
+.olist { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 13px }
+.timeline { display: grid; gap: 14px; border-left: 1px solid var(--wf-line); margin-left: 22px; padding-left: 26px }
+.yr { width: 44px; height: 44px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--wf-ink); display: grid; place-items: center; font-size: 12px; font-weight: 600; margin-left: -49px; background: var(--wf-surface) }
+.pub-row { display: grid; gap: 4px 20px; padding: 14px 0; border-bottom: 1px solid var(--wf-line) }
+@container frame (min-width: 720px) { .pub-row { grid-template-columns: 80px minmax(0, 1fr) } }
+.first-letter::first-letter { font-weight: 700; text-decoration: underline; text-underline-offset: 3px }
+.region-card { box-shadow: inset 0 0 0 1px var(--wf-line); border-radius: 4px; padding: 20px; font-size: 17px; font-weight: 500 }
+.region-card.on { box-shadow: inset 0 0 0 2px var(--wf-ink) }
+.quote { position: absolute; inset: auto 0 0 0; padding: 12px; background: color-mix(in srgb, var(--wf-dark) 82%, transparent); color: var(--wf-dark-ink); font-size: 13px }
+.hover-note { position: absolute; top: 8px; left: 8px; font: 500 10px/1 var(--f-mono); background: var(--wf-paper); color: var(--wf-muted); padding: 3px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: .06em }
+
+/* page composer */
+.pb { position: relative; outline: 1px solid transparent; }
+.pb:hover { outline-color: var(--redline) }
+.pb-bar { position: absolute; top: 6px; left: 6px; z-index: 4; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; max-width: calc(100% - 12px); font: 500 11px/1 var(--f-ui); }
+.pb-bar .tag { background: var(--redline); color: var(--redline-ink); padding: 4px 7px; border-radius: 4px; font-weight: 600 }
+.pb-bar select, .pb-bar button { font-size: 11px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); cursor: pointer }
+.composer-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 7px 12px; cursor: pointer }
+.btn.dark { background: var(--ink); color: var(--panel); border-color: var(--ink) }
+.outline-list { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 3px; font-size: 13px }
+
+/* overview / tables */
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) }
+.cards .panel { padding: 14px; text-decoration: none; display: grid; gap: 4px; align-content: start }
+.cards .panel:hover { border-color: var(--ink) }
+.cards .panel b { font-size: 15px }
+.cards .panel span { color: var(--muted); font-size: 12px }
+.figures { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 18px }
+.figures .panel { padding: 14px }
+.figures b { display: block; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em }
+.figures span { color: var(--muted); font-size: 12px }
+.tbl-wrap { overflow-x: auto }
+table.doc { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 620px }
+table.doc th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line) }
+table.doc td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top }
+.layers { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top: 14px }
+.layers .panel { padding: 14px }
+.layers .panel b { display: block; margin-bottom: 4px }
+.swatches { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) }
+.sw { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: center }
+.sw i { height: 40px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--line) }
+.atom { padding: 16px; display: grid; gap: 12px }
+.atom-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: baseline }
+.atom-head b { font-size: 16px }
+.atom .frame { padding: 18px }
+.samples { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end }
+.samples > * { min-width: 0 }
+.samples figure { margin: 0; display: grid; gap: 6px; justify-items: start; min-width: 0 }
+.samples figcaption { font: 400 11px/1.2 var(--f-mono); color: var(--muted) }
+@media (prefers-reduced-motion: no-preference) { .nav a, .seg button, .chip { transition: background .12s, border-color .12s } }
+</style>
+
+<div class="app">
+  <aside class="nav" id="nav" aria-label="Разделы библиотеки"></aside>
+  <div style="min-width:0">
+    <div class="topbar"><label for="jump" class="kicker">Раздел</label><select id="jump"></select></div>
+    <main id="main"><div class="wrap" id="view"></div></main>
+  </div>
+</div>
+
+<script id="kit-data" type="application/json">/*__DATA__*/{}</script>
+<script>
+(() => {
+const DATA = JSON.parse(document.getElementById('kit-data').textContent);
+const META = Object.fromEntries(DATA.meta.map(m => [m.type, m]));
+const CAT = { content: 'Контент', list: 'Списки записей', system: 'Системные' };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const P = p => p ? ` data-part="${p}"` : '';
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const clone = o => JSON.parse(JSON.stringify(o));
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch { return d } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
+
+/* ---------- usage tracking: which shared component each block uses ---------- */
+let CUR = null;
+const USAGE = {};          // atom -> Set(block type)
+const BLOCK_ATOMS = {};    // block type -> Set(atom)
+const use = a => { if (!CUR) return; (USAGE[a] ||= new Set()).add(CUR); (BLOCK_ATOMS[CUR] ||= new Set()).add(a); };
+
+function fileLabel(u) {
+  if (!u) return '';
+  const yt = String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|watch\?v=))([\w-]{6,})/);
+  if (yt) return 'YouTube · ' + yt[1];
+  let s = String(u).split('?')[0].split('#')[0];
+  s = s.split('/').pop() || s;
+  try { s = decodeURIComponent(s.replace(/\+/g, ' ')) } catch {}
+  s = s.replace(/\.[a-z0-9]{2,4}$/i, '').replace(/-[0-9a-f]{6}$/i, '').replace(/-1920w$/i, '').replace(/^[A-Za-z0-9]{18,22}_/, '');
+  return s.length > 44 ? s.slice(0, 42) + '…' : s;
+}
+const isFile = u => /\.(mp4|mov|webm)(\?|$)/i.test(u || '') || /vid\.cdn-website/.test(u || '');
+
+/* ---------- shared components (atoms) ---------- */
+const A = {
+  section(tone, inner, o = {}) { use('Section'); const cls = ['a-band', tone, o.pad ? 'p-' + o.pad : '', o.rule ? 'rule' : '', o.topRule ? 'top-rule' : ''].join(' ');
+    return `<section class="${cls}" data-atom="Section">${o.bg ? `<span class="bg-chip">${esc(o.bg)}</span>` : ''}<div class="in">${inner}</div></section>`; },
+  eyebrow(t, p, links) { use('Eyebrow'); return `<div class="a-eyebrow" data-atom="Eyebrow"${P(p)}>${esc(t)}${(links || []).map(l => ` · <u>${esc(l.label)}</u>`).join('')}</div>`; },
+  heading(level, html, p, extra = '') { use('Heading'); return `<div class="a-h a-h${level} ${extra}" data-atom="Heading"${P(p)}>${html}</div>`; },
+  h(level, t, p, extra) { return A.heading(level, esc(t), p, extra); },
+  text(style, t, p) { use('Text'); return `<p class="a-t ${style}" data-atom="Text"${P(p)}>${esc(t)}</p>`; },
+  button(kind, label, p, arrow) { use('Button'); return `<span class="a-btn ${kind}" data-atom="Button"${P(p)}>${esc(label)}${arrow ? ' →' : ''}</span>`; },
+  media(kind, label, ratio, p, cls = '') { use('Media'); const K = { image: 'Image', video: 'Video', icon: 'Icon', chart: 'Chart', diagram: 'Diagram', map: 'Map', photo: 'Photo', poster: 'Poster' }[kind] || kind;
+    return `<div class="a-media ${kind === 'video' ? 'video' : ''} ${cls}" style="aspect-ratio:${ratio}" data-atom="Media"${P(p)}><span class="k">${K}</span>${label ? `<span class="l">${esc(label)}</span>` : ''}</div>`; },
+  stat(style, s, p, i) { use('Stat'); const ic = s.iconUrl ? A.media('icon', '', '1/1', '', 'tiny') : '';
+    if (style === 'circle') return `<div class="a-stat-circle" data-atom="Stat"${P(p)}><span class="v">${esc(s.value)}</span><span class="lb">${esc(s.label)}</span>${s.note ? `<span class="nt">${esc(s.note)}</span>` : ''}</div>`;
+    if (style === 'badge') return `<div class="a-stat-badge" data-atom="Stat"${P(p)}>${ic ? `<div style="width:44px">${ic}</div>` : ''}<div><div class="v">${esc(s.value)}</div><div class="lb">${esc(s.label)}</div></div></div>`;
+    return `<div class="a-stat-row" data-atom="Stat"${P(p)}>${ic ? `<div style="width:52px;flex:none">${ic}</div>` : ''}<div><div class="v">${esc(s.value)}</div><div class="lb">${esc(s.label)}</div></div></div>`; },
+  card(inner, p, extra = '') { use('Card'); return `<div class="a-card stack s8 ${extra}" data-atom="Card"${P(p)}>${inner}</div>`; },
+  tabs(style, items, active, gid, p) { use('Tabs');
+    return `<div class="a-tabs ${style}" role="tablist" data-atom="Tabs"${P(p)}>${items.map((t, i) => t.href
+      ? `<span class="tab" style="cursor:default">${esc(t.label)} ↗${t.sublabel ? `<small>${esc(t.sublabel)}</small>` : ''}</span>`
+      : `<button type="button" class="tab" role="tab" data-tab="${gid}" data-i="${i}" aria-selected="${i === active}">${esc(t.label)}${t.sublabel ? `<small>${esc(t.sublabel)}</small>` : ''}</button>`).join('')}</div>`; },
+  field(kind, label) { use('Form field'); if (kind === 'check') return `<div class="a-check" data-atom="Form field"><i></i>${esc(label)}</div>`;
+    return `<div class="a-field ${kind === 'area' ? 'area' : ''}" data-atom="Form field">${esc(label)}<div class="box">${kind === 'select' ? '<span>Select…</span><span>▾</span>' : ''}</div></div>`; },
+  dots(n, pos) { use('Carousel controls'); return `<div class="a-dots ${pos || ''}" data-atom="Carousel controls">${Array.from({ length: Math.max(n, 1) }, (_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>`; },
+  arrows() { use('Carousel controls'); return `<span class="a-arrow" style="left:-10px" aria-hidden="true">‹</span><span class="a-arrow" style="right:-10px" aria-hidden="true">›</span>`; },
+  table(cols, rows, p) { use('Table'); return `<div class="a-table-wrap" data-atom="Table"${P(p)}><table class="a-table"><thead><tr>${(cols || []).map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${(rows || []).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; },
+  prose(html, p, limit = 14) { use('Rich text');
+    const doc = new DOMParser().parseFromString(`<div>${html || ''}</div>`, 'text/html');
+    const out = []; let n = 0, total = 0;
+    const inline = node => [...node.childNodes].map(c => c.nodeType === 3 ? esc(c.textContent) : c.nodeType !== 1 ? '' :
+      /^(STRONG|B)$/.test(c.tagName) ? `<b>${inline(c)}</b>` : /^(EM|I)$/.test(c.tagName) ? `<i>${inline(c)}</i>` : c.tagName === 'A' ? `<u>${inline(c)}</u>` : c.tagName === 'BR' ? '<br>' : inline(c)).join('');
+    for (const el of doc.body.firstChild.children) {
+      total++; if (n >= limit) continue;
+      const t = el.tagName;
+      const img = el.querySelector('img'), vid = el.querySelector('video');
+      if (img && !el.textContent.trim()) { out.push(A.media('image', fileLabel(img.getAttribute('src')), '16/9')); n++; continue; }
+      if (vid) { out.push(A.media('video', fileLabel(vid.getAttribute('src')), '16/9')); n++; continue; }
+      if (/^H[1-6]$/.test(t)) out.push(`<div class="hd">${inline(el)}</div>`);
+      else if (t === 'UL' || t === 'OL') out.push(`<${t.toLowerCase()}>${[...el.children].slice(0, 8).map(li => `<li>${inline(li)}</li>`).join('')}</${t.toLowerCase()}>`);
+      else if (el.textContent.trim()) out.push(`<p>${inline(el)}</p>`); else continue;
+      n++;
+    }
+    if (total > n) out.push(`<div class="more">… ещё ${total - n} элементов текста</div>`);
+    return `<div class="a-prose" data-atom="Rich text"${P(p)}>${out.join('')}</div>`; },
+};
+
+/* ---------- blocks ---------- */
+const FLOW = { hero: v => v === 'page', text: v => v === 'default' || v === 'large', richText: () => true, media: () => true, form: v => v !== 'section', webinars: () => true, jobs: () => true, regionChooser: () => true };
+const STACK = { textMedia: v => v === 'statement' ? null : v === 'links' ? 'white' : 'grey' };
+const isFlow = b => !!(FLOW[b.type] && FLOW[b.type](b.variant));
+const stackOf = b => STACK[b.type] ? STACK[b.type](b.variant) : null;
+const wrapStack = (g, rows) => A.section(g === 'grey' ? 'surface' : '', `<div class="stack s40">${rows}</div>`);
+let UID = 0;
+
+const R = {
+  hero(v, d, c) {
+    const links = d.eyebrowLinks || [];
+    const eb = (d.eyebrow || links.length) ? A.eyebrow(d.eyebrow || '', 'eyebrow', links) : '';
+    const title = A.heading(1, `<span${P('title')}>${esc(d.title)}</span>${d.title2 ? `<br><span${P('title2')}>${esc(d.title2)}</span>` : ''}`, '');
+    const btn = d.cta && d.cta.href ? `<div>${A.button('primary', d.cta.label, 'cta')}</div>` : '';
+    if (v === 'page') { const inner = `<div class="stack s8">${eb}${title}${d.body ? A.text('muted', d.body, 'body') : ''}</div>`; return c.nested ? inner : A.section('', inner); }
+    if (v === 'title') return A.section('', `<div class="stack">${eb}${title}${d.body ? A.text('lead', d.body, 'body') : ''}${btn}</div>`, { pad: 'l', rule: true });
+    if (v === 'image') return A.section('', `<div class="g2"><div class="stack">${eb}${title}${d.body ? A.text('lead', d.body, 'body') : ''}${btn}</div>${A.media('image', fileLabel(d.imageUrl), '4/3', 'imageUrl')}</div>`, { pad: 'l', rule: true });
+    const bg = d.videoUrl ? 'Фон · видео · ' + fileLabel(d.videoUrl) : null;
+    const tone = d.videoUrl ? 'dark' : '';
+    const textCol = `<div class="stack">${eb}${title}${d.subtitle ? A.text('sub', d.subtitle, 'subtitle') : ''}${d.body ? A.text(v === 'banner' || d.subtitle ? '' : 'lead', d.body, 'body') : ''}${d.note ? A.text('small', d.note, 'note') : ''}${btn}</div>`;
+    if (v === 'video') return A.section(tone, `<div class="g2">${textCol}<div></div></div>`, { pad: 'l', bg, rule: !d.videoUrl });
+    return A.section(tone, `<div class="mw">${textCol}</div>`, { pad: v === 'banner' ? 'xl' : 'l', bg, rule: !d.videoUrl });
+  },
+  text(v, d, c) {
+    if (v === 'surface') return A.section('surface', `<div class="stack">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('muted', d.body, 'body') : ''}</div>`);
+    if (v === 'dark') return A.section('dark', `<div class="stack center mw mx">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('lead', d.body, 'body') : ''}</div>`, { pad: 'l', bg: d.videoUrl ? 'Фон · видео · ' + fileLabel(d.videoUrl) : d.imageUrl ? 'Фон · картинка · ' + fileLabel(d.imageUrl) : null });
+    if (v === 'lead') return A.section('', `<div class="g2"><div class="stack">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('lead muted', d.body, 'body') : ''}</div>${d.videoUrl || d.imageUrl ? A.media(d.videoUrl ? 'video' : 'image', fileLabel(d.videoUrl || d.imageUrl), '16/10', d.videoUrl ? 'videoUrl' : 'imageUrl') : ''}</div>`);
+    const inner = v === 'large'
+      ? `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('xl', d.body, 'body') : ''}${d.imageUrl ? A.media('image', fileLabel(d.imageUrl), '21/9', 'imageUrl') : ''}</div>`
+      : `<div class="stack">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('lead', d.body, 'body') : ''}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  textMedia(v, d, c) {
+    let row;
+    if (v === 'statement') {
+      const stats = (d.stats || []).filter(s => s.value);
+      return A.section('', `<div class="stack s40"><div class="g2"><div>${d.title ? A.text('statement', d.title, 'title') : ''}</div>${d.videoUrl ? A.media('video', fileLabel(d.videoUrl), '16/9', 'videoUrl') : ''}</div>${stats.length ? `<div class="g3" data-part="stats">${stats.map(s => A.stat('row', s)).join('')}</div>` : ''}<div class="stack">${d.body ? A.text('lead', d.body, 'body') : ''}${d.link && d.link.href ? `<div>${A.button('secondary', d.link.label, 'link')}</div>` : ''}</div></div>`);
+    }
+    const text = `<div class="stack">${d.eyebrow ? A.eyebrow(d.eyebrow, 'eyebrow') : ''}${A.h(2, d.title, 'title')}${d.body ? A.text('muted', d.body, 'body') : ''}${d.footnote ? A.text('small', d.footnote, 'footnote') : ''}${d.link && d.link.href ? `<div>${A.button('secondary', d.link.label, 'link')}</div>` : ''}${v === 'links' ? `<div class="row" data-part="links">${(d.links || []).map(l => A.button('secondary', l.label, '', true)).join('')}</div>` : ''}</div>`;
+    if (v === 'links') row = `<div class="g2">${text}${d.imageUrl ? A.media('image', fileLabel(d.imageUrl), '4/3', 'imageUrl') : '<div></div>'}</div>`;
+    else {
+      const stats = (d.stats || []).filter(s => s.value);
+      const ch = d.chart && d.chart.categories && d.chart.categories.length ? d.chart : null;
+      const media = `<div class="stack s24">${stats.length ? `<figure class="stack center" style="margin:0" data-part="stats"><div class="row" style="justify-content:center;gap:16px">${stats.map(s => A.stat('circle', s)).join('')}</div>${d.statsCaption ? `<figcaption>${A.text('', d.statsCaption, 'statsCaption')}</figcaption>` : ''}</figure>` : ''}${ch ? A.media('chart', 'Bar chart · ' + ch.categories.join(' · '), '16/10', 'chart') : ''}${d.videoUrl || d.imageUrl ? A.media(d.videoUrl ? 'video' : 'image', fileLabel(d.videoUrl || d.imageUrl), '4/3', d.videoUrl ? 'videoUrl' : 'imageUrl') : ''}</div>`;
+      row = v === 'threeColumn'
+        ? `<div class="g3c">${media}${text}${d.secondaryImageUrl ? A.media('photo', fileLabel(d.secondaryImageUrl), '3/4', 'secondaryImageUrl') : '<div></div>'}</div>`
+        : `<div class="g2 ${v === 'mediaLeft' ? 'rev' : ''}">${text}${media}</div>`;
+    }
+    return c.inStack ? row : wrapStack(STACK.textMedia(v), row);
+  },
+  keyNumbers(v, d, c) {
+    const items = (d.items || []).filter(s => s.value);
+    const inner = v === 'badge' ? `<div class="center stack" data-part="items">${A.stat('badge', items[0] || {})}</div>`
+      : v === 'row' ? `<div class="g3" data-part="items">${items.map(s => A.stat('row', s)).join('')}</div>`
+      : `<figure class="stack center" style="margin:0"><div class="row" style="justify-content:center;gap:16px" data-part="items">${items.map(s => A.stat('circle', s)).join('')}</div>${d.caption ? A.text('', d.caption, 'caption') : ''}</figure>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  columns(v, d, c) {
+    const items = d.items || [];
+    if (v === 'principles') return A.section('surface', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.intro ? A.text('muted', d.intro, 'intro') : ''}${d.imageUrl ? `<div style="max-width:420px;width:100%" class="mx">${A.media('image', fileLabel(d.imageUrl), '16/9', 'imageUrl')}</div>` : ''}<div class="g5 top" data-part="items">${items.map(p => `<div class="stack s8 center">${A.h(3, p.title, '', 'first-letter')}${A.text('small', p.body)}</div>`).join('')}</div></div>`);
+    if (v === 'cards') return A.section('', `<div class="g2" data-part="items">${items.map(it => A.card(`${A.eyebrow(it.eyebrow || '')}${A.h(3, it.title)}`)).join('')}</div>`);
+    let inner;
+    if (v === 'steps') inner = `<div class="g3 top" data-part="items">${items.map((s, i) => `<div class="stack s8">${A.text('small', `${i + 1}. ${s.title}${s.body ? ' ' + s.body : ''}`)}${s.videoUrl || s.imageUrl ? A.media(s.videoUrl ? 'video' : 'image', fileLabel(s.videoUrl || s.imageUrl), '16/9') : ''}</div>`).join('')}</div>`;
+    else inner = items.length ? `<div class="g2 top" data-part="items">${items.map(f => `<div class="row top" style="flex-wrap:nowrap;align-items:flex-start">${f.iconUrl ? `<div style="width:56px;flex:none">${A.media('icon', '', '1/1', '', 'tiny')}</div>` : ''}<div class="stack s8">${A.h(4, f.title)}${f.body ? A.text('small', f.body) : ''}</div></div>`).join('')}</div>`
+      : d.legacyImageUrl ? A.media('image', fileLabel(d.legacyImageUrl), '16/9', 'legacyImageUrl') : '';
+    return c.nested ? inner : A.section('', inner);
+  },
+  video(v, d) {
+    const file = isFile(d.url);
+    return A.section('dark', `<div class="stack center s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.url && !file ? `<div style="width:100%;max-width:720px">${A.media('video', fileLabel(d.url), '16/9', 'url')}</div>` : ''}</div>`, { pad: 'l', bg: file ? 'Фон · видео · ' + fileLabel(d.url) : null });
+  },
+  cta(v, d, c) {
+    const btns = `<div class="row" data-part="buttons">${(d.buttons || []).map((b, i) => A.button(i ? 'secondary' : 'primary', b.label)).join('')}</div>`;
+    if (v === 'band') return A.section('dark', `<div class="row" style="gap:20px 40px">${d.title ? A.h(2, d.title, 'title', 'upper') : ''}${d.body ? `<div style="flex:1;min-width:200px">${A.text('small', d.body, 'body')}</div>` : ''}${btns}</div>`);
+    if (v === 'light') return A.section('surface', `<div class="stack">${d.title ? A.h(2, d.title, 'title') : ''}${d.body ? A.text('muted', d.body, 'body') : ''}${btns}</div>`);
+    const inner = v === 'panel'
+      ? `<div class="panel-dark stack center">${d.title ? A.h(3, d.title, 'title', 'upper') : ''}${d.body ? A.text('small', d.body, 'body') : ''}${btns}</div>`
+      : `<div class="row">${btns}${d.note ? A.text('small', d.note, 'note') : ''}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  productDetails(v, d, c) {
+    const gid = 'tg' + (++UID);
+    const tabs = d.tabs || [];
+    const panels = tabs.map((t, i) => t.href ? '' : `<div class="stack s24" data-panel="${gid}" data-i="${i}" ${i ? 'hidden' : ''}>${t.title ? A.h(2, t.title) : ''}${(t.blocks || []).map(b => b.group
+      ? `<div class="stack" data-nested>${A.eyebrow(b.group)}${b.blocks.map(x => render(x, { nested: true })).join('')}</div>`
+      : `<div data-nested>${render(b, { nested: true })}</div>`).join('')}</div>`).join('');
+    return A.section('', `<div class="stack s24">${d.hint ? A.text('small', d.hint, 'hint') : ''}${A.tabs(v, tabs.map(t => ({ label: t.label, href: t.href })), 0, gid, 'tabs')}${panels}</div>`);
+  },
+  deviceDiagram(v, d, c) {
+    const m = d.markers || [];
+    const inner = `<figure class="stack" style="margin:0"><div class="diagram" data-part="imageUrl">${A.media('diagram', fileLabel(d.imageUrl), '21/9')}${m.map((k, i) => `<span class="mk" style="left:${k.x}%;top:${k.y}%">${i + 1}</span>`).join('')}</div>${m.length ? `<ol class="olist g2" style="align-items:start" data-part="markers">${m.map(k => `<li>${esc(k.label)}</li>`).join('')}</ol>` : ''}${d.caption ? A.text('small', d.caption, 'caption') : ''}</figure>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  specTable(v, d, c) {
+    const t = d.table || {};
+    const inner = v === 'images'
+      ? `<div class="stack"><div class="g2" data-part="images">${(d.images || []).map(u => A.media('image', fileLabel(u), '16/9')).join('')}</div>${d.note ? A.text('small', d.note, 'note') : ''}</div>`
+      : `<div class="stack">${A.table(t.columns, t.rows, 'table')}${d.note || t.note ? A.text('small', '*' + (d.note || t.note), 'note') : ''}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  people(v, d, c) {
+    if (v === 'team') return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.intro ? A.text('muted', d.intro, 'intro') : ''}<div class="g3 top" data-part="members">${(d.members || []).map(m => `<div class="stack s8">${A.media('photo', m.name, '1/1')}${A.h(4, m.name.toUpperCase())}${A.text('small', (m.title || '') + ' →')}</div>`).join('')}</div></div>`);
+    const inner = `<div class="stack" data-part="items">${(d.items || []).map(p => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:14px"><div style="width:64px;flex:none">${A.media('photo', '', '1/1', '', 'round')}</div><div class="stack s8">${p.person || p.location ? A.h(4, [p.person, p.location].filter(Boolean).join(' | ')) : ''}${A.text('', p.title)}${p.linkUrl ? `<div>${A.button('link', { case: 'View case', testimonial: 'Watch', webinar: 'Watch recording' }[p.kind] || 'Open')}</div>` : ''}</div></div>`).join('')}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  indications(v, d) {
+    return A.section('', `<div class="stack s24">${d.indicationsHtml ? `<div class="stack">${A.h(3, 'Indications for use')}${A.prose(d.indicationsHtml, 'indicationsHtml', 6)}</div>` : ''}${d.referencesHtml ? `<div class="stack">${A.h(4, 'References')}${A.prose(d.referencesHtml, 'referencesHtml', 4)}</div>` : ''}</div>`, { topRule: true });
+  },
+  richText(v, d, c) { const inner = A.prose(d.html, 'html'); return c.nested ? inner : A.section('', inner); },
+  media(v, d, c) {
+    const inner = v === 'document' ? `<div>${A.button('primary', d.document ? d.document.label : 'Open PDF', 'document')}</div>`
+      : v === 'video' ? A.media('video', fileLabel(d.videoUrl), '16/9', 'videoUrl') : A.media('poster', fileLabel(d.imageUrl), '4/3', 'imageUrl');
+    return c.nested ? inner : A.section('', inner);
+  },
+  form(v, d, c) {
+    const compact = v !== 'default';
+    const f = `<div class="stack" data-part="topics" style="max-width:640px">${A.field('select', 'Topic*')}<div class="g2" style="gap:12px">${A.field('input', 'First Name*')}${A.field('input', 'Last Name*')}</div>${A.field('input', 'Organization')}<div class="g2" style="gap:12px">${A.field('input', 'Email*')}${A.field('input', 'Phone')}</div>${A.field('select', 'Region')}${compact ? '' : `<div class="g2" style="gap:12px">${A.field('input', 'Country')}${A.field('input', 'State / Province')}</div>`}${A.field('area', 'Message')}${A.field('check', 'Sign me up! I agree to receive news and updates.')}<div>${A.button('primary', 'Submit')}</div></div>`;
+    if (v === 'section') return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.note ? A.text('small', d.note, 'note') : ''}${f}</div>`);
+    return c.nested ? f : A.section('', f);
+  },
+  officesMap(v, d) {
+    const offices = d.offices || [];
+    if (v === 'offices') return A.section('surface', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="g4 top" data-part="offices">${offices.map(o => `<div class="stack s8">${A.h(4, o.name)}${o.label ? A.text('small', o.label) : ''}${o.address ? A.text('small', o.address.replace(/\n/g, ', ')) : ''}${o.phone ? A.text('small', 'Tel: ' + o.phone) : ''}</div>`).join('')}</div></div>`);
+    const pins = offices.filter(o => o.lat != null).length;
+    return A.section('', `<div class="stack s24"><div class="stack">${d.title ? A.h(2, d.title, 'title') : ''}${d.subtitle ? A.text('muted', d.subtitle, 'subtitle') : ''}</div>${A.media('map', `Интерактивная карта · 7 регионов → Contact · ${pins} офиса`, '2.1/1', 'offices')}<div class="row">${A.text('lead', d.closingLine || '', 'closingLine')}${d.button ? A.button('primary', d.button.label) : ''}</div></div>`);
+  },
+  gallery(v, d) {
+    return A.section('', `<div class="g2" data-part="items">${(d.items || []).map(q => `<div style="position:relative">${A.media('photo', fileLabel(q.imageUrl), '4/3')}<span class="hover-note">при наведении</span>${q.quote ? `<div class="quote">“${esc(q.quote)}”${q.author ? `<br>– ${esc(q.author)}` : ''}</div>` : ''}</div>`).join('')}</div>`);
+  },
+  news(v, d) {
+    const items = d.items || [];
+    const dt = s => s ? new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
+    if (v === 'timeline') {
+      const years = {}; items.forEach(n => { const y = n.publishedOn ? new Date(n.publishedOn).getFullYear() : 0; (years[y] ||= []).push(n); });
+      const ys = Object.keys(years).sort((a, b) => b - a);
+      return A.section('surface', `<div class="timeline" data-part="items">${ys.slice(0, 3).map(y => `<div class="yr">${y}</div>${years[y].slice(0, 3).map(n => { const t = new Date(n.publishedOn); return A.card(`${A.text('small', `${t.getMonth() + 1}/${String(t.getFullYear()).slice(2)}`)}${A.h(4, n.title)}<div>${A.button('link', 'Read more »')}</div>`); }).join('')}`).join('')}<div>${A.button('secondary', 'Show more')}</div></div>`);
+    }
+    if (v === 'carousel') {
+      const n = items[0] || {};
+      return A.section('', `<div class="stack s24"><div style="border-bottom:1px solid var(--wf-ink);padding-bottom:10px">${A.eyebrow(d.title || '', 'title')}</div><div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:16px">${A.dots(items.length, 'left')}<div class="g23" style="flex:1;min-width:0" data-part="items">${A.media('image', fileLabel(n.imageUrl), '4/3')}<div class="stack">${A.text('small', dt(n.publishedOn))}${A.h(3, n.title || '')}<div>${A.button('primary', 'Continue reading')}</div></div></div></div>${d.allLabel ? `<div class="center stack">${A.button('link', d.allLabel, 'allLabel')}</div>` : ''}</div>`);
+    }
+    return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="g4 top" data-part="items">${items.map(n => A.card(`${A.text('small', dt(n.publishedOn) + (n.source ? ' · ' + n.source : ''))}${A.h(4, n.title)}<div>${A.button('link', 'Continue reading →')}</div>`)).join('')}</div>${d.allLabel ? `<div class="center stack">${A.button('secondary', d.allLabel, 'allLabel')}</div>` : ''}</div>`);
+  },
+  publications(v, d) {
+    const dt = s => s ? new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
+    const items = d.items || [];
+    if (v === 'spotlight') {
+      const p = items[0];
+      return A.section('', `<div class="stack s24"><div class="stack center">${d.stat ? A.stat('badge', d.stat, 'stat') : ''}${d.line ? A.text('italic', d.line, 'line') : ''}</div>${p ? `<div style="position:relative" data-part="items">${A.card(`<div class="g2">${A.media('image', fileLabel(p.imageUrl), '16/9')}<div class="stack">${A.eyebrow([p.journal, dt(p.publishedOn)].filter(Boolean).join(' · '))}${A.h(3, p.title)}${p.authors ? A.text('small', p.authors) : ''}<div>${A.button('primary', 'Read article')}</div></div></div>`, '', '')}${A.arrows()}</div>${A.dots(items.length)}` : ''}</div>`);
+    }
+    if (v === 'cards') return A.section('surface', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="g3 top" data-part="items">${items.slice(0, 3).map(p => A.card(`${A.media('image', fileLabel(p.imageUrl), '16/9')}${A.eyebrow(dt(p.publishedOn))}${A.h(4, p.title)}<div>${A.button('link', 'Read ›')}</div>`)).join('')}</div></div>`);
+    const gid = 'tg' + (++UID); const groups = d.groups || [];
+    return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${A.tabs('pills', groups.map(g => ({ label: g.label, sublabel: g.sublabel })), 0, gid, 'groups')}${groups.map((g, i) => `<div class="stack s8" data-panel="${gid}" data-i="${i}" ${i ? 'hidden' : ''}>${A.h(4, g.fullName)}<div data-part="items">${g.items.map(p => `<div class="pub-row">${A.text('small', dt(p.publishedOn))}<div class="stack s8">${A.h(4, p.title)}${p.authors || p.journal ? A.text('small', [p.authors, p.journal].filter(Boolean).join(' · ')) : ''}<div class="row">${p.url ? A.button('link', p.doi ? 'doi:' + p.doi : 'Read') : ''}${p.pdfUrl ? A.button('link', 'Download PDF') : ''}</div></div></div>`).join('')}</div></div>`).join('')}</div>`);
+  },
+  webinars(v, d, c) {
+    const inner = `<div class="g3 top" data-part="items">${(d.items || []).map(w => A.card(`${A.media('image', fileLabel(w.imageUrl), '16/9')}${A.h(4, w.title)}${A.text('small', [w.speaker, w.event].filter(Boolean).join(' · '))}${w.productName ? A.eyebrow(w.productName) : ''}`)).join('')}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+  jobs(v, d, c) {
+    const items = d.items || [];
+    const inner = items.length ? `<div data-part="items">${items.map(j => `<div class="pub-row" style="grid-template-columns:1fr">${A.h(3, j.title)}${A.text('small', [j.department, j.location].filter(Boolean).join(' · '))}</div>`).join('')}</div>`
+      : A.text('muted', 'There are no open positions right now. You can still submit general interest.', 'items');
+    return c.nested ? inner : A.section('', inner);
+  },
+  regionChooser(v, d, c) {
+    const inner = `<div class="g3" data-part="options">${(d.options || []).map(o => `<div class="region-card ${o.suggested ? 'on' : ''}">${esc(o.label)} →${o.suggested ? `<div class="a-t small" style="font-weight:400">Suggested for your location</div>` : ''}</div>`).join('')}</div>`;
+    return c.nested ? inner : A.section('', inner);
+  },
+};
+function render(b, c = {}) {
+  const prev = CUR; if (!c.noTrack && !c.nested) CUR = b.type;
+  try { return R[b.type] ? R[b.type](b.variant, b.data || {}, c) : `<div class="a-band"><div class="in">${esc(b.type)}</div></div>`; }
+  finally { CUR = prev; }
+}
+/* page = groups: flow blocks share one plain section, text-and-media rows share their band */
+function renderPage(blocks, wrapOne) {
+  const out = [];
+  for (let i = 0; i < blocks.length;) {
+    const b = blocks[i];
+    if (isFlow(b)) { let j = i; const parts = []; while (j < blocks.length && isFlow(blocks[j])) { parts.push(wrapOne(blocks[j], j, render(blocks[j], { nested: true }), true)); j++; } out.push(A.section('', `<div class="stack s24">${parts.join('')}</div>`)); i = j; continue; }
+    const g = stackOf(b);
+    if (g) { let j = i; const parts = []; while (j < blocks.length && blocks[j].type === b.type && stackOf(blocks[j]) === g) { parts.push(wrapOne(blocks[j], j, render(blocks[j], { inStack: true }), true)); j++; } out.push(wrapStack(g, parts.join(''))); i = j; continue; }
+    out.push(wrapOne(b, i, render(b), false)); i++;
+  }
+  return out.join('');
+}
+
+/* ---------- instances (real content) and usage pre-pass ---------- */
+const INST = DATA.instances;
+for (const m of DATA.meta) for (const v of m.variants) {
+  const src = (INST[m.type] || []).find(x => x.variant === v.id) || (INST[m.type] || [])[0];
+  if (src) { CUR = m.type; R[m.type](v.id, src.data, {}); CUR = null; }
+}
+const ATOMS = [
+  { name: 'Section', figma: 'Layout/Section', props: 'Tone: paper · surface · dark; Padding: m · l · xl; Rule', note: 'Полоса страницы с контейнером 1152 px. Фон-видео или картинка — подпись в углу.' },
+  { name: 'Eyebrow', figma: 'Type/Eyebrow', props: 'Links (0–n)', note: 'Надзаголовок, хлебные крошки, подписи групп.' },
+  { name: 'Heading', figma: 'Type/Heading', props: 'Level: 1 · 2 · 3 · 4; Upper', note: 'Заголовки блоков и карточек.' },
+  { name: 'Text', figma: 'Type/Text', props: 'Style: body · lead · xl · sub · statement · muted · small · italic', note: 'Абзацы, подписи, сноски.' },
+  { name: 'Button', figma: 'Control/Button', props: 'Kind: primary · secondary · link; Arrow', note: 'Первая кнопка в ряду — primary.' },
+  { name: 'Media', figma: 'Media/Placeholder', props: 'Kind: image · video · photo · icon · chart · diagram · map · poster; Ratio', note: 'Серая плашка с типом и именем файла с сайта.' },
+  { name: 'Stat', figma: 'Data/Stat', props: 'Style: circle · row · badge; Icon; Note', note: 'Ключевые цифры.' },
+  { name: 'Card', figma: 'Layout/Card', props: '—', note: 'Карточки новостей, публикаций, вебинаров, ссылок.' },
+  { name: 'Tabs', figma: 'Control/Tabs', props: 'Style: pills · underline; Link tab', note: 'Вкладки продукта и публикаций; на телефоне — аккордеон.' },
+  { name: 'Form field', figma: 'Control/Field', props: 'Kind: input · select · textarea · checkbox; Required', note: 'Поля форм.' },
+  { name: 'Carousel controls', figma: 'Control/Carousel', props: 'Dots: bottom · left; Arrows', note: 'Точки и стрелки каруселей.' },
+  { name: 'Table', figma: 'Data/Table', props: 'Columns, rows', note: 'Таблица спецификаций.' },
+  { name: 'Rich text', figma: 'Type/Rich text', props: '—', note: 'Длинный текст с заголовками, списками и ссылками.' },
+];
+const SAMPLE_STAT = (INST.textMedia || []).flatMap(i => i.data.stats || []).find(s => s.value) || { value: '50K+', label: 'procedures' };
+const atomSamples = {
+  Section: () => `<div class="stack">${['', 'surface', 'dark'].map(t => `<figure style="margin:0">${A.section(t, A.text('', { '': 'paper', surface: 'surface', dark: 'dark' }[t]))}</figure>`).join('')}</div>`,
+  Eyebrow: () => `<div class="samples"><figure>${A.eyebrow('Therapies / Large vessel stroke', '', [{ label: 'US version' }])}<figcaption>with links</figcaption></figure><figure>${A.eyebrow('Gain active')}<figcaption>plain</figcaption></figure></div>`,
+  Heading: () => `<div class="stack">${[1, 2, 3, 4].map(l => `<figure style="margin:0" class="stack s8">${A.h(l, 'A patient-centric approach to AIS')}<figcaption class="mono" style="color:var(--muted)">Level ${l}</figcaption></figure>`).join('')}</div>`,
+  Text: () => `<div class="stack">${[['lead', 'lead'], ['', 'body'], ['muted', 'muted'], ['small', 'small'], ['statement', 'statement']].map(([s, l]) => `<figure style="margin:0" class="stack s8">${A.text(s, 'Two million brain cells die every minute.')}<figcaption class="mono" style="color:var(--muted)">${l}</figcaption></figure>`).join('')}</div>`,
+  Button: () => `<div class="samples">${[['primary', 'Contact us'], ['secondary', 'Request a demo'], ['link', 'Read more »']].map(([k, l]) => `<figure>${A.button(k, l)}<figcaption>${k}</figcaption></figure>`).join('')}<figure>${A.button('secondary', 'TIGERTRIEVER™', '', true)}<figcaption>secondary + arrow</figcaption></figure></div>`,
+  Media: () => `<div class="g4 top">${[['image', '4/3'], ['video', '16/9'], ['photo', '1/1'], ['chart', '16/10'], ['diagram', '21/9'], ['map', '2.1/1'], ['icon', '1/1'], ['poster', '3/4']].map(([k, r]) => `<figure style="margin:0" class="stack s8">${A.media(k, k === 'icon' ? '' : 'file-name', r)}<figcaption class="mono" style="color:var(--muted)">${k} · ${r}</figcaption></figure>`).join('')}</div>`,
+  Stat: () => `<div class="samples"><figure>${A.stat('circle', SAMPLE_STAT)}<figcaption>circle</figcaption></figure><figure>${A.stat('row', SAMPLE_STAT)}<figcaption>row</figcaption></figure><figure>${A.stat('badge', SAMPLE_STAT)}<figcaption>badge</figcaption></figure></div>`,
+  Card: () => `<div class="g3 top">${A.card(`${A.text('small', 'Mar 2026')}${A.h(4, 'Card title')}<div>${A.button('link', 'Read ›')}</div>`)}</div>`,
+  Tabs: () => `<div class="stack">${A.tabs('pills', [{ label: 'Product overview' }, { label: 'How it works' }, { label: 'Clinical evidence', href: '#' }], 0, 'sa')}${A.tabs('underline', [{ label: 'Product overview' }, { label: 'How it works' }, { label: 'Clinical evidence', href: '#' }], 0, 'sb')}</div>`,
+  'Form field': () => `<div class="g2 top">${A.field('input', 'First Name*')}${A.field('select', 'Topic*')}${A.field('area', 'Message')}${A.field('check', 'Sign me up!')}</div>`,
+  'Carousel controls': () => `<div class="samples"><figure>${A.dots(3)}<figcaption>dots · bottom</figcaption></figure><figure>${A.dots(3, 'left')}<figcaption>dots · left</figcaption></figure></div>`,
+  Table: () => A.table(['Product', 'Ref', 'Vessel Ø, mm'], [['TIGERTRIEVER™ 13', 'TRPP3144', '0.5 – 2.5'], ['TIGERTRIEVER™ 17', 'TRPP3166', '0.5 – 3.0']]),
+  'Rich text': () => A.prose('<h2>Terms of use</h2><p>Paragraph of a long text page with a <a href="#">link</a>.</p><ul><li>List item</li><li>List item</li></ul>'),
+};
+
+/* ---------- state ---------- */
+const state = Object.assign({ width: 'desktop', anatomy: true }, store.get('rm-wf-ui', {}));
+const saveUi = () => store.set('rm-wf-ui', { width: state.width, anatomy: state.anatomy });
+const blockState = {};
+const pageNames = Object.keys(DATA.pages);
+let pages = store.get('rm-wf-pages-v1', null);
+if (!pages || typeof pages !== 'object') pages = {};
+for (const n of pageNames) if (!Array.isArray(pages[n])) pages[n] = clone(DATA.pages[n]);
+const savePages = () => store.set('rm-wf-pages-v1', pages);
+
+/* ---------- views ---------- */
+const view = document.getElementById('view');
+const BY_CAT = ['content', 'list', 'system'].map(c => [c, DATA.meta.filter(m => m.category === c)]);
+const ROUTES = [['overview', 'Обзор'], ['foundations', 'Основы'], ['components', 'Общие компоненты']];
+function nav(active) {
+  const a = (h, label, n) => `<a href="#${h}" ${active === h ? 'aria-current="page"' : ''}>${esc(label)}${n != null ? `<span class="n">${n}</span>` : ''}</a>`;
+  document.getElementById('nav').innerHTML = `<div class="brand">Rapid Medical<small>Wireframe kit · из блоков сайта</small></div>
+    <h4>Библиотека</h4>${ROUTES.map(([h, l]) => a(h, l, h === 'components' ? ATOMS.length : null)).join('')}
+    ${BY_CAT.map(([c, ms]) => `<h4>Блоки · ${CAT[c]}</h4>${ms.map(m => a('block-' + m.type, m.name, m.variants.length)).join('')}`).join('')}
+    <h4>Страницы</h4>${pageNames.map(n => a('page-' + slug(n), n, pages[n].length)).join('')}`;
+  const sel = document.getElementById('jump');
+  sel.innerHTML = [...ROUTES.map(([h, l]) => [h, l]), ...DATA.meta.map(m => ['block-' + m.type, 'Блок · ' + m.name]), ...pageNames.map(n => ['page-' + slug(n), 'Страница · ' + n])]
+    .map(([h, l]) => `<option value="${h}" ${h === active ? 'selected' : ''}>${esc(l)}</option>`).join('');
+}
+const totalVariants = DATA.meta.reduce((s, m) => s + m.variants.length, 0);
+const optionalFields = m => m.fields.filter(f => !f.required);
+
+function vOverview() {
+  return `<div class="kicker">Wireframe kit</div><h1 class="ttl">Библиотека блоков Rapid Medical</h1>
+  <p class="lede">Все блоки, из которых сейчас собирается сайт, в виде серых вайрфреймов с реальными текстами. Блок собран из общих компонентов: поменяли компонент — поменялся во всех блоках. Варианты блока — это свойства одного компонента, как в Figma.</p>
+  <div class="figures"><div class="panel"><b>${DATA.meta.length}</b><span>блоков</span></div><div class="panel"><b>${totalVariants}</b><span>вариантов</span></div><div class="panel"><b>${ATOMS.length}</b><span>общих компонентов</span></div><div class="panel"><b>${pageNames.length}</b><span>страниц с реальным составом</span></div></div>
+  <div class="sec"><h3>Как устроено</h3><div class="layers">
+    <div class="panel"><b>1 · Основы</b><span class="lede">Серая палитра, шрифтовая шкала и отступы, снятые с кода сайта.</span></div>
+    <div class="panel"><b>2 · Общие компоненты</b><span class="lede">Заголовок, текст, кнопка, плашка медиа, цифра, карточка, вкладки, поле формы…</span></div>
+    <div class="panel"><b>3 · Блоки</b><span class="lede">Hero, Text and media, Publications… Каждый — из общих компонентов, с вариантами и переключателями частей.</span></div>
+    <div class="panel"><b>4 · Страницы</b><span class="lede">Реальные составы страниц. Можно менять порядок, варианты, добавлять и удалять блоки.</span></div></div></div>
+  <div class="sec"><h3>Блоки</h3>${BY_CAT.map(([c, ms]) => `<div class="kicker" style="margin:14px 0 8px">${CAT[c]}</div><div class="cards">${ms.map(m => `<a class="panel" href="#block-${m.type}"><b>${esc(m.name)}</b><span>${m.variants.map(v => esc(v.label)).join(' · ')}</span></a>`).join('')}</div>`).join('')}</div>
+  <div class="sec"><h3>Для переноса в Figma</h3><p class="lede" style="margin-bottom:12px">Имена и свойства ниже — те же, что в коде сайта (<code>src/blocks/</code>). Компонент блока в Figma: вариант — свойство Variant, необязательные части — булевы свойства, внутри — экземпляры общих компонентов.</p>
+  <div class="panel tbl-wrap"><table class="doc"><thead><tr><th>Компонент</th><th>Variant</th><th>Показ частей (boolean)</th><th>Вложенные компоненты</th></tr></thead><tbody>${DATA.meta.map(m => `<tr><td><a href="#block-${m.type}">Block/${esc(m.name)}</a></td><td><code>${m.variants.map(v => v.id).join(' · ')}</code></td><td>${optionalFields(m).map(f => esc(f.label)).join(', ') || '—'}</td><td>${[...(BLOCK_ATOMS[m.type] || [])].join(', ')}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function vFoundations() {
+  const sw = [['--wf-paper', 'Paper', 'фон страницы'], ['--wf-surface', 'Surface', 'серая полоса'], ['--wf-dark', 'Dark', 'тёмная полоса'], ['--wf-fill', 'Fill', 'плашка медиа'], ['--wf-ink', 'Ink', 'текст'], ['--wf-muted', 'Muted', 'второстепенный текст'], ['--wf-line', 'Line', 'рамки и линии']];
+  const type = [['H1', 'a-h a-h1', '30 → 46 px', 'text-3xl → md:text-5xl'], ['H2', 'a-h a-h2', '24 → 30 px', 'text-2xl → md:text-3xl'], ['H3', 'a-h a-h3', '19 → 22 px', 'text-xl'], ['Lead', 'a-t lead', '18 px', 'text-lg'], ['Body', 'a-t', '15–16 px', 'text-base'], ['Small', 'a-t small', '13–14 px', 'text-sm'], ['Eyebrow', 'a-eyebrow', '11–12 px, caps', 'text-xs uppercase tracking-widest']];
+  return `<div class="kicker">Основы</div><h1 class="ttl">Палитра, шрифты, сетка</h1><p class="lede">Значения сняты с нынешнего кода сайта (Tailwind-классы в шаблонах). В Figma это переменные; при редизайне меняются здесь и расходятся по всем блокам.</p>
+  <div class="sec"><h3>Серая палитра вайрфреймов</h3><div class="panel" style="padding:16px"><div class="swatches">${sw.map(([v, n, d]) => `<div class="sw"><i style="background:var(${v})"></i><div><b>${n}</b><div class="mono" style="color:var(--muted)">${d}</div></div></div>`).join('')}</div></div></div>
+  <div class="sec"><h3>Шрифтовая шкала</h3><div class="panel tbl-wrap"><table class="doc"><thead><tr><th>Стиль</th><th>Образец</th><th>Размер (телефон → десктоп)</th><th>На сайте</th></tr></thead><tbody>${type.map(([n, c, s, tw]) => `<tr><td>${n}</td><td><div class="frame" style="box-shadow:none;background:none;color:var(--ink)"><div class="${c}" style="color:inherit">${n === 'Eyebrow' ? 'Therapies / Large vessel stroke' : 'Active thrombectomy'}</div></div></td><td class="mono">${s}</td><td><code>${tw}</code></td></tr>`).join('')}</tbody></table></div></div>
+  <div class="sec"><h3>Сетка и отступы</h3><div class="panel tbl-wrap"><table class="doc"><thead><tr><th>Токен</th><th>Значение</th><th>На сайте</th></tr></thead><tbody>
+    <tr><td>Контейнер</td><td class="mono">1152 px, поля 16 px</td><td><code>max-w-6xl px-4</code></td></tr>
+    <tr><td>Полоса (Section)</td><td class="mono">48 → 64 px сверху и снизу</td><td><code>py-12 md:py-16</code></td></tr>
+    <tr><td>Hero компактный / большой</td><td class="mono">112 / 160 px</td><td><code>md:py-28 · md:py-40</code></td></tr>
+    <tr><td>Колонки</td><td class="mono">2 · 3 · 4 · 5, на телефоне одна</td><td><code>md:grid-cols-*</code></td></tr>
+    <tr><td>Промежутки</td><td class="mono">8 · 16 · 24 · 32 · 64 px</td><td><code>gap-2 … gap-8, space-y-16</code></td></tr>
+    <tr><td>Скругление</td><td class="mono">4 px; круги — цифры, фото врачей</td><td><code>rounded</code></td></tr></tbody></table></div></div>`;
+}
+function vComponents() {
+  return `<div class="kicker">Общие компоненты</div><h1 class="ttl">${ATOMS.length} компонентов, из которых собраны блоки</h1><p class="lede">У каждого — где используется. В Figma это главные компоненты; блоки содержат их экземпляры.</p>
+  ${ATOMS.map(a => `<div class="panel atom sec" id="atom-${slug(a.name)}"><div class="atom-head"><b>${esc(a.name)}</b><code>${esc(a.figma)}</code></div><div class="lede">${esc(a.note)} <span class="mono">Свойства: ${esc(a.props)}</span></div>
+    <div class="frame">${atomSamples[a.name] ? atomSamples[a.name]() : ''}</div>
+    <div class="meta-row"><span class="kicker">Используется в</span>${[...(USAGE[a.name] || [])].map(t => `<a class="chip" href="#block-${t}">${esc(META[t].name)}</a>`).join('') || '<span class="chip">—</span>'}</div></div>`).join('')}`;
+}
+function frameBar() {
+  return `<div class="board-bar"><div class="seg" role="group" aria-label="Ширина">${['desktop', 'mobile'].map(w => `<button type="button" data-width="${w}" aria-pressed="${state.width === w}">${w === 'desktop' ? 'Десктоп' : 'Телефон 390'}</button>`).join('')}</div>
+    <label style="display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="anat" ${state.anatomy ? 'checked' : ''}> Анатомия</label></div>`;
+}
+function vBlock(type) {
+  const m = META[type]; if (!m) return vOverview();
+  const insts = INST[type] || [];
+  const st = blockState[type] ||= { variant: (insts[0] || {}).variant || m.variants[0].id, src: 0, off: {} };
+  const src = insts[st.src] || insts[0] || { data: {}, page: '—' };
+  const data = clone(src.data);
+  for (const k of Object.keys(st.off)) if (st.off[k]) data[k] = Array.isArray(data[k]) ? [] : null;
+  const realVariants = new Set(insts.filter(i => !i.built).map(i => i.variant));
+  const present = optionalFields(m).filter(f => { const v = src.data[f.key]; return v != null && v !== '' && !(Array.isArray(v) && !v.length); });
+  const vd = m.variants.find(v => v.id === st.variant) || m.variants[0];
+  const html = render({ type, variant: st.variant, data }, { noTrack: true });
+  return `<div class="kicker">Блок · ${CAT[m.category]}</div><h1 class="ttl">${esc(m.name)}</h1><p class="lede">${esc(m.description)}</p>
+    <div class="meta-row"><span class="chip k">Block/${esc(m.name)}</span><span class="chip k">type: ${type}</span>${m.nestable ? '<span class="chip">может стоять во вкладке Product details</span>' : ''}${m.pinned ? '<span class="chip">закреплён: редактор не двигает и не удаляет</span>' : ''}${isFlow({ type, variant: st.variant }) ? '<span class="chip">идёт одним потоком с соседними простыми блоками</span>' : ''}</div>
+    <div class="meta-row"><span class="kicker">Из компонентов</span>${[...(BLOCK_ATOMS[type] || [])].map(a => `<a class="chip" href="#components">${esc(a)}</a>`).join('')}</div>
+    <div class="panel props">
+      <div class="prop"><span class="l">Variant</span><div><div class="seg" role="group" aria-label="Вариант">${m.variants.map(v => `<button type="button" data-variant="${v.id}" aria-pressed="${v.id === st.variant}" title="${esc(v.description || '')}">${esc(v.label)}${realVariants.has(v.id) ? '<span class="real" title="есть на сайте"></span>' : ''}</button>`).join('')}</div><div class="vdesc"><code>${vd.id}</code>${vd.description ? ' — ' + esc(vd.description) : ''}${realVariants.has(vd.id) ? '' : ' · на сайте сейчас не встречается'}</div></div></div>
+      ${present.length ? `<div class="prop"><span class="l">Показ частей</span><div class="toggles">${present.map(f => `<label><input type="checkbox" data-off="${f.key}" ${st.off[f.key] ? '' : 'checked'}> ${esc(f.label)}</label>`).join('')}</div></div>` : ''}
+      <div class="prop"><label for="srcsel">Контент</label><div><select id="srcsel">${insts.map((i, n) => `<option value="${n}" ${n === st.src ? 'selected' : ''}>${esc(i.page)} · ${esc(i.variant)}${i.nested ? ' (во вкладке)' : ''}</option>`).join('')}</select><div class="src-note">Тексты — с сайта, картинки и видео — плашки с именем файла.</div></div></div>
+    </div>
+    <div class="board">${frameBar()}<div class="frame ${state.width === 'mobile' ? 'mobile' : ''} ${state.anatomy ? 'anat' : ''}" data-anatomy="${state.anatomy}">${html}</div>${state.anatomy ? `<div class="legend"><ol id="legend"></ol></div>` : ''}</div>
+    <div class="sec"><h3>Поля блока</h3><div class="panel tbl-wrap"><table class="doc"><thead><tr><th>Ключ</th><th>Часть</th><th>Тип</th><th></th></tr></thead><tbody>${m.fields.map(f => `<tr><td><code>${f.key}</code></td><td>${esc(f.label)}</td><td class="mono">${f.kind}</td><td>${f.required ? 'обязательное' : ''}${f.note ? `<span style="color:var(--muted)"> ${esc(f.note)}</span>` : ''}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function vPage(name) {
+  const bs = pages[name];
+  const label = b => `${META[b.type] ? META[b.type].name : b.type} · ${(META[b.type]?.variants.find(v => v.id === b.variant) || {}).label || b.variant}`;
+  const wrapOne = (b, i, html) => `<div class="pb" data-pb="${i}"><div class="pb-bar"><span class="tag">${i + 1}. ${esc(label(b))}</span>
+    <select data-pv="${i}" aria-label="Вариант блока ${i + 1}">${(META[b.type]?.variants || []).map(v => `<option value="${v.id}" ${v.id === b.variant ? 'selected' : ''}>${esc(v.label)}</option>`).join('')}</select>
+    <button type="button" data-mv="${i}" data-d="-1" aria-label="Выше" ${i ? '' : 'disabled'}>↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Ниже" ${i < bs.length - 1 ? '' : 'disabled'}>↓</button><button type="button" data-rm="${i}" aria-label="Убрать">✕</button></div>${html}</div>`;
+  return `<div class="kicker">Страница</div><h1 class="ttl">${esc(name)}</h1><p class="lede">Реальный состав страницы из блоков. Наведите на блок: можно сменить вариант, сдвинуть или убрать. Изменения хранятся только в этом браузере.</p>
+    <div class="composer-tools"><label for="addsel" class="kicker">Добавить блок</label><select id="addsel" class="btn">${DATA.meta.map(m => `<option value="${m.type}">${esc(m.name)}</option>`).join('')}</select><button type="button" class="btn dark" id="addbtn">Добавить в конец</button><button type="button" class="btn" id="resetbtn">Вернуть как на сайте</button><button type="button" class="btn" id="copybtn">Копировать состав</button><span id="copymsg" class="mono" style="color:var(--muted)"></span></div>
+    <ol class="outline-list" id="outline">${bs.map((b, i) => `<li>${esc(label(b))}</li>`).join('')}</ol>
+    <div class="board">${frameBar()}<div class="frame ${state.width === 'mobile' ? 'mobile' : ''}">${renderPage(bs, wrapOne)}</div></div>`;
+}
+
+/* ---------- anatomy pins ---------- */
+function placePins() {
+  const fr = view.querySelector('.frame[data-anatomy="true"]'); const lg = document.getElementById('legend');
+  if (!fr || !lg) return;
+  fr.querySelectorAll('.pin').forEach(p => p.remove());
+  const type = location.hash.replace('#block-', ''); const m = META[type]; if (!m) return;
+  const fields = Object.fromEntries(m.fields.map(f => [f.key, f]));
+  const seen = new Map();
+  for (const el of fr.querySelectorAll('[data-part]')) {
+    if (el.closest('[data-nested]')) continue;
+    const k = el.dataset.part; if (seen.has(k) || !el.getClientRects().length) continue;
+    seen.set(k, el);
+  }
+  const fb = fr.getBoundingClientRect(); let n = 0; const rows = [];
+  for (const [k, el] of seen) {
+    n++; const r = el.getBoundingClientRect();
+    const pin = document.createElement('span'); pin.className = 'pin'; pin.textContent = n;
+    pin.style.left = Math.max(2, Math.min(fb.width - 22, r.left - fb.left - 10)) + 'px'; pin.style.top = Math.max(2, r.top - fb.top - 10) + 'px';
+    fr.appendChild(pin);
+    const f = fields[k] || { label: k, kind: '' };
+    const atom = el.dataset.atom || el.closest('[data-atom]')?.dataset.atom || el.querySelector('[data-atom]')?.dataset.atom || 'группа';
+    rows.push(`<li><span class="num">${n}</span><span>${esc(f.label)} <span class="k">${k}${f.required ? ' · обяз.' : ''} · ${esc(atom)}</span></span></li>`);
+  }
+  lg.innerHTML = rows.join('') || '<li><span></span><span class="k">В этом варианте нет размеченных частей</span></li>';
+}
+
+/* ---------- router & events ---------- */
+function show() {
+  const h = location.hash.slice(1) || 'overview';
+  let html;
+  if (h === 'foundations') html = vFoundations();
+  else if (h === 'components') html = vComponents();
+  else if (h.startsWith('block-')) html = vBlock(h.slice(6));
+  else if (h.startsWith('page-')) { const n = pageNames.find(x => 'page-' + slug(x) === h); html = n ? vPage(n) : vOverview(); }
+  else html = vOverview();
+  view.innerHTML = html; nav(h);
+  requestAnimationFrame(placePins);
+}
+const curPage = () => pageNames.find(x => 'page-' + slug(x) === location.hash.slice(1));
+function rerender(keepScroll = true) { const y = window.scrollY; show(); if (keepScroll) window.scrollTo(0, y); }
+window.addEventListener('hashchange', () => { show(); window.scrollTo(0, 0); });
+window.addEventListener('resize', () => requestAnimationFrame(placePins));
+document.getElementById('jump').addEventListener('change', e => { location.hash = e.target.value; });
+view.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.tab) { const g = t.dataset.tab, i = t.dataset.i; t.parentElement.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b === t)); view.querySelectorAll(`[data-panel="${g}"]`).forEach(p => p.hidden = p.dataset.i !== i); requestAnimationFrame(placePins); return; }
+  if (t.dataset.width) { state.width = t.dataset.width; saveUi(); return rerender(); }
+  if (t.dataset.variant) { const type = location.hash.replace('#block-', ''); const st = blockState[type]; st.variant = t.dataset.variant; const insts = INST[type] || []; const k = insts.findIndex(i => i.variant === st.variant); if (k >= 0) { st.src = k; st.off = {}; } return rerender(); }
+  const name = curPage(); if (!name) return;
+  const bs = pages[name];
+  if (t.dataset.mv) { const i = +t.dataset.mv, j = i + +t.dataset.d; [bs[i], bs[j]] = [bs[j], bs[i]]; savePages(); return rerender(); }
+  if (t.dataset.rm) { bs.splice(+t.dataset.rm, 1); savePages(); return rerender(); }
+  if (t.id === 'addbtn') { const type = document.getElementById('addsel').value; const src = (INST[type] || []).find(i => !i.nested) || (INST[type] || [])[0]; bs.push({ type, variant: src ? src.variant : META[type].variants[0].id, data: clone(src ? src.data : {}) }); savePages(); rerender(); window.scrollTo(0, document.body.scrollHeight); return; }
+  if (t.id === 'resetbtn') { pages[name] = clone(DATA.pages[name]); savePages(); return rerender(); }
+  if (t.id === 'copybtn') {
+    const text = name + '\n' + bs.map((b, i) => `${i + 1}. ${META[b.type]?.name || b.type} · ${b.variant}${b.data && (b.data.title || b.data.eyebrow) ? ' — ' + (b.data.title || b.data.eyebrow) : ''}`).join('\n');
+    const msg = document.getElementById('copymsg');
+    const fallback = () => { const o = document.getElementById('outline'); const r = document.createRange(); r.selectNodeContents(o); const s = getSelection(); s.removeAllRanges(); s.addRange(r); msg.textContent = 'Выделено — нажмите ⌘C'; };
+    try { navigator.clipboard.writeText(text).then(() => { msg.textContent = 'Скопировано'; }, fallback); } catch { fallback(); }
+  }
+});
+view.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'anat') { state.anatomy = t.checked; saveUi(); return rerender(); }
+  if (t.id === 'srcsel') { const type = location.hash.replace('#block-', ''); const st = blockState[type]; st.src = +t.value; st.off = {}; st.variant = (INST[type][st.src] || {}).variant || st.variant; return rerender(); }
+  if (t.dataset.off) { const type = location.hash.replace('#block-', ''); blockState[type].off[t.dataset.off] = !t.checked; return rerender(); }
+  if (t.dataset.pv) { const name = curPage(); if (!name) return; pages[name][+t.dataset.pv].variant = t.value; savePages(); return rerender(); }
+});
+show();
+})();
+</script>

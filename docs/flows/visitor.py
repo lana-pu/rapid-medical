@@ -20,15 +20,12 @@ def page(name, idx=None, extra=None):
     return {'c': 'rm-page', 'items': items}
 
 
-HEADER = {'c': 'siteheader', 'logo': 'Rapid Medical', 'nav': ['Therapies', 'Evidence', 'News', 'About', 'Careers'], 'cta': 'Get in touch'}
-HEADER_M = {'c': 'siteheader', 'logo': 'Rapid Medical', 'cta': '☰'}
-BANNER = {'c': 'box', 'tone': 'surface', 'pad': 's', 'items': [{'c': 'row', 'gap': 's', 'wrap': True, 'items': [
-    {'c': 'text', 'v': 'small', 'text': 'It looks like you are in Americas. This site is intended for healthcare professionals in your region.'},
-    {'c': 'button', 'v': 'primary', 'size': 's', 'text': 'Go to the Americas site', 'to': 'therapies', 'label': 'плашка региона'},
-    {'c': 'button', 'v': 'link', 'text': 'Stay here'}]}],
+HEADER = {'c': 'rm-header', 'region': 'us'}
+HEADER_NONE = {'c': 'rm-header'}
+HEADER_M = {'c': 'rm-header', 'region': 'us'}
+BANNER = {'c': 'rm-regionBanner', 'suggested': 'us', 'to': 'therapies', 'label': 'плашка региона',
     'annotation': 'Плашка по IP, без автоматического редиректа (Fix List C.4): Google и врачи в поездках должны видеть любой регион. По коду: ведёт на список терапий региона, а не на ту же страницу.'}
-FOOTER = {'c': 'sitefooter', 'columns': [{'title': 'Get in touch', 'items': ['Contact us']}, {'title': 'Follow', 'items': ['LinkedIn', 'Instagram', 'YouTube']},
-                                         {'title': 'Legal', 'items': ['Privacy Statement', 'Terms of Use', 'Compliance Statement', 'Patents']}]}
+FOOTER = {'c': 'rm-footer', 'region': 'us'}
 THANKS = {'c': 'box', 'tone': 'surface', 'pad': 'm', 'border': True, 'items': [{'c': 'text', 'v': 'strong', 'text': 'Thank you for contacting us.'},
                                                                               {'c': 'text', 'v': 'small', 'text': 'We will get back to you as soon as possible.'}]}
 
@@ -45,12 +42,12 @@ flow = {
     ],
     'links': [{'from': 'evidence', 'to': 'webinars', 'label': 'меню → вебинары (через In-Practice)'}, {'from': 'aneurysm', 'to': 'aneurysm-phone', 'label': 'та же страница на телефоне'}],
     'screens': [
-        {'id': 'home', 'title': 'Home page, first visit', 'url': 'rapid-medical.com', 'body': [BANNER, HEADER, page('Home', [0, 1, 2], {
+        {'id': 'home', 'title': 'Home page, first visit', 'url': 'rapid-medical.com', 'body': [BANNER, HEADER_NONE, page('Home', [0, 1, 2], {
             0: {'to': 'choose', 'label': 'Explore Our Therapies', 'focus': {'part': 'cta', 'style': 'hover', 'cursor': True},
                 'annotation': 'Два пути к терапиям: плашка региона и кнопка героя. Кнопка без запомненного региона ведёт на выбор региона — лишний шаг, если плашка уже знает регион. Вопрос: вести кнопку сразу в подсказанный регион?'}})]},
-        {'id': 'choose', 'title': 'Choose your location', 'url': 'rapid-medical.com/choose-your-location', 'height': 560, 'body': [HEADER, page('Choose location', None, {
+        {'id': 'choose', 'title': 'Choose your location', 'url': 'rapid-medical.com/choose-your-location', 'height': 560, 'body': [HEADER_NONE, page('Choose location', None, {
             1: {'to': 'therapies', 'annotation': 'Подсказанный регион выделен рамкой. Названия здесь «Europe & Middle East», а в плашке и шапках — «Europe, Middle East, Latin America & Australia» (по коду, REGION_CHOICES и REGION_LABELS). Свести к одному.'}})]},
-        {'id': 'therapies', 'title': 'Therapies, Americas', 'url': 'rapid-medical.com/us/therapies', 'body': [HEADER, page('US · Therapies', None, {
+        {'id': 'therapies', 'title': 'Therapies, Americas', 'url': 'rapid-medical.com/us/therapies', 'body': [dict(HEADER, menuOpen=True, annotation='По коду: в шапке метка «🌐 US» — код региона, а не название (REGION_SHORT). Меню Therapies раскрывает терапии выбранного региона.'), page('US · Therapies', None, {
             2: {'to': 'aneurysm', 'label': 'COMANECI™', 'focus': {'part': 'links', 'style': 'hover', 'cursor': True}}})]},
         {'id': 'aneurysm', 'title': 'Aneurysm: top of the page', 'url': 'rapid-medical.com/us/therapies/aneurysm', 'body': [HEADER, page('US · Aneurysm', [0, 1, 2], {
             0: {'to': 'contact', 'label': 'Request a demo', 'focus': {'part': 'eyebrow', 'style': 'hover'},

@@ -100,7 +100,7 @@
 - **Вкладка по ссылке не открывается.** «Clinical evidence» ведёт на `/{region}/evidence#comaneci`, но `Tabs.tsx` не
   читает якорь: открыта первая вкладка (TIGERTRIEVER™). Врач видит не те исследования.
 - **Коды регионов видны посетителю:** «OUS version · APAC version» над заголовком терапии (`REGION_SHORT` в
-  `from-solution.ts`). И три разных названия региона: чузер «Europe & Middle East», `REGION_LABELS` «Europe, Middle East,
+  `from-solution.ts`) и метка «🌐 OUS» в верхней строке шапки (`Header.tsx`). И три разных названия региона: чузер «Europe & Middle East», `REGION_LABELS` «Europe, Middle East,
   Latin America & Australia», админка — коды.
 - Вопросы к владелице: кнопка героя главной — сразу в подсказанный регион; вкладка Clinical evidence — ссылка или 3
   последних исследования во вкладке; текст после запроса вебинара (когда придёт запись); Country/State в контактной форме.

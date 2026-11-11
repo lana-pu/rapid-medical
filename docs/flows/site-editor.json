@@ -376,20 +376,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -530,20 +522,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -710,20 +694,12 @@
        "gap": "xs",
        "items": [
         {
-         "c": "siteheader",
-         "logo": "Rapid Medical",
-         "nav": [
-          "Therapies",
-          "Evidence",
-          "News",
-          "About",
-          "Careers"
-         ],
-         "cta": "Get in touch"
-        },
-        {
          "c": "rm-page",
          "items": [
+          {
+           "c": "rm-header",
+           "region": "ous"
+          },
           {
            "c": "rm-hero",
            "v": "video",
@@ -909,20 +885,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -1145,20 +1113,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -1381,20 +1341,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -1536,20 +1488,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -1777,20 +1721,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",
@@ -1922,20 +1858,12 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
-    },
-    {
      "c": "rm-page",
      "items": [
+      {
+       "c": "rm-header",
+       "region": "ous"
+      },
       {
        "c": "rm-hero",
        "v": "video",

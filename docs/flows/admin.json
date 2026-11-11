@@ -2896,16 +2896,7 @@
      ]
     },
     {
-     "c": "siteheader",
-     "logo": "Rapid Medical",
-     "nav": [
-      "Therapies",
-      "Evidence",
-      "News",
-      "About",
-      "Careers"
-     ],
-     "cta": "Get in touch"
+     "c": "rm-header"
     },
     {
      "c": "rm-page",
