@@ -389,11 +389,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -404,7 +404,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4",
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "to": "edit-text",
        "annotation": "Страница выглядит как на сайте. Пунктир при наведении показывает, что можно поменять. Клик — правка на месте.",
        "focus": {
@@ -419,8 +419,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-textMedia",
@@ -429,7 +429,7 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
       }
      ]
     }
@@ -535,11 +535,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -550,7 +550,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4",
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "annotation": "Текст правится прямо в заголовке. Шрифт, цвет и размер редактору недоступны: дизайн заперт (ADR-006).",
        "focus": {
         "style": "selected",
@@ -583,8 +583,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-textMedia",
@@ -593,7 +593,7 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
       }
      ]
     }
@@ -707,11 +707,11 @@
            "eyebrow": "Therapies / Large vessel stroke",
            "eyebrowLinks": [
             {
-             "label": "US version",
+             "label": "Americas version",
              "href": "/us/therapies/lvo"
             },
             {
-             "label": "APAC version",
+             "label": "Asia & Pacific version",
              "href": "/apac/therapies/lvo"
             }
            ],
@@ -722,7 +722,7 @@
             "label": "Request a demo"
            },
            "imageUrl": null,
-           "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+           "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
           },
           {
            "c": "rm-textMedia",
@@ -730,8 +730,8 @@
            "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
            "title": "control",
            "eyebrow": "Gain active",
-           "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-           "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png",
+           "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+           "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
            "selected": true
           }
          ]
@@ -898,11 +898,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -913,7 +913,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -921,8 +921,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-textMedia",
@@ -931,7 +931,7 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
       }
      ]
     },
@@ -1126,11 +1126,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -1141,7 +1141,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -1149,8 +1149,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-cta",
@@ -1209,7 +1209,7 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
       }
      ]
     },
@@ -1355,11 +1355,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -1370,7 +1370,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -1378,8 +1378,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-cta",
@@ -1512,11 +1512,11 @@
            "eyebrow": "Therapies / Large vessel stroke",
            "eyebrowLinks": [
             {
-             "label": "US version",
+             "label": "Americas version",
              "href": "/us/therapies/lvo"
             },
             {
-             "label": "OUS version",
+             "label": "Europe & Middle East version",
              "href": "/ous/therapies/lvo"
             }
            ],
@@ -1526,7 +1526,7 @@
             "href": "/contact-us?region=apac&topic=demo",
             "label": "Request a demo"
            },
-           "imageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/3666+TT13+Expand+-+Compress+Dynamic+V3_HIGHRES.gif",
+           "imageUrl": "/uploads/duda/3666-TT13-Expand---Compress-Dynamic-V3_HIGHRES-e31360.gif",
            "videoUrl": null,
            "selected": true,
            "annotation": "Отличие видно прямо на странице: рамка на блоке, который в этом регионе свой."
@@ -1536,7 +1536,7 @@
            "v": "lead",
            "title": null,
            "body": null,
-           "imageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png",
+           "imageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
            "videoUrl": null,
            "selected": true
           },
@@ -1546,8 +1546,8 @@
            "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
            "title": "control",
            "eyebrow": "Gain active",
-           "videoUrl": "https://vid.cdn-website.com/48595db0/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-           "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+           "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-10b47a.mp4",
+           "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
           }
          ]
         }
@@ -1702,11 +1702,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -1717,7 +1717,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -1725,8 +1725,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       }
      ]
     }
@@ -1935,11 +1935,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -1950,7 +1950,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -1958,8 +1958,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       },
       {
        "c": "rm-cta",
@@ -2072,11 +2072,11 @@
        "eyebrow": "Therapies / Large vessel stroke",
        "eyebrowLinks": [
         {
-         "label": "US version",
+         "label": "Americas version",
          "href": "/us/therapies/lvo"
         },
         {
-         "label": "APAC version",
+         "label": "Asia & Pacific version",
          "href": "/apac/therapies/lvo"
         }
        ],
@@ -2087,7 +2087,7 @@
         "label": "Request a demo"
        },
        "imageUrl": null,
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/636q06j9Tiq4QNRHY6i7_tigerface+wide-v.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
       },
       {
        "c": "rm-textMedia",
@@ -2095,8 +2095,8 @@
        "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
        "title": "control",
        "eyebrow": "Gain active",
-       "videoUrl": "https://vid.cdn-website.com/8b5f57de/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
-       "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
       }
      ]
     }
