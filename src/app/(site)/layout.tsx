@@ -1,6 +1,7 @@
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Integrations } from "@/components/site/Integrations";
+import { Tracking } from "@/components/site/Tracking";
 import { getRememberedRegion, getSuggestedRegion } from "@/lib/region-cookie";
 import { RegionBanner } from "@/components/site/RegionBanner";
 import { REGION_LABELS } from "@/lib/regions";
@@ -30,7 +31,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} />
       <div className="flex-1">{children}</div>
       <Footer contact={contact} social={social} region={region} regionalNotice={notice} />
-      {editing ? <EditorLoader /> : <Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} />}
+      {editing ? <EditorLoader /> : (<><Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} /><Tracking /></>)}
     </>
   );
 }

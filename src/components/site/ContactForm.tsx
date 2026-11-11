@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { submitForm, type FormState } from "@/lib/forms";
+import { attribution, track } from "@/lib/tracking";
 
 const REGIONS = ["Americas", "Europe", "Asia Pacific", "Middle East"];
 const input = "w-full rounded border border-border bg-background px-3 py-2 text-sm focus:border-foreground focus:outline-none";
@@ -22,8 +23,17 @@ export function ContactForm({
   meta?: Record<string, string>;
   compact?: boolean;
 }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(submitForm, null);
+  // Source of the visit goes into the submission (variant Г); a successful one is reported to GA4 (variant Б).
+  const topic = useRef("");
+  const [state, action, pending] = useActionState<FormState, FormData>((prev, fd) => {
+    topic.current = String(fd.get("topic") ?? "");
+    fd.set("meta", JSON.stringify({ ...attribution(), ...meta }));
+    return submitForm(prev, fd);
+  }, null);
   const err = (k: string) => (state && !state.ok && state.errors?.[k]) || null;
+  useEffect(() => {
+    if (state?.ok) track("generate_lead", { form, topic: topic.current });
+  }, [state, form]);
 
   if (state?.ok)
     return (
@@ -36,7 +46,6 @@ export function ContactForm({
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="form" value={form} />
-      <input type="hidden" name="meta" value={JSON.stringify(meta)} />
       {/* honeypot */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 

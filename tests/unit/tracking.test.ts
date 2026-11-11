@@ -1,0 +1,19 @@
+import { describe, expect, it } from "vitest";
+import { eventForLink } from "@/lib/tracking";
+
+describe("eventForLink", () => {
+  const ctx = { inHeader: false, pathname: "/ous/therapies" };
+  it("email links", () => {
+    expect(eventForLink("mailto:orders.inc@rapid-medical.com?subject=Order", ctx)).toEqual({ name: "click_email", params: { link_url: "orders.inc@rapid-medical.com" } });
+  });
+  it("therapy pages: source is the menu, the overview or another page", () => {
+    expect(eventForLink("/ous/therapies/mvo", ctx)?.params).toEqual({ region: "ous", therapy: "mvo", source: "overview" });
+    expect(eventForLink("/us/therapies/lvo", { ...ctx, inHeader: true })?.params.source).toBe("menu");
+    expect(eventForLink("/us/therapies/lvo", { inHeader: false, pathname: "/" })?.params.source).toBe("page");
+  });
+  it("everything else is not reported", () => {
+    expect(eventForLink("/ous/therapies", ctx)).toBeNull();
+    expect(eventForLink("/about-us", ctx)).toBeNull();
+    expect(eventForLink("https://example.com/x.pdf", ctx)).toBeNull();
+  });
+});

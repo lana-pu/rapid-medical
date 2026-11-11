@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { db, contactSubmissions } from "@/db";
 import { sendMail } from "@/lib/mail";
-import { getSetting } from "@/lib/settings";
+import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
@@ -22,7 +22,7 @@ const schema = z.object({
   state: z.string().trim().max(80).default(""),
   message: z.string().trim().max(4000).default(""),
   optIn: z.boolean().default(false),
-  meta: z.record(z.string(), z.string()).default({}),
+  meta: z.record(z.string().max(40), z.string().max(500)).default({}),
 });
 
 // Very small in-memory rate limiter (per instance). Replace with Redis/Upstash in multi-instance hosting.
@@ -80,7 +80,7 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
     "", `View in admin: ${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions/${row.id}`,
   ];
   try {
-    const to = recipientFor(d, await getSetting<RoutingSettings>("contact"));
+    const to = recipientFor(d, await getLiveSetting<RoutingSettings>("contact")); // published values only, never a preview draft
     await sendMail({ to, subject: `[Website] ${d.form}: ${d.topic || "new submission"} – ${d.firstName} ${d.lastName}`, text: lines.join("\n"), replyTo: d.email });
   } catch (e) {
     console.error("mail failed", e);

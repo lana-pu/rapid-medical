@@ -226,6 +226,27 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | SMTP | `nodemailer` | Не сконфигурировано по умолчанию |
 | Vercel Cron | `vercel.json` → `/api/cron/publish` 05:00 UTC | Не подключено (Vercel не настроен) |
 
+### Аналитика (решение 2026-11-10, аудит Emily: варианты Б + Г)
+
+**Б — события GA4 с сайта** (`src/lib/tracking.ts`, `Tracking.tsx`, `ContactForm.tsx`). Шлются, только если GA
+подключён (`gtag` есть); без ID в настройках — ничего.
+
+| Событие | Когда | Параметры |
+|---|---|---|
+| `generate_lead` | форма успешно отправлена (сервер ответил ok) | `form` (contact / webinar / careers), `topic` |
+| `select_therapy` | клик по ссылке на страницу терапии | `region`, `therapy`, `source` = `menu` / `overview` / `page` |
+| `click_email` | клик по `mailto:` | `link_url` (адрес) |
+| `file_download` | скачивание PDF | шлёт сам GA4 (enhanced measurement), сайт не дублирует |
+
+Маркетинг в GA4: отметить `generate_lead` как key event, включить enhanced measurement, фильтры ботов и внутреннего
+трафика, связать Search Console.
+
+**Г — источник в самой заявке.** При первой странице визита в `sessionStorage` (`rm_attr`) пишутся `landing_page`,
+`referrer` (внешний или `(direct)`) и `utm_source/medium/campaign`; при отправке любой формы они вместе с `form_page`
+попадают в `contact_submissions.meta` (видно в админке и в письме). Не зависит от GA, блокировщиков и согласия на
+cookie; заблокированное хранилище → заявка просто без источника. Значения обрезаются до 300 символов, сервер
+принимает ключи ≤ 40 и значения ≤ 500 символов.
+
 ## Инструмент Tigertriever (предложение, кода нет)
 
 > Гипотеза на проектирование, 2026-11-08. Кода инструмента в репозитории нет; ниже — модель для прототипа Content Studio
