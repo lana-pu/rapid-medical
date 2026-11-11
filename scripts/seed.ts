@@ -13,6 +13,7 @@ import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
 import { markdownToHtml } from "../src/lib/html";
 import { SOLUTIONS } from "../content/seed/solutions";
+import { groupForSlug } from "../src/lib/therapy-groups";
 import { SETTINGS, PRODUCTS, REDIRECTS, WEBINARS } from "../content/seed/settings";
 
 const RESET = process.argv.includes("--reset");
@@ -53,7 +54,7 @@ async function main() {
   /* solutions */
   for (const s of SOLUTIONS) {
     const { product, heroCta, ...rest } = s;
-    const row: schema.NewSolution = { ...rest, regulatoryHtml: markdownToHtml(rest.regulatoryHtml), referencesHtml: markdownToHtml(rest.referencesHtml), productId: prodId(product), heroCta: heroCta ?? null, status: "published" };
+    const row: schema.NewSolution = { ...rest, therapyGroup: groupForSlug(rest.slug), regulatoryHtml: markdownToHtml(rest.regulatoryHtml), referencesHtml: markdownToHtml(rest.referencesHtml), productId: prodId(product), heroCta: heroCta ?? null, status: "published" };
     await db
       .insert(solutions)
       .values(row)

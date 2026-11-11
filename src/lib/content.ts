@@ -55,8 +55,12 @@ async function one<T extends { id: number }>(resource: string, row: T | undefine
 
 export async function getSolutionsNav(region: Region) {
   const rows = await db
-    .select({ id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl })
+    .select({
+      id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, therapyGroup: solutions.therapyGroup, proofPoint: solutions.proofPoint,
+      heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name,
+    })
     .from(solutions)
+    .leftJoin(products, eq(products.id, solutions.productId))
     .where(and(eq(solutions.region, region), await visible(solutions.status)))
     .orderBy(asc(solutions.sortOrder), asc(solutions.id));
   return overlay("solutions", rows);
@@ -173,7 +177,7 @@ export async function getAllPublicPaths(): Promise<string[]> {
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
   ]);
   return [
-    "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us", "/choose-your-location",
+    "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us",
     ...["us", "ous", "apac"].flatMap((r) => [`/${r}/therapies`, `/${r}/evidence`, `/${r}/webinars`]),
     ...sols.map((s) => `/${s.region}/therapies/${s.slug}`),
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),

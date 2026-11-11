@@ -82,8 +82,9 @@ on-page editor (`data-e`), поэтому правка на странице п�
   предложенный регион не совпадает с текущим — баннер над шапкой «It looks like you are in … · Go to the
   … site / Stay here» (`RegionBanner`), отказ запоминается cookie `rm_geo_dismissed` (30 дней).
   Региональные страницы (терапии, лендинги, Evidence, вебинары) отдают `hreflang`: `en-US` → `/us/…`,
-  `en` → `/ous/…`, `en-AU` → `/apac/…`, `x-default` → `/choose-your-location`.
-- **Решение 2026-11-10 (аудит Emily, кода ещё нет — заменяет баннер выше):**
+  `en` → `/ous/…`, `en-AU` → `/apac/…`, `x-default` → OUS-версия.
+- **Решение 2026-11-10 (аудит Emily), сделано:** (баннер выше остаётся только для чужого региона по прямой ссылке —
+  IP-регион ≠ регион страницы, пока посетитель сам не выбрал регион)
   - Регион по IP **применяется сразу** при первом заходе на любую страницу (пишется в `rm_region`), без
     баннера-вопроса. Ручной выбор в переключателе шапки тоже пишется в `rm_region` и IP больше не перебивается.
   - Страна не определилась (VPN, нет заголовка, страны нет в карте) → «Therapies» и «Evidence» ведут на
@@ -96,6 +97,12 @@ on-page editor (`data-e`), поэтому правка на странице п�
     первый визит). Ведут на него: кнопка на главной, «All therapies», корень legacy-хостов и `/{region}`.
     Собирается из записей терапий (название, подзаголовок, картинка, направление), своих текстов — только
     заголовок; у терапии необязательное поле «одна цифра-доказательство» (заполняется после MLR).
+  - Реализация: `proxy.ts` пишет `rm_region` из IP и в ответ, и в сам запрос (первая страница уже с регионом);
+    коды стран-заглушки (XX, T1, A1, EU…) = страна неизвестна. Переключатель в шапке (`RegionSwitcher`) →
+    `GET /api/region?to=&back=` (запоминает выбор, гасит баннер, возвращает на ту же страницу в другом регионе;
+    нет такой страницы в регионе → обзор). Направление — поле `solutions.therapyGroup` (миграция 0010),
+    доказательство — `solutions.proofPoint`. `hreflang x-default` → OUS-версия страницы (выбор региона теперь
+    редиректит и не может быть x-default).
 - **Legacy-хосты** (`us.` / `ous.` / `apac.rapid-medical.com`, `*-rapid-medical.juuced.co`) → 301 на
   `NEXT_PUBLIC_SITE_URL/{region}{path}`; корень → `/therapies`, `lvo|mvo|aneurysm|vasospasm|access|drivewire` →
   `/therapies/{slug}`.
@@ -116,7 +123,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 
 | Таблица | Admin slug | Ключевые поля | `status` по умолчанию | Особенности |
 |---|---|---|---|---|
-| `solutions` | `solutions` (Therapies) | `slug`+`region` (unique), `productId`, hero/intro, `benefits[]`, overview, `overviewFeatures[]`, `annotatedImage`, `specs` (таблица) / `specImageUrls` (legacy), `howItWorks[]`, `inPractice[]`, `actionLinks[]`, closing, `regulatoryHtml`, `referencesHtml`, SEO (`metaTitle` — полный заголовок без шаблона, `metaDescription`, `shareImageUrl` → og:image, иначе hero) | `draft` | Одна строка на (терапия, регион) — регуляторика разная. «Copy to {REGION}» в админке |
+| `solutions` | `solutions` (Therapies) | `slug`+`region` (unique), `productId`, `therapyGroup` (ischemic / hemorrhagic / access / пусто), `proofPoint`, hero/intro, `benefits[]`, overview, `overviewFeatures[]`, `annotatedImage`, `specs` (таблица) / `specImageUrls` (legacy), `howItWorks[]`, `inPractice[]`, `actionLinks[]`, closing, `regulatoryHtml`, `referencesHtml`, SEO (`metaTitle` — полный заголовок без шаблона, `metaDescription`, `shareImageUrl` → og:image, иначе hero) | `draft` | Одна строка на (терапия, регион) — регуляторика разная. «Copy to {REGION}» в админке |
 | `publications` | `publications` (Evidence) | `title`, `authors`, `journal`, `publishedOn` (месяц), `url`/`pdfUrl`/`doi`, `productId`, `regions[]` (пусто = все), `featured`, `imageUrl` | `published` | |
 | `news_items` | `news` | `title`, `publishedOn`, `url` (внешняя), `source`, `excerpt`, `featured` | `published` | Только внешние ссылки |
 | `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос |

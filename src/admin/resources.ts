@@ -11,6 +11,7 @@ import {
   redirects,
 } from "@/db/schema";
 import type { FieldDef, ListColumn } from "./fields";
+import { THERAPY_GROUPS } from "@/lib/therapy-groups";
 
 export type Resource = {
   slug: string;
@@ -63,6 +64,15 @@ export const RESOURCES: Resource[] = [
       { ...statusField, section: "Basics" },
       { ...sortField, section: "Basics" },
       { name: "breadcrumb", label: "Breadcrumb", type: "text", section: "Basics", placeholder: "OUR SOLUTIONS / LARGE VESSEL STROKE" },
+      {
+        name: "therapyGroup",
+        label: "Group in the menu and on the overview",
+        type: "select",
+        half: true,
+        section: "Basics",
+        options: [{ value: "", label: "No group (listed last)" }, ...THERAPY_GROUPS.map((g) => ({ value: g.value, label: g.label }))],
+      },
+      { name: "proofPoint", label: "Proof point on the overview card", type: "text", half: true, section: "Basics", help: "One line with a cited result. Optional; fill in after MLR approval." },
 
       { name: "heroTitle", label: "Hero title", type: "text", required: true, section: "Hero" },
       { name: "heroBody", label: "Hero body", type: "textarea", section: "Hero", rows: 3 },

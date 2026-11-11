@@ -217,6 +217,10 @@ export const solutions = pgTable(
     sortOrder: integer("sort_order").notNull().default(0),
 
     navLabel: text("nav_label").notNull(), // "Large vessel stroke"
+    /** Menu and overview group: ischemic | hemorrhagic | access ("" = ungrouped, listed last) */
+    therapyGroup: text("therapy_group").notNull().default(""),
+    /** Optional one-line proof point on the overview card ("TIGER trial: …"); filled after MLR review */
+    proofPoint: text("proof_point").notNull().default(""),
     breadcrumb: text("breadcrumb").notNull().default(""), // "OUR SOLUTIONS / LARGE VESSEL STROKE"
     metaTitle: text("meta_title").notNull().default(""),
     metaDescription: text("meta_description").notNull().default(""),

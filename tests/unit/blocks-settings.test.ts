@@ -68,17 +68,20 @@ describe("evidenceToBlocks", () => {
 });
 
 describe("therapiesToBlocks", () => {
-  const items = [{ slug: "lvo", navLabel: "LVO", heroTitle: "Title" }];
-  it("rows from settings", () => {
+  const items = [
+    { slug: "drivewire", navLabel: "Access", heroTitle: "Steer", therapyGroup: "access", productName: "DRIVEWIRE™" },
+    { slug: "lvo", navLabel: "LVO", heroTitle: "Title", therapyGroup: "ischemic", proofPoint: "TIGER trial", productName: "TIGERTRIEVER™" },
+    { slug: "aneurysm", navLabel: "Aneurysm", heroTitle: "Remodel", therapyGroup: "hemorrhagic" },
+    { slug: "new", navLabel: "New", heroTitle: "Soon" },
+  ];
+  it("one card group per therapy group, in menu order; the landing's own rows are not shown", () => {
     const bs = therapiesToBlocks({ region: "ous", landing: { blocks: [{ title: "A", body: "a" }] }, items });
-    expect(types(bs)).toEqual(["hero:bannerCompact", "textMedia:links", "cta:light"]);
-    expect(fieldPath(bs[1].edit, "links.0.href")).toBe("blocks.0.links.0.href");
-    expect((bs[2] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
-  });
-  it("falls back to cards from the records", () => {
-    const bs = therapiesToBlocks({ region: "ous", landing: {}, items });
-    expect(types(bs)[1]).toBe("columns:cards");
-    expect((bs[1] as BlockOf<"columns">).data.items[0].href).toBe("/ous/therapies/lvo");
+    expect(types(bs)).toEqual(["hero:bannerCompact", "columns:cards", "columns:cards", "columns:cards", "columns:cards", "cta:light"]);
+    const groups = bs.slice(1, 5).map((b) => (b as BlockOf<"columns">).data);
+    expect(groups.map((g) => g.title)).toEqual(["Ischemic stroke", "Hemorrhagic stroke", "Access", null]);
+    expect(groups[0].items[0]).toMatchObject({ eyebrow: "TIGERTRIEVER™", title: "LVO", body: "Title", note: "TIGER trial", href: "/ous/therapies/lvo" });
+    expect(groups[3].items[0].href).toBe("/ous/therapies/new");
+    expect((bs[5] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
   });
 });
 

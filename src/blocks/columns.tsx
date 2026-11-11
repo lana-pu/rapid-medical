@@ -7,7 +7,7 @@ import type { BlockDef, BlockProps } from "./types";
 
 export type ColumnsVariant = "steps" | "features" | "principles" | "cards";
 
-export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string; /** `cards` */ eyebrow?: string; href?: string };
+export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string; /** `cards` */ eyebrow?: string; href?: string; /** `cards`: one emphasised line under the text (proof point) */ note?: string };
 
 export type ColumnsData = {
   /** `principles`: heading, text and a picture above the columns. */
@@ -33,12 +33,18 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
   if (variant === "cards") {
     return (
       <Section>
-        <ul className="grid gap-6 md:grid-cols-2">
+        {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
+        <ul className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${d.title ? "mt-6" : ""}`}>
           {d.items.map((c, i) => (
             <li key={i}>
-              <Link href={c.href ?? "#"} className="group block rounded border border-border p-6 hover:bg-surface">
-                <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>
-                <h2 className="mt-1 text-xl font-medium group-hover:underline">{c.title}</h2>
+              <Link href={c.href ?? "#"} className="group block h-full overflow-hidden rounded border border-border hover:bg-surface">
+                {c.imageUrl && <Img src={c.imageUrl} className="aspect-video w-full object-cover" />}
+                <div className="p-6">
+                  {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>}
+                  <h3 className="mt-1 text-xl font-medium group-hover:underline">{c.title}</h3>
+                  {c.body && <p className="mt-2 text-sm text-muted">{c.body}</p>}
+                  {c.note && <p className="mt-3 text-sm font-medium">{c.note}</p>}
+                </div>
               </Link>
             </li>
           ))}
@@ -79,10 +85,10 @@ export const columns: BlockDef<"columns"> = {
     { id: "steps", label: "Steps with media", description: "Numbered automatically, video or image under each step, 3 columns" },
     { id: "features", label: "Features with icons", description: "Icon, title, text, 2 columns" },
     { id: "principles", label: "Principles", description: "Grey band, first letter highlighted, optional picture above" },
-    { id: "cards", label: "Link cards", description: "Bordered cards that link to a page, 2 columns" },
+    { id: "cards", label: "Link cards", description: "Bordered cards that link to a page: optional heading above, picture, text and a proof line; up to 3 columns" },
   ],
   fields: [
-    { key: "title", label: "Title (principles)", kind: "text" },
+    { key: "title", label: "Title (principles, cards)", kind: "text" },
     { key: "intro", label: "Intro (principles)", kind: "longText" },
     { key: "imageUrl", label: "Picture (principles)", kind: "media" },
     { key: "items", label: "Items: title (required), text, icon or media", kind: "items", required: true },
@@ -108,9 +114,10 @@ export const columns: BlockDef<"columns"> = {
       ],
     },
     cards: {
+      title: "Sample group",
       items: [
-        { eyebrow: "Sample area", title: "Sample card title", href: "/style-guide#columns" },
-        { eyebrow: "Sample area", title: "Another card title", href: "/style-guide#columns" },
+        { eyebrow: "Sample product", title: "Sample card title", body: "One line about the page.", note: "Sample proof point", href: "/style-guide#columns" },
+        { eyebrow: "Sample product", title: "Another card title", href: "/style-guide#columns" },
       ],
     },
     features: {

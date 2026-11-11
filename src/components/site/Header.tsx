@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { Region } from "@/db/schema";
-import { REGION_SHORT } from "@/lib/regions";
+import { groupTherapies } from "@/lib/therapy-groups";
+import { RegionSwitcher } from "./RegionSwitcher";
 
-export type NavSolution = { slug: string; navLabel: string };
+export type NavSolution = { slug: string; navLabel: string; therapyGroup?: string | null };
 
 export function Header({
   region,
@@ -15,6 +16,7 @@ export function Header({
   contact: { phoneHq?: string; phoneUs?: string; email?: string };
   logoUrl?: string | null;
 }) {
+  // No region only when the IP country is unknown: then the menu goes through the location chooser (decision 2026-11-10).
   const therapiesHref = region ? `/${region}/therapies` : "/choose-your-location";
   const evidenceHref = region ? `/${region}/evidence` : "/choose-your-location?next=evidence";
 
@@ -29,9 +31,7 @@ export function Header({
             {contact.phoneUs && <a href={`tel:${contact.phoneUs}`} className="hidden sm:inline">US: {contact.phoneUs}</a>}
             {contact.email && <a href={`mailto:${contact.email}`} className="hidden md:inline">{contact.email}</a>}
           </div>
-          <Link href="/choose-your-location" className="rounded border border-border px-2 py-0.5" title="Choose your location">
-            🌐 {region ? REGION_SHORT[region] : "Choose location"}
-          </Link>
+          <RegionSwitcher region={region} />
         </div>
       </div>
 
@@ -52,12 +52,20 @@ export function Header({
               Therapies <span aria-hidden>▾</span>
             </Link>
             {solutionsNav.length > 0 && region && (
-              <div className="invisible absolute left-0 top-full z-20 min-w-52 rounded border border-border bg-background p-2 opacity-0 shadow-md transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                {solutionsNav.map((s) => (
-                  <Link key={s.slug} href={`/${region}/therapies/${s.slug}`} className="block rounded px-3 py-1.5 hover:bg-surface">
-                    {s.navLabel}
-                  </Link>
+              <div className="invisible absolute left-0 top-full z-20 min-w-56 rounded border border-border bg-background p-2 opacity-0 shadow-md transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                {groupTherapies(solutionsNav).map((g) => (
+                  <div key={g.value} className="py-1">
+                    {g.label && <div className="px-3 pb-1 text-xs font-semibold uppercase tracking-widest text-muted">{g.label}</div>}
+                    {g.items.map((s) => (
+                      <Link key={s.slug} href={`/${region}/therapies/${s.slug}`} className="block rounded px-3 py-1.5 hover:bg-surface">
+                        {s.navLabel}
+                      </Link>
+                    ))}
+                  </div>
                 ))}
+                <Link href={`/${region}/therapies`} className="mt-1 block rounded border-t border-border px-3 py-2 hover:bg-surface">
+                  All therapies →
+                </Link>
               </div>
             )}
           </div>

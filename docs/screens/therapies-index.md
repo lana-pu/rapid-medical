@@ -6,9 +6,10 @@
 ## Блоки
 | Порядок | Блок · вариант | Из полей | Условие |
 |---|---|---|---|
-| 1 | Hero · `bannerCompact` | регион и ссылка «change», `title`, `intro`, `note`, `heroVideoUrl` | всегда |
-| 2 | Text and media · `links`, по блоку на направление | `blocks[]`: `title`, `body`, `imageUrl`, `links[]` | в настройках есть направления |
-| 2′ | Columns · `cards` | записи `solutions`: `navLabel`, `heroTitle`, ссылка на терапию | направлений в настройках нет |
+| 1 | Hero · `bannerCompact` | название региона, `title`, `intro`, `note`, `heroVideoUrl` | всегда |
+| 2 | Columns · `cards`, по блоку на направление (Ischemic stroke → Hemorrhagic stroke → Access → без группы) | записи `solutions`: заголовок группы из `therapyGroup`; на карточке продукт, `navLabel`, `heroTitle`, `proofPoint` (если заполнен), ссылка на терапию | есть терапии в группе |
 | 3 | Call to action · `light` | `closingTitle`, `closingBody`; кнопка «Contact us» → `/contact-us?region={region}` | всегда |
 
-Ряды Text and media · `links` стоят в одной белой секции.
+Решение 2026-11-10: страница необязательная — обзор для тех, кто не знает линейку. Собирается из записей терапий;
+тексты направлений в настройках (`blocks[]`) больше не показываются, но не удалены. Картинок на карточках нет: у части
+терапий в шапке видео, карточки получались разной высоты. Ссылки «change» в hero нет — регион меняется в шапке.

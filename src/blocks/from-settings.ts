@@ -1,6 +1,7 @@
 import type { Job, NewsItem, Product, Publication, Stat, Webinar } from "@/db/schema";
 import { REGION_CHOICES, REGION_FORM_VALUE, REGION_LABELS, type Region } from "@/lib/regions";
 import type { Block } from "./types";
+import { groupTherapies } from "@/lib/therapy-groups";
 import type { NewsCard } from "./news";
 import type { PublicationCard, PublicationGroup } from "./publications";
 
@@ -124,7 +125,7 @@ export function evidenceToBlocks({ region, cfg, all, featured, products }: { reg
     {
       type: "hero",
       variant: "bannerCompact",
-      data: { eyebrow: REGION_LABELS[region], eyebrowLinks: [{ label: "change", href: "/choose-your-location?next=evidence" }], title: cfg.title ?? "Evidence", body: cfg.intro, videoUrl: cfg.heroVideoUrl },
+      data: { eyebrow: REGION_LABELS[region], title: cfg.title ?? "Evidence", body: cfg.intro, videoUrl: cfg.heroVideoUrl },
       edit: { r, map: { title: "title", body: "intro" } },
     },
     {
@@ -152,21 +153,38 @@ export type TherapiesLanding = {
   closingTitle?: string; closingBody?: string; metaTitle?: string; metaDescription?: string;
 };
 
-export function therapiesToBlocks({ region, landing, items }: { region: Region; landing: TherapiesLanding; items: { slug: string; navLabel: string; heroTitle: string }[] }): Block[] {
+export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; heroImageUrl?: string | null };
+
+/**
+ * Regional therapies overview (decision 2026-11-10): one group of link cards per therapy group, built from the
+ * therapy records themselves. The landing's own `blocks` texts are no longer shown (kept in settings, not deleted).
+ */
+export function therapiesToBlocks({ region, landing, items }: { region: Region; landing: TherapiesLanding; items: OverviewTherapy[] }): Block[] {
   const r = `settings:therapies:${region}`;
-  const rows = landing.blocks ?? [];
   const blocks: Block[] = [
     {
       type: "hero",
       variant: "bannerCompact",
-      data: { eyebrow: REGION_LABELS[region], eyebrowLinks: [{ label: "change", href: "/choose-your-location" }], title: landing.title ?? "Therapies", body: landing.intro, note: landing.note, videoUrl: landing.heroVideoUrl },
+      data: { eyebrow: REGION_LABELS[region], title: landing.title ?? "Therapies", body: landing.intro, note: landing.note, videoUrl: landing.heroVideoUrl },
       edit: { r, map: { title: "title", body: "intro", note: "note" } },
     },
   ];
-  if (rows.length > 0) {
-    rows.forEach((b, i) => blocks.push({ type: "textMedia", variant: "links", data: { title: b.title, body: b.body, imageUrl: b.imageUrl, links: b.links }, edit: { r, prefix: `blocks.${i}.` } }));
-  } else {
-    blocks.push({ type: "columns", variant: "cards", data: { items: items.map((s) => ({ eyebrow: s.navLabel, title: s.heroTitle, href: `/${region}/therapies/${s.slug}` })) } });
+  for (const g of groupTherapies(items)) {
+    blocks.push({
+      type: "columns",
+      variant: "cards",
+      data: {
+        title: g.label || null,
+        items: g.items.map((s) => ({
+          eyebrow: s.productName ?? undefined,
+          title: s.navLabel,
+          body: s.heroTitle,
+          note: s.proofPoint || undefined,
+          // No picture: only some therapies have a hero image (others a video), so cards would differ in height.
+          href: `/${region}/therapies/${s.slug}`,
+        })),
+      },
+    });
   }
   blocks.push({
     type: "cta",

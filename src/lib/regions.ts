@@ -50,6 +50,8 @@ export const LEGACY_HOSTS: Record<string, Region> = {
 export function regionForCountry(cc: string | null | undefined): Region | null {
   if (!cc) return null;
   const c = cc.toUpperCase();
+  // Not a real country: unknown (XX), Tor (T1), anonymous proxy / satellite (A1, A2), region-level codes (EU, AP)
+  if (!/^[A-Z]{2}$/.test(c) || ["XX", "T1", "A1", "A2", "O1", "EU", "AP", "ZZ"].includes(c)) return null;
   if (["US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "BO", "PY", "UY", "GT", "HN", "SV", "NI", "CR", "PA", "DO", "CU", "JM", "TT", "PR", "GY", "SR", "BZ", "HT"].includes(c)) return "us";
   if (["CN", "JP", "KR", "IN", "SG", "MY", "TH", "VN", "ID", "PH", "TW", "HK", "MO", "PK", "BD", "LK", "NP", "KH", "LA", "MM", "MN", "KZ", "UZ", "KG", "TJ", "TM", "AF", "BT", "MV", "BN", "TL", "IL", "SA", "AE", "QA", "BH", "KW", "OM", "IQ", "IR", "JO", "LB", "SY", "TR", "PS", "EG", "YE"].includes(c)) return "apac";
   return "ous";

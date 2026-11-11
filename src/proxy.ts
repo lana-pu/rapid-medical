@@ -7,7 +7,10 @@ const SOLUTION_SLUGS = /^(lvo|mvo|aneurysm|vasospasm|access|drivewire)$/;
  * 1. Legacy regional subdomains (us./ous./apac.) → path-based regions on www.
  * 2. Cheap /admin gate: no session cookie → login. Real validation (DB session,
  *    2FA state, role) happens in requireUser() on every page and action.
- * 3. Remember the visitor's region; suggest one by IP country on first visit.
+ * 3. Region (spec → Регионы и URL, decision 2026-11-10): a regional path sets `rm_region`; with no region yet,
+ *    the IP country's region is applied at once — written to the request too, so the very first page already
+ *    renders with it. `rm_geo` keeps the IP region for the "you seem to be in …" banner on other regions' pages.
+ *    No country → no region, and the menu falls back to the location chooser.
  * 4. Security headers.
  */
 export async function proxy(req: NextRequest) {
@@ -33,24 +36,27 @@ export async function proxy(req: NextRequest) {
   }
 
   const m = /^\/(us|ous|apac)(\/|$)/.exec(url.pathname);
+  const cc = req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? req.headers.get("x-country-code");
+  const ipRegion = regionForCountry(cc);
+  const set: [name: string, value: string, maxAge: number][] = [];
   if (m) {
-    const res = withHeaders(NextResponse.next());
-    res.cookies.set("rm_region", m[1], { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
-    return res;
+    if (req.cookies.get(REGION_COOKIE)?.value !== m[1]) set.push([REGION_COOKIE, m[1], YEAR]);
+  } else if (!req.cookies.get(REGION_COOKIE) && ipRegion) {
+    set.push([REGION_COOKIE, ipRegion, YEAR]);
   }
+  if (ipRegion && req.cookies.get(GEO_COOKIE)?.value !== ipRegion) set.push([GEO_COOKIE, ipRegion, 60 * 60 * 24 * 30]);
+  if (set.length === 0) return withHeaders(NextResponse.next());
 
-  if (!req.cookies.get("rm_region") && !req.cookies.get("rm_geo")) {
-    const cc = req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? req.headers.get("x-country-code");
-    const suggested = regionForCountry(cc);
-    if (suggested) {
-      const res = withHeaders(NextResponse.next());
-      res.cookies.set("rm_geo", suggested, { path: "/", maxAge: 60 * 60 * 24 * 30, sameSite: "lax" });
-      return res;
-    }
-  }
-
-  return withHeaders(NextResponse.next());
+  // Same request sees the new values (server components read request cookies), the browser keeps them.
+  for (const [name, value] of set) req.cookies.set(name, value);
+  const res = withHeaders(NextResponse.next({ request: { headers: req.headers } }));
+  for (const [name, value, maxAge] of set) res.cookies.set(name, value, { path: "/", maxAge, sameSite: "lax" });
+  return res;
 }
+
+const REGION_COOKIE = "rm_region";
+const GEO_COOKIE = "rm_geo";
+const YEAR = 60 * 60 * 24 * 365;
 
 function withHeaders(res: NextResponse) {
   res.headers.set("X-Content-Type-Options", "nosniff");
