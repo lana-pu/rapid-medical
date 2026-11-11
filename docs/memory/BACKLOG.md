@@ -11,7 +11,8 @@
    человек не разберётся. Практики и разбор: `findings/admin-editor-best-practices.md`. Владелица выбрала правку на странице, как в Webflow (ADR-006).
    Прототип редактора на странице Large vessel stroke (приватная ссылка): https://claude.ai/artifact/9o31C5ccVdxUV52w2JKZxv.
    **Флоу редактора (2026-11-10):** `docs/flows/site-editor.json`, 12 экранов, страница (приватная ссылка):
-   https://claude.ai/artifact/LkArx5FdPAWQQqCvsigRP8 — ждёт оценки владелицы по заметкам.
+   https://claude.ai/artifact/LkArx5FdPAWQQqCvsigRP8 — ждёт оценки владелицы по заметкам. Проверка на людях:
+   `docs/flows/site-editor-test.md` (7 заданий) — ждёт решения владелицы, кого и когда звать.
    **Флоу админки (2026-11-10):** `docs/flows/admin.json`, 14 экранов (приватная ссылка):
    https://claude.ai/artifact/9mBBLfMDh1soj6rFuXaAPh. Решить: замена файла везде — черновиком или сразу в живом.
    Дальше её обратная связь по нему, потом модель регионов и какая версия базовая.
@@ -98,9 +99,9 @@
 Флоу `docs/flows/visitor.json`, страница (приватная ссылка): https://claude.ai/artifact/UsCAqb3b5fYKEatPjjAsFg
 - **Вкладка по ссылке не открывается.** «Clinical evidence» ведёт на `/{region}/evidence#comaneci`, но `Tabs.tsx` не
   читает якорь: открыта первая вкладка (TIGERTRIEVER™). Врач видит не те исследования.
-- **Коды регионов видны посетителю:** «OUS version · APAC version» над заголовком терапии (`REGION_SHORT` в
-  `from-solution.ts`) и метка «🌐 OUS» в верхней строке шапки (`Header.tsx`). И три разных названия региона: чузер «Europe & Middle East», `REGION_LABELS` «Europe, Middle East,
-  Latin America & Australia», админка — коды.
+- ~~Коды регионов видны посетителю~~ — исправлено коммитом `e026863` (2026-11-11): над заголовком терапии и в шапке
+  теперь названия из `REGION_CHOICES`. Осталось: `REGION_LABELS` («Europe, Middle East, Latin America & Australia»)
+  расходится с чузером, в админке — коды. Флоу (`pack.js` → `rm-header`) ещё рисует старую шапку с кодом.
 - Вопросы к владелице: кнопка героя главной — сразу в подсказанный регион; вкладка Clinical evidence — ссылка или 3
   последних исследования во вкладке; текст после запроса вебинара (когда придёт запись); Country/State в контактной форме.
 
