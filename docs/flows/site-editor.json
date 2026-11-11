@@ -26,6 +26,7 @@
    "title": "3 · Регионы, публикация, откат",
    "screens": [
     "regions",
+    "differences",
     "review",
     "published",
     "history"
@@ -1291,7 +1292,8 @@
           },
           "-",
           {
-           "label": "See differences"
+           "label": "See differences",
+           "to": "differences"
           }
          ]
         }
@@ -1403,6 +1405,206 @@
    ],
    "notes": [
     "Регуляторные блоки (Indications and references) всегда свои в каждом регионе и не наследуются: правка одного региона не меняет показания в другом."
+   ]
+  },
+  {
+   "id": "differences",
+   "title": "See differences between regions",
+   "url": "rapid-medical.com/apac/therapies/lvo",
+   "height": 900,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages",
+       "to": "pages",
+       "quiet": true
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "Large vessel stroke"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Therapies · /apac/therapies/lvo"
+        }
+       ]
+      }
+     ],
+     "center": [
+      {
+       "c": "button",
+       "v": "secondary",
+       "size": "s",
+       "text": "Showing: Asia & Pacific ▾",
+       "to": "regions",
+       "quiet": true
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live, with unpublished changes",
+       "tone": "warning",
+       "dot": true
+      },
+      {
+       "c": "text",
+       "v": "small",
+       "text": "Saved. Not live yet"
+      },
+      {
+       "c": "iconbutton",
+       "icon": "↶",
+       "label": "Undo"
+      },
+      {
+       "c": "iconbutton",
+       "icon": "↷",
+       "label": "Redo"
+      },
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "Comment"
+      },
+      {
+       "c": "button",
+       "v": "secondary",
+       "text": "Preview"
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "Publish",
+       "to": "review",
+       "quiet": true
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 380px",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "rm-page",
+         "items": [
+          {
+           "c": "rm-header",
+           "region": "apac"
+          },
+          {
+           "c": "rm-hero",
+           "v": "image",
+           "eyebrow": "Therapies / Large vessel stroke",
+           "eyebrowLinks": [
+            {
+             "label": "US version",
+             "href": "/us/therapies/lvo"
+            },
+            {
+             "label": "OUS version",
+             "href": "/ous/therapies/lvo"
+            }
+           ],
+           "title": "A patient-centric approach to AIS",
+           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+           "cta": {
+            "href": "/contact-us?region=apac&topic=demo",
+            "label": "Request a demo"
+           },
+           "imageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/3666+TT13+Expand+-+Compress+Dynamic+V3_HIGHRES.gif",
+           "videoUrl": null,
+           "selected": true,
+           "annotation": "Отличие видно прямо на странице: рамка на блоке, который в этом регионе свой."
+          },
+          {
+           "c": "rm-text",
+           "v": "lead",
+           "title": null,
+           "body": null,
+           "imageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png",
+           "videoUrl": null,
+           "selected": true
+          },
+          {
+           "c": "rm-textMedia",
+           "v": "threeColumn",
+           "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+           "title": "control",
+           "eyebrow": "Gain active",
+           "videoUrl": "https://vid.cdn-website.com/48595db0/videos/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4",
+           "secondaryImageUrl": "https://irp.cdn-website.com/48595db0/dms3rep/multi/opt/TT_Revised-Base_V4-1920w.png"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "Asia & Pacific vs Europe & Middle East",
+       "items": [
+        {
+         "c": "text",
+         "v": "small",
+         "text": "2 differences on this page. Everything else is the same in both regions."
+        },
+        {
+         "c": "list",
+         "items": [
+          {
+           "title": "Top of page",
+           "meta": "Asia & Pacific: picture beside the title · Europe & Middle East: background video",
+           "badge": "Only in this region",
+           "tone": "info"
+          },
+          {
+           "title": "Intro picture",
+           "meta": "Only in Asia & Pacific: TT_Revised-Base_V4.png",
+           "badge": "Only in this region",
+           "tone": "info"
+          },
+          {
+           "title": "Indications and references",
+           "meta": "Same text today. Kept separate in every region — never shared",
+           "badge": "Separate by rule"
+          }
+         ]
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "Use Europe & Middle East version for the top of page",
+         "annotation": "Отличие можно сбросить к общему (Shopify, Webflow). Регуляторный блок — нельзя: он всегда свой в регионе."
+        }
+       ],
+       "actions": [
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Done",
+         "to": "review"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "notes": [
+    "Отличия взяты из реальных страниц Large vessel stroke: в Asia & Pacific наверху картинка и вводный блок с картинкой, в Europe & Middle East — фоновое видео."
    ]
   },
   {

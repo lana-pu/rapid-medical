@@ -4,17 +4,20 @@ from pathlib import Path
 OUT=Path(__file__).with_name('site-editor.json')
 REG='Europe & Middle East'
 URL='rapid-medical.com/ous/therapies/lvo'
-def toolbar(status='All changes saved', badge=('Live','success'), showing=None, publish_to='review', extra_right=None):
+def toolbar(status='All changes saved', badge=('Live','success'), showing=None, publish_to='review', extra_right=None, path='/ous/therapies/lvo'):
     show={'c':'button','v':'secondary','size':'s','text':f'Showing: {REG} ▾','to':'regions','quiet':True}
     if showing: show.update(showing)
     return {'c':'toolbar',
-      'left':[{'c':'button','v':'ghost','text':'← Pages','to':'pages','quiet':True},{'c':'stack','gap':'xs','items':[{'c':'text','v':'strong','text':'Large vessel stroke'},{'c':'text','v':'caption','text':'Therapies · /ous/therapies/lvo'}]}],
+      'left':[{'c':'button','v':'ghost','text':'← Pages','to':'pages','quiet':True},{'c':'stack','gap':'xs','items':[{'c':'text','v':'strong','text':'Large vessel stroke'},{'c':'text','v':'caption','text':'Therapies · '+path}]}],
       'center':[show],
       'right':[{'c':'badge','text':badge[0],'tone':badge[1],'dot':True},{'c':'text','v':'small','text':status},{'c':'iconbutton','icon':'↶','label':'Undo'},{'c':'iconbutton','icon':'↷','label':'Redo'},{'c':'button','v':'ghost','text':'Comment'},{'c':'button','v':'secondary','text':'Preview'},dict({'c':'button','v':'primary','text':'Publish'}, **({'to':publish_to,'quiet':True} if publish_to else {}))]}
 HERO_TITLE='A patient-centric approach to AIS'
 NEW_TITLE='A patient-centric approach to acute ischemic stroke'
 HERO_TEXT='TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.'
 RM=json.load(open(Path(__file__).with_name('rm-pages.json'),encoding='utf8'))['pages']['OUS · Large vessel stroke']
+RMA=json.load(open(Path(__file__).with_name('rm-pages.json'),encoding='utf8'))['pages']['APAC · Large vessel stroke']
+def rma(i, **extra):
+    b=RMA[i]; return dict({'c':'rm-'+b['type'],'v':b['variant']}, **dict(b['data'], **extra))
 def rm(i, **extra):
     b=RM[i]; return dict({'c':'rm-'+b['type'],'v':b['variant']}, **dict(b['data'], **extra))
 def hero(title=HERO_TITLE, tw=None):
@@ -38,7 +41,7 @@ flow={
  'groups':[
    {'title':'1 · Найти страницу','screens':['signin','choose','pages']},
    {'title':'2 · Править на странице','screens':['page','edit-text','edit-video','add-section','section-added']},
-   {'title':'3 · Регионы, публикация, откат','screens':['regions','review','published','history']}],
+   {'title':'3 · Регионы, публикация, откат','screens':['regions','differences','review','published','history']}],
  'screens':[
   {'id':'signin','title':'Sign in','url':'rapid-medical.com/admin','height':620,'body':[
     {'c':'box','pad':'l','items':[{'c':'row','justify':'center','items':[{'c':'box','pad':'l','border':True,'items':[
@@ -112,11 +115,24 @@ flow={
    'links':[{'from':'section-added','to':'regions','label':'Showing ▾'}]},
   {'id':'regions','title':'Which region you are looking at','url':URL,'height':900,'body':[
     toolbar(status='Saved. Not live yet',badge=('Live, with unpublished changes','warning'),showing={'selected':True,'popover':[{'c':'menu','items':[
-      {'title':'Showing'},{'label':'Americas','meta':'1 difference'},{'label':'Europe & Middle East','meta':'✓','on':True},{'label':'Asia & Pacific','meta':'2 differences'},'-',{'label':'See differences'}]}],
+      {'title':'Showing'},{'label':'Americas','meta':'1 difference'},{'label':'Europe & Middle East','meta':'✓','on':True},{'label':'Asia & Pacific','meta':'2 differences'},'-',{'label':'See differences','to':'differences'}]}],
       'annotation':'Регион — одно меню над страницей, страница показана как в нём (Shopify Markets). Отличия считаются сами.'}),
     HEADER, hero(title=NEW_TITLE), row1(), CTA],
    'links':[{'from':'regions','to':'review','label':'Publish'}],
    'notes':['Регуляторные блоки (Indications and references) всегда свои в каждом регионе и не наследуются: правка одного региона не меняет показания в другом.']},
+  {'id':'differences','title':'See differences between regions','url':URL.replace('/ous/','/apac/'),'height':900,'body':[
+    toolbar(status='Saved. Not live yet',badge=('Live, with unpublished changes','warning'),showing={'text':'Showing: Asia & Pacific ▾'},path='/apac/therapies/lvo'),
+    {'c':'split','cols':'minmax(0,1fr) 380px','items':[
+      {'c':'stack','gap':'xs','items':[dict(HEADER, region='apac'), rma(0, selected=True, annotation='Отличие видно прямо на странице: рамка на блоке, который в этом регионе свой.'), rma(1, selected=True), rma(2)]},
+      {'c':'panel','title':'Asia & Pacific vs Europe & Middle East','items':[
+        {'c':'text','v':'small','text':'2 differences on this page. Everything else is the same in both regions.'},
+        {'c':'list','items':[
+          {'title':'Top of page','meta':'Asia & Pacific: picture beside the title · Europe & Middle East: background video','badge':'Only in this region','tone':'info'},
+          {'title':'Intro picture','meta':'Only in Asia & Pacific: TT_Revised-Base_V4.png','badge':'Only in this region','tone':'info'},
+          {'title':'Indications and references','meta':'Same text today. Kept separate in every region — never shared','badge':'Separate by rule'}]},
+        {'c':'button','v':'secondary','text':'Use Europe & Middle East version for the top of page','annotation':'Отличие можно сбросить к общему (Shopify, Webflow). Регуляторный блок — нельзя: он всегда свой в регионе.'}],
+       'actions':[{'c':'button','v':'primary','text':'Done','to':'review'}]}]}],
+   'notes':['Отличия взяты из реальных страниц Large vessel stroke: в Asia & Pacific наверху картинка и вводный блок с картинкой, в Europe & Middle East — фоновое видео.']},
   {'id':'review','title':'Check before publishing','url':URL,'height':900,
    'body':[toolbar(status='Saved. Not live yet',badge=('Live, with unpublished changes','warning'),publish_to=None), HEADER, hero(title=NEW_TITLE), row1()],
    'overlay':{'c':'modal','wide':True,'title':'Publish Large vessel stroke','items':[
