@@ -30,6 +30,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-11 | Аудит Emily по GA4: регионы, кнопки продукта, аналитика, события, медиа-окно, JSON-LD | [2026-11-11-emily-audit-site.md](sessions/2026-11-11-emily-audit-site.md) |
 | 2026-11-11 | Инструмент Tigertriever: атлас 00–10, учебные v0.4–v0.5, Studio (время пунктов, различия), S0 с проверкой хранения | [2026-11-11-tigertriever-learner-v05.md](sessions/2026-11-11-tigertriever-learner-v05.md) |
 | 2026-11-10 | Набор для вайрфреймов (`/wireframes`), флоу редактора сайта | [2026-11-10-wireframes-kit.md](sessions/2026-11-10-wireframes-kit.md) |
 | 2026-11-09 | Весь сайт на блоках: списки, Gallery, Region chooser, варианты | [2026-11-09-whole-site-on-blocks.md](sessions/2026-11-09-whole-site-on-blocks.md) |
