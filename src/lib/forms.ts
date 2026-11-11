@@ -10,7 +10,7 @@ import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
 const schema = z.object({
-  form: z.enum(["contact", "webinar", "careers"]),
+  form: z.enum(["contact", "webinar", "careers", "event"]),
   topic: z.string().max(120).default(""),
   firstName: z.string().trim().min(1, "Required").max(80),
   lastName: z.string().trim().min(1, "Required").max(80),

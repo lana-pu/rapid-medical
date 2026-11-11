@@ -15,6 +15,7 @@ import { markdownToHtml } from "../src/lib/html";
 import { SOLUTIONS } from "../content/seed/solutions";
 import { groupForSlug } from "../src/lib/therapy-groups";
 import { SETTINGS, PRODUCTS, REDIRECTS, WEBINARS } from "../content/seed/settings";
+import { EVENTS, UNDATED_EVENT_PATHS } from "../content/seed/events";
 
 const RESET = process.argv.includes("--reset");
 
@@ -27,7 +28,7 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is not set");
   const client = postgres(url, { max: 1 });
   const db = drizzle(client, { schema });
-  const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars } = schema;
+  const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars, events } = schema;
 
   if (RESET) {
     await db.execute(sql`TRUNCATE solutions, publications, news_items, webinars, team_members, jobs, pages, redirects RESTART IDENTITY CASCADE`);
@@ -105,6 +106,16 @@ async function main() {
     console.log(`media: ${fresh.length} rows added from snapshot (${have.size} already present)`);
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+  }
+
+  /* events (Duda event pages) + their old URLs */
+  for (const { from, startsOn, endsOn, ...e } of EVENTS) {
+    const row: schema.NewEvent = { ...e, startsOn: new Date(startsOn), endsOn: endsOn ? new Date(endsOn) : null };
+    await db.insert(events).values(row).onConflictDoUpdate({ target: events.slug, set: { ...row, updatedAt: new Date() } });
+    await db.insert(redirects).values({ from, to: `/events/${e.slug}` }).onConflictDoUpdate({ target: redirects.from, set: { to: `/events/${e.slug}` } });
+  }
+  for (const from of UNDATED_EVENT_PATHS) {
+    await db.insert(redirects).values({ from, to: "/news-events" }).onConflictDoUpdate({ target: redirects.from, set: { to: "/news-events" } });
   }
 
   /* redirects */

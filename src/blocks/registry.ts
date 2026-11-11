@@ -17,6 +17,7 @@ import { form } from "./form";
 import { officesMap } from "./offices-map";
 import { gallery } from "./gallery";
 import { news } from "./news";
+import { events } from "./events";
 import { publications } from "./publications";
 import { webinars } from "./webinars";
 import { jobs } from "./jobs";
@@ -43,6 +44,7 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   gallery,
   people,
   news,
+  events,
   publications,
   webinars,
   jobs,

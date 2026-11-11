@@ -12,6 +12,7 @@ import {
 } from "@/db/schema";
 import type { FieldDef, ListColumn } from "./fields";
 import { THERAPY_GROUPS } from "@/lib/therapy-groups";
+import { events } from "@/db/schema";
 
 export type Resource = {
   slug: string;
@@ -218,6 +219,56 @@ export const RESOURCES: Resource[] = [
       { name: "featured", label: "Featured on Evidence page", type: "boolean", half: true },
       { name: "imageUrl", label: "Image (for featured)", type: "image" },
       statusField,
+    ],
+  },
+
+  /* ------------------------------------------------------------- */
+  {
+    // Decision 2026-11-10 (docs/screens/events.md): marketing publishes events; upcoming / past comes from the dates.
+    slug: "events",
+    title: "Events",
+    titleSingular: "Event",
+    table: events,
+    labelField: "title",
+    sortBy: "startsOn",
+    revalidate: ["/news-events"],
+    previewUrl: (r) => `/events/${r.slug}`,
+    listColumns: [
+      { name: "title", label: "Title" },
+      { name: "startsOn", label: "Date", kind: "date" },
+      { name: "city", label: "City" },
+      { name: "startsOn", label: "When", kind: "eventWhen" },
+      { name: "status", label: "Status", kind: "status" },
+    ],
+    fields: [
+      { name: "title", label: "Title", type: "text", required: true, half: true, section: "Event" },
+      { name: "slug", label: "Slug", type: "slug", required: true, half: true, section: "Event" },
+      { name: "subtitle", label: "Subtitle", type: "text", section: "Event", placeholder: "Real-world experience from two perspectives" },
+      { name: "startsOn", label: "Date (first day)", type: "date", required: true, half: true, section: "Event", help: "YYYY-MM-DD. The event moves to “Past events” on its own the day after it ends." },
+      { name: "endsOn", label: "Last day (if several days)", type: "date", half: true, section: "Event" },
+      { name: "startTime", label: "Time", type: "text", half: true, section: "Event", placeholder: "12:45 PM" },
+      { name: "congress", label: "Congress", type: "text", half: true, section: "Event", placeholder: "ESMINT" },
+      { name: "city", label: "City", type: "text", half: true, section: "Event" },
+      { name: "venue", label: "Venue", type: "text", half: true, section: "Event", placeholder: "Park Hyatt Busan" },
+      { name: "imageUrl", label: "Image", type: "image", section: "Event" },
+      { name: "descriptionHtml", label: "Description", type: "markdown", rows: 8, section: "Event" },
+      statusField,
+      {
+        name: "registration",
+        label: "Registration",
+        type: "select",
+        half: true,
+        section: "Registration",
+        options: [
+          { value: "none", label: "No registration" },
+          { value: "form", label: "Form on our site" },
+          { value: "link", label: "Link to another site" },
+        ],
+      },
+      { name: "registrationUrl", label: "Registration link", type: "url", half: true, section: "Registration", help: "Only for “Link to another site”." },
+      { name: "registrationClosesOn", label: "Registration closes after", type: "date", half: true, section: "Registration", help: "Empty = the first day of the event." },
+      { name: "recapHtml", label: "Recap (after the event)", type: "markdown", rows: 6, section: "After the event", help: "Shown instead of the description once the event has taken place. Optional." },
+      { name: "recapPhotos", label: "Photos (after the event)", type: "stringList", section: "After the event", help: "One image URL per line, from Media." },
     ],
   },
 

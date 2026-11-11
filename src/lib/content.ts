@@ -7,6 +7,7 @@ import {
   solutions,
   publications,
   newsItems,
+  events,
   webinars,
   teamMembers,
   jobs,
@@ -156,6 +157,15 @@ export async function getJobs() {
   return overlay("jobs", rows);
 }
 
+export async function getEvents() {
+  const rows = await db.query.events.findMany({ where: await visible(events.status), orderBy: [desc(events.startsOn), desc(events.id)] });
+  return overlay("events", rows);
+}
+
+export async function getEvent(slug: string) {
+  return one("events", await db.query.events.findFirst({ where: and(eq(events.slug, slug), await visible(events.status)) }));
+}
+
 export async function getJob(slug: string) {
   return one("jobs", await db.query.jobs.findFirst({ where: and(eq(jobs.slug, slug), await visible(jobs.status)) }));
 }
@@ -170,11 +180,12 @@ export async function getPage(slug: string, region: Region | null) {
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {
-  const [sols, pgs, team, jb] = await Promise.all([
+  const [sols, pgs, team, jb, ev] = await Promise.all([
     db.select({ slug: solutions.slug, region: solutions.region }).from(solutions).where(eq(solutions.status, "published")),
     db.select({ slug: pages.slug, region: pages.region, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
     db.select({ slug: teamMembers.slug }).from(teamMembers).where(eq(teamMembers.status, "published")),
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
+    db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
   ]);
   return [
     "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us",
@@ -183,5 +194,6 @@ export async function getAllPublicPaths(): Promise<string[]> {
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
     ...team.map((t) => `/team/${t.slug}`),
     ...jb.map((j) => `/open-positions/${j.slug}`),
+    ...ev.map((e) => `/events/${e.slug}`),
   ];
 }

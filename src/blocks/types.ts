@@ -18,6 +18,7 @@ import type { FormBlockData, FormVariant } from "./form";
 import type { OfficesMapData, OfficesMapVariant } from "./offices-map";
 import type { GalleryData, GalleryVariant } from "./gallery";
 import type { NewsData, NewsVariant } from "./news";
+import type { EventsData, EventsVariant } from "./events";
 import type { PublicationsData, PublicationsVariant } from "./publications";
 import type { WebinarsData, WebinarsVariant } from "./webinars";
 import type { JobsData, JobsVariant } from "./jobs";
@@ -48,6 +49,7 @@ export type BlockMap = {
   officesMap: { variant: OfficesMapVariant; data: OfficesMapData };
   gallery: { variant: GalleryVariant; data: GalleryData };
   news: { variant: NewsVariant; data: NewsData };
+  events: { variant: EventsVariant; data: EventsData };
   publications: { variant: PublicationsVariant; data: PublicationsData };
   webinars: { variant: WebinarsVariant; data: WebinarsData };
   jobs: { variant: JobsVariant; data: JobsData };

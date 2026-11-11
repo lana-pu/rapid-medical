@@ -127,7 +127,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `publications` | `publications` (Evidence) | `title`, `authors`, `journal`, `publishedOn` (месяц), `url`/`pdfUrl`/`doi`, `productId`, `regions[]` (пусто = все), `featured`, `imageUrl` | `published` | |
 | `news_items` | `news` | `title`, `publishedOn`, `url` (внешняя), `source`, `excerpt`, `featured` | `published` | Только внешние ссылки |
 | `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос |
-| `events` (**решение 2026-11-10, кода нет**) | `events` | `slug`, `title`, `subtitle`, `startsAt` (дата, время необязательно), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
+| `events` (решение 2026-11-10, сделано) | `events` | `slug`, `title`, `subtitle`, `startsOn` (первый день), `startTime` (текст), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
 | `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `bodyHtml`, SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
@@ -156,7 +156,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, review, schedule, logout |
 | `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda) |
-| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers), контакты, `meta`, `status`, `ip`, `userAgent` |
+| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `ip`, `userAgent` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
 | `not_found_log` | Публичные 404 (дедуп по пути) для создания редиректов |
 
@@ -206,7 +206,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 
 | Событие | Кому | Тема | Код |
 |---|---|---|---|
-| Отправка любой формы (contact / webinar / careers) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
+| Отправка любой формы (contact / webinar / careers / event) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
 | Черновик отправлен на ревью | `site_settings.workflow.notifyEmail` (если задан) | `[Website] Review requested: …` | `src/admin/workflow.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 
@@ -396,7 +396,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/{region}/{slug}` | Региональная страница из `pages` (лендинги) | [pages](screens/pages.md) |
 | `/{slug}` | Глобальная страница из `pages` (privacy, terms, …); промах → redirects / 404 | [pages](screens/pages.md) |
 | `/news-events` | Внешние новости; **(решение 2026-11-10)** сверху предстоящие события, ниже архив прошедших | [news-events](screens/news-events.md) |
-| `/events/{slug}` | **(решение 2026-11-10, кода нет)** Событие: до даты — описание и регистрация, после — «прошло» и итоги | [events](screens/events.md) |
+| `/events/{slug}` | Событие (2026-11-10): до даты — описание и регистрация, после — «прошло» и итоги | [events](screens/events.md) |
 | `/about-us` | О компании, руководство, офисы, интерактивная карта; **(решение 2026-11-10)** биографии руководства раскрываются здесь же | [about-us](screens/about-us.md) |
 | `/team/{slug}` | Профиль руководителя. **Решение 2026-11-10:** отдельные страницы убрать, 301 на `/about-us#{slug}` (аудит Emily: один абзац, 2 секунды) | спека не написана |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |

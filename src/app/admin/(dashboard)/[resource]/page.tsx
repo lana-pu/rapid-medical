@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isPast, type EventDates } from "@/lib/events";
 import { notFound } from "next/navigation";
 import { db, products, REGIONS, type Region } from "@/db";
 import { getResource } from "@/admin/resources";
@@ -111,6 +112,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
                       case "regions": cell = Array.isArray(v) && v.length ? (v as Region[]).map((r) => REGION_SHORT[r]).join(", ") : <span className="text-neutral-400">all</span>; break;
                       case "product": cell = productName(v); break;
                       case "boolean": cell = v ? "✓" : ""; break;
+                      case "eventWhen": cell = isPast(row as unknown as EventDates) ? <span className="text-neutral-400">Past</span> : "Upcoming"; break;
                       default: cell = String(v ?? "");
                     }
                     return (

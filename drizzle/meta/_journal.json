@@ -78,6 +78,13 @@
       "when": 1794358550209,
       "tag": "0010_therapy_group",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794406254142,
+      "tag": "0011_events",
+      "breakpoints": true
     }
   ]
 }

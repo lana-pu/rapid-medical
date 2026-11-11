@@ -1,4 +1,4 @@
-import { getNews } from "@/lib/content";
+import { getEvents, getNews } from "@/lib/content";
 import { BlockList } from "@/blocks/render";
 import { newsPageToBlocks } from "@/blocks/from-settings";
 
@@ -8,5 +8,6 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
-  return <BlockList blocks={newsPageToBlocks(await getNews())} />;
+  const [news, events] = await Promise.all([getNews(), getEvents()]);
+  return <BlockList blocks={newsPageToBlocks(news, events)} />;
 }

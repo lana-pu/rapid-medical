@@ -329,6 +329,43 @@ export const newsItems = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/*  Events (decision 2026-11-10, docs/screens/events.md)                */
+/*  Upcoming / past is derived from the dates — nobody archives by hand */
+/* ------------------------------------------------------------------ */
+
+export const events = pgTable(
+  "events",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    subtitle: text("subtitle").notNull().default(""),
+    startsOn: timestamp("starts_on", { withTimezone: false, mode: "date" }).notNull(),
+    /** Free text, e.g. "12:45 PM" or "19:30"; empty = no time shown */
+    startTime: text("start_time").notNull().default(""),
+    /** Last day of a multi-day event; null = one day */
+    endsOn: timestamp("ends_on", { withTimezone: false, mode: "date" }),
+    city: text("city").notNull().default(""),
+    venue: text("venue").notNull().default(""),
+    /** Congress the event is part of (ESMINT, LINNC…) */
+    congress: text("congress").notNull().default(""),
+    descriptionHtml: text("description_html").notNull().default(""),
+    imageUrl: text("image_url"),
+    /** none | form | link */
+    registration: text("registration").notNull().default("none"),
+    registrationUrl: text("registration_url"),
+    /** Registration closes after this day; null = the start day */
+    registrationClosesOn: timestamp("registration_closes_on", { withTimezone: false, mode: "date" }),
+    recapHtml: text("recap_html").notNull().default(""),
+    recapPhotos: jsonb("recap_photos").$type<string[]>().notNull().default([]),
+    status: statusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("events_date").on(t.startsOn)],
+);
+
+/* ------------------------------------------------------------------ */
 /*  Webinars (gated – shown as a list, access via request form)         */
 /* ------------------------------------------------------------------ */
 
@@ -426,7 +463,7 @@ export const siteSettings = pgTable("site_settings", {
 
 export const contactSubmissions = pgTable("contact_submissions", {
   id: serial("id").primaryKey(),
-  form: text("form").notNull().default("contact"), // contact | webinar | careers
+  form: text("form").notNull().default("contact"), // contact | webinar | careers | event
   topic: text("topic").notNull().default(""),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
@@ -559,6 +596,8 @@ export type Solution = typeof solutions.$inferSelect;
 export type NewSolution = typeof solutions.$inferInsert;
 export type Publication = typeof publications.$inferSelect;
 export type NewsItem = typeof newsItems.$inferSelect;
+export type Event = typeof events.$inferSelect;
+export type NewEvent = typeof events.$inferInsert;
 export type Webinar = typeof webinars.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type Job = typeof jobs.$inferSelect;

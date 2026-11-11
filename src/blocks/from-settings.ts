@@ -1,4 +1,6 @@
-import type { Job, NewsItem, Product, Publication, Stat, Webinar } from "@/db/schema";
+import type { Event, Job, NewsItem, Product, Publication, Stat, Webinar } from "@/db/schema";
+import { formatEventDates, registrationOpen, splitEvents, day } from "@/lib/events";
+import type { EventCard } from "./events";
 import { REGION_CHOICES, REGION_FORM_VALUE, REGION_LABELS, type Region } from "@/lib/regions";
 import type { Block } from "./types";
 import { groupTherapies } from "@/lib/therapy-groups";
@@ -195,14 +197,30 @@ export function therapiesToBlocks({ region, landing, items }: { region: Region; 
   return blocks;
 }
 
-export function newsPageToBlocks(items: NewsItem[]): Block[] {
+const eventCard = (e: Event, now?: string): EventCard => ({
+  id: e.id,
+  title: e.title,
+  href: `/events/${e.slug}`,
+  dates: formatEventDates(e),
+  year: Number(day(e.startsOn).slice(0, 4)),
+  place: [e.venue, e.city].filter(Boolean).join(", ") || null,
+  congress: e.congress || null,
+  registrationOpen: registrationOpen(e, now),
+  edit: record("events", e.id),
+});
+
+/** News & Events: upcoming events first, then news, then the events archive (docs/screens/events.md). */
+export function newsPageToBlocks(items: NewsItem[], eventItems: Event[] = [], now?: string): Block[] {
   const featured = items.filter((n) => n.featured);
   const slides = (featured.length ? featured : items).slice(0, 5);
+  const { upcoming, past } = splitEvents(eventItems, now);
   const blocks: Block[] = [{ type: "hero", variant: "title", data: { title: "News &", title2: "Events" } }];
+  if (upcoming.length > 0) blocks.push({ type: "events", variant: "upcoming", data: { title: "Upcoming events", anchor: "upcoming-events", items: upcoming.map((e) => eventCard(e, now)) } });
   if (slides.length > 0) {
     blocks.push({ type: "news", variant: "carousel", data: { title: "Latest news", items: slides.map(newsCard), allHref: "#all-news", allLabel: "View all news ↓" } });
   }
   blocks.push({ type: "news", variant: "timeline", data: { anchor: "all-news", items: items.map(newsCard) } });
+  if (past.length > 0) blocks.push({ type: "events", variant: "archive", data: { title: "Past events", anchor: "past-events", items: past.map((e) => eventCard(e, now)) } });
   return blocks;
 }
 

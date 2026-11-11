@@ -16,7 +16,8 @@ export function ContactForm({
   meta = {},
   compact = false,
 }: {
-  form?: "contact" | "webinar" | "careers";
+  /** `event`: registration for an event — "Hospital" instead of "Organization", plus dietary requirements. */
+  form?: "contact" | "webinar" | "careers" | "event";
   topics: string[];
   defaultTopic?: string;
   defaultRegion?: string;
@@ -27,7 +28,10 @@ export function ContactForm({
   const topic = useRef("");
   const [state, action, pending] = useActionState<FormState, FormData>((prev, fd) => {
     topic.current = String(fd.get("topic") ?? "");
-    fd.set("meta", JSON.stringify({ ...attribution(), ...meta }));
+    // Extra fields of a form type (meta_*) travel in meta, like the visit source.
+    const extra: Record<string, string> = {};
+    for (const [k, v] of [...fd.entries()]) if (k.startsWith("meta_") && typeof v === "string" && v.trim()) extra[k.slice(5)] = v.trim().slice(0, 500);
+    fd.set("meta", JSON.stringify({ ...attribution(), ...extra, ...meta }));
     return submitForm(prev, fd);
   }, null);
   const err = (k: string) => (state && !state.ok && state.errors?.[k]) || null;
@@ -53,18 +57,22 @@ export function ContactForm({
 
       <p className="text-xs text-muted">(* indicates a required field)</p>
 
-      <label className="block text-sm">
-        <span className="mb-1 block">How can we help? Select a topic.*</span>
-        <select name="topic" required defaultValue={defaultTopic ?? ""} className={input}>
-          <option value="" disabled>Select…</option>
-          {topics.map((t) => <option key={t} value={t}>{t}</option>)}
-        </select>
-      </label>
+      {form === "event" ? (
+        <input type="hidden" name="topic" value={defaultTopic ?? topics[0] ?? ""} />
+      ) : (
+        <label className="block text-sm">
+          <span className="mb-1 block">How can we help? Select a topic.*</span>
+          <select name="topic" required defaultValue={defaultTopic ?? ""} className={input}>
+            <option value="" disabled>Select…</option>
+            {topics.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </label>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field name="firstName" label="First Name*" error={err("firstName")} required />
         <Field name="lastName" label="Last Name*" error={err("lastName")} required />
-        <Field name="organization" label="Organization" />
+        <Field name="organization" label={form === "event" ? "Hospital" : "Organization"} />
         <Field name="email" label="Email*" type="email" error={err("email")} required />
         <Field name="phone" label="Phone" type="tel" />
         <label className="block text-sm">
@@ -76,6 +84,7 @@ export function ContactForm({
         </label>
         {!compact && <Field name="country" label="Country" />}
         {!compact && <Field name="state" label="State/Province" />}
+        {form === "event" && <Field name="meta_dietary" label="Dietary requirements" />}
       </div>
 
       <label className="block text-sm">
