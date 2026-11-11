@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export type Tab = { id: string; label: string; sublabel?: string; content: ReactNode; href?: string };
 
@@ -8,10 +8,20 @@ export type Tab = { id: string; label: string; sublabel?: string; content: React
  * Pill tabs as on the current site (rounded bar, active pill filled). On
  * small screens the same tabs become an accordion: every panel gets its own
  * header and only the active one is open.
+ * A link to `#<tab id>` opens that tab (deep links from therapy pages to Evidence).
  */
 export function Tabs({ tabs, hint, variant = "pills" }: { tabs: Tab[]; hint?: string; variant?: "pills" | "underline" }) {
   const [active, setActive] = useState(tabs[0]?.id);
   const pill = variant === "pills";
+  useEffect(() => {
+    const openFromHash = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      if (tabs.some((t) => t.id === id && !t.href)) setActive(id);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [tabs]);
   return (
     <div>
       {hint && <p className="mb-4 text-center text-lg">{hint}</p>}

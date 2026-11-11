@@ -47,6 +47,13 @@ test("evidence tabs follow the region", async ({ page }) => {
   await expect(page.getByRole("tab", { name: "DRIVEWIRE™" })).toBeVisible();
 });
 
+test("a product anchor opens its evidence tab", async ({ page }) => {
+  await page.goto("/us/evidence#comaneci");
+  await expect(page.getByRole("tab", { name: /COMANECI/ })).toHaveAttribute("aria-selected", "true");
+  await page.goto("/us/evidence#drivewire");
+  await expect(page.getByRole("tab", { name: /DRIVEWIRE/ })).toHaveAttribute("aria-selected", "true");
+});
+
 test("about page renders the interactive map", async ({ page }) => {
   await page.goto("/about-us");
   await expect(page.locator("svg path").first()).toBeVisible({ timeout: 15000 });
