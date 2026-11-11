@@ -12,12 +12,15 @@ for (const path of PUBLIC) {
 test("seeded pages and bios keep their text", async ({ page }) => {
   await page.goto("/terms");
   await expect(page.getByRole("heading", { name: "1. Acceptance of the Terms" })).toBeVisible();
+  // Bios open on About (decision 2026-11-10): /team/{slug} lands on the card, "Read bio" opens it in place.
   await page.goto("/team/ronen");
+  await expect(page).toHaveURL(/\/about-us#ronen$/);
+  await page.locator("#ronen").getByText("Read bio").click();
   await expect(page.getByText("Ronen Eckhouse is the co-founder")).toBeVisible();
 });
 
 test("legacy URLs redirect", async ({ request }) => {
-  for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/team/ronen"], ["/us/therapies/access", "/us/therapies/drivewire"]]) {
+  for (const [from, to] of [["/welcome_d", "/"], ["/us/lvo", "/us/therapies/lvo"], ["/ronen", "/about-us#ronen"], ["/us/therapies/access", "/us/therapies/drivewire"]]) {
     const res = await request.get(from, { maxRedirects: 0 });
     expect([301, 308]).toContain(res.status());
     expect(res.headers().location).toContain(to);
