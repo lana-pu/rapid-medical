@@ -1,6 +1,6 @@
 # Tigertriever Training Tool — UX research & prototypes
 
-**Status:** design exploration · **Updated:** 2026-11-08 · **Product:** independent offline physician training app + online Content Studio.
+**Status:** design exploration · **Updated:** 2026-11-11 · **Product:** independent offline physician training app + online Content Studio.
 
 This folder contains the UX work for the **Tigertriever interactive learning tool**. The learner tool stays a separate product from the **Rapid Medical website** in `src/`, but both live in this repository because their users overlap and they will share one admin (entry point, then a choice of website or training tool). No website app code, deployment configuration or existing GitHub Pages files have been changed by this contribution.
 
@@ -10,9 +10,9 @@ This folder contains the UX work for the **Tigertriever interactive learning too
 
 | What | File |
 |---|---|
-| Content Studio prototype (editor side, v0.1, updated 2026-11-08) | [prototypes/content-studio-v0.1.html](prototypes/content-studio-v0.1.html) · content model: `../spec.md → Инструмент Tigertriever` · what the client specified: `../memory/findings/client-brief-lesson-content.md` |
-| Latest learner prototype (v0.5: programme panel and resume, text follows the clip, compare mode with play-both and point-aligned slider) | [prototypes/training-app-v0.5.html](prototypes/training-app-v0.5.html) |
-| Previous learner prototype (v0.4) | [prototypes/training-app-v0.4.html](prototypes/training-app-v0.4.html) |
+| Content Studio prototype (editor side, v0.1, updated 2026-11-11: point times, What's different, ship a stage without video, package data export) | [prototypes/content-studio-v0.1.html](prototypes/content-studio-v0.1.html) · content model: `../spec.md → Инструмент Tigertriever` · what the client specified: `../memory/findings/client-brief-lesson-content.md` |
+| Latest learner prototype (v0.6: drawn only from package data built by Content Studio; opens a package file downloaded from the Studio) | [prototypes/training-app-v0.6.html](prototypes/training-app-v0.6.html) + sample package [prototypes/content.js](prototypes/content.js) |
+| Previous learner prototypes (v0.5: programme panel and resume, text follows the clip, compare mode; v0.4) | [prototypes/training-app-v0.5.html](prototypes/training-app-v0.5.html), [prototypes/training-app-v0.4.html](prototypes/training-app-v0.4.html) |
 | Previous learner prototype (v0.3) | [prototypes/training-app-v0.3.html](prototypes/training-app-v0.3.html) |
 | Previous learner prototype (v0.2) | [prototypes/training-app-v0.2.html](prototypes/training-app-v0.2.html) |
 | First learner prototype (v0.1) | [prototypes/training-app-v0.1.html](prototypes/training-app-v0.1.html) |

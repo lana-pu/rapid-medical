@@ -1,0 +1,440 @@
+<title>Tigertriever Training</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a player, not a page. One thin context bar, the clip as large as the window allows, the text beside it and
+   following the clip, one stage strip at the bottom. System fonts on purpose: the real package runs offline. */
+:root{
+  --bg:#FFFFFF;--fg:#16232B;--muted:#5C6C76;--line:#DAE2E6;--soft:#F1F5F6;
+  --accent:#174C5A;--on-accent:#FFFFFF;--accent-soft:#E2EEF1;--ok:#1E6B45;--warn:#8A4B00;--warn-soft:#FFF1DE;--diff:#7A3E00;--diff-soft:#FFF3E3;
+  --stage:#0E1417;--on-stage:#F2F5F6;
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --top:52px;--ts:1;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11181C;--fg:#E6ECEF;--muted:#9AA9B3;--line:#2A363D;--soft:#1A2329;--accent:#7FBBCA;--on-accent:#0C1417;--accent-soft:#1C2E35;--ok:#6FCF97;--warn:#F2B35C;--warn-soft:#3A2A12;--diff:#F5C27A;--diff-soft:#33260F;--stage:#07090B;--on-stage:#EEF2F4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11181C;--fg:#E6ECEF;--muted:#9AA9B3;--line:#2A363D;--soft:#1A2329;--accent:#7FBBCA;--on-accent:#0C1417;--accent-soft:#1C2E35;--ok:#6FCF97;--warn:#F2B35C;--warn-soft:#3A2A12;--diff:#F5C27A;--diff-soft:#33260F;--stage:#07090B;--on-stage:#EEF2F4;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--font)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+h1,h2,p,ul,ol{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.fine{font-size:12.5px;color:var(--muted)}
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:8px;font-weight:600;white-space:nowrap;background:var(--bg)}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.4}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px;background:var(--soft);max-width:100%;flex-wrap:wrap}
+.seg button{height:34px;padding:0 14px;border-radius:6px;font-weight:600;white-space:nowrap;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
+
+/* context bar */
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:var(--top);display:flex;align-items:center;gap:10px;background:var(--bg);border-bottom:1px solid var(--line)}
+#top .chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:var(--accent-soft);font-weight:600;min-width:0}
+#top .chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#top .grow{flex:1 1 auto;min-width:0}
+
+/* choose */
+.page{max-width:760px;margin:0 auto;padding-block:32px 56px;display:flex;flex-direction:column;gap:24px}
+.page h1{font-size:28px;line-height:1.2;text-wrap:balance}
+.resume{border:1px solid var(--accent);border-radius:12px;padding:16px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:var(--accent-soft)}
+.resume b{display:block}
+.models{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.model{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--line)}
+.model b{font-size:17px}
+.model .opts{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:4px 12px}
+.note{border:1px dashed var(--line);border-radius:9px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* programme panel */
+#prog{position:fixed;z-index:55;top:calc(var(--top) + env(safe-area-inset-top,0px));left:0;bottom:0;width:min(380px,100vw);background:var(--bg);border-right:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:auto;padding:16px max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-bottom,0px)) 16px;display:flex;flex-direction:column;gap:12px}
+#prog .list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+#prog .list button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
+#prog .list button[aria-current]{color:var(--accent);font-weight:700}
+#prog .n{width:20px;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+#prog .nm{flex:1;min-width:0;font-weight:600}
+#prog .meta{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+#prog .meta .w{color:var(--ok)}
+#prog .meta .nov{color:var(--warn)}
+
+/* player */
+.player{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,30%);height:calc(100dvh - var(--top) - 64px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:320px}
+.vcol{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--stage)}
+.vtools{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;flex:none;flex-wrap:wrap}
+.vtools .seg{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+.vtools .seg button{color:var(--on-stage);opacity:.75}
+.vtools .seg button[aria-pressed=true]{background:var(--on-stage);color:var(--stage);opacity:1}
+.vtools .single{color:var(--on-stage);font-weight:700}
+.cmpbtn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:7px;font-weight:700;white-space:nowrap;background:var(--on-stage);color:var(--stage)}
+.cmpbtn:disabled{background:transparent;color:var(--on-stage);opacity:.5;border:1px dashed rgba(255,255,255,.35)}
+.vbox{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.vbox video{width:100%;height:100%;object-fit:contain;display:block;background:var(--stage)}
+.none{color:var(--on-stage);text-align:center;padding:24px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.none b{font-size:18px}
+.none span{opacity:.75;max-width:40ch}
+.overlay{position:absolute;right:14px;bottom:56px;background:rgba(10,16,20,.9);color:#F2F5F6;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;max-width:calc(100% - 28px)}
+.overlay .row button{height:32px;padding:0 12px;border-radius:7px;border:1px solid rgba(255,255,255,.3);font-weight:600;color:#F2F5F6}
+.overlay .row button.go{background:#F2F5F6;color:#10181C;border-color:#F2F5F6}
+.side{overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;border-left:1px solid var(--line);font-size:calc(15px * var(--ts))}
+.side h1{font-size:calc(24px * var(--ts));line-height:1.2;text-wrap:balance}
+.side .head{font-weight:600;font-size:calc(16px * var(--ts))}
+.pts{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
+.pts li button{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;padding:8px 10px;border-radius:8px;border-left:3px solid transparent;transition:background .15s}
+.pts li button:hover{background:var(--soft)}
+.pts li button .t{font-family:var(--mono);font-size:12px;color:var(--muted);flex:none;width:34px}
+.pts li.now button{background:var(--accent-soft);border-left-color:var(--accent)}
+.pts li.now button .t{color:var(--accent);font-weight:700}
+.handle{border-radius:9px;background:var(--accent-soft);padding:11px 13px}
+.handle b{display:block;margin-bottom:3px}
+.same{border:1px dashed var(--line);border-radius:9px;padding:9px 13px;color:var(--muted)}
+.graphic{border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+.player.textonly{grid-template-columns:minmax(0,1fr)}
+.player.textonly .side{border-left:0;max-width:720px;margin:0 auto;width:100%;padding-top:40px}
+
+/* stage strip */
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:30;min-height:64px;padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;background:var(--bg);border-top:1px solid var(--line)}
+.strip{flex:1 1 auto;min-width:0;display:flex;gap:4px}
+.strip button{flex:1 1 0;min-width:34px;height:40px;border-radius:7px;background:var(--soft);font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.strip button:hover{color:var(--fg)}
+.strip button.cur{flex:3 1 0;background:var(--accent);color:var(--on-accent)}
+.strip button.seen:not(.cur){color:var(--ok)}
+.strip button.nov:not(.cur){color:var(--warn)}
+.strip .t{overflow:hidden;text-overflow:ellipsis}
+.nowname{display:none;flex:1 1 auto;text-align:center;font-weight:700}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;white-space:nowrap}
+.switch i{width:34px;height:20px;border-radius:999px;background:var(--line);position:relative;display:block;flex:none;transition:background .15s}
+.switch i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--bg);transition:left .15s}
+.switch[aria-checked=true] i{background:var(--accent)}
+.switch[aria-checked=true] i::after{left:16px}
+
+/* compare */
+.chead2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px}
+.cvids{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--stage)}
+.cv{position:relative;aspect-ratio:16/9;max-width:100%;display:flex;align-items:center;justify-content:center;background:var(--stage)}
+.cv video{width:100%;height:100%;object-fit:contain;display:block}
+.cv .lab{position:absolute;left:10px;top:10px;background:rgba(10,16,20,.8);color:#F2F5F6;border-radius:6px;padding:3px 9px;font-weight:700;font-size:13px}
+.ctrl{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line)}
+.ctrl input[type=range]{flex:1 1 260px;min-width:0;accent-color:var(--accent)}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);flex:1 1 100%}
+.diffbox{border-radius:10px;background:var(--diff-soft);border:1px solid var(--diff);padding:12px 14px;margin-top:14px}
+.diffbox b{color:var(--diff)}
+.diffbox ul{margin-top:6px;padding-left:20px}
+.ctexts{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-block:14px 96px}
+.ctexts h2{font-size:15px;margin-bottom:6px}
+.pts.cmp li button{padding:7px 10px}
+.pts.cmp li.same button{opacity:.6}
+.pts.cmp li.dif button{background:var(--diff-soft);border-left-color:var(--diff)}
+.pts.cmp li.now button{background:var(--accent-soft);border-left-color:var(--accent);opacity:1}
+.warnb{border-left:3px solid var(--warn);background:var(--warn-soft);border-radius:0 9px 9px 0;padding:11px 13px}
+.tagline{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.tagline.same{color:var(--muted)}
+.tagline.dif{color:var(--diff)}
+
+/* present */
+body.present #top{display:none}
+body.present .player{height:calc(100dvh - 64px - env(safe-area-inset-bottom,0px));grid-template-columns:minmax(0,1fr) minmax(320px,34%)}
+body.present .vtools .cmpbtn{display:none}
+body.present .strip{display:none}
+body.present .nowname{display:block}
+
+@media (max-width:760px){
+  .player{display:block;height:auto;padding-bottom:128px}
+  .vcol{display:flex}
+  .vbox{order:1;flex:none;aspect-ratio:16/9}
+  .vtools{order:2;padding:8px max(10px,env(safe-area-inset-right,0px)) 8px max(10px,env(safe-area-inset-left,0px))}
+  .vtools .seg{flex:1 1 auto;flex-wrap:nowrap;min-width:0}
+  .vtools .seg button{flex:1 1 0;padding:0 6px;font-size:13px}
+  .side{border-left:0;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));overflow:visible}
+  #bar{flex-wrap:wrap;gap:8px}
+  .strip{order:-1;flex:1 0 100%;overflow-x:auto}
+  .strip button,.strip button.cur{flex:none}
+  .barsp{flex:1 1 auto}
+  [data-do="present"]{display:none}
+  .cvids{grid-template-columns:1fr}
+  .ctexts{grid-template-columns:1fr}
+}
+</style>
+
+<div id="top" class="gut" hidden></div>
+<main id="view"></main>
+<aside id="prog" hidden aria-label="Programme"></aside>
+<nav id="bar" class="gut" aria-label="Stages" hidden></nav>
+
+<script src="content.js"></script>
+<script>
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* Everything on screen comes from the package data: window.TT_PACKAGE in content.js, built by Content Studio.
+   Format: docs/spec.md → Офлайн-пакет. No clinical content here: the sample package holds stand-in texts. */
+const PROTO_KEY = 'tt-proto-package'; // prototype only: a package file loaded from Content Studio
+function clean(p) {
+  if (!p || p.format !== 1 || !p.market || !Array.isArray(p.sections) || !Array.isArray(p.configs) || !p.lessons || typeof p.lessons !== 'object' || !p.media || typeof p.media !== 'object') return null;
+  const okFile = (f) => typeof f === 'string' && /^media\/[A-Za-z0-9._-]+\.(mp4|webm)$/.test(f);
+  const okId = (x) => typeof x === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x);
+  Object.keys(p.media).forEach((id) => { const m = p.media[id]; if (!okId(id) || !m || !okFile(m.file)) delete p.media[id]; });
+  p.sections = p.sections.filter((x) => x && okId(x.k) && Number.isFinite(Number(x.num))).map((x) => ({ k: x.k, n: String(x.n || x.k), num: Number(x.num) }));
+  p.market = { id: okId(p.market.id) ? p.market.id : 'market', name: String(p.market.name || '') };
+  ['package', 'version', 'built', 'note'].forEach((f) => { p[f] = String(p[f] || ''); });
+  p.configs = p.configs.filter((c) => c && okId(c.id) && okId(c.model) && p.lessons[c.id] && typeof p.lessons[c.id] === 'object').map((c) => ({ id: c.id, model: c.model, modelName: String(c.modelName || c.model), handle: String(c.handle || ''), handleName: String(c.handleName || '') }));
+  p.upcoming = (Array.isArray(p.upcoming) ? p.upcoming : []).filter((u) => u && okId(u.model)).map((u) => ({ model: u.model, name: String(u.name || u.model) }));
+  p.configs.forEach((c) => Object.keys(p.lessons[c.id]).forEach((k) => {
+    const l = p.lessons[c.id][k]; if (!l || typeof l !== 'object') { delete p.lessons[c.id][k]; return; }
+    const strs = (a) => (Array.isArray(a) ? a.map((x) => String(x)) : []);
+    l.head = String(l.head || ''); l.points = strs(l.points); l.notes = strs(l.notes); l.graphics = strs(l.graphics); l.warn = String(l.warn || '');
+    l.cues = Array.isArray(l.cues) ? l.cues : []; l.same = !!l.same; if (l.media && !p.media[l.media]) l.media = null;
+  }));
+  p.pairs = (Array.isArray(p.pairs) ? p.pairs : []).filter((x) => x && Array.isArray(x.configs) && x.configs.length === 2 && x.configs.every((id) => p.configs.some((c) => c.id === id)));
+  p.pairs.forEach((x) => { const d = x.diffs && typeof x.diffs === 'object' ? x.diffs : {}; x.diffs = {}; Object.keys(d).forEach((k) => { if (okId(k) && Array.isArray(d[k])) x.diffs[k] = d[k].map(String); }); });
+  return p.configs.length && p.sections.length ? p : null;
+}
+let PKG = clean(window.TT_PACKAGE), FROM = 'sample';
+try { const raw = localStorage.getItem(PROTO_KEY); if (raw) { const p = clean(JSON.parse(raw)); if (p) { PKG = p; FROM = 'loaded'; } else localStorage.removeItem(PROTO_KEY); } } catch (e) {}
+
+/* Saved place: one key per package, market and version — every file:// page shares one storage in Chrome. */
+const KEY = PKG ? `tt-learner:${PKG.package}:${PKG.market.id}:${PKG.version}` : 'tt-learner:none';
+const SECS = PKG ? PKG.sections : [];
+const CF = (id) => PKG.configs.find((c) => c.id === id) || null;
+const L = (k, id = S.cfg) => (PKG.lessons[id] || {})[k] || null;
+const sec = (k) => { const x = SECS.find((s) => s.k === k); return x ? { ...x, f: x.num < 1 || x.num > 8, txt: k === 'before' } : null; };
+const seq = (id = S.cfg) => SECS.filter((s) => L(s.k, id)).map((s) => sec(s.k));
+const clipOf = (id, k) => { const l = L(k, id); return l && l.media ? l.media : null; };
+const src = (m) => PKG.media[m].file;
+const cfg = () => CF(S.cfg);
+const pairOf = (id = S.cfg) => PKG.pairs.find((p) => p.configs.includes(id)) || null;
+const MODELS = PKG ? (() => { const out = []; PKG.configs.forEach((c) => { let m = out.find((x) => x.id === c.model); if (!m) out.push((m = { id: c.model, n: c.modelName, cfgs: [] })); m.cfgs.push(c); }); PKG.upcoming.forEach((u) => { if (!out.some((x) => x.id === u.model)) out.push({ id: u.model, n: u.name, cfgs: [], later: true }); }); return out; })() : [];
+const fmt = (d) => (d || d === 0 ? `${Math.floor(d / 60)}:${String(Math.floor(d % 60)).padStart(2, '0')}` : '');
+
+let S = { screen: 'choose', cfg: null, stage: null, auto: false, present: false, prog: false, watched: {}, last: {}, pos: {}, lastCfg: null };
+let playNext = false, stopped = false, timer = null, count = 0, DUR = {}, saveT = 0;
+if (PKG) {
+  Object.keys(PKG.media).forEach((id) => { const d = Number(PKG.media[id].dur); if (d > 0) DUR[id] = d; });
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (s && typeof s === 'object') {
+      const okKey = (key) => { const [id, k] = String(key).split('/'); return !!CF(id) && !!L(k, id); };
+      S.auto = !!s.auto;
+      ['watched', 'pos'].forEach((f) => { const o = s[f] && typeof s[f] === 'object' ? s[f] : {}; Object.keys(o).forEach((key) => { const v = o[key]; if (okKey(key) && typeof v === 'number' && isFinite(v) && v >= 0) S[f][key] = v; }); });
+      const lo = s.last && typeof s.last === 'object' ? s.last : {}; Object.keys(lo).forEach((id) => { if (CF(id) && L(lo[id], id)) S.last[id] = lo[id]; });
+      if (typeof s.lastCfg === 'string' && CF(s.lastCfg)) S.lastCfg = s.lastCfg;
+    }
+  } catch (e) {}
+}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ auto: S.auto, watched: S.watched, last: S.last, pos: S.pos, lastCfg: S.lastCfg })); } catch (e) {} };
+const kk = (k, id = S.cfg) => `${id}/${k}`;
+const seen = (k, id = S.cfg) => !!S.watched[kk(k, id)];
+const posOf = (k, id = S.cfg) => S.pos[kk(k, id)] || 0;
+/* Point start times come from the package (set by the editor in Content Studio). A missing time falls back to an even split. */
+const cuesOf = (id, k) => { const l = L(k, id), c = clipOf(id, k), d = c && DUR[c]; if (!l || !c || !l.points.length) return null; return l.points.map((_, i) => { const t = l.cues[i]; return typeof t === 'number' && isFinite(t) && t >= 0 ? t : d ? (i * d) / l.points.length : 0; }); };
+const pointAt = (id, k, t) => { const c = cuesOf(id, k); if (!c) return -1; let i = 0; c.forEach((x, j) => { if (t >= x) i = j; }); return i; };
+
+if (PKG) Object.keys(PKG.media).forEach((id) => {
+  const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = src(id);
+  v.onloadedmetadata = () => { DUR[id] = v.duration; if (S.screen !== 'choose') { renderBar(); if (!S.prog) refreshTimes(); else renderProg(); } };
+});
+
+function media(id, k, vid, opts = {}) {
+  const c = clipOf(id, k), cf = CF(id);
+  if (!c) return `<div class="none"><b>Video not filmed yet</b><span>${stopped ? 'Auto-advance stopped here. ' : ''}${esc(cf.handleName)} footage for this stage is still to come. No other handle's video is shown instead.</span></div>`;
+  return `<video id="${vid}" src="${esc(src(c))}" ${opts.controls === false ? '' : `controls ${innerWidth > 760 ? 'controlslist="nofullscreen"' : ''}`} muted playsinline preload="metadata" aria-label="${esc(sec(k).n)}, ${esc(cf.handleName)}"></video>`;
+}
+function pointsList(id, k, cls = '') {
+  const l = L(k, id), cs = cuesOf(id, k);
+  return `<ul class="pts ${cls}" data-h="${esc(id)}">${l.points.map((p, i) => `<li data-i="${i}"><button data-do="cue" data-h="${esc(id)}" data-i="${i}" ${cs ? '' : 'disabled'}><span class="t">${cs ? fmt(cs[i]) : ''}</span><span>${esc(p)}</span></button></li>`).join('')}</ul>`;
+}
+
+/* ---------- top, programme, bar ---------- */
+function renderTop() {
+  const t = $('#top'); const show = S.screen !== 'choose' && S.cfg; t.hidden = !show; if (!show) return;
+  const cf = cfg(), ctx = `${esc(cf.modelName)} · ${esc(cf.handleName)} · ${esc(PKG.market.name)}`;
+  t.innerHTML = `${S.screen === 'stage' ? `<button class="btn" data-do="prog" aria-expanded="${S.prog}">☰ Programme</button>` : ''}<span class="chip"><span>${ctx}</span></span><span class="grow"></span><button class="btn" data-do="exit">Exit</button>`;
+}
+function renderProg() {
+  const p = $('#prog'); p.hidden = !(S.prog && S.screen === 'stage'); if (p.hidden) return;
+  p.innerHTML = `<div class="row" style="justify-content:space-between"><b>Programme</b><button class="btn" data-do="prog">Close</button></div>
+  <div class="list">${seq().map((s) => { const c = clipOf(S.cfg, s.k), at = posOf(s.k), done = seen(s.k); return `<button data-do="go" data-k="${s.k}" ${s.k === S.stage ? 'aria-current="step"' : ''}><span class="n">${s.f ? '' : s.num}</span><span class="nm">${esc(s.n)}</span><span class="meta">${done ? '<span class="w">✓ Watched</span><br>' : ''}${!s.txt && !c ? '<span class="nov">Video not filmed yet</span>' : ''}${c ? (at > 1 && !done ? `Stopped at ${fmt(at)} of ${fmt(DUR[c])}` : fmt(DUR[c])) : ''}</span></button>`; }).join('')}</div>
+  <p class="fine">Package v${esc(PKG.version)} · ${esc(PKG.market.name)} · built ${esc(PKG.built)}. Your place is saved on this computer. Exit returns to device choice.</p>`;
+}
+function renderBar() {
+  const b = $('#bar'), on = S.screen === 'stage'; b.hidden = !on; if (!on) return;
+  const list = seq(), i = list.findIndex((s) => s.k === S.stage);
+  const mark = (s) => (s.f ? s.n.slice(0, 2) : s.num);
+  const strip = list.map((s) => { const c = clipOf(S.cfg, s.k), nv = !s.txt && !c, cur = s.k === S.stage; return `<button class="${cur ? 'cur' : ''} ${seen(s.k) ? 'seen' : ''} ${nv ? 'nov' : ''}" data-do="go" data-k="${s.k}" title="${esc(s.n)}${nv ? ', video not filmed yet' : (c && DUR[c] ? ', ' + fmt(DUR[c]) : '')}" ${cur ? 'aria-current="step"' : ''}><span class="t">${cur ? (s.f ? '' : s.num + ' · ') + esc(s.n) + (c && DUR[c] ? ' · ' + fmt(DUR[c]) : '') : mark(s)}</span>${seen(s.k) && !cur ? ' ✓' : ''}${nv && !cur ? ' ○' : ''}</button>`; }).join('');
+  const now = list[i], name = now ? (now.f ? '' : now.num + ' · ') + esc(now.n) : '';
+  b.innerHTML = `<button class="btn" data-do="prev" ${i <= 0 ? 'disabled' : ''} aria-label="Previous stage">←</button><div class="strip">${strip}</div><div class="nowname">${name}</div><button class="btn pri" data-do="next" ${i >= list.length - 1 ? 'disabled' : ''} aria-label="Next stage">→</button><span class="barsp"></span><button class="switch" role="switch" aria-checked="${S.auto}" data-do="auto"><i></i>Auto-advance</button><button class="btn" data-do="present">${S.present ? 'Exit full screen' : 'Present'}</button>`;
+}
+
+/* ---------- views ---------- */
+function vChoose() {
+  const lc = S.lastCfg && CF(S.lastCfg), k = lc && S.last[lc.id], at = k ? S.pos[kk(k, lc.id)] || 0 : 0;
+  const resume = lc && k ? `<div class="resume"><div><b>Continue where you left off</b><span class="muted">${esc(lc.modelName)} · ${esc(lc.handleName)} · ${esc(sec(k).n)}${at > 1 ? ` at ${fmt(at)}` : ''}</span></div><button class="btn pri" data-do="continue">Continue</button></div>` : '';
+  return `<div class="page gut"><div><h1>Choose your training</h1><p class="muted">Training for ${esc(PKG.market.name)}. Package v${esc(PKG.version)}, built ${esc(PKG.built)}.</p></div>${resume}
+  <div><div class="label">Device and handle</div><div class="models">${MODELS.map((m) => `<div class="model"><b>${esc(m.n)}</b><div class="opts">${m.later ? '<span class="tag">No training yet</span>' : m.cfgs.map((c) => `<button class="btn" data-do="pick" data-c="${esc(c.id)}">${esc(c.handleName)} →</button>`).join('')}</div></div>`).join('')}</div></div>
+  <p class="fine">Concept v0.6. ${esc(PKG.note || '')}</p>
+  <div class="note"><div class="fine"><b>Prototype only, not part of the product.</b> ${FROM === 'sample' ? 'You are looking at the sample package built by the Content Studio prototype.' : `Loaded from a Content Studio file: ${esc(PKG.package)} v${esc(PKG.version)}.`} Publish in Content Studio, download the package data and open it here.</div>
+  <div class="row"><label class="btn" for="pkgfile">Load a package from Content Studio (.json)</label><input type="file" id="pkgfile" accept=".json,application/json" hidden>${FROM === 'loaded' ? '<button class="btn" data-do="sample">Back to the sample package</button>' : ''}</div><div class="fine" id="pkgmsg" role="status"></div></div></div>`;
+}
+function vStage() {
+  const s = sec(S.stage), l = L(S.stage), cf = cfg(), pair = pairOf();
+  if (s.txt) return `<div class="player textonly"><aside class="side"><h1>${esc(s.n)}</h1><p class="head">${esc(l.head)}</p><ul style="padding-left:20px">${l.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul><p class="fine">Shown only for ${esc(cf.modelName)} in ${esc(PKG.market.name)}.</p></aside></div>`;
+  const cmpReason = !pair ? `${cf.modelName} has one handle in this package` : (s.f ? 'Compare works on the eight stages' : '');
+  const tools = `${pair ? `<div class="seg" role="group" aria-label="Handle">${pair.configs.map((id) => `<button aria-pressed="${id === S.cfg}" data-do="handle" data-c="${esc(id)}">${esc(CF(id).handleName)}</button>`).join('')}</div>` : `<span class="single">${esc(cf.handleName)}</span>`}<button class="cmpbtn" data-do="compare" ${cmpReason ? `disabled title="${esc(cmpReason)}"` : ''}>⇆ Compare handles</button>`;
+  const graphics = l.graphics.map((g) => `<div class="graphic"><b>Data graphic</b><div class="small muted">${esc(g)}</div></div>`).join('');
+  const extra = l.same ? '<div class="same">Same for both handles.</div>' : (l.notes.length ? `<div class="handle"><b>${esc(cf.handleName)}</b>${l.notes.map(esc).join('<br>')}</div>` : '');
+  return `<div class="player"><section class="vcol"><div class="vtools">${tools}</div><div class="vbox" id="vbox">${media(S.cfg, S.stage, 'v')}</div></section>
+  <aside class="side"><h1>${esc(s.n)}</h1><p class="head">${esc(l.head)}</p>${pointsList(S.cfg, S.stage)}
+  ${graphics}${extra}${l.warn ? `<div class="warnb"><b>Important</b> ${esc(l.warn)}</div>` : ''}
+  <p class="fine">Text and point times come from the package. The highlighted point follows the clip; click a point to jump to it.</p></aside></div>`;
+}
+function vCompare() {
+  const pair = pairOf(), [ia, ib] = pair.configs, s = sec(S.stage), la = L(S.stage, ia), lb = L(S.stage, ib);
+  const list = seq(ia).filter((x) => !x.f && L(x.k, ib)), i = list.findIndex((x) => x.k === S.stage), same = la.same && lb.same, d = (pair.diffs[S.stage] || []).map(String);
+  const n = la.points.length, both = clipOf(ia, S.stage) && clipOf(ib, S.stage), aligned = both && n > 0 && n === lb.points.length;
+  const side = (id, tag) => { const l = L(S.stage, id); return `<div><h2>${tag} · ${esc(CF(id).handleName)}</h2><p class="head" style="font-weight:600;margin-bottom:6px">${esc(l.head)}</p>${pointsList(id, S.stage, 'cmp')}<p class="tagline ${l.same ? 'same' : 'dif'}" style="margin-top:10px">${l.same ? 'Same for both handles' : 'Different with this handle'}</p>${l.same || !l.notes.length ? '' : `<div class="handle" style="margin-top:6px;background:var(--diff-soft)">${l.notes.map(esc).join('<br>')}</div>`}</div>`; };
+  const scrub = aligned ? `<input type="range" id="scrub" min="0" max="${n}" step="0.01" value="0" aria-label="Move both clips point by point"><div class="ticks">${la.points.map((_, j) => `<span>Point ${j + 1}</span>`).join('')}<span>End</span></div>` : `<p class="fine" style="flex:1 1 100%">${!both ? 'One side has no video yet, so there is nothing to line up.' : 'The two handles have a different number of points at this stage, so the clips cannot be lined up by points.'}</p>`;
+  const diffBlock = same ? '<div class="same" style="margin-top:14px">This stage is the same for both handles.</div>' : `<div class="diffbox"><b>What's different at this stage</b>${d.length ? `<ul>${d.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p class="muted">Rapid Medical has not written the differences for this stage yet.</p>'}<p class="fine" style="margin-top:6px">Written by Rapid Medical. We do not work out differences ourselves.</p></div>`;
+  return `<div class="gut chead2"><div><div class="label" style="margin:0">Compare handles · ${esc(CF(ia).modelName)}</div><div class="row"><button class="btn" data-do="cprev" ${i <= 0 ? 'disabled' : ''} aria-label="Previous stage">←</button><b>${s.num} · ${esc(s.n)}</b><button class="btn" data-do="cnext" ${i >= list.length - 1 ? 'disabled' : ''} aria-label="Next stage">→</button></div></div><button class="btn" data-do="exitcmp">Back to the lesson</button></div>
+  <div class="cvids"><div class="cv"><span class="lab">A · ${esc(CF(ia).handleName)}</span>${media(ia, S.stage, 'va', { controls: false })}</div><div class="cv"><span class="lab">B · ${esc(CF(ib).handleName)}</span>${media(ib, S.stage, 'vb', { controls: false })}</div></div>
+  <div class="gut"><div class="ctrl"><button class="btn pri" data-do="both" id="bothBtn">▶ Play both</button><div class="seg" role="group" aria-label="Speed">${[1, 0.5, 0.25].map((r) => `<button aria-pressed="${r === (S.rate || 1)}" data-do="rate" data-r="${r}">${r}×</button>`).join('')}</div>${scrub}</div>
+  <p class="fine" style="margin-top:6px">The slider lines the clips up by the points of the text, not by seconds: the two clips are filmed differently and run for different times.</p>
+  ${diffBlock}
+  <div class="ctexts">${side(ia, 'A')}${side(ib, 'B')}</div></div>`;
+}
+function vNoPackage() { return '<div class="page gut"><h1>The training package did not load</h1><p class="muted">content.js is missing or damaged. If you opened the package from a ZIP, extract the whole ZIP first, then open index.html.</p></div>'; }
+const VIEWS = { choose: vChoose, stage: vStage, compare: vCompare };
+
+/* ---------- render ---------- */
+function clearTimer() { clearInterval(timer); timer = null; const o = $('#ov'); if (o) o.remove(); }
+function render() {
+  clearTimer();
+  document.documentElement.style.setProperty('--ts', S.present && S.screen === 'stage' ? 1.4 : 1);
+  document.body.classList.toggle('present', S.present && S.screen === 'stage');
+  $('#view').innerHTML = VIEWS[S.screen]();
+  renderTop(); renderBar(); renderProg();
+  if (S.screen === 'stage') wireStage();
+  if (S.screen === 'compare') wireCompare();
+  if (S.screen === 'choose') wireChoose();
+  playNext = false;
+}
+function refreshTimes() { if (S.screen === 'stage' && $('.side .pts')) { $('.side .pts').outerHTML = pointsList(S.cfg, S.stage); highlight(); } }
+function highlight() {
+  const v = $('#v'); if (!v || !clipOf(S.cfg, S.stage)) return;
+  const i = pointAt(S.cfg, S.stage, v.currentTime);
+  $$('.side .pts li').forEach((li) => li.classList.toggle('now', Number(li.dataset.i) === i));
+}
+function wireStage() {
+  const v = $('#v'); if (!v) return;
+  const k = kk(S.stage), at = S.pos[k] || 0;
+  v.addEventListener('timeupdate', () => {
+    highlight();
+    if (v.duration && v.currentTime / v.duration > 0.85) mark();
+    const now = Date.now(); if (now - saveT > 1000) { saveT = now; S.pos[k] = v.currentTime; save(); }
+  });
+  v.addEventListener('pause', () => { S.pos[k] = v.currentTime; save(); });
+  v.addEventListener('ended', onEnded);
+  v.addEventListener('loadedmetadata', highlight);
+  if (playNext) v.play().catch(() => {});
+  else if (at > 1 && !seen(S.stage)) overlay(`<div>You stopped at <b>${fmt(at)}</b></div><div class="row"><button class="go" data-do="resume">Continue from ${fmt(at)}</button><button data-do="fromstart">From the start</button></div>`);
+  highlight();
+}
+function wireChoose() {
+  const f = $('#pkgfile'); if (!f) return;
+  f.addEventListener('change', () => {
+    const file = f.files && f.files[0], msg = $('#pkgmsg'); if (!file) return;
+    file.text().then((txt) => {
+      let p = null; try { p = clean(JSON.parse(txt)); } catch (e) { p = null; }
+      if (!p) { msg.textContent = 'This file is not package data from Content Studio (format 1).'; return; }
+      try { localStorage.setItem(PROTO_KEY, txt); location.reload(); } catch (e) { msg.textContent = 'This browser does not let the page keep the file. Try another browser.'; }
+    }, () => { msg.textContent = 'The file could not be read.'; });
+  });
+}
+function mark() { const k = kk(S.stage); if (S.watched[k]) return; S.watched[k] = 1; S.pos[k] = 0; save(); renderBar(); }
+function nextStage() { const l = seq(), i = l.findIndex((s) => s.k === S.stage); return i < l.length - 1 ? l[i + 1] : null; }
+function overlay(html) { clearTimer(); const b = $('#vbox'); if (!b) return; b.insertAdjacentHTML('beforeend', `<div class="overlay" id="ov">${html}</div>`); }
+function onEnded() {
+  mark();
+  const n = nextStage();
+  if (!(S.auto && n)) return;
+  count = 3;
+  overlay(`<div id="cd">Next: <b>${esc(n.n)}</b> in ${count}</div><div class="row"><button data-do="cancel">Cancel</button><button class="go" data-do="now">Play now</button></div>`);
+  timer = setInterval(() => { count -= 1; if (count <= 0) { clearInterval(timer); advance(); } else { const o = $('#cd'); if (o) o.innerHTML = `Next: <b>${esc(n.n)}</b> in ${count}`; } }, 1000);
+}
+function advance() { const n = nextStage(); if (!n) return; const has = clipOf(S.cfg, n.k); stopped = !has; go(n.k, !!has); }
+function go(k, play) { S.stage = k; S.screen = 'stage'; S.last[S.cfg] = k; S.lastCfg = S.cfg; save(); playNext = !!play; render(); stopped = false; window.scrollTo(0, 0); }
+function open(id) { if (!CF(id)) return; S.cfg = id; stopped = false; const k = S.last[id]; go(k && L(k, id) ? k : seq(id)[0].k, false); }
+function step(d) { const l = seq(), i = l.findIndex((s) => s.k === S.stage) + d; if (i >= 0 && i < l.length) { stopped = false; go(l[i].k, false); } }
+function setPresent(on) { S.present = on; S.prog = false; if (on) { try { document.documentElement.requestFullscreen?.().catch(() => {}); } catch (e) {} } else { try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {} } render(); }
+
+/* ---------- compare ---------- */
+function stepToTime(id, s) {
+  const c = clipOf(id, S.stage), d = DUR[c]; if (!d) return 0; const cs = cuesOf(id, S.stage).concat([d]), n = cs.length - 1;
+  const i = Math.min(Math.floor(s), n - 1), f = s - i; return Math.min(d - 0.05, cs[i] + (cs[i + 1] - cs[i]) * f);
+}
+function timeToStep(id, t) { const c = clipOf(id, S.stage), d = DUR[c]; if (!d) return 0; const cs = cuesOf(id, S.stage).concat([d]), n = cs.length - 1; for (let i = 0; i < n; i++) if (t < cs[i + 1]) return i + (t - cs[i]) / Math.max(0.01, cs[i + 1] - cs[i]); return n; }
+function wireCompare() {
+  const [ia, ib] = pairOf().configs, va = $('#va'), vb = $('#vb'), sc = $('#scrub'), btn = $('#bothBtn'), vids = [[va, ia], [vb, ib]].filter(([v]) => v);
+  if (!vids.length) { btn.disabled = true; return; }
+  const rate = S.rate || 1; vids.forEach(([v]) => { v.playbackRate = rate; });
+  const hl = () => vids.forEach(([v, id]) => { const i = pointAt(id, S.stage, v.currentTime); $$(`.ctexts .pts[data-h="${id}"] li`).forEach((li) => li.classList.toggle('now', Number(li.dataset.i) === i)); });
+  const playing = () => vids.some(([v]) => !v.paused && !v.ended);
+  const lab = () => { btn.textContent = playing() ? '❚❚ Pause both' : vids.length > 1 ? '▶ Play both' : '▶ Play'; };
+  vids.forEach(([v, id]) => {
+    v.addEventListener('timeupdate', () => { hl(); if (sc && v === vids[0][0] && document.activeElement !== sc) sc.value = timeToStep(id, v.currentTime).toFixed(2); });
+    v.addEventListener('play', lab); v.addEventListener('pause', lab); v.addEventListener('ended', lab);
+    v.addEventListener('loadedmetadata', () => { v.playbackRate = rate; hl(); });
+  });
+  if (sc) sc.addEventListener('input', () => { vids.forEach(([v, id]) => { v.pause(); v.currentTime = stepToTime(id, Number(sc.value)); }); hl(); });
+  btn.onclick = () => { if (playing()) vids.forEach(([v]) => v.pause()); else vids.forEach(([v]) => { if (v.ended) v.currentTime = 0; v.play().catch(() => {}); }); };
+  lab(); hl();
+}
+function cstep(d) { const [ia, ib] = pairOf().configs, l = seq(ia).filter((x) => !x.f && L(x.k, ib)), i = l.findIndex((x) => x.k === S.stage) + d; if (i >= 0 && i < l.length) { S.stage = l[i].k; render(); } }
+
+/* ---------- events ---------- */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-do]'); if (!b || !PKG) return;
+  const a = b.dataset.do;
+  if (a === 'pick') open(b.dataset.c);
+  else if (a === 'continue') open(S.lastCfg);
+  else if (a === 'sample') { try { localStorage.removeItem(PROTO_KEY); } catch (err) {} location.reload(); }
+  else if (a === 'exit') { S.screen = 'choose'; S.present = false; S.prog = false; render(); }
+  else if (a === 'prog') { S.prog = !S.prog; renderTop(); renderProg(); }
+  else if (a === 'go') { stopped = false; S.prog = false; go(b.dataset.k, false); }
+  else if (a === 'prev') step(-1);
+  else if (a === 'next') step(1);
+  else if (a === 'handle') { const id = b.dataset.c; if (!CF(id)) return; S.cfg = id; stopped = false; go(L(S.stage, id) ? S.stage : seq(id)[0].k, false); }
+  else if (a === 'compare') { if (!pairOf()) return; S.screen = 'compare'; S.present = false; S.prog = false; render(); window.scrollTo(0, 0); }
+  else if (a === 'exitcmp') go(S.stage, false);
+  else if (a === 'cprev') cstep(-1);
+  else if (a === 'cnext') cstep(1);
+  else if (a === 'rate') { S.rate = Number(b.dataset.r); $$('[data-do="rate"]').forEach((x) => x.setAttribute('aria-pressed', x === b)); ['#va', '#vb'].forEach((id) => { const v = $(id); if (v) v.playbackRate = S.rate; }); }
+  else if (a === 'cue') { const id = b.dataset.h, v = S.screen === 'compare' ? $(pairOf().configs[0] === id ? '#va' : '#vb') : $('#v'), cs = cuesOf(id, S.stage); if (v && cs) v.currentTime = cs[Number(b.dataset.i)]; }
+  else if (a === 'auto') { S.auto = !S.auto; save(); renderBar(); }
+  else if (a === 'present') setPresent(!S.present);
+  else if (a === 'cancel') clearTimer();
+  else if (a === 'now') { clearInterval(timer); advance(); }
+  else if (a === 'resume') { const v = $('#v'); clearTimer(); if (v) { v.currentTime = posOf(S.stage); v.play().catch(() => {}); } }
+  else if (a === 'fromstart') { const v = $('#v'); clearTimer(); S.pos[kk(S.stage)] = 0; save(); if (v) { v.currentTime = 0; v.play().catch(() => {}); } }
+});
+document.addEventListener('keydown', (e) => {
+  if (!PKG) return;
+  if (e.key === 'Escape') { if (S.prog) { S.prog = false; renderTop(); renderProg(); return; } if (S.present) { setPresent(false); return; } }
+  if (S.screen !== 'stage') return;
+  if (e.target.tagName === 'VIDEO' && !S.present) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+  else if (e.key === ' ' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'VIDEO') { const v = $('#v'); if (v) { e.preventDefault(); v.paused ? v.play().catch(() => {}) : v.pause(); } }
+});
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.present) { S.present = false; render(); } });
+
+/* Start: one configuration in the package skips the choice (spec → Путь врача). */
+if (!PKG) $('#view').innerHTML = vNoPackage();
+else if (PKG.configs.length === 1) open(PKG.configs[0].id);
+else render();
+</script>

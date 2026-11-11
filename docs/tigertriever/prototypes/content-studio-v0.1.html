@@ -362,7 +362,7 @@ textarea,input[type=text]{font:inherit;width:100%;border:1px solid var(--line);b
   <ol>
     <li>Open <em>Device preparation</em> for Tiger 13 · Legacy slider. Click the video and replace it for this handle only.</li>
     <li>Press <em>Preview</em>, then <em>Compare with package</em> to see your draft next to v1.2.</li>
-    <li>Press <em>Publish</em>. Try to include Tiger 13 · Precision knob.</li>
+    <li>Press <em>Publish</em>. Include Tiger 13 · Precision knob and the comparison; for knob stages not filmed yet choose <em>Publish without this video</em>. Download the package data and open it in the training prototype.</li>
     <li>Click a point's time (0:00) to set when it starts in the clip. In Positioning, edit <em>What's different</em>.</li>
   </ol>
   <div class="hint" style="margin-bottom:8px">Nothing leaves your browser. Texts, device names and files are stand-ins, not approved content.</div>
@@ -436,6 +436,9 @@ const MEDIA = {
   'ret-knob': { name: 'Retrieval_knob.mp4', kind: 'video', ready: 'filming', ver: 0, up: '', source: 'To be filmed', need: 'Indicator window close-up during guide catheter entry', who: 'Emily' },
   'between-inservice': { name: 'Between_passes_inservice.mp4', kind: 'video', dur: '0:52', ready: 'confirmed', ver: 1, up: '2 Oct 2026', source: 'In-service cleaning clip', need: '' },
 };
+/* Prototype only: the public stand-in clip that plays for each library file in the training prototype, and its real length. */
+const STAND = { 'anim-tiger': 'animation', 'prep-inservice': 'clip-b', 'prep-inservice-v2': 'clip-b', 'prep-raw': 'clip-b', 'pos-abergel': 'clip-a', 'pos-t13-mevo': 'knob', 'dep-slider': 'clip-b', 'clot-slider': 'clip-a', 'clot-knob': 'knob', comb: 'clip-a', 'pre-slider': 'clip-b', 'ret-slider': 'clip-a', 'between-inservice': 'clip-b' };
+const STAND_DUR = { animation: 8.9, 'clip-a': 4.34, 'clip-b': 20.19, knob: 10.82 };
 function planFor(c) {
   const k = c.handle === 'knob';
   return { opening: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] }, prep: { media: 'prep-inservice' }, pos: { media: k ? 'pos-t13-mevo' : 'pos-abergel' }, dep: { media: k ? 'dep-knob' : 'dep-slider' }, clot: { media: k ? 'clot-knob' : 'clot-slider' }, asp: { media: 'comb' }, pre: { media: k ? 'pre-knob' : 'pre-slider' }, ret: { media: k ? 'ret-knob' : 'ret-slider' }, between: { media: 'between-inservice' }, closing: { media: 'anim-tiger', graphics: [k ? 'g-distals' : 'g-tiger-trial'] } };
@@ -503,17 +506,17 @@ const lesson = (c = cur.c, s = cur.s) => S.lessons[c][s];
 const mediaOf = (id) => (id ? MEDIA[id] : null);
 const hasMedia = (l) => { const m = mediaOf(l.media); return !!m && m.ready !== 'filming'; };
 const notStarted = (l) => !l.head && !l.points.length && !l.media;
-const complete = (c, k, l) => !!l.head && l.points.length > 0 && (!isStage(k) || hasMedia(l));
+const complete = (c, k, l) => !!l.head && l.points.length > 0 && (!isStage(k) || hasMedia(l) || !!l.noVideo);
 function usedIn(id) { const out = []; if (!id) return out; S.configs.forEach((c) => sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; if (!l) return; if (l.media === id) out.push({ c: c.id, s: s.k, f: 'media' }); l.graphics.forEach((g, i) => { if (g === id) out.push({ c: c.id, s: s.k, f: 'graphics', i }); }); })); return out; }
 function pairFor(m = S.market) { const a = cfgs(m).find((c) => c.model === 't13' && c.handle === 'slider'), b = cfgs(m).find((c) => c.model === 't13' && c.handle === 'knob'); return a && b ? { a, b } : null; }
 function latestPkg(m = S.market) { return S.packages.find((p) => p.market === m) || null; }
 function nextVersion(m = S.market) { const p = latestPkg(m); if (!p) return '1.0'; const [a, b] = p.v.split('.').map(Number); return `${a}.${b + 1}`; }
-const FIELD = { head: 'headline', points: 'points', notes: 'handle notes', warn: 'warning', media: 'media', graphics: 'graphics', cues: 'point times', diffs: 'differences' };
+const FIELD = { noVideo: 'video requirement', head: 'headline', points: 'points', notes: 'handle notes', warn: 'warning', media: 'media', graphics: 'graphics', cues: 'point times', diffs: 'differences' };
 function diffs(m = S.market) {
   const out = [];
   cfgs(m).forEach((c) => { const r = S.released[c.id]; if (!r) return;
     sectionsOf(c).forEach((s) => { const a = r[s.k] || emptyLesson(), b = S.lessons[c.id][s.k];
-      ['media', 'graphics', 'head', 'points', 'cues', 'notes', 'warn', 'shared'].forEach((f) => { if (!same(a[f], b[f])) { let what = FIELD[f] ? FIELD[f] + ' edited' : 'sharing changed'; if (f === 'media') what = b.media ? `${KIND[MEDIA[b.media].kind].toLowerCase()} replaced (${MEDIA[b.media].name})` : 'media removed'; out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${what}` }); } });
+      ['media', 'noVideo', 'graphics', 'head', 'points', 'cues', 'notes', 'warn', 'shared'].forEach((f) => { if (f === 'noVideo' ? !!a[f] !== !!b[f] : !same(a[f], b[f])) { let what = FIELD[f] ? FIELD[f] + ' edited' : 'sharing changed'; if (f === 'noVideo') what = b.noVideo ? 'ships without video' : 'video required again'; if (f === 'media') what = b.media ? `${KIND[MEDIA[b.media].kind].toLowerCase()} replaced (${MEDIA[b.media].name})` : 'media removed'; out.push({ c: c.id, s: s.k, f, label: `${s.n} · ${cfgName(c)}: ${what}` }); } });
     }); });
   const rp = S.releasedPairDiffs[m], pr = pairFor(m);
   if (rp && pr) { const now = S.pairDiffs[m] || {}; [...new Set([...Object.keys(rp), ...Object.keys(now)])].forEach((k) => { if (!same(rp[k] || [], now[k] || [])) out.push({ c: pr.a.id, s: k, f: 'diffs', label: `Comparison · ${SC[k].n}: differences edited` }); }); }
@@ -523,7 +526,7 @@ function cellState(c, k) {
   const cfg = CF(c), l = S.lessons[c][k]; if (!l) return { k: 'na', t: '—' };
   const m = mediaOf(l.media), missing = isStage(k) && !hasMedia(l);
   if (notStarted(l)) return { k: 'none', t: 'Not started' };
-  if (missing) return { k: 'bad', t: m && m.ready === 'filming' ? 'Filming needed' : 'No video' };
+  if (missing && !l.noVideo) return { k: 'bad', t: m && m.ready === 'filming' ? 'Filming needed' : 'No video' };
   const inc = !complete(c, k, l);
   if (S.released[c]) { if (inc) return { k: 'chg', t: 'Empty field' }; return same(S.released[c][k], l) ? { k: 'ok', t: 'In package' } : { k: 'chg', t: 'Changed' }; }
   return inc ? { k: 'chg', t: 'Empty field' } : { k: 'ready', t: 'Ready' };
@@ -537,12 +540,12 @@ function blockers(sel, m = S.market) {
   const out = [];
   cfgs(m).forEach((c) => { if (!sel[c.id]) return;
     sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k], name = `${s.n} · ${cfgName(c)}`; if (s.k === 'before') return;
-      if (isStage(s.k) && !hasMedia(l)) { const md = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: ${md && md.ready === 'filming' ? `video not filmed yet (${md.who || 'owner'}: ${md.need.toLowerCase()})` : 'no video'}.`, leave: c.id }); }
+      if (isStage(s.k) && !hasMedia(l) && !l.noVideo) { const md = mediaOf(l.media); out.push({ c: c.id, s: s.k, msg: `${name}: ${md && md.ready === 'filming' ? `video not filmed yet (${md.who || 'owner'}: ${md.need.toLowerCase()})` : 'no video'}.`, leave: c.id, novideo: true }); }
       if (!l.head) out.push({ c: c.id, s: s.k, msg: `${name}: the headline is empty.`, leave: c.id });
       if (!l.points.length) out.push({ c: c.id, s: s.k, msg: `${name}: no on-screen points.`, leave: c.id });
       const cs = (l.cues || []).filter((x) => x != null); if (cs.some((x, j) => j && x <= cs[j - 1])) out.push({ c: c.id, s: s.k, msg: `${name}: point times are out of order.`, leave: c.id });
     }); });
-  if (sel.cmp) { const p = pairFor(m); if (!p || !sel[p.a.id] || !sel[p.b.id]) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' }); else SECTIONS.filter((s) => isStage(s.k)).forEach((s) => { [p.a, p.b].forEach((c) => { if (!hasMedia(lesson(c.id, s.k))) out.push({ c: c.id, s: s.k, msg: `Comparison, ${s.n}: ${HANDLES[c.handle]} has no video.`, leave: 'cmp' }); }); }); }
+  if (sel.cmp) { const p = pairFor(m); if (!p || !sel[p.a.id] || !sel[p.b.id]) out.push({ msg: 'The comparison needs both Tiger 13 handles in the package.', leave: 'cmp' }); else SECTIONS.filter((s) => isStage(s.k)).forEach((s) => { [p.a, p.b].forEach((c) => { const lc = lesson(c.id, s.k); if (!hasMedia(lc) && !lc.noVideo) out.push({ c: c.id, s: s.k, msg: `Comparison, ${s.n}: ${HANDLES[c.handle]} has no video.`, leave: 'cmp' }); }); }); }
   return out;
 }
 function reviewItems(sel, m = S.market) { const set = new Map(); cfgs(m).forEach((c) => { if (!sel[c.id]) return; sectionsOf(c).forEach((s) => { const l = S.lessons[c.id][s.k]; [l.media, ...l.graphics].forEach((id) => { const md = mediaOf(id); if (md && md.ready === 'review') set.set(id, md); }); }); }); return [...set.values()]; }
@@ -625,6 +628,7 @@ function renderLesson() {
       ${cur.s === 'before' ? `<span class="condchip">Shown only for ${esc(mk.name)} · ${esc(MD[c.model].name)}</span>` : ''}
       <div><p class="stage-num">${num}</p><h1 data-f="head" ${ed ? 'data-t' : ''} data-ph="Headline the physician reads first">${esc(l.head)}</h1></div>
       ${cur.s === 'before' && !l.media && !ed ? '' : mediaBox(l, cur.s, ed)}
+      ${isStage(cur.s) && !hasMedia(l) ? (l.noVideo ? `<p class="hint nvnote">Ships without video: physicians see “Video not filmed yet” here and in Compare.${ed ? ' <button type="button" class="lnkb" data-novideo-off>Require a video again</button>' : ''}</p>` : (ed ? `<p class="hint">Not filmed yet. Publish stops here unless you <button type="button" class="lnkb" data-novideo-on>publish this stage without video</button>.</p>` : '')) : ''}
       ${isFraming(cur.s) ? graphicsRow(l, ed) : ''}
       <div class="block"><h2>On screen${l.shared ? '<span class="chip">Same for all handles</span>' : ''}</h2>${list(l, 'points', '', 'Add a point the physician reads next to the clip', ed)}</div>
       ${l.shared ? (ed ? `<p class="hint"><button type="button" class="lnkb" data-unshare>This step differs by handle</button></p>` : '') : `<div class="block"><h2>${esc(HANDLES[c.handle])}${ed && !l.notes.length && isStage(cur.s) ? `<button type="button" class="lnkb" data-share style="font-size:12px;text-transform:none;letter-spacing:0">Same for all handles</button>` : ''}</h2>${list(l, 'notes', 'notes', `How this step differs with the ${HANDLES[c.handle].toLowerCase()}`, ed)}</div>`}
@@ -653,7 +657,7 @@ function renderPackages() {
     ${list.length ? list.map((p) => `<article class="pk"><div><h2>Package v${esc(p.v)} <span class="st ${p.status === 'sent' ? 'live' : 'dirty'}">${p.status === 'sent' ? 'Sent ' + esc(p.sentOn) : 'Built, not sent'}</span></h2>
       <p class="meta">Built ${esc(p.date)} · ${esc(mk.name)} · ${p.configs.map((id) => esc(cfgName(CF(id)))).join(', ')}${p.cmp ? ' · comparison: Tiger 13 handles' : ''} · ${esc(p.size)} · <code>sha256 ${esc(p.sha)}…</code></p>
       <ul class="chgs">${p.changes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div class="acts"><button type="button" class="b sm" data-dl="${esc(p.v)}">Download ZIP</button>${p.status === 'built' ? `<button type="button" class="b sm pri" data-sent="${esc(p.v)}">Mark as sent</button>` : ''}</div></article>`).join('') : `<p class="notebox">No packages for ${esc(mk.name)} yet. Fill the lessons, then publish the first one.</p>`}
+      <div class="acts">${p.data ? `<button type="button" class="b sm" data-dlj="${esc(p.v)}">Package data (.json)</button>` : ''}<button type="button" class="b sm" data-dl="${esc(p.v)}">Download ZIP</button>${p.status === 'built' ? `<button type="button" class="b sm pri" data-sent="${esc(p.v)}">Mark as sent</button>` : ''}</div></article>`).join('') : `<p class="notebox">No packages for ${esc(mk.name)} yet. Fill the lessons, then publish the first one.</p>`}
     <p class="hint">Before sending a package: unzip it, go offline, open index.html and check one stage and the comparison. The package must not need the internet.</p></div>`;
 }
 function renderMedia() {
@@ -770,12 +774,13 @@ function openPublish(keep) {
   openModal(`<h2>Publish package v${esc(next)}</h2><p class="sub hint">${esc(mk.name)}. ${last ? `Package v${esc(last.v)} stays available and unchanged.` : 'This is the first package for this market.'}</p>
     <div><h3>What goes in</h3>${pubOpen ? `${list.map(cfgOpt).join('')}${pair ? `<label class="opt"><input type="checkbox" data-cfg="cmp" ${sel.cmp ? 'checked' : ''}><span><b>Comparison: Tiger 13 handles</b></span></label>` : ''}` : `<p>${names.length ? names.map(esc).join(', ') : 'Nothing yet'} · <button type="button" class="lnkb" data-expand>Change</button></p>`}</div>
     <div><h3>Changes since ${last ? 'v' + esc(last.v) : 'the start'}</h3>${changes.length ? `<ul class="chg-list">${changes.slice(0, 4).map((x) => `<li>${esc(x)}</li>`).join('')}${changes.length > 4 ? `<li class="muted">and ${changes.length - 4} more</li>` : ''}</ul>` : '<p class="muted">Nothing changed since the last package.</p>'}</div>
-    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF(b.leave))) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video, a headline and its points.</span></div>`}
+    <div><h3>Checks</h3>${bl.length ? bl.map((b) => `<div class="ck bad"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span class="grow">${esc(b.msg)}<br>${b.c ? `<button type="button" class="lnkb" data-open="${b.c}/${b.s}">Open stage</button>` : ''}${b.novideo ? `<button type="button" class="lnkb" data-novideo="${b.c}/${b.s}">Publish without this video</button>` : ''}<button type="button" class="lnkb" data-leave="${b.leave}">${b.leave === 'cmp' ? 'Leave the comparison out' : 'Leave ' + esc(cfgName(CF(b.leave))) + ' out'}</button></span></div>`).join('') : `<div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Every stage has a video, a headline and its points.</span></div>`}
     ${rev.length ? `<div class="ck rev" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16h.01"/></svg><span class="grow">${plural(rev.length, 'file')} still marked “Review first”. They ship as they are unless you check them.</span></div>` : ''}</div>
     <div class="act"><button type="button" class="b pri" data-build ${can ? '' : 'disabled'}>Publish package v${esc(next)}</button><button type="button" class="b" data-x>Cancel</button>${!can ? `<span class="hint">${bl.length ? `Fix ${plural(bl.length, 'issue')} or leave them out.` : !list.some((c) => sel[c.id]) ? 'Choose at least one configuration.' : `Nothing changed since v${esc(last.v)}.`}</span>` : ''}</div>`);
   $('#modal').onclick = (e) => {
     const cb = e.target.closest('input[data-cfg]'); if (cb) { S.scope[m][cb.dataset.cfg] = cb.checked; persist(); openPublish(true); return; }
     if (e.target.closest('[data-expand]')) { pubOpen = true; openPublish(true); return; }
+    const nv = e.target.closest('[data-novideo]'); if (nv) { const [c, k] = nv.dataset.novideo.split('/'); S.lessons[c][k].noVideo = true; commit(`${SC[k].n} · ${cfgName(CF(c))}: ships without video`); openPublish(true); return; }
     const lv = e.target.closest('[data-leave]'); if (lv) { S.scope[m][lv.dataset.leave] = false; persist(); openPublish(true); return; }
     const op = e.target.closest('[data-open]'); if (op) { closeModal(); const [c, s] = op.dataset.open.split('/'); openLesson(c, s); return; }
     if (e.target.closest('[data-x]')) closeModal();
@@ -791,14 +796,38 @@ function build(v, changes, mb) {
     if (sel.cmp) S.releasedPairDiffs[m] = clone(S.pairDiffs[m] || {}); else delete S.releasedPairDiffs[m];
     const sha = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((x) => x.toString(16).padStart(2, '0')).join('');
     const prev = latestPkg(m);
-    S.packages.unshift({ v, market: m, date: today(), status: 'built', configs: cfgs(m).filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
+    const data = packageData(m, v);
+    S.packages.unshift({ v, data, market: m, date: today(), status: 'built', configs: cfgs(m).filter((c) => sel[c.id]).map((c) => c.id), cmp: !!sel.cmp, size: `${mb} MB`, sha, changes: changes.length ? changes : ['No content changes'] });
     persist(); rerender();
     openModal(`<h2>Package v${esc(v)} is ready</h2><p class="sub hint">Built ${esc(today())} for ${esc(mk.name)}. Physicians get it when you send it${prev ? `; until then they keep using v${esc(prev.v)}` : ''}.</p>
       <dl class="kv"><dt>Contains</dt><dd>${cfgs(m).filter((c) => sel[c.id]).map((c) => esc(cfgName(c))).join(', ')}${sel.cmp ? ', comparison: Tiger 13 handles' : ''}</dd><dt>Size</dt><dd>${mb} MB</dd><dt>Checksum</dt><dd><code>sha256 ${esc(sha)}…</code></dd></dl>
       <div class="ck good"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Test before sending: unzip, go offline, open index.html, check one stage${sel.cmp ? ' and the comparison' : ''}.</span></div>
-      <div class="act"><button type="button" class="b pri" data-dl="${esc(v)}">Download ZIP</button><a class="b" href="#packages">All packages</a></div>`);
-    $('#modal').onclick = (e) => { if (e.target.closest('[data-dl]')) say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); else if (e.target.closest('[data-sent]')) { markSent(v, m); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
+      <div class="act"><button type="button" class="b pri" data-dlj="${esc(v)}">Download package data (.json)</button><button type="button" class="b" data-dl="${esc(v)}">Download ZIP</button><a class="b" href="#packages">All packages</a></div>
+      <p class="hint">The data file is what the training prototype reads: open it in the <a href="https://claude.ai/artifact/NsYRKETEC9vuiwqDZsr6Bo" target="_blank" rel="noopener">training prototype ↗</a> with “Load a package from Content Studio”.</p>`);
+    $('#modal').onclick = (e) => { if (e.target.closest('[data-dlj]')) downloadPkg(S.packages.find((x) => x.v === v && x.market === m)); else if (e.target.closest('[data-dl]')) say('The ZIP with clips is built by the real Studio. Here you can download the package data.'); else if (e.target.closest('[data-sent]')) { markSent(v, m); closeModal(); } else if (e.target.closest('a[href="#packages"]')) closeModal(); };
   }, 1700);
+}
+/* The package data: the same object goes into content.js inside the ZIP (window.TT_PACKAGE = …). Format: spec → Офлайн-пакет. */
+function packageData(m, v) {
+  const sel = S.scope[m], list = cfgs(m).filter((c) => sel[c.id]), used = new Set(), lessons = {};
+  list.forEach((c) => { lessons[c.id] = {}; sectionsOf(c).forEach((s) => {
+    const l = S.lessons[c.id][s.k], md = hasMedia(l) && MEDIA[l.media].kind !== 'graphic' ? l.media : null; if (md) used.add(md);
+    const scale = md && STAND[md] && durOf(md) ? STAND_DUR[STAND[md]] / durOf(md) : 1;
+    lessons[c.id][s.k] = { head: l.head, points: l.points.slice(), cues: md ? l.points.map((_, i) => { const t = (l.cues || [])[i]; return t == null ? null : Math.round(t * scale * 100) / 100; }) : [], notes: l.shared ? [] : l.notes.slice(), same: !!l.shared, media: md, graphics: l.graphics.map((g) => MEDIA[g].source), warn: l.warn || '' };
+  }); });
+  const media = {}; used.forEach((id) => { const x = MEDIA[id]; media[id] = { file: `media/${STAND[id] || id}.mp4`, name: x.name, kind: x.kind, ver: x.ver, dur: STAND[id] ? STAND_DUR[STAND[id]] : durOf(id) }; });
+  const p = pairFor(m), pairs = sel.cmp && p && sel[p.a.id] && sel[p.b.id] ? [{ model: p.a.model, configs: [p.b.id, p.a.id], diffs: clone(S.pairDiffs[m] || {}) }] : [];
+  return { format: 1, product: 'Tigertriever training', package: `tigertriever-${m}`, version: v, market: { id: m, name: MK[m].name }, built: new Date().toISOString().slice(0, 10),
+    note: 'Stand-in content from the Content Studio prototype. Clips are public Rapid Medical website clips standing in for training footage. Not for clinical use.',
+    sections: SECTIONS.map((x) => ({ k: x.k, n: x.n, num: x.num })), configs: list.map((c) => ({ id: c.id, model: c.model, modelName: MD[c.model].name, handle: c.handle, handleName: HANDLES[c.handle] })),
+    upcoming: MODELS.filter((x) => x.phase > 1).map((x) => ({ model: x.id, name: x.name })), lessons, media, pairs };
+}
+async function downloadPkg(p) {
+  if (!p || !p.data) { say('This package was built before the prototype could export its data. Publish a new one to download it.'); return; }
+  const txt = JSON.stringify(p.data, null, 1), name = `${p.data.package}-v${p.v}.json`;
+  let d = null; try { d = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (e) { d = null; }
+  if (d) { try { await d.save({ filename: name, data: txt }); say(`Saved ${name}. In the training prototype, use “Load a package from Content Studio”.`); } catch (e) { if (!e || e.code !== 'declined') say('This view cannot save files. Open the Studio in claude.ai to download the package data.'); } return; }
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); say(`Saved ${name}.`); } catch (e) { say('Downloads are not available here.'); }
 }
 function markSent(v, m = S.market) { const p = S.packages.find((x) => x.v === v && x.market === m); if (!p) return; p.status = 'sent'; p.sentOn = today(); persist(); rerender(); say(`Package v${v} for ${MK[m].name} marked as sent on ${today()}.`); }
 
@@ -817,13 +846,16 @@ $('#view').addEventListener('click', (e) => {
   if (t.closest('[data-publish]')) { openPublish(); return; }
   if (t.closest('[data-upload]')) { say('Uploads are switched off in this prototype. Rapid Medical supplies the files.'); return; }
   const fl = t.closest('[data-filter]'); if (fl) { mediaFilter = fl.dataset.filter; rerender(); return; }
-  if (t.closest('[data-dl]')) { say('Downloads are switched off in this prototype. The real Studio hands you the ZIP here.'); return; }
+  const dj = t.closest('[data-dlj]'); if (dj) { downloadPkg(S.packages.find((x) => x.v === dj.dataset.dlj && x.market === S.market)); return; }
+  if (t.closest('[data-dl]')) { say('The ZIP with clips is built by the real Studio. Here you can download the package data.'); return; }
   const sn = t.closest('[data-sent]'); if (sn) { markSent(sn.dataset.sent); return; }
   if (view === 'lesson' && mode === 'edit') {
     const ap = t.closest('[data-addpt]'); if (ap) { addPoint(ap.dataset.addpt); return; }
     if (t.closest('[data-addg]')) { endEdit(); openPicker({ f: 'graphics', i: null }); return; }
     if (t.closest('[data-addwarn]')) { endEdit(); lesson().warn = null; rerender(); const el = $('[data-f="warn"]'); if (el) startEdit(el); return; }
     if (t.closest('[data-share]')) { endEdit(); const l = lesson(); l.shared = true; l.notes = []; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: marked same for all handles`); rerender(); return; }
+    if (t.closest('[data-novideo-on]')) { endEdit(); lesson().noVideo = true; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: ships without video`); rerender(); return; }
+    if (t.closest('[data-novideo-off]')) { endEdit(); delete lesson().noVideo; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: video required again`); rerender(); return; }
     if (t.closest('[data-unshare]')) { endEdit(); const l = lesson(); l.shared = false; commit(`${SC[cur.s].n} · ${cfgName(CF(cur.c))}: differs by handle`); rerender(); return; }
     const md = t.closest('[data-media]'); if (md) { endEdit(); openMedia(md.dataset.media); return; }
     const f = t.closest('[data-t]'); if (f) { startEdit(f); return; }
