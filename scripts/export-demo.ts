@@ -55,6 +55,9 @@ async function main() {
   const table: Record<string, string> = { news: "news_items", team: "team_members" };
   const ids: Record<string, number[]> = {};
   for (const r of resources) ids[r] = (await sql.unsafe<{ id: number }[]>(`select id from "${table[r] ?? r}" order by id`)).map((x) => x.id);
+  // The demo is public: form submissions (list and details) may only be test data on the reserved example.com domain.
+  const [real] = await sql<{ n: number }[]>`select count(*)::int as n from contact_submissions where email not ilike '%@example.com'`;
+  if (real.n > 0) throw new Error(`the database has ${real.n} real form submissions — build the demo from a test database (npm run test:e2e seeds one)`);
   const submissionIds = (await sql<{ id: number }[]>`select id from contact_submissions order by id`).map((x) => x.id);
   const media = await sql<{ id: number; url: string; filename: string; mime: string; size: number; alt: string; createdAt: Date }[]>`select id, url, filename, mime, size, alt, created_at as "createdAt" from media where url like '/uploads/%' order by id desc`;
   const hiddenPages = await sql<{ slug: string; region: string | null }[]>`select slug, region from pages where noindex and status = 'published'`;
