@@ -55,6 +55,10 @@ async function main() {
   const table: Record<string, string> = { news: "news_items", team: "team_members", "site-pages": "site_pages" };
   const ids: Record<string, number[]> = {};
   for (const r of resources) ids[r] = (await sql.unsafe<{ id: number }[]>(`select id from "${table[r] ?? r}" order by id`)).map((x) => x.id);
+  // The demo is public and its admin pages show drafts, history and who edited: only test accounts may exist
+  // (the e2e setup creates them), so a real database is never exported.
+  const [people] = await sql<{ n: number }[]>`select count(*)::int as n from users where email not ilike '%@e2e.test' and email <> 'e2e@rapid-medical.com' and email not ilike '%@example.com'`;
+  if (people.n > 0) throw new Error(`the database has ${people.n} real user accounts — build the demo from a test database (npm run test:e2e seeds one)`);
   // The demo is public: form submissions (list and details) may only be test data on the reserved example.com domain.
   const [real] = await sql<{ n: number }[]>`select count(*)::int as n from contact_submissions where email not ilike '%@example.com'`;
   if (real.n > 0) throw new Error(`the database has ${real.n} real form submissions — build the demo from a test database (npm run test:e2e seeds one)`);

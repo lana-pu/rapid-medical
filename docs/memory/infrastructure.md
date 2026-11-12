@@ -47,7 +47,7 @@
 | Поток | Триггер | Что происходит |
 |---|---|---|
 | Vercel | push в `main` → автодеплой — **когда подключат**; сейчас не подключён | `build:vercel` = `tsx scripts/bootstrap.ts && next build`: ждёт БД, `scripts/migrate.ts`, сид на пустой БД (+ `migrate-media.ts`) |
-| GitHub Pages (демо) | вручную: `npm run demo:export`, затем публикация `out/` в `gh-pages` (worktree ветки, замена содержимого, `.nojekyll`) | сборка с `NEXT_PUBLIC_DEMO=1` + `basePath=/rapid-medical`, обход всех публичных страниц и части админки, переписывание путей. **Только с тестовой базы** (после `npm run test:e2e`): демо публичное, экспорт падает, если в базе есть заявки не с `@example.com` |
+| GitHub Pages (демо) | вручную: `npm run demo:export`, затем публикация `out/` в `gh-pages` (worktree ветки, замена содержимого, `.nojekyll`) | сборка с `NEXT_PUBLIC_DEMO=1` + `basePath=/rapid-medical`, обход всех публичных страниц и части админки, переписывание путей. **Только с тестовой базы** (после `npm run test:e2e`): демо публичное, экспорт падает, если в базе есть заявки не с `@example.com` или учётные записи не из тестов (админка демо показывает черновики, историю и имена редакторов) |
 | Docker | `docker compose up --build` | образ `node:22-bookworm-slim` + ffmpeg; `CMD`: bootstrap → `next start -p 3000` |
 
 Миграции: Drizzle (`drizzle/0000_init … 0008_blocks`), применяются `scripts/migrate.ts` (в bootstrap).
