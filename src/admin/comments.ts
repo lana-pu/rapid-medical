@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, eq, isNull, ne } from "drizzle-orm";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { comments, db, type Comment } from "@/db";
 import { audit } from "@/lib/audit";
 import { getEditable } from "./workflow";
@@ -75,12 +75,14 @@ export async function deleteComment(id: number): Promise<{ ok: true } | Fail> {
     if (!c) return { ok: true };
     if (c.authorId !== me.id && me.role !== "admin") return { error: "Only the author or an admin can delete it" };
     if (me.role !== "admin") {
-      // other people's replies are theirs: a thread with them is resolved, not deleted, unless an admin does it
-      const others = await db.query.comments.findFirst({ where: and(eq(comments.parentId, c.id), ne(comments.authorId, me.id)) });
-      if (others) return { error: "Others replied to it — resolve it instead" };
+      // Other people's replies (a removed person's too) are theirs: a thread with them is resolved, not deleted, unless an
+      // admin does it. One statement, so a reply posted meanwhile cannot slip past the check.
+      const gone = (await db.execute(sql`DELETE FROM comments WHERE (id = ${c.id} OR parent_id = ${c.id}) AND NOT EXISTS (SELECT 1 FROM comments r WHERE r.parent_id = ${c.id} AND r.author_id IS DISTINCT FROM ${me.id}) RETURNING id`)) as unknown as { id: number }[];
+      if (!gone.length) return { error: "Others replied to it — resolve it instead" };
+    } else {
+      await db.delete(comments).where(eq(comments.parentId, c.id));
+      await db.delete(comments).where(eq(comments.id, c.id));
     }
-    await db.delete(comments).where(eq(comments.parentId, c.id));
-    await db.delete(comments).where(eq(comments.id, c.id));
     await audit(me, "comment", { resource: c.resource, recordId: c.recordId, label: c.body.slice(0, 80), meta: { deleted: true } });
     return { ok: true };
   } catch (e) {
