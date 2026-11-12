@@ -15,9 +15,9 @@ import type { PublicationCard, PublicationGroup } from "./publications";
 
 const record = (r: string, id: number) => ({ r, id, prefix: "" });
 
-const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
+export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
 
-const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("publications", p.id) });
+export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("publications", p.id) });
 
 export type HomeSettings = {
   heroLine1?: string; heroLine2?: string; heroSub?: string; heroBody?: string;
@@ -104,10 +104,11 @@ export type EvidenceSettings = {
   forefrontText?: string; forefrontImageUrl?: string; forefrontImage2Url?: string; featuredTitle?: string; browseTitle?: string;
 };
 
-type PublicationRow = Publication & { product?: Pick<Product, "slug" | "family"> | null };
+export type PublicationRow = Publication & { product?: Pick<Product, "slug" | "family"> | null };
+export type EvidenceLists = { all: PublicationRow[]; featured: Publication[]; products: Pick<Product, "slug" | "name" | "fullName">[] };
 
-export function evidenceToBlocks({ region, cfg, all, featured, products }: { region: Region; cfg: EvidenceSettings; all: PublicationRow[]; featured: Publication[]; products: Pick<Product, "slug" | "name" | "fullName">[] }): Block[] {
-  const r = "settings:evidence";
+/** What the Evidence page lists: latest with pictures, and per-product tabs (also used by the stored page's sources). */
+export function evidenceLists({ all, products }: EvidenceLists): { latest: PublicationRow[]; groups: PublicationGroup[] } {
   const latest = all.filter((p) => p.imageUrl).slice(0, 3);
   // A family tab (e.g. TIGERTRIEVER™) also lists sub-products that have no tab of their own in this region.
   const tabbed = new Set(products.map((p) => p.slug));
@@ -122,6 +123,12 @@ export function evidenceToBlocks({ region, cfg, all, featured, products }: { reg
       fullName: prod.fullName,
       items: list.map(publicationCard),
     }));
+  return { latest, groups };
+}
+
+export function evidenceToBlocks({ region, cfg, all, featured, products }: { region: Region; cfg: EvidenceSettings } & EvidenceLists): Block[] {
+  const r = "settings:evidence";
+  const { latest, groups } = evidenceLists({ all, featured, products });
 
   const blocks: Block[] = [
     {
@@ -157,6 +164,18 @@ export type TherapiesLanding = {
 
 export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; heroImageUrl?: string | null };
 
+/** Overview cards of one therapy group (also used by the stored page's `therapyGroup` source). */
+export function therapyCards(items: OverviewTherapy[], region: Region) {
+  return items.map((s) => ({
+    eyebrow: s.productName ?? undefined,
+    title: s.navLabel,
+    body: s.heroTitle,
+    note: s.proofPoint || undefined,
+    // No picture: only some therapies have a hero image (others a video), so cards would differ in height.
+    href: `/${region}/therapies/${s.slug}`,
+  }));
+}
+
 /**
  * Regional therapies overview (decision 2026-11-10): one group of link cards per therapy group, built from the
  * therapy records themselves. The landing's own `blocks` texts are no longer shown (kept in settings, not deleted).
@@ -171,23 +190,7 @@ export function therapiesToBlocks({ region, landing, items }: { region: Region; 
       edit: { r, map: { title: "title", body: "intro", note: "note" } },
     },
   ];
-  for (const g of groupTherapies(items)) {
-    blocks.push({
-      type: "columns",
-      variant: "cards",
-      data: {
-        title: g.label || null,
-        items: g.items.map((s) => ({
-          eyebrow: s.productName ?? undefined,
-          title: s.navLabel,
-          body: s.heroTitle,
-          note: s.proofPoint || undefined,
-          // No picture: only some therapies have a hero image (others a video), so cards would differ in height.
-          href: `/${region}/therapies/${s.slug}`,
-        })),
-      },
-    });
-  }
+  for (const g of groupTherapies(items)) blocks.push({ type: "columns", variant: "cards", data: { title: g.label || null, items: therapyCards(g.items, region) } });
   blocks.push({
     type: "cta",
     variant: "light",

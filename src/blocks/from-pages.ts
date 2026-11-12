@@ -30,6 +30,9 @@ export function contactToBlocks({ region, topic }: { region?: string; topic?: st
   ];
 }
 
+/** A leadership card on About (also used by the stored page's `team` source). */
+export const teamCard = (m: TeamMember) => ({ name: m.name, title: m.title, longTitle: m.longTitle, photoUrl: m.photoUrl, slug: m.slug, bioHtml: m.bioHtml ? safeHtml(m.bioHtml) : null, href: `/about-us#${m.slug}`, edit: { r: "team", id: m.id, prefix: "" } });
+
 export type AboutSettings = { intro?: string; whatWeDoTitle?: string; whatWeDoBody?: string; leadershipIntro?: string; heroImageUrl?: string; mapTitle?: string; mapSub?: string; mapFallbackImageUrl?: string; closingLine?: string };
 
 export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; offices: Office[]; team: TeamMember[] }): Block[] {
@@ -46,7 +49,7 @@ export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; 
       anchor: "leadership",
       title: "Leadership Team",
       intro: about.leadershipIntro,
-      members: team.map((m) => ({ name: m.name, title: m.title, longTitle: m.longTitle, photoUrl: m.photoUrl, slug: m.slug, bioHtml: m.bioHtml ? safeHtml(m.bioHtml) : null, href: `/about-us#${m.slug}`, edit: { r: "team", id: m.id, prefix: "" } })),
+      members: team.map(teamCard),
     },
     edit: { r, map: { intro: "leadershipIntro" } },
   });

@@ -67,7 +67,7 @@ export default async function EditResource({ params, searchParams }: { params: P
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (
-          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={editHref} />
+          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} />
         )}
       </div>
     </>

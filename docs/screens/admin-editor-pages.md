@@ -1,6 +1,6 @@
 # Экран: Pages — список страниц для редактора (`/admin/editor`)
 
-Основа: флоу `docs/flows/site-editor.json` (экран «Pages»), ADR-006, ADR-007. Статус: **сделано 2026-11-12** для страниц терапий и текстовых страниц; синглтоны появятся после переезда в `site_pages`.
+Основа: флоу `docs/flows/site-editor.json` (экран «Pages»), ADR-006, ADR-007. Статус: **сделано 2026-11-12**: Home, About, Careers, Evidence, обзор терапий (сверху, по порядку регионов меню), страницы терапий, текстовые страницы.
 Код: `src/app/admin/(dashboard)/editor/page.tsx`, `src/admin/pages-index.ts`.
 
 ## Назначение

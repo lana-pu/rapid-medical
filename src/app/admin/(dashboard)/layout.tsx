@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const nav = [
     { href: "/admin/editor", label: "Pages" },
     { href: "/admin", label: "Dashboard" },
-    ...RESOURCES.filter((r) => !["redirects", "products"].includes(r.slug)).map((r) => ({ href: `/admin/${r.slug}`, label: r.title })),
+    ...RESOURCES.filter((r) => !["redirects", "products", "site-pages"].includes(r.slug)).map((r) => ({ href: `/admin/${r.slug}`, label: r.title })),
     { href: "/admin/products", label: "Products" },
     { href: "/admin/settings", label: "Site settings" },
     { href: "/admin/media", label: "Media" },

@@ -1,4 +1,8 @@
-import type { Region, StoredBlock } from "@/db/schema";
+import type { NewsItem, Region, StoredBlock, TeamMember } from "@/db/schema";
+import { groupTherapies } from "@/lib/therapy-groups";
+import { evidenceLists, newsCard, publicationCard, therapyCards, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import { teamCard } from "./from-pages";
+import type { Office } from "./offices-map";
 import { REGION_CHOICES, REGION_LABELS } from "@/lib/regions";
 import type { EditBinding } from "./bind";
 import type { Block } from "./types";
@@ -23,7 +27,7 @@ export type RenderCtx = {
   /** Other regions that have this page, with the path of the page there */
   versions?: { region: Region; href: string }[];
   /** Preloaded lists for `source` blocks that need records (filled by the page's route) */
-  lists?: Record<string, unknown>;
+  lists?: SourceLists;
 };
 
 /** The record that holds the page: admin resource slug + id. */
@@ -32,7 +36,20 @@ export type PageRef = { r: string; id: number };
 type Source = {
   /** Data keys the source fills; they are not editable through the block (their records are). */
   keys: string[];
-  fill: (data: Record<string, unknown>, ctx: RenderCtx) => Record<string, unknown>;
+  /** Filled data, or null to leave the block out (nothing to list, as the old pages did). */
+  fill: (data: Record<string, unknown>, ctx: RenderCtx) => Record<string, unknown> | null;
+  /** The block's fields live in another record (e.g. offices in Contact details): edit there, not in the page. */
+  binding?: EditBinding;
+};
+
+/** Lists a page's route loads for its `source` blocks. */
+export type SourceLists = {
+  news?: NewsItem[];
+  team?: TeamMember[];
+  offices?: Office[];
+  jobCount?: number;
+  evidence?: EvidenceLists;
+  therapies?: OverviewTherapy[];
 };
 
 const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -48,6 +65,52 @@ export const SOURCES: Record<string, Source> = {
     keys: ["eyebrow"],
     fill: (_d, ctx) => ({ eyebrow: ctx.region ? REGION_LABELS[ctx.region] : undefined }),
   },
+  /** Home: featured news cards */
+  featuredNews: { keys: ["items"], fill: (_d, ctx) => ({ items: (ctx.lists?.news ?? []).map(newsCard) }) },
+  /** Careers: the button to the open positions, with their number */
+  openPositions: {
+    keys: ["cta"],
+    fill: (_d, ctx) => ({ cta: { label: `View open positions${ctx.lists?.jobCount ? ` (${ctx.lists.jobCount})` : ""}`, href: "/open-positions" } }),
+  },
+  /** About: leadership cards (each edits its team record) */
+  team: { keys: ["members"], fill: (_d, ctx) => ({ members: (ctx.lists?.team ?? []).map(teamCard) }) },
+  /** About: offices from Contact details */
+  offices: {
+    keys: ["offices"],
+    binding: { r: "settings:contact", map: { offices: "offices" } },
+    fill: (_d, ctx) => (ctx.lists?.offices?.length ? { offices: ctx.lists.offices } : null),
+  },
+  /** About: the map's pins — the same offices; the map's own texts stay editable on the page */
+  officePins: { keys: ["offices"], fill: (_d, ctx) => ({ offices: ctx.lists?.offices ?? [] }) },
+  /** Evidence: featured studies under the counter; the counter shows the number of studies unless typed in */
+  featuredPublications: {
+    keys: ["items"],
+    fill: (d, ctx) => {
+      const stat = (d.stat ?? {}) as { value?: string };
+      return { items: (ctx.lists?.evidence?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ctx.lists?.evidence?.all.length ?? 0}+` } };
+    },
+  },
+  /** Evidence: the latest studies with a picture */
+  latestPublications: {
+    keys: ["items"],
+    fill: (_d, ctx) => {
+      const latest = ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).latest : [];
+      return latest.length ? { items: latest.map(publicationCard) } : null;
+    },
+  },
+  /** Evidence: one tab per product */
+  publicationsByProduct: {
+    keys: ["groups", "anchors"],
+    fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug) }),
+  },
+  /** Therapies overview: the cards of one therapy group (`data.group`: ischemic / hemorrhagic / access / "" = the rest) */
+  therapyGroup: {
+    keys: ["title", "items"],
+    fill: (d, ctx) => {
+      const g = groupTherapies(ctx.lists?.therapies ?? []).find((x) => x.value === (d.group ?? ""));
+      return g && ctx.region ? { title: g.label || null, items: therapyCards(g.items, ctx.region), group: undefined } : null;
+    },
+  },
 };
 
 export const isSource = (name: string | undefined): name is string => !!name && Object.hasOwn(SOURCES, name);
@@ -57,10 +120,12 @@ export const isSource = (name: string | undefined): name is string => !!name && 
 /* ------------------------------------------------------------------ */
 
 const isHrefKey = (k: string) => k === "href" || k.endsWith("Href");
+/** Only plain objects are walked: dates and other class instances (news and study dates) pass through as they are. */
+const isPlain = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && [Object.prototype, null].includes(Object.getPrototypeOf(v));
 
 function mapHrefs(v: unknown, f: (href: string) => string): unknown {
   if (Array.isArray(v)) return v.map((x) => mapHrefs(x, f));
-  if (v && typeof v === "object") {
+  if (isPlain(v)) {
     const out: Record<string, unknown> = {};
     for (const [k, x] of Object.entries(v)) out[k] = typeof x === "string" && isHrefKey(k) ? f(x) : mapHrefs(x, f);
     return out;
@@ -80,7 +145,14 @@ export function templateHref(href: string, region: Region | null, product?: stri
 
 export function fillHref(href: string, ctx: RenderCtx): string {
   if (!href.includes("{")) return href;
-  return href.replaceAll("{region}", ctx.region ?? "us").replaceAll("{product}", ctx.product || "browse-by-product");
+  let h = href;
+  if (!ctx.region) {
+    // region not known yet (Home before the visitor chose one): regional pages go through the chooser,
+    // links that only preselect a region drop the parameter
+    h = h.replace(/^\/\{region\}(?=\/|$|[?#]).*$/, "/choose-your-location");
+    h = h.replace(/([?&])region=\{region\}(&|$)/, (_m, sep: string, next: string) => (next ? sep : "")).replace(/\?$/, "");
+  }
+  return h.replaceAll("{region}", ctx.region ?? "us").replaceAll("{product}", ctx.product || "browse-by-product");
 }
 
 /* ------------------------------------------------------------------ */
@@ -90,7 +162,7 @@ export function fillHref(href: string, ctx: RenderCtx): string {
 /** Drop editor bindings (they are rebuilt from the position on render). */
 function stripEdit(v: unknown): unknown {
   if (Array.isArray(v)) return v.map(stripEdit);
-  if (v && typeof v === "object") {
+  if (isPlain(v)) {
     const out: Record<string, unknown> = {};
     for (const [k, x] of Object.entries(v)) if (k !== "edit" && x !== undefined) out[k] = stripEdit(x);
     return out;
@@ -146,18 +218,25 @@ function bindNested(data: Record<string, unknown>, page: PageRef | null, prefix:
  * every block bound to `blocks.{n}.data.` of that record for the on-page editor.
  */
 export function resolveBlocks(stored: StoredBlock[], ctx: RenderCtx, page: PageRef | null = null): Block[] {
-  return stored.map((s, i) => {
+  const out = stored.map((s, i) => {
     let data: Record<string, unknown> = { ...s.data };
     const source = isSource(s.source) ? SOURCES[s.source] : null;
-    if (source) data = { ...data, ...source.fill(data, ctx) };
+    if (source) {
+      const filled = source.fill(data, ctx);
+      if (!filled) return null; // nothing to list: the section is left out (it stays in the stored list)
+      data = { ...data, ...filled };
+    }
     data = mapHrefs(data, (h) => fillHref(h, ctx)) as Record<string, unknown>;
     const prefix = `blocks.${i}.data.`;
     data = bindNested(data, page, prefix);
-    const edit: EditBinding | undefined = page
-      ? { r: page.r, id: page.id, prefix, ...(source ? { map: Object.fromEntries(source.keys.map((k) => [k, null])) } : {}) }
-      : undefined;
+    const edit: EditBinding | undefined = source?.binding
+      ? source.binding
+      : page
+        ? { r: page.r, id: page.id, prefix, ...(source ? { map: Object.fromEntries(source.keys.map((k) => [k, null])) } : {}) }
+        : undefined;
     return { type: s.type, variant: s.variant, data, edit, uid: s.id } as unknown as Block;
   });
+  return out.filter((b): b is Block => b !== null);
 }
 
 /** Title, text and image for SEO and cards: the first hero block, else the first block with a title. */

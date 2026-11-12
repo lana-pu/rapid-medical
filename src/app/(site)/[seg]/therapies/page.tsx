@@ -1,5 +1,7 @@
 import { regionOr404 } from "@/lib/region-param";
-import { getSolutionsNav } from "@/lib/content";
+import { getSitePage, getSolutionsNav } from "@/lib/content";
+import { resolveBlocks } from "@/blocks/stored";
+import { PageMark } from "@/components/editor/PageMark";
 import { getSetting } from "@/lib/settings";
 import { REGION_LABELS, REGIONS } from "@/lib/regions";
 import { regionalAlternates, absoluteTitle } from "@/lib/seo";
@@ -18,6 +20,12 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
 
 export default async function TherapiesIndex({ params }: { params: Promise<{ seg: string }> }) {
   const region = regionOr404((await params).seg);
-  const [landing, items] = await Promise.all([getSetting<Landing>(`therapies:${region}`), getSolutionsNav(region)]);
-  return <BlockList blocks={therapiesToBlocks({ region, landing, items })} />;
+  const [page, landing, items] = await Promise.all([getSitePage("therapies", region), getSetting<Landing>(`therapies:${region}`), getSolutionsNav(region)]);
+  if (!page) return <BlockList blocks={therapiesToBlocks({ region, landing, items })} />;
+  return (
+    <>
+      <PageMark r="site-pages" id={page.id} />
+      <BlockList blocks={resolveBlocks(page.blocks, { region, lists: { therapies: items } }, { r: "site-pages", id: page.id })} />
+    </>
+  );
 }

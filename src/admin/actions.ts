@@ -24,6 +24,7 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
   const id = idRaw ? Number(idRaw) : null;
   const res = getResource(slug);
   if (!res) return { message: "Unknown resource" };
+  if (res.alwaysLive && !id) return { message: "These pages exist once; open them from Pages" };
 
   const parsed = parseForm(res, fd);
   const { errors } = parsed;
@@ -69,6 +70,7 @@ export async function publishResource(fd: FormData) {
 
 export async function unpublishResource(fd: FormData) {
   const { user, res, id } = await ctx(fd);
+  if (res.alwaysLive) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent("This page is always live")}`);
   const row = await getRow(res, id);
   await unpublish(res, id, user);
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
@@ -109,6 +111,7 @@ export async function restoreAction(fd: FormData) {
 
 export async function duplicateResource(fd: FormData) {
   const { user, res, id } = await ctx(fd);
+  if (res.alwaysLive) redirect(`/admin/${res.slug}/${id}`);
   const overrides: Record<string, unknown> = {};
   const region = fd.get("region");
   if (region) overrides.region = region;
@@ -124,6 +127,7 @@ export async function bulkResource(fd: FormData) {
   const ids = fd.getAll("ids").map(Number).filter(Boolean);
   const res = getResource(slug);
   if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
+  if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted
   if (action === "publish" && hasWorkflow(res)) {
     for (const id of ids) {
       const allowed = await canPublish(user, await getDraft(res, id));

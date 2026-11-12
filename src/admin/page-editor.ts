@@ -13,6 +13,7 @@ import { and, eq, getTableColumns, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { isRegion } from "@/lib/regions";
 import { canPublish, getEditable, getRevision, listRevisions, restoreRevision, saveWithWorkflow, workflowSettings } from "./workflow";
+import { SITE_PAGE_TYPE } from "./pages-index";
 import { checkBase, ConflictError, knownBlocks, pageResource, pageVersion, regionalSiblings, requireEditor, type PageRef } from "./page-core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -79,7 +80,7 @@ export async function pageInfo(ref: PageRef): Promise<PageInfo | Fail> {
     return {
       ref,
       title: String(e.row[res.labelField] ?? ""),
-      type: res.titleSingular,
+      type: res.slug === "site-pages" ? (SITE_PAGE_TYPE[String(e.row.key)] ?? res.titleSingular) : res.titleSingular,
       region,
       regions,
       status: e.live.status !== "published" ? "draft" : pending ? "changed" : "live",

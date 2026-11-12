@@ -16,6 +16,7 @@ export function WorkflowPanel({
   requireApproval,
   previewHref,
   editHref,
+  alwaysLive = false,
 }: {
   resourceSlug: string;
   id: number;
@@ -26,6 +27,8 @@ export function WorkflowPanel({
   requireApproval: boolean;
   previewHref: string | null;
   editHref?: string | null;
+  /** Home, About…: the site needs them, no Unpublish */
+  alwaysLive?: boolean;
 }) {
   const hidden = (
     <>
@@ -62,7 +65,7 @@ export function WorkflowPanel({
           {(pending || liveStatus !== "published") && (
             <form action={publishResource}>{hidden}<Button type="submit" disabled={!mayPublish} title={mayPublish ? "" : "Needs approval first"}>{pending ? "Publish changes" : "Publish"}</Button></form>
           )}
-          {liveStatus === "published" && (
+          {liveStatus === "published" && !alwaysLive && (
             <form action={unpublishResource}>{hidden}<Button type="submit" variant="secondary">Unpublish</Button></form>
           )}
           {pending && (

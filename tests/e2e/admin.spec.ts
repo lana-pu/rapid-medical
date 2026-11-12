@@ -155,7 +155,7 @@ test("activity log records actions", async ({ page }) => {
   await expect(page.locator("tbody td span", { hasText: /^login_failed$/ }).first()).toBeVisible();
 });
 
-test("on-page editor: inline text edit → pending → publish; settings draft", async ({ page, browser }) => {
+test("on-page editor: inline text edit → pending → publish; Home is a site page", async ({ page, browser }) => {
   await login(page);
   await page.goto("/api/editor?on=1&redirect=/ous/therapies/lvo");
   await page.waitForURL(/\/ous\/therapies\/lvo/);
@@ -188,19 +188,21 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
   await publishFromEditor(page);
 
-  // settings-backed page (home): draft table, then publish
+  // Home is a site page (ADR-007): its numbers are in its block list, the change waits in drafts until Publish
   await page.goto("/");
+  await expect(page.getByRole("status")).toHaveText("Live");
   const stat = page.locator('[data-e*="stats.0.value"]');
   await stat.click();
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
-  await expect.poll(() => sql("select value->'stats'->0->>'value' from setting_drafts where key='home'")).toBe("99K+");
-  expect(sql("select value->'stats'->0->>'value' from site_settings where key='home'")).toBe("50K+");
+  const statIn = (table: string) => `select b->'data'->'stats'->0->>'value' from ${table}, jsonb_array_elements(blocks) b where b->>'type'='textMedia' and b->>'variant'='statement'`;
+  await expect.poll(() => sql(statIn("(select data->'blocks' as blocks from drafts where resource='site-pages') d"))).toBe("99K+");
+  expect(sql(statIn("(select blocks from site_pages where key='home') s"))).toBe("50K+");
   await page.click('#rm-editor-ui button:has-text("Publish")');
   await page.click('[role=dialog] button:has-text("Discard all changes")');
   await page.click('[role=dialog] button:has-text("Click again to discard all")');
-  await expect.poll(() => sql("select count(*) from setting_drafts")).toBe("0");
+  await expect.poll(() => sql("select count(*) from drafts where resource='site-pages'")).toBe("0");
 
   // exit
   await page.goto("/api/editor?off=1&redirect=/");

@@ -7,7 +7,7 @@ import { ResourceForm } from "@/components/admin/ResourceForm";
 export default async function NewResource({ params }: { params: Promise<{ resource: string }> }) {
   const { resource } = await params;
   const res = getResource(resource);
-  if (!res) notFound();
+  if (!res || res.alwaysLive) notFound();
   const prods = await db.select().from(products).orderBy(products.sortOrder);
 
   return (

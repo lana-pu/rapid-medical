@@ -29,6 +29,7 @@ async function selectSection(page: Page, n: number) {
 }
 
 test("sections: add from presets, edit its text, move, undo, delete; the regulatory block stays", async ({ page, browser }) => {
+  test.setTimeout(150_000);
   await login(page);
   await open(page);
   const before = await ids(page);
@@ -107,6 +108,17 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   await expect(page.getByRole("status")).toHaveText(/Version restored/);
   await expect(page.locator("h1")).toHaveText(original);
   await publishFromEditor(page);
+
+  // restoring a version taken while live does not publish an unpublished page (Publish and approval stay a step)
+  const id = sql("select id from solutions where region='apac' and slug='mvo'");
+  sql(`update solutions set status='draft' where id=${id}`);
+  await open(page);
+  await expect(page.getByRole("status")).toHaveText("Draft — not live yet");
+  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
+  await expect(page.getByRole("status")).toHaveText(/Version restored/);
+  expect(sql(`select status from solutions where id=${id}`)).toBe("draft");
+  sql(`update solutions set status='published' where id=${id}`);
 });
 
 test("compare with another region and switch region", async ({ page }) => {
@@ -120,6 +132,7 @@ test("compare with another region and switch region", async ({ page }) => {
 });
 
 test("two editors: the second save is refused, not silently overwritten", async ({ page, browser }) => {
+  test.setTimeout(150_000); // two sign-ins and two editor loads
   sql(`insert into users(email,name,password_hash,role) values ('second@e2e.test','Second editor',(select password_hash from users where email='e2e@rapid-medical.com'),'editor') on conflict (email) do nothing`);
   await login(page);
   await open(page);

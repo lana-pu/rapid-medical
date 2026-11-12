@@ -12,9 +12,11 @@ import {
   teamMembers,
   jobs,
   pages,
+  sitePages,
   products,
   drafts,
   type Region,
+  type SitePageKey,
 } from "@/db";
 import { pageSummary } from "@/blocks/stored";
 
@@ -184,6 +186,11 @@ export async function getPage(slug: string, region: Region | null) {
       where: and(eq(pages.slug, slug), region ? eq(pages.region, region) : isNull(pages.region), await visible(pages.status)),
     }),
   );
+}
+
+/** Home, About, Careers, Evidence, Therapies overview as block lists (ADR-007). Always live; drafts layered in preview. */
+export async function getSitePage(key: SitePageKey, region: Region | null) {
+  return one("site-pages", await db.query.sitePages.findFirst({ where: and(eq(sitePages.key, key), region ? eq(sitePages.region, region) : isNull(sitePages.region)) }));
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {

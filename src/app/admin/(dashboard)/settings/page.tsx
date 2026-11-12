@@ -39,7 +39,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       else if (f.type === "stringList") out[f.name] = s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
       else out[f.name] = s;
     }
-    await setSetting(g.key, out);
+    // keep keys the form does not show (texts that moved to the page editor stay for rollback)
+    await setSetting(g.key, { ...(await getLiveSetting(g.key)), ...out });
     await deleteSettingDraft(g.key);
     await audit(user, "settings", { label: g.title, meta: { key: g.key } });
     for (const p of g.revalidate) revalidatePath(p, "layout");

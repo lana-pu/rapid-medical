@@ -31,7 +31,7 @@ async function main() {
   const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars, events } = schema;
 
   if (RESET) {
-    await db.execute(sql`TRUNCATE solutions, publications, news_items, webinars, team_members, jobs, pages, redirects RESTART IDENTITY CASCADE`);
+    await db.execute(sql`TRUNCATE solutions, publications, news_items, webinars, team_members, jobs, pages, site_pages, redirects RESTART IDENTITY CASCADE`);
     console.log("content tables truncated");
   }
 

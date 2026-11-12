@@ -133,7 +133,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
 | `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `blocks` (ADR-007; `bodyHtml` — до переноса), SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
-| `site_pages` (ADR-007, в работе) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`). Правятся только в редакторе страницы |
+| `site_pages` (ADR-007, 2026-11-12) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`; строки настроек оставлены для отката). Правятся только в редакторе страницы; создать, снять с публикации или удалить нельзя (`alwaysLive`). Списки (новости, команда, офисы, публикации, карточки терапий, число вакансий) подставляются при показе |
 | `products` | `products` | `slug`, `name`, `fullName`, `family`, `regions[]` (вкладка Evidence), `aliases` (напр. APAC → COLUMBUS™) | — | **Без workflow**: сохранение сразу live |
 | `redirects` | `redirects` | `from` (host+path или path), `to`, `permanent`, `hits` | — | **Без workflow** |
 
@@ -145,10 +145,12 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 ### Настройки (`site_settings`, ключ → jsonb)
 
 Группы (`src/admin/settings.ts`): `contact` (телефоны, e-mail заказов, офисы с координатами для карты),
-`social`, `home`, `about`, `careers`, `regional` (заголовок выбора локации, регуляторные сноски по
-регионам), `evidence`, `therapies:us|ous|apac` (+ `metaTitle`/`metaDescription` лендинга), `seo` (Google-заголовки и
+`social`, `regional` (заголовок выбора локации, регуляторные сноски по
+регионам), `therapies:us|ous|apac` (только `metaTitle`/`metaDescription` обзора терапий), `seo` (Google-заголовки и
 описания Evidence, Webinars, Contact по регионам — используются как есть, без шаблона «| Rapid Medical™»),
 `workflow` (`requireApproval`, `notifyEmail`), `branding`, `integrations` (`gaMeasurementId`, `userwayAccount`, `geoSuggest`).
+Группы `home`, `about`, `careers`, `evidence` и тексты `therapies:*` с 2026-11-12 в форме не показываются: страницы
+правятся в редакторе (`site_pages`, ADR-007). Сохранение группы сливает форму с текущим значением, скрытые ключи не теряются.
 Не используются кодом (поля есть, эффекта нет): `integrations.geoSuggest`, `branding.logoPngUrl`,
 `branding.ogImageUrl`, `branding.faviconUrl`, `evidence.forefrontImageUrl`/`forefrontImage2Url`.
 
@@ -205,8 +207,10 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 - **Preview**: `/api/preview?token=…` включает Next draft mode; публичный слой (`src/lib/content.ts`)
   показывает неопубликованные строки и накладывает `drafts`; баннер «Exit preview».
 - **On-page editor**: см. `docs/screens/on-page-editor.md`. Секции, история и проверка перед публикацией — там же.
-  Синглтоны (Home, About, Careers, Evidence, обзор терапий) после переноса — ресурс `site-pages` с тем же workflow (ADR-007);
-  до переноса их тексты пишутся в `setting_drafts`.
+  Синглтоны (Home, About, Careers, Evidence, обзор терапий) — ресурс `site-pages` с тем же workflow (ADR-007).
+  `setting_drafts` остаётся для полей настроек, которые видны на странице (офисы на About — из Contact details).
+- **Restore не меняет статус записи** (2026-11-12, ревью безопасности): версия, снятая в опубликованном состоянии,
+  не публикует неопубликованную запись — публикация всегда отдельный шаг с проверкой прав.
 
 ## Уведомления
 

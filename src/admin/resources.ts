@@ -14,6 +14,8 @@ import type { FieldDef, ListColumn } from "./fields";
 import { THERAPY_GROUPS } from "@/lib/therapy-groups";
 import { events } from "@/db/schema";
 import { templateBlocks } from "@/blocks/templates";
+import { sitePagePath } from "@/blocks/site-pages";
+import { sitePages } from "@/db/schema";
 
 /** The page's sections (ADR-007): edited on the page; the fields marked `onPage` moved into them. */
 const blocksField: FieldDef = { name: "blocks", label: "Page sections", type: "blocks", onPage: true };
@@ -35,6 +37,8 @@ export type Resource = {
   previewUrl?: (row: Record<string, unknown>) => string | null;
   /** Fill what the form does not ask for when a record is created (e.g. the page's first block list). */
   onCreate?: (data: Record<string, unknown>) => Record<string, unknown>;
+  /** The site cannot do without these records (Home, About…): no create, unpublish or delete. */
+  alwaysLive?: boolean;
 };
 
 const statusField: FieldDef = { name: "status", label: "Status", type: "status", half: true };
@@ -428,6 +432,27 @@ export const RESOURCES: Resource[] = [
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
       { ...statusField, section: "SEO" },
     ],
+  },
+
+  /* ------------------------------------------------------------- */
+  {
+    // Home, About, Careers, Evidence ×3, Therapies overview ×3 (ADR-007): content is edited on the page only.
+    slug: "site-pages",
+    title: "Site pages",
+    titleSingular: "Page",
+    table: sitePages,
+    labelField: "title",
+    sortBy: "id",
+    revalidate: ["/"],
+    previewUrl: (r) => sitePagePath(String(r.key), (r.region ?? null) as never),
+    alwaysLive: true,
+    listColumns: [
+      { name: "title", label: "Name" },
+      { name: "key", label: "Page" },
+      { name: "region", label: "Region", kind: "region" },
+      { name: "status", label: "Status", kind: "status" },
+    ],
+    fields: [{ name: "title", label: "Page name (in the admin)", type: "text", required: true }, blocksField, statusField],
   },
 
   /* ------------------------------------------------------------- */
