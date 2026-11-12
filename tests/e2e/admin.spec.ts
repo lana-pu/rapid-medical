@@ -106,7 +106,7 @@ test("approval on: an editor cannot publish an unpublished record through the st
   }
 });
 
-test("unpublish keeps the pending changes in the record and drops an old approval", async ({ page }) => {
+test("unpublish keeps the pending changes in the record, drops an old approval and the schedule", async ({ page }) => {
   await login(page);
   const id = sql("select id from news_items where status='published' order by id desc limit 1");
   const title = sql(`select title from news_items where id=${id}`);
@@ -115,11 +115,11 @@ test("unpublish keeps the pending changes in the record and drops an old approva
     await page.fill("input[name=title]", "E2E pending title");
     await page.click('button:has-text("Save")');
     await page.waitForURL(/pending=1/);
-    sql(`update drafts set review_status='approved' where resource='news' and record_id=${id}`);
+    sql(`update drafts set review_status='approved', publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
     await page.click('button:has-text("Unpublish")');
     await page.waitForURL(/unpublished=1/);
     expect(sql(`select status || '|' || title from news_items where id=${id}`)).toBe("draft|E2E pending title");
-    expect(sql(`select coalesce(data::text,'null') || '|' || review_status from drafts where resource='news' and record_id=${id}`)).toBe("null|editing");
+    expect(sql(`select coalesce(data::text,'null') || '|' || review_status || '|' || coalesce(publish_at::text,'none') from drafts where resource='news' and record_id=${id}`)).toBe("null|editing|none");
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
@@ -136,6 +136,15 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
   await page.click('button:has-text("Set")');
   await page.waitForURL(/scheduled=1/);
+  // with approval on, the schedule waits for the approval
+  sql(`update site_settings set value='{"requireApproval": true}' where key='workflow'`);
+  try {
+    const waiting = await (await request.get("/api/cron/publish")).json();
+    expect(waiting.published).not.toContainEqual({ resource: "solutions", id: Number(id) });
+    sql(`update drafts set review_status='approved' where resource='solutions' and record_id=${id}`);
+  } finally {
+    sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
+  }
   const res = await (await request.get("/api/cron/publish")).json();
   expect(res.published).toContainEqual({ resource: "solutions", id: Number(id) });
   const site = await request.get("/apac/therapies/drivewire");

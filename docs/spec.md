@@ -199,9 +199,11 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
   `revalidatePath` по `resource.revalidate` + preview-URL + `/sitemap.xml`.
 - **Согласование** (`workflow.requireApproval`, по умолчанию выкл.): editor → `in_review` (письмо на
   `workflow.notifyEmail`); approver/admin → `approved` / `changes_requested`; публиковать может
-  admin, approver или кто угодно при `approved`. Правка approved-черновика сбрасывает его в `editing`.
+  admin, approver или кто угодно при `approved`. Правка approved-черновика (и неопубликованной записи) сбрасывает
+  одобрение в `editing`. Сохранение само не публикует: только Publish или статус `published` в форме по тем же правам.
+- **Unpublish**: неопубликованные правки переходят в запись (ревизия), одобрение сбрасывается, расписание отменяется.
 - **Отложенная публикация**: `drafts.publishAt`; `GET /api/cron/publish` публикует всё, у чего время
-  наступило (системный актор «Scheduler»).
+  наступило (системный актор «Scheduler»); при включённом согласовании — только `approved`, остальное ждёт одобрения.
 - **История**: `/admin/{resource}/{id}/history` — сравнение двух ревизий (или live/pending) по полям с
   подсветкой слов; restore = сохранение через тот же workflow.
 - **Preview**: `/api/preview?token=…` включает Next draft mode; публичный слой (`src/lib/content.ts`)

@@ -59,11 +59,11 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Live-статус, плашка «Unpublished changes by … · дата», статус ревью и заметка | всегда / при pending / при approval | — |
 | «Scheduled to publish …» | если `publishAt` | — |
 | **Publish / Publish changes** | есть pending или запись не live | кнопка disabled, если approval включён, роль editor и не `approved` |
-| **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись, одобрение сбрасывается, расписание остаётся |
+| **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись (ревизия «Unpublished: pending changes kept in the record»), одобрение сбрасывается, расписание отменяется |
 | **Discard changes** | есть pending | любая роль |
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
 | **Review**: заметка + Submit for review / Approve / Request changes | approval включён и (pending или не live) | Approve/Request changes — admin, approver |
-| **Schedule publication** (datetime-local, Set, clear) | всегда | любая роль |
+| **Schedule publication** (datetime-local, Set, clear) | всегда | любая роль; при включённом согласовании публикуется только одобренное — до одобрения расписание ждёт |
 | **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |
 | **Copy to {REGION}** (в шапке) | только `solutions` | дубликат как draft в другом регионе |
 
@@ -71,5 +71,4 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 `scheduled`, `restored`, `error`.
 
 ## Известные расхождения (код ↔ заявленная модель) — см. BACKLOG P0
-- Подсказка расписания говорит «if approved», но `publishDue()` не проверяет одобрение.
 - Unpublish, Discard, Schedule, restore, bulk delete — без проверки роли.

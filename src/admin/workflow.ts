@@ -141,12 +141,17 @@ export async function publish(res: Resource, id: number, user: SessionUser): Pro
 
 /**
  * Take the record off the site. Pending changes move into the record itself (an unpublished record is edited in place),
- * and an approval is reset: a later Publish must not lay old changes or an old approval over it. A schedule stays.
+ * an approval is reset and a schedule is cancelled: a later Publish must not lay old changes or an old approval over it,
+ * and the record does not come back on its own.
  */
 export async function unpublish(res: Resource, id: number, user: SessionUser): Promise<void> {
   const draft = await getDraft(res, id);
   await saveRow(res, id, { ...(draft?.data ?? {}), status: "draft" });
-  if (draft) await db.update(drafts).set({ data: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
+  if (draft) {
+    await db.update(drafts).set({ data: null, publishAt: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
+    // what the pending changes made of the record is in its history
+    if (draft.data) await addRevision(res, id, "draft", snapshot(res, (await getRow(res, id))!), user, "Unpublished: pending changes kept in the record");
+  }
   const row = (await getRow(res, id))!;
   await audit(user, "unpublish", { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
 }
@@ -189,9 +194,12 @@ export async function publishDue(now = new Date()): Promise<{ resource: string; 
   const due = await db.select().from(drafts).where(and(isNotNull(drafts.publishAt), lte(drafts.publishAt, now)));
   const done: { resource: string; id: number }[] = [];
   const system: SessionUser = { id: 0, email: "system", name: "Scheduler", role: "admin" };
+  const { requireApproval } = await workflowSettings();
   for (const d of due) {
     const res = getResource(d.resource);
     if (!res) continue;
+    // with approval on, a schedule publishes only approved changes; it waits until they are approved
+    if (requireApproval && d.reviewStatus !== "approved") continue;
     await publish(res, d.recordId, system);
     done.push({ resource: d.resource, id: d.recordId });
   }
