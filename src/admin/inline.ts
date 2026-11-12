@@ -256,12 +256,10 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
       const k = t.r.slice(9);
       const group = getSettingsGroup(k);
       if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
-      if (!mayEditGroup(user, group)) {
-        // page-label rights: the draft may change texts only
-        const [live, draft] = await Promise.all([getLiveSetting(k), getSettingDraft(k)]);
-        if (draft && JSON.stringify(structureOf(group.fields, groupValue(group, live))) !== JSON.stringify(structureOf(group.fields, groupValue(group, live, draft.value)))) continue;
-      }
-      if (await publishSettingDraft(k)) {
+      // page-label rights only: the value that goes live may change texts and nothing else (checked on that value)
+      const live = mayEditGroup(user, group) ? null : await getLiveSetting(k);
+      const textsOnly = live === null ? undefined : (v: Record<string, unknown>) => JSON.stringify(structureOf(group.fields, groupValue(group, live))) === JSON.stringify(structureOf(group.fields, groupValue(group, live, v)));
+      if (await publishSettingDraft(k, textsOnly)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
         for (const p of getSettingsGroup(k)?.revalidate ?? ["/"]) revalidatePath(p, "layout");

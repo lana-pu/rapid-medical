@@ -1,5 +1,5 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { draftMode } from "next/headers";
 import { db, siteSettings, settingDrafts } from "@/db";
 
@@ -65,11 +65,16 @@ export async function deleteSettingDraft(key: string) {
   await db.delete(settingDrafts).where(eq(settingDrafts.key, key));
 }
 
-/** Make a pending setting draft live. */
-export async function publishSettingDraft(key: string): Promise<boolean> {
+/**
+ * Make the group's draft live. `accept` checks the very value that goes live (not an earlier read of it); a draft
+ * saved meanwhile is not deleted — it stays as the next pending change.
+ */
+export async function publishSettingDraft(key: string, accept?: (value: Record<string, unknown>) => boolean): Promise<boolean> {
   const d = await getSettingDraft(key);
   if (!d) return false;
-  await setSetting(key, d.value);
-  await deleteSettingDraft(key);
+  const value = d.value as Record<string, unknown>;
+  if (accept && !accept(value)) return false;
+  await setSetting(key, value);
+  await db.delete(settingDrafts).where(and(eq(settingDrafts.key, key), eq(settingDrafts.updatedAt, d.updatedAt)));
   return true;
 }
