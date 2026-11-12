@@ -44,6 +44,44 @@ function keptInOrder(a: string[], b: string[]): Set<string> {
   return keep;
 }
 
+type Nested = { type: string; variant: string; data: Record<string, unknown> };
+type Tab = { id?: string; label?: string; href?: string; blocks?: (Nested | { group: string; blocks: Nested[] })[] };
+const flat = (t: Tab | undefined): Nested[] => (t?.blocks ?? []).flatMap((x) => ("group" in x ? (x.blocks ?? []) : [x]));
+const nestedName = (n: Nested) => blockName({ id: "", ...n });
+
+/** Sections inside Product details tabs have no ids: matched by content, then by type, per tab. */
+function describeTabs(before: Tab[], after: Tab[]): string[] {
+  const out: string[] = [];
+  const labelsChanged = before.length !== after.length || before.some((t, i) => t.label !== after[i]?.label || t.href !== after[i]?.href);
+  if (labelsChanged) out.push("Changed tabs in Product details");
+  for (const t of after) {
+    const old = before.find((b) => (b.id ?? b.label) === (t.id ?? t.label));
+    if (!old || t.href) continue;
+    const where = `in tab “${t.label ?? ""}”`;
+    const a = flat(old);
+    const b = flat(t);
+    const key = (n: Nested) => JSON.stringify(n);
+    const removed = [...a];
+    const added: Nested[] = [];
+    for (const n of b) {
+      const i = removed.findIndex((x) => key(x) === key(n));
+      if (i >= 0) removed.splice(i, 1);
+      else added.push(n);
+    }
+    for (const n of [...added]) {
+      const i = removed.findIndex((x) => x.type === n.type);
+      if (i < 0) continue;
+      out.push(n.variant !== removed[i].variant ? `Changed layout of ${nestedName(n)} ${where}` : `Changed ${nestedName(n)} ${where}`);
+      removed.splice(i, 1);
+      added.splice(added.indexOf(n), 1);
+    }
+    for (const n of added) out.push(`Added ${nestedName(n)} ${where}`);
+    for (const n of removed) out.push(`Removed ${nestedName(n)} ${where}`);
+    if (!added.length && !removed.length && a.length === b.length && a.some((n, i) => key(n) !== key(b[i])) && out.every((x) => !x.endsWith(where))) out.push(`Moved sections ${where}`);
+  }
+  return out;
+}
+
 export function describeBlockChanges(before: StoredBlock[] | null | undefined, after: StoredBlock[] | null | undefined): string[] {
   const a = before ?? [];
   const b = after ?? [];
@@ -63,7 +101,11 @@ export function describeBlockChanges(before: StoredBlock[] | null | undefined, a
       const label = def(x.type)?.variants.find((v) => v.id === x.variant)?.label ?? x.variant;
       out.push(`Changed layout of ${blockName(x)} to “${label}”`);
     }
-    const keys = [...new Set([...Object.keys(old.data ?? {}), ...Object.keys(x.data ?? {})])].filter((k) => !same(old.data?.[k], x.data?.[k]));
+    let keys = [...new Set([...Object.keys(old.data ?? {}), ...Object.keys(x.data ?? {})])].filter((k) => !same(old.data?.[k], x.data?.[k]));
+    if (x.type === "productDetails" && keys.includes("tabs") && Array.isArray(old.data?.tabs) && Array.isArray(x.data?.tabs)) {
+      out.push(...describeTabs(old.data.tabs as Tab[], x.data.tabs as Tab[]));
+      keys = keys.filter((k) => k !== "tabs");
+    }
     if (keys.length) out.push(`Changed ${keys.map((k) => fieldLabel(x, k)).join(", ")} in ${blockName(old)}`);
   }
   for (const x of a) if (!afterIds.has(x.id)) out.push(`Removed section ${blockName(x)}`);

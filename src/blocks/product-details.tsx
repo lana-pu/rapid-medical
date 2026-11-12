@@ -1,6 +1,7 @@
 import { Section, Eyebrow } from "@/components/site/primitives";
 import { Tabs } from "@/components/site/Tabs";
 import type { Block, BlockDef, BlockProps } from "./types";
+import { Mark, listOf } from "./mark";
 
 export type ProductDetailsVariant = "pills" | "underline";
 
@@ -41,11 +42,13 @@ function ProductDetails({ variant, data: d, render }: BlockProps<"productDetails
                         <div key={i} className="mt-12">
                           <Eyebrow>{p.group}</Eyebrow>
                           {p.blocks.map((b, j) => render(b, true, j))}
+                          <ListEnd blocks={p.blocks} />
                         </div>
                       ) : (
                         render(p, true, i)
                       ),
                     )}
+                    <ListEnd blocks={t.blocks.flatMap((p) => (isGroup(p) ? [] : [p]))} />
                   </div>
                 ),
               },
@@ -53,6 +56,12 @@ function ProductDetails({ variant, data: d, render }: BlockProps<"productDetails
       />
     </Section>
   );
+}
+
+/** End of a list of sections inside a tab, for the page editor (the last section ends here). */
+function ListEnd({ blocks }: { blocks: Block[] }) {
+  const uid = blocks.find((b) => b.uid)?.uid;
+  return uid ? <Mark i={-1} uid="end" l={listOf(uid)} /> : null;
 }
 
 export const productDetails: BlockDef<"productDetails"> = {

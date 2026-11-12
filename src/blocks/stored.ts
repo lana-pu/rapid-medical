@@ -195,18 +195,22 @@ export function toStored(blocks: Block[], ctx: { region: Region | null; product?
 type Nested = { type: string; variant: string; data: Record<string, unknown>; edit?: EditBinding };
 type Group = { group: string; blocks: Nested[] };
 
-/** Product details tabs hold blocks (or groups of blocks); give each one a binding to its own path. */
-function bindNested(data: Record<string, unknown>, page: PageRef | null, prefix: string): Record<string, unknown> {
+/**
+ * Product details tabs hold blocks (or groups of blocks); give each one a binding to its own path and — for the page
+ * editor's section tools (`sectionsOf`: the Product details block's id) — its address `{id}/{tab}/{j}[/{k}]`.
+ */
+function bindNested(data: Record<string, unknown>, page: PageRef | null, prefix: string, sectionsOf: string | null): Record<string, unknown> {
   if (!Array.isArray(data.tabs)) return data;
   const tabs = (data.tabs as Record<string, unknown>[]).map((tab, t) => {
     if (!Array.isArray(tab.blocks)) return tab;
+    const uid = (path: string) => (page && sectionsOf && !tab.href ? { uid: `${sectionsOf}/${t}/${path}` } : {});
     const blocks = (tab.blocks as (Nested | Group)[]).map((x, j) => {
       const at = `${prefix}tabs.${t}.blocks.${j}.`;
       if ("group" in x && Array.isArray(x.blocks)) {
-        return { ...x, blocks: x.blocks.map((n, k) => ({ ...n, edit: page ? { r: page.r, id: page.id, prefix: `${at}blocks.${k}.data.` } : undefined })) };
+        return { ...x, blocks: x.blocks.map((n, k) => ({ ...n, edit: page ? { r: page.r, id: page.id, prefix: `${at}blocks.${k}.data.` } : undefined, ...uid(`${j}/${k}`) })) };
       }
       const n = x as Nested;
-      return { ...n, edit: page ? { r: page.r, id: page.id, prefix: `${at}data.` } : undefined };
+      return { ...n, edit: page ? { r: page.r, id: page.id, prefix: `${at}data.` } : undefined, ...uid(String(j)) };
     });
     return { ...tab, blocks };
   });
@@ -228,7 +232,7 @@ export function resolveBlocks(stored: StoredBlock[], ctx: RenderCtx, page: PageR
     }
     data = mapHrefs(data, (h) => fillHref(h, ctx)) as Record<string, unknown>;
     const prefix = `blocks.${i}.data.`;
-    data = bindNested(data, page, prefix);
+    data = bindNested(data, page, prefix, s.type === "productDetails" && !source ? s.id : null);
     const edit: EditBinding | undefined = source?.binding
       ? source.binding
       : page

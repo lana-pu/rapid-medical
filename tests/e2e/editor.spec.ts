@@ -5,7 +5,9 @@ import { login, sql, publishFromEditor } from "./helpers";
 test.describe.configure({ mode: "serial" });
 
 const PAGE = "/apac/therapies/mvo";
-const ids = (page: Page) => page.evaluate(() => Array.from(document.querySelectorAll("[data-rm-b]")).map((e) => JSON.parse(e.getAttribute("data-rm-b") || "{}").id as string));
+/** Marks of the page's own sections (sections inside Product details tabs have a list `l`). */
+const pageMarks = `Array.from(document.querySelectorAll("[data-rm-b]")).filter((e) => !JSON.parse(e.getAttribute("data-rm-b") || "{}").l)`;
+const ids = (page: Page) => page.evaluate((q) => (eval(q) as Element[]).map((e) => JSON.parse(e.getAttribute("data-rm-b") || "{}").id as string), pageMarks);
 
 async function open(page: Page, path = PAGE) {
   await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(path)}`);
@@ -15,15 +17,15 @@ async function open(page: Page, path = PAGE) {
 
 /** Click an empty spot of the n-th section (left gutter): selects it. */
 async function selectSection(page: Page, n: number) {
-  const y = await page.evaluate((i) => {
-    const marks = Array.from(document.querySelectorAll("[data-rm-b]"));
+  const y = await page.evaluate(([i, q]) => {
+    const marks = eval(q as string) as Element[];
     const r = document.createRange();
     r.setStartAfter(marks[i]);
     r.setEndBefore(marks[i + 1]);
     window.scrollBy(0, r.getBoundingClientRect().top - 200);
     const b = r.getBoundingClientRect();
     return b.top + Math.min(b.height / 2, 120);
-  }, n);
+  }, [n, pageMarks] as const);
   await page.mouse.click(8, y);
   await expect(page.locator("#rm-section-toolbar")).toBeVisible();
 }
@@ -86,6 +88,81 @@ test("sections: add from presets, edit its text, move, undo, delete; the regulat
   await expect(page.getByRole("status")).toHaveText(/^Deleted Key numbers/);
   await publishFromEditor(page);
   expect(await ids(page)).toEqual(before);
+});
+
+/** Sections inside the open Product details tab: [{ id, l, t }] in page order. */
+const tabSections = (page: Page) =>
+  page.evaluate(() =>
+    Array.from(document.querySelectorAll("[data-rm-b]"))
+      .map((e) => JSON.parse(e.getAttribute("data-rm-b") || "{}") as { id: string; l?: string; t?: string })
+      .filter((m) => m.l && m.id !== "end" && /^[^/]+\/0$/.test(m.l)),
+  );
+
+/** Click an empty spot (no editable text, no button or link) inside a section of a tab: selects that section. */
+async function selectInTab(page: Page, id: string) {
+  const p = await page.evaluate((want) => {
+    const marks = Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]"));
+    const i = marks.findIndex((m) => JSON.parse(m.getAttribute("data-rm-b") || "{}").id === want);
+    const l = JSON.parse(marks[i].getAttribute("data-rm-b") || "{}").l as string;
+    const end = marks.slice(i + 1).find((m) => {
+      const x = JSON.parse(m.getAttribute("data-rm-b") || "{}").l ?? "";
+      return x === l || x.startsWith(`${l}/`);
+    })!;
+    const r = document.createRange();
+    r.setStartAfter(marks[i]);
+    r.setEndBefore(end);
+    window.scrollBy(0, r.getBoundingClientRect().top - 250);
+    const b = r.getBoundingClientRect();
+    for (let y = b.top + 2; y < b.bottom; y += 6)
+      for (let x = b.left + 2; x < b.right; x += 12) {
+        const el = document.elementFromPoint(x, y);
+        if (el && !el.closest("[data-e],a,button,#rm-editor-ui")) return { x, y };
+      }
+    return null;
+  }, id);
+  expect(p).not.toBeNull();
+  await page.mouse.click(p!.x, p!.y);
+  await expect(page.locator("#rm-section-toolbar")).toBeVisible();
+}
+
+test("sections inside a product tab: add only tab blocks, move, review in words, delete", async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await open(page);
+  const before = await tabSections(page);
+  expect(before.length).toBeGreaterThan(0);
+  const pageIds = await ids(page);
+
+  await selectInTab(page, before[0].id);
+  await page.locator("button[data-rm-plus]").filter({ hasText: "Add section to this tab" }).nth(1).click();
+  const panel = page.getByRole("complementary", { name: "Add section to this tab" });
+  await expect(panel.getByRole("heading", { name: "Hero" })).toHaveCount(0); // a banner cannot go inside a tab
+  await panel.getByRole("button", { name: /Circles/ }).click();
+  await expect(page.getByRole("status")).toHaveText("Added Key numbers. Not live yet");
+  await expect.poll(async () => (await tabSections(page)).length).toBe(before.length + 1);
+  expect((await tabSections(page))[1].t).toBe("keyNumbers");
+  await expect(page.locator("#rm-section-toolbar")).toContainText("Key numbers");
+  expect(await ids(page)).toEqual(pageIds); // the page's own sections are as they were
+
+  // move it up: it is the first in the tab now and stays selected
+  await page.locator('#rm-section-toolbar button[aria-label="Move up"]').click();
+  await expect.poll(async () => (await tabSections(page))[0].t).toBe("keyNumbers");
+  await expect(page.locator("#rm-section-toolbar")).toContainText("Key numbers");
+  await expect(page.locator('#rm-section-toolbar button[aria-label="Move up"]')).toBeDisabled();
+
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await expect(page.getByRole("dialog", { name: "Review changes" })).toContainText(/Added Key numbers.* in tab “/);
+  await page.click('[role=dialog] button:has-text("Keep editing")');
+
+  await page.locator('#rm-section-toolbar button:has-text("Delete")').click();
+  await expect(page.getByRole("status")).toHaveText(/^Deleted Key numbers/);
+  await expect.poll(async () => (await tabSections(page)).map((m) => m.t)).toEqual(before.map((m) => m.t));
+  // the page is as it was: nothing to publish; drop the draft
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await expect(page.locator('[role=dialog] button:has-text("Publish now")')).toBeDisabled();
+  await page.click('[role=dialog] button:has-text("Discard all changes")');
+  await page.click('[role=dialog] button:has-text("Click again to discard all")');
+  await expect(page.getByRole("status")).toHaveText(/Changes discarded|^Live$/);
 });
 
 test("history: restore an earlier version as a draft", async ({ page }) => {

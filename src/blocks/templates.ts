@@ -11,11 +11,11 @@ import { newBlockId } from "./stored";
 
 const def = (t: string) => (Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] as unknown as BlockDef<BlockType>) : null);
 
-export type Preset = { type: string; variant: string; name: string; label: string; description: string };
+export type Preset = { type: string; variant: string; name: string; label: string; description: string; /** can go inside a Product details tab */ nestable: boolean };
 
 export const PRESETS: Preset[] = Object.values(BLOCKS as unknown as Record<string, BlockDef<BlockType>>)
   .filter((d) => d.category === "content")
-  .flatMap((d) => d.variants.map((v) => ({ type: d.type, variant: v.id as string, name: d.name, label: v.label, description: v.description ?? d.description })));
+  .flatMap((d) => d.variants.map((v) => ({ type: d.type, variant: v.id as string, name: d.name, label: v.label, description: v.description ?? d.description, nestable: !!d.nestable })));
 
 export const isPreset = (type: string, variant: string) => PRESETS.some((p) => p.type === type && p.variant === variant);
 

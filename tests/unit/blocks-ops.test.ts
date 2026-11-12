@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import type { StoredBlock } from "../../src/db/schema";
-import { applyOp, variantsFor } from "../../src/blocks/ops";
+import { applyOp, selectAfterOp, variantsFor } from "../../src/blocks/ops";
 import { describeBlockChanges, compareBlocks } from "../../src/blocks/diff";
 import { PRESETS, templateBlocks } from "../../src/blocks/templates";
 
@@ -92,5 +93,64 @@ describe("templates", () => {
       expect(new Set(l.map((b) => b.id)).size).toBe(l.length);
     }
     expect(templateBlocks("therapy", "X").at(-1)?.type).toBe("indications");
+  });
+});
+
+describe("sections inside Product details tabs", () => {
+  const txt = (body: string) => ({ type: "text", variant: "default", data: { body } });
+  const pd: StoredBlock[] = [
+    { id: "h", type: "hero", variant: "image", data: { title: "Hello" } },
+    {
+      id: "pd",
+      type: "productDetails",
+      variant: "pills",
+      data: {
+        tabs: [
+          { id: "o", label: "Overview", blocks: [txt("A"), { group: "Specifications", blocks: [txt("S1"), txt("S2")] }, txt("B")] },
+          { id: "h", label: "How", blocks: [txt("Only")] },
+          { id: "e", label: "Evidence", href: "/x", blocks: [] },
+        ],
+      },
+    },
+  ];
+  const tab = (l: StoredBlock[], t: number) => ((l[1].data as any).tabs[t].blocks as any[]).map((x) => ("group" in x ? `[${x.blocks.map((n: any) => n.data.body).join(",")}]` : x.data.body)).join(" ");
+
+  it("add only nestable presets, at a position in a tab or a group", () => {
+    const next = applyOp(pd, { op: "add", at: 1, type: "keyNumbers", variant: PRESETS.find((p) => p.type === "keyNumbers")!.variant, in: "pd/0" });
+    expect(((next[1].data as any).tabs[0].blocks[1] as any).type).toBe("keyNumbers");
+    expect((next[1].data as any).tabs[0].blocks[1].id).toBeUndefined();
+    const inGroup = applyOp(pd, { op: "add", at: 2, type: "text", variant: "default", in: "pd/0/1" });
+    expect((inGroup[1].data as any).tabs[0].blocks[1].blocks).toHaveLength(3);
+    expect(() => applyOp(pd, { op: "add", at: 0, type: "hero", variant: PRESETS.find((p) => p.type === "hero")!.variant, in: "pd/0" })).toThrow(/inside a tab/);
+    expect(() => applyOp(pd, { op: "add", at: 0, type: "text", variant: "default", in: "pd/2" })).toThrow(/no sections/);
+    expect(() => applyOp(pd, { op: "add", at: 0, type: "text", variant: "default", in: "h/0" })).toThrow(/cannot be added/);
+    expect(() => applyOp(pd, { op: "add", at: 9, type: "text", variant: "default", in: "pd/0" })).toThrow(/position/);
+    expect(pd[1].data).toEqual(structuredClone(pd[1].data)); // the input is not changed
+  });
+  it("move, copy, remove inside a tab and inside a group", () => {
+    expect(tab(applyOp(pd, { op: "move", id: "pd/0/0", dir: 1 }), 0)).toBe("[S1,S2] A B");
+    expect(tab(applyOp(pd, { op: "move", id: "pd/0/1/1", dir: -1 }), 0)).toBe("A [S2,S1] B");
+    expect(() => applyOp(pd, { op: "move", id: "pd/0/1/0", dir: -1 })).toThrow(/first section in this group/);
+    expect(() => applyOp(pd, { op: "move", id: "pd/0/2", dir: 1 })).toThrow(/last section in this tab/);
+    expect(tab(applyOp(pd, { op: "duplicate", id: "pd/0/0" }), 0)).toBe("A A [S1,S2] B");
+    expect(tab(applyOp(pd, { op: "remove", id: "pd/0/2" }), 0)).toBe("A [S1,S2]");
+    // the last section of a group takes its heading with it
+    const one = applyOp(pd, { op: "remove", id: "pd/0/1/0" });
+    expect(tab(applyOp(one, { op: "remove", id: "pd/0/1/0" }), 0)).toBe("A B");
+    expect(() => applyOp(pd, { op: "remove", id: "pd/1/0" })).toThrow(/at least one section/);
+    expect(() => applyOp(pd, { op: "remove", id: "pd/0/1" })).toThrow(/no longer/); // a group is not a section
+    expect(() => applyOp(pd, { op: "remove", id: "pd/0/__proto__" })).toThrow();
+  });
+  it("layout, and which section to select after", () => {
+    expect((applyOp(pd, { op: "variant", id: "pd/0/0", variant: "lead" })[1].data as any).tabs[0].blocks[0].variant).toBe("lead");
+    expect(selectAfterOp({ op: "move", id: "pd/0/1/1", dir: -1 }, pd, pd)).toBe("pd/0/1/0");
+    expect(selectAfterOp({ op: "add", at: 2, type: "text", variant: "default", in: "pd/0" }, pd, pd)).toBe("pd/0/2");
+  });
+  it("changes in words", () => {
+    const added = applyOp(pd, { op: "add", at: 0, type: "text", variant: "default", in: "pd/1" });
+    expect(describeBlockChanges(pd, added)).toEqual([expect.stringMatching(/^Added Text “.+” in tab “How”$/)]);
+    expect(describeBlockChanges(pd, applyOp(pd, { op: "remove", id: "pd/0/2" }))).toEqual(["Removed Text in tab “Overview”"]);
+    expect(describeBlockChanges(pd, applyOp(pd, { op: "move", id: "pd/0/0", dir: 1 }))).toEqual(["Moved sections in tab “Overview”"]);
+    expect(describeBlockChanges(pd, applyOp(pd, { op: "variant", id: "pd/0/0", variant: "lead" }))).toEqual(["Changed layout of Text in tab “Overview”"]);
   });
 });

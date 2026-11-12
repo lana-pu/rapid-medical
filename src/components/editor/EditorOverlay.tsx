@@ -25,13 +25,13 @@ const pageApi = DEMO ? demoPageApi : pageLive;
 
 type Tag = { r: string; id: number; f: string; k: "text" | "rich" | "link" | "media"; fh?: string; fv?: string };
 type Ref = { r: string; id: number };
-type Box = { id: string; i: number; top: number; left: number; width: number; height: number };
+type Box = { id: string; i: number; l: string; top: number; left: number; width: number; height: number };
 type Undo = { kind: "field"; t: { r: string; id: number; f: string }; k: InlineKind; prev: string; label: string } | { kind: "blocks"; prev: StoredBlock[]; label: string };
 type Panel =
   | { k: "rich"; tag: Tag; value: string; label: string }
   | { k: "link"; tag: Tag; label: string; href: string }
   | { k: "media"; tag: Tag; image: string; video: string }
-  | { k: "add"; at: number }
+  | { k: "add"; at: number; list: string }
   | { k: "history"; items: HistoryItem[] | null }
   | null;
 type Modal = { k: "review"; items: string[]; others: string[]; note: string; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
@@ -67,21 +67,36 @@ function readPageRef(): Ref | null {
   }
 }
 
-/** Each section spans from its mark to the next one (the marks are invisible; no wrappers around blocks). */
+/**
+ * Each section spans from its mark to the next mark of its list (the marks are invisible; no wrappers around blocks).
+ * Lists: "" — the page; inside Product details tabs `{block}/{tab}` and groups `{block}/{tab}/{j}` — a section in a tab
+ * also ends where a group starts. Sections in a closed tab have no size and are left out.
+ */
 function measure(): Box[] {
   // document order (the static demo moves sections in the page)
-  const marks = Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).map((el, k) => ({ el, ...(JSON.parse(el.getAttribute("data-rm-b") || "{}") as { id: string }), i: k }));
+  const marks = Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).map((el, k) => ({ el, l: "", ...(JSON.parse(el.getAttribute("data-rm-b") || "{}") as { id: string; l?: string }), i: k }));
   const out: Box[] = [];
   for (let k = 0; k < marks.length - 1; k++) {
     const m = marks[k];
     if (m.id === "end") continue;
+    const end = marks.slice(k + 1).find((x) => x.l === m.l || (m.l !== "" && x.l.startsWith(`${m.l}/`)));
+    if (!end) continue;
     const range = document.createRange();
     range.setStartAfter(m.el);
-    range.setEndBefore(marks[k + 1].el);
+    range.setEndBefore(end.el);
     const r = range.getBoundingClientRect();
-    out.push({ id: m.id, i: m.i, top: r.top + window.scrollY, left: r.left + window.scrollX, width: r.width, height: Math.max(r.height, 16) });
+    if (m.l && r.width === 0 && r.height === 0) continue;
+    out.push({ id: m.id, i: m.i, l: m.l, top: r.top + window.scrollY, left: r.left + window.scrollX, width: r.width, height: Math.max(r.height, 16) });
   }
   return out;
+}
+
+/** The innermost section under the pointer (a section inside a tab before its Product details block). */
+function hitTest(boxes: Box[], x: number, y: number): Box | undefined {
+  const slack = (b: Box) => (b.l ? 0 : 40);
+  return boxes
+    .filter((b) => y >= b.top && y <= b.top + b.height && x >= b.left - slack(b) && x <= b.left + b.width + slack(b))
+    .sort((a, b) => a.width * a.height - b.width * b.height)[0];
 }
 
 export default function EditorOverlay() {
@@ -205,7 +220,7 @@ export default function EditorOverlay() {
       const x = e.pageX;
       const y = e.pageY;
       setHovered((cur) => {
-        const hit = boxesRef.current.find((b) => y >= b.top && y <= b.top + b.height && x >= b.left - 40 && x <= b.left + b.width + 40);
+        const hit = hitTest(boxesRef.current, x, y);
         return hit?.id ?? (cur && (e.target as HTMLElement).closest?.("[data-rm-plus]") ? cur : null);
       });
     };
@@ -281,14 +296,14 @@ export default function EditorOverlay() {
         version.current = res.version;
         if (record) pushUndo({ kind: "blocks", prev: res.undo, label });
         if (res.added) selectAfter.current = res.added;
-        if (op.op === "remove") setSelected(null);
+        if (op.op === "remove" || (op.op === "set" && selected?.includes("/"))) setSelected(null);
         say(DEMO ? "Saved in this browser (demo)" : `${label}. Not live yet`);
         await afterChange();
       } finally {
         setBusy(false);
       }
     },
-    [afterChange, say],
+    [afterChange, say, selected],
   );
 
   const doUndo = useCallback(async () => {
@@ -376,11 +391,12 @@ export default function EditorOverlay() {
           })();
         }
       } else {
-        const y = e.pageY;
-        const hit = boxesRef.current.find((b) => y >= b.top && y <= b.top + b.height);
+        const hit = hitTest(boxesRef.current, e.pageX, e.pageY);
         if (hit) setSelected(hit.id);
         // links on the page do not navigate while editing (Preview for that); buttons such as tabs still work
         if (target.closest("a[href]")) e.preventDefault();
+        // a tab may have opened: its sections get their frames
+        requestAnimationFrame(() => remeasure());
       }
     };
     const onKey = (e: KeyboardEvent) => {
@@ -392,7 +408,7 @@ export default function EditorOverlay() {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener("keydown", onKey);
     };
-  }, [startText, preview, off]);
+  }, [startText, preview, off, remeasure]);
 
   /* ---- top bar actions ---- */
   const legacyItems = (legacy?.items ?? []).filter((it) => !(page && it.r === page.r && it.id === page.id));
@@ -504,20 +520,25 @@ export default function EditorOverlay() {
     );
   }
 
-  const sectionById = new Map((info?.sections ?? []).map((s, i) => [s.id, { s, i }]));
+  const sectionById = new Map((info?.sections ?? []).map((s) => [s.id, s]));
+  const listOf = (l: string) => (info?.sections ?? []).filter((s) => s.list === l);
   const vis = (b: Box) => ({ top: b.top - scroll, left: b.left, width: b.width, height: b.height });
   const sel = selected ? boxes.find((b) => b.id === selected) : null;
   const selInfo = selected ? sectionById.get(selected) : undefined;
+  const selList = selInfo ? listOf(selInfo.list) : [];
   const hov = hovered && hovered !== selected ? boxes.find((b) => b.id === hovered) : null;
   const plusFor = [sel, hovered ? boxes.find((b) => b.id === hovered) : null].filter((b): b is Box => !!b);
-  const plusAt = new Map<number, number>(); // insert index → y (document)
+  const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
+  const plusAt = new Map<string, { list: string; at: number; y: number; x: number }>(); // list + insert index → place
   for (const b of plusFor) {
     // position in the stored list (a section with nothing to list is stored but not shown)
-    const at = sectionById.get(b.id)?.i ?? b.i;
-    plusAt.set(at, b.top);
-    plusAt.set(at + 1, b.top + b.height);
+    const s = sectionById.get(b.id);
+    const at = s?.at ?? b.i;
+    const list = s?.list ?? b.l;
+    const x = list ? b.left + b.width / 2 : vw / 2;
+    plusAt.set(`${list}|${at}`, { list, at, y: b.top, x });
+    plusAt.set(`${list}|${at + 1}`, { list, at: at + 1, y: b.top + b.height, x });
   }
-  const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
   const title = info?.title ?? (typeof document === "undefined" ? "" : document.title.split(/\s[|–-]\s/)[0]);
 
   return (
@@ -558,7 +579,8 @@ export default function EditorOverlay() {
           {/* comparison frames */}
           {compare &&
             boxes.map((b) => {
-              const d = compare.sections[sectionById.get(b.id)?.i ?? -1];
+              const s = sectionById.get(b.id);
+              const d = s && !s.list ? compare.sections[s.at] : undefined;
               if (!d || d === "same") return null;
               return (
                 <div key={`cmp-${b.id}`} className="pointer-events-none fixed z-[999] border-2 border-dashed border-amber-500" style={vis(b)}>
@@ -569,44 +591,44 @@ export default function EditorOverlay() {
           {/* hover and selection */}
           {hov && (
             <div className="pointer-events-none fixed z-[999] border border-blue-400" style={vis(hov)}>
-              <span className="absolute left-0 top-0 bg-blue-500 px-1.5 py-0.5 text-[11px] text-white">{sectionById.get(hov.id)?.s.name}</span>
+              <span className="absolute left-0 top-0 bg-blue-500 px-1.5 py-0.5 text-[11px] text-white">{sectionById.get(hov.id)?.name}</span>
             </div>
           )}
           {sel && <div className="pointer-events-none fixed z-[999] border-2 border-blue-600" style={vis(sel)} />}
           {sel && selInfo && (
             <SectionToolbar
-              s={selInfo.s}
-              first={selInfo.i === 0}
-              last={selInfo.i === info.sections.length - 1 || !!info.sections[selInfo.i + 1]?.pinned}
+              s={selInfo}
+              first={selInfo.at === 0}
+              last={selInfo.at === selList.length - 1 || !!selList[selInfo.at + 1]?.pinned}
               busy={busy}
               style={{ top: Math.min(Math.max(sel.top - scroll - 34, top + 6), sel.top - scroll + sel.height - 34), left: Math.min(Math.max(sel.left + 8, 8), vw - 380) }}
-              onVariant={(v) => runOp({ op: "variant", id: selInfo.s.id, variant: v }, `Changed layout of ${selInfo.s.name}`)}
-              onMove={(d) => runOp({ op: "move", id: selInfo.s.id, dir: d }, `Moved ${selInfo.s.name}`)}
-              onCopy={() => runOp({ op: "duplicate", id: selInfo.s.id }, `Copied ${selInfo.s.name}`)}
-              onRemove={() => runOp({ op: "remove", id: selInfo.s.id }, `Deleted ${selInfo.s.name}`)}
+              onVariant={(v) => runOp({ op: "variant", id: selInfo.id, variant: v }, `Changed layout of ${selInfo.name}`)}
+              onMove={(d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`)}
+              onCopy={() => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`)}
+              onRemove={() => runOp({ op: "remove", id: selInfo.id }, `Deleted ${selInfo.name}`)}
             />
           )}
-          {sel && selInfo?.s.fromRecords && (
+          {sel && selInfo?.fromRecords && (
             <div className="fixed z-[1002] rounded bg-neutral-900 px-2 py-1 text-xs text-white" style={{ top: Math.max(sel.top - scroll + 6, top + 44), left: Math.max(sel.left + sel.width - 260, 8) }}>
               List items come from their own records in the admin
             </div>
           )}
           {/* add-section buttons on the edges of the hovered / selected section */}
-          {[...plusAt.entries()].map(([at, y]) => (
+          {[...plusAt.entries()].map(([key, p]) => (
             <button
-              key={`plus-${at}`}
+              key={`plus-${key}`}
               type="button"
               data-rm-plus
               disabled={busy}
-              onClick={() => setPanel({ k: "add", at })}
+              onClick={() => setPanel({ k: "add", at: p.at, list: p.list })}
               className="fixed z-[1001] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow-lg hover:bg-blue-700"
-              style={{ top: y - scroll, left: vw / 2 }}
+              style={{ top: p.y - scroll, left: p.x }}
             >
-              + Add section
+              {p.list ? "+ Add section to this tab" : "+ Add section"}
             </button>
           ))}
           {boxes.length === 0 && (
-            <button type="button" onClick={() => setPanel({ k: "add", at: 0 })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
+            <button type="button" onClick={() => setPanel({ k: "add", at: 0, list: "" })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
               + Add section
             </button>
           )}
@@ -657,13 +679,13 @@ export default function EditorOverlay() {
         </SidePanel>
       )}
       {panel?.k === "add" && (
-        <SidePanel title="Add section" top={top} onClose={() => setPanel(null)}>
+        <SidePanel title={panel.list ? "Add section to this tab" : "Add section"} top={top} onClose={() => setPanel(null)}>
           <PresetList
-            presets={info?.presets ?? []}
+            presets={(info?.presets ?? []).filter((p) => !panel.list || p.nestable)}
             busy={busy}
             onPick={async (p) => {
               setPanel(null);
-              await runOp({ op: "add", at: panel.at, type: p.type, variant: p.variant }, `Added ${p.name}`);
+              await runOp({ op: "add", at: panel.at, type: p.type, variant: p.variant, ...(panel.list ? { in: panel.list } : {}) }, `Added ${p.name}`);
             }}
           />
         </SidePanel>

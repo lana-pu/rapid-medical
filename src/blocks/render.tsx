@@ -1,15 +1,25 @@
 import { Fragment, type ReactNode } from "react";
 import { Section } from "@/components/site/primitives";
-import { isEditing } from "@/lib/editing";
+import { Mark, listOf } from "./mark";
 import { BLOCKS } from "./registry";
 import { blockName } from "./diff";
 import type { Block, BlockDef, BlockType, RenderBlock } from "./types";
 
 const def = (b: Block) => BLOCKS[b.type] as unknown as BlockDef<BlockType>;
 
+const info = (b: Block, uid: string) => ({ t: b.type, v: b.variant as string, n: blockName({ id: uid, type: b.type, variant: b.variant as string, data: b.data as Record<string, unknown> }), p: !!def(b).pinned });
+
 export const renderBlock: RenderBlock = (b, nested = false, key) => {
   const { Component } = def(b);
-  return <Component key={key} variant={b.variant} data={b.data} edit={b.edit} nested={nested} render={renderBlock} />;
+  const node = <Component key={b.uid?.includes("/") ? undefined : key} variant={b.variant} data={b.data} edit={b.edit} nested={nested} render={renderBlock} />;
+  // a section inside a Product details tab: its own mark (the page's sections get theirs from BlockList)
+  if (!b.uid?.includes("/")) return node;
+  return (
+    <Fragment key={key}>
+      <Mark i={Number(b.uid.split("/").pop())} uid={b.uid} l={listOf(b.uid)} info={info(b, b.uid)} />
+      {node}
+    </Fragment>
+  );
 };
 
 const isFlow = (b: Block) => def(b).flow?.(b.variant as never) ?? false;
@@ -24,7 +34,7 @@ export function BlockList({ blocks }: { blocks: Block[] }) {
   // between its mark and the next one (no wrappers, so the layout is the same as visitors see).
   const marked = (b: Block, i: number, node: ReactNode, key: number) => (
     <Fragment key={key}>
-      <Mark i={i} uid={b.uid} b={b} />
+      <Mark i={i} uid={b.uid} info={b.uid ? info(b, b.uid) : undefined} />
       {node}
     </Fragment>
   );
@@ -50,11 +60,4 @@ export function BlockList({ blocks }: { blocks: Block[] }) {
   }
   if (blocks.some((b) => b.uid)) out.push(<Mark key="end" i={blocks.length} uid="end" />);
   return <>{out}</>;
-}
-
-async function Mark({ i, uid, b }: { i: number; uid?: string; b?: Block }) {
-  if (!uid || !(await isEditing())) return null;
-  // what the section is, for the editor in the static demo (no server to ask)
-  const info = b ? { t: b.type, v: b.variant, n: blockName({ id: uid, type: b.type, variant: b.variant as string, data: b.data as Record<string, unknown> }), p: !!def(b).pinned } : {};
-  return <i hidden data-rm-b={JSON.stringify({ i, id: uid, ...info })} />;
 }

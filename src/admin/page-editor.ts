@@ -6,7 +6,7 @@ import { audit } from "@/lib/audit";
 import { REGION_CHOICES } from "@/lib/regions";
 import { BLOCKS } from "@/blocks/registry";
 import type { BlockDef, BlockType } from "@/blocks/types";
-import { applyOp, BlockOpError, isPinned, variantsFor, type BlockOp } from "@/blocks/ops";
+import { applyOp, BlockOpError, isPinned, selectAfterOp, variantsFor, type BlockOp } from "@/blocks/ops";
 import { blockName, compareBlocks, describeBlockChanges, type RegionDiff } from "@/blocks/diff";
 import { PRESETS, TEMPLATES, templateBlocks, type Preset, type TemplateId } from "@/blocks/templates";
 import { and, eq, getTableColumns, isNull } from "drizzle-orm";
@@ -27,7 +27,19 @@ import { checkBase, ConflictError, knownBlocks, pageResource, pageVersion, regio
 type Fail = { error: string; conflict?: boolean };
 const fail = (e: unknown): Fail => ({ error: (e as Error).message || "Something went wrong", conflict: e instanceof ConflictError });
 
-export type SectionInfo = { id: string; type: string; name: string; variant: string; variants: { id: string; label: string }[]; pinned: boolean; fromRecords: boolean };
+export type SectionInfo = {
+  id: string;
+  type: string;
+  name: string;
+  variant: string;
+  variants: { id: string; label: string }[];
+  pinned: boolean;
+  fromRecords: boolean;
+  /** "" — the page; inside Product details: "{block}/{tab}" or a group "{block}/{tab}/{j}" */
+  list: string;
+  /** position in that list */
+  at: number;
+};
 
 export type PageInfo = {
   ref: PageRef;
@@ -50,16 +62,36 @@ export type PageInfo = {
 
 const def = (t: string) => (Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] as unknown as BlockDef<BlockType>) : null);
 
+const variantsOf = (b: { type: string; variant: string }) => (variantsFor(b.type).some((v) => v.id === b.variant) ? variantsFor(b.type) : []);
+
+type Nested = { type: string; variant: string; data: Record<string, unknown> };
+
+/** The page's sections, then the sections inside Product details tabs (addressed by position, see blocks/ops.ts). */
 function sections(list: StoredBlock[]): SectionInfo[] {
-  return list.map((b) => ({
+  const out: SectionInfo[] = list.map((b, i) => ({
     id: b.id,
     type: b.type,
     name: blockName(b),
     variant: b.variant,
-    variants: variantsFor(b.type).some((v) => v.id === b.variant) ? variantsFor(b.type) : [],
+    variants: variantsOf(b),
     pinned: isPinned(b),
     fromRecords: !!b.source || def(b.type)?.category === "list",
+    list: "",
+    at: i,
   }));
+  const nested = (n: Nested, id: string, l: string, at: number): SectionInfo => ({ id, type: n.type, name: blockName({ id, ...n }), variant: n.variant, variants: variantsOf(n), pinned: false, fromRecords: false, list: l, at });
+  for (const b of list) {
+    if (b.type !== "productDetails" || b.source) continue;
+    const tabs = (b.data as { tabs?: { href?: string; blocks?: (Nested | { group: string; blocks: Nested[] })[] }[] }).tabs ?? [];
+    tabs.forEach((tab, t) => {
+      if (tab.href || !Array.isArray(tab.blocks)) return;
+      tab.blocks.forEach((x, j) => {
+        if ("group" in x) (x.blocks ?? []).forEach((n, k) => out.push(nested(n, `${b.id}/${t}/${j}/${k}`, `${b.id}/${t}/${j}`, k)));
+        else out.push(nested(x, `${b.id}/${t}/${j}`, `${b.id}/${t}`, j));
+      });
+    });
+  }
+  return out;
 }
 
 const label = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -115,7 +147,7 @@ export async function editBlocks(ref: PageRef, op: BlockOp, base?: string): Prom
     const result = await saveWithWorkflow(res, ref.id, { ...data, blocks: next, status }, user);
     await audit(user, "save", { resource: res.slug, recordId: ref.id, label: String(e.row[res.labelField] ?? ""), meta: { sections: op.op } });
     if (!result.pending) for (const p of res.revalidate) revalidatePath(p, "layout");
-    const added = op.op === "add" || op.op === "duplicate" ? next.find((b) => !current.some((c) => c.id === b.id))?.id : undefined;
+    const added = selectAfterOp(op, current, next);
     return { version: await pageVersion(res, ref.id), sections: sections(next), added, undo: current };
   } catch (err) {
     if (err instanceof BlockOpError || err instanceof ConflictError) return fail(err);

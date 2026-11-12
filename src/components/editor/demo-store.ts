@@ -167,7 +167,7 @@ export const demoApi = {
  */
 
 type PageApi = typeof import("@/admin/page-editor");
-type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string };
+type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string; in?: string };
 type SectionsState = { ops: Op[]; published: number };
 
 const secKey = () => `rm-demo:sections:${location.pathname}`;
@@ -186,30 +186,37 @@ function saveSections(st: SectionsState) {
   }
 }
 
-type MarkInfo = { id: string; t?: string; v?: string; n?: string; p?: boolean };
-const marks = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).filter((m) => (JSON.parse(m.getAttribute("data-rm-b") || "{}") as MarkInfo).id !== "end");
+/** `l`: the list the section is in — "" the page, or a list inside a Product details tab (see blocks/mark.tsx). */
+type MarkInfo = { id: string; l?: string; t?: string; v?: string; n?: string; p?: boolean };
 const info = (m: Element) => JSON.parse(m.getAttribute("data-rm-b") || "{}") as MarkInfo;
-const markOf = (id: string) => marks().find((m) => info(m).id === id) ?? null;
-const endMark = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).find((m) => info(m).id === "end") ?? null;
+const allMarks = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]"));
+const marks = (l = "") => allMarks().filter((m) => info(m).id !== "end" && (info(m).l ?? "") === l);
+const markOf = (id: string) => allMarks().find((m) => info(m).id === id) ?? null;
+const endMark = (l = "") => allMarks().find((m) => info(m).id === "end" && (info(m).l ?? "") === l) ?? null;
+/** Marks of list `l` in this element (itself included). */
+const marksIn = (n: HTMLElement, l: string) => [n, ...Array.from(n.querySelectorAll("[data-rm-b]"))].filter((m) => m.hasAttribute("data-rm-b") && (info(m).l ?? "") === l).length;
 
 /** The DOM of one section: its own band when it is alone in it, else the mark and its siblings up to the next mark. */
 function unitOf(mark: HTMLElement): Node[] {
-  const host = endMark()?.parentElement;
+  const l = info(mark).l ?? "";
+  const host = l ? null : endMark()?.parentElement;
   if (host && mark.parentElement !== host) {
     let a: HTMLElement | null = mark;
     while (a && a.parentElement !== host) a = a.parentElement;
-    if (a && a.querySelectorAll("[data-rm-b]").length === 1) return [a];
+    if (a && marksIn(a, "") === 1) return [a];
   }
   const out: Node[] = [mark];
-  // up to the next section: a mark, or an element that holds marks (a band of stacked sections)
-  for (let n = mark.nextSibling; n && !(n instanceof HTMLElement && (n.hasAttribute("data-rm-b") || n.querySelector("[data-rm-b]"))); n = n.nextSibling) out.push(n);
+  // up to the next section of the same list: a mark, or an element that holds one (a band of stacked sections);
+  // inside a tab also a group (its own list)
+  const stop = (n: Node) => n instanceof HTMLElement && (n.hasAttribute("data-rm-b") ? (info(n).l ?? "") === l || !!l : marksIn(n, l) > 0 || (!!l && n.querySelector("[data-rm-b]") !== null));
+  for (let n = mark.nextSibling; n && !stop(n); n = n.nextSibling) out.push(n);
   return out;
 }
 const insertBefore = (nodes: Node[], ref: Node) => nodes.forEach((n) => ref.parentNode?.insertBefore(n, ref));
 const insertAfter = (nodes: Node[], ref: Node) => [...nodes].reverse().forEach((n) => ref.parentNode?.insertBefore(n, ref.nextSibling));
 
-function setMark(el: HTMLElement, id: string, name: string, type: string, variant: string) {
-  el.setAttribute("data-rm-b", JSON.stringify({ i: 0, id, t: type, v: variant, n: name, p: false }));
+function setMark(el: HTMLElement, id: string, name: string, type: string, variant: string, l = "") {
+  el.setAttribute("data-rm-b", JSON.stringify({ i: 0, id, ...(l ? { l } : {}), t: type, v: variant, n: name, p: false }));
 }
 
 let presetDoc: Promise<Document> | null = null;
@@ -222,12 +229,13 @@ async function presetNodes(type: string, variant: string): Promise<Node[]> {
 
 async function apply(op: Op): Promise<void> {
   if (op.op === "add") {
-    const list = marks();
-    const ref = list[op.at] ?? endMark();
+    const l = op.in ?? "";
+    const list = marks(l);
+    const ref = list[op.at] ?? endMark(l);
     if (!ref) return;
     const mark = document.createElement("i");
     mark.hidden = true;
-    setMark(mark, op.newId, op.name, op.type, op.variant);
+    setMark(mark, op.newId, op.name, op.type, op.variant, l);
     const nodes = [mark, ...(await presetNodes(op.type, op.variant))];
     const refUnit = list[op.at] ? unitOf(list[op.at]) : [ref];
     insertBefore(nodes, refUnit[0]);
@@ -242,11 +250,11 @@ async function apply(op: Op): Promise<void> {
     const first = copy[0] as HTMLElement;
     const mk = first.hasAttribute?.("data-rm-b") ? first : (first.querySelector?.("[data-rm-b]") as HTMLElement | null);
     const src = info(m);
-    if (mk) setMark(mk, op.newId, `${src.n ?? "Section"} (copy)`, src.t ?? "", src.v ?? "");
+    if (mk) setMark(mk, op.newId, `${src.n ?? "Section"} (copy)`, src.t ?? "", src.v ?? "", src.l ?? "");
     copy.forEach((n) => n instanceof HTMLElement && [n, ...Array.from(n.querySelectorAll("[data-e]"))].forEach((e) => e.removeAttribute("data-e")));
     insertAfter(copy, unit[unit.length - 1]);
   } else if (op.op === "move") {
-    const list = marks();
+    const list = marks(info(m).l ?? "");
     const i = list.indexOf(m);
     const other = list[i + op.dir];
     if (!other) return;
@@ -263,11 +271,15 @@ export async function applyDemoSections(): Promise<void> {
   for (const op of loadSections().ops) await apply(op);
 }
 
-const sectionsNow = () =>
-  marks().map((m) => {
-    const x = info(m);
-    return { id: x.id, type: x.t ?? "", name: x.n ?? "Section", variant: x.v ?? "", variants: [], pinned: !!x.p, fromRecords: false };
-  });
+const sectionsNow = () => {
+  const lists = [...new Set(allMarks().map((m) => info(m).l ?? ""))];
+  return lists.flatMap((l) =>
+    marks(l).map((m, at) => {
+      const x = info(m);
+      return { id: x.id, type: x.t ?? "", name: x.n ?? "Section", variant: x.v ?? "", variants: [], pinned: !!x.p, fromRecords: false, list: l, at };
+    }),
+  );
+};
 
 const describe = (op: Op): string => {
   const name = op.op === "add" ? op.name : (info(markOf(op.id) ?? document.createElement("i")).n ?? "a section");
@@ -313,10 +325,13 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
     if (op.op === "variant") return { error: "Changing the layout needs the server; not in the demo" };
     const target = "id" in op ? before.find((x) => x.id === op.id) : null;
     if (target?.pinned) return { error: "This section stays at the end of the page" };
-    const newId = Math.random().toString(16).slice(2, 12);
+    // a section inside a tab keeps a "/" in its id (the editor tells the lists apart by it)
+    const nestedList = op.op === "add" ? (op.in ?? "") : (target?.list ?? "");
+    const newId = `${nestedList ? `${nestedList}/n` : ""}${Math.random().toString(16).slice(2, 12)}`;
+    if (op.op === "remove" && nestedList && marks(nestedList).length <= 1 && !document.querySelector(`[data-rm-b*='"l":"${nestedList}/']`)) return { error: "A tab keeps at least one section" };
     if (op.op === "add") {
       const p = (JSON.parse(document.querySelector("[data-rm-page]")?.getAttribute("data-rm-presets") || "[]") as { type: string; variant: string; name: string }[]).find((x) => x.type === op.type && x.variant === op.variant);
-      rec = { op: "add", at: op.at, type: op.type, variant: op.variant, newId, name: p?.name ?? op.type };
+      rec = { op: "add", at: op.at, type: op.type, variant: op.variant, newId, name: p?.name ?? op.type, ...(op.in ? { in: op.in } : {}) };
     } else if (op.op === "duplicate") rec = { op: "duplicate", id: op.id, newId };
     else rec = op;
     try {
