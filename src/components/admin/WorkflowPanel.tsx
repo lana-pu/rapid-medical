@@ -1,7 +1,8 @@
 import type { Draft, Revision } from "@/db";
-import { publishResource, unpublishResource, discardDraftAction, scheduleAction, restoreAction } from "@/admin/actions";
+import { unpublishResource, discardDraftAction, scheduleAction, restoreAction } from "@/admin/actions";
 import { Button, StatusBadge, formatDate } from "./ui";
 import Link from "next/link";
+import { israelZoneLabel, toIsraelInput } from "@/lib/israel-time";
 
 export function WorkflowPanel({
   resourceSlug,
@@ -30,7 +31,6 @@ export function WorkflowPanel({
     </>
   );
   const pending = Boolean(draft?.data);
-  const toLocalInput = (d: Date | null | undefined) => (d ? new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "");
 
   return (
     <aside className="space-y-4 text-sm">
@@ -47,13 +47,10 @@ export function WorkflowPanel({
         )}
         {draft?.publishAt && (
           <div className="mt-2 rounded border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900">
-            Scheduled to publish {formatDate(draft.publishAt, { dateStyle: "medium", timeStyle: "short" })}
+            Scheduled to publish {formatDate(draft.publishAt, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jerusalem" })} ({israelZoneLabel(draft.publishAt)})
           </div>
         )}
         <div className="mt-4 flex flex-wrap gap-2">
-          {(pending || liveStatus !== "published") && (
-            <form action={publishResource}>{hidden}<Button type="submit">{pending ? "Publish changes" : "Publish"}</Button></form>
-          )}
           {liveStatus === "published" && !alwaysLive && (
             <form action={unpublishResource}>{hidden}<Button type="submit" variant="secondary">Unpublish</Button></form>
           )}
@@ -75,11 +72,11 @@ export function WorkflowPanel({
         <div className="text-xs uppercase text-neutral-500">Schedule publication</div>
         <form action={scheduleAction} className="mt-2 flex items-center gap-2">
           {hidden}
-          <input type="datetime-local" name="publishAt" defaultValue={toLocalInput(draft?.publishAt)} className="rounded border border-neutral-300 px-2 py-1 text-sm" />
+          <input type="datetime-local" name="publishAt" defaultValue={toIsraelInput(draft?.publishAt)} aria-label="Publish at (Israel time)" className="rounded border border-neutral-300 px-2 py-1 text-sm" />
           <Button type="submit" variant="secondary">Set</Button>
           {draft?.publishAt && <button name="publishAt" value="" className="text-xs text-red-600 underline">clear</button>}
         </form>
-        <p className="mt-1 text-[11px] text-neutral-500">Publishes the pending changes (or the draft record) at that time.</p>
+        <p className="mt-1 text-[11px] text-neutral-500">Publishes the pending changes (or the draft record) at that time. Time zone: {israelZoneLabel(draft?.publishAt ?? new Date())}.</p>
       </div>
 
       {/* History */}

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { fromIsraelInput } from "@/lib/israel-time";
 import { getResource } from "./resources";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
 import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, schedule, restoreRevision, hasWorkflow } from "./workflow";
@@ -16,18 +17,23 @@ function revalidate(paths: string[], extra?: string | null) {
   revalidatePath("/sitemap.xml");
 }
 
-export async function saveResource(_prev: SaveState, fd: FormData): Promise<SaveState> {
+const needAttention = (n: number) => `${n} field${n > 1 ? "s" : ""} need${n > 1 ? "" : "s"} attention`;
+
+type Persisted = { user: Awaited<ReturnType<typeof requireUser>>; res: NonNullable<ReturnType<typeof getResource>>; data: Record<string, unknown>; result: { id: number; pending: boolean } };
+
+/** Validate the form and save it through the workflow (never publishes). */
+async function persist(fd: FormData): Promise<Persisted | { state: NonNullable<SaveState> }> {
   const user = await requireUser();
   const slug = String(fd.get("__resource"));
   const idRaw = fd.get("__id");
   const id = idRaw ? Number(idRaw) : null;
   const res = getResource(slug);
-  if (!res) return { message: "Unknown resource" };
-  if (res.alwaysLive && !id) return { message: "These pages exist once; open them from Pages" };
+  if (!res) return { state: { message: "Unknown resource" } };
+  if (res.alwaysLive && !id) return { state: { message: "These pages exist once; open them from Pages" } };
 
   const parsed = parseForm(res, fd);
   const { errors } = parsed;
-  if (Object.keys(errors).length) return { errors, message: "Please fix the highlighted fields." };
+  if (Object.keys(errors).length) return { state: { errors, message: needAttention(Object.keys(errors).length) } };
   // Fields edited on the page (ADR-007) are not in the form: keep what the page has now (pending draft over live).
   let data = parsed.data;
   if (id) {
@@ -35,16 +41,40 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
     if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
   } else if (res.onCreate) data = res.onCreate(data);
 
-  let result: { id: number; pending: boolean };
   try {
-    result = await saveWithWorkflow(res, id, data, user, { formPublish: true });
+    const result = await saveWithWorkflow(res, id, data, user);
+    if (!result.pending) revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
+    return { user, res, data, result };
   } catch (e) {
     const msg = (e as Error).message;
-    if (/unique/i.test(msg)) return { message: "A record with this slug/region already exists." };
-    return { message: msg };
+    if (/unique/i.test(msg)) return { state: { message: "A record with this slug/region already exists." } };
+    console.error("save failed", e);
+    return { state: { message: "Could not save. Try again." } };
   }
-  if (!result.pending) revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
+}
+
+/** Create draft / Save (resources without workflow) / Publish (`__intent=publish`: save, then publish). */
+export async function saveResource(_prev: SaveState, fd: FormData): Promise<SaveState> {
+  const p = await persist(fd);
+  if ("state" in p) return p.state;
+  const { user, res, result } = p;
+  if (fd.get("__intent") === "publish" && hasWorkflow(res)) {
+    await publish(res, result.id, user);
+    const row = await getRow(res, result.id);
+    revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
+    redirect(`/admin/${res.slug}/${result.id}?published=1`);
+  }
   redirect(`/admin/${res.slug}/${result.id}?${result.pending ? "pending=1" : "saved=1"}`);
+}
+
+export type AutosaveResult = { ok: true; at: string; pending: boolean } | { ok: false; message: string; errors?: FieldErrors };
+
+/** Autosave of an existing record (docs/screens/admin-record-edit.md): saves, never publishes, never redirects. */
+export async function autosaveResource(fd: FormData): Promise<AutosaveResult> {
+  if (!fd.get("__id")) return { ok: false, message: "Create the draft first" };
+  const p = await persist(fd);
+  if ("state" in p) return { ok: false, message: p.state.message ?? "Not saved", errors: p.state.errors };
+  return { ok: true, at: new Date().toISOString(), pending: p.result.pending };
 }
 
 async function ctx(fd: FormData) {
@@ -82,8 +112,8 @@ export async function discardDraftAction(fd: FormData) {
 export async function scheduleAction(fd: FormData) {
   const { user, res, id } = await ctx(fd);
   const raw = String(fd.get("publishAt") ?? "");
-  const at = raw ? new Date(raw) : null;
-  if (at && Number.isNaN(at.getTime())) redirect(`/admin/${res.slug}/${id}?error=Invalid+date`);
+  const at = raw ? fromIsraelInput(raw) : null; // typed as Israel time
+  if (raw && !at) redirect(`/admin/${res.slug}/${id}?error=Invalid+date`);
   await schedule(res, id, at, user);
   redirect(`/admin/${res.slug}/${id}?scheduled=1`);
 }

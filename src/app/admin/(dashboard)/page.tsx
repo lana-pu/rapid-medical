@@ -7,7 +7,7 @@ import { LinkButton, Notice, PageHeader, formatDate } from "@/components/admin/u
 export default async function Home({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
   const user = await requireUser();
-  const [todo, activity, sum] = await Promise.all([attention(), recentActivity(), summary()]);
+  const [todo, activity, sum] = await Promise.all([attention(user), recentActivity(), summary()]);
   const first = user.name.split(/\s+/)[0] || user.name;
 
   return (

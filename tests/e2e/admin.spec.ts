@@ -27,7 +27,8 @@ test("editing a live record creates pending changes, preview shows them, publish
   await login(page);
   const id = sql("select id from solutions where region='ous' and slug='lvo'");
   await page.goto(`/admin/solutions/${id}`);
-  await expect(page.locator("select[name=status]")).toHaveCount(0); // live record: status via panel
+  await expect(page.locator("select[name=status]")).toHaveCount(0); // on the site only through Publish
+  await expect(page.getByTestId("record-status")).toHaveText("Live");
   // page content is edited on the page (ADR-007): the form keeps basics and SEO only
   await expect(page.locator("input[name=heroTitle]")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Edit on page ✎" }).first()).toBeVisible();
@@ -36,8 +37,10 @@ test("editing a live record creates pending changes, preview shows them, publish
   const originalTitle = await anon.title();
 
   await page.fill("input[name=metaTitle]", "E2E pending title");
-  await page.click('button:has-text("Save")');
-  await page.waitForURL(/pending=1/);
+  await page.locator("input[name=metaTitle]").blur(); // autosave on leaving the field
+  await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
+  await expect(page.getByTestId("record-status")).toHaveText("Live, with unpublished changes");
+  await page.reload();
 
   await anon.reload();
   await expect(anon).toHaveTitle(originalTitle);
@@ -67,6 +70,24 @@ test("editing a live record creates pending changes, preview shows them, publish
   await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
 });
 
+test("new publication: mistakes listed on top with links, month and year, Israel time for the schedule", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/publications/new");
+  await expect(page.locator("input[name=publishedOn]")).toHaveAttribute("type", "month");
+  await expect(page.locator("select[name=status]")).toHaveCount(0);
+  await page.click('button:has-text("Create draft")');
+  const summary = page.getByRole("alert").filter({ hasText: /attention/ });
+  await expect(summary).toContainText(/fields? needs? attention/);
+  await expect(summary).toBeFocused();
+  await summary.getByRole("link", { name: "Title" }).click();
+  await expect(page).toHaveURL(/#title$/);
+  // an existing publication: the schedule says which time zone it uses
+  const id = sql("select id from publications order by id limit 1");
+  await page.goto(`/admin/publications/${id}`);
+  await expect(page.getByText(/Time zone: Israel \(UTC\+[23]\)/)).toBeVisible();
+  await expect(page.locator("input[name=publishedOn]")).toHaveValue(/^\d{4}-\d{2}$/);
+});
+
 const addUser = (email: string, role: string) =>
   sql(`insert into users(email,name,password_hash,role) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}') on conflict (email) do update set role='${role}'`);
 
@@ -82,9 +103,9 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     // no approval step: the status field publishes an unpublished record
     await ed.goto(`/admin/news/${id}`);
     await expect(ed.getByText("Submit for review")).toHaveCount(0);
-    await ed.selectOption("select[name=status]", "published");
-    await ed.click('button:has-text("Save")');
-    await ed.waitForURL(/saved=1/);
+    await expect(ed.getByTestId("record-status")).toHaveText("Draft · not on the site");
+    await ed.click('button[name=__intent][value=publish]');
+    await ed.waitForURL(/published=1/);
     expect(sql(`select status from news_items where id=${id}`)).toBe("published");
     // Site settings without Branding, Integrations and Workflow
     await ed.goto("/admin/settings?group=integrations");
@@ -123,8 +144,9 @@ test("unpublish keeps the pending changes in the record and cancels the schedule
   try {
     await page.goto(`/admin/news/${id}`);
     await page.fill("input[name=title]", "E2E pending title");
-    await page.click('button:has-text("Save")');
-    await page.waitForURL(/pending=1/);
+    await page.locator("input[name=title]").blur();
+    await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
+    await page.reload();
     sql(`update drafts set publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
     await page.click('button:has-text("Unpublish")');
     await page.waitForURL(/unpublished=1/);
@@ -161,8 +183,8 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   const id = sql("select id from solutions where region='apac' and slug='drivewire'");
   await page.goto(`/admin/solutions/${id}`);
   await page.fill("input[name=metaTitle]", "Scheduled title");
-  await page.click('button:has-text("Save")');
-  await page.waitForURL(/pending=1/);
+  await page.locator("input[name=metaTitle]").blur();
+  await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
   await page.click('button:has-text("Set")');
   await page.waitForURL(/scheduled=1/);

@@ -18,9 +18,9 @@
 markdown (Tiptap), json, link, table (редактор спецификаций, вставка из Excel), number, boolean, select,
 date, image (пикер медиатеки + загрузка), url, regions, region, product, status, repeater (drag-сортировка,
 свернуть, дублировать, вложенные), stringList.
-- Опубликованная запись: поле `status` скрыто (управляется панелью), подсказка «saving creates pending changes».
-- Неопубликованная запись: `status = published` в форме — это Publish. Сохранение из других мест (правка на странице,
-  секции, замена файла в медиатеке, restore) никогда не публикует запись само (2026-11-12, ревью безопасности).
+- Поля `status` в форме нет (флоу админки pub-new, 2026-11-12): на сайт запись попадает только кнопкой **Publish**.
+  Сохранение (автоматическое, «Create draft», правка на странице, секции, замена файла, restore) никогда не публикует.
+- **Месяц и год** (`month`, флоу pub-new): поле «Published» у публикаций — выбор месяца, хранится первым числом месяца.
 - **Поля `onPage` (ADR-007, 2026-11-12)** в форме не показываются: содержимое страницы правится на странице. Вместо них —
   блок «Page content» со ссылкой «Edit on page ✎». Сохранение формы оставляет их как есть (черновик поверх live).
   Терапии: в форме Basics (без breadcrumb) и SEO; текстовые страницы: без `bodyHtml`. Новая запись получает список блоков
@@ -41,26 +41,32 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | link | `{label, href}`; без `href` → «Link needs a URL» |
 | table / repeater | валидный JSON (repeater — массив); **подполя не валидируются** |
 | уникальность | «A record with this slug/region already exists.» |
-Общая ошибка формы: «Please fix the highlighted fields.»
+**Сводка ошибок** (флоу pub-error, GOV.UK): над формой «{N} field(s) need attention» и список подписей полей — ссылки
+к полям; у поля — текст ошибки; фокус переходит на сводку.
 
-## Сохранение (Save)
-| Состояние записи | Результат | Уведомление |
+## Сохранение и публикация (флоу pub-new / pub-error / pub-live)
+| Состояние записи | Как сохраняется | Нижняя панель |
 |---|---|---|
-| Новая | Вставка со `status = draft` → редирект на `/admin/{resource}/{id}` | «Saved.» |
-| Не опубликована | Правка на месте; если в форме выбран `published` → публикация | «Saved.» |
-| Опубликована | Изменения в `drafts`, live не меняется | «Saved as pending changes…» |
-| `products`, `redirects` (без workflow) | Сразу в live | «Saved.» |
+| Новая | кнопка **Create draft** → черновик, редирект на `/admin/{resource}/{id}` | «Draft · not on the site» · Create draft |
+| Не опубликована | **автоматически** через 2 с после правки и при уходе из поля; правка на месте | «Draft · not on the site» · «Saved automatically · 10:42. Visitors see it only after you publish.» · **Publish** |
+| Опубликована | автоматически; изменения в `drafts`, live не меняется | «Live» / «Live, with unpublished changes» · то же · **Publish changes** |
+| `products`, `redirects` (без workflow) | кнопка **Save** → сразу в live | Save |
+- Автосохранение пропускает форму с ошибками: «Not saved: {N} field(s) need attention» (сводка — по Publish).
+  Ошибка сервера → «Not saved: {причина}», правка остаётся в форме.
+- **Publish** в форме сохраняет её и публикует; при ошибках не публикует и показывает сводку.
+- После Publish: «Live on {адрес} · View on the site ↗» (если у записи есть адрес на сайте), иначе «Published».
+- В демо автосохранения нет (нет сервера): «Demo: changes are not saved».
 
 ## Панель workflow (только ресурсы со `status`)
 | Элемент | Когда показан | Кто может |
 |---|---|---|
 | Live-статус, плашка «Unpublished changes by … · дата» | всегда / при pending | — |
 | «Scheduled to publish …» | если `publishAt` | — |
-| **Publish / Publish changes** | есть pending или запись не live | любая роль (согласования нет, ADR-006) |
+| **Publish / Publish changes** | в нижней панели формы (не в панели справа: публикуется то, что в форме, а не последнее автосохранение) | любая роль (согласования нет, ADR-006) |
 | **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись (ревизия «Unpublished: pending changes kept in the record»), одобрение сбрасывается, расписание отменяется |
 | **Discard changes** | есть pending | любая роль |
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
-| **Schedule publication** (datetime-local, Set, clear) | всегда | любая роль |
+| **Schedule publication** (datetime-local, Set, clear) — «Publish later» | всегда | любая роль; время — по Израилю, подпись «Time zone: Israel (UTC+2/+3)» по дате |
 | **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |
 | **Copy to {REGION}** (в шапке) | только `solutions` | дубликат как draft в другом регионе |
 

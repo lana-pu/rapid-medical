@@ -64,12 +64,21 @@ export function UnsavedGuard({ formRef, storageKey }: { formRef: React.RefObject
     form.addEventListener("input", onInput);
     form.addEventListener("change", onInput);
     form.addEventListener("submit", onSubmit);
+    // autosave stored the form: nothing to warn about or to keep locally
+    const onSaved = () => {
+      baseline.current = JSON.stringify(serialise());
+      dirtyRef.current = false;
+      setDirty(false);
+      try { localStorage.removeItem(storageKey); } catch { /* ignore */ }
+    };
+    form.addEventListener("rm-saved", onSaved);
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => {
       clearTimeout(t0);
       form.removeEventListener("input", onInput);
       form.removeEventListener("change", onInput);
       form.removeEventListener("submit", onSubmit);
+      form.removeEventListener("rm-saved", onSaved);
       window.removeEventListener("beforeunload", onBeforeUnload);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

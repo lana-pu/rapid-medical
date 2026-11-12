@@ -2,7 +2,7 @@ import "server-only";
 import { and, count, desc, eq, like, max, notInArray } from "drizzle-orm";
 import { auditLog, contactSubmissions, db, media, publications, users } from "@/db";
 import { listSettingDrafts } from "@/lib/settings";
-import { getSettingsGroup } from "./settings";
+import { getSettingsGroup, mayEditGroup } from "./settings";
 import { getResource } from "./resources";
 import { pendingDrafts } from "./workflow";
 
@@ -13,7 +13,8 @@ export type Attention = { key: string; text: string; by?: string; at?: Date; act
 const TZ = "Asia/Jerusalem";
 const when = (d: Date) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: TZ }).format(d);
 
-export async function attention(): Promise<Attention[]> {
+/** What waits, for this person: settings groups their role cannot open are left out. */
+export async function attention(user: { role: string }): Promise<Attention[]> {
   const [drafts, settingDrafts, [{ n: newRequests }], [{ n: noAlt }]] = await Promise.all([
     pendingDrafts(),
     listSettingDrafts(),
@@ -37,7 +38,9 @@ export async function attention(): Promise<Attention[]> {
     if (d.publishAt) out.push({ key: `s${d.id}`, text: `${d.label} — publishes ${when(d.publishAt)} (Israel time)`, at: d.updatedAt, action: "Open", href: `/admin/${d.resource}/${d.recordId}` });
   }
   for (const s of settingDrafts) {
-    out.push({ key: `g${s.key}`, text: `${getSettingsGroup(s.key)?.title ?? s.key} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: "Open", href: `/admin/settings?group=${s.key}` });
+    const g = getSettingsGroup(s.key);
+    if (!g || !mayEditGroup(user, g)) continue;
+    out.push({ key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: "Open", href: `/admin/settings?group=${s.key}` });
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));
   if (newRequests) out.unshift({ key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });

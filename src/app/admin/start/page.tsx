@@ -9,7 +9,7 @@ export const metadata = { title: "Rapid Medical · Admin" };
 /** After sign-in: the website or the training tool (docs/screens/admin-choose.md). */
 export default async function Start() {
   const user = await requireUser();
-  const todo = await attention();
+  const todo = await attention(user);
 
   async function logout() {
     "use server";

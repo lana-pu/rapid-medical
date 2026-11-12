@@ -113,6 +113,7 @@ function parseField(f: FieldDef, raw: FormDataEntryValue | null, errors: FieldEr
     case "boolean":
       return raw === "on" || raw === "true" || raw === "1";
     case "date":
+    case "month":
       if (required) errors[key] = "Required";
       if (!s) return null;
       if (!/^\d{4}-\d{2}(-\d{2})?$/.test(s)) errors[key] = "Use YYYY-MM or YYYY-MM-DD";

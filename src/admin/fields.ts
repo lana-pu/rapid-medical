@@ -14,6 +14,7 @@ export type FieldType =
   | "boolean"
   | "select"
   | "date"
+  | "month" // month and year → date (the 1st of that month)
   | "image"
   | "url"
   | "regions" // multi-select of regions → jsonb Region[]

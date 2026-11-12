@@ -33,6 +33,14 @@ export function snapshot(res: Resource, row: Row): Record<string, unknown> {
 }
 
 async function addRevision(res: Resource, id: number, kind: Revision["kind"], data: Record<string, unknown>, user: SessionUser, note = "") {
+  // Autosave: one person's saves in a row within 10 minutes are one version in History, not dozens
+  if (kind === "draft" && !note && user.id > 0) {
+    const [last] = await db.select().from(revisions).where(and(eq(revisions.resource, res.slug), eq(revisions.recordId, id))).orderBy(desc(revisions.createdAt)).limit(1);
+    if (last && last.kind === "draft" && !last.note && last.userId === user.id && Date.now() - last.createdAt.getTime() < 10 * 60_000) {
+      await db.update(revisions).set({ data, createdAt: new Date() }).where(eq(revisions.id, last.id));
+      return;
+    }
+  }
   // id 0 = system actor (scheduler); no users row behind it
   await db.insert(revisions).values({ resource: res.slug, recordId: id, kind, data, userId: user.id > 0 ? user.id : null, userName: user.name, note });
 }
@@ -49,16 +57,14 @@ async function ensureBaseline(res: Resource, id: number, live: Row) {
  * - unpublished record    → update live row directly, revision "draft"
  * - published record      → write to drafts table (live untouched), revision "draft"
  * Returns the record id and whether the change is pending (in a draft).
- * Only the admin form may publish an unpublished record, through its status select (`formPublish`). Every other save
- * (on-page edits, sections, media replace, restore) never publishes: a status carried over from a stale draft must not
- * put a record on the site without Publish. There is no approval step (ADR-006): Publish is the approval.
+ * Saving never publishes — not the form (autosave, Create draft), not the page editor, not media replace, not restore:
+ * only Publish does (ADR-006: Publish is the approval). A status carried over from a stale draft cannot publish either.
  */
 export async function saveWithWorkflow(
   res: Resource,
   id: number | null,
   data: Row,
   user: SessionUser,
-  opts: { formPublish?: boolean } = {},
 ): Promise<{ id: number; pending: boolean }> {
   if (!hasWorkflow(res)) {
     const saved = await saveRow(res, id, data);
@@ -78,12 +84,10 @@ export async function saveWithWorkflow(
   await ensureBaseline(res, id, live);
 
   if (live.status !== "published") {
-    // Not live yet: edit in place. The form's status select may flip it to published → that is a publish.
-    const wantsPublish = opts.formPublish === true && data.status === "published";
+    // Not live yet: edit in place; it stays a draft until Publish.
     await saveRow(res, id, { ...data, status: "draft" });
     await addRevision(res, id, "draft", snapshot(res, { ...data, status: "draft" }), user);
     await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? "") });
-    if (wantsPublish) await publish(res, id, user);
     return { id, pending: false };
   }
 

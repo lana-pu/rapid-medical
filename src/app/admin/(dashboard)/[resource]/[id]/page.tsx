@@ -11,7 +11,7 @@ import { ResourceForm } from "@/components/admin/ResourceForm";
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
 
-type SP = { saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; review?: string; scheduled?: string; restored?: string; error?: string };
+type SP = { saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
 
 export default async function EditResource({ params, searchParams }: { params: Promise<{ resource: string; id: string }>; searchParams: Promise<SP> }) {
   const { resource, id } = await params;
@@ -53,17 +53,26 @@ export default async function EditResource({ params, searchParams }: { params: P
       />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.pending && <Notice kind="info">Saved as pending changes. The live page is unchanged until you publish.</Notice>}
-      {sp.published && <Notice kind="success">Published.</Notice>}
+      {sp.published && (
+        <Notice kind="success">
+          {previewPath && live.status === "published" ? (
+            <>
+              Live on <b>{previewPath}</b> · <a href={withBase(previewPath)} target="_blank" rel="noreferrer" className="underline">View on the site ↗</a>
+            </>
+          ) : (
+            "Published."
+          )}
+        </Notice>
+      )}
       {sp.unpublished && <Notice kind="info">Unpublished — the page is no longer visible on the site.</Notice>}
       {sp.discarded && <Notice kind="info">Pending changes discarded.</Notice>}
-      {sp.review && <Notice kind="info">Review status updated.</Notice>}
       {sp.scheduled && <Notice kind="info">Schedule updated.</Notice>}
       {sp.restored && <Notice kind="success">Revision restored{live.status === "published" ? " as pending changes" : ""}.</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div>
-          <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} contentHref={editHref} />
+          <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (
           <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} />

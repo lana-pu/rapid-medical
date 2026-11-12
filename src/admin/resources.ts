@@ -226,7 +226,7 @@ export const RESOURCES: Resource[] = [
       { name: "title", label: "Title", type: "text", required: true },
       { name: "authors", label: "Authors", type: "textarea", rows: 2 },
       { name: "journal", label: "Journal / citation", type: "text" },
-      { name: "publishedOn", label: "Published (month)", type: "date", required: true, half: true },
+      { name: "publishedOn", label: "Published", type: "month", required: true, half: true, help: "Month and year" },
       { name: "productId", label: "Product", type: "product", half: true },
       { name: "url", label: "Link (DOI / journal)", type: "url", half: true },
       { name: "pdfUrl", label: "PDF", type: "url", half: true },
