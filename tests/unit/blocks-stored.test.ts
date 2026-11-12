@@ -9,12 +9,12 @@ import { fieldPath } from "../../src/blocks/bind";
 import { REGION_LABELS } from "../../src/lib/regions";
 import type { Block } from "../../src/blocks/types";
 
-/** Rendered blocks without editor bindings (they differ by design: record fields before, block paths after). */
+/** Rendered blocks without editor bindings and section ids (they differ by design: record fields before, block paths after). */
 function plain(v: unknown): unknown {
   if (Array.isArray(v)) return v.map(plain);
   if (v && typeof v === "object") {
     const out: Record<string, unknown> = {};
-    for (const [k, x] of Object.entries(v)) if (k !== "edit" && x !== undefined) out[k] = plain(x);
+    for (const [k, x] of Object.entries(v)) if (k !== "edit" && k !== "uid" && x !== undefined) out[k] = plain(x);
     return out;
   }
   return v;

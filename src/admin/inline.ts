@@ -9,6 +9,7 @@ import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
 import { checkBlockPath } from "@/blocks/paths";
+import { checkBase, ConflictError, pageVersion } from "./page-core";
 import { saveWithWorkflow, publish, discardDraft, getDraft, getEditable, canPublish, setReview, workflowSettings, hasWorkflow } from "./workflow";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -141,10 +142,27 @@ function coerce(field: FieldDef, kind: InlineKind, raw: unknown): unknown {
   return field.type === "textarea" ? t.trim() : t.replace(/\n+/g, " ").trim();
 }
 
-/** Save one field. Published records get a pending draft; unpublished rows and settings-drafts are updated directly. */
-export async function saveField(t: Target, kind: InlineKind, raw: unknown): Promise<{ pending: boolean }> {
+/**
+ * Save one field. Published records get a pending draft; unpublished rows and settings-drafts are updated directly.
+ * `base` = the page version the editor loaded (page-core.ts → pageVersion): if someone else changed the record since,
+ * nothing is saved and `conflict` says who. The new version comes back for the next save.
+ */
+export async function saveField(t: Target, kind: InlineKind, raw: unknown, base?: string): Promise<{ pending: boolean; version?: string; conflict?: string }> {
   const user = await requireEditor();
   const r = resolve(t);
+  if (r.kind !== "settings" && base) {
+    try {
+      await checkBase(r.res, r.id, base, user);
+    } catch (e) {
+      if (e instanceof ConflictError) return { pending: false, conflict: e.message };
+      throw e;
+    }
+  }
+  const saved = await saveFieldChecked(r, t, kind, raw, user);
+  return r.kind === "settings" ? saved : { ...saved, version: await pageVersion(r.res, r.id) };
+}
+
+async function saveFieldChecked(r: Resolved, t: Target, kind: InlineKind, raw: unknown, user: SessionUser): Promise<{ pending: boolean }> {
   if (r.kind === "blocks") {
     const e = await getEditable(r.res, r.id);
     if (!e) throw new Error("Record not found");

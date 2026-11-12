@@ -156,7 +156,7 @@ export function resolveBlocks(stored: StoredBlock[], ctx: RenderCtx, page: PageR
     const edit: EditBinding | undefined = page
       ? { r: page.r, id: page.id, prefix, ...(source ? { map: Object.fromEntries(source.keys.map((k) => [k, null])) } : {}) }
       : undefined;
-    return { type: s.type, variant: s.variant, data, edit } as unknown as Block;
+    return { type: s.type, variant: s.variant, data, edit, uid: s.id } as unknown as Block;
   });
 }
 

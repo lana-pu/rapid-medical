@@ -402,7 +402,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "pages",
-    title: "Pages",
+    title: "Text pages",
     titleSingular: "Page",
     table: pages,
     labelField: "title",

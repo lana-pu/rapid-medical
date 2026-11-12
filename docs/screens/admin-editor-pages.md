@@ -1,25 +1,26 @@
 # Экран: Pages — список страниц для редактора (`/admin/editor`)
 
-Основа: флоу `docs/flows/site-editor.json` (экран «Pages»), ADR-006, ADR-007. Статус: **в работе с 2026-11-12**.
+Основа: флоу `docs/flows/site-editor.json` (экран «Pages»), ADR-006, ADR-007. Статус: **сделано 2026-11-12** для страниц терапий и текстовых страниц; синглтоны появятся после переезда в `site_pages`.
 Код: `src/app/admin/(dashboard)/editor/page.tsx`, `src/admin/pages-index.ts`.
 
 ## Назначение
 Частая задача «поменять текст на странице X» начинается с поиска, а не с дерева разделов. Первый пункт сайдбара админки —
-«Pages». После входа в админку открывается этот экран.
+«Pages». После входа в админку (и после 2FA) открывается этот экран. Ресурс `pages` в сайдбаре переименован в «Text pages».
 
 ## Состав
 - Поиск по названию и адресу (на лету, без перезагрузки).
-- Фильтр региона: All · Americas · Europe & Middle East · Asia & Pacific · Global.
+- Фильтр региона: All · Americas · Asia & Pacific · Europe & Middle East · Global.
 - Карточки страниц: миниатюра (первая картинка страницы или серый прямоугольник с типом), название, тип
   (Therapy page / Page / Landing page / Home / About / Careers / Evidence / Therapies overview), регион, адрес, статус
   словами — «Live», «Live, with unpublished changes» (кто и когда правил), «Draft — not live yet».
 - Клик по карточке → страница открывается в редакторе (`/api/editor?on=1&redirect=…`).
-- Ссылка «Settings» на карточке → форма записи (slug, SEO, статус).
+- Ссылка «Settings» на карточке (при наведении) → форма записи (slug, SEO, статус).
+- Тип: Therapy page или Page (лендинг от текстовой страницы по записи не отличить — шаблон не хранится).
 - Страницы, которые собираются из коллекций (News & Events, Webinars, Open positions, Contact), — отдельной строкой внизу
   «Lists»: ссылки на их коллекции в админке.
 
 ## New page
-Кнопка «New page» → окно: шаблон (Text page · Landing page · Therapy page), название, регион (или Global для текстовой),
+Кнопка «New page» (в демо недоступна: нужен сервер) → окно: шаблон (Text page · Landing page · Therapy page), название, регион (или Global для текстовой),
 адрес (подставляется из названия, можно поправить). Create → черновик создан, страница открывается в редакторе.
 Ошибки: адрес занят в этом регионе → «A page with this address already exists in {регион}»; пустое название → Required.
 Страница терапии требует регион; в меню сайта она появится после Publish.

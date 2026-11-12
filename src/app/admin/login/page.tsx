@@ -10,13 +10,13 @@ export const metadata = { title: "Sign in · Rapid Medical admin" };
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string; reset?: string }> }) {
   const sp = await searchParams;
   const session = await getSession();
-  if (session && !session.totpPending) redirect(sp.next ?? "/admin");
+  if (session && !session.totpPending) redirect(sp.next ?? "/admin/editor");
 
   async function login(fd: FormData) {
     "use server";
     const email = String(fd.get("email") ?? "");
     const password = String(fd.get("password") ?? "");
-    const next = String(fd.get("next") ?? "/admin");
+    const next = String(fd.get("next") ?? "/admin/editor");
     const result = await authenticate(email, password);
     if (!result.ok) {
       await audit(null, "login_failed", { meta: { email, reason: result.reason } });
@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     const { needsTotp } = await createSession(result.user);
     const u = result.user;
     await audit({ id: u.id, email: u.email, name: u.name, role: u.role }, "login", { meta: needsTotp ? { step: "password" } : {} });
-    const target = next.startsWith("/admin") || next.startsWith("/api/editor") ? next : "/admin";
+    const target = next.startsWith("/admin") || next.startsWith("/api/editor") ? next : "/admin/editor";
     if (needsTotp) redirect(`/admin/login/2fa?next=${encodeURIComponent(target)}`);
     const editorPath = await resolveEditorNext(target);
     redirect(editorPath ?? target);
@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         {sp.error === "invalid" && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">Invalid email or password.</p>}
         {sp.error === "throttled" && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">Too many attempts. Try again in 15 minutes.</p>}
         {sp.reset && <p className="rounded bg-green-50 px-3 py-2 text-sm text-green-800">Password updated. Please sign in.</p>}
-        <input type="hidden" name="next" value={sp.next ?? "/admin"} />
+        <input type="hidden" name="next" value={sp.next ?? "/admin/editor"} />
         <div>
           <label className="mb-1 block text-sm font-medium">Email</label>
           <input name="email" type="email" required autoComplete="username" className={inputCls} />

@@ -9,6 +9,7 @@ import { regionalAlternates, absoluteTitle } from "@/lib/seo";
 import { BlockList } from "@/blocks/render";
 import { therapyPageBlocks } from "@/blocks/convert";
 import { pageSummary } from "@/blocks/stored";
+import { PageMark } from "@/components/editor/PageMark";
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
   const { seg, slug } = await params;
@@ -54,6 +55,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
           manufacturer: { "@type": "Organization", name: "Rapid Medical", url: site },
         }}
       />
+      {s.blocks?.length ? <PageMark r="solutions" id={s.id} /> : null}
       <BlockList blocks={therapyPageBlocks(s, { region, others })} />
     </>
   );

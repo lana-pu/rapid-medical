@@ -108,7 +108,8 @@ export const demoApi = {
     if (tag.k === "rich") return { value: (el.querySelector(".prose-rm") ?? el).innerHTML, label: t.f };
     return { value: el.innerText, label: t.f };
   },
-  async saveField(t: { r: string; id: number; f: string }, kind: InlineKind, raw: unknown): Promise<{ pending: boolean }> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async saveField(t: { r: string; id: number; f: string }, kind: InlineKind, raw: unknown, _base?: string): Promise<{ pending: boolean; version?: string; conflict?: string }> {
     const s = load();
     s[k(t)] = { value: raw == null ? "" : String(raw), kind, published: false, at: new Date().toISOString() };
     save(s);
@@ -152,4 +153,23 @@ export const demoApi = {
     save(s);
     return n;
   },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Page editor (sections) in the demo                                 */
+/* ------------------------------------------------------------------ */
+
+type PageApi = typeof import("@/admin/page-editor");
+const NO_SERVER = { error: "Not available in the demo" };
+
+/** Browser-only stand-in for src/admin/page-editor.ts. */
+export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K]>) => Promise<Awaited<ReturnType<PageApi[K]>>> } = {
+  pageInfo: async () => NO_SERVER,
+  editBlocks: async () => NO_SERVER,
+  pageChanges: async () => NO_SERVER,
+  pageHistory: async () => NO_SERVER,
+  restorePage: async () => NO_SERVER,
+  compareWith: async () => NO_SERVER,
+  currentPageVersion: async () => NO_SERVER,
+  createPage: async () => ({ error: "New pages need the server; the demo has none" }),
 };

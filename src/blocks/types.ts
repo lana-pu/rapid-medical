@@ -64,6 +64,8 @@ export type BlockOf<T extends BlockType> = {
   data: BlockMap[T]["data"];
   /** Where the fields are stored, for the on-page editor. No binding → not editable on the page. */
   edit?: EditBinding;
+  /** Id of the stored section (pages stored as block lists, ADR-007): lets the editor select, move and remove it. */
+  uid?: string;
 };
 
 export type Block = { [T in BlockType]: BlockOf<T> }[BlockType];

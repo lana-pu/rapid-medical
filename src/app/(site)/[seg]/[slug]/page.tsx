@@ -6,6 +6,7 @@ import { redirectIfLegacy } from "@/lib/redirects";
 import { isRegion } from "@/lib/regions";
 import { BlockList } from "@/blocks/render";
 import { textPageBlocks } from "@/blocks/convert";
+import { PageMark } from "@/components/editor/PageMark";
 
 /** Regional landing pages, e.g. /us/success-study-final-results */
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
@@ -35,5 +36,8 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
     notFound();
   }
 
-  return <BlockList blocks={textPageBlocks(page)} />;
+  return <>
+      {page.blocks?.length ? <PageMark r="pages" id={page.id} /> : null}
+      <BlockList blocks={textPageBlocks(page)} />
+    </>;
 }

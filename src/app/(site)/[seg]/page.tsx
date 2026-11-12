@@ -5,6 +5,7 @@ import { getPage } from "@/lib/content";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { BlockList } from "@/blocks/render";
 import { textPageBlocks } from "@/blocks/convert";
+import { PageMark } from "@/components/editor/PageMark";
 
 /**
  * /us and /ous  → region landing (therapies index)
@@ -28,5 +29,8 @@ export default async function GlobalPage({ params }: { params: Promise<{ seg: st
     notFound();
   }
 
-  return <BlockList blocks={textPageBlocks(page)} />;
+  return <>
+      {page.blocks?.length ? <PageMark r="pages" id={page.id} /> : null}
+      <BlockList blocks={textPageBlocks(page)} />
+    </>;
 }

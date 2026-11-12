@@ -18,3 +18,11 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
 export function totp(secret: string): string {
   return execSync(`node -e "require('otplib').generate({secret:'${secret}'}).then(t=>process.stdout.write(t))"`).toString().trim();
 }
+
+/** Page editor: Publish → «Review changes» → Publish now → «Live now». */
+export async function publishFromEditor(page: Page) {
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await page.click('[role=dialog] button:has-text("Publish now")');
+  await page.locator('[role=dialog][aria-label="Live now"]').waitFor();
+  await page.click('[role=dialog] button:has-text("Keep editing")');
+}

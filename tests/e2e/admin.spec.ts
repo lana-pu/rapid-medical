@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { login, sql, ADMIN, totp } from "./helpers";
+import { login, sql, ADMIN, totp, publishFromEditor } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
 test("login, dashboard, list filters", async ({ page }) => {
   await login(page);
+  await expect(page).toHaveURL(/\/admin\/editor$/); // editors land on Pages
+  await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
   await page.goto("/admin/solutions?region=apac");
   await expect(page.locator("tbody tr")).toHaveCount(5);
@@ -129,7 +131,7 @@ test("two-factor: enable, enforce, recovery code", async ({ page, browser }) => 
   await fresh.waitForURL(/\/admin\/login\/2fa/);
   await fresh.fill("input[name=code]", codes[0]);
   await fresh.click('button:has-text("Verify")');
-  await fresh.waitForURL(/\/admin$/);
+  await fresh.waitForURL(/\/admin\/editor$/);
   expect(sql(`select jsonb_array_length(recovery_codes) from users where email='${ADMIN.email}'`)).toBe("7");
   sql(`update users set totp_secret=null,totp_enabled_at=null,recovery_codes='[]' where email='${ADMIN.email}'`);
 });
@@ -166,7 +168,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("Inline edited title");
   await page.keyboard.press("Enter");
-  await expect(page.getByText("1 pending change on this page")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
   expect(sql("select data->'blocks'->0->'data'->>'title' from drafts where resource='solutions'")).toBe("Inline edited title");
 
   const anon = await (await browser.newContext()).newPage();
@@ -174,8 +176,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
   await expect(anon.locator("[data-e]")).toHaveCount(0);
 
-  await page.click('#rm-editor-ui button:has-text("Publish")');
-  await expect(page.getByText("No pending changes on this page")).toBeVisible();
+  await publishFromEditor(page);
   await anon.reload();
   await expect(anon.locator("h1")).toHaveText("Inline edited title");
 
@@ -184,9 +185,8 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("A patient-centric approach to AIS");
   await page.keyboard.press("Enter");
-  await expect(page.getByText("1 pending change on this page")).toBeVisible();
-  await page.click('#rm-editor-ui button:has-text("Publish")');
-  await expect(page.getByText("No pending changes on this page")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+  await publishFromEditor(page);
 
   // settings-backed page (home): draft table, then publish
   await page.goto("/");
@@ -195,13 +195,12 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
-  await expect(page.getByText("1 pending change on this page")).toBeVisible();
-  expect(sql("select value->'stats'->0->>'value' from setting_drafts where key='home'")).toBe("99K+");
+  await expect.poll(() => sql("select value->'stats'->0->>'value' from setting_drafts where key='home'")).toBe("99K+");
   expect(sql("select value->'stats'->0->>'value' from site_settings where key='home'")).toBe("50K+");
-  page.once("dialog", (d) => d.accept());
-  await page.click('#rm-editor-ui button:has-text("Discard")');
-  await expect(page.getByText("No pending changes on this page")).toBeVisible();
-  expect(sql("select count(*) from setting_drafts")).toBe("0");
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await page.click('[role=dialog] button:has-text("Discard all changes")');
+  await page.click('[role=dialog] button:has-text("Click again to discard all")');
+  await expect.poll(() => sql("select count(*) from setting_drafts")).toBe("0");
 
   // exit
   await page.goto("/api/editor?off=1&redirect=/");
