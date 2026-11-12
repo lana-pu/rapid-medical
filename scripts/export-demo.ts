@@ -51,8 +51,8 @@ async function main() {
   if (!admin) throw new Error("no admin user in the database");
   const sid = crypto.randomBytes(32).toString("hex");
   await sql`insert into sessions (id, user_id, verified, expires_at) values (${sid}, ${admin.id}, true, now() + interval '1 hour')`;
-  const resources = ["solutions", "publications", "events", "news", "webinars", "team", "jobs", "pages", "products", "redirects"];
-  const table: Record<string, string> = { news: "news_items", team: "team_members" };
+  const resources = ["site-pages", "solutions", "publications", "events", "news", "webinars", "team", "jobs", "pages", "products", "redirects"];
+  const table: Record<string, string> = { news: "news_items", team: "team_members", "site-pages": "site_pages" };
   const ids: Record<string, number[]> = {};
   for (const r of resources) ids[r] = (await sql.unsafe<{ id: number }[]>(`select id from "${table[r] ?? r}" order by id`)).map((x) => x.id);
   // The demo is public: form submissions (list and details) may only be test data on the reserved example.com domain.
@@ -117,9 +117,11 @@ async function main() {
 
   // 2. admin pages (read-only preview; forms are intercepted client-side)
   const cookie = `rm_admin=${sid}`;
-  const adminPaths = ["/admin", "/admin/login", "/admin/settings", "/admin/media", "/admin/submissions", "/admin/users", "/admin/activity", "/admin/account", "/admin/not-found-log"];
+  // /admin/editor = Pages, where editors land (docs/screens/admin-editor-pages.md)
+  const adminPaths = ["/admin", "/admin/editor", "/admin/login", "/admin/settings", "/admin/media", "/admin/submissions", "/admin/users", "/admin/activity", "/admin/account", "/admin/not-found-log"];
   for (const r of resources) {
-    adminPaths.push(`/admin/${r}`, `/admin/${r}/new`);
+    adminPaths.push(`/admin/${r}`);
+    if (r !== "site-pages") adminPaths.push(`/admin/${r}/new`); // site pages exist once: no «new»
     for (const id of ids[r]) adminPaths.push(`/admin/${r}/${id}`);
     if (ids[r][0]) adminPaths.push(`/admin/${r}/${ids[r][0]}/history`);
   }
