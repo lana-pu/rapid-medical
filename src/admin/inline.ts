@@ -265,7 +265,12 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     if (!draft?.data && live.status === "published") continue; // nothing pending
     const ok = await canPublish(user, draft);
     if (!ok.ok) { blocked.push(`${res.titleSingular} ${live[res.labelField] ?? t.id}`); continue; }
-    await publish(res, t.id, user);
+    try {
+      await publish(res, t.id, user, draft);
+    } catch {
+      blocked.push(`${res.titleSingular} ${live[res.labelField] ?? t.id} (changed meanwhile — check and publish again)`);
+      continue;
+    }
     published++;
     for (const p of res.revalidate) revalidatePath(p, "layout");
     const url = res.previewUrl?.(live);

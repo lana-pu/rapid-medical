@@ -94,8 +94,9 @@ export async function saveWithWorkflow(
     await addRevision(res, id, "draft", snapshot(res, { ...data, status: "draft" }), user);
     await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? "") });
     if (!wantsPublish) return { id, pending: false };
-    if (!(await canPublish(user, await getDraft(res, id))).ok) return { id, pending: false, notPublished: true };
-    await publish(res, id, user);
+    const checked = await getDraft(res, id);
+    if (!(await canPublish(user, checked)).ok) return { id, pending: false, notPublished: true };
+    await publish(res, id, user, checked);
     return { id, pending: false };
   }
 
@@ -126,9 +127,16 @@ export async function canPublish(user: SessionUser, draft: Draft | null): Promis
   return { ok: false, reason: "Changes must be approved before publishing." };
 }
 
-/** Make the draft (or the unpublished row) live. */
-export async function publish(res: Resource, id: number, user: SessionUser): Promise<void> {
+const sameDraft = (a: Draft | null, b: Draft | null) =>
+  a === b || (!!a && !!b && a.id === b.id && a.reviewStatus === b.reviewStatus && a.updatedAt.getTime() === b.updatedAt.getTime() && JSON.stringify(a.data) === JSON.stringify(b.data));
+
+/**
+ * Make the draft (or the unpublished row) live. `checked`: the draft the caller ran `canPublish` on — if it was edited
+ * or its review changed since, nothing is published (what goes live is what was checked).
+ */
+export async function publish(res: Resource, id: number, user: SessionUser, checked?: Draft | null): Promise<void> {
   const draft = await getDraft(res, id);
+  if (checked !== undefined && !sameDraft(draft, checked)) throw new Error("These changes were edited or their review changed meanwhile. Check them and publish again.");
   const live = await getRow(res, id);
   if (!live) throw new Error("Record not found");
   const next = { ...(draft?.data ?? {}), status: "published" };
@@ -201,7 +209,11 @@ export async function publishDue(now = new Date()): Promise<{ resource: string; 
     if (!res) continue;
     // with approval on, a schedule publishes only approved changes; it waits until they are approved
     if (requireApproval && d.reviewStatus !== "approved") continue;
-    await publish(res, d.recordId, system);
+    try {
+      await publish(res, d.recordId, system, requireApproval ? d : undefined);
+    } catch {
+      continue; // changed after the approval: waits for a new one
+    }
     done.push({ resource: d.resource, id: d.recordId });
   }
   return done;

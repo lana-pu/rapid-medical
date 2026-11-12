@@ -195,7 +195,9 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Запись не опубликована | Правка на месте, ревизия `draft`; если в форме выбран `published` — сразу `publish()` |
 | Запись опубликована | Live не трогается; изменения → `drafts`, ревизия `draft`, «pending» |
 
-- **Publish**: черновик сливается в live, `status = published`, черновик удаляется, ревизия `published`,
+- **Publish**: публикуется ровно то, что прошло проверку прав: если черновик правили или его согласование поменялось
+  между проверкой и публикацией — ничего не публикуется, «These changes were edited or their review changed meanwhile…».
+  Черновик сливается в live, `status = published`, черновик удаляется, ревизия `published`,
   `revalidatePath` по `resource.revalidate` + preview-URL + `/sitemap.xml`.
 - **Согласование** (`workflow.requireApproval`, по умолчанию выкл.): editor → `in_review` (письмо на
   `workflow.notifyEmail`); approver/admin → `approved` / `changes_requested`; публиковать может

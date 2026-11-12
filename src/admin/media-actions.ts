@@ -62,10 +62,9 @@ export async function replaceEverywhere(oldId: number, newId: number, mode: "dra
       const saved = await saveWithWorkflow(res, u.id, { ...data, status: e.live.status }, user);
       let live = !saved.pending && e.live.status === "published";
       if (mode === "publish" && saved.pending) {
-        if ((await canPublish(user, await getDraft(res, u.id))).ok) {
-          await publish(res, u.id, user);
-          live = true;
-        } else result.notPublished.push(u.label);
+        const checked = await getDraft(res, u.id);
+        if ((await canPublish(user, checked)).ok && (await publish(res, u.id, user, checked).then(() => true, () => false))) live = true;
+        else result.notPublished.push(u.label);
       }
       if (live) {
         for (const p of res.revalidate) revalidatePath(p, "layout");

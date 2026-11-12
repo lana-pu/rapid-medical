@@ -63,7 +63,13 @@ export async function publishResource(fd: FormData) {
   const draft = await getDraft(res, id);
   const allowed = await canPublish(user, draft);
   if (!allowed.ok) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(allowed.reason ?? "Not allowed")}`);
-  await publish(res, id, user);
+  let failed: string | null = null;
+  try {
+    await publish(res, id, user, draft);
+  } catch (e) {
+    failed = (e as Error).message;
+  }
+  if (failed) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(failed)}`);
   const row = await getRow(res, id);
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
   redirect(`/admin/${res.slug}/${id}?published=1`);
@@ -131,8 +137,9 @@ export async function bulkResource(fd: FormData) {
   if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted
   if (action === "publish" && hasWorkflow(res)) {
     for (const id of ids) {
-      const allowed = await canPublish(user, await getDraft(res, id));
-      if (allowed.ok && (await getEditable(res, id))) await publish(res, id, user); // a row gone meanwhile is skipped
+      const draft = await getDraft(res, id);
+      if (!(await canPublish(user, draft)).ok || !(await getEditable(res, id))) continue; // not allowed, or gone meanwhile
+      await publish(res, id, user, draft).catch(() => undefined); // changed after the check: left for a new check
     }
   } else if (action === "unpublish" && hasWorkflow(res)) {
     // the same as one by one: pending changes kept, approval reset, schedule cancelled
