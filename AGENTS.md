@@ -55,3 +55,5 @@ Studio/
 Репозиторий на проект: у каждого `projects/<slug>/` свой `.git` и remote. Корень воркспейса — отдельный
 репозиторий «личный стек» (modules/, rules/, .claude/, AGENTS.md); `projects/` и `lessons/` в нём
 игнорируются.
+Remote — ветка `studio` в `lana-pu/rapid-medical` (решение владелицы 2026-11-12; репозиторий **публичный** —
+никаких секретов и личных данных в библиотеке). Push: `git push` из корня (main → origin/studio).
