@@ -59,7 +59,7 @@ export async function replaceEverywhere(oldId: number, newId: number, mode: "dra
       const next = swapUrl(e.row, re, to.url) as Record<string, any>;
       const { id: _id, ...data } = next;
       void _id;
-      const saved = await saveWithWorkflow(res, u.id, { ...data, status: e.row.status }, user);
+      const saved = await saveWithWorkflow(res, u.id, { ...data, status: e.live.status }, user);
       let live = !saved.pending && e.live.status === "published";
       if (mode === "publish" && saved.pending) {
         if ((await canPublish(user, await getDraft(res, u.id))).ok) {

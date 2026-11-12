@@ -36,15 +36,16 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
     if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
   } else if (res.onCreate) data = res.onCreate(data);
 
-  let result: { id: number; pending: boolean };
+  let result: { id: number; pending: boolean; notPublished?: boolean };
   try {
-    result = await saveWithWorkflow(res, id, data, user);
+    result = await saveWithWorkflow(res, id, data, user, { formPublish: true });
   } catch (e) {
     const msg = (e as Error).message;
     if (/unique/i.test(msg)) return { message: "A record with this slug/region already exists." };
     return { message: msg };
   }
   if (!result.pending) revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
+  if (result.notPublished) redirect(`/admin/${res.slug}/${result.id}?error=${encodeURIComponent("Saved, not published: needs approval")}`);
   redirect(`/admin/${res.slug}/${result.id}?${result.pending ? "pending=1" : "saved=1"}`);
 }
 

@@ -57,8 +57,17 @@ async function ensureBaseline(res: Resource, id: number, live: Row) {
  * - unpublished record    → update live row directly, revision "draft"
  * - published record      → write to drafts table (live untouched), revision "draft"
  * Returns the record id and whether the change is pending (in a draft).
+ * Only the admin form may publish an unpublished record through its status select (`formPublish`), and only when
+ * `canPublish` allows it. Every other save (on-page edits, sections, media replace, restore) never publishes: a status
+ * carried over from a stale draft must not skip Publish and the approval check.
  */
-export async function saveWithWorkflow(res: Resource, id: number | null, data: Row, user: SessionUser): Promise<{ id: number; pending: boolean }> {
+export async function saveWithWorkflow(
+  res: Resource,
+  id: number | null,
+  data: Row,
+  user: SessionUser,
+  opts: { formPublish?: boolean } = {},
+): Promise<{ id: number; pending: boolean; notPublished?: boolean }> {
   if (!hasWorkflow(res)) {
     const saved = await saveRow(res, id, data);
     await audit(user, "save", { resource: res.slug, recordId: saved, label: String(data[res.labelField] ?? "") });
@@ -78,11 +87,13 @@ export async function saveWithWorkflow(res: Resource, id: number | null, data: R
 
   if (live.status !== "published") {
     // Not live yet: edit in place. The form's status select may flip it to published → that is a publish.
-    const wantsPublish = data.status === "published";
+    const wantsPublish = opts.formPublish === true && data.status === "published";
     await saveRow(res, id, { ...data, status: "draft" });
     await addRevision(res, id, "draft", snapshot(res, { ...data, status: "draft" }), user);
     await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? "") });
-    if (wantsPublish) await publish(res, id, user);
+    if (!wantsPublish) return { id, pending: false };
+    if (!(await canPublish(user, await getDraft(res, id))).ok) return { id, pending: false, notPublished: true };
+    await publish(res, id, user);
     return { id, pending: false };
   }
 

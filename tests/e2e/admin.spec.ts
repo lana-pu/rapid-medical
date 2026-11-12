@@ -81,6 +81,26 @@ test("approval workflow blocks editors from publishing", async ({ page, browser 
   sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
 });
 
+test("approval on: an editor cannot publish an unpublished record through the status field", async ({ browser }) => {
+  sql(`update site_settings set value='{"requireApproval": true}' where key='workflow'`);
+  sql(`insert into users(email,name,password_hash,role) values ('editor@e2e.test','Editor',(select password_hash from users where email='${ADMIN.email}'),'editor') on conflict (email) do nothing`);
+  const id = sql("select id from news_items where status='published' order by id limit 1");
+  sql(`update news_items set status='draft' where id=${id}`);
+  try {
+    const ed = await (await browser.newContext()).newPage();
+    await login(ed, "editor@e2e.test", ADMIN.password);
+    await ed.goto(`/admin/news/${id}`);
+    await ed.selectOption("select[name=status]", "published");
+    await ed.click('button:has-text("Save")');
+    await ed.waitForURL(/error=/);
+    await expect(ed.getByText("Saved, not published: needs approval")).toBeVisible();
+    expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
+  } finally {
+    sql(`update news_items set status='published' where id=${id}`);
+    sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
+  }
+});
+
 test("scheduled publishing via cron", async ({ page, request }) => {
   await login(page);
   const id = sql("select id from solutions where region='apac' and slug='drivewire'");
