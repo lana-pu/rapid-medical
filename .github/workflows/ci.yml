@@ -34,7 +34,17 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - name: e2e
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2e 2>&1 | tee e2e.log
+      # the last lines of the e2e log as an annotation: readable without signing in to GitHub
+      - name: e2e log tail
+        if: failure()
+        shell: bash
+        run: |
+          tail -n 80 e2e.log | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g' | sed -e 's/^/::error title=e2e log tail::/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with: { name: playwright-report, path: test-results }
