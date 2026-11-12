@@ -126,6 +126,26 @@ test("unpublish keeps the pending changes in the record, drops an old approval a
   }
 });
 
+test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/news");
+  const id = await page.locator('input[name=ids]').first().getAttribute("value");
+  const was = sql(`select status from news_items where id=${id}`);
+  sql(`update news_items set status='published' where id=${id}`);
+  sql(`insert into drafts(resource,record_id,data,review_status,publish_at,updated_by_name) values ('news',${id},null,'approved',now() + interval '1 day','Admin') on conflict (resource,record_id) do update set review_status='approved', publish_at=now() + interval '1 day'`);
+  try {
+    await page.reload();
+    await page.check(`input[name=ids][value="${id}"]`);
+    await page.click('button[value=unpublish]');
+    await page.waitForURL(/bulk=unpublish/);
+    expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
+    expect(sql(`select review_status || '|' || coalesce(publish_at::text,'none') from drafts where resource='news' and record_id=${id}`)).toBe("editing|none");
+  } finally {
+    sql(`delete from drafts where resource='news' and record_id=${id}`);
+    sql(`update news_items set status='${was}' where id=${id}`);
+  }
+});
+
 test("scheduled publishing via cron", async ({ page, request }) => {
   await login(page);
   const id = sql("select id from solutions where region='apac' and slug='drivewire'");

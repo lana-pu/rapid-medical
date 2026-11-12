@@ -134,6 +134,9 @@ export async function bulkResource(fd: FormData) {
       const allowed = await canPublish(user, await getDraft(res, id));
       if (allowed.ok) await publish(res, id, user);
     }
+  } else if (action === "unpublish" && hasWorkflow(res)) {
+    // the same as one by one: pending changes kept, approval reset, schedule cancelled
+    for (const id of ids) await unpublish(res, id, user);
   } else {
     await bulk(res, ids, action);
     await audit(user, "bulk", { resource: res.slug, meta: { action, ids } });
