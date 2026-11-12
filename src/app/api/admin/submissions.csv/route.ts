@@ -1,12 +1,12 @@
 import { desc } from "drizzle-orm";
-import { getSession } from "@/lib/auth";
+import { getSession, isReady } from "@/lib/auth";
 import { db, contactSubmissions } from "@/db";
 import { audit } from "@/lib/audit";
 
 /** GET /api/admin/submissions.csv — all form submissions as CSV (Excel-friendly). */
 export async function GET() {
   const session = await getSession();
-  if (!session) return new Response("Unauthorized", { status: 401 });
+  if (!isReady(session)) return new Response("Unauthorized", { status: 401 });
   const rows = await db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt));
   const cols = ["id", "createdAt", "form", "topic", "firstName", "lastName", "organization", "email", "phone", "region", "country", "state", "optIn", "status", "message"] as const;
   const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;

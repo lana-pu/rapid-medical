@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { desc, ilike, or, sql, eq } from "drizzle-orm";
-import { getSession } from "@/lib/auth";
+import { getSession, isReady } from "@/lib/auth";
 import { db, media } from "@/db";
 import { findMediaUsage } from "@/lib/media-usage";
 import { removeMedia } from "@/lib/media";
@@ -8,7 +8,7 @@ import { removeMedia } from "@/lib/media";
 /** A signed-in admin user who passed the second factor. */
 async function signedIn() {
   const s = await getSession();
-  return s && !s.totpPending ? s : null;
+  return isReady(s) ? s : null;
 }
 
 /** GET /api/admin/media?q=&type=image|video|pdf&page=1 — media library listing for the picker. */

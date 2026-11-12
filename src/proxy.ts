@@ -25,7 +25,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL(`/${legacy}${path}${url.search}`, canonical), 301);
   }
 
-  if (url.pathname.startsWith("/admin") && !url.pathname.startsWith("/admin/login") && !url.pathname.startsWith("/admin/reset")) {
+  if (url.pathname.startsWith("/admin") && !url.pathname.startsWith("/admin/login") && !url.pathname.startsWith("/admin/reset") && !url.pathname.startsWith("/admin/welcome")) {
     const cookie = req.cookies.get("rm_admin")?.value;
     if (!cookie || !/^[a-f0-9]{64}$/.test(cookie)) {
       const login = new URL("/admin/login", req.url);

@@ -2,6 +2,10 @@ import { execSync } from "node:child_process";
 import type { Page } from "@playwright/test";
 
 export const ADMIN = { email: "e2e@rapid-medical.com", password: "e2e-password-123456" };
+/** Two-step sign-in is mandatory: every test person has this authenticator key (set in global-setup / when created). */
+export const TOTP_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
+/** SQL columns that give a test person two-step sign-in with TOTP_SECRET. */
+export const TWO_STEP_SQL = `totp_secret='${TOTP_SECRET}', totp_enabled_at=now()`;
 
 export function sql(q: string): string {
   return execSync(`psql "${process.env.DATABASE_URL}" -t -A -c "${q.replace(/"/g, '\\"')}"`).toString().trim();
@@ -12,7 +16,12 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
   await page.fill("input[name=email]", email);
   await page.fill("input[name=password]", password);
   await page.click('button:has-text("Sign in")');
-  await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/login"));
+  await page.waitForURL((u) => u.pathname.startsWith("/admin") && u.pathname !== "/admin/login");
+  if (new URL(page.url()).pathname === "/admin/login/2fa") {
+    await page.fill("input[name=code]", totp(TOTP_SECRET));
+    await page.click('button:has-text("Verify")');
+    await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/login"));
+  }
 }
 
 export function totp(secret: string): string {

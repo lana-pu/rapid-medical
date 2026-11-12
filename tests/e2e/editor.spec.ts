@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { login, sql, publishFromEditor } from "./helpers";
+import { login, sql, publishFromEditor, TOTP_SECRET, TWO_STEP_SQL } from "./helpers";
 
 /** Page editor: sections, review, history, regions, conflicts, Pages list (docs/screens/on-page-editor.md, admin-editor-pages.md). */
 test.describe.configure({ mode: "serial" });
@@ -210,7 +210,7 @@ test("compare with another region and switch region", async ({ page }) => {
 
 test("two editors: the second save is refused, not silently overwritten", async ({ page, browser }) => {
   test.setTimeout(150_000); // two sign-ins and two editor loads
-  sql(`insert into users(email,name,password_hash,role) values ('second@e2e.test','Second editor',(select password_hash from users where email='e2e@rapid-medical.com'),'editor') on conflict (email) do nothing`);
+  sql(`insert into users(email,name,password_hash,role,totp_secret,totp_enabled_at) values ('second@e2e.test','Second editor',(select password_hash from users where email='e2e@rapid-medical.com'),'editor','${TOTP_SECRET}',now()) on conflict (email) do update set ${TWO_STEP_SQL}`);
   await login(page);
   await open(page);
   const other = await (await browser.newContext()).newPage();

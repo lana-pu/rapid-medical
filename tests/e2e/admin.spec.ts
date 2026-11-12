@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { login, sql, ADMIN, totp, publishFromEditor } from "./helpers";
+import { login, sql, ADMIN, totp, publishFromEditor, TOTP_SECRET, TWO_STEP_SQL } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -118,7 +118,7 @@ test("requests: who answers, status and a note for the team; filters", async ({ 
 });
 
 const addUser = (email: string, role: string) =>
-  sql(`insert into users(email,name,password_hash,role) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}') on conflict (email) do update set role='${role}'`);
+  sql(`insert into users(email,name,password_hash,role,totp_secret,totp_enabled_at) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}','${TOTP_SECRET}',now()) on conflict (email) do update set role='${role}', ${TWO_STEP_SQL}`);
 
 test("roles: an editor publishes, but cannot change how a section looks or open Integrations; a designer can", async ({ browser }) => {
   test.setTimeout(120_000);
@@ -243,27 +243,71 @@ test("media library: upload, variants, usage guard", async ({ page, request }) =
   void request;
 });
 
-test("two-factor: enable, enforce, recovery code", async ({ page, browser }) => {
+test("invite → welcome link → two-step sign-in set up on the first visit → a recovery code works", async ({ page, browser }) => {
+  test.setTimeout(120_000);
+  sql(`delete from users where email='invited@e2e.test'`);
   await login(page);
-  await page.goto("/admin/account?setup=1");
-  const secret = await page.locator("input[name=secret]").inputValue();
-  await page.fill("input[name=code]", totp(secret));
-  await page.click('button:has-text("Turn on")');
-  await page.waitForURL(/codes=/);
-  const codes = decodeURIComponent(new URL(page.url()).searchParams.get("codes")!).split(",");
-  expect(codes).toHaveLength(8);
+  await page.goto("/admin/users");
+  await page.getByRole("button", { name: "Invite a person" }).click();
+  const dlg = page.getByRole("dialog", { name: "Invite a person" });
+  await dlg.getByLabel("Email").fill("invited@e2e.test");
+  await dlg.getByLabel("Name").fill("Noa B");
+  await dlg.getByLabel(/Designer/).check();
+  await dlg.getByRole("button", { name: "Send invite" }).click();
+  const link = await dlg.getByLabel("Invite link").inputValue();
+  expect(link).toMatch(/\/admin\/welcome\?token=[a-f0-9]{64}$/);
+  await dlg.getByRole("button", { name: "Done" }).click();
+  await page.reload();
+  await expect(page.locator('[data-person="invited@e2e.test"]')).toContainText("Waiting for sign-in");
+  // the same email again
+  await page.getByRole("button", { name: "Invite a person" }).click();
+  await dlg.getByLabel("Email").fill("invited@e2e.test");
+  await dlg.getByLabel("Name").fill("Noa B");
+  await dlg.getByRole("button", { name: "Send invite" }).click();
+  await expect(dlg).toContainText("Already has access");
 
-  const fresh = await (await browser.newContext()).newPage();
-  await fresh.goto("/admin/login");
-  await fresh.fill("input[name=email]", ADMIN.email);
-  await fresh.fill("input[name=password]", ADMIN.password);
-  await fresh.click('button:has-text("Sign in")');
-  await fresh.waitForURL(/\/admin\/login\/2fa/);
-  await fresh.fill("input[name=code]", codes[0]);
-  await fresh.click('button:has-text("Verify")');
-  await fresh.waitForURL(/\/admin\/start$/);
-  expect(sql(`select jsonb_array_length(recovery_codes) from users where email='${ADMIN.email}'`)).toBe("7");
-  sql(`update users set totp_secret=null,totp_enabled_at=null,recovery_codes='[]' where email='${ADMIN.email}'`);
+  const noa = await (await browser.newContext()).newPage();
+  await noa.goto(new URL(link).pathname + new URL(link).search);
+  await expect(noa.getByRole("heading", { name: "Welcome, Noa B" })).toBeVisible();
+  await noa.getByLabel("Password").fill("noa-password-123456");
+  await noa.click('button:has-text("Continue")');
+  await noa.waitForURL(/\/admin\/login\/setup$/);
+  // nothing else opens until two-step sign-in is on
+  await noa.goto("/admin/editor");
+  await expect(noa).toHaveURL(/\/admin\/login\/setup$/);
+  expect((await noa.request.get("/api/admin/media")).status()).toBe(401);
+  const key = (await noa.getByTestId("totp-key").textContent())!.trim();
+  await noa.getByLabel("Code from the app").fill(totp(key));
+  await noa.getByRole("button", { name: "Turn on" }).click();
+  const codes = (await noa.getByLabel("Recovery codes").textContent())!.trim().split("\n");
+  expect(codes).toHaveLength(8);
+  expect(noa.url()).not.toContain(codes[0]); // never in the address
+  await noa.getByRole("link", { name: "Continue" }).click();
+  await noa.waitForURL(/\/admin\/start$/);
+  expect(sql("select role from users where email='invited@e2e.test'")).toBe("designer");
+
+  // the invite link is used up
+  const again = await (await browser.newContext()).newPage();
+  await again.goto(new URL(link).pathname + new URL(link).search);
+  await expect(again.getByRole("heading", { name: "This link has expired" })).toBeVisible();
+
+  // next sign-in: password, then a recovery code instead of the app
+  await again.goto("/admin/login");
+  await again.fill("input[name=email]", "invited@e2e.test");
+  await again.fill("input[name=password]", "noa-password-123456");
+  await again.click('button:has-text("Sign in")');
+  await again.waitForURL(/\/admin\/login\/2fa/);
+  await again.fill("input[name=code]", codes[0]);
+  await again.click('button:has-text("Verify")');
+  await again.waitForURL(/\/admin\/start$/);
+  expect(sql(`select jsonb_array_length(recovery_codes) from users where email='invited@e2e.test'`)).toBe("7");
+  await again.goto("/admin/account");
+  await expect(again.getByRole("button", { name: "Set up on a new phone" })).toBeVisible();
+  await expect(again.getByRole("button", { name: "Disable" })).toHaveCount(0);
+
+  await page.reload();
+  await expect(page.locator('[data-person="invited@e2e.test"]')).toContainText("On");
+  sql(`delete from users where email='invited@e2e.test'`);
 });
 
 test("login throttling", async ({ page }) => {

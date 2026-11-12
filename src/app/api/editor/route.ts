@@ -19,6 +19,7 @@ export async function GET(req: Request) {
   const user = await getSession();
   if (!user) return NextResponse.redirect(new URL(`/admin/login?next=${encodeURIComponent(`/api/editor?on=1&redirect=${safe}`)}`, url.origin));
   if (user.totpPending) return NextResponse.redirect(new URL("/admin/login/2fa", url.origin));
+  if (user.needsSetup) return NextResponse.redirect(new URL("/admin/login/setup", url.origin));
   await setEditorMode(true);
   return NextResponse.redirect(new URL(safe, url.origin));
 }

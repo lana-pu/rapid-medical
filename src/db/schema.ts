@@ -122,11 +122,13 @@ export const sessions = pgTable(
   (t) => [index("sessions_user").on(t.userId)],
 );
 
-/** Password-reset tokens (hashed) */
+/** Password-reset and invite tokens (hashed) */
 export const passwordResets = pgTable("password_resets", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   tokenHash: text("token_hash").notNull().unique(),
+  /** reset — «forgot password» (1 hour); invite — first sign-in of an invited person (7 days) */
+  purpose: text("purpose").notNull().default("reset"),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   usedAt: timestamp("used_at", { withTimezone: true }),
 });

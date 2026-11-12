@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSession, type SessionUser } from "@/lib/auth";
+import { getSession, isReady, type SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getSettingDraft, getLiveSetting, setSettingDraft, deleteSettingDraft, publishSettingDraft } from "@/lib/settings";
 import { getSettingsGroup, mayEditGroup } from "./settings";
@@ -25,7 +25,7 @@ export type InlineKind = "text" | "rich" | "image" | "video" | "url";
 
 async function requireEditor(): Promise<SessionUser> {
   const u = await getSession();
-  if (!u || u.totpPending) throw new Error("Not signed in");
+  if (!isReady(u)) throw new Error("Not signed in");
   return u;
 }
 

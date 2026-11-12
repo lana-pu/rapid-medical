@@ -1,24 +1,15 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import QRCode from "qrcode";
 import { db, users } from "@/db";
-import { requireUser, totpSetup, totpCheck, makeRecoveryCodes, listSessions, destroyAllSessions, hashPassword, verifyPassword } from "@/lib/auth";
+import { requireUser, listSessions, destroyAllSessions, hashPassword, verifyPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { PageHeader, Button, inputCls, Notice, formatDate } from "@/components/admin/ui";
 
-export default async function AccountPage({ searchParams }: { searchParams: Promise<{ setup?: string; codes?: string; msg?: string; error?: string }> }) {
+export default async function AccountPage({ searchParams }: { searchParams: Promise<{ msg?: string; error?: string }> }) {
   const me = await requireUser();
   const sp = await searchParams;
   const [user, sessions] = await Promise.all([db.query.users.findFirst({ where: eq(users.id, me.id) }), listSessions(me.id)]);
   if (!user) redirect("/admin/login");
-
-  // 2FA setup: secret lives only in the form until confirmed
-  let setup: { secret: string; qr: string } | null = null;
-  if (sp.setup && !user.totpEnabledAt) {
-    const s = totpSetup(user.email);
-    setup = { secret: s.secret, qr: await QRCode.toDataURL(s.uri, { margin: 1, width: 180 }) };
-  }
 
   async function changePassword(fd: FormData) {
     "use server";
@@ -33,26 +24,15 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     redirect("/admin/account?msg=Password+changed.+Other+sessions+were+signed+out.");
   }
 
-  async function enable2fa(fd: FormData) {
-    "use server";
-    const u = await requireUser();
-    const secret = String(fd.get("secret") ?? "");
-    const code = String(fd.get("code") ?? "");
-    if (!(await totpCheck(secret, code))) redirect("/admin/account?setup=1&error=Code+didn%27t+match+%E2%80%94+try+again");
-    const { plain, hashed } = makeRecoveryCodes();
-    await db.update(users).set({ totpSecret: secret, totpEnabledAt: new Date(), recoveryCodes: hashed }).where(eq(users.id, u.id));
-    await audit(u, "user", { recordId: u.id, meta: { totpEnabled: true } });
-    redirect(`/admin/account?codes=${encodeURIComponent(plain.join(","))}`);
-  }
-
-  async function disable2fa(fd: FormData) {
+  /** Two-step sign-in is mandatory: no «off», only «set up again on a new phone» (docs/screens/admin-people.md). */
+  async function setUpAgain(fd: FormData) {
     "use server";
     const u = await requireUser();
     const row = await db.query.users.findFirst({ where: eq(users.id, u.id) });
     if (!row || !(await verifyPassword(String(fd.get("password")), row.passwordHash))) redirect("/admin/account?error=Password+is+wrong");
     await db.update(users).set({ totpSecret: null, totpEnabledAt: null, recoveryCodes: [] }).where(eq(users.id, u.id));
-    await audit(u, "user", { recordId: u.id, meta: { totpEnabled: false } });
-    redirect("/admin/account?msg=Two-factor+disabled");
+    await audit(u, "user", { recordId: u.id, meta: { totpReset: true, own: true } });
+    redirect("/admin/login/setup");
   }
 
   async function signOutEverywhere() {
@@ -65,41 +45,19 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
 
   return (
     <>
-      <PageHeader title="My account" subtitle={`${user.name} · ${user.email} · ${user.role}`} />
+      <PageHeader title="My account" subtitle={`${user.name} · ${user.email}`} />
       {sp.msg && <Notice kind="success">{sp.msg}</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
-      {sp.codes && (
-        <Notice kind="info">
-          <b>Two-factor is on.</b> Save these recovery codes somewhere safe — each works once if you lose your phone:
-          <pre className="mt-2 rounded bg-white p-2 font-mono text-xs">{sp.codes.split(",").join("\n")}</pre>
-        </Notice>
-      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <section className="rounded-lg border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Two-factor authentication</h2>
-          {user.totpEnabledAt ? (
-            <form action={disable2fa} className="mt-3 space-y-2 text-sm">
-              <p className="text-green-800">Enabled since {formatDate(user.totpEnabledAt, { dateStyle: "medium" })}. {user.recoveryCodes.length} recovery codes left.</p>
-              <input name="password" type="password" placeholder="Confirm with your password" className={inputCls} />
-              <Button type="submit" variant="danger">Disable</Button>
-            </form>
-          ) : setup ? (
-            <form action={enable2fa} className="mt-3 space-y-3 text-sm">
-              <p>Scan with Google Authenticator, 1Password, Authy… then enter the 6-digit code.</p>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={setup.qr} alt="QR code" width={180} height={180} />
-              <p className="font-mono text-xs text-neutral-500">Manual key: {setup.secret}</p>
-              <input type="hidden" name="secret" value={setup.secret} />
-              <input name="code" inputMode="numeric" placeholder="123456" required className={`${inputCls} max-w-[10rem]`} />
-              <Button type="submit">Turn on</Button>
-            </form>
-          ) : (
-            <div className="mt-3 text-sm">
-              <p className="text-neutral-600">Adds a second step at sign-in with an authenticator app. Recommended for everyone who can publish.</p>
-              <Link href="/admin/account?setup=1" className="mt-3 inline-block rounded bg-neutral-900 px-3 py-2 text-sm text-white">Set up</Link>
-            </div>
-          )}
+          <h2 className="font-semibold">Two-step sign-in</h2>
+          <form action={setUpAgain} className="mt-3 space-y-2 text-sm">
+            <p className="text-green-800">On since {formatDate(user.totpEnabledAt, { dateStyle: "medium" })}. {user.recoveryCodes.length} recovery codes left.</p>
+            <p className="text-neutral-600">New phone? Set it up again: the old codes stop working.</p>
+            <input name="password" type="password" placeholder="Confirm with your password" autoComplete="current-password" required className={inputCls} />
+            <Button type="submit" variant="secondary">Set up on a new phone</Button>
+          </form>
         </section>
 
         <section className="rounded-lg border border-neutral-200 bg-white p-5">

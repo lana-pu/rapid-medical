@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import { and, eq, gt, lt, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
 import { generateSecret, verify as verifyTotp, generateURI } from "otplib";
 import { db, users, sessions, passwordResets, loginAttempts, type User } from "@/db";
 
@@ -20,7 +20,20 @@ const TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 const MAX_ATTEMPTS = 8; // per 15 minutes
 const WINDOW_MS = 15 * 60 * 1000;
 
-export type SessionUser = { id: number; email: string; name: string; role: User["role"]; sessionId?: string; totpPending?: boolean };
+export type SessionUser = {
+  id: number;
+  email: string;
+  name: string;
+  role: User["role"];
+  sessionId?: string;
+  /** password ok, the code from the phone not yet entered */
+  totpPending?: boolean;
+  /** two-step sign-in not set up yet: only the setup screen opens (mandatory, docs/screens/admin-people.md) */
+  needsSetup?: boolean;
+};
+
+/** Signed in all the way: password, two-step sign-in set up and passed. */
+export const isReady = (s: SessionUser | null): s is SessionUser => !!s && !s.totpPending && !s.needsSetup;
 
 /* ------------------------------------------------------------------ */
 /*  Passwords                                                          */
@@ -92,11 +105,18 @@ export async function getSession(): Promise<SessionUser | null> {
   if (!hit || !hit.u.active) return null;
   // touch at most once a minute
   if (Date.now() - hit.s.lastSeenAt.getTime() > 60_000) db.update(sessions).set({ lastSeenAt: new Date() }).where(eq(sessions.id, id)).catch(() => {});
-  return { id: hit.u.id, email: hit.u.email, name: hit.u.name, role: hit.u.role, sessionId: id, totpPending: !hit.s.verified };
+  return { id: hit.u.id, email: hit.u.email, name: hit.u.name, role: hit.u.role, sessionId: id, totpPending: !hit.s.verified, needsSetup: !hit.u.totpEnabledAt };
 }
 
 /** Use at the top of every admin page / server action. */
 export async function requireUser(): Promise<SessionUser> {
+  const s = await requireSignedIn();
+  if (s.needsSetup) redirect("/admin/login/setup");
+  return s;
+}
+
+/** Password (and the code, if set up) passed; two-step sign-in may still need setting up — for the setup screen only. */
+export async function requireSignedIn(): Promise<SessionUser> {
   const s = await getSession();
   if (!s) redirect("/admin/login");
   if (s.totpPending) redirect("/admin/login/2fa");
@@ -199,13 +219,44 @@ export async function createPasswordReset(email: string): Promise<{ token: strin
   if (!user || !user.active) return null;
   const token = crypto.randomBytes(32).toString("hex");
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-  await db.insert(passwordResets).values({ userId: user.id, tokenHash, expiresAt: new Date(Date.now() + 60 * 60 * 1000) });
+  await db.insert(passwordResets).values({ userId: user.id, tokenHash, purpose: "reset", expiresAt: new Date(Date.now() + 60 * 60 * 1000) });
   return { token, user };
+}
+
+/** Invite link for a person who has not signed in yet (7 days); earlier invite links of that person stop working. */
+export async function createInvite(userId: number): Promise<string> {
+  await db.delete(passwordResets).where(and(eq(passwordResets.userId, userId), eq(passwordResets.purpose, "invite")));
+  const token = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  await db.insert(passwordResets).values({ userId, tokenHash, purpose: "invite", expiresAt: new Date(Date.now() + 7 * 24 * 3600 * 1000) });
+  return token;
+}
+
+/** The invited person behind a live invite link, or null. */
+export async function inviteFor(token: string): Promise<User | null> {
+  if (!/^[a-f0-9]{64}$/.test(token)) return null;
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const row = await db.query.passwordResets.findFirst({ where: and(eq(passwordResets.tokenHash, tokenHash), eq(passwordResets.purpose, "invite")) });
+  if (!row || row.usedAt || row.expiresAt < new Date()) return null;
+  const user = await db.query.users.findFirst({ where: eq(users.id, row.userId) });
+  return user && user.active ? user : null;
+}
+
+/** Accept an invite: set the password, use up the link, sign in (two-step sign-in is set up next). */
+export async function acceptInvite(token: string, password: string): Promise<User | null> {
+  const user = await inviteFor(token);
+  if (!user) return null;
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const used = await db.update(passwordResets).set({ usedAt: new Date() }).where(and(eq(passwordResets.tokenHash, tokenHash), isNull(passwordResets.usedAt))).returning({ id: passwordResets.id });
+  if (!used.length) return null; // used meanwhile
+  await db.update(users).set({ passwordHash: await hashPassword(password), lastLoginAt: new Date() }).where(eq(users.id, user.id));
+  await createSession(user);
+  return user;
 }
 
 export async function consumePasswordReset(token: string, newPassword: string): Promise<User | null> {
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-  const row = await db.query.passwordResets.findFirst({ where: eq(passwordResets.tokenHash, tokenHash) });
+  const row = await db.query.passwordResets.findFirst({ where: and(eq(passwordResets.tokenHash, tokenHash), eq(passwordResets.purpose, "reset")) });
   if (!row || row.usedAt || row.expiresAt < new Date()) return null;
   await db.update(users).set({ passwordHash: await hashPassword(newPassword) }).where(eq(users.id, row.userId));
   await db.update(passwordResets).set({ usedAt: new Date() }).where(eq(passwordResets.id, row.id));

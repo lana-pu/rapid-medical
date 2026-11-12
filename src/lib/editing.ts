@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { cookies, draftMode } from "next/headers";
-import { getSession, type SessionUser } from "./auth";
+import { getSession, isReady, type SessionUser } from "./auth";
 import { DEMO } from "./demo";
 
 export const EDIT_COOKIE = "rm_edit";
@@ -19,7 +19,7 @@ export const editingUser = cache(async (): Promise<SessionUser | null> => {
     const [dm, jar] = await Promise.all([draftMode(), cookies()]);
     if (!dm.isEnabled || jar.get(EDIT_COOKIE)?.value !== "1") return null;
     const user = await getSession();
-    if (!user || user.totpPending) return null;
+    if (!isReady(user)) return null;
     return user;
   } catch {
     return null; // outside a request scope

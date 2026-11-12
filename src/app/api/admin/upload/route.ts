@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { getSession, isReady } from "@/lib/auth";
 import { ingestFile } from "@/lib/media";
 import { audit } from "@/lib/audit";
 
@@ -8,7 +8,7 @@ const ALLOWED = /^(image\/(png|jpe?g|webp|gif|svg\+xml)|application\/pdf|video\/
 
 export async function POST(req: Request) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isReady(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const fd = await req.formData();
   const file = fd.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "No file" }, { status: 400 });

@@ -3,7 +3,7 @@ import { and, desc, eq, ne } from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
 import { db, revisions, type Region, type StoredBlock } from "@/db";
 import type { SessionUser } from "@/lib/auth";
-import { getSession } from "@/lib/auth";
+import { getSession, isReady } from "@/lib/auth";
 import { REGIONS } from "@/db/schema";
 import { getResource, type Resource } from "./resources";
 import { getDraft, getEditable, hasWorkflow } from "./workflow";
@@ -17,7 +17,7 @@ export type PageRef = { r: string; id: number };
 
 export async function requireEditor(): Promise<SessionUser> {
   const u = await getSession();
-  if (!u || u.totpPending) throw new Error("Not signed in");
+  if (!isReady(u)) throw new Error("Not signed in");
   return u;
 }
 
