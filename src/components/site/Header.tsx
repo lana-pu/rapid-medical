@@ -53,11 +53,11 @@ export function Header({
         <nav className="hidden items-center gap-6 text-sm md:flex" aria-label="Main">
           {nav.menu.map((m, i) =>
             m.kind !== "therapies" ? (
-              <Link key={i} href={menuHref(m, region)}><E r={NAV} f={`menu.${i}.label`}>{m.label}</E></Link>
+              <Link key={i} href={menuHref(m, region)}>{m.path ? <E r={NAV} f={`${m.path}.label`}>{m.label}</E> : m.label}</Link>
             ) : (
           <div key={i} className="group relative">
             <Link href={menuHref(m, region)} className="inline-flex items-center gap-1">
-              <E r={NAV} f={`menu.${i}.label`}>{m.label}</E> <span aria-hidden>▾</span>
+              {m.path ? <E r={NAV} f={`${m.path}.label`}>{m.label}</E> : m.label} <span aria-hidden>▾</span>
             </Link>
             {solutionsNav.length > 0 && region && (
               <div className="invisible absolute left-0 top-full z-20 min-w-56 rounded border border-border bg-background p-2 opacity-0 shadow-md transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">

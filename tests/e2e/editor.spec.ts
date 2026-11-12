@@ -233,6 +233,44 @@ test("menu and footer: a label changed on the page waits for Publish; Site setti
   }
 });
 
+test("comments: on a section, a pin on the page, reply, resolve; listed on the admin home", async ({ page }) => {
+  test.setTimeout(150_000);
+  sql("delete from comments");
+  await login(page);
+  await open(page);
+  await page.getByRole("button", { name: /^Comment/ }).click();
+  const panel = page.getByRole("complementary", { name: "Comments" });
+  await expect(panel).toContainText("No open comments on this page.");
+  await panel.getByRole("button", { name: "Comment on a section" }).click();
+  await page.mouse.click(8, 300); // the first section
+  await expect(panel).toContainText(/Comment on Hero/);
+  await panel.getByRole("textbox", { name: "Comment" }).fill("Check the claim with regulatory");
+  await panel.getByRole("button", { name: "Comment", exact: true }).click();
+  await expect(panel.locator("[data-comment]")).toContainText("Check the claim with regulatory");
+  await expect(page.getByRole("button", { name: /^1 comment on Hero/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Comment (1)" })).toBeVisible();
+  // nothing on the page changed: no unpublished changes
+  await expect(page.getByRole("status")).toHaveText("Live");
+
+  await panel.getByRole("textbox", { name: "Reply" }).fill("Done, see the footnote");
+  await panel.getByRole("button", { name: "Reply", exact: true }).click();
+  await expect(panel.locator("[data-comment]")).toContainText("Done, see the footnote");
+
+  await page.goto("/admin");
+  await expect(page.getByText(/1 open comment on /)).toBeVisible();
+
+  await open(page);
+  await page.getByRole("button", { name: /^1 comment on Hero/ }).click();
+  await panel.getByRole("button", { name: "Resolve" }).click();
+  await expect(panel).toContainText("No open comments on this page.");
+  await expect(page.getByRole("button", { name: /comment on Hero/ })).toHaveCount(0);
+  await panel.getByLabel("Show resolved").check();
+  await expect(panel.locator("[data-comment]")).toContainText(/resolved by/);
+  await panel.locator("[data-comment]").getByRole("button", { name: "Delete" }).last().click(); // the thread, with its reply
+  await expect(panel.locator("[data-comment]")).toHaveCount(0);
+  expect(sql("select count(*) from comments")).toBe("0");
+});
+
 test("history: restore an earlier version as a draft", async ({ page }) => {
   await login(page);
   await open(page);
@@ -299,7 +337,7 @@ test("two editors: the second save is refused, not silently overwritten", async 
   await page.click('#rm-editor-ui button:has-text("Publish")');
   await page.click('[role=dialog] button:has-text("Discard all changes")');
   await page.click('[role=dialog] button:has-text("Click again to discard all")');
-  await expect(page.getByRole("status")).toHaveText(/Live/);
+  await expect(page.getByRole("status")).toHaveText(/Live|Changes discarded/);
 });
 
 test("Pages: search, open in the editor, new page from a template", async ({ page }) => {

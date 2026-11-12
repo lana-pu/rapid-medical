@@ -159,6 +159,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | Таблица | Назначение |
 |---|---|
 | `drafts` | Отложенные изменения опубликованной записи (`resource`+`recordId` unique), `publishAt`; `data = null` — только расписание |
+| `comments` | Комментарии на странице (ADR-006): `resource`+`recordId` страницы, `anchor` (секция или null — вся страница), `parentId` (ответ), текст, автор, `resolvedAt`/`resolvedByName` |
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |

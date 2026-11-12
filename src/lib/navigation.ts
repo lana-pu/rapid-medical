@@ -5,8 +5,8 @@ import type { Region } from "@/db/schema";
  * defaults below are the site's menu. The header and footer read `navigationFrom(settings.navigation)`.
  */
 export type MenuKind = "page" | "therapies" | "evidence";
-export type MenuItem = { label: string; kind: MenuKind; href?: string };
-export type LegalLink = { label: string; href: string };
+export type MenuItem = { label: string; kind: MenuKind; href?: string; /** where its label is stored, for editing on the page; null — not editable there */ path?: string | null };
+export type LegalLink = { label: string; href: string; path?: string | null };
 export type Navigation = {
   menu: MenuItem[];
   contactLabel: string;
@@ -45,18 +45,21 @@ const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 /** Saved values over the defaults; items with no label or an unsafe address are left out. */
 export function navigationFrom(saved: unknown): Navigation {
   const s = (saved && typeof saved === "object" ? saved : {}) as Record<string, unknown>;
+  // each kept item keeps its stored position, so a label edited on the page lands on the right item
   const menu = (Array.isArray(s.menu) ? s.menu : [])
-    .map((m: Record<string, unknown>) => ({ label: str(m?.label), kind: (["therapies", "evidence"].includes(String(m?.kind)) ? m.kind : "page") as MenuKind, href: str(m?.href) }))
+    .map((m: Record<string, unknown>, i: number) => ({ label: str(m?.label), kind: (["therapies", "evidence"].includes(String(m?.kind)) ? m.kind : "page") as MenuKind, href: str(m?.href), path: `menu.${i}` }))
     .filter((m) => m.label && (m.kind !== "page" || SAFE.test(m.href)));
-  const legal = (Array.isArray(s.legal) ? s.legal : []).map((l: Record<string, unknown>) => ({ label: str(l?.label), href: str(l?.href) })).filter((l) => l.label && SAFE.test(l.href));
+  const legal = (Array.isArray(s.legal) ? s.legal : []).map((l: Record<string, unknown>, i: number) => ({ label: str(l?.label), href: str(l?.href), path: `legal.${i}` })).filter((l) => l.label && SAFE.test(l.href));
+  // never saved → the defaults are what the editor edits; saved but unusable → shown, not editable on the page
+  const fallback = <T,>(key: string, list: T[]): (T & { path: string | null })[] => list.map((x, i) => ({ ...x, path: key in s ? null : `${key}.${i}` }));
   const text = (k: keyof Navigation) => str(s[k]) || (DEFAULT_NAVIGATION[k] as string);
   return {
-    menu: menu.length ? menu : DEFAULT_NAVIGATION.menu,
+    menu: menu.length ? menu : fallback("menu", DEFAULT_NAVIGATION.menu),
     contactLabel: text("contactLabel"),
     contactTitle: text("contactTitle"),
     followTitle: text("followTitle"),
     legalTitle: text("legalTitle"),
-    legal: Array.isArray(s.legal) ? legal : DEFAULT_NAVIGATION.legal,
+    legal: Array.isArray(s.legal) ? legal : fallback("legal", DEFAULT_NAVIGATION.legal),
     copyright: text("copyright"),
   };
 }

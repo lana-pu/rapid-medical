@@ -43,7 +43,7 @@ export async function Footer({
           <div className="font-semibold"><E r={NAV} f="legalTitle">{nav.legalTitle}</E></div>
           <ul className="mt-2 space-y-1 text-muted">
             {nav.legal.map((l, i) => (
-              <li key={i}><Link href={l.href}><E r={NAV} f={`legal.${i}.label`}>{l.label}</E></Link></li>
+              <li key={i}><Link href={l.href}>{l.path ? <E r={NAV} f={`${l.path}.label`}>{l.label}</E> : l.label}</Link></li>
             ))}
           </ul>
         </div>

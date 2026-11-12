@@ -37,6 +37,9 @@ export function TopBar(props: {
   demo: boolean;
   onUndo: () => void;
   onHistory: () => void;
+  /** open comment threads on this page (null: comments are not available here) */
+  comments?: number | null;
+  onComments?: () => void;
   onPreview: () => void;
   onPublish: () => void;
   onCompare: (region: string) => void;
@@ -70,6 +73,7 @@ export function TopBar(props: {
         )}
         <span className="min-w-0 flex-1 truncate text-xs text-neutral-300" role="status" aria-live="polite">{props.status}</span>
         <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change">↶ Undo</button>
+        {info && props.comments != null && <button type="button" className={btn} onClick={props.onComments}>Comment{props.comments ? ` (${props.comments})` : ""}</button>}
         {info && !props.demo && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
         <button type="button" className={btn} onClick={props.onPreview}>Preview</button>
         <button type="button" disabled={!props.hasChanges || props.busy} onClick={props.onPublish} className="rounded bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 disabled:bg-neutral-700 disabled:text-neutral-400">
@@ -371,6 +375,89 @@ export function TabsPanel({ tabs, busy, onRename, onMove, onRemove, onLink, onAd
         {link && <input aria-label="New tab link" value={href} onChange={(e) => setHref(e.target.value)} placeholder="/us/evidence or https://…" required className={`${field} font-mono text-xs`} />}
         <button type="submit" disabled={busy} className="rounded bg-blue-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-50">{link ? "+ Add link tab" : "+ Add tab"}</button>
       </form>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Comments (docs/screens/on-page-editor.md → «Комментарии»)          */
+/* ------------------------------------------------------------------ */
+
+type CommentItem = import("@/admin/comments").CommentView;
+
+const ago = (iso: string) => new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+function Reply({ onSend, busy, label = "Reply", autoFocus = false }: { onSend: (text: string) => Promise<boolean>; busy: boolean; label?: string; autoFocus?: boolean }) {
+  const [text, setText] = useState("");
+  return (
+    <form
+      className="mt-2 space-y-1"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        if (await onSend(text)) setText("");
+      }}
+    >
+      <textarea aria-label={label} value={text} onChange={(e) => setText(e.target.value)} rows={2} maxLength={2000} autoFocus={autoFocus} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" placeholder={label === "Reply" ? "Reply…" : "Write a comment…"} />
+      <button type="submit" disabled={busy || !text.trim()} className="rounded bg-blue-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-40">{label === "Reply" ? "Reply" : "Comment"}</button>
+    </form>
+  );
+}
+
+export function CommentsPanel({ items, sectionName, focus, composeFor, picking, busy, onPick, onCompose, onAdd, onResolve, onDelete }: {
+  items: CommentItem[];
+  /** name of a section by its id (undefined: no longer on the page) */
+  sectionName: (anchor: string) => string | undefined;
+  /** the thread group to show first */
+  focus?: string | null;
+  /** writing a new comment on this section ("" = the whole page) */
+  composeFor: string | null;
+  picking: boolean;
+  busy: boolean;
+  onPick: () => void;
+  onCompose: (anchor: string | null) => void;
+  onAdd: (anchor: string | null, text: string, parentId?: number) => Promise<boolean>;
+  onResolve: (id: number, resolved: boolean) => void;
+  onDelete: (id: number) => void;
+}) {
+  const [showResolved, setShowResolved] = useState(false);
+  const threads = items.filter((c) => !c.parentId && (showResolved || !c.resolvedAt));
+  const replies = (id: number) => items.filter((c) => c.parentId === id);
+  const where = (a: string | null) => (a ? sectionName(a) ?? "A section that is no longer on the page" : "Page");
+  const sorted = [...threads].sort((a, b) => Number(b.anchor === focus) - Number(a.anchor === focus));
+  return (
+    <div className="space-y-4 text-sm">
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={onPick} className={`rounded px-3 py-1 text-xs font-semibold ${picking ? "bg-amber-500 text-black" : "bg-blue-600 text-white"}`}>{picking ? "Click a section on the page…" : "Comment on a section"}</button>
+        <button type="button" onClick={() => onCompose(null)} className="rounded border border-neutral-300 px-3 py-1 text-xs">Comment on the whole page</button>
+      </div>
+      {composeFor !== null && (
+        <div className="rounded border border-blue-300 bg-blue-50 p-2">
+          <div className="text-xs font-medium text-blue-900">Comment on {composeFor ? where(composeFor) : "the whole page"}</div>
+          <Reply label="Comment" busy={busy} autoFocus onSend={(t) => onAdd(composeFor || null, t)} />
+        </div>
+      )}
+      {sorted.length === 0 && <p className="text-neutral-500">No open comments on this page.</p>}
+      <ul className="space-y-3">
+        {sorted.map((c) => (
+          <li key={c.id} className={`rounded border p-2 ${c.anchor === focus ? "border-blue-400" : "border-neutral-200"} ${c.resolvedAt ? "opacity-60" : ""}`} data-comment={c.id}>
+            <div className="text-xs text-neutral-500">{where(c.anchor)}</div>
+            <p className="mt-1 whitespace-pre-wrap">{c.body}</p>
+            <div className="mt-1 text-xs text-neutral-500">{c.authorName} · {ago(c.at)}{c.resolvedAt && ` · resolved by ${c.resolvedByName}`}</div>
+            {replies(c.id).map((r) => (
+              <div key={r.id} className="mt-2 border-l-2 border-neutral-200 pl-2">
+                <p className="whitespace-pre-wrap">{r.body}</p>
+                <div className="text-xs text-neutral-500">{r.authorName} · {ago(r.at)}{r.canDelete && <> · <button type="button" className="underline" onClick={() => onDelete(r.id)}>Delete</button></>}</div>
+              </div>
+            ))}
+            <div className="mt-2 flex gap-3 text-xs">
+              <button type="button" className="underline" disabled={busy} onClick={() => onResolve(c.id, !c.resolvedAt)}>{c.resolvedAt ? "Reopen" : "Resolve"}</button>
+              {c.canDelete && <button type="button" className="underline" disabled={busy} onClick={() => onDelete(c.id)}>Delete</button>}
+            </div>
+            {!c.resolvedAt && <Reply busy={busy} onSend={(t) => onAdd(c.anchor, t, c.id)} />}
+          </li>
+        ))}
+      </ul>
+      <label className="flex items-center gap-2 text-xs text-neutral-600"><input type="checkbox" checked={showResolved} onChange={(e) => setShowResolved(e.target.checked)} /> Show resolved</label>
     </div>
   );
 }

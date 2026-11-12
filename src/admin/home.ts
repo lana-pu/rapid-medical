@@ -1,10 +1,11 @@
 import "server-only";
-import { and, count, desc, eq, like, max, notInArray } from "drizzle-orm";
-import { auditLog, contactSubmissions, db, media, publications, users } from "@/db";
+import { and, count, desc, eq, isNull, like, max, notInArray } from "drizzle-orm";
+import { auditLog, comments, contactSubmissions, db, media, publications, users } from "@/db";
 import { listSettingDrafts } from "@/lib/settings";
 import { getSettingsGroup, mayEditGroup } from "./settings";
 import { getResource } from "./resources";
 import { pendingDrafts } from "./workflow";
+import { getRow } from "./engine";
 
 /** «Website — what needs you» (docs/screens/admin-home.md): what waits for someone, recent activity, a summary. */
 
@@ -44,6 +45,15 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));
   if (newRequests) out.unshift({ key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });
+  // open comment threads, per page
+  const open = await db.select({ resource: comments.resource, recordId: comments.recordId, n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt))).groupBy(comments.resource, comments.recordId);
+  for (const c of open) {
+    const res = getResource(c.resource);
+    const row = res ? await getRow(res, c.recordId) : null;
+    if (!res || !row) continue;
+    const path = res.previewUrl?.(row) ?? null;
+    out.push({ key: `c${c.resource}${c.recordId}`, text: `${c.n} open comment${c.n > 1 ? "s" : ""} on ${String(row[res.labelField] ?? `#${c.recordId}`)}`, action: path ? "Open on page" : "Open", href: path ? `/api/editor?on=1&redirect=${encodeURIComponent(path)}` : `/admin/${res.slug}/${c.recordId}` });
+  }
   if (noAlt) out.push({ key: "alt", text: `${noAlt} picture${noAlt > 1 ? "s" : ""} without a description`, action: "Describe pictures", href: "/admin/media?describe=1" });
   return out;
 }
@@ -72,6 +82,7 @@ function phrase(e: typeof auditLog.$inferSelect): string {
     case "settings": return `changed settings: ${what}`;
     case "user": return `changed people and roles${what ? `: ${what}` : ""}`;
     case "media": return m.replaced ? `replaced ${what} in ${String(m.places ?? "")} places` : m.alt ? `described ${what}` : `changed ${what} in the media library`;
+    case "comment": return m.deleted ? `deleted a comment on ${getResource(e.resource ?? "")?.titleSingular.toLowerCase() ?? "a page"}` : m.resolved === true ? `resolved a comment: “${what}”` : m.resolved === false ? `reopened a comment: “${what}”` : `commented: “${what}”`;
     case "request": return m.took ? `took the request ${what}` : `updated the request ${what}`;
     case "save": return m.discardedDraft ? `discarded changes to ${what}` : m.created ? `created ${what}` : `saved ${what}`;
     default: return `${e.action} ${what}`.trim();

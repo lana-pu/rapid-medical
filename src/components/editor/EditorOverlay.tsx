@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import * as live from "@/admin/inline";
 import * as pageLive from "@/admin/page-editor";
+import * as commentsLive from "@/admin/comments";
+import type { CommentView } from "@/admin/comments";
 import type { PendingItem, InlineKind } from "@/admin/inline";
 import type { PageInfo, HistoryItem } from "@/admin/page-editor";
 import type { BlockOp } from "@/blocks/ops";
@@ -12,7 +14,7 @@ import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
 import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
-import { BAR_H, buttons, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TabsPanel, TopBar, statusText } from "./editor-ui";
+import { BAR_H, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TabsPanel, TopBar, statusText } from "./editor-ui";
 
 /**
  * The page editor (docs/screens/on-page-editor.md, ADR-006/007), loaded only in editor mode.
@@ -34,6 +36,7 @@ type Panel =
   | { k: "add"; at: number; list: string }
   | { k: "history"; items: HistoryItem[] | null }
   | { k: "tabs"; id: string }
+  | { k: "comments"; focus?: string | null; compose: string | null }
   | null;
 type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
 type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
@@ -120,6 +123,12 @@ export default function EditorOverlay() {
   const [preview, setPreview] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [undoCount, setUndoCount] = useState(0);
+  const [comments, setComments] = useState<CommentView[]>([]);
+  const [picking, setPicking] = useState(false);
+  const pickingRef = useRef(false);
+  useEffect(() => {
+    pickingRef.current = picking;
+  }, [picking]);
   const version = useRef("");
   const undo = useRef<Undo[]>([]);
   const editing = useRef<{ el: HTMLElement; tag: Tag; original: string } | null>(null);
@@ -159,6 +168,13 @@ export default function EditorOverlay() {
     version.current = res.version;
   }, [say]);
 
+  const loadComments = useCallback(async () => {
+    const ref = readPageRef();
+    if (!ref || DEMO) return setComments([]);
+    const r = await commentsLive.listComments(ref);
+    if (!("error" in r)) setComments(r.items);
+  }, []);
+
   const loadLegacy = useCallback(async () => {
     try {
       setLegacy(await api.pendingFor(targetsOnPage()));
@@ -183,10 +199,11 @@ export default function EditorOverlay() {
       setCompare(null);
       void loadInfo();
       void loadLegacy();
+      void loadComments();
       remeasure();
     }, 50);
     return () => clearTimeout(t);
-  }, [pathname, loadInfo, loadLegacy, remeasure]);
+  }, [pathname, loadInfo, loadLegacy, loadComments, remeasure]);
 
   /* ---- after a server refresh: new marks, maybe a section to select ---- */
   useEffect(() => {
@@ -393,6 +410,14 @@ export default function EditorOverlay() {
         }
       } else {
         const hit = hitTest(boxesRef.current, e.pageX, e.pageY);
+        if (pickingRef.current) {
+          // «Comment on a section»: this click chooses the section
+          e.preventDefault();
+          e.stopPropagation();
+          setPicking(false);
+          if (hit) setPanel({ k: "comments", focus: hit.id, compose: hit.id });
+          return;
+        }
         if (hit) setSelected(hit.id);
         // links on the page do not navigate while editing (Preview for that); buttons such as tabs still work
         if (target.closest("a[href]")) e.preventDefault();
@@ -553,6 +578,8 @@ export default function EditorOverlay() {
           demo={DEMO}
           onUndo={doUndo}
           onHistory={openHistory}
+          comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
+          onComments={() => setPanel({ k: "comments", compose: null })}
           onPreview={() => { setPreview(true); setSelected(null); setPanel(null); }}
           onPublish={openReview}
           onCompare={onCompare}
@@ -582,6 +609,16 @@ export default function EditorOverlay() {
             </div>
           )}
           {sel && <div className="pointer-events-none fixed z-[999] border-2 border-blue-600" style={vis(sel)} />}
+          {/* open comment threads on a section */}
+          {boxes.map((b) => {
+            const n = comments.filter((c) => !c.parentId && !c.resolvedAt && c.anchor === b.id).length;
+            if (!n) return null;
+            return (
+              <button key={`cm-${b.id}`} type="button" aria-label={`${n} comment${n > 1 ? "s" : ""} on ${sectionById.get(b.id)?.name ?? "this section"}`} onClick={() => setPanel({ k: "comments", focus: b.id, compose: null })} className="fixed z-[1001] flex h-7 min-w-7 -translate-x-1/2 items-center justify-center rounded-full bg-amber-400 px-2 text-xs font-bold text-black shadow" style={{ top: b.top - scroll + 6, left: Math.min(b.left + b.width - 18, vw - 24) }}>
+                {n}
+              </button>
+            );
+          })}
           {sel && selInfo && (
             <SectionToolbar
               s={info.canDesign ? selInfo : { ...selInfo, variants: [] }}
@@ -688,6 +725,37 @@ export default function EditorOverlay() {
             onRemove={(tab) => runOp({ op: "tab", id: panel.id, act: "remove", tab }, "Deleted a tab")}
             onLink={(tab, href) => runOp({ op: "tab", id: panel.id, act: "link", tab, href }, "Changed a tab link")}
             onAdd={(label, href) => runOp({ op: "tab", id: panel.id, act: "add", at: sectionById.get(panel.id)?.tabs?.length ?? 0, label, ...(href !== undefined ? { href } : {}) }, `Added tab ${label}`)}
+          />
+        </SidePanel>
+      )}
+      {panel?.k === "comments" && page && (
+        <SidePanel title="Comments" top={top} onClose={() => { setPanel(null); setPicking(false); }}>
+          <CommentsPanel
+            items={comments}
+            sectionName={(a) => sectionById.get(a)?.name}
+            focus={panel.focus}
+            composeFor={panel.compose}
+            picking={picking}
+            busy={busy}
+            onPick={() => setPicking((p) => !p)}
+            onCompose={(a) => setPanel({ ...panel, compose: a ?? "" })}
+            onAdd={async (anchor, text, parentId) => {
+              const r = await commentsLive.addComment(page, anchor, text, parentId);
+              if ("error" in r) { say(r.error, true); return false; }
+              if (!parentId) setPanel({ ...panel, compose: null, focus: anchor });
+              await loadComments();
+              return true;
+            }}
+            onResolve={async (id, resolved) => {
+              const r = await commentsLive.resolveComment(id, resolved);
+              if ("error" in r) say(r.error, true);
+              await loadComments();
+            }}
+            onDelete={async (id) => {
+              const r = await commentsLive.deleteComment(id);
+              if ("error" in r) say(r.error, true);
+              await loadComments();
+            }}
           />
         </SidePanel>
       )}

@@ -566,6 +566,29 @@ export const drafts = pgTable(
 );
 
 /** Pending change to a site_settings group (made from the on-page editor). */
+/** Comments on a page (ADR-006: comments in place instead of an approval step; docs/screens/on-page-editor.md). */
+export const comments = pgTable(
+  "comments",
+  {
+    id: serial("id").primaryKey(),
+    /** the page record: resource slug + id */
+    resource: text("resource").notNull(),
+    recordId: integer("record_id").notNull(),
+    /** the section (stored block id, or a position inside a tab); null = the whole page */
+    anchor: text("anchor"),
+    /** a reply to this comment */
+    parentId: integer("parent_id"),
+    body: text("body").notNull(),
+    authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+    authorName: text("author_name").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolvedByName: text("resolved_by_name"),
+  },
+  (t) => [index("comments_page").on(t.resource, t.recordId)],
+);
+export type Comment = typeof comments.$inferSelect;
+
 export const settingDrafts = pgTable("setting_drafts", {
   key: text("key").primaryKey(),
   value: jsonb("value").$type<Record<string, unknown>>().notNull(),
