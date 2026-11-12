@@ -52,8 +52,20 @@ const nestedName = (n: Nested) => blockName({ id: "", ...n });
 /** Sections inside Product details tabs have no ids: matched by content, then by type, per tab. */
 function describeTabs(before: Tab[], after: Tab[]): string[] {
   const out: string[] = [];
-  const labelsChanged = before.length !== after.length || before.some((t, i) => t.label !== after[i]?.label || t.href !== after[i]?.href);
-  if (labelsChanged) out.push("Changed tabs in Product details");
+  const key = (t: Tab) => t.id ?? t.label ?? "";
+  const was = new Map(before.map((t) => [key(t), t]));
+  const now = new Set(after.map(key));
+  for (const t of after) {
+    const o = was.get(key(t));
+    if (!o) out.push(`Added tab “${t.label ?? ""}”`);
+    else {
+      if (o.label !== t.label) out.push(`Renamed tab “${o.label ?? ""}” to “${t.label ?? ""}”`);
+      if (o.href !== t.href) out.push(`Changed the link of tab “${t.label ?? ""}”`);
+    }
+  }
+  for (const t of before) if (!now.has(key(t))) out.push(`Removed tab “${t.label ?? ""}”`);
+  const order = (l: Tab[]) => l.map(key).filter((k) => was.has(k) && now.has(k)).join("\n");
+  if (order(before) !== order(after)) out.push("Moved tabs");
   for (const t of after) {
     const old = before.find((b) => (b.id ?? b.label) === (t.id ?? t.label));
     if (!old || t.href) continue;

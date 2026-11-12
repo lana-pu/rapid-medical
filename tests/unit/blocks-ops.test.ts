@@ -154,3 +154,48 @@ describe("sections inside Product details tabs", () => {
     expect(describeBlockChanges(pd, applyOp(pd, { op: "variant", id: "pd/0/0", variant: "lead" }))).toEqual(["Changed layout of Text in tab “Overview”"]);
   });
 });
+
+describe("the tabs of Product details", () => {
+  const mk = (): StoredBlock[] => [
+    {
+      id: "pd",
+      type: "productDetails",
+      variant: "pills",
+      data: { tabs: [
+        { id: "overview", label: "Overview", title: "Overview", blocks: [{ type: "text", variant: "default", data: { body: "A" } }] },
+        { id: "evidence", label: "Evidence", href: "/us/evidence", blocks: [] },
+      ] },
+    },
+  ];
+  const tabs = (l: StoredBlock[]) => ((l[0].data as any).tabs as any[]).map((t) => `${t.id}:${t.label}${t.href ? `→${t.href}` : ""}`);
+
+  it("add a tab with one text section, or a link tab; ids from the name stay unique", () => {
+    const one = applyOp(mk(), { op: "tab", id: "pd", act: "add", at: 1, label: "How it works" });
+    expect(tabs(one)).toEqual(["overview:Overview", "how-it-works:How it works", "evidence:Evidence→/us/evidence"]);
+    expect((one[0].data as any).tabs[1].blocks).toHaveLength(1);
+    const two = applyOp(one, { op: "tab", id: "pd", act: "add", at: 3, label: "Overview", href: "https://example.com/x" });
+    expect(tabs(two)[3]).toBe("overview-2:Overview→https://example.com/x");
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "add", at: 0, label: "X", href: "//evil.example" })).toThrow(/page address/);
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "add", at: 0, label: "X", href: "javascript:alert(1)" })).toThrow(/page address/);
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "add", at: 0, label: "   " })).toThrow(/1–60/);
+  });
+  it("move, rename (the address stays), change a link, remove — one tab with content stays", () => {
+    expect(tabs(applyOp(mk(), { op: "tab", id: "pd", act: "move", tab: 1, dir: -1 }))).toEqual(["evidence:Evidence→/us/evidence", "overview:Overview"]);
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "move", tab: 0, dir: -1 })).toThrow(/first tab/);
+    const renamed = applyOp(mk(), { op: "tab", id: "pd", act: "rename", tab: 0, label: "Product overview" });
+    expect(tabs(renamed)[0]).toBe("overview:Product overview");
+    expect((renamed[0].data as any).tabs[0].title).toBe("Product overview");
+    expect(tabs(applyOp(mk(), { op: "tab", id: "pd", act: "link", tab: 1, href: "/ous/evidence" }))[1]).toBe("evidence:Evidence→/ous/evidence");
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "link", tab: 0, href: "/x" })).toThrow(/not a link/);
+    expect(tabs(applyOp(mk(), { op: "tab", id: "pd", act: "remove", tab: 1 }))).toEqual(["overview:Overview"]);
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "remove", tab: 0 })).toThrow(/at least one tab/);
+    expect(() => applyOp(mk(), { op: "tab", id: "pd", act: "remove", tab: 5 })).toThrow(/no longer there/);
+  });
+  it("in words", () => {
+    const b = mk();
+    expect(describeBlockChanges(b, applyOp(b, { op: "tab", id: "pd", act: "add", at: 2, label: "Sizes" }))).toEqual(["Added tab “Sizes”"]);
+    expect(describeBlockChanges(b, applyOp(b, { op: "tab", id: "pd", act: "remove", tab: 1 }))).toEqual(["Removed tab “Evidence”"]);
+    expect(describeBlockChanges(b, applyOp(b, { op: "tab", id: "pd", act: "rename", tab: 0, label: "Intro" }))).toEqual(["Renamed tab “Overview” to “Intro”"]);
+    expect(describeBlockChanges(b, applyOp(b, { op: "tab", id: "pd", act: "move", tab: 1, dir: -1 }))).toEqual(["Moved tabs"]);
+  });
+});

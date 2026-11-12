@@ -165,6 +165,44 @@ test("sections inside a product tab: add only tab blocks, move, review in words,
   await expect(page.getByRole("status")).toHaveText(/Changes discarded|^Live$/);
 });
 
+test("tabs of Product details: add, rename, move, delete; review says so", async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await open(page);
+  // select Product details by its tab bar
+  await page.getByRole("tab", { name: /Product overview/ }).first().click();
+  await expect(page.locator("#rm-section-toolbar")).toContainText("Product details");
+  await page.locator('#rm-section-toolbar button:has-text("Tabs")').click();
+  const panel = page.getByRole("complementary", { name: "Tabs" });
+  const before = await panel.getByRole("textbox", { name: /^Name of tab/ }).count();
+
+  await panel.getByLabel("New tab name").fill("Sizes");
+  await panel.getByRole("button", { name: "+ Add tab" }).click();
+  await expect(page.getByRole("status")).toHaveText("Added tab Sizes. Not live yet");
+  await expect(page.getByRole("tab", { name: "Sizes" })).toBeVisible();
+  await expect(panel.getByRole("textbox", { name: /^Name of tab/ })).toHaveCount(before + 1);
+
+  const last = panel.getByRole("textbox", { name: `Name of tab ${before + 1}` });
+  await last.fill("Sizes and models");
+  await last.press("Enter");
+  await expect(page.getByRole("tab", { name: "Sizes and models" })).toBeVisible();
+  await panel.getByRole("button", { name: "Move tab Sizes and models up" }).click();
+  await expect(page.getByRole("status")).toHaveText("Moved a tab. Not live yet");
+
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  const review = page.getByRole("dialog", { name: "Review changes" });
+  await expect(review).toContainText("Added tab “Sizes and models”");
+  await page.click('[role=dialog] button:has-text("Keep editing")');
+
+  const row = panel.locator("li", { has: page.getByRole("textbox", { name: /Name of tab/ }).and(page.locator('[value="Sizes and models"]')) });
+  await row.getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByRole("tab", { name: "Sizes and models" })).toHaveCount(0);
+  // nothing left to publish: drop the draft
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await page.click('[role=dialog] button:has-text("Discard all changes")');
+  await page.click('[role=dialog] button:has-text("Click again to discard all")');
+});
+
 test("history: restore an earlier version as a draft", async ({ page }) => {
   await login(page);
   await open(page);

@@ -316,6 +316,7 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
       return { version: "demo", sections: before, undo: [] };
     }
     if (op.op === "variant") return { error: "Changing the layout needs the server; not in the demo" };
+    if (op.op === "tab") return { error: "Changing tabs needs the server; not in the demo" };
     const target = "id" in op ? before.find((x) => x.id === op.id) : null;
     if (target?.pinned) return { error: "This section stays at the end of the page" };
     // a section inside a tab keeps a "/" in its id (the editor tells the lists apart by it)

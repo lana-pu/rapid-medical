@@ -18,7 +18,13 @@ export type BlockOp =
   | { op: "remove"; id: string }
   | { op: "variant"; id: string; variant: string }
   /** Undo: put back an earlier list. Every block must be one the page had (now or in a recent version). */
-  | { op: "set"; blocks: StoredBlock[] };
+  | { op: "set"; blocks: StoredBlock[] }
+  /** The tabs of a Product details block (`id`): add (content or link), move, remove, rename, change a link's address */
+  | { op: "tab"; id: string; act: "add"; at: number; label: string; href?: string }
+  | { op: "tab"; id: string; act: "move"; tab: number; dir: -1 | 1 }
+  | { op: "tab"; id: string; act: "remove"; tab: number }
+  | { op: "tab"; id: string; act: "rename"; tab: number; label: string }
+  | { op: "tab"; id: string; act: "link"; tab: number; href: string };
 
 const def = (t: string) => (Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] as unknown as BlockDef<BlockType>) : null);
 export const isPinned = (b: StoredBlock) => !!def(b.type)?.pinned;
@@ -90,7 +96,7 @@ function openList(list: StoredBlock[], path: string) {
   return { items, tabCount, done, inGroup: j !== undefined };
 }
 
-function nestedOp(list: StoredBlock[], op: Exclude<BlockOp, { op: "set" }>): StoredBlock[] {
+function nestedOp(list: StoredBlock[], op: Exclude<BlockOp, { op: "set" | "tab" }>): StoredBlock[] {
   if (op.op === "add") {
     const l = openList(list, op.in!);
     if (!Number.isInteger(op.at) || op.at < 0 || op.at > l.items.length) fail("Bad position");
@@ -129,6 +135,81 @@ function nestedOp(list: StoredBlock[], op: Exclude<BlockOp, { op: "set" }>): Sto
   }
 }
 
+/* ------------------------------------------------------------------ */
+/*  The tabs themselves                                                */
+/* ------------------------------------------------------------------ */
+
+type Tab = { id: string; label: string; title?: string; href?: string; blocks: TabItem[] };
+const SAFE_HREF = /^(https?:\/\/[^\s]+|\/(?!\/)[^\s]*)$/;
+const tabSlug = (label: string, taken: string[]) => {
+  const base = label.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "tab";
+  let id = base;
+  for (let n = 2; taken.includes(id); n++) id = `${base}-${n}`;
+  return id;
+};
+const cleanLabel = (l: unknown) => {
+  const v = String(l ?? "").replace(/\s+/g, " ").trim();
+  if (!v || v.length > 60) fail("A tab name is 1–60 characters");
+  return v;
+};
+const cleanHref = (h: unknown) => {
+  const v = String(h ?? "").trim();
+  if (!SAFE_HREF.test(v)) fail("Use a page address (/…) or a full link (https://…)");
+  return v;
+};
+
+function tabOp(list: StoredBlock[], op: Extract<BlockOp, { op: "tab" }>): StoredBlock[] {
+  const bi = list.findIndex((b) => b.id === op.id);
+  if (bi < 0) fail("This section is no longer on the page. Reload to see the latest version.");
+  const outer = list[bi];
+  if (outer.type !== "productDetails" || outer.source) fail("This section has no tabs");
+  const data = JSON.parse(JSON.stringify(outer.data)) as { tabs?: Tab[] };
+  const tabs: Tab[] = Array.isArray(data.tabs) ? data.tabs : [];
+  const at = (i: number) => {
+    if (!Number.isInteger(i) || !tabs[i]) fail("This tab is no longer there. Reload to see the latest version.");
+    return tabs[i];
+  };
+  switch (op.act) {
+    case "add": {
+      if (!Number.isInteger(op.at) || op.at < 0 || op.at > tabs.length) fail("Bad position");
+      const label = cleanLabel(op.label);
+      const id = tabSlug(label, tabs.map((t) => t.id));
+      const { id: _id, ...text } = presetBlock("text", "default");
+      void _id;
+      tabs.splice(op.at, 0, op.href !== undefined ? { id, label, href: cleanHref(op.href), blocks: [] } : { id, label, title: label, blocks: [text as Nested] });
+      break;
+    }
+    case "move": {
+      at(op.tab);
+      const j = op.tab + op.dir;
+      if ((op.dir !== -1 && op.dir !== 1) || !tabs[j]) fail(op.dir < 0 ? "Already the first tab" : "Already the last tab");
+      [tabs[op.tab], tabs[j]] = [tabs[j], tabs[op.tab]];
+      break;
+    }
+    case "remove": {
+      const t = at(op.tab);
+      if (!t.href && tabs.filter((x) => !x.href).length <= 1) fail("Product details keeps at least one tab with content");
+      tabs.splice(op.tab, 1);
+      break;
+    }
+    case "rename": {
+      const t = at(op.tab);
+      const label = cleanLabel(op.label);
+      tabs[op.tab] = { ...t, label, ...(t.title === t.label ? { title: label } : {}) };
+      break;
+    }
+    case "link": {
+      const t = at(op.tab);
+      if (!t.href) fail("This tab has sections, not a link");
+      tabs[op.tab] = { ...t, href: cleanHref(op.href) };
+      break;
+    }
+  }
+  const next = [...list];
+  next[bi] = { ...outer, data: { ...data, tabs } as Record<string, unknown> };
+  return next;
+}
+
 /** The section to select after an operation (a new one, or a moved section inside a tab, whose address changes). */
 export function selectAfterOp(op: BlockOp, before: StoredBlock[], after: StoredBlock[]): string | undefined {
   if (op.op === "add" && op.in) return `${op.in}/${op.at}`;
@@ -141,7 +222,8 @@ export function selectAfterOp(op: BlockOp, before: StoredBlock[], after: StoredB
 }
 
 export function applyOp(current: StoredBlock[], op: BlockOp, known: StoredBlock[] = []): StoredBlock[] {
-  if (op.op === "add" ? op.in !== undefined : op.op !== "set" && isNestedId(op.id)) return nestedOp(current, op as Exclude<BlockOp, { op: "set" }>);
+  if (op.op === "tab") return tabOp(current, op);
+  if (op.op === "add" ? op.in !== undefined : op.op !== "set" && isNestedId(op.id)) return nestedOp(current, op as Exclude<BlockOp, { op: "set" | "tab" }>);
   const list = [...current];
   const find = (id: string) => {
     const i = list.findIndex((b) => b.id === id);

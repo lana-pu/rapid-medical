@@ -101,7 +101,7 @@ export function PreviewBar({ demo, onBack }: { demo: boolean; onBack: () => void
 /*  Section toolbar                                                    */
 /* ------------------------------------------------------------------ */
 
-export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove: (d: -1 | 1) => void; onCopy: () => void; onRemove: () => void }) {
+export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove, onTabs }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove: (d: -1 | 1) => void; onCopy: () => void; onRemove: () => void; onTabs?: () => void }) {
   const t = "rounded px-2 py-1 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40";
   const pinnedNote = "This section stays at the end of the page and cannot be removed";
   return (
@@ -116,6 +116,7 @@ export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove,
       <button type="button" className={t} disabled={busy || s.pinned || last} onClick={() => onMove(1)} title={s.pinned ? pinnedNote : "Move down"} aria-label="Move down">↓</button>
       <button type="button" className={t} disabled={busy || s.pinned} onClick={onCopy} title={s.pinned ? pinnedNote : "Copy"}>Copy</button>
       <button type="button" className={t} disabled={busy || s.pinned} onClick={onRemove} title={s.pinned ? pinnedNote : "Delete"}>Delete</button>
+      {onTabs && <button type="button" className={t} disabled={busy} onClick={onTabs}>Tabs</button>}
     </div>
   );
 }
@@ -283,3 +284,56 @@ export function HistoryList({ items, busy, onRestore }: { items: HistoryItem[] |
 }
 
 export const buttons = { primary, secondary };
+
+/** The tabs of a Product details block (docs/screens/on-page-editor.md → «Сами вкладки»). */
+export function TabsPanel({ tabs, busy, onRename, onMove, onRemove, onLink, onAdd }: {
+  tabs: { label: string; href?: string }[];
+  busy: boolean;
+  onRename: (tab: number, label: string) => void;
+  onMove: (tab: number, dir: -1 | 1) => void;
+  onRemove: (tab: number) => void;
+  onLink: (tab: number, href: string) => void;
+  onAdd: (label: string, href?: string) => void;
+}) {
+  const [label, setLabel] = useState("");
+  const [href, setHref] = useState("");
+  const [link, setLink] = useState(false);
+  const field = "w-full rounded border border-neutral-300 px-2 py-1 text-sm";
+  return (
+    <div className="space-y-4 text-sm">
+      <ol className="space-y-3">
+        {tabs.map((t, i) => (
+          <li key={`${i}:${t.label}:${t.href ?? ""}`} className="rounded border border-neutral-200 p-2">
+            <div className="flex items-center gap-1">
+              <input aria-label={`Name of tab ${i + 1}`} defaultValue={t.label} maxLength={60} disabled={busy} className={field} onBlur={(e) => e.target.value.trim() !== t.label && onRename(i, e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} />
+              <button type="button" aria-label={`Move tab ${t.label} up`} disabled={busy || i === 0} onClick={() => onMove(i, -1)} className="px-1 disabled:opacity-30">↑</button>
+              <button type="button" aria-label={`Move tab ${t.label} down`} disabled={busy || i === tabs.length - 1} onClick={() => onMove(i, 1)} className="px-1 disabled:opacity-30">↓</button>
+              <button type="button" disabled={busy} onClick={() => onRemove(i)} className="px-1 text-red-700">Delete</button>
+            </div>
+            {t.href !== undefined && (
+              <input aria-label={`Link of tab ${t.label}`} defaultValue={t.href} disabled={busy} className={`${field} mt-1 font-mono text-xs`} onBlur={(e) => e.target.value.trim() !== t.href && onLink(i, e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} />
+            )}
+            <span className="mt-1 block text-xs text-neutral-500">{t.href !== undefined ? "Link tab — opens another page" : "Tab with sections"}</span>
+          </li>
+        ))}
+      </ol>
+      <form
+        className="space-y-2 rounded border border-dashed border-neutral-300 p-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onAdd(label, link ? href : undefined);
+          setLabel("");
+          setHref("");
+        }}
+      >
+        <div className="flex gap-3 text-xs">
+          <label className="flex items-center gap-1"><input type="radio" checked={!link} onChange={() => setLink(false)} /> Tab with sections</label>
+          <label className="flex items-center gap-1"><input type="radio" checked={link} onChange={() => setLink(true)} /> Link tab</label>
+        </div>
+        <input aria-label="New tab name" value={label} onChange={(e) => setLabel(e.target.value)} maxLength={60} placeholder="Tab name" required className={field} />
+        {link && <input aria-label="New tab link" value={href} onChange={(e) => setHref(e.target.value)} placeholder="/us/evidence or https://…" required className={`${field} font-mono text-xs`} />}
+        <button type="submit" disabled={busy} className="rounded bg-blue-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-50">{link ? "+ Add link tab" : "+ Add tab"}</button>
+      </form>
+    </div>
+  );
+}

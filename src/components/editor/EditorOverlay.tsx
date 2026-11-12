@@ -12,7 +12,7 @@ import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
 import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
-import { BAR_H, buttons, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TopBar, statusText } from "./editor-ui";
+import { BAR_H, buttons, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TabsPanel, TopBar, statusText } from "./editor-ui";
 
 /**
  * The page editor (docs/screens/on-page-editor.md, ADR-006/007), loaded only in editor mode.
@@ -33,6 +33,7 @@ type Panel =
   | { k: "media"; tag: Tag; image: string; video: string }
   | { k: "add"; at: number; list: string }
   | { k: "history"; items: HistoryItem[] | null }
+  | { k: "tabs"; id: string }
   | null;
 type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
 type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
@@ -296,7 +297,7 @@ export default function EditorOverlay() {
         version.current = res.version;
         if (record) pushUndo({ kind: "blocks", prev: res.undo, label });
         if (res.added) selectAfter.current = res.added;
-        if (op.op === "remove" || (op.op === "set" && selected?.includes("/"))) setSelected(null);
+        if (op.op === "remove" || ((op.op === "set" || op.op === "tab") && selected?.includes("/"))) setSelected(null);
         say(DEMO ? "Saved in this browser (demo)" : `${label}. Not live yet`);
         await afterChange();
       } finally {
@@ -592,6 +593,7 @@ export default function EditorOverlay() {
               onMove={(d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`)}
               onCopy={() => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`)}
               onRemove={() => runOp({ op: "remove", id: selInfo.id }, `Deleted ${selInfo.name}`)}
+              onTabs={selInfo.tabs ? () => setPanel({ k: "tabs", id: selInfo.id }) : undefined}
             />
           )}
           {sel && selInfo?.fromRecords && (
@@ -673,6 +675,19 @@ export default function EditorOverlay() {
               setPanel(null);
               await runOp({ op: "add", at: panel.at, type: p.type, variant: p.variant, ...(panel.list ? { in: panel.list } : {}) }, `Added ${p.name}`);
             }}
+          />
+        </SidePanel>
+      )}
+      {panel?.k === "tabs" && (
+        <SidePanel title="Tabs" top={top} onClose={() => setPanel(null)}>
+          <TabsPanel
+            tabs={sectionById.get(panel.id)?.tabs ?? []}
+            busy={busy}
+            onRename={(tab, label) => runOp({ op: "tab", id: panel.id, act: "rename", tab, label }, "Renamed a tab")}
+            onMove={(tab, dir) => runOp({ op: "tab", id: panel.id, act: "move", tab, dir }, "Moved a tab")}
+            onRemove={(tab) => runOp({ op: "tab", id: panel.id, act: "remove", tab }, "Deleted a tab")}
+            onLink={(tab, href) => runOp({ op: "tab", id: panel.id, act: "link", tab, href }, "Changed a tab link")}
+            onAdd={(label, href) => runOp({ op: "tab", id: panel.id, act: "add", at: sectionById.get(panel.id)?.tabs?.length ?? 0, label, ...(href !== undefined ? { href } : {}) }, `Added tab ${label}`)}
           />
         </SidePanel>
       )}

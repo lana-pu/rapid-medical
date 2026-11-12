@@ -40,6 +40,8 @@ export type SectionInfo = {
   list: string;
   /** position in that list */
   at: number;
+  /** Product details: its tabs, for the Tabs panel */
+  tabs?: { label: string; href?: string }[];
 };
 
 export type PageInfo = {
@@ -79,6 +81,7 @@ function sections(list: StoredBlock[]): SectionInfo[] {
     fromRecords: !!b.source || def(b.type)?.category === "list",
     list: "",
     at: i,
+    ...(b.type === "productDetails" && !b.source ? { tabs: ((b.data as { tabs?: { label?: string; href?: string }[] }).tabs ?? []).map((t) => ({ label: String(t.label ?? ""), ...(t.href ? { href: t.href } : {}) })) } : {}),
   }));
   const nested = (n: Nested, id: string, l: string, at: number): SectionInfo => ({ id, type: n.type, name: blockName({ id, ...n }), variant: n.variant, variants: variantsOf(n), pinned: false, fromRecords: false, list: l, at });
   for (const b of list) {
