@@ -90,7 +90,7 @@ function blockField(row: Record<string, unknown>, r: Extract<Resolved, { kind: "
     if (check.kind !== "rich") throw new Error("This text has no formatting");
     return { name: label, label, type: "markdown" };
   }
-  if (kind === "image" || kind === "video" || kind === "url") return { name: label, label, type: "url" };
+  if (kind === "image" || kind === "video" || kind === "url" || check.url) return { name: label, label, type: "url" };
   return { name: label, label, type: check.kind === "rich" ? "markdown" : "textarea" };
 }
 

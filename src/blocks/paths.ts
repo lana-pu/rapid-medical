@@ -18,7 +18,10 @@ type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
 const def = (t: unknown) => (typeof t === "string" && Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] as unknown as BlockDef<BlockType>) : null);
 
-export type BlockPathCheck = { ok: true; type: string; key: string; kind: string | null } | { ok: false; reason: string };
+/** `url`: the value is an address (href, …Url) — validated as a URL whatever kind of edit writes it. */
+export type BlockPathCheck = { ok: true; type: string; key: string; kind: string | null; url: boolean } | { ok: false; reason: string };
+
+const URL_KEY = /^(href|url|src)$|(Href|Url|Src)$/;
 
 export function checkBlockPath(blocks: unknown, path: string[]): BlockPathCheck {
   const no = (reason: string): BlockPathCheck => ({ ok: false, reason });
@@ -84,5 +87,6 @@ export function checkBlockPath(blocks: unknown, path: string[]): BlockPathCheck 
   const value = (cur as Obj)[last as never];
   if (value !== undefined && value !== null && typeof value !== "string") return no("Only text and media can be changed here");
   const field = d.fields.find((f) => f.key === leaf[0]);
-  return { ok: true, type: d.type, key: leaf.join("."), kind: field?.kind ?? null };
+  const url = URL_KEY.test(last) || (IDX.test(last) && field?.kind === "media");
+  return { ok: true, type: d.type, key: leaf.join("."), kind: field?.kind ?? null, url };
 }

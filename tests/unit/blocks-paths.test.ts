@@ -49,6 +49,12 @@ describe("checkBlockPath", () => {
     expect(ok("9.data.title").ok).toBe(false);
     expect(ok("x.data.title").ok).toBe(false);
   });
+  it("addresses are marked as URLs whatever edit writes them", () => {
+    expect(ok("0.data.cta.href")).toMatchObject({ ok: true, url: true });
+    expect(ok("0.data.imageUrl")).toMatchObject({ ok: true, url: true });
+    expect(ok("1.data.tabs.0.blocks.1.blocks.0.data.images.0")).toMatchObject({ ok: true, url: true });
+    expect(ok("0.data.title")).toMatchObject({ ok: true, url: false });
+  });
   it("keys filled from other records are refused", () => {
     expect(ok("0.data.eyebrowLinks.0.label")).toMatchObject({ ok: false });
   });
