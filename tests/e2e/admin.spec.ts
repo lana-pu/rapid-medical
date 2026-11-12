@@ -15,23 +15,31 @@ test("editing a live record creates pending changes, preview shows them, publish
   const id = sql("select id from solutions where region='ous' and slug='lvo'");
   await page.goto(`/admin/solutions/${id}`);
   await expect(page.locator("select[name=status]")).toHaveCount(0); // live record: status via panel
-  await page.fill("input[name=heroTitle]", "E2E pending title");
+  // page content is edited on the page (ADR-007): the form keeps basics and SEO only
+  await expect(page.locator("input[name=heroTitle]")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Edit on page ✎" }).first()).toBeVisible();
+  const anon = await (await browser.newContext()).newPage();
+  await anon.goto("/ous/therapies/lvo");
+  const originalTitle = await anon.title();
+
+  await page.fill("input[name=metaTitle]", "E2E pending title");
   await page.click('button:has-text("Save")');
   await page.waitForURL(/pending=1/);
 
-  const anon = await (await browser.newContext()).newPage();
-  await anon.goto("/ous/therapies/lvo");
-  await expect(anon.locator("h1")).not.toHaveText("E2E pending title");
+  await anon.reload();
+  await expect(anon).toHaveTitle(originalTitle);
 
   const preview = await page.locator('a:has-text("Preview")').getAttribute("href");
   await anon.goto(preview!);
-  await expect(anon.locator("h1")).toHaveText("E2E pending title");
+  await expect(anon).toHaveTitle("E2E pending title");
+  await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS"); // the form save kept the page's sections
   await expect(anon.getByText("Preview mode")).toBeVisible();
 
   await page.click('button:has-text("Publish changes")');
   await page.waitForURL(/published=1/);
   await anon.goto("/api/preview?exit=1&redirect=/ous/therapies/lvo");
-  await expect(anon.locator("h1")).toHaveText("E2E pending title");
+  await expect(anon).toHaveTitle("E2E pending title");
+  await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
 
   // history has the baseline + draft + published, restore baseline
   await page.goto(`/admin/solutions/${id}/history`);
@@ -42,6 +50,7 @@ test("editing a live record creates pending changes, preview shows them, publish
   await page.click('button:has-text("Publish changes")');
   await page.waitForURL(/published=1/);
   await anon.goto("/ous/therapies/lvo");
+  await expect(anon).toHaveTitle(originalTitle);
   await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
 });
 
@@ -52,7 +61,7 @@ test("approval workflow blocks editors from publishing", async ({ page, browser 
   const ed = await (await browser.newContext()).newPage();
   await login(ed, "editor@e2e.test", ADMIN.password);
   await ed.goto(`/admin/solutions/${id}`);
-  await ed.fill("textarea[name=heroBody]", "Changed by editor");
+  await ed.fill("textarea[name=metaDescription]", "Changed by editor");
   await ed.click('button:has-text("Save")');
   await ed.waitForURL(/pending=1/);
   await expect(ed.locator('button:has-text("Publish changes")')).toBeDisabled();
@@ -74,7 +83,7 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await login(page);
   const id = sql("select id from solutions where region='apac' and slug='drivewire'");
   await page.goto(`/admin/solutions/${id}`);
-  await page.fill("input[name=heroTitle]", "Scheduled title");
+  await page.fill("input[name=metaTitle]", "Scheduled title");
   await page.click('button:has-text("Save")');
   await page.waitForURL(/pending=1/);
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
@@ -158,7 +167,7 @@ test("on-page editor: inline text edit → pending → publish; settings draft",
   await page.keyboard.type("Inline edited title");
   await page.keyboard.press("Enter");
   await expect(page.getByText("1 pending change on this page")).toBeVisible();
-  expect(sql("select data->>'heroTitle' from drafts where resource='solutions'")).toBe("Inline edited title");
+  expect(sql("select data->'blocks'->0->'data'->>'title' from drafts where resource='solutions'")).toBe("Inline edited title");
 
   const anon = await (await browser.newContext()).newPage();
   await anon.goto("/ous/therapies/lvo");

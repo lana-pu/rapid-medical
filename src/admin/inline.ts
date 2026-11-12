@@ -8,6 +8,7 @@ import { getSettingsGroup } from "./settings";
 import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
+import { checkBlockPath } from "@/blocks/paths";
 import { saveWithWorkflow, publish, discardDraft, getDraft, getEditable, canPublish, setReview, workflowSettings, hasWorkflow } from "./workflow";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -74,7 +75,23 @@ function setPath(obj: any, path: string[], value: unknown): any {
   return base;
 }
 
-type Resolved = { kind: "resource"; res: Resource; id: number; path: string[]; field: FieldDef } | { kind: "settings"; key: string; path: string[]; field: FieldDef };
+type Resolved =
+  | { kind: "resource"; res: Resource; id: number; path: string[]; field: FieldDef }
+  | { kind: "blocks"; res: Resource; id: number; path: string[]; field: FieldDef }
+  | { kind: "settings"; key: string; path: string[]; field: FieldDef };
+
+/** A field inside the page's block list (ADR-007): checked against the current blocks, typed by the kind of edit. */
+function blockField(row: Record<string, unknown>, r: Extract<Resolved, { kind: "blocks" }>, kind: InlineKind | null): FieldDef {
+  const check = checkBlockPath(row[r.path[0]], r.path.slice(1));
+  if (!check.ok) throw new Error(check.reason);
+  const label = check.key;
+  if (kind === "rich") {
+    if (check.kind !== "rich") throw new Error("This text has no formatting");
+    return { name: label, label, type: "markdown" };
+  }
+  if (kind === "image" || kind === "video" || kind === "url") return { name: label, label, type: "url" };
+  return { name: label, label, type: check.kind === "rich" ? "markdown" : "textarea" };
+}
 
 function resolve(t: Target): Resolved {
   const path = t.f.split(".").filter(Boolean);
@@ -89,6 +106,8 @@ function resolve(t: Target): Resolved {
   }
   const res = getResource(t.r);
   if (!res || !t.id) throw new Error("Unknown resource");
+  const top = res.fields.find((f) => f.name === path[0]);
+  if (top?.type === "blocks") return { kind: "blocks", res, id: t.id, path, field: top };
   const field = resolveField(res.fields, path);
   if (!field) throw new Error(`Field ${t.f} is not editable`);
   return { kind: "resource", res, id: t.id, path, field };
@@ -104,7 +123,8 @@ export async function readField(t: Target): Promise<{ value: unknown; label: str
   }
   const e = await getEditable(r.res, r.id);
   if (!e) throw new Error("Record not found");
-  return { value: getPath(e.row, r.path) ?? "", label: r.field.label };
+  const field = r.kind === "blocks" ? blockField(e.row, r, null) : r.field;
+  return { value: getPath(e.row, r.path) ?? "", label: field.label };
 }
 
 function coerce(field: FieldDef, kind: InlineKind, raw: unknown): unknown {
@@ -125,6 +145,17 @@ function coerce(field: FieldDef, kind: InlineKind, raw: unknown): unknown {
 export async function saveField(t: Target, kind: InlineKind, raw: unknown): Promise<{ pending: boolean }> {
   const user = await requireEditor();
   const r = resolve(t);
+  if (r.kind === "blocks") {
+    const e = await getEditable(r.res, r.id);
+    if (!e) throw new Error("Record not found");
+    const field = blockField(e.row, r, kind);
+    const next = setPath(e.row, r.path, coerce(field, kind, raw));
+    const { status: _s, id: _i, ...data } = next;
+    void _i;
+    const result = await saveWithWorkflow(r.res, r.id, { ...data, status: _s }, user);
+    if (!result.pending) for (const p of r.res.revalidate) revalidatePath(p, "layout");
+    return { pending: result.pending };
+  }
   if (!allowedKind(r.field, kind)) throw new Error(`Field ${t.f} cannot be edited as ${kind}`);
   const value = coerce(r.field, kind, raw);
 

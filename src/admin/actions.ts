@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getResource } from "./resources";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
-import { saveWithWorkflow, publish, unpublish, discardDraft, setReview, schedule, restoreRevision, canPublish, getDraft, hasWorkflow } from "./workflow";
+import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, setReview, schedule, restoreRevision, canPublish, getDraft, hasWorkflow } from "./workflow";
 import type { ReviewStatus } from "@/db";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
@@ -25,8 +25,15 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
   const res = getResource(slug);
   if (!res) return { message: "Unknown resource" };
 
-  const { data, errors } = parseForm(res, fd);
+  const parsed = parseForm(res, fd);
+  const { errors } = parsed;
   if (Object.keys(errors).length) return { errors, message: "Please fix the highlighted fields." };
+  // Fields edited on the page (ADR-007) are not in the form: keep what the page has now (pending draft over live).
+  let data = parsed.data;
+  if (id) {
+    const current = await getEditable(res, id);
+    if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
+  } else if (res.onCreate) data = res.onCreate(data);
 
   let result: { id: number; pending: boolean };
   try {

@@ -13,7 +13,7 @@ export default async function NewResource({ params }: { params: Promise<{ resour
   return (
     <>
       <PageHeader title={`New ${res.titleSingular.toLowerCase()}`} actions={<LinkButton href={`/admin/${res.slug}`}>← Back</LinkButton>} />
-      <ResourceForm resourceSlug={res.slug} fields={res.fields} row={null} products={prods} />
+      <ResourceForm resourceSlug={res.slug} fields={res.fields} row={null} products={prods} contentHref={null} />
     </>
   );
 }

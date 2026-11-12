@@ -30,6 +30,7 @@ export default async function EditResource({ params, searchParams }: { params: P
 
   const previewPath = res.previewUrl?.(row) ?? null;
   const previewHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/preview?token=${await makePreviewToken(previewPath)}`) : null;
+  const editHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
   const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => r !== row.region) : [];
 
   return (
@@ -63,10 +64,10 @@ export default async function EditResource({ params, searchParams }: { params: P
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div>
-          <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} />
+          <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (
-          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null} />
+          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={editHref} />
         )}
       </div>
     </>

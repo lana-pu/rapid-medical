@@ -3,6 +3,7 @@
  *   1. wait for Postgres
  *   2. apply migrations
  *   3. if the database has no content yet → seed it, link the media library, generate image variants
+ *   4. convert pages to block lists (ADR-007), idempotent
  *
  *   npx tsx --env-file=.env scripts/bootstrap.ts
  */
@@ -46,6 +47,7 @@ async function main() {
     console.log(`database already has content (${n} therapy pages) – skipping seed`);
     if (u === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) run("npx tsx scripts/seed.ts");
   }
+  run("npx tsx scripts/migrate-blocks.ts"); // pages → block lists (ADR-007); converts only what is not converted yet
   if (process.env.ADMIN_EMAIL) console.log(`admin login: ${process.env.ADMIN_EMAIL} (password from ADMIN_PASSWORD)`);
   console.log("bootstrap done");
 }

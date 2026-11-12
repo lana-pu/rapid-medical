@@ -19,6 +19,10 @@ markdown (Tiptap), json, link, table (редактор спецификаций,
 date, image (пикер медиатеки + загрузка), url, regions, region, product, status, repeater (drag-сортировка,
 свернуть, дублировать, вложенные), stringList.
 - Опубликованная запись: поле `status` скрыто (управляется панелью), подсказка «saving creates pending changes».
+- **Поля `onPage` (ADR-007, 2026-11-12)** в форме не показываются: содержимое страницы правится на странице. Вместо них —
+  блок «Page content» со ссылкой «Edit on page ✎». Сохранение формы оставляет их как есть (черновик поверх live).
+  Терапии: в форме Basics (без breadcrumb) и SEO; текстовые страницы: без `bodyHtml`. Новая запись получает список блоков
+  из шаблона (`src/blocks/templates.ts`).
 - **UnsavedGuard**: предупреждение при уходе с несохранённой формой + локальная копия в `localStorage`
   (`rm-draft:{resource}:{id|new}`) с восстановлением.
 

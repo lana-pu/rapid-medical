@@ -20,6 +20,8 @@ type Props = {
   products: Product[];
   /** Published records: status is controlled by the workflow panel, not the form */
   hideStatus?: boolean;
+  /** Link into the on-page editor for records whose content is edited on the page (null = new record, no link yet) */
+  contentHref?: string | null;
 };
 
 function toDateInput(v: unknown): string {
@@ -28,7 +30,7 @@ function toDateInput(v: unknown): string {
   return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
-export function ResourceForm({ resourceSlug, fields, row, products, hideStatus = false }: Props) {
+export function ResourceForm({ resourceSlug, fields, row, products, hideStatus = false, contentHref }: Props) {
   const [state, action, pending] = useActionState<SaveState, FormData>(saveResource, null);
   const errors = state?.errors ?? {};
   const formRef = useRef<HTMLFormElement>(null);
@@ -37,6 +39,7 @@ export function ResourceForm({ resourceSlug, fields, row, products, hideStatus =
   const sections: { name: string; fields: FieldDef[] }[] = [];
   for (const f of fields) {
     if (hideStatus && f.type === "status") continue;
+    if (f.onPage) continue; // edited on the page (ADR-007)
     const name = f.section ?? "";
     let s = sections.find((x) => x.name === name);
     if (!s) {
@@ -53,6 +56,14 @@ export function ResourceForm({ resourceSlug, fields, row, products, hideStatus =
       <UnsavedGuard formRef={formRef} storageKey={`rm-draft:${resourceSlug}:${row?.id ?? "new"}`} />
 
       {state?.message && <Notice kind="error">{state.message}</Notice>}
+
+      {contentHref !== undefined && fields.some((f) => f.onPage) && (
+        <div className="rounded-lg border border-neutral-200 bg-white p-5 text-sm text-neutral-700">
+          <div className="font-semibold text-neutral-900">Page content</div>
+          <p className="mt-1">Texts, pictures and sections of this page are edited on the page itself.{!row?.id && " The page starts from a template; open it after saving."}</p>
+          {contentHref && <a href={contentHref} className="mt-2 inline-block font-medium underline">Edit on page ✎</a>}
+        </div>
+      )}
 
       {sections.map((s) => (
         <fieldset key={s.name || "_"} className="rounded-lg border border-neutral-200 bg-white p-5">

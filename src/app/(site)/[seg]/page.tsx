@@ -4,7 +4,7 @@ import { isRegion } from "@/lib/regions";
 import { getPage } from "@/lib/content";
 import { redirectIfLegacy } from "@/lib/redirects";
 import { BlockList } from "@/blocks/render";
-import { pageToBlocks } from "@/blocks/from-pages";
+import { textPageBlocks } from "@/blocks/convert";
 
 /**
  * /us and /ous  → region landing (therapies index)
@@ -28,5 +28,5 @@ export default async function GlobalPage({ params }: { params: Promise<{ seg: st
     notFound();
   }
 
-  return <BlockList blocks={pageToBlocks(page)} />;
+  return <BlockList blocks={textPageBlocks(page)} />;
 }

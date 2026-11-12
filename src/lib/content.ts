@@ -16,6 +16,7 @@ import {
   drafts,
   type Region,
 } from "@/db";
+import { pageSummary } from "@/blocks/stored";
 
 /**
  * Public read layer.
@@ -59,12 +60,18 @@ export async function getSolutionsNav(region: Region) {
     .select({
       id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, therapyGroup: solutions.therapyGroup, proofPoint: solutions.proofPoint,
       heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name,
+      blocks: solutions.blocks,
     })
     .from(solutions)
     .leftJoin(products, eq(products.id, solutions.productId))
     .where(and(eq(solutions.region, region), await visible(solutions.status)))
     .orderBy(asc(solutions.sortOrder), asc(solutions.id));
-  return overlay("solutions", rows);
+  // A converted page (ADR-007) keeps its hero in the block list; the overview card shows that one.
+  return (await overlay("solutions", rows)).map(({ blocks, ...r }) => {
+    if (!blocks?.length) return r;
+    const sum = pageSummary(blocks);
+    return { ...r, heroTitle: sum.title ?? r.heroTitle, heroBody: sum.body ?? "", heroImageUrl: sum.imageUrl ?? null };
+  });
 }
 
 export async function getSolution(region: Region, slug: string) {

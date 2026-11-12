@@ -21,7 +21,8 @@ export type FieldType =
   | "product" // FK to products
   | "status"
   | "repeater" // array of objects → jsonb
-  | "stringList"; // array of strings → jsonb
+  | "stringList" // array of strings → jsonb
+  | "blocks"; // the page as a block list (ADR-007) — edited on the page only
 
 export type FieldDef = {
   name: string;
@@ -38,6 +39,8 @@ export type FieldDef = {
   /** Narrow column (half width) */
   half?: boolean;
   rows?: number;
+  /** Edited on the page (ADR-007): not in the form; a form save keeps the current value. */
+  onPage?: boolean;
 };
 
 export type ListColumn = {

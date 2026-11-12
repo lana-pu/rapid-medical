@@ -13,6 +13,7 @@
     "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
     "db:seed": "tsx --env-file=.env scripts/seed.ts",
     "db:reset": "tsx --env-file=.env scripts/seed.ts --reset",
+    "db:blocks": "tsx --env-file=.env scripts/migrate-blocks.ts",
     "duda:scrape": "tsx scripts/scrape-duda.ts",
     "duda:extract": "tsx scripts/extract-duda.ts",
     "duda:media": "tsx --env-file=.env scripts/migrate-media.ts",

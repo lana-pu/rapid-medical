@@ -10,7 +10,7 @@ import {
   uniqueIndex,
   index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 /* ------------------------------------------------------------------ */
 /*  Enums                                                              */
@@ -201,6 +201,13 @@ export const products = pgTable("products", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
+/**
+ * A page section stored in a block list (ADR-007). `type` and `variant` come from the block registry
+ * (src/blocks/registry.ts); `data` follows that block type's data shape; `source` names a list that is
+ * filled in at render time from other records (src/blocks/stored.ts → SOURCES).
+ */
+export type StoredBlock = { id: string; type: string; variant: string; data: Record<string, unknown>; source?: string };
+
 /* ------------------------------------------------------------------ */
 /*  Solutions = therapy pages (LVO, MVO, Aneurysm, Vasospasm, Access)   */
 /*  One row per (slug, region) because regulatory copy differs.        */
@@ -271,6 +278,9 @@ export const solutions = pgTable(
     regulatoryHtml: text("regulatory_html").notNull().default(""),
     /** Numbered references – rich text HTML */
     referencesHtml: text("references_html").notNull().default(""),
+
+    /** The page as a block list (ADR-007). null = not converted yet: built from the fields above. */
+    blocks: jsonb("blocks").$type<StoredBlock[] | null>(),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -434,6 +444,8 @@ export const pages = pgTable(
     region: regionEnum("region"),
     title: text("title").notNull(),
     bodyHtml: text("body_html").notNull().default(""),
+    /** The page as a block list (ADR-007). null = not converted yet: title + bodyHtml. */
+    blocks: jsonb("blocks").$type<StoredBlock[] | null>(),
     metaTitle: text("meta_title").notNull().default(""),
     metaDescription: text("meta_description").notNull().default(""),
     /** Social share (Open Graph) image; falls back to the hero image */
@@ -445,6 +457,31 @@ export const pages = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("pages_slug_region").on(t.slug, t.region)],
+);
+
+/* ------------------------------------------------------------------ */
+/*  Singleton pages (Home, About, Careers, Evidence, Therapies overview) */
+/* ------------------------------------------------------------------ */
+
+export const SITE_PAGE_KEYS = ["home", "about", "careers", "evidence", "therapies"] as const;
+export type SitePageKey = (typeof SITE_PAGE_KEYS)[number];
+
+/** Pages that exist once (or once per region) and are only edited on the page (ADR-007). */
+export const sitePages = pgTable(
+  "site_pages",
+  {
+    id: serial("id").primaryKey(),
+    key: text("key").$type<SitePageKey>().notNull(),
+    /** null = one page for all regions (Home, About, Careers) */
+    region: regionEnum("region"),
+    title: text("title").notNull(),
+    blocks: jsonb("blocks").$type<StoredBlock[]>().notNull().default([]),
+    status: statusEnum("status").notNull().default("published"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  // one page per key and region, and one global page per key
+  (t) => [uniqueIndex("site_pages_key_region").on(t.key, t.region), uniqueIndex("site_pages_key_global").on(t.key).where(sql`${t.region} is null`)],
 );
 
 /* ------------------------------------------------------------------ */
@@ -602,6 +639,7 @@ export type Webinar = typeof webinars.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type Job = typeof jobs.$inferSelect;
 export type Page = typeof pages.$inferSelect;
+export type SitePage = typeof sitePages.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
 export type Draft = typeof drafts.$inferSelect;

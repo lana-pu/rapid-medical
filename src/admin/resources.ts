@@ -13,6 +13,10 @@ import {
 import type { FieldDef, ListColumn } from "./fields";
 import { THERAPY_GROUPS } from "@/lib/therapy-groups";
 import { events } from "@/db/schema";
+import { templateBlocks } from "@/blocks/templates";
+
+/** The page's sections (ADR-007): edited on the page; the fields marked `onPage` moved into them. */
+const blocksField: FieldDef = { name: "blocks", label: "Page sections", type: "blocks", onPage: true };
 
 export type Resource = {
   slug: string;
@@ -29,6 +33,8 @@ export type Resource = {
   revalidate: string[];
   /** Build public preview URL for a row (optional) */
   previewUrl?: (row: Record<string, unknown>) => string | null;
+  /** Fill what the form does not ask for when a record is created (e.g. the page's first block list). */
+  onCreate?: (data: Record<string, unknown>) => Record<string, unknown>;
 };
 
 const statusField: FieldDef = { name: "status", label: "Status", type: "status", half: true };
@@ -50,6 +56,7 @@ export const RESOURCES: Resource[] = [
     sortBy: "sortOrder",
     revalidate: ["/us", "/ous"],
     previewUrl: (r) => `/${r.region}/therapies/${r.slug}`,
+    onCreate: (d) => ({ ...d, heroTitle: d.heroTitle || d.navLabel, blocks: templateBlocks("therapy", String(d.navLabel ?? "")) }),
     listColumns: [
       { name: "navLabel", label: "Name" },
       { name: "slug", label: "Slug" },
@@ -64,7 +71,7 @@ export const RESOURCES: Resource[] = [
       { name: "productId", label: "Product", type: "product", half: true, section: "Basics" },
       { ...statusField, section: "Basics" },
       { ...sortField, section: "Basics" },
-      { name: "breadcrumb", label: "Breadcrumb", type: "text", section: "Basics", placeholder: "OUR SOLUTIONS / LARGE VESSEL STROKE" },
+      { onPage: true, name: "breadcrumb", label: "Breadcrumb", type: "text", section: "Basics", placeholder: "OUR SOLUTIONS / LARGE VESSEL STROKE" },
       {
         name: "therapyGroup",
         label: "Group in the menu and on the overview",
@@ -75,18 +82,19 @@ export const RESOURCES: Resource[] = [
       },
       { name: "proofPoint", label: "Proof point on the overview card", type: "text", half: true, section: "Basics", help: "One line with a cited result. Optional; fill in after MLR approval." },
 
-      { name: "heroTitle", label: "Hero title", type: "text", required: true, section: "Hero" },
-      { name: "heroBody", label: "Hero body", type: "textarea", section: "Hero", rows: 3 },
-      { name: "heroImageUrl", label: "Hero image (or video poster)", type: "image", section: "Hero", half: true },
-      { name: "heroVideoUrl", label: "Hero background video (mp4)", type: "image", section: "Hero", half: true },
-      { name: "heroCta", label: "Hero CTA", type: "link", section: "Hero" },
+      { onPage: true, name: "heroTitle", label: "Hero title", type: "text", required: true, section: "Hero" },
+      { onPage: true, name: "heroBody", label: "Hero body", type: "textarea", section: "Hero", rows: 3 },
+      { onPage: true, name: "heroImageUrl", label: "Hero image (or video poster)", type: "image", section: "Hero", half: true },
+      { onPage: true, name: "heroVideoUrl", label: "Hero background video (mp4)", type: "image", section: "Hero", half: true },
+      { onPage: true, name: "heroCta", label: "Hero CTA", type: "link", section: "Hero" },
 
-      { name: "introTitle", label: "Intro title", type: "text", section: "Intro" },
-      { name: "introBody", label: "Intro body", type: "textarea", section: "Intro", rows: 3 },
-      { name: "introImageUrl", label: "Intro image", type: "image", section: "Intro", half: true },
-      { name: "introVideoUrl", label: "Intro video (mp4)", type: "image", section: "Intro", half: true },
+      { onPage: true, name: "introTitle", label: "Intro title", type: "text", section: "Intro" },
+      { onPage: true, name: "introBody", label: "Intro body", type: "textarea", section: "Intro", rows: 3 },
+      { onPage: true, name: "introImageUrl", label: "Intro image", type: "image", section: "Intro", half: true },
+      { onPage: true, name: "introVideoUrl", label: "Intro video (mp4)", type: "image", section: "Intro", half: true },
 
       {
+        onPage: true,
         name: "benefits",
         label: "Benefit blocks",
         type: "repeater",
@@ -115,9 +123,10 @@ export const RESOURCES: Resource[] = [
         ],
       },
 
-      { name: "overviewTitle", label: "Overview title", type: "text", section: "Product overview", half: true },
-      { name: "overviewBody", label: "Overview body", type: "textarea", section: "Product overview", rows: 3 },
+      { onPage: true, name: "overviewTitle", label: "Overview title", type: "text", section: "Product overview", half: true },
+      { onPage: true, name: "overviewBody", label: "Overview body", type: "textarea", section: "Product overview", rows: 3 },
       {
+        onPage: true,
         name: "overviewFeatures",
         label: "Features (icon + title + text, 2×2)",
         type: "repeater",
@@ -128,13 +137,14 @@ export const RESOURCES: Resource[] = [
           { name: "body", label: "Text", type: "textarea", rows: 2 },
         ],
       },
-      { name: "annotatedImage", label: "Device diagram (JSON: imageUrl, caption, markers[{x, y, label}] – x/y in % of the image)", type: "json", section: "Product overview" },
-      { name: "overviewImageUrl", label: "Overview image (legacy – used only when no features are filled in)", type: "image", section: "Product overview" },
-      { name: "specs", label: "Specifications table", type: "table", section: "Product overview", help: "Shown instead of the specification images when filled in." },
-      { name: "specImageUrls", label: "Specification images (legacy)", type: "stringList", section: "Product overview", help: "One URL per line. Used only while the table above is empty." },
-      { name: "specNote", label: "Specification note", type: "text", section: "Product overview" },
+      { onPage: true, name: "annotatedImage", label: "Device diagram (JSON: imageUrl, caption, markers[{x, y, label}] – x/y in % of the image)", type: "json", section: "Product overview" },
+      { onPage: true, name: "overviewImageUrl", label: "Overview image (legacy – used only when no features are filled in)", type: "image", section: "Product overview" },
+      { onPage: true, name: "specs", label: "Specifications table", type: "table", section: "Product overview", help: "Shown instead of the specification images when filled in." },
+      { onPage: true, name: "specImageUrls", label: "Specification images (legacy)", type: "stringList", section: "Product overview", help: "One URL per line. Used only while the table above is empty." },
+      { onPage: true, name: "specNote", label: "Specification note", type: "text", section: "Product overview" },
 
       {
+        onPage: true,
         name: "howItWorks",
         label: "Steps",
         type: "repeater",
@@ -148,6 +158,7 @@ export const RESOURCES: Resource[] = [
       },
 
       {
+        onPage: true,
         name: "inPractice",
         label: "In-practice items",
         type: "repeater",
@@ -172,17 +183,18 @@ export const RESOURCES: Resource[] = [
         ],
       },
 
-      { name: "actionLinks", label: "Action links", type: "repeater", section: "Actions", fields: actionLinkFields, help: "Not shown on the page since 2026-11 (two actions: Request a demo + Customer support → contact form). Kept for reference." },
-      { name: "actionNote", label: "Action note", type: "text", section: "Actions", placeholder: "Canada: orders.canada@rapid-medical.com" },
-      { name: "webinarCtaEnabled", label: "Show webinar CTA", type: "boolean", section: "Actions" },
+      { onPage: true, name: "actionLinks", label: "Action links", type: "repeater", section: "Actions", fields: actionLinkFields, help: "Not shown on the page since 2026-11 (two actions: Request a demo + Customer support → contact form). Kept for reference." },
+      { onPage: true, name: "actionNote", label: "Action note", type: "text", section: "Actions", placeholder: "Canada: orders.canada@rapid-medical.com" },
+      { onPage: true, name: "webinarCtaEnabled", label: "Show webinar CTA", type: "boolean", section: "Actions" },
 
-      { name: "closingTitle", label: "Closing title", type: "text", section: "Closing" },
-      { name: "closingBody", label: "Closing body", type: "textarea", section: "Closing", rows: 2 },
-      { name: "closingEmbedUrl", label: "Closing video (YouTube URL or mp4)", type: "url", section: "Closing" },
+      { onPage: true, name: "closingTitle", label: "Closing title", type: "text", section: "Closing" },
+      { onPage: true, name: "closingBody", label: "Closing body", type: "textarea", section: "Closing", rows: 2 },
+      { onPage: true, name: "closingEmbedUrl", label: "Closing video (YouTube URL or mp4)", type: "url", section: "Closing" },
 
-      { name: "regulatoryHtml", label: "Indications / contraindications", type: "markdown", section: "Regulatory", rows: 8 },
-      { name: "referencesHtml", label: "References ", type: "markdown", section: "Regulatory", rows: 8 },
+      { onPage: true, name: "regulatoryHtml", label: "Indications / contraindications", type: "markdown", section: "Regulatory", rows: 8 },
+      { onPage: true, name: "referencesHtml", label: "References ", type: "markdown", section: "Regulatory", rows: 8 },
 
+      blocksField,
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
       { name: "shareImageUrl", label: "Social share image (Open Graph; falls back to the hero image)", type: "image", section: "SEO" },
@@ -397,6 +409,7 @@ export const RESOURCES: Resource[] = [
     sortBy: "updatedAt",
     revalidate: ["/"],
     previewUrl: (r) => (r.region ? `/${r.region}/${r.slug}` : `/${r.slug}`),
+    onCreate: (d) => ({ ...d, blocks: templateBlocks("text", String(d.title ?? "")) }),
     listColumns: [
       { name: "title", label: "Title" },
       { name: "slug", label: "Slug" },
@@ -409,7 +422,8 @@ export const RESOURCES: Resource[] = [
       { name: "slug", label: "Slug", type: "slug", required: true, half: true },
       { name: "region", label: "Region (empty = global)", type: "region", half: true },
       { name: "noindex", label: "Hide from search engines", type: "boolean", half: true },
-      { name: "bodyHtml", label: "Body ", type: "markdown", rows: 20 },
+      { onPage: true, name: "bodyHtml", label: "Body ", type: "markdown", rows: 20 },
+      blocksField,
       { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
       { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
       { ...statusField, section: "SEO" },

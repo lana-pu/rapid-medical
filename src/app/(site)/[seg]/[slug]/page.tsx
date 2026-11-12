@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
 import { getPage } from "@/lib/content";
 import { redirectIfLegacy } from "@/lib/redirects";
-import { isRegion, REGION_LABELS } from "@/lib/regions";
+import { isRegion } from "@/lib/regions";
 import { BlockList } from "@/blocks/render";
-import { pageToBlocks } from "@/blocks/from-pages";
+import { textPageBlocks } from "@/blocks/convert";
 
 /** Regional landing pages, e.g. /us/success-study-final-results */
 export async function generateMetadata({ params }: { params: Promise<{ seg: string; slug: string }> }): Promise<Metadata> {
@@ -35,5 +35,5 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
     notFound();
   }
 
-  return <BlockList blocks={pageToBlocks(page, REGION_LABELS[region])} />;
+  return <BlockList blocks={textPageBlocks(page)} />;
 }
