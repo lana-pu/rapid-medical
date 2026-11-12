@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { Section } from "@/components/site/primitives";
 import { isEditing } from "@/lib/editing";
 import { BLOCKS } from "./registry";
+import { blockName } from "./diff";
 import type { Block, BlockDef, BlockType, RenderBlock } from "./types";
 
 const def = (b: Block) => BLOCKS[b.type] as unknown as BlockDef<BlockType>;
@@ -23,7 +24,7 @@ export function BlockList({ blocks }: { blocks: Block[] }) {
   // between its mark and the next one (no wrappers, so the layout is the same as visitors see).
   const marked = (b: Block, i: number, node: ReactNode, key: number) => (
     <Fragment key={key}>
-      <Mark i={i} uid={b.uid} />
+      <Mark i={i} uid={b.uid} b={b} />
       {node}
     </Fragment>
   );
@@ -51,7 +52,9 @@ export function BlockList({ blocks }: { blocks: Block[] }) {
   return <>{out}</>;
 }
 
-async function Mark({ i, uid }: { i: number; uid?: string }) {
+async function Mark({ i, uid, b }: { i: number; uid?: string; b?: Block }) {
   if (!uid || !(await isEditing())) return null;
-  return <i hidden data-rm-b={JSON.stringify({ i, id: uid })} />;
+  // what the section is, for the editor in the static demo (no server to ask)
+  const info = b ? { t: b.type, v: b.variant, n: blockName({ id: uid, type: b.type, variant: b.variant as string, data: b.data as Record<string, unknown> }), p: !!def(b).pinned } : {};
+  return <i hidden data-rm-b={JSON.stringify({ i, id: uid, ...info })} />;
 }

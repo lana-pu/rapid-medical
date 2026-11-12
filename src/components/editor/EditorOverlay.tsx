@@ -11,7 +11,7 @@ import type { RegionDiff } from "@/blocks/diff";
 import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
-import { demoApi, demoPageApi, applyDemoState, demoEditorOff, setDemoEditorOff } from "./demo-store";
+import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
 import { BAR_H, buttons, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TopBar, statusText } from "./editor-ui";
 
 /**
@@ -69,9 +69,8 @@ function readPageRef(): Ref | null {
 
 /** Each section spans from its mark to the next one (the marks are invisible; no wrappers around blocks). */
 function measure(): Box[] {
-  const marks = Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]"))
-    .map((el) => ({ el, ...(JSON.parse(el.getAttribute("data-rm-b") || "{}") as { i: number; id: string }) }))
-    .sort((a, b) => a.i - b.i);
+  // document order (the static demo moves sections in the page)
+  const marks = Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).map((el, k) => ({ el, ...(JSON.parse(el.getAttribute("data-rm-b") || "{}") as { id: string }), i: k }));
   const out: Box[] = [];
   for (let k = 0; k < marks.length - 1; k++) {
     const m = marks[k];
@@ -156,8 +155,9 @@ export default function EditorOverlay() {
 
   /* ---- load on every page ---- */
   useEffect(() => {
-    const t = setTimeout(() => {
+    const t = setTimeout(async () => {
       if (DEMO) {
+        await applyDemoSections(); // this browser's section changes, replayed on the static page
         applyDemoState();
         setOff(demoEditorOff());
       }
@@ -512,8 +512,10 @@ export default function EditorOverlay() {
   const plusFor = [sel, hovered ? boxes.find((b) => b.id === hovered) : null].filter((b): b is Box => !!b);
   const plusAt = new Map<number, number>(); // insert index → y (document)
   for (const b of plusFor) {
-    plusAt.set(b.i, b.top);
-    plusAt.set(b.i + 1, b.top + b.height);
+    // position in the stored list (a section with nothing to list is stored but not shown)
+    const at = sectionById.get(b.id)?.i ?? b.i;
+    plusAt.set(at, b.top);
+    plusAt.set(at + 1, b.top + b.height);
   }
   const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
   const title = info?.title ?? (typeof document === "undefined" ? "" : document.title.split(/\s[|–-]\s/)[0]);

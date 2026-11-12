@@ -69,7 +69,7 @@ export function TopBar(props: {
         )}
         <span className="min-w-0 flex-1 truncate text-xs text-neutral-300" role="status" aria-live="polite">{props.status}</span>
         <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change">↶ Undo</button>
-        {info && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
+        {info && !props.demo && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
         <button type="button" className={btn} onClick={props.onPreview}>Preview</button>
         <button type="button" disabled={!props.hasChanges || props.busy} onClick={props.onPublish} className="rounded bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 disabled:bg-neutral-700 disabled:text-neutral-400">
           Publish

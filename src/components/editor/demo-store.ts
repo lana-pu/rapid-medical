@@ -6,7 +6,7 @@
  * the visitor's browser.
  */
 import type { PendingItem, InlineKind } from "@/admin/inline";
-import { withBase } from "@/lib/demo";
+import { BASE, withBase } from "@/lib/demo";
 
 const KEY = "rm-demo:v1";
 const OFF = "rm-demo:editor-off";
@@ -133,14 +133,14 @@ export const demoApi = {
   },
   async publishTargets(targets: { r: string; id: number }[]) {
     const s = load();
-    let n = 0;
+    let n = demoPublishSections();
     for (const t of targets) for (const [kk, e] of Object.entries(s)) if (kk.startsWith(`${t.r}#${t.id}.`) && !e.published) { e.published = true; n++; }
     save(s);
     return { published: n, blocked: [] as string[] };
   },
   async discardTargets(targets: { r: string; id: number }[]) {
     const s = load();
-    let n = 0;
+    let n = demoDiscardSections();
     for (const t of targets) for (const kk of Object.keys(s)) if (kk.startsWith(`${t.r}#${t.id}.`) && !s[kk].published) { delete s[kk]; n++; }
     save(s);
     if (n) setTimeout(() => location.reload(), 300); // originals come back from the static page
@@ -159,17 +159,198 @@ export const demoApi = {
 /*  Page editor (sections) in the demo                                 */
 /* ------------------------------------------------------------------ */
 
+/*
+ * No server: sections are moved, copied and removed in the page itself, new ones are copied from the style guide
+ * (/style-guide has every block variant on sample content). The operations are kept per page in this browser and
+ * replayed on load. Copies and new sections show sample content and are not editable in the demo; changing a
+ * section's layout, History and region comparison need the server and are not offered.
+ */
+
 type PageApi = typeof import("@/admin/page-editor");
-const NO_SERVER = { error: "Not available in the demo" };
+type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string };
+type SectionsState = { ops: Op[]; published: number };
+
+const secKey = () => `rm-demo:sections:${location.pathname}`;
+function loadSections(): SectionsState {
+  try {
+    return { ops: [], published: 0, ...(JSON.parse(localStorage.getItem(secKey()) || "{}") as Partial<SectionsState>) };
+  } catch {
+    return { ops: [], published: 0 };
+  }
+}
+function saveSections(st: SectionsState) {
+  try {
+    localStorage.setItem(secKey(), JSON.stringify(st));
+  } catch {
+    /* private mode */
+  }
+}
+
+type MarkInfo = { id: string; t?: string; v?: string; n?: string; p?: boolean };
+const marks = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).filter((m) => (JSON.parse(m.getAttribute("data-rm-b") || "{}") as MarkInfo).id !== "end");
+const info = (m: Element) => JSON.parse(m.getAttribute("data-rm-b") || "{}") as MarkInfo;
+const markOf = (id: string) => marks().find((m) => info(m).id === id) ?? null;
+const endMark = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]")).find((m) => info(m).id === "end") ?? null;
+
+/** The DOM of one section: its own band when it is alone in it, else the mark and its siblings up to the next mark. */
+function unitOf(mark: HTMLElement): Node[] {
+  const host = endMark()?.parentElement;
+  if (host && mark.parentElement !== host) {
+    let a: HTMLElement | null = mark;
+    while (a && a.parentElement !== host) a = a.parentElement;
+    if (a && a.querySelectorAll("[data-rm-b]").length === 1) return [a];
+  }
+  const out: Node[] = [mark];
+  // up to the next section: a mark, or an element that holds marks (a band of stacked sections)
+  for (let n = mark.nextSibling; n && !(n instanceof HTMLElement && (n.hasAttribute("data-rm-b") || n.querySelector("[data-rm-b]"))); n = n.nextSibling) out.push(n);
+  return out;
+}
+const insertBefore = (nodes: Node[], ref: Node) => nodes.forEach((n) => ref.parentNode?.insertBefore(n, ref));
+const insertAfter = (nodes: Node[], ref: Node) => [...nodes].reverse().forEach((n) => ref.parentNode?.insertBefore(n, ref.nextSibling));
+
+function setMark(el: HTMLElement, id: string, name: string, type: string, variant: string) {
+  el.setAttribute("data-rm-b", JSON.stringify({ i: 0, id, t: type, v: variant, n: name, p: false }));
+}
+
+let presetDoc: Promise<Document> | null = null;
+async function presetNodes(type: string, variant: string): Promise<Node[]> {
+  presetDoc ??= fetch(withBase("/style-guide/")).then(async (r) => new DOMParser().parseFromString(await r.text(), "text/html"));
+  const box = (await presetDoc).querySelector(`[data-rm-preset="${CSS.escape(`${type}:${variant}`)}"]`);
+  if (!box) throw new Error("This section is not in the demo");
+  return Array.from(box.childNodes).map((n) => document.importNode(n, true));
+}
+
+async function apply(op: Op): Promise<void> {
+  if (op.op === "add") {
+    const list = marks();
+    const ref = list[op.at] ?? endMark();
+    if (!ref) return;
+    const mark = document.createElement("i");
+    mark.hidden = true;
+    setMark(mark, op.newId, op.name, op.type, op.variant);
+    const nodes = [mark, ...(await presetNodes(op.type, op.variant))];
+    const refUnit = list[op.at] ? unitOf(list[op.at]) : [ref];
+    insertBefore(nodes, refUnit[0]);
+    return;
+  }
+  const m = markOf(op.id);
+  if (!m) return;
+  const unit = unitOf(m);
+  if (op.op === "remove") unit.forEach((n) => n.parentNode?.removeChild(n));
+  else if (op.op === "duplicate") {
+    const copy = unit.map((n) => n.cloneNode(true));
+    const first = copy[0] as HTMLElement;
+    const mk = first.hasAttribute?.("data-rm-b") ? first : (first.querySelector?.("[data-rm-b]") as HTMLElement | null);
+    const src = info(m);
+    if (mk) setMark(mk, op.newId, `${src.n ?? "Section"} (copy)`, src.t ?? "", src.v ?? "");
+    copy.forEach((n) => n instanceof HTMLElement && [n, ...Array.from(n.querySelectorAll("[data-e]"))].forEach((e) => e.removeAttribute("data-e")));
+    insertAfter(copy, unit[unit.length - 1]);
+  } else if (op.op === "move") {
+    const list = marks();
+    const i = list.indexOf(m);
+    const other = list[i + op.dir];
+    if (!other) return;
+    const ou = unitOf(other);
+    if (op.dir < 0) insertBefore(unit, ou[0]);
+    else insertAfter(unit, ou[ou.length - 1]);
+  }
+}
+
+/** Replay this page's section changes (after load). */
+export async function applyDemoSections(): Promise<void> {
+  if (document.documentElement.dataset.rmSections === "applied") return;
+  document.documentElement.dataset.rmSections = "applied";
+  for (const op of loadSections().ops) await apply(op);
+}
+
+const sectionsNow = () =>
+  marks().map((m) => {
+    const x = info(m);
+    return { id: x.id, type: x.t ?? "", name: x.n ?? "Section", variant: x.v ?? "", variants: [], pinned: !!x.p, fromRecords: false };
+  });
+
+const describe = (op: Op): string => {
+  const name = op.op === "add" ? op.name : (info(markOf(op.id) ?? document.createElement("i")).n ?? "a section");
+  return op.op === "add" ? `Added section ${op.name}` : op.op === "remove" ? "Removed a section" : op.op === "duplicate" ? `Copied ${name}` : `Moved ${name}`;
+};
 
 /** Browser-only stand-in for src/admin/page-editor.ts. */
 export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K]>) => Promise<Awaited<ReturnType<PageApi[K]>>> } = {
-  pageInfo: async () => NO_SERVER,
-  editBlocks: async () => NO_SERVER,
-  pageChanges: async () => NO_SERVER,
-  pageHistory: async () => NO_SERVER,
-  restorePage: async () => NO_SERVER,
-  compareWith: async () => NO_SERVER,
-  currentPageVersion: async () => NO_SERVER,
+  async pageInfo(ref) {
+    const st = loadSections();
+    const presets = JSON.parse(document.querySelector("[data-rm-page]")?.getAttribute("data-rm-presets") || "[]");
+    return {
+      ref,
+      title: document.title.split(/\s[|–]\s/)[0],
+      type: "Page",
+      region: null,
+      regions: [],
+      status: st.ops.length > st.published ? "changed" : "live",
+      changedBy: st.ops.length > st.published ? "you (demo)" : null,
+      changedAt: null,
+      version: "demo",
+      livePath: location.pathname.replace(BASE, "") || "/",
+      adminHref: withBase(`/admin/${ref.r}/${ref.id}`),
+      sections: sectionsNow(),
+      presets,
+      canPublish: true,
+      requireApproval: false,
+      user: "Demo editor",
+    };
+  },
+  async editBlocks(_ref, op) {
+    const st = loadSections();
+    const before = sectionsNow();
+    let rec: Op;
+    if (op.op === "set") {
+      // undo: drop the last change and replay the rest
+      st.ops.pop();
+      st.published = Math.min(st.published, st.ops.length);
+      saveSections(st);
+      setTimeout(() => location.reload(), 300);
+      return { version: "demo", sections: before, undo: [] };
+    }
+    if (op.op === "variant") return { error: "Changing the layout needs the server; not in the demo" };
+    const target = "id" in op ? before.find((x) => x.id === op.id) : null;
+    if (target?.pinned) return { error: "This section stays at the end of the page" };
+    const newId = Math.random().toString(16).slice(2, 12);
+    if (op.op === "add") {
+      const p = (JSON.parse(document.querySelector("[data-rm-page]")?.getAttribute("data-rm-presets") || "[]") as { type: string; variant: string; name: string }[]).find((x) => x.type === op.type && x.variant === op.variant);
+      rec = { op: "add", at: op.at, type: op.type, variant: op.variant, newId, name: p?.name ?? op.type };
+    } else if (op.op === "duplicate") rec = { op: "duplicate", id: op.id, newId };
+    else rec = op;
+    try {
+      await apply(rec);
+    } catch (e) {
+      return { error: (e as Error).message };
+    }
+    st.ops.push(rec);
+    saveSections(st);
+    return { version: "demo", sections: sectionsNow(), added: "newId" in rec ? rec.newId : undefined, undo: [] };
+  },
+  async pageChanges() {
+    const st = loadSections();
+    return { items: st.ops.slice(st.published).map(describe), by: null, at: null };
+  },
+  pageHistory: async () => ({ error: "History needs the server; not in the demo" }),
+  restorePage: async () => ({ error: "History needs the server; not in the demo" }),
+  compareWith: async () => ({ error: "Comparing regions needs the server; not in the demo" }),
+  currentPageVersion: async () => ({ version: "demo" }),
   createPage: async () => ({ error: "New pages need the server; the demo has none" }),
 };
+
+/** Publish / discard in the demo also cover the page's sections. */
+export function demoPublishSections(): number {
+  const st = loadSections();
+  const n = st.ops.length - st.published;
+  st.published = st.ops.length;
+  saveSections(st);
+  return n;
+}
+export function demoDiscardSections(): number {
+  const st = loadSections();
+  const n = st.ops.length - st.published;
+  st.ops = st.ops.slice(0, st.published);
+  saveSections(st);
+  return n;
+}

@@ -74,7 +74,10 @@ export default function StyleGuidePage() {
                           {v.description && <span className="text-muted"> — {v.description}</span>}
                         </div>
                       </Container>
-                      <BlockList blocks={[block]} />
+                      {/* the demo's «Add section» copies a new section from here (no server in the static build) */}
+                      <div data-rm-preset={`${d.type}:${v.id}`}>
+                        <BlockList blocks={[block]} />
+                      </div>
                     </div>
                   );
                 })}
