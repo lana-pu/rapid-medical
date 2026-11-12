@@ -5,6 +5,21 @@ import { DEFAULT_NAVIGATION } from "@/lib/navigation";
 export const mayEditGroup = (user: { role: string }, g: { access?: "designer" | "admin" }) =>
   !g.access || user.role === "admin" || (g.access === "designer" && user.role === "designer");
 
+/**
+ * The group's value with every text field blanked: two values with the same «structure» differ only in texts
+ * (labels). Someone with page-label rights only may publish a draft only if its structure equals the live one.
+ */
+export function structureOf(fields: FieldDef[], v: unknown): unknown {
+  if (!v || typeof v !== "object") return v;
+  const o = v as Record<string, unknown>;
+  const out: Record<string, unknown> = { ...o };
+  for (const f of fields) {
+    if (f.type === "text") out[f.name] = "";
+    else if (f.type === "repeater" && f.fields && Array.isArray(o[f.name])) out[f.name] = (o[f.name] as unknown[]).map((it) => structureOf(f.fields!, it));
+  }
+  return out;
+}
+
 /** May this person edit (and publish or discard) the group's changes made on the page? */
 export const mayEditOnPage = (user: { role: string }, g: { access?: "designer" | "admin"; pageLabels?: boolean }) => mayEditGroup(user, g) || !!g.pageLabels;
 

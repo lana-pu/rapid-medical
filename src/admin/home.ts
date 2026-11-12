@@ -2,7 +2,7 @@ import "server-only";
 import { and, count, desc, eq, isNull, like, max, notInArray } from "drizzle-orm";
 import { auditLog, comments, contactSubmissions, db, media, publications, users } from "@/db";
 import { listSettingDrafts } from "@/lib/settings";
-import { getSettingsGroup, mayEditOnPage } from "./settings";
+import { getSettingsGroup, mayEditGroup, mayEditOnPage } from "./settings";
 import { getResource } from "./resources";
 import { pendingDrafts } from "./workflow";
 import { getRow } from "./engine";
@@ -41,7 +41,9 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
   for (const s of settingDrafts) {
     const g = getSettingsGroup(s.key);
     if (!g || !mayEditOnPage(user, g)) continue;
-    out.push({ key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: "Open", href: `/admin/settings?group=${s.key}` });
+    // page-label rights only: the way in is the page, not the limited settings screen
+    const own = mayEditGroup(user, g);
+    out.push({ key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: own ? "Open" : "Open on page", href: own ? `/admin/settings?group=${s.key}` : "/api/editor?on=1&redirect=%2F" });
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));
   if (newRequests) out.unshift({ key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });

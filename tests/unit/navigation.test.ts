@@ -24,3 +24,21 @@ describe("menu and footer", () => {
     expect(menuHref({ label: "E", kind: "evidence" }, "apac")).toBe("/apac/evidence");
   });
 });
+
+import { getSettingsGroup, groupValue, structureOf } from "../../src/admin/settings";
+
+describe("menu labels vs structure", () => {
+  const g = getSettingsGroup("navigation")!;
+  const live = groupValue(g, {});
+  const same = (v: unknown) => JSON.stringify(structureOf(g.fields, v)) === JSON.stringify(structureOf(g.fields, live));
+  it("a changed label keeps the structure", () => {
+    const menu = (live.menu as { label: string }[]).map((m, i) => (i === 5 ? { ...m, label: "Join us" } : m));
+    expect(same({ ...live, menu, copyright: "x" })).toBe(true);
+  });
+  it("a changed address, a new or a removed item does not", () => {
+    const menu = live.menu as { label: string; href?: string }[];
+    expect(same({ ...live, menu: menu.map((m, i) => (i === 5 ? { ...m, href: "https://evil.example" } : m)) })).toBe(false);
+    expect(same({ ...live, menu: [...menu, { label: "New", kind: "page", href: "/x" }] })).toBe(false);
+    expect(same({ ...live, menu: menu.slice(1) })).toBe(false);
+  });
+});

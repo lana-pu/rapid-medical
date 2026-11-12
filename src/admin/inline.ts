@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession, isReady, type SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getSettingDraft, getLiveSetting, setSettingDraft, deleteSettingDraft, publishSettingDraft } from "@/lib/settings";
-import { getSettingsGroup, groupValue, mayEditOnPage } from "./settings";
+import { getSettingsGroup, groupValue, mayEditGroup, mayEditOnPage, structureOf } from "./settings";
 import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
@@ -182,7 +182,14 @@ async function saveFieldChecked(r: Resolved, t: Target, kind: InlineKind, raw: u
 
   if (r.kind === "settings") {
     const [live, draft] = await Promise.all([getLiveSetting(r.key), getSettingDraft(r.key)]);
-    const next = setPath(groupValue(getSettingsGroup(r.key), live, draft?.value), r.path, value);
+    const group = getSettingsGroup(r.key);
+    const current = groupValue(group, live, draft?.value);
+    if (group?.access && !mayEditGroup(user, group)) {
+      // labels only: an item that is already there, never an empty label (the structure is the designers')
+      if (getPath(current, r.path) === undefined) throw new Error("This item is not in the menu");
+      if (typeof value !== "string" || !value.trim()) throw new Error("A label cannot be empty");
+    }
+    const next = setPath(current, r.path, value);
     await setSettingDraft(r.key, next, user);
     await audit(user, "save", { resource: `settings:${r.key}`, label: r.field.label, meta: { pending: true, inline: true, field: t.f } });
     return { pending: true };
@@ -249,6 +256,11 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
       const k = t.r.slice(9);
       const group = getSettingsGroup(k);
       if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
+      if (!mayEditGroup(user, group)) {
+        // page-label rights: the draft may change texts only
+        const [live, draft] = await Promise.all([getLiveSetting(k), getSettingDraft(k)]);
+        if (draft && JSON.stringify(structureOf(group.fields, groupValue(group, live))) !== JSON.stringify(structureOf(group.fields, groupValue(group, live, draft.value)))) continue;
+      }
       if (await publishSettingDraft(k)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
