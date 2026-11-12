@@ -28,7 +28,8 @@ const pageApi = DEMO ? demoPageApi : pageLive;
 type Tag = { r: string; id: number; f: string; k: "text" | "rich" | "link" | "media"; fh?: string; fv?: string };
 type Ref = { r: string; id: number };
 type Box = { id: string; i: number; l: string; top: number; left: number; width: number; height: number };
-type Undo = { kind: "field"; t: { r: string; id: number; f: string }; k: InlineKind; prev: string; label: string } | { kind: "blocks"; prev: StoredBlock[]; label: string };
+/** A step of Undo / Redo: what to put back (`prev`); a field also keeps what it replaces (`next`) for the way back. */
+type Undo = { kind: "field"; t: { r: string; id: number; f: string }; k: InlineKind; prev: string; next: string; label: string } | { kind: "blocks"; prev: StoredBlock[]; label: string };
 type Panel =
   | { k: "rich"; tag: Tag; value: string; label: string }
   | { k: "link"; tag: Tag; label: string; href: string }
@@ -123,6 +124,8 @@ export default function EditorOverlay() {
   const [preview, setPreview] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [undoCount, setUndoCount] = useState(0);
+  const [redoCount, setRedoCount] = useState(0);
+  const redo = useRef<Undo[]>([]);
   const [comments, setComments] = useState<CommentView[]>([]);
   const [picking, setPicking] = useState(false);
   const pickingRef = useRef(false);
@@ -195,6 +198,8 @@ export default function EditorOverlay() {
       }
       undo.current = [];
       setUndoCount(0);
+      redo.current = [];
+      setRedoCount(0);
       setSelected(null);
       setCompare(null);
       void loadInfo();
@@ -262,10 +267,15 @@ export default function EditorOverlay() {
     await Promise.all([loadInfo(), loadLegacy()]);
   }, [refresh, loadInfo, loadLegacy]);
 
-  const pushUndo = (u: Undo) => {
+  /** a new action: it can be undone, and what was undone before cannot be redone any more */
+  const pushUndo = (u: Undo, keepRedo = false) => {
     undo.current.push(u);
     if (undo.current.length > 50) undo.current.shift();
     setUndoCount(undo.current.length);
+    if (!keepRedo) {
+      redo.current = [];
+      setRedoCount(0);
+    }
   };
 
   /* ---- saving a field ---- */
@@ -283,7 +293,7 @@ export default function EditorOverlay() {
           return false;
         }
         if (mine && "version" in res && res.version) version.current = res.version;
-        if (prev) pushUndo({ kind: "field", t: tag, k: kind, prev: prev.value, label: prev.label });
+        if (prev) pushUndo({ kind: "field", t: tag, k: kind, prev: prev.value, next: value == null ? "" : String(value), label: prev.label });
         say(DEMO ? "Saved in this browser (demo)" : res.pending ? "Saved. Not live yet" : "Saved");
         await afterChange();
         return true;
@@ -317,6 +327,7 @@ export default function EditorOverlay() {
         if (op.op === "remove" || ((op.op === "set" || op.op === "tab") && selected?.includes("/"))) setSelected(null);
         say(DEMO ? "Saved in this browser (demo)" : `${label}. Not live yet`);
         await afterChange();
+        return res.undo; // the list before this change
       } finally {
         setBusy(false);
       }
@@ -324,13 +335,47 @@ export default function EditorOverlay() {
     [afterChange, say, selected],
   );
 
+  /** Put a step back; returns the step that reverses it (for the other stack), or null if it did not apply. */
+  const applyStep = useCallback(
+    async (u: Undo, word: "Undone" | "Redone"): Promise<Undo | null> => {
+      if (u.kind === "field") return (await save(u.t, u.k, u.prev)) ? { ...u, prev: u.next, next: u.prev } : null;
+      const before = await runOp({ op: "set", blocks: u.prev }, `${word}: ${u.label}`, false);
+      return before ? { kind: "blocks", prev: before, label: u.label } : null;
+    },
+    [save, runOp],
+  );
+
   const doUndo = useCallback(async () => {
     const u = undo.current.pop();
     setUndoCount(undo.current.length);
     if (!u) return;
-    if (u.kind === "field") await save(u.t, u.k, u.prev);
-    else await runOp({ op: "set", blocks: u.prev }, `Undone: ${u.label}`, false);
-  }, [save, runOp]);
+    const back = await applyStep(u, "Undone");
+    if (back) {
+      redo.current.push(back);
+      setRedoCount(redo.current.length);
+    }
+  }, [applyStep]);
+
+  const doRedo = useCallback(async () => {
+    const u = redo.current.pop();
+    setRedoCount(redo.current.length);
+    if (!u) return;
+    const back = await applyStep(u, "Redone");
+    if (back) pushUndo(back, true);
+  }, [applyStep]);
+
+  /* ---- Ctrl/⌘+Z, Ctrl/⌘+Shift+Z outside text fields ---- */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "z" || busy) return;
+      const t = e.target as HTMLElement;
+      if (t.closest("input,textarea,select,[contenteditable]")) return; // the field's own undo
+      e.preventDefault();
+      void (e.shiftKey ? doRedo() : doUndo());
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [doUndo, doRedo, busy]);
 
   /* ---- inline plain text ---- */
   const commitText = useCallback(async () => {
@@ -461,6 +506,8 @@ export default function EditorOverlay() {
       const r = await api.publishTargets(targetsOnPage());
       undo.current = [];
       setUndoCount(0);
+      redo.current = [];
+      setRedoCount(0);
       setModal(r.published ? { k: "live", path: info?.livePath ?? pathname } : null);
       if (!r.published) say("Nothing to publish");
       await afterChange();
@@ -475,6 +522,8 @@ export default function EditorOverlay() {
       const n = await api.discardTargets(targetsOnPage());
       undo.current = [];
       setUndoCount(0);
+      redo.current = [];
+      setRedoCount(0);
       setModal(null);
       say(n ? "Changes discarded" : "Nothing to discard");
       await afterChange();
@@ -571,6 +620,8 @@ export default function EditorOverlay() {
           status={msg ?? statusText(info, legacyItems.length)}
           busy={busy}
           canUndo={undoCount > 0}
+          canRedo={redoCount > 0}
+          onRedo={doRedo}
           hasChanges={hasChanges}
           compareLabel={compare?.label ?? null}
           pagesHref={withBase("/admin/editor")}

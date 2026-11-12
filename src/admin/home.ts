@@ -2,7 +2,7 @@ import "server-only";
 import { and, count, desc, eq, isNull, like, max, notInArray } from "drizzle-orm";
 import { auditLog, comments, contactSubmissions, db, media, publications, users } from "@/db";
 import { listSettingDrafts } from "@/lib/settings";
-import { getSettingsGroup, mayEditGroup } from "./settings";
+import { getSettingsGroup, mayEditOnPage } from "./settings";
 import { getResource } from "./resources";
 import { pendingDrafts } from "./workflow";
 import { getRow } from "./engine";
@@ -40,7 +40,7 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
   }
   for (const s of settingDrafts) {
     const g = getSettingsGroup(s.key);
-    if (!g || !mayEditGroup(user, g)) continue;
+    if (!g || !mayEditOnPage(user, g)) continue;
     out.push({ key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: "Open", href: `/admin/settings?group=${s.key}` });
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));

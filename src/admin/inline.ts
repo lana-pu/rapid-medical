@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession, isReady, type SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getSettingDraft, getLiveSetting, setSettingDraft, deleteSettingDraft, publishSettingDraft } from "@/lib/settings";
-import { getSettingsGroup, groupValue, mayEditGroup } from "./settings";
+import { getSettingsGroup, groupValue, mayEditOnPage } from "./settings";
 import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
@@ -101,9 +101,11 @@ function resolve(t: Target): Resolved {
     const key = t.r.slice("settings:".length);
     const group = getSettingsGroup(key);
     if (!group) throw new Error("Unknown settings group");
-    if (group.access) throw new Error("This setting is changed in Site settings"); // role-limited groups are not on pages
+    if (group.access && !group.pageLabels) throw new Error("This setting is changed in Site settings"); // role-limited groups are not on pages
     const field = resolveField(group.fields, path);
     if (!field) throw new Error(`Field ${t.f} is not editable`);
+    // a limited group with labels on the page: only its texts, never an address
+    if (group.access && field.type !== "text") throw new Error("This setting is changed in Site settings");
     return { kind: "settings", key, path, field };
   }
   const res = getResource(t.r);
@@ -210,7 +212,7 @@ export async function pendingFor(targets: { r: string; id: number }[]): Promise<
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
       const group = getSettingsGroup(k);
-      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
+      if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       const d = await getSettingDraft(k);
       if (!d) continue;
       const g = getSettingsGroup(k);
@@ -246,7 +248,7 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
       const group = getSettingsGroup(k);
-      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
+      if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       if (await publishSettingDraft(k)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
@@ -277,7 +279,7 @@ export async function discardTargets(targets: { r: string; id: number }[]): Prom
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
       const group = getSettingsGroup(k);
-      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
+      if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       if (await getSettingDraft(k)) { await deleteSettingDraft(k); n++; await audit(user, "save", { resource: `settings:${k}`, meta: { discardedDraft: true } }); }
       continue;
     }

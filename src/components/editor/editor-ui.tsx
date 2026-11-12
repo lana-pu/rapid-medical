@@ -30,6 +30,8 @@ export function TopBar(props: {
   status: string;
   busy: boolean;
   canUndo: boolean;
+  canRedo?: boolean;
+  onRedo?: () => void;
   hasChanges: boolean;
   compareLabel: string | null;
   pagesHref: string;
@@ -72,7 +74,8 @@ export function TopBar(props: {
           </select>
         )}
         <span className="min-w-0 flex-1 truncate text-xs text-neutral-300" role="status" aria-live="polite">{props.status}</span>
-        <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change">↶ Undo</button>
+        <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change (Ctrl/⌘+Z)">↶ Undo</button>
+        <button type="button" className={btn} disabled={!props.canRedo || props.busy} onClick={props.onRedo} title="Redo (Ctrl/⌘+Shift+Z)">↷ Redo</button>
         {info && props.comments != null && <button type="button" className={btn} onClick={props.onComments}>Comment{props.comments ? ` (${props.comments})` : ""}</button>}
         {info && !props.demo && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
         <button type="button" className={btn} onClick={props.onPreview}>Preview</button>

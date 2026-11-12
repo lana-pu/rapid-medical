@@ -59,6 +59,12 @@ test("sections: add from presets, edit its text, move, undo, delete; the regulat
   await expect.poll(async () => (await ids(page))[2]).toBe(added);
   await page.getByRole("button", { name: "↶ Undo" }).click();
   await expect.poll(async () => (await ids(page))[1]).toBe(added);
+  // redo puts the move back, undo takes it away again
+  await page.getByRole("button", { name: "↷ Redo" }).click();
+  await expect.poll(async () => (await ids(page))[2]).toBe(added);
+  await expect(page.getByRole("button", { name: "↷ Redo" })).toBeDisabled();
+  await page.keyboard.press("ControlOrMeta+Z");
+  await expect.poll(async () => (await ids(page))[1]).toBe(added);
 
   // visitors still see the old page
   const anon = await (await browser.newContext()).newPage();

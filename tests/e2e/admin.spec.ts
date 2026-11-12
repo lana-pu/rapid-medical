@@ -102,10 +102,11 @@ test("requests: who answers, status and a note for the team; filters", async ({ 
     await page.getByRole("button", { name: "I'll answer" }).click();
     await page.waitForURL(/saved=1/);
     expect(sql(`select status || '|' || (assigned_to_id is not null) from contact_submissions where id=${id}`)).toBe("in_progress|true");
+    await expect(page.getByText(/took it/)).toBeVisible(); // the page shows the new state (the form is rebuilt with it)
+    await expect(page.getByLabel("Who answers")).not.toHaveValue("");
     await page.getByLabel("Note for the team").fill("Called back, demo on Friday");
     await page.getByRole("button", { name: "Save" }).click();
-    await page.waitForURL(/saved=1/);
-    expect(sql(`select note from contact_submissions where id=${id}`)).toBe("Called back, demo on Friday");
+    await expect.poll(() => sql(`select note from contact_submissions where id=${id}`)).toBe("Called back, demo on Friday");
     await expect(page.getByText(/took it/)).toBeVisible();
     // mine, in progress
     await page.goto("/admin/submissions?status=in_progress&mine=1&form=contact");
@@ -141,6 +142,7 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Branding" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Workflow" })).toHaveCount(0);
+    await expect(ed.getByRole("link", { name: "Menu and footer" })).toHaveCount(0); // the menu's structure: designers
     await expect(ed.locator("input[name=__group]").first()).toHaveValue("contact");
     // on the page: no layout choice for a section
     await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
@@ -149,12 +151,21 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await ed.mouse.click(8, 300);
     await expect(ed.locator("#rm-section-toolbar")).toBeVisible();
     await expect(ed.locator('#rm-section-toolbar select[aria-label="Layout"]')).toHaveCount(0);
+    // …but the menu's labels are everyone's, on the page
+    const careers = ed.locator('header [data-e*="menu.5.label"]');
+    await careers.click();
+    await ed.keyboard.press("ControlOrMeta+A");
+    await ed.keyboard.type("Careers at Rapid");
+    await ed.keyboard.press("Enter");
+    await expect(ed.getByRole("status")).toHaveText("Saved. Not live yet");
+    sql(`delete from setting_drafts where key='navigation'`);
 
     const de = await (await browser.newContext()).newPage();
     await login(de, "designer@e2e.test", ADMIN.password);
     await de.goto("/admin/settings?group=branding");
     await expect(de.locator("input[name=__group]").first()).toHaveValue("branding");
     await expect(de.getByRole("link", { name: "Integrations" })).toHaveCount(0);
+    await expect(de.getByRole("link", { name: "Menu and footer" })).toBeVisible();
     await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
     await de.evaluate(() => window.scrollTo(0, 0));

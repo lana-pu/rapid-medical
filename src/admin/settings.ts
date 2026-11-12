@@ -5,6 +5,9 @@ import { DEFAULT_NAVIGATION } from "@/lib/navigation";
 export const mayEditGroup = (user: { role: string }, g: { access?: "designer" | "admin" }) =>
   !g.access || user.role === "admin" || (g.access === "designer" && user.role === "designer");
 
+/** May this person edit (and publish or discard) the group's changes made on the page? */
+export const mayEditOnPage = (user: { role: string }, g: { access?: "designer" | "admin"; pageLabels?: boolean }) => mayEditGroup(user, g) || !!g.pageLabels;
+
 /**
  * Site-wide settings, grouped by key. Each group is stored as one jsonb row
  * in site_settings. Fields reuse the admin form renderer.
@@ -17,6 +20,8 @@ export type SettingsGroup = {
   revalidate: string[];
   /** who may open and save it (ADR-006): designer — designer and admin; admin — admin only. Default: everyone signed in */
   access?: "designer" | "admin";
+  /** its text fields (labels) are edited on the page by any role, even when the group itself is limited */
+  pageLabels?: boolean;
   /** what the site shows while the group has never been saved (the form and on-page edits start from it) */
   defaults?: Record<string, unknown>;
 };
@@ -111,6 +116,8 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
     key: "navigation",
     title: "Menu and footer",
+    access: "designer", // the structure and the addresses; labels are edited on the page by everyone
+    pageLabels: true,
     description: "The menu at the top of every page and the footer. Labels can also be changed right on the page.",
     revalidate: ["/"],
     defaults: DEFAULT_NAVIGATION,
