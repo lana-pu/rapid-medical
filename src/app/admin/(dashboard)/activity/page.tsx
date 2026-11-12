@@ -4,7 +4,7 @@ import { db, auditLog, users } from "@/db";
 import { PageHeader, formatDate, inputCls } from "@/components/admin/ui";
 import { getResource } from "@/admin/resources";
 
-const ACTIONS = ["login", "login_failed", "logout", "save", "publish", "unpublish", "delete", "restore", "bulk", "settings", "user", "media", "review", "schedule"];
+const ACTIONS = ["login", "login_failed", "logout", "save", "publish", "unpublish", "delete", "restore", "bulk", "settings", "user", "media", "schedule", "request", "comment"];
 
 export default async function ActivityPage({ searchParams }: { searchParams: Promise<{ action?: string; user?: string; q?: string; page?: string }> }) {
   const sp = await searchParams;

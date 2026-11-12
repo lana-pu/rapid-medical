@@ -515,6 +515,10 @@ export const contactSubmissions = pgTable("contact_submissions", {
   /** Extra fields (webinar title, job slug…) */
   meta: jsonb("meta").$type<Record<string, string>>().notNull().default({}),
   status: submissionStatusEnum("status").notNull().default("new"),
+  /** Who answers (docs/screens/admin-requests.md) */
+  assignedToId: integer("assigned_to_id").references(() => users.id, { onDelete: "set null" }),
+  /** Note for the team, admin only */
+  note: text("note").notNull().default(""),
   ip: text("ip"),
   userAgent: text("user_agent"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

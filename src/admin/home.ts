@@ -72,6 +72,7 @@ function phrase(e: typeof auditLog.$inferSelect): string {
     case "settings": return `changed settings: ${what}`;
     case "user": return `changed people and roles${what ? `: ${what}` : ""}`;
     case "media": return m.replaced ? `replaced ${what} in ${String(m.places ?? "")} places` : m.alt ? `described ${what}` : `changed ${what} in the media library`;
+    case "request": return m.took ? `took the request ${what}` : `updated the request ${what}`;
     case "save": return m.discardedDraft ? `discarded changes to ${what}` : m.created ? `created ${what}` : `saved ${what}`;
     default: return `${e.action} ${what}`.trim();
   }

@@ -88,6 +88,35 @@ test("new publication: mistakes listed on top with links, month and year, Israel
   await expect(page.locator("input[name=publishedOn]")).toHaveValue(/^\d{4}-\d{2}$/);
 });
 
+test("requests: who answers, status and a note for the team; filters", async ({ page }) => {
+  sql(`delete from contact_submissions where email='req@example.com'`);
+  sql(`insert into contact_submissions(form,topic,first_name,last_name,organization,email,region,status) values ('contact','Request a demo','Laura','Mendes','Hospital São José','req@example.com','Americas','new')`);
+  const id = sql("select id from contact_submissions where email='req@example.com'");
+  try {
+    await login(page);
+    await page.goto("/admin/submissions");
+    await expect(page.getByRole("tab", { name: /New/, selected: true })).toBeVisible();
+    await expect(page.getByText("Laura Mendes, Hospital São José")).toBeVisible();
+    await page.getByText("Laura Mendes, Hospital São José").click();
+    await expect(page.getByRole("heading", { name: "Request a demo" })).toBeVisible();
+    await page.getByRole("button", { name: "I'll answer" }).click();
+    await page.waitForURL(/saved=1/);
+    expect(sql(`select status || '|' || (assigned_to_id is not null) from contact_submissions where id=${id}`)).toBe("in_progress|true");
+    await page.getByLabel("Note for the team").fill("Called back, demo on Friday");
+    await page.getByRole("button", { name: "Save" }).click();
+    await page.waitForURL(/saved=1/);
+    expect(sql(`select note from contact_submissions where id=${id}`)).toBe("Called back, demo on Friday");
+    await expect(page.getByText(/took it/)).toBeVisible();
+    // mine, in progress
+    await page.goto("/admin/submissions?status=in_progress&mine=1&form=contact");
+    await expect(page.getByText("Laura Mendes, Hospital São José")).toBeVisible();
+    await page.goto("/admin/submissions?status=in_progress&form=webinar");
+    await expect(page.getByText("Laura Mendes, Hospital São José")).toHaveCount(0);
+  } finally {
+    sql(`delete from contact_submissions where id=${id}`);
+  }
+});
+
 const addUser = (email: string, role: string) =>
   sql(`insert into users(email,name,password_hash,role) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}') on conflict (email) do update set role='${role}'`);
 

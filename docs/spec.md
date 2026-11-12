@@ -161,9 +161,9 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `drafts` | Отложенные изменения опубликованной записи (`resource`+`recordId` unique), `publishAt`; `data = null` — только расписание |
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
-| `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, review, schedule, logout |
+| `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |
 | `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda) |
-| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `ip`, `userAgent` |
+| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `note` (заметка для команды), `ip`, `userAgent` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
 | `not_found_log` | Публичные 404 (дедуп по пути) для создания редиректов |
 
@@ -432,7 +432,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | спека не написана |
 | `/admin/settings?group=` | Site settings по группам | спека не написана |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
-| `/admin/submissions`, `/admin/submissions/{id}` | Заявки форм, статус, CSV | спека не написана |
+| `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
 | `/admin/not-found-log` | Битые ссылки → редирект в один клик | спека не написана |
 | `/admin/activity` | Журнал действий | спека не написана |
 | `/admin/account` | Пароль, 2FA, активные сессии | спека не написана |

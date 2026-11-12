@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { db, auditLog } from "@/db";
 import type { SessionUser } from "./auth";
 
-export type AuditAction = "login" | "login_failed" | "logout" | "save" | "publish" | "unpublish" | "delete" | "restore" | "bulk" | "settings" | "user" | "media" | "review" | "schedule";
+export type AuditAction = "login" | "login_failed" | "logout" | "save" | "publish" | "unpublish" | "delete" | "restore" | "bulk" | "settings" | "user" | "media" | "schedule" | "request" | "comment";
 
 /** Best-effort audit entry; never throws into the caller. */
 export async function audit(user: SessionUser | null, action: AuditAction, opts: { resource?: string; recordId?: number | string; label?: string; meta?: Record<string, unknown> } = {}) {
