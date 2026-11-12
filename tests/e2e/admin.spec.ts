@@ -89,15 +89,40 @@ test("approval on: an editor cannot publish an unpublished record through the st
   try {
     const ed = await (await browser.newContext()).newPage();
     await login(ed, "editor@e2e.test", ADMIN.password);
+    // an approval given earlier does not cover a later edit
+    sql(`insert into drafts(resource,record_id,data,review_status,updated_by_name) values ('news',${id},null,'approved','Admin') on conflict (resource,record_id) do update set review_status='approved', data=null`);
     await ed.goto(`/admin/news/${id}`);
+    await ed.fill("input[name=title]", (await ed.inputValue("input[name=title]")) + " ");
     await ed.selectOption("select[name=status]", "published");
     await ed.click('button:has-text("Save")');
     await ed.waitForURL(/error=/);
     await expect(ed.getByText("Saved, not published: needs approval")).toBeVisible();
     expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
+    expect(sql(`select review_status from drafts where resource='news' and record_id=${id}`)).toBe("editing");
   } finally {
+    sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='published' where id=${id}`);
     sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
+  }
+});
+
+test("unpublish keeps the pending changes in the record and drops an old approval", async ({ page }) => {
+  await login(page);
+  const id = sql("select id from news_items where status='published' order by id desc limit 1");
+  const title = sql(`select title from news_items where id=${id}`);
+  try {
+    await page.goto(`/admin/news/${id}`);
+    await page.fill("input[name=title]", "E2E pending title");
+    await page.click('button:has-text("Save")');
+    await page.waitForURL(/pending=1/);
+    sql(`update drafts set review_status='approved' where resource='news' and record_id=${id}`);
+    await page.click('button:has-text("Unpublish")');
+    await page.waitForURL(/unpublished=1/);
+    expect(sql(`select status || '|' || title from news_items where id=${id}`)).toBe("draft|E2E pending title");
+    expect(sql(`select coalesce(data::text,'null') || '|' || review_status from drafts where resource='news' and record_id=${id}`)).toBe("null|editing");
+  } finally {
+    sql(`delete from drafts where resource='news' and record_id=${id}`);
+    sql(`update news_items set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
   }
 });
 

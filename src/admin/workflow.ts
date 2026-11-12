@@ -89,6 +89,8 @@ export async function saveWithWorkflow(
     // Not live yet: edit in place. The form's status select may flip it to published → that is a publish.
     const wantsPublish = opts.formPublish === true && data.status === "published";
     await saveRow(res, id, { ...data, status: "draft" });
+    // an approval was given to the content before this edit (as with pending changes below)
+    await db.update(drafts).set({ reviewStatus: "editing" }).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id), eq(drafts.reviewStatus, "approved")));
     await addRevision(res, id, "draft", snapshot(res, { ...data, status: "draft" }), user);
     await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? "") });
     if (!wantsPublish) return { id, pending: false };
@@ -131,14 +133,20 @@ export async function publish(res: Resource, id: number, user: SessionUser): Pro
   if (!live) throw new Error("Record not found");
   const next = { ...(draft?.data ?? {}), status: "published" };
   await saveRow(res, id, next);
-  if (draft) await db.delete(drafts).where(eq(drafts.id, draft.id));
+  if (draft) await db.update(drafts).set({ data: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
   const row = (await getRow(res, id))!;
   await addRevision(res, id, "published", snapshot(res, row), user);
   await audit(user, "publish", { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
 }
 
+/**
+ * Take the record off the site. Pending changes move into the record itself (an unpublished record is edited in place),
+ * and an approval is reset: a later Publish must not lay old changes or an old approval over it. A schedule stays.
+ */
 export async function unpublish(res: Resource, id: number, user: SessionUser): Promise<void> {
-  await saveRow(res, id, { status: "draft" });
+  const draft = await getDraft(res, id);
+  await saveRow(res, id, { ...(draft?.data ?? {}), status: "draft" });
+  if (draft) await db.update(drafts).set({ data: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
   const row = (await getRow(res, id))!;
   await audit(user, "unpublish", { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
 }

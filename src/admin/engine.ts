@@ -179,7 +179,12 @@ export function parseForm(res: Resource, fd: FormData): { data: Row; errors: Fie
 export async function saveRow(res: Resource, id: number | null, data: Row): Promise<number> {
   const cols = getTableColumns(res.table) as Row;
   const values: Row = {};
-  for (const k of Object.keys(data)) if (cols[k]) values[k] = data[k];
+  for (const k of Object.keys(data)) {
+    if (!cols[k]) continue;
+    // drafts and revisions are JSON: their dates come back as strings, timestamp columns want a Date
+    const v = data[k];
+    values[k] = typeof v === "string" && (cols[k] as { dataType?: string }).dataType === "date" ? (v ? new Date(v) : null) : v;
+  }
   if (cols.updatedAt) values.updatedAt = new Date();
 
   if (id) {

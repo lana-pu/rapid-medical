@@ -49,7 +49,7 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Состояние записи | Результат | Уведомление |
 |---|---|---|
 | Новая | Вставка со `status = draft` → редирект на `/admin/{resource}/{id}` | «Saved.» |
-| Не опубликована | Правка на месте; если в форме выбран `published` → сразу публикация | «Saved.» |
+| Не опубликована | Правка на месте; одобрение (`approved`) сбрасывается в `editing` — одобряли другой текст; если в форме выбран `published` → публикация по правилам Publish | «Saved.» / «Saved, not published: needs approval» |
 | Опубликована | Изменения в `drafts`, live не меняется | «Saved as pending changes…» |
 | `products`, `redirects` (без workflow) | Сразу в live | «Saved.» |
 
@@ -59,7 +59,7 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Live-статус, плашка «Unpublished changes by … · дата», статус ревью и заметка | всегда / при pending / при approval | — |
 | «Scheduled to publish …» | если `publishAt` | — |
 | **Publish / Publish changes** | есть pending или запись не live | кнопка disabled, если approval включён, роль editor и не `approved` |
-| **Unpublish** | запись live | любая роль |
+| **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись, одобрение сбрасывается, расписание остаётся |
 | **Discard changes** | есть pending | любая роль |
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
 | **Review**: заметка + Submit for review / Approve / Request changes | approval включён и (pending или не live) | Approve/Request changes — admin, approver |
