@@ -109,7 +109,7 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
         ) : isNew ? (
           <Button type="submit" disabled={submitting}>{submitting ? "Creating…" : "Create draft"}</Button>
         ) : (
-          <Button type="submit" name="__intent" value="publish" disabled={submitting || auto.busy}>
+          <Button type="submit" name="__intent" value="publish" disabled={submitting || auto.busy || (liveStatus === "published" && !hasPending && !auto.saved && !auto.touched)} title={liveStatus === "published" && !hasPending && !auto.saved && !auto.touched ? "No changes to publish" : undefined}>
             {submitting ? "Publishing…" : liveStatus === "published" ? "Publish changes" : "Publish"}
           </Button>
         )}
@@ -136,6 +136,7 @@ function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boole
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("Saved automatically. Visitors see it only after you publish.");
   const [saved, setSaved] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string> | null>(null);
   const last = useRef<string | null>(null);
   const running = useRef(false);
@@ -184,6 +185,7 @@ function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boole
     if (!form) return;
     last.current = snapshot()?.key ?? null; // what the page loaded with is saved already
     const soon = () => {
+      setTouched(true);
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => void save(), 2000);
     };
@@ -201,7 +203,7 @@ function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boole
     };
   }, [on, formRef, save, snapshot]);
 
-  return { busy, text, saved, errors };
+  return { busy, text, saved, touched, errors };
 }
 
 function Label({ f, error }: { f: FieldDef; error?: string }) {

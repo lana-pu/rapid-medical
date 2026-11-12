@@ -18,10 +18,17 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
   await page.click('button:has-text("Sign in")');
   await page.waitForURL((u) => u.pathname.startsWith("/admin") && u.pathname !== "/admin/login");
   if (new URL(page.url()).pathname === "/admin/login/2fa") {
+    await freshCodeWindow(page);
     await page.fill("input[name=code]", totp(TOTP_SECRET));
     await page.click('button:has-text("Verify")');
     await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/login"));
   }
+}
+
+/** A code made in the last seconds of its 30-second window may be stale by the time it is checked: wait for a new one. */
+export async function freshCodeWindow(page: Page) {
+  const into = (Date.now() / 1000) % 30;
+  if (into > 26) await page.waitForTimeout((30 - into + 0.5) * 1000);
 }
 
 export function totp(secret: string): string {

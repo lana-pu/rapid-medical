@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { RichText } from "@/components/admin/RichText";
 import type { PageInfo, SectionInfo, HistoryItem } from "@/admin/page-editor";
 import type { Preset } from "@/blocks/templates";
+import { withBase } from "@/lib/demo";
 
 /**
  * Presentational parts of the page editor (docs/screens/on-page-editor.md): top bar, section toolbar,
@@ -226,6 +227,39 @@ export function MediaActions({ image, video, hasVideo, onReplace, onRemoveVideo,
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Preset previews: the variant's sample from /style-guide, scaled    */
+/* ------------------------------------------------------------------ */
+
+let styleGuide: Promise<Document> | null = null;
+const sampleOf = async (type: string, variant: string): Promise<Element | null> => {
+  styleGuide ??= fetch(withBase("/style-guide/")).then(async (r) => new DOMParser().parseFromString(await r.text(), "text/html"));
+  return (await styleGuide).querySelector(`[data-rm-preset="${CSS.escape(`${type}:${variant}`)}"]`);
+};
+
+/** A small, inert copy of the sample (no links, no ids, no editing marks): what the new section will look like. */
+function PresetThumb({ type, variant }: { type: string; variant: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let alive = true;
+    void sampleOf(type, variant).then((el) => {
+      const host = box.current;
+      if (!alive || !host || !el) return;
+      const copy = document.importNode(el, true) as HTMLElement;
+      copy.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+      copy.querySelectorAll("[data-e],[data-rm-b]").forEach((n) => { n.removeAttribute("data-e"); n.removeAttribute("data-rm-b"); });
+      copy.querySelectorAll("video").forEach((v) => { v.removeAttribute("autoplay"); v.removeAttribute("src"); });
+      host.replaceChildren(copy);
+    }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [type, variant]);
+  return (
+    <span aria-hidden="true" className="relative block h-[72px] w-[120px] flex-none overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+      <span ref={box} inert className="pointer-events-none absolute left-0 top-0 block w-[1200px] origin-top-left scale-[0.1] bg-white" />
+    </span>
+  );
+}
+
 export function PresetList({ presets, onPick, busy }: { presets: Preset[]; onPick: (p: Preset) => void; busy: boolean }) {
   const [q, setQ] = useState("");
   const shown = presets.filter((p) => `${p.name} ${p.label} ${p.description}`.toLowerCase().includes(q.toLowerCase()));
@@ -239,9 +273,12 @@ export function PresetList({ presets, onPick, busy }: { presets: Preset[]; onPic
           <ul className="divide-y divide-neutral-100 rounded border border-neutral-200">
             {shown.filter((p) => p.name === g).map((p) => (
               <li key={`${p.type}:${p.variant}`}>
-                <button type="button" disabled={busy} onClick={() => onPick(p)} className="block w-full px-3 py-2 text-left hover:bg-neutral-50 disabled:opacity-50">
-                  <span className="block text-sm font-medium">{p.label}</span>
-                  <span className="block text-xs text-neutral-500">{p.description}</span>
+                <button type="button" disabled={busy} onClick={() => onPick(p)} className="flex w-full gap-3 px-3 py-2 text-left hover:bg-neutral-50 disabled:opacity-50">
+                  <PresetThumb type={p.type} variant={p.variant} />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium">{p.label}</span>
+                    <span className="block text-xs text-neutral-500">{p.description}</span>
+                  </span>
                 </button>
               </li>
             ))}

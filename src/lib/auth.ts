@@ -251,11 +251,17 @@ export async function revokeAccess(userId: number) {
 
 /** The key the setup screen shows: issued and kept by the server until it is confirmed (never taken from the browser). */
 export async function pendingTotpKey(userId: number, email: string): Promise<{ secret: string; uri: string }> {
+  const uri = (secret: string) => generateURI({ secret, issuer: "Rapid Medical Admin", label: email });
   const u = await db.query.users.findFirst({ where: eq(users.id, userId) });
-  if (u?.totpSecret && !u.totpEnabledAt) return { secret: u.totpSecret, uri: generateURI({ secret: u.totpSecret, issuer: "Rapid Medical Admin", label: email }) };
+  if (u?.totpEnabledAt) throw new Error("Two-step sign-in is already on");
+  if (u?.totpSecret) return { secret: u.totpSecret, uri: uri(u.totpSecret) };
   const s = totpSetup(email);
-  await db.update(users).set({ totpSecret: s.secret }).where(eq(users.id, userId));
-  return s;
+  // only into an empty slot: a confirmed key, or one issued meanwhile in another tab, is never overwritten
+  const set = await db.update(users).set({ totpSecret: s.secret }).where(and(eq(users.id, userId), isNull(users.totpEnabledAt), isNull(users.totpSecret))).returning({ id: users.id });
+  if (set.length) return s;
+  const again = await db.query.users.findFirst({ where: eq(users.id, userId) });
+  if (!again?.totpSecret || again.totpEnabledAt) throw new Error("Two-step sign-in is already on");
+  return { secret: again.totpSecret, uri: uri(again.totpSecret) };
 }
 
 /** Accept an invite: set the password, use up the link, sign in (two-step sign-in is set up next). */
