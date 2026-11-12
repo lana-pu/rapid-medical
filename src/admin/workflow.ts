@@ -145,6 +145,7 @@ export async function publish(res: Resource, id: number, user: SessionUser): Pro
  * and the record does not come back on its own.
  */
 export async function unpublish(res: Resource, id: number, user: SessionUser): Promise<void> {
+  if (!(await getRow(res, id))) return; // gone meanwhile (a list action with an old row)
   const draft = await getDraft(res, id);
   await saveRow(res, id, { ...(draft?.data ?? {}), status: "draft" });
   if (draft) {

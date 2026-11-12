@@ -125,14 +125,14 @@ export async function bulkResource(fd: FormData) {
   const user = await requireUser();
   const slug = String(fd.get("__resource"));
   const action = String(fd.get("__action")) as "publish" | "unpublish" | "delete";
-  const ids = fd.getAll("ids").map(Number).filter(Boolean);
+  const ids = [...new Set(fd.getAll("ids").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   const res = getResource(slug);
   if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
   if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted
   if (action === "publish" && hasWorkflow(res)) {
     for (const id of ids) {
       const allowed = await canPublish(user, await getDraft(res, id));
-      if (allowed.ok) await publish(res, id, user);
+      if (allowed.ok && (await getEditable(res, id))) await publish(res, id, user); // a row gone meanwhile is skipped
     }
   } else if (action === "unpublish" && hasWorkflow(res)) {
     // the same as one by one: pending changes kept, approval reset, schedule cancelled
