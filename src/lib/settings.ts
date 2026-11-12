@@ -66,15 +66,19 @@ export async function deleteSettingDraft(key: string) {
 }
 
 /**
- * Make the group's draft live. `accept` checks the very value that goes live (not an earlier read of it); a draft
- * saved meanwhile is not deleted — it stays as the next pending change.
+ * Make the group's draft live. `accept(live, draft)` checks the very values of the write, read in one transaction with
+ * both rows locked, so neither can change between the check and the write; a draft saved meanwhile waits for the lock
+ * and stays as the next pending change.
  */
-export async function publishSettingDraft(key: string, accept?: (value: Record<string, unknown>) => boolean): Promise<boolean> {
-  const d = await getSettingDraft(key);
-  if (!d) return false;
-  const value = d.value as Record<string, unknown>;
-  if (accept && !accept(value)) return false;
-  await setSetting(key, value);
-  await db.delete(settingDrafts).where(and(eq(settingDrafts.key, key), eq(settingDrafts.updatedAt, d.updatedAt)));
-  return true;
+export async function publishSettingDraft(key: string, accept?: (live: Record<string, unknown>, draft: Record<string, unknown>) => boolean): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const [d] = await tx.select().from(settingDrafts).where(eq(settingDrafts.key, key)).for("update");
+    if (!d) return false;
+    const [row] = await tx.select().from(siteSettings).where(eq(siteSettings.key, key)).for("update");
+    const value = d.value as Record<string, unknown>;
+    if (accept && !accept((row?.value ?? {}) as Record<string, unknown>, value)) return false;
+    await tx.insert(siteSettings).values({ key, value, updatedAt: new Date() }).onConflictDoUpdate({ target: siteSettings.key, set: { value, updatedAt: new Date() } });
+    await tx.delete(settingDrafts).where(and(eq(settingDrafts.key, key), eq(settingDrafts.updatedAt, d.updatedAt)));
+    return true;
+  });
 }

@@ -257,8 +257,7 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
       const group = getSettingsGroup(k);
       if (!group || !mayEditOnPage(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       // page-label rights only: the value that goes live may change texts and nothing else (checked on that value)
-      const live = mayEditGroup(user, group) ? null : await getLiveSetting(k);
-      const textsOnly = live === null ? undefined : (v: Record<string, unknown>) => JSON.stringify(structureOf(group.fields, groupValue(group, live))) === JSON.stringify(structureOf(group.fields, groupValue(group, live, v)));
+      const textsOnly = mayEditGroup(user, group) ? undefined : (live: Record<string, unknown>, v: Record<string, unknown>) => JSON.stringify(structureOf(group.fields, groupValue(group, live))) === JSON.stringify(structureOf(group.fields, groupValue(group, live, v)));
       if (await publishSettingDraft(k, textsOnly)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
