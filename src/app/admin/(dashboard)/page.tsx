@@ -1,101 +1,86 @@
 import Link from "next/link";
-import { count, desc, eq } from "drizzle-orm";
-import { db, solutions, publications, newsItems, webinars, jobs, pages, contactSubmissions, teamMembers } from "@/db";
-import { PageHeader, StatusBadge, formatDate } from "@/components/admin/ui";
-import { pendingDrafts } from "@/admin/workflow";
-import { listSettingDrafts } from "@/lib/settings";
-import { getSettingsGroup } from "@/admin/settings";
+import { requireUser } from "@/lib/auth";
+import { attention, recentActivity, summary } from "@/admin/home";
+import { LinkButton, Notice, PageHeader, formatDate } from "@/components/admin/ui";
 
-export default async function Dashboard({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+/** Website — what needs you (docs/screens/admin-home.md). */
+export default async function Home({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
-  const [[sol], [pub], [news], [web], [job], [pg], [team], [newSub]] = await Promise.all([
-    db.select({ n: count() }).from(solutions),
-    db.select({ n: count() }).from(publications),
-    db.select({ n: count() }).from(newsItems),
-    db.select({ n: count() }).from(webinars),
-    db.select({ n: count() }).from(jobs),
-    db.select({ n: count() }).from(pages),
-    db.select({ n: count() }).from(teamMembers),
-    db.select({ n: count() }).from(contactSubmissions).where(eq(contactSubmissions.status, "new")),
-  ]);
-  const [latest, pending, settingPending] = await Promise.all([db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt)).limit(8), pendingDrafts(), listSettingDrafts()]);
-
-  const cards = [
-    { href: "/admin/solutions", label: "Therapy pages", n: sol.n },
-    { href: "/admin/publications", label: "Publications", n: pub.n },
-    { href: "/admin/news", label: "News items", n: news.n },
-    { href: "/admin/webinars", label: "Webinars", n: web.n },
-    { href: "/admin/team", label: "Team members", n: team.n },
-    { href: "/admin/jobs", label: "Open positions", n: job.n },
-    { href: "/admin/pages", label: "Pages", n: pg.n },
-    { href: "/admin/submissions", label: "New submissions", n: newSub.n },
-  ];
+  const user = await requireUser();
+  const [todo, activity, sum] = await Promise.all([attention(), recentActivity(), summary()]);
+  const first = user.name.split(/\s+/)[0] || user.name;
 
   return (
     <>
-      <PageHeader title="Dashboard" />
-      {sp.error === "forbidden" && <p className="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">That area requires the admin role.</p>}
-      <div className="grid grid-cols-4 gap-4">
-        {cards.map((c) => (
-          <Link key={c.href} href={c.href} className="rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-400">
-            <div className="text-3xl font-semibold">{c.n}</div>
-            <div className="text-sm text-neutral-600">{c.label}</div>
-          </Link>
-        ))}
-      </div>
+      <PageHeader title={`Hello, ${first}`} actions={<LinkButton href="/admin/editor?new=1" variant="primary">New page</LinkButton>} />
+      {sp.error === "forbidden" && <Notice kind="error">That area is for admins.</Notice>}
 
-      <h2 className="mt-10 mb-3 text-lg font-semibold">Pending changes &amp; scheduled publications</h2>
-      <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">
-            <tr><th className="px-3 py-2">Record</th><th className="px-3 py-2">Type</th><th className="px-3 py-2">Changed by</th><th className="px-3 py-2">Review</th><th className="px-3 py-2">Scheduled</th><th className="px-3 py-2">Updated</th></tr>
-          </thead>
-          <tbody>
-            {pending.length === 0 && settingPending.length === 0 && <tr><td colSpan={6} className="px-3 py-6 text-center text-neutral-400">Nothing pending — everything is live.</td></tr>}
-            {settingPending.map((d) => (
-              <tr key={`s-${d.key}`} className="border-t border-neutral-100">
-                <td className="px-3 py-2"><Link href={`/admin/settings?group=${d.key}`} className="font-medium underline">{getSettingsGroup(d.key)?.title ?? d.key}</Link></td>
-                <td className="px-3 py-2 text-neutral-600">Site settings (edited on site)</td>
-                <td className="px-3 py-2">{d.updatedByName}</td>
-                <td className="px-3 py-2"><span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">Editing</span></td>
-                <td className="px-3 py-2" />
-                <td className="px-3 py-2 text-neutral-500">{formatDate(d.updatedAt, { dateStyle: "medium", timeStyle: "short" })}</td>
-              </tr>
+      <section aria-labelledby="todo" className="mb-10">
+        <h2 id="todo" className="mb-3 text-lg font-semibold">Needs your attention</h2>
+        {todo.length === 0 ? (
+          <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-600">Nothing waiting. Everything is live.</p>
+        ) : (
+          <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
+            {todo.map((t) => (
+              <li key={t.key} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+                <span className="min-w-0 flex-1">
+                  <span className="font-medium">{t.text}</span>
+                  {(t.by || t.at) && (
+                    <span className="block text-xs text-neutral-500">
+                      {t.by ? `by ${t.by}` : ""}
+                      {t.by && t.at ? " · " : ""}
+                      {t.at ? formatDate(t.at, { dateStyle: "medium", timeStyle: "short" }) : ""}
+                    </span>
+                  )}
+                </span>
+                <a href={t.href} className="rounded border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-neutral-50">{t.action}</a>
+              </li>
             ))}
-            {pending.map((d) => (
-              <tr key={d.id} className="border-t border-neutral-100">
-                <td className="px-3 py-2"><Link href={`/admin/${d.resource}/${d.recordId}`} className="font-medium underline">{d.label}</Link></td>
-                <td className="px-3 py-2 text-neutral-600">{d.resourceTitle}</td>
-                <td className="px-3 py-2">{d.updatedByName}</td>
-                <td className="px-3 py-2">{d.data ? <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">Unpublished changes</span> : <span className="text-neutral-400">—</span>}</td>
-                <td className="px-3 py-2 text-neutral-600">{d.publishAt ? formatDate(d.publishAt, { dateStyle: "medium", timeStyle: "short" }) : ""}</td>
-                <td className="px-3 py-2 text-neutral-500">{formatDate(d.updatedAt, { dateStyle: "medium", timeStyle: "short" })}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          </ul>
+        )}
+      </section>
 
-      <h2 className="mt-10 mb-3 text-lg font-semibold">Latest form submissions</h2>
-      <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">
-            <tr><th className="px-3 py-2">When</th><th className="px-3 py-2">Form</th><th className="px-3 py-2">Name</th><th className="px-3 py-2">Topic</th><th className="px-3 py-2">Status</th></tr>
-          </thead>
-          <tbody>
-            {latest.length === 0 && <tr><td colSpan={5} className="px-3 py-6 text-center text-neutral-400">No submissions yet.</td></tr>}
-            {latest.map((s) => (
-              <tr key={s.id} className="border-t border-neutral-100">
-                <td className="px-3 py-2 text-neutral-500">{formatDate(s.createdAt, { dateStyle: "medium", timeStyle: "short" })}</td>
-                <td className="px-3 py-2">{s.form}</td>
-                <td className="px-3 py-2"><Link href={`/admin/submissions/${s.id}`} className="underline">{s.firstName} {s.lastName}</Link></td>
-                <td className="px-3 py-2">{s.topic}</td>
-                <td className="px-3 py-2"><StatusBadge status={s.status} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+        <section aria-labelledby="activity">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 id="activity" className="text-lg font-semibold">Recent activity</h2>
+            <Link href="/admin/activity" className="text-sm underline">All activity</Link>
+          </div>
+          {activity.length === 0 ? (
+            <p className="text-sm text-neutral-500">No activity yet.</p>
+          ) : (
+            <ul className="space-y-2 text-sm">
+              {activity.map((a) => (
+                <li key={a.id}>
+                  <b>{a.who}</b> {a.href ? <Link href={a.href} className="underline decoration-neutral-300 hover:decoration-neutral-900">{a.text}</Link> : a.text}
+                  <span className="text-neutral-500"> · {a.ago}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section aria-label="Summary" className="space-y-3">
+          <Card href="/admin/publications" title="Evidence" text={`${sum.studies} studies${sum.lastStudy ? ` · last added ${sum.lastStudy}` : ""}`} />
+          <Card href="/admin/media" title="Media library" text={`${sum.files} files · ${sum.filesNoAlt} without description`} />
+          {user.role === "admin" && (
+            <Card
+              href="/admin/users"
+              title="People and roles"
+              text={`${sum.people} people · ${sum.peopleWithout2fa ? `${sum.peopleWithout2fa} without two-step sign-in` : "two-step sign-in on for everyone"}`}
+            />
+          )}
+        </section>
       </div>
     </>
+  );
+}
+
+function Card({ href, title, text }: { href: string; title: string; text: string }) {
+  return (
+    <Link href={href} className="block rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-400">
+      <div className="font-semibold">{title}</div>
+      <div className="text-sm text-neutral-600">{text}</div>
+    </Link>
   );
 }

@@ -58,7 +58,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader title="Users" />
+      <PageHeader title="People and roles" />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
       <div className="mb-8 overflow-hidden rounded-lg border border-neutral-200 bg-white">

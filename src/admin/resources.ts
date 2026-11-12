@@ -291,7 +291,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "news",
-    title: "News & Events",
+    title: "News",
     titleSingular: "News item",
     table: newsItems,
     labelField: "title",
@@ -349,7 +349,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "team",
-    title: "Leadership team",
+    title: "Team",
     titleSingular: "Team member",
     table: teamMembers,
     labelField: "name",
@@ -377,7 +377,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "jobs",
-    title: "Open positions",
+    title: "Jobs",
     titleSingular: "Position",
     table: jobs,
     labelField: "title",

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession, type SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getSettingDraft, getLiveSetting, setSettingDraft, deleteSettingDraft, publishSettingDraft } from "@/lib/settings";
-import { getSettingsGroup } from "./settings";
+import { getSettingsGroup, mayEditGroup } from "./settings";
 import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
@@ -209,6 +209,8 @@ export async function pendingFor(targets: { r: string; id: number }[]): Promise<
     seen.add(key);
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
+      const group = getSettingsGroup(k);
+      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       const d = await getSettingDraft(k);
       if (!d) continue;
       const g = getSettingsGroup(k);
@@ -243,6 +245,8 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     seen.add(key);
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
+      const group = getSettingsGroup(k);
+      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       if (await publishSettingDraft(k)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
@@ -272,6 +276,8 @@ export async function discardTargets(targets: { r: string; id: number }[]): Prom
   for (const t of targets) {
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
+      const group = getSettingsGroup(k);
+      if (!group || !mayEditGroup(user, group)) continue; // role-limited groups (ADR-006) only through Site settings
       if (await getSettingDraft(k)) { await deleteSettingDraft(k); n++; await audit(user, "save", { resource: `settings:${k}`, meta: { discardedDraft: true } }); }
       continue;
     }

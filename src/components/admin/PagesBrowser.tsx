@@ -19,10 +19,10 @@ const STATUS: Record<PageCard["status"], { text: string; cls: string }> = {
   draft: { text: "Draft — not live yet", cls: "bg-neutral-200 text-neutral-700" },
 };
 
-export function PagesBrowser({ cards, templates, regions, lists, demo }: { cards: PageCard[]; templates: { id: TemplateId; label: string; description: string }[]; regions: { label: string; region: Region }[]; lists: { label: string; href: string }[]; demo: boolean }) {
+export function PagesBrowser({ cards, templates, regions, lists, demo, startCreating = false }: { cards: PageCard[]; templates: { id: TemplateId; label: string; description: string }[]; regions: { label: string; region: Region }[]; lists: { label: string; href: string }[]; demo: boolean; startCreating?: boolean }) {
   const [q, setQ] = useState("");
   const [region, setRegion] = useState<string>("all");
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState(startCreating);
   const regionLabel = (r: Region | null) => (r ? regions.find((x) => x.region === r)?.label ?? r : "Global");
   const editHref = (path: string) => (demo ? withBase(path) : `/api/editor?on=1&redirect=${encodeURIComponent(path)}`);
 

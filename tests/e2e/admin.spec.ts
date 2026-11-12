@@ -3,11 +3,22 @@ import { login, sql, ADMIN, totp, publishFromEditor } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
-test("login, dashboard, list filters", async ({ page }) => {
+test("login → website or training tool → what needs you; list filters", async ({ page }) => {
+  sql(`insert into contact_submissions(form,first_name,last_name,email,status) values ('contact','E2E','Home','home@example.com','new')`);
   await login(page);
-  await expect(page).toHaveURL(/\/admin\/editor$/); // editors land on Pages
-  await page.goto("/admin");
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page).toHaveURL(/\/admin\/start$/);
+  await expect(page.getByRole("heading", { name: "What do you want to work on?" })).toBeVisible();
+  await expect(page.getByText("Training tool")).toBeVisible();
+  await page.getByRole("link", { name: /Website/ }).click();
+  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page.getByRole("heading", { name: /^Hello, / })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Needs your attention" })).toBeVisible();
+  await expect(page.getByText(/\d+ new requests?/)).toBeVisible();
+  await expect(page.getByText(/pictures? without a description/).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Evidence" }).first()).toBeVisible();
+  await page.getByRole("link", { name: "New page" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible(); // the template choice opens straight away
+  sql(`delete from contact_submissions where email='home@example.com'`);
   await page.goto("/admin/solutions?region=apac");
   await expect(page.locator("tbody tr")).toHaveCount(5);
 });
@@ -199,7 +210,7 @@ test("two-factor: enable, enforce, recovery code", async ({ page, browser }) => 
   await fresh.waitForURL(/\/admin\/login\/2fa/);
   await fresh.fill("input[name=code]", codes[0]);
   await fresh.click('button:has-text("Verify")');
-  await fresh.waitForURL(/\/admin\/editor$/);
+  await fresh.waitForURL(/\/admin\/start$/);
   expect(sql(`select jsonb_array_length(recovery_codes) from users where email='${ADMIN.email}'`)).toBe("7");
   sql(`update users set totp_secret=null,totp_enabled_at=null,recovery_codes='[]' where email='${ADMIN.email}'`);
 });

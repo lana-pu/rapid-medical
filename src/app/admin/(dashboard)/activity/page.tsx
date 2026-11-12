@@ -30,7 +30,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader title="Activity log" subtitle={`${n} entries`} />
+      <PageHeader title="Activity" subtitle={`${n} entries`} />
       <form className="mb-4 flex flex-wrap gap-2">
         <select name="action" defaultValue={sp.action ?? ""} className={`${inputCls} w-auto`}>
           <option value="">Any action</option>{ACTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
