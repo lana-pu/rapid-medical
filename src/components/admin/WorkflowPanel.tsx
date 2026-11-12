@@ -1,10 +1,7 @@
 import type { Draft, Revision } from "@/db";
-import type { SessionUser } from "@/lib/auth";
-import { publishResource, unpublishResource, discardDraftAction, reviewAction, scheduleAction, restoreAction } from "@/admin/actions";
+import { publishResource, unpublishResource, discardDraftAction, scheduleAction, restoreAction } from "@/admin/actions";
 import { Button, StatusBadge, formatDate } from "./ui";
 import Link from "next/link";
-
-const REVIEW_LABEL: Record<string, string> = { editing: "Editing", in_review: "In review", changes_requested: "Changes requested", approved: "Approved" };
 
 export function WorkflowPanel({
   resourceSlug,
@@ -12,8 +9,6 @@ export function WorkflowPanel({
   liveStatus,
   draft,
   revisions,
-  user,
-  requireApproval,
   previewHref,
   editHref,
   alwaysLive = false,
@@ -23,8 +18,6 @@ export function WorkflowPanel({
   liveStatus: string;
   draft: Draft | null;
   revisions: Revision[];
-  user: SessionUser;
-  requireApproval: boolean;
   previewHref: string | null;
   editHref?: string | null;
   /** Home, About…: the site needs them, no Unpublish */
@@ -37,9 +30,6 @@ export function WorkflowPanel({
     </>
   );
   const pending = Boolean(draft?.data);
-  const review = draft?.reviewStatus ?? "editing";
-  const isApprover = user.role === "admin" || user.role === "approver";
-  const mayPublish = !requireApproval || isApprover || review === "approved";
   const toLocalInput = (d: Date | null | undefined) => (d ? new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "");
 
   return (
@@ -53,7 +43,6 @@ export function WorkflowPanel({
         {pending && (
           <div className="mt-3 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
             Unpublished changes by <b>{draft!.updatedByName || "someone"}</b> · {formatDate(draft!.updatedAt, { dateStyle: "medium", timeStyle: "short" })}
-            {requireApproval && <div className="mt-1">Review: <b>{REVIEW_LABEL[review]}</b>{draft!.reviewNote && <> — “{draft!.reviewNote}”</>}</div>}
           </div>
         )}
         {draft?.publishAt && (
@@ -63,7 +52,7 @@ export function WorkflowPanel({
         )}
         <div className="mt-4 flex flex-wrap gap-2">
           {(pending || liveStatus !== "published") && (
-            <form action={publishResource}>{hidden}<Button type="submit" disabled={!mayPublish} title={mayPublish ? "" : "Needs approval first"}>{pending ? "Publish changes" : "Publish"}</Button></form>
+            <form action={publishResource}>{hidden}<Button type="submit">{pending ? "Publish changes" : "Publish"}</Button></form>
           )}
           {liveStatus === "published" && !alwaysLive && (
             <form action={unpublishResource}>{hidden}<Button type="submit" variant="secondary">Unpublish</Button></form>
@@ -81,22 +70,6 @@ export function WorkflowPanel({
         )}
       </div>
 
-      {/* Review */}
-      {requireApproval && (pending || liveStatus !== "published") && (
-        <div className="rounded-lg border border-neutral-200 bg-white p-4">
-          <div className="text-xs uppercase text-neutral-500">Review</div>
-          <form action={reviewAction} className="mt-2 space-y-2">
-            {hidden}
-            <textarea name="note" rows={2} placeholder="Note for the reviewer / author" className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" defaultValue="" />
-            <div className="flex flex-wrap gap-2">
-              {review !== "in_review" && <button name="status" value="in_review" className="rounded border border-neutral-400 px-2 py-1 text-xs">Submit for review</button>}
-              {isApprover && review !== "approved" && <button name="status" value="approved" className="rounded bg-green-700 px-2 py-1 text-xs text-white">Approve</button>}
-              {isApprover && review !== "changes_requested" && <button name="status" value="changes_requested" className="rounded border border-red-300 px-2 py-1 text-xs text-red-700">Request changes</button>}
-            </div>
-          </form>
-        </div>
-      )}
-
       {/* Schedule */}
       <div className="rounded-lg border border-neutral-200 bg-white p-4">
         <div className="text-xs uppercase text-neutral-500">Schedule publication</div>
@@ -106,7 +79,7 @@ export function WorkflowPanel({
           <Button type="submit" variant="secondary">Set</Button>
           {draft?.publishAt && <button name="publishAt" value="" className="text-xs text-red-600 underline">clear</button>}
         </form>
-        <p className="mt-1 text-[11px] text-neutral-500">Publishes the pending changes (or the draft record) at that time{requireApproval ? ", if approved" : ""}.</p>
+        <p className="mt-1 text-[11px] text-neutral-500">Publishes the pending changes (or the draft record) at that time.</p>
       </div>
 
       {/* History */}

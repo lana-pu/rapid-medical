@@ -1,10 +1,22 @@
 import type { FieldDef } from "./fields";
 
+/** May this person open and save the group (ADR-006 roles)? */
+export const mayEditGroup = (user: { role: string }, g: { access?: "designer" | "admin" }) =>
+  !g.access || user.role === "admin" || (g.access === "designer" && user.role === "designer");
+
 /**
  * Site-wide settings, grouped by key. Each group is stored as one jsonb row
  * in site_settings. Fields reuse the admin form renderer.
  */
-export type SettingsGroup = { key: string; title: string; description?: string; fields: FieldDef[]; revalidate: string[] };
+export type SettingsGroup = {
+  key: string;
+  title: string;
+  description?: string;
+  fields: FieldDef[];
+  revalidate: string[];
+  /** who may open and save it (ADR-006): designer — designer and admin; admin — admin only. Default: everyone signed in */
+  access?: "designer" | "admin";
+};
 
 export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
@@ -91,17 +103,8 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
-    key: "workflow",
-    title: "Workflow",
-    description: "Editorial workflow for published content.",
-    revalidate: [],
-    fields: [
-      { name: "requireApproval", label: "Require approval before publishing (editors submit, approvers/admins publish)", type: "boolean" },
-      { name: "notifyEmail", label: "Notify this email when content is submitted for review", type: "text", half: true },
-    ],
-  },
-  {
     key: "branding",
+    access: "designer",
     title: "Branding",
     revalidate: ["/"],
     fields: [
@@ -113,6 +116,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   },
   {
     key: "integrations",
+    access: "admin",
     title: "Integrations",
     description: "Third-party scripts. Leave a field empty to disable.",
     revalidate: ["/"],

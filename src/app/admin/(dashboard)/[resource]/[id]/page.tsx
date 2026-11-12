@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { db, products } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/admin/resources";
-import { getEditable, hasWorkflow, listRevisions, workflowSettings } from "@/admin/workflow";
+import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
 import { duplicateResource } from "@/admin/actions";
@@ -18,12 +18,11 @@ export default async function EditResource({ params, searchParams }: { params: P
   const sp = await searchParams;
   const res = getResource(resource);
   if (!res) notFound();
-  const user = await requireUser();
-  const [editable, prods, revisions, wf] = await Promise.all([
+  await requireUser();
+  const [editable, prods, revisions] = await Promise.all([
     getEditable(res, Number(id)),
     db.select().from(products).orderBy(products.sortOrder),
     hasWorkflow(res) ? listRevisions(res, Number(id)) : Promise.resolve([]),
-    workflowSettings(),
   ]);
   if (!editable) notFound();
   const { row, draft, live } = editable;
@@ -67,7 +66,7 @@ export default async function EditResource({ params, searchParams }: { params: P
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} hideStatus={hasWorkflow(res) && live.status === "published"} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (
-          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} user={user} requireApproval={Boolean(wf.requireApproval)} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} />
+          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} />
         )}
       </div>
     </>

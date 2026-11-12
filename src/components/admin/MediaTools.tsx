@@ -34,7 +34,7 @@ export function AltField({ id, alt, label = "Description (alt text)" }: { id: nu
 type FileInfo = { id: number; url: string; filename: string; mime: string };
 const mediaKind = (mime: string): MediaKind => (mime.startsWith("image/") ? "image" : mime.startsWith("video/") ? "video" : mime === "application/pdf" ? "pdf" : "any");
 
-export function ReplaceButton({ file, places, canPublishNow }: { file: FileInfo; places: number; canPublishNow: boolean }) {
+export function ReplaceButton({ file, places }: { file: FileInfo; places: number }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [picker, setPicker] = useState(false);
@@ -112,7 +112,6 @@ export function ReplaceButton({ file, places, canPublishNow }: { file: FileInfo;
                 </li>
               ))}
             </ul>
-            {done.notPublished.length > 0 && <p className="text-sm text-amber-900">Not published (needs approval): {done.notPublished.join(", ")}</p>}
             <div className="flex justify-end">
               <Button type="button" onClick={() => { setOpen(false); setDone(null); setNext(null); }}>Close</Button>
             </div>
@@ -137,9 +136,8 @@ export function ReplaceButton({ file, places, canPublishNow }: { file: FileInfo;
             <p className="text-sm">The new file takes its place in {places} place{places > 1 ? "s" : ""}. The description stays.</p>
             <fieldset className="space-y-1 text-sm">
               <label className="flex gap-2"><input type="radio" checked={mode === "draft"} onChange={() => setMode("draft")} /> Add as unpublished changes — publish the pages yourself</label>
-              <label className={`flex gap-2 ${canPublishNow ? "" : "text-neutral-400"}`}>
-                <input type="radio" checked={mode === "publish"} disabled={!canPublishNow} onChange={() => setMode("publish")} /> Replace and publish now
-                {!canPublishNow && <span className="text-xs">(needs approval: publish each page after review)</span>}
+              <label className="flex gap-2">
+                <input type="radio" checked={mode === "publish"} onChange={() => setMode("publish")} /> Replace and publish now
               </label>
             </fieldset>
             {err && <p className="text-sm text-red-700">{err}</p>}

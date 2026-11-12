@@ -19,7 +19,7 @@
 
 **Ключевые возможности.** Региональные терапии с регуляторными текстами; Evidence с вкладками по
 продуктам; формы (контакт / вебинар / карьера) с сохранением в БД и e-mail; админка, сгенерированная
-из декларативного описания ресурсов; черновики поверх live, preview-ссылки, согласование, отложенная
+из декларативного описания ресурсов; черновики поверх live, preview-ссылки, отложенная
 публикация, история ревизий; on-page editor; медиапайплайн (WebP-варианты, постеры видео); 301 со
 старых доменов Duda; статическое демо на GitHub Pages.
 
@@ -118,7 +118,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 ## Данные
 
 Все таблицы — `src/db/schema.ts`. Enum-ы: `region` (us/ous/apac), `status` (draft/published),
-`user_role` (admin/approver/editor), `review_status` (editing/in_review/changes_requested/approved),
+`user_role` (admin/designer/editor), `review_status` (не используется, ADR-006),
 `submission_status` (new/in_progress/done/spam).
 
 ### Контент (ресурсы админки)
@@ -148,7 +148,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 `social`, `regional` (заголовок выбора локации, регуляторные сноски по
 регионам), `therapies:us|ous|apac` (только `metaTitle`/`metaDescription` обзора терапий), `seo` (Google-заголовки и
 описания Evidence, Webinars, Contact по регионам — используются как есть, без шаблона «| Rapid Medical™»),
-`workflow` (`requireApproval`, `notifyEmail`), `branding`, `integrations` (`gaMeasurementId`, `userwayAccount`, `geoSuggest`).
+`branding`, `integrations` (`gaMeasurementId`, `userwayAccount`, `geoSuggest`).
 Группы `home`, `about`, `careers`, `evidence` и тексты `therapies:*` с 2026-11-12 в форме не показываются: страницы
 правятся в редакторе (`site_pages`, ADR-007). Сохранение группы сливает форму с текущим значением, скрытые ключи не теряются.
 Не используются кодом (поля есть, эффекта нет): `integrations.geoSuggest`, `branding.logoPngUrl`,
@@ -158,7 +158,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 
 | Таблица | Назначение |
 |---|---|
-| `drafts` | Отложенные изменения опубликованной записи (`resource`+`recordId` unique), `reviewStatus`, `reviewNote`, `publishAt`; `data = null` — только расписание/ревью |
+| `drafts` | Отложенные изменения опубликованной записи (`resource`+`recordId` unique), `publishAt`; `data = null` — только расписание |
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, review, schedule, logout |
@@ -172,13 +172,16 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | Кто | Что может (по коду) |
 |---|---|
 | **Посетитель** | Все публичные страницы (только `status = published`), формы. С preview-ссылкой (JWT, 7 дней) — видит черновики и pending-правки |
-| **editor** | Вход в `/admin` и on-page editor; создаёт/правит любые ресурсы (кроме Users); при выключенном согласовании — публикует сам; при включённом — «Submit for review» |
-| **approver** | Как editor + Approve / Request changes и публикация при включённом согласовании |
-| **admin** | Всё, включая `/admin/users` (создание, роли, деактивация, сброс 2FA) |
+| **editor** | Вход в `/admin` и редактор на странице; создаёт, правит, публикует и снимает с публикации любые записи; медиатека, заявки, расписание. На странице — тексты, медиа, секции из пресетов (добавить, сдвинуть, скопировать, удалить), **без смены оформления** (варианта) секций. Site settings — группы с содержимым (контакты, соцсети, региональные уведомления, Google-тексты) |
+| **designer** | Как editor + меняет оформление секций (вариант) на странице и группу настроек Branding |
+| **admin** | Всё: + People and roles (приглашения, роли, отключение, сброс 2FA), Integrations |
 
-- Жёсткие ролевые проверки — `requireAdmin()` на `/admin/users` и проверка в `src/admin/actions.ts`. Остальное — `requireUser()`
-  (сессия + пройденная 2FA). Удаление, unpublish, расписание, настройки сайта, медиа, редиректы,
-  продукты доступны любой роли. См. `docs/memory/findings/pre-launch-audit.md` — расхождения с заявленной моделью согласования.
+- **Согласования нет (ADR-006, решение владелицы 2026-11-12).** Одобрение — это Publish, его нажимает тот, кто работает с
+  контентом. Роль approver убрана (бывшие approver → editor, миграция `0014`), статусов ревью и настройки `requireApproval` нет;
+  колонки `drafts.review_status`/`review_note` не используются и удаляются отдельной миграцией после прода.
+
+- Ролевые проверки на сервере: `requireAdmin()` — People and roles и группа Integrations; `canDesign(user)` (designer, admin) —
+  смена варианта секции и группа Branding. Остальное — `requireUser()` (сессия + пройденная 2FA).
 - `/admin/*` без cookie `rm_admin` → `/admin/login?next=…` (проверка формата cookie в proxy; реальная
   проверка — в layout админки и части страниц/экшенов). `/api/admin/*` проверяют `getSession()` (без проверки 2FA).
 - Сессия: 7 дней, httpOnly, `sameSite=lax`, отзывная. Троттлинг входа: 8 неудач на e-mail или IP за 15 мин.
@@ -195,17 +198,12 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Запись не опубликована | Правка на месте, ревизия `draft`; если в форме выбран `published` — сразу `publish()` |
 | Запись опубликована | Live не трогается; изменения → `drafts`, ревизия `draft`, «pending» |
 
-- **Publish**: публикуется ровно то, что прошло проверку прав: если черновик правили или его согласование поменялось
-  между проверкой и публикацией — ничего не публикуется, «These changes were edited or their review changed meanwhile…».
-  Черновик сливается в live, `status = published`, черновик удаляется, ревизия `published`,
+- **Publish** — любой вошедший (редактор, дизайнер, админ). Сохранение само не публикует: только Publish или статус
+  `published` в форме неопубликованной записи. Черновик сливается в live, `status = published`, черновик удаляется, ревизия `published`,
   `revalidatePath` по `resource.revalidate` + preview-URL + `/sitemap.xml`.
-- **Согласование** (`workflow.requireApproval`, по умолчанию выкл.): editor → `in_review` (письмо на
-  `workflow.notifyEmail`); approver/admin → `approved` / `changes_requested`; публиковать может
-  admin, approver или кто угодно при `approved`. Правка approved-черновика (и неопубликованной записи) сбрасывает
-  одобрение в `editing`. Сохранение само не публикует: только Publish или статус `published` в форме по тем же правам.
-- **Unpublish**: неопубликованные правки переходят в запись (ревизия), одобрение сбрасывается, расписание отменяется; так же и массовое Unpublish из списка.
+- **Unpublish**: неопубликованные правки переходят в запись (ревизия), расписание отменяется; так же и массовое Unpublish из списка.
 - **Отложенная публикация**: `drafts.publishAt`; `GET /api/cron/publish` публикует всё, у чего время
-  наступило (системный актор «Scheduler»); при включённом согласовании — только `approved`, остальное ждёт одобрения.
+  наступило (системный актор «Scheduler»).
 - **История**: `/admin/{resource}/{id}/history` — сравнение двух ревизий (или live/pending) по полям с
   подсветкой слов; restore = сохранение через тот же workflow.
 - **Preview**: `/api/preview?token=…` включает Next draft mode; публичный слой (`src/lib/content.ts`)
@@ -221,7 +219,6 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Событие | Кому | Тема | Код |
 |---|---|---|---|
 | Отправка любой формы (contact / webinar / careers / event) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
-| Черновик отправлен на ревью | `site_settings.workflow.notifyEmail` (если задан) | `[Website] Review requested: …` | `src/admin/workflow.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 
 Без `SMTP_HOST` письма только логируются в консоль (включая токен сброса пароля и данные заявки).

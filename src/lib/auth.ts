@@ -103,6 +103,9 @@ export async function requireUser(): Promise<SessionUser> {
   return s;
 }
 
+/** Roles (ADR-006): editor — content; designer — also how sections look and Branding; admin — also people and Integrations. */
+export const canDesign = (u: { role: string }) => u.role === "designer" || u.role === "admin";
+
 export async function requireAdmin(): Promise<SessionUser> {
   const s = await requireUser();
   if (s.role !== "admin") redirect("/admin?error=forbidden");

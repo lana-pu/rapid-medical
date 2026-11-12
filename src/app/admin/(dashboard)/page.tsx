@@ -19,7 +19,6 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     db.select({ n: count() }).from(contactSubmissions).where(eq(contactSubmissions.status, "new")),
   ]);
   const [latest, pending, settingPending] = await Promise.all([db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt)).limit(8), pendingDrafts(), listSettingDrafts()]);
-  const REVIEW: Record<string, string> = { editing: "Editing", in_review: "In review", changes_requested: "Changes requested", approved: "Approved" };
 
   const cards = [
     { href: "/admin/solutions", label: "Therapy pages", n: sol.n },
@@ -68,7 +67,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 <td className="px-3 py-2"><Link href={`/admin/${d.resource}/${d.recordId}`} className="font-medium underline">{d.label}</Link></td>
                 <td className="px-3 py-2 text-neutral-600">{d.resourceTitle}</td>
                 <td className="px-3 py-2">{d.updatedByName}</td>
-                <td className="px-3 py-2">{d.data ? <span className={`rounded px-1.5 py-0.5 text-xs ${d.reviewStatus === "approved" ? "bg-green-100 text-green-800" : d.reviewStatus === "in_review" ? "bg-blue-100 text-blue-800" : d.reviewStatus === "changes_requested" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>{REVIEW[d.reviewStatus]}</span> : <span className="text-neutral-400">—</span>}</td>
+                <td className="px-3 py-2">{d.data ? <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800">Unpublished changes</span> : <span className="text-neutral-400">—</span>}</td>
                 <td className="px-3 py-2 text-neutral-600">{d.publishAt ? formatDate(d.publishAt, { dateStyle: "medium", timeStyle: "short" }) : ""}</td>
                 <td className="px-3 py-2 text-neutral-500">{formatDate(d.updatedAt, { dateStyle: "medium", timeStyle: "short" })}</td>
               </tr>

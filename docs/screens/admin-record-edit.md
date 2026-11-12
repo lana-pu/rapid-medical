@@ -10,7 +10,7 @@
 
 ## Данные
 `getEditable()` — live-строка с наложенным pending-черновиком; список продуктов (для селекта);
-до 50 ревизий; настройки workflow. Preview-ссылка — JWT на 7 дней (`/api/preview?token=…`), если у ресурса
+до 50 ревизий. Preview-ссылка — JWT на 7 дней (`/api/preview?token=…`), если у ресурса
 есть `previewUrl` (solutions, team, jobs, pages).
 
 ## Форма
@@ -19,10 +19,8 @@ markdown (Tiptap), json, link, table (редактор спецификаций,
 date, image (пикер медиатеки + загрузка), url, regions, region, product, status, repeater (drag-сортировка,
 свернуть, дублировать, вложенные), stringList.
 - Опубликованная запись: поле `status` скрыто (управляется панелью), подсказка «saving creates pending changes».
-- Неопубликованная запись: `status = published` в форме — это Publish по тем же правилам, что и кнопка (`canPublish`).
-  Без права (согласование включено, роль editor, нет approve) запись сохраняется неопубликованной с сообщением
-  «Saved, not published: needs approval». Сохранение из других мест (правка на странице, секции, замена файла в
-  медиатеке, restore) никогда не публикует запись само (2026-11-12, ревью безопасности).
+- Неопубликованная запись: `status = published` в форме — это Publish. Сохранение из других мест (правка на странице,
+  секции, замена файла в медиатеке, restore) никогда не публикует запись само (2026-11-12, ревью безопасности).
 - **Поля `onPage` (ADR-007, 2026-11-12)** в форме не показываются: содержимое страницы правится на странице. Вместо них —
   блок «Page content» со ссылкой «Edit on page ✎». Сохранение формы оставляет их как есть (черновик поверх live).
   Терапии: в форме Basics (без breadcrumb) и SEO; текстовые страницы: без `bodyHtml`. Новая запись получает список блоков
@@ -49,25 +47,24 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Состояние записи | Результат | Уведомление |
 |---|---|---|
 | Новая | Вставка со `status = draft` → редирект на `/admin/{resource}/{id}` | «Saved.» |
-| Не опубликована | Правка на месте; одобрение (`approved`) сбрасывается в `editing` — одобряли другой текст; если в форме выбран `published` → публикация по правилам Publish | «Saved.» / «Saved, not published: needs approval» |
+| Не опубликована | Правка на месте; если в форме выбран `published` → публикация | «Saved.» |
 | Опубликована | Изменения в `drafts`, live не меняется | «Saved as pending changes…» |
 | `products`, `redirects` (без workflow) | Сразу в live | «Saved.» |
 
 ## Панель workflow (только ресурсы со `status`)
 | Элемент | Когда показан | Кто может |
 |---|---|---|
-| Live-статус, плашка «Unpublished changes by … · дата», статус ревью и заметка | всегда / при pending / при approval | — |
+| Live-статус, плашка «Unpublished changes by … · дата» | всегда / при pending | — |
 | «Scheduled to publish …» | если `publishAt` | — |
-| **Publish / Publish changes** | есть pending или запись не live | кнопка disabled, если approval включён, роль editor и не `approved` |
+| **Publish / Publish changes** | есть pending или запись не live | любая роль (согласования нет, ADR-006) |
 | **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись (ревизия «Unpublished: pending changes kept in the record»), одобрение сбрасывается, расписание отменяется |
 | **Discard changes** | есть pending | любая роль |
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
-| **Review**: заметка + Submit for review / Approve / Request changes | approval включён и (pending или не live) | Approve/Request changes — admin, approver |
-| **Schedule publication** (datetime-local, Set, clear) | всегда | любая роль; при включённом согласовании публикуется только одобренное — до одобрения расписание ждёт |
+| **Schedule publication** (datetime-local, Set, clear) | всегда | любая роль |
 | **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |
 | **Copy to {REGION}** (в шапке) | только `solutions` | дубликат как draft в другом регионе |
 
-Уведомления после действий — через query-параметры: `published`, `unpublished`, `discarded`, `review`,
+Уведомления после действий — через query-параметры: `published`, `unpublished`, `discarded`,
 `scheduled`, `restored`, `error`.
 
 ## Известные расхождения (код ↔ заявленная модель) — см. BACKLOG P0

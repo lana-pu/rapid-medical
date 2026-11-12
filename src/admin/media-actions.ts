@@ -8,7 +8,7 @@ import { getLiveSetting, getSettingDraft, setSetting, setSettingDraft, deleteSet
 import { findMediaUsage, swapUrl, urlPattern, type MediaUsage } from "@/lib/media-usage";
 import { getSettingsGroup } from "./settings";
 import { getResource } from "./resources";
-import { canPublish, getDraft, getEditable, publish, saveWithWorkflow, workflowSettings } from "./workflow";
+import { getEditable, publish, saveWithWorkflow } from "./workflow";
 import { requireEditor } from "./page-core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -22,7 +22,7 @@ type Fail = { error: string };
 
 const kind = (m: Pick<Media, "mime">) => (m.mime.startsWith("image/") ? "picture" : m.mime.startsWith("video/") ? "video" : m.mime === "application/pdf" ? "PDF" : "file");
 
-export type ReplaceResult = { places: { label: string; href: string; pagePath: string | null; live: boolean }[]; notPublished: string[] };
+export type ReplaceResult = { places: { label: string; href: string; pagePath: string | null; live: boolean }[] };
 
 export async function replaceEverywhere(oldId: number, newId: number, mode: "draft" | "publish"): Promise<ReplaceResult | Fail> {
   try {
@@ -31,13 +31,11 @@ export async function replaceEverywhere(oldId: number, newId: number, mode: "dra
     if (!from || !to) return { error: "File not found" };
     if (from.id === to.id) return { error: "Choose a different file" };
     if (kind(from) !== kind(to)) return { error: `Replace a ${kind(from)} with a ${kind(from)}` };
-    const wf = await workflowSettings();
-    if (mode === "publish" && wf.requireApproval && user.role === "editor") return { error: "Needs approval: publish each page after review" };
 
     const usage = await findMediaUsage(from.url);
     if (!usage.length) return { error: "This file is not used anywhere" };
     const re = urlPattern(from.url);
-    const result: ReplaceResult = { places: [], notPublished: [] };
+    const result: ReplaceResult = { places: [] };
 
     for (const u of usage) {
       if (u.r.startsWith("settings:")) {
@@ -62,9 +60,8 @@ export async function replaceEverywhere(oldId: number, newId: number, mode: "dra
       const saved = await saveWithWorkflow(res, u.id, { ...data, status: e.live.status }, user);
       let live = !saved.pending && e.live.status === "published";
       if (mode === "publish" && saved.pending) {
-        const checked = await getDraft(res, u.id);
-        if ((await canPublish(user, checked)).ok && (await publish(res, u.id, user, checked).then(() => true, () => false))) live = true;
-        else result.notPublished.push(u.label);
+        await publish(res, u.id, user);
+        live = true;
       }
       if (live) {
         for (const p of res.revalidate) revalidatePath(p, "layout");

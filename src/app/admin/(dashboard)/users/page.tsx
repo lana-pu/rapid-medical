@@ -16,7 +16,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     const email = String(fd.get("email") ?? "").toLowerCase().trim();
     const name = String(fd.get("name") ?? "").trim();
     const password = String(fd.get("password") ?? "");
-    const role = (["admin", "approver", "editor"].includes(String(fd.get("role"))) ? String(fd.get("role")) : "editor") as "admin" | "approver" | "editor";
+    const role = (["admin", "designer", "editor"].includes(String(fd.get("role"))) ? String(fd.get("role")) : "editor") as "admin" | "designer" | "editor";
     if (!email || !name || password.length < 10) redirect("/admin/users?error=Password+must+be+10%2B+chars");
     try {
       const [u] = await db.insert(users).values({ email, name, role, passwordHash: await hashPassword(password) }).returning();
@@ -102,7 +102,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         <div><label className="mb-1 block text-sm">Name</label><input name="name" required className={inputCls} /></div>
         <div><label className="mb-1 block text-sm">Email</label><input name="email" type="email" required className={inputCls} /></div>
         <div><label className="mb-1 block text-sm">Password (10+ chars)</label><input name="password" type="password" required minLength={10} className={inputCls} /></div>
-        <div><label className="mb-1 block text-sm">Role</label><select name="role" className={inputCls}><option value="editor">Editor</option><option value="approver">Approver</option><option value="admin">Admin</option></select></div>
+        <div><label className="mb-1 block text-sm">Role</label><select name="role" className={inputCls}><option value="editor">Editor</option><option value="designer">Designer</option><option value="admin">Admin</option></select></div>
         <div className="col-span-2"><Button type="submit">Create user</Button></div>
       </form>
     </>

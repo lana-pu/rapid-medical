@@ -11,7 +11,7 @@ import { BASE, withBase } from "@/lib/demo";
 const KEY = "rm-demo:v1";
 const OFF = "rm-demo:editor-off";
 
-type Entry = { value: string; kind: InlineKind; published: boolean; review?: string; at: string };
+type Entry = { value: string; kind: InlineKind; published: boolean; at: string };
 type Store = Record<string, Entry>; // "r#id.f" → entry
 
 function load(): Store {
@@ -127,16 +127,16 @@ export const demoApi = {
       const mine = Object.entries(s).filter(([kk, e]) => kk.startsWith(key + ".") && !e.published);
       if (!mine.length) continue;
       const latest = mine.map(([, e]) => e).sort((a, b) => (a.at < b.at ? 1 : -1))[0];
-      items.push({ r: t.r, id: t.id, label: `${t.r.replace("settings:", "page settings: ")}${t.id ? ` #${t.id}` : ""} — ${mine.length} field${mine.length > 1 ? "s" : ""}`, href: withBase(t.r.startsWith("settings:") ? `/admin/settings?group=${t.r.slice(9)}` : `/admin/${t.r}/${t.id}`), by: "you (demo)", at: latest.at, reviewStatus: latest.review ?? "editing", publishAt: null });
+      items.push({ r: t.r, id: t.id, label: `${t.r.replace("settings:", "page settings: ")}${t.id ? ` #${t.id}` : ""} — ${mine.length} field${mine.length > 1 ? "s" : ""}`, href: withBase(t.r.startsWith("settings:") ? `/admin/settings?group=${t.r.slice(9)}` : `/admin/${t.r}/${t.id}`), by: "you (demo)", at: latest.at, publishAt: null });
     }
-    return { items, canPublishAll: true, requireApproval: false, user: { name: "Demo editor", role: "admin" } };
+    return { items, user: { name: "Demo editor", role: "admin" } };
   },
   async publishTargets(targets: { r: string; id: number }[]) {
     const s = load();
     let n = demoPublishSections();
     for (const t of targets) for (const [kk, e] of Object.entries(s)) if (kk.startsWith(`${t.r}#${t.id}.`) && !e.published) { e.published = true; n++; }
     save(s);
-    return { published: n, blocked: [] as string[] };
+    return { published: n };
   },
   async discardTargets(targets: { r: string; id: number }[]) {
     const s = load();
@@ -146,13 +146,7 @@ export const demoApi = {
     if (n) setTimeout(() => location.reload(), 300); // originals come back from the static page
     return n;
   },
-  async submitTargetsForReview(targets: { r: string; id: number }[]) {
-    const s = load();
-    let n = 0;
-    for (const t of targets) for (const [kk, e] of Object.entries(s)) if (kk.startsWith(`${t.r}#${t.id}.`) && !e.published) { e.review = "in_review"; n++; }
-    save(s);
-    return n;
-  },
+
 };
 
 /* ------------------------------------------------------------------ */
@@ -305,8 +299,7 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
       adminHref: withBase(`/admin/${ref.r}/${ref.id}`),
       sections: sectionsNow(),
       presets,
-      canPublish: true,
-      requireApproval: false,
+      canDesign: false,
       user: "Demo editor",
     };
   },

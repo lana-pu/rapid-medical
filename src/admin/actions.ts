@@ -6,8 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getResource } from "./resources";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
-import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, setReview, schedule, restoreRevision, canPublish, getDraft, hasWorkflow } from "./workflow";
-import type { ReviewStatus } from "@/db";
+import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, schedule, restoreRevision, hasWorkflow } from "./workflow";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -36,7 +35,7 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
     if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
   } else if (res.onCreate) data = res.onCreate(data);
 
-  let result: { id: number; pending: boolean; notPublished?: boolean };
+  let result: { id: number; pending: boolean };
   try {
     result = await saveWithWorkflow(res, id, data, user, { formPublish: true });
   } catch (e) {
@@ -45,7 +44,6 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
     return { message: msg };
   }
   if (!result.pending) revalidate(res.revalidate, res.previewUrl?.(data) ?? null);
-  if (result.notPublished) redirect(`/admin/${res.slug}/${result.id}?error=${encodeURIComponent("Saved, not published: needs approval")}`);
   redirect(`/admin/${res.slug}/${result.id}?${result.pending ? "pending=1" : "saved=1"}`);
 }
 
@@ -60,16 +58,7 @@ async function ctx(fd: FormData) {
 
 export async function publishResource(fd: FormData) {
   const { user, res, id } = await ctx(fd);
-  const draft = await getDraft(res, id);
-  const allowed = await canPublish(user, draft);
-  if (!allowed.ok) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(allowed.reason ?? "Not allowed")}`);
-  let failed: string | null = null;
-  try {
-    await publish(res, id, user, draft);
-  } catch (e) {
-    failed = (e as Error).message;
-  }
-  if (failed) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(failed)}`);
+  await publish(res, id, user);
   const row = await getRow(res, id);
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
   redirect(`/admin/${res.slug}/${id}?published=1`);
@@ -88,16 +77,6 @@ export async function discardDraftAction(fd: FormData) {
   const { user, res, id } = await ctx(fd);
   await discardDraft(res, id, user);
   redirect(`/admin/${res.slug}/${id}?discarded=1`);
-}
-
-export async function reviewAction(fd: FormData) {
-  const { user, res, id } = await ctx(fd);
-  const status = String(fd.get("status")) as ReviewStatus;
-  const note = String(fd.get("note") ?? "").slice(0, 2000);
-  if (!["editing", "in_review", "changes_requested", "approved"].includes(status)) return;
-  if ((status === "approved" || status === "changes_requested") && user.role === "editor") redirect(`/admin/${res.slug}/${id}?error=Only+approvers+can+approve`);
-  await setReview(res, id, status, note, user);
-  redirect(`/admin/${res.slug}/${id}?review=${status}`);
 }
 
 export async function scheduleAction(fd: FormData) {
@@ -137,9 +116,7 @@ export async function bulkResource(fd: FormData) {
   if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted
   if (action === "publish" && hasWorkflow(res)) {
     for (const id of ids) {
-      const draft = await getDraft(res, id);
-      if (!(await canPublish(user, draft)).ok || !(await getEditable(res, id))) continue; // not allowed, or gone meanwhile
-      await publish(res, id, user, draft).catch(() => undefined); // changed after the check: left for a new check
+      if (await getEditable(res, id)) await publish(res, id, user); // a row gone meanwhile is skipped
     }
   } else if (action === "unpublish" && hasWorkflow(res)) {
     // the same as one by one: pending changes kept, approval reset, schedule cancelled

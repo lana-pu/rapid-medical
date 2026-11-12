@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { Region, StoredBlock } from "@/db";
 import { audit } from "@/lib/audit";
+import { canDesign } from "@/lib/auth";
 import { REGION_CHOICES } from "@/lib/regions";
 import { BLOCKS } from "@/blocks/registry";
 import type { BlockDef, BlockType } from "@/blocks/types";
@@ -12,7 +13,7 @@ import { PRESETS, TEMPLATES, templateBlocks, type Preset, type TemplateId } from
 import { and, eq, getTableColumns, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { isRegion } from "@/lib/regions";
-import { canPublish, getEditable, getRevision, listRevisions, restoreRevision, saveWithWorkflow, workflowSettings } from "./workflow";
+import { getEditable, getRevision, listRevisions, restoreRevision, saveWithWorkflow } from "./workflow";
 import { SITE_PAGE_TYPE } from "./pages-index";
 import { checkBase, ConflictError, knownBlocks, pageResource, pageVersion, regionalSiblings, requireEditor, type PageRef } from "./page-core";
 
@@ -55,8 +56,8 @@ export type PageInfo = {
   adminHref: string;
   sections: SectionInfo[];
   presets: Preset[];
-  canPublish: boolean;
-  requireApproval: boolean;
+  /** may change how sections look (variant): designer and admin (ADR-006) */
+  canDesign: boolean;
   user: string;
 };
 
@@ -102,7 +103,6 @@ export async function pageInfo(ref: PageRef): Promise<PageInfo | Fail> {
     const res = pageResource(ref.r);
     const e = await getEditable(res, ref.id);
     if (!e) return { error: "Page not found" };
-    const wf = await workflowSettings();
     const region = (e.row.region ?? null) as Region | null;
     const siblings = await regionalSiblings(res, e.live);
     const regions = region
@@ -123,8 +123,7 @@ export async function pageInfo(ref: PageRef): Promise<PageInfo | Fail> {
       adminHref: `/admin/${res.slug}/${ref.id}`,
       sections: sections((e.row.blocks as StoredBlock[] | null) ?? []),
       presets: PRESETS,
-      canPublish: (await canPublish(user, e.draft)).ok,
-      requireApproval: !!wf.requireApproval,
+      canDesign: canDesign(user),
       user: user.name,
     };
   } catch (err) {
@@ -136,6 +135,7 @@ export async function pageInfo(ref: PageRef): Promise<PageInfo | Fail> {
 export async function editBlocks(ref: PageRef, op: BlockOp, base?: string): Promise<{ version: string; sections: SectionInfo[]; added?: string; undo: StoredBlock[] } | Fail> {
   try {
     const user = await requireEditor();
+    if (op.op === "variant" && !canDesign(user)) return { error: "Changing how a section looks is for designers" };
     const res = pageResource(ref.r);
     await checkBase(res, ref.id, base, user);
     const e = await getEditable(res, ref.id);

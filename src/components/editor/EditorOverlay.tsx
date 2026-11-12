@@ -34,8 +34,8 @@ type Panel =
   | { k: "add"; at: number; list: string }
   | { k: "history"; items: HistoryItem[] | null }
   | null;
-type Modal = { k: "review"; items: string[]; others: string[]; note: string; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
-type Legacy = { items: PendingItem[]; canPublishAll: boolean; requireApproval: boolean; user: { name: string; role: string } };
+type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
+type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
 
 const STYLE = (top: number, preview: boolean) =>
   preview
@@ -413,7 +413,6 @@ export default function EditorOverlay() {
   /* ---- top bar actions ---- */
   const legacyItems = (legacy?.items ?? []).filter((it) => !(page && it.r === page.r && it.id === page.id));
   const hasChanges = (info ? info.status !== "live" : false) || legacyItems.length > 0;
-  const canPublish = info ? info.canPublish && (legacy?.canPublishAll ?? true) : (legacy?.canPublishAll ?? true);
 
   const openReview = async () => {
     setBusy(true);
@@ -424,7 +423,7 @@ export default function EditorOverlay() {
         if ("error" in res) return say(res.error, true);
         items = res.items;
       }
-      setModal({ k: "review", items, others: legacyItems.map((i) => i.label), note: "", confirmDiscard: false });
+      setModal({ k: "review", items, others: legacyItems.map((i) => i.label), confirmDiscard: false });
     } finally {
       setBusy(false);
     }
@@ -434,23 +433,10 @@ export default function EditorOverlay() {
     setBusy(true);
     try {
       const r = await api.publishTargets(targetsOnPage());
-      if (r.blocked.length) say(`Not published: ${r.blocked.join(", ")}`, true);
       undo.current = [];
       setUndoCount(0);
       setModal(r.published ? { k: "live", path: info?.livePath ?? pathname } : null);
-      if (!r.published && !r.blocked.length) say("Nothing to publish");
-      await afterChange();
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const submitReview = async (note: string) => {
-    setBusy(true);
-    try {
-      const n = await api.submitTargetsForReview(targetsOnPage(), note);
-      say(n ? "Sent for review" : "Nothing to send", true);
-      setModal(null);
+      if (!r.published) say("Nothing to publish");
       await afterChange();
     } finally {
       setBusy(false);
@@ -597,7 +583,7 @@ export default function EditorOverlay() {
           {sel && <div className="pointer-events-none fixed z-[999] border-2 border-blue-600" style={vis(sel)} />}
           {sel && selInfo && (
             <SectionToolbar
-              s={selInfo}
+              s={info.canDesign ? selInfo : { ...selInfo, variants: [] }}
               first={selInfo.at === 0}
               last={selInfo.at === selList.length - 1 || !!selList[selInfo.at + 1]?.pinned}
               busy={busy}
@@ -721,18 +707,8 @@ export default function EditorOverlay() {
             </ul>
           )}
           {info?.changedBy && <p className="mb-4 text-xs text-neutral-500">Last change by {info.changedBy}{info.changedAt ? `, ${new Date(info.changedAt).toLocaleString()}` : ""}.</p>}
-          {!canPublish && (
-            <label className="mb-4 block text-sm">
-              <span className="mb-1 block text-xs font-medium text-neutral-600">Changes need approval. Note for the approver (optional)</span>
-              <textarea value={modal.note} onChange={(e) => setModal({ ...modal, note: e.target.value })} className="w-full rounded border border-neutral-300 px-2 py-1.5" rows={2} />
-            </label>
-          )}
           <div className="flex flex-wrap items-center gap-2">
-            {canPublish ? (
-              <button type="button" className={buttons.primary} disabled={busy || modal.items.length + modal.others.length === 0} onClick={publishNow}>Publish now</button>
-            ) : (
-              <button type="button" className={buttons.primary} disabled={busy} onClick={() => submitReview(modal.note)}>Submit for review</button>
-            )}
+            <button type="button" className={buttons.primary} disabled={busy || modal.items.length + modal.others.length === 0} onClick={publishNow}>Publish now</button>
             <button type="button" className={buttons.secondary} onClick={() => setModal(null)}>Keep editing</button>
             <span className="flex-1" />
             <button type="button" className={`${buttons.secondary} text-red-700`} disabled={busy} onClick={() => (modal.confirmDiscard ? discardAll() : setModal({ ...modal, confirmDiscard: true }))}>

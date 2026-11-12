@@ -56,57 +56,56 @@ test("editing a live record creates pending changes, preview shows them, publish
   await expect(anon.locator("h1")).toHaveText("A patient-centric approach to AIS");
 });
 
-test("approval workflow blocks editors from publishing", async ({ page, browser }) => {
-  sql(`update site_settings set value='{"requireApproval": true}' where key='workflow'`);
-  sql(`insert into users(email,name,password_hash,role) values ('editor@e2e.test','Editor',(select password_hash from users where email='${ADMIN.email}'),'editor') on conflict (email) do nothing`);
-  const id = sql("select id from solutions where region='us' and slug='lvo'");
-  const ed = await (await browser.newContext()).newPage();
-  await login(ed, "editor@e2e.test", ADMIN.password);
-  await ed.goto(`/admin/solutions/${id}`);
-  await ed.fill("textarea[name=metaDescription]", "Changed by editor");
-  await ed.click('button:has-text("Save")');
-  await ed.waitForURL(/pending=1/);
-  await expect(ed.locator('button:has-text("Publish changes")')).toBeDisabled();
-  await ed.click('button:has-text("Submit for review")');
-  await ed.waitForURL(/review=in_review/);
+const addUser = (email: string, role: string) =>
+  sql(`insert into users(email,name,password_hash,role) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}') on conflict (email) do update set role='${role}'`);
 
-  await login(page); // admin
-  await page.goto("/admin");
-  await expect(page.getByText("In review")).toBeVisible();
-  await page.goto(`/admin/solutions/${id}`);
-  await page.click('button:has-text("Approve")');
-  await page.waitForURL(/review=approved/);
-  await page.click('button:has-text("Publish changes")');
-  await page.waitForURL(/published=1/);
-  sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
-});
-
-test("approval on: an editor cannot publish an unpublished record through the status field", async ({ browser }) => {
-  sql(`update site_settings set value='{"requireApproval": true}' where key='workflow'`);
-  sql(`insert into users(email,name,password_hash,role) values ('editor@e2e.test','Editor',(select password_hash from users where email='${ADMIN.email}'),'editor') on conflict (email) do nothing`);
+test("roles: an editor publishes, but cannot change how a section looks or open Integrations; a designer can", async ({ browser }) => {
+  test.setTimeout(120_000);
+  addUser("editor@e2e.test", "editor");
+  addUser("designer@e2e.test", "designer");
   const id = sql("select id from news_items where status='published' order by id limit 1");
   sql(`update news_items set status='draft' where id=${id}`);
   try {
     const ed = await (await browser.newContext()).newPage();
     await login(ed, "editor@e2e.test", ADMIN.password);
-    // an approval given earlier does not cover a later edit
-    sql(`insert into drafts(resource,record_id,data,review_status,updated_by_name) values ('news',${id},null,'approved','Admin') on conflict (resource,record_id) do update set review_status='approved', data=null`);
+    // no approval step: the status field publishes an unpublished record
     await ed.goto(`/admin/news/${id}`);
-    await ed.fill("input[name=title]", (await ed.inputValue("input[name=title]")) + " ");
+    await expect(ed.getByText("Submit for review")).toHaveCount(0);
     await ed.selectOption("select[name=status]", "published");
     await ed.click('button:has-text("Save")');
-    await ed.waitForURL(/error=/);
-    await expect(ed.getByText("Saved, not published: needs approval")).toBeVisible();
-    expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
-    expect(sql(`select review_status from drafts where resource='news' and record_id=${id}`)).toBe("editing");
+    await ed.waitForURL(/saved=1/);
+    expect(sql(`select status from news_items where id=${id}`)).toBe("published");
+    // Site settings without Branding, Integrations and Workflow
+    await ed.goto("/admin/settings?group=integrations");
+    await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
+    await expect(ed.getByRole("link", { name: "Branding" })).toHaveCount(0);
+    await expect(ed.getByRole("link", { name: "Workflow" })).toHaveCount(0);
+    await expect(ed.locator("input[name=__group]").first()).toHaveValue("contact");
+    // on the page: no layout choice for a section
+    await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
+    await expect(ed.getByRole("status")).toHaveText(/Live|Draft/);
+    await ed.evaluate(() => window.scrollTo(0, 0));
+    await ed.mouse.click(8, 300);
+    await expect(ed.locator("#rm-section-toolbar")).toBeVisible();
+    await expect(ed.locator('#rm-section-toolbar select[aria-label="Layout"]')).toHaveCount(0);
+
+    const de = await (await browser.newContext()).newPage();
+    await login(de, "designer@e2e.test", ADMIN.password);
+    await de.goto("/admin/settings?group=branding");
+    await expect(de.locator("input[name=__group]").first()).toHaveValue("branding");
+    await expect(de.getByRole("link", { name: "Integrations" })).toHaveCount(0);
+    await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
+    await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
+    await de.evaluate(() => window.scrollTo(0, 0));
+    await de.mouse.click(8, 300);
+    await expect(de.locator('#rm-section-toolbar select[aria-label="Layout"]')).toBeVisible();
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='published' where id=${id}`);
-    sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
   }
 });
 
-test("unpublish keeps the pending changes in the record, drops an old approval and the schedule", async ({ page }) => {
+test("unpublish keeps the pending changes in the record and cancels the schedule", async ({ page }) => {
   await login(page);
   const id = sql("select id from news_items where status='published' order by id desc limit 1");
   const title = sql(`select title from news_items where id=${id}`);
@@ -115,11 +114,11 @@ test("unpublish keeps the pending changes in the record, drops an old approval a
     await page.fill("input[name=title]", "E2E pending title");
     await page.click('button:has-text("Save")');
     await page.waitForURL(/pending=1/);
-    sql(`update drafts set review_status='approved', publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
+    sql(`update drafts set publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
     await page.click('button:has-text("Unpublish")');
     await page.waitForURL(/unpublished=1/);
     expect(sql(`select status || '|' || title from news_items where id=${id}`)).toBe("draft|E2E pending title");
-    expect(sql(`select coalesce(data::text,'null') || '|' || review_status || '|' || coalesce(publish_at::text,'none') from drafts where resource='news' and record_id=${id}`)).toBe("null|editing|none");
+    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
@@ -132,14 +131,14 @@ test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ 
   const id = await page.locator('input[name=ids]').first().getAttribute("value");
   const was = sql(`select status from news_items where id=${id}`);
   sql(`update news_items set status='published' where id=${id}`);
-  sql(`insert into drafts(resource,record_id,data,review_status,publish_at,updated_by_name) values ('news',${id},null,'approved',now() + interval '1 day','Admin') on conflict (resource,record_id) do update set review_status='approved', publish_at=now() + interval '1 day'`);
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${id},null,now() + interval '1 day','Admin') on conflict (resource,record_id) do update set publish_at=now() + interval '1 day'`);
   try {
     await page.reload();
     await page.check(`input[name=ids][value="${id}"]`);
     await page.click('button[value=unpublish]');
     await page.waitForURL(/bulk=unpublish/);
     expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
-    expect(sql(`select review_status || '|' || coalesce(publish_at::text,'none') from drafts where resource='news' and record_id=${id}`)).toBe("editing|none");
+    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='${was}' where id=${id}`);
@@ -156,17 +155,12 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
   await page.click('button:has-text("Set")');
   await page.waitForURL(/scheduled=1/);
-  // with approval on, the schedule waits for the approval
-  sql(`update site_settings set value='{"requireApproval": true}' where key='workflow'`);
-  try {
-    const waiting = await (await request.get("/api/cron/publish")).json();
-    expect(waiting.published).not.toContainEqual({ resource: "solutions", id: Number(id) });
-    sql(`update drafts set review_status='approved' where resource='solutions' and record_id=${id}`);
-  } finally {
-    sql(`update site_settings set value='{"requireApproval": false}' where key='workflow'`);
-  }
   const res = await (await request.get("/api/cron/publish")).json();
   expect(res.published).toContainEqual({ resource: "solutions", id: Number(id) });
+  // the schedule went with the draft: the next run does not publish it again
+  expect(sql(`select count(*) from drafts where resource='solutions' and record_id=${id}`)).toBe("0");
+  const again = await (await request.get("/api/cron/publish")).json();
+  expect(again.published).not.toContainEqual({ resource: "solutions", id: Number(id) });
   const site = await request.get("/apac/therapies/drivewire");
   expect(await site.text()).toContain("Scheduled title");
 });

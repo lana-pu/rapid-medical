@@ -1,20 +1,12 @@
 import "server-only";
 import { and, desc, eq, lte, isNotNull, sql } from "drizzle-orm";
-import { db, drafts, revisions, type Draft, type Revision, type ReviewStatus } from "@/db";
+import { db, drafts, revisions, type Draft, type Revision } from "@/db";
 import type { SessionUser } from "@/lib/auth";
-import { getSetting } from "@/lib/settings";
 import { audit } from "@/lib/audit";
-import { sendMail } from "@/lib/mail";
 import { getResource, type Resource } from "./resources";
 import { getRow, saveRow, type Row } from "./engine";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-export type WorkflowSettings = { requireApproval?: boolean; notifyEmail?: string };
-
-export async function workflowSettings(): Promise<WorkflowSettings> {
-  return getSetting<WorkflowSettings>("workflow");
-}
 
 /** Which resources go through draft → publish (everything with a status column). */
 export function hasWorkflow(res: Resource): boolean {
@@ -57,9 +49,9 @@ async function ensureBaseline(res: Resource, id: number, live: Row) {
  * - unpublished record    → update live row directly, revision "draft"
  * - published record      → write to drafts table (live untouched), revision "draft"
  * Returns the record id and whether the change is pending (in a draft).
- * Only the admin form may publish an unpublished record through its status select (`formPublish`), and only when
- * `canPublish` allows it. Every other save (on-page edits, sections, media replace, restore) never publishes: a status
- * carried over from a stale draft must not skip Publish and the approval check.
+ * Only the admin form may publish an unpublished record, through its status select (`formPublish`). Every other save
+ * (on-page edits, sections, media replace, restore) never publishes: a status carried over from a stale draft must not
+ * put a record on the site without Publish. There is no approval step (ADR-006): Publish is the approval.
  */
 export async function saveWithWorkflow(
   res: Resource,
@@ -67,7 +59,7 @@ export async function saveWithWorkflow(
   data: Row,
   user: SessionUser,
   opts: { formPublish?: boolean } = {},
-): Promise<{ id: number; pending: boolean; notPublished?: boolean }> {
+): Promise<{ id: number; pending: boolean }> {
   if (!hasWorkflow(res)) {
     const saved = await saveRow(res, id, data);
     await audit(user, "save", { resource: res.slug, recordId: saved, label: String(data[res.labelField] ?? "") });
@@ -89,14 +81,9 @@ export async function saveWithWorkflow(
     // Not live yet: edit in place. The form's status select may flip it to published → that is a publish.
     const wantsPublish = opts.formPublish === true && data.status === "published";
     await saveRow(res, id, { ...data, status: "draft" });
-    // an approval was given to the content before this edit (as with pending changes below)
-    await db.update(drafts).set({ reviewStatus: "editing" }).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id), eq(drafts.reviewStatus, "approved")));
     await addRevision(res, id, "draft", snapshot(res, { ...data, status: "draft" }), user);
     await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? "") });
-    if (!wantsPublish) return { id, pending: false };
-    const checked = await getDraft(res, id);
-    if (!(await canPublish(user, checked)).ok) return { id, pending: false, notPublished: true };
-    await publish(res, id, user, checked);
+    if (wantsPublish) await publish(res, id, user);
     return { id, pending: false };
   }
 
@@ -107,41 +94,24 @@ export async function saveWithWorkflow(
   const existing = await getDraft(res, id);
   await db
     .insert(drafts)
-    .values({ resource: res.slug, recordId: id, data: payload, reviewStatus: existing?.reviewStatus === "approved" ? "editing" : existing?.reviewStatus ?? "editing", updatedById: user.id, updatedByName: user.name, updatedAt: new Date(), publishAt: existing?.publishAt ?? null })
+    .values({ resource: res.slug, recordId: id, data: payload, updatedById: user.id, updatedByName: user.name, updatedAt: new Date(), publishAt: existing?.publishAt ?? null })
     .onConflictDoUpdate({
       target: [drafts.resource, drafts.recordId],
-      set: { data: payload, reviewStatus: existing?.reviewStatus === "approved" ? "editing" : existing?.reviewStatus ?? "editing", updatedById: user.id, updatedByName: user.name, updatedAt: new Date() },
+      set: { data: payload, updatedById: user.id, updatedByName: user.name, updatedAt: new Date() },
     });
   await addRevision(res, id, "draft", payload, user);
   await audit(user, "save", { resource: res.slug, recordId: id, label: String(data[res.labelField] ?? ""), meta: { pending: true } });
   return { id, pending: true };
 }
 
-/** Can this user publish right now? */
-export async function canPublish(user: SessionUser, draft: Draft | null): Promise<{ ok: boolean; reason?: string }> {
-  const s = await workflowSettings();
-  if (!s.requireApproval) return { ok: true };
-  if (user.role === "admin") return { ok: true };
-  if (user.role === "approver") return { ok: true };
-  if (draft?.reviewStatus === "approved") return { ok: true };
-  return { ok: false, reason: "Changes must be approved before publishing." };
-}
-
-const sameDraft = (a: Draft | null, b: Draft | null) =>
-  a === b || (!!a && !!b && a.id === b.id && a.reviewStatus === b.reviewStatus && a.updatedAt.getTime() === b.updatedAt.getTime() && JSON.stringify(a.data) === JSON.stringify(b.data));
-
-/**
- * Make the draft (or the unpublished row) live. `checked`: the draft the caller ran `canPublish` on — if it was edited
- * or its review changed since, nothing is published (what goes live is what was checked).
- */
-export async function publish(res: Resource, id: number, user: SessionUser, checked?: Draft | null): Promise<void> {
+/** Make the draft (or the unpublished row) live; the draft row goes, with its schedule. */
+export async function publish(res: Resource, id: number, user: SessionUser): Promise<void> {
   const draft = await getDraft(res, id);
-  if (checked !== undefined && !sameDraft(draft, checked)) throw new Error("These changes were edited or their review changed meanwhile. Check them and publish again.");
   const live = await getRow(res, id);
   if (!live) throw new Error("Record not found");
   const next = { ...(draft?.data ?? {}), status: "published" };
   await saveRow(res, id, next);
-  if (draft) await db.update(drafts).set({ data: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
+  if (draft) await db.delete(drafts).where(eq(drafts.id, draft.id));
   const row = (await getRow(res, id))!;
   await addRevision(res, id, "published", snapshot(res, row), user);
   await audit(user, "publish", { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
@@ -149,15 +119,15 @@ export async function publish(res: Resource, id: number, user: SessionUser, chec
 
 /**
  * Take the record off the site. Pending changes move into the record itself (an unpublished record is edited in place),
- * an approval is reset and a schedule is cancelled: a later Publish must not lay old changes or an old approval over it,
- * and the record does not come back on its own.
+ * and a schedule is cancelled: a later Publish must not lay old changes over it, and the record does not come back on
+ * its own.
  */
 export async function unpublish(res: Resource, id: number, user: SessionUser): Promise<void> {
   if (!(await getRow(res, id))) return; // gone meanwhile (a list action with an old row)
   const draft = await getDraft(res, id);
   await saveRow(res, id, { ...(draft?.data ?? {}), status: "draft" });
   if (draft) {
-    await db.update(drafts).set({ data: null, publishAt: null, reviewStatus: draft.reviewStatus === "approved" ? "editing" : draft.reviewStatus }).where(eq(drafts.id, draft.id));
+    await db.delete(drafts).where(eq(drafts.id, draft.id));
     // what the pending changes made of the record is in its history
     if (draft.data) await addRevision(res, id, "draft", snapshot(res, (await getRow(res, id))!), user, "Unpublished: pending changes kept in the record");
   }
@@ -168,26 +138,6 @@ export async function unpublish(res: Resource, id: number, user: SessionUser): P
 export async function discardDraft(res: Resource, id: number, user: SessionUser): Promise<void> {
   await db.delete(drafts).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id)));
   await audit(user, "save", { resource: res.slug, recordId: id, meta: { discardedDraft: true } });
-}
-
-export async function setReview(res: Resource, id: number, status: ReviewStatus, note: string, user: SessionUser): Promise<void> {
-  await db
-    .insert(drafts)
-    .values({ resource: res.slug, recordId: id, data: null, reviewStatus: status, reviewNote: note, updatedById: user.id, updatedByName: user.name })
-    .onConflictDoUpdate({ target: [drafts.resource, drafts.recordId], set: { reviewStatus: status, reviewNote: note, updatedAt: new Date() } });
-  await audit(user, "review", { resource: res.slug, recordId: id, meta: { status, note } });
-  if (status === "in_review") {
-    const wf = await workflowSettings();
-    if (wf.notifyEmail) {
-      const live = await getRow(res, id);
-      const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-      sendMail({
-        to: wf.notifyEmail,
-        subject: `[Website] Review requested: ${res.titleSingular} “${live?.[res.labelField] ?? id}”`,
-        text: `${user.name} submitted changes for review.\n\n${note ? `Note: ${note}\n\n` : ""}Open: ${base}/admin/${res.slug}/${id}`,
-      }).catch((e) => console.error("notify failed", e));
-    }
-  }
 }
 
 export async function schedule(res: Resource, id: number, at: Date | null, user: SessionUser): Promise<void> {
@@ -203,16 +153,14 @@ export async function publishDue(now = new Date()): Promise<{ resource: string; 
   const due = await db.select().from(drafts).where(and(isNotNull(drafts.publishAt), lte(drafts.publishAt, now)));
   const done: { resource: string; id: number }[] = [];
   const system: SessionUser = { id: 0, email: "system", name: "Scheduler", role: "admin" };
-  const { requireApproval } = await workflowSettings();
   for (const d of due) {
     const res = getResource(d.resource);
     if (!res) continue;
-    // with approval on, a schedule publishes only approved changes; it waits until they are approved
-    if (requireApproval && d.reviewStatus !== "approved") continue;
     try {
-      await publish(res, d.recordId, system, requireApproval ? d : undefined);
-    } catch {
-      continue; // changed after the approval: waits for a new one
+      await publish(res, d.recordId, system);
+    } catch (e) {
+      console.error(`scheduled publish failed: ${d.resource} #${d.recordId}`, e); // the others still go out; this one retries next run
+      continue;
     }
     done.push({ resource: d.resource, id: d.recordId });
   }

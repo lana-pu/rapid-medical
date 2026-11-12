@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
-import { SETTINGS_GROUPS, getSettingsGroup } from "@/admin/settings";
+import { SETTINGS_GROUPS, getSettingsGroup, mayEditGroup } from "@/admin/settings";
 import { getLiveSetting, setSetting, getSettingDraft, deleteSettingDraft } from "@/lib/settings";
 import { db, products } from "@/db";
 import { PageHeader, Notice, Button } from "@/components/admin/ui";
@@ -11,7 +11,10 @@ import { SettingsFields } from "@/components/admin/SettingsFields";
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string }> }) {
   const sp = await searchParams;
-  const group = getSettingsGroup(sp.group ?? "contact") ?? SETTINGS_GROUPS[0];
+  const me = await requireUser();
+  const groups = SETTINGS_GROUPS.filter((g) => mayEditGroup(me, g));
+  const asked = getSettingsGroup(sp.group ?? "contact");
+  const group = asked && mayEditGroup(me, asked) ? asked : groups[0];
   const [live, draft, prods] = await Promise.all([getLiveSetting(group.key), getSettingDraft(group.key), db.select().from(products)]);
   const value = draft ? { ...live, ...draft.value } : live;
 
@@ -19,7 +22,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     "use server";
     const user = await requireUser();
     const g = getSettingsGroup(String(fd.get("__group")));
-    if (!g) return;
+    if (!g || !mayEditGroup(user, g)) return;
     const out: Record<string, unknown> = {};
     for (const f of g.fields) {
       const raw = fd.get(f.name);
@@ -51,6 +54,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     "use server";
     const user = await requireUser();
     const key = String(fd.get("__group"));
+    const g = getSettingsGroup(key);
+    if (!g || !mayEditGroup(user, g)) return;
     await deleteSettingDraft(key);
     await audit(user, "settings", { label: key, meta: { key, discardedDraft: true } });
     redirect(`/admin/settings?group=${key}`);
@@ -60,7 +65,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     <>
       <PageHeader title="Site settings" />
       <div className="mb-6 flex gap-1 border-b border-neutral-200">
-        {SETTINGS_GROUPS.map((g) => (
+        {groups.map((g) => (
           <Link key={g.key} href={`/admin/settings?group=${g.key}`} className={`-mb-px border-b-2 px-3 py-2 text-sm ${g.key === group.key ? "border-neutral-900 font-medium" : "border-transparent text-neutral-500 hover:text-neutral-800"}`}>
             {g.title}
           </Link>

@@ -24,7 +24,7 @@ export const REGIONS: Region[] = ["us", "ous", "apac"];
 export const statusEnum = pgEnum("status", ["draft", "published"]);
 export type Status = (typeof statusEnum.enumValues)[number];
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "approver", "editor"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "designer", "editor"]);
 export type UserRole = (typeof userRoleEnum.enumValues)[number];
 
 export const reviewStatusEnum = pgEnum("review_status", ["editing", "in_review", "changes_requested", "approved"]);

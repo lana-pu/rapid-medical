@@ -10,7 +10,7 @@ import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
 import { checkBlockPath } from "@/blocks/paths";
 import { checkBase, ConflictError, pageVersion } from "./page-core";
-import { saveWithWorkflow, publish, discardDraft, getDraft, getEditable, canPublish, setReview, workflowSettings, hasWorkflow } from "./workflow";
+import { saveWithWorkflow, publish, discardDraft, getDraft, getEditable, hasWorkflow } from "./workflow";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -101,6 +101,7 @@ function resolve(t: Target): Resolved {
     const key = t.r.slice("settings:".length);
     const group = getSettingsGroup(key);
     if (!group) throw new Error("Unknown settings group");
+    if (group.access) throw new Error("This setting is changed in Site settings"); // role-limited groups are not on pages
     const field = resolveField(group.fields, path);
     if (!field) throw new Error(`Field ${t.f} is not editable`);
     return { kind: "settings", key, path, field };
@@ -195,14 +196,12 @@ async function saveFieldChecked(r: Resolved, t: Target, kind: InlineKind, raw: u
   return { pending: result.pending };
 }
 
-export type PendingItem = { r: string; id: number; label: string; href: string | null; by: string; at: string; reviewStatus: string | null; publishAt: string | null };
+export type PendingItem = { r: string; id: number; label: string; href: string | null; by: string; at: string; publishAt: string | null };
 
-/** Which of the records on this page have pending changes, and whether this user may publish them. */
-export async function pendingFor(targets: { r: string; id: number }[]): Promise<{ items: PendingItem[]; canPublishAll: boolean; requireApproval: boolean; user: { name: string; role: string } }> {
+/** Which of the records on this page have pending changes. */
+export async function pendingFor(targets: { r: string; id: number }[]): Promise<{ items: PendingItem[]; user: { name: string; role: string } }> {
   const user = await requireEditor();
-  const wf = await workflowSettings();
   const items: PendingItem[] = [];
-  let canPublishAll = true;
   const seen = new Set<string>();
   for (const t of targets) {
     const key = `${t.r}#${t.id}`;
@@ -213,8 +212,7 @@ export async function pendingFor(targets: { r: string; id: number }[]): Promise<
       const d = await getSettingDraft(k);
       if (!d) continue;
       const g = getSettingsGroup(k);
-      items.push({ r: t.r, id: 0, label: g?.title ?? k, href: `/admin/settings?group=${k}`, by: d.updatedByName, at: d.updatedAt.toISOString(), reviewStatus: null, publishAt: null });
-      if (wf.requireApproval && user.role === "editor") canPublishAll = false;
+      items.push({ r: t.r, id: 0, label: g?.title ?? k, href: `/admin/settings?group=${k}`, by: d.updatedByName, at: d.updatedAt.toISOString(), publishAt: null });
       continue;
     }
     const res = getResource(t.r);
@@ -224,24 +222,20 @@ export async function pendingFor(targets: { r: string; id: number }[]): Promise<
       // an unpublished record is "pending" in the sense that it is not live yet
       const live = await getRow(res, t.id);
       if (live && hasWorkflow(res) && live.status !== "published") {
-        items.push({ r: t.r, id: t.id, label: `${res.titleSingular}: ${live[res.labelField] ?? t.id} (not published yet)`, href: `/admin/${res.slug}/${t.id}`, by: "", at: "", reviewStatus: null, publishAt: null });
-        if (!(await canPublish(user, null)).ok) canPublishAll = false;
+        items.push({ r: t.r, id: t.id, label: `${res.titleSingular}: ${live[res.labelField] ?? t.id} (not published yet)`, href: `/admin/${res.slug}/${t.id}`, by: "", at: "", publishAt: null });
       }
       continue;
     }
     const label = String((d.data as any)[res.labelField] ?? t.id);
-    items.push({ r: t.r, id: t.id, label: `${res.titleSingular}: ${label}`, href: `/admin/${res.slug}/${t.id}`, by: d.updatedByName, at: d.updatedAt.toISOString(), reviewStatus: d.reviewStatus, publishAt: d.publishAt?.toISOString() ?? null });
-    if (!(await canPublish(user, d)).ok) canPublishAll = false;
+    items.push({ r: t.r, id: t.id, label: `${res.titleSingular}: ${label}`, href: `/admin/${res.slug}/${t.id}`, by: d.updatedByName, at: d.updatedAt.toISOString(), publishAt: d.publishAt?.toISOString() ?? null });
   }
-  return { items, canPublishAll, requireApproval: !!wf.requireApproval, user: { name: user.name, role: user.role } };
+  return { items, user: { name: user.name, role: user.role } };
 }
 
 /** Publish every pending change among the given records. */
-export async function publishTargets(targets: { r: string; id: number }[]): Promise<{ published: number; blocked: string[] }> {
+export async function publishTargets(targets: { r: string; id: number }[]): Promise<{ published: number }> {
   const user = await requireEditor();
-  const wf = await workflowSettings();
   let published = 0;
-  const blocked: string[] = [];
   const seen = new Set<string>();
   for (const t of targets) {
     const key = `${t.r}#${t.id}`;
@@ -249,7 +243,6 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     seen.add(key);
     if (t.r.startsWith("settings:")) {
       const k = t.r.slice(9);
-      if (wf.requireApproval && user.role === "editor") { blocked.push(k); continue; }
       if (await publishSettingDraft(k)) {
         published++;
         await audit(user, "publish", { resource: `settings:${k}`, label: getSettingsGroup(k)?.title ?? k });
@@ -263,21 +256,14 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     const live = await getRow(res, t.id);
     if (!live) continue;
     if (!draft?.data && live.status === "published") continue; // nothing pending
-    const ok = await canPublish(user, draft);
-    if (!ok.ok) { blocked.push(`${res.titleSingular} ${live[res.labelField] ?? t.id}`); continue; }
-    try {
-      await publish(res, t.id, user, draft);
-    } catch {
-      blocked.push(`${res.titleSingular} ${live[res.labelField] ?? t.id} (changed meanwhile — check and publish again)`);
-      continue;
-    }
+    await publish(res, t.id, user);
     published++;
     for (const p of res.revalidate) revalidatePath(p, "layout");
     const url = res.previewUrl?.(live);
     if (url) revalidatePath(url);
   }
   revalidatePath("/sitemap.xml");
-  return { published, blocked };
+  return { published };
 }
 
 export async function discardTargets(targets: { r: string; id: number }[]): Promise<number> {
@@ -292,19 +278,6 @@ export async function discardTargets(targets: { r: string; id: number }[]): Prom
     const res = getResource(t.r);
     if (!res) continue;
     if (await getDraft(res, t.id)) { await discardDraft(res, t.id, user); n++; }
-  }
-  return n;
-}
-
-export async function submitTargetsForReview(targets: { r: string; id: number }[], note: string): Promise<number> {
-  const user = await requireEditor();
-  let n = 0;
-  for (const t of targets) {
-    if (t.r.startsWith("settings:")) continue;
-    const res = getResource(t.r);
-    if (!res) continue;
-    const d = await getDraft(res, t.id);
-    if (d?.data && d.reviewStatus !== "in_review") { await setReview(res, t.id, "in_review", note, user); n++; }
   }
   return n;
 }

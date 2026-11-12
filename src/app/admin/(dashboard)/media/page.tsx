@@ -3,8 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db, media } from "@/db";
 import { findMediaUsage, mediaIndex, usageIn } from "@/lib/media-usage";
-import { getSession } from "@/lib/auth";
-import { workflowSettings } from "@/admin/workflow";
 import { PageHeader, formatDate, inputCls, Notice } from "@/components/admin/ui";
 import { MediaGrid } from "@/components/admin/MediaGrid";
 import { AltField, DescribeQueue, ReplaceButton } from "@/components/admin/MediaTools";
@@ -64,8 +62,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
 async function MediaDetail({ id }: { id: number }) {
   const m = await db.query.media.findFirst({ where: eq(media.id, id) });
   if (!m) notFound();
-  const [usage, user, wf] = await Promise.all([findMediaUsage(m.url), getSession(), workflowSettings()]);
-  const canPublishNow = !wf.requireApproval || (user?.role ?? "editor") !== "editor";
+  const usage = await findMediaUsage(m.url);
   return (
     <>
       <PageHeader
@@ -73,7 +70,7 @@ async function MediaDetail({ id }: { id: number }) {
         subtitle={`${m.mime} · ${(m.size / 1024).toFixed(0)} KB · ${formatDate(m.createdAt, { dateStyle: "medium" })}`}
         actions={
           <>
-            {usage.length > 0 && <ReplaceButton file={{ id: m.id, url: m.url, filename: m.filename, mime: m.mime }} places={usage.length} canPublishNow={canPublishNow} />}
+            {usage.length > 0 && <ReplaceButton file={{ id: m.id, url: m.url, filename: m.filename, mime: m.mime }} places={usage.length} />}
             <Link href="/admin/media" className="self-center text-sm underline">← Library</Link>
           </>
         }

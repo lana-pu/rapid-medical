@@ -186,7 +186,7 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   await expect(page.locator("h1")).toHaveText(original);
   await publishFromEditor(page);
 
-  // restoring a version taken while live does not publish an unpublished page (Publish and approval stay a step)
+  // restoring a version taken while live does not publish an unpublished page (Publish stays a step)
   const id = sql("select id from solutions where region='apac' and slug='mvo'");
   sql(`update solutions set status='draft' where id=${id}`);
   await open(page);
