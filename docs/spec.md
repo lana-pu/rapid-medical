@@ -148,7 +148,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 `social`, `regional` (заголовок выбора локации, регуляторные сноски по
 регионам), `therapies:us|ous|apac` (только `metaTitle`/`metaDescription` обзора терапий), `seo` (Google-заголовки и
 описания Evidence, Webinars, Contact по регионам — используются как есть, без шаблона «| Rapid Medical™»),
-`branding`, `integrations` (`gaMeasurementId`, `userwayAccount`, `geoSuggest`).
+`navigation` (меню и футер, `screens/menu-footer.md`), `branding`, `integrations` (`gaMeasurementId`, `userwayAccount`, `geoSuggest`).
 Группы `home`, `about`, `careers`, `evidence` и тексты `therapies:*` с 2026-11-12 в форме не показываются: страницы
 правятся в редакторе (`site_pages`, ADR-007). Сохранение группы сливает форму с текущим значением, скрытые ключи не теряются.
 Не используются кодом (поля есть, эффекта нет): `integrations.geoSuggest`, `branding.logoPngUrl`,
@@ -432,7 +432,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | спека не написана |
-| `/admin/settings?group=` | Site settings по группам | спека не написана |
+| `/admin/settings?group=` | Site settings по группам (Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | спека не написана |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
 | `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
 | `/admin/not-found-log` | Битые ссылки → редирект в один клик | спека не написана |

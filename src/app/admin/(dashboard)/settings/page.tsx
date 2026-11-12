@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
-import { SETTINGS_GROUPS, getSettingsGroup, mayEditGroup } from "@/admin/settings";
+import { SETTINGS_GROUPS, getSettingsGroup, groupValue, mayEditGroup } from "@/admin/settings";
 import { getLiveSetting, setSetting, getSettingDraft, deleteSettingDraft } from "@/lib/settings";
 import { db, products } from "@/db";
 import { PageHeader, Notice, Button } from "@/components/admin/ui";
@@ -16,7 +16,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const asked = getSettingsGroup(sp.group ?? "contact");
   const group = asked && mayEditGroup(me, asked) ? asked : groups[0];
   const [live, draft, prods] = await Promise.all([getLiveSetting(group.key), getSettingDraft(group.key), db.select().from(products)]);
-  const value = draft ? { ...live, ...draft.value } : live;
+  const value = groupValue(group, live, draft?.value);
 
   async function save(fd: FormData) {
     "use server";

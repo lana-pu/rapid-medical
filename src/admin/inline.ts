@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession, isReady, type SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getSettingDraft, getLiveSetting, setSettingDraft, deleteSettingDraft, publishSettingDraft } from "@/lib/settings";
-import { getSettingsGroup, mayEditGroup } from "./settings";
+import { getSettingsGroup, groupValue, mayEditGroup } from "./settings";
 import { getResource, type Resource } from "./resources";
 import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
@@ -121,7 +121,7 @@ export async function readField(t: Target): Promise<{ value: unknown; label: str
   const r = resolve(t);
   if (r.kind === "settings") {
     const [live, draft] = await Promise.all([getLiveSetting(r.key), getSettingDraft(r.key)]);
-    return { value: getPath({ ...live, ...(draft?.value ?? {}) }, r.path) ?? "", label: r.field.label };
+    return { value: getPath(groupValue(getSettingsGroup(r.key), live, draft?.value), r.path) ?? "", label: r.field.label };
   }
   const e = await getEditable(r.res, r.id);
   if (!e) throw new Error("Record not found");
@@ -180,7 +180,7 @@ async function saveFieldChecked(r: Resolved, t: Target, kind: InlineKind, raw: u
 
   if (r.kind === "settings") {
     const [live, draft] = await Promise.all([getLiveSetting(r.key), getSettingDraft(r.key)]);
-    const next = setPath({ ...live, ...(draft?.value ?? {}) }, r.path, value);
+    const next = setPath(groupValue(getSettingsGroup(r.key), live, draft?.value), r.path, value);
     await setSettingDraft(r.key, next, user);
     await audit(user, "save", { resource: `settings:${r.key}`, label: r.field.label, meta: { pending: true, inline: true, field: t.f } });
     return { pending: true };

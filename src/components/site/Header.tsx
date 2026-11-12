@@ -2,6 +2,11 @@ import Link from "next/link";
 import type { Region } from "@/db/schema";
 import { groupTherapies } from "@/lib/therapy-groups";
 import { RegionSwitcher } from "./RegionSwitcher";
+import { E } from "./editable";
+import { menuHref, type Navigation } from "@/lib/navigation";
+
+/** Labels of the menu are edited right on the page (settings group `navigation`, docs/screens/menu-footer.md). */
+const NAV = "settings:navigation";
 
 export type NavSolution = { slug: string; navLabel: string; therapyGroup?: string | null };
 
@@ -10,15 +15,15 @@ export function Header({
   solutionsNav,
   contact,
   logoUrl,
+  nav,
 }: {
   region: Region | null;
   solutionsNav: NavSolution[];
   contact: { phoneHq?: string; phoneUs?: string; email?: string };
   logoUrl?: string | null;
+  nav: Navigation;
 }) {
   // No region only when the IP country is unknown: then the menu goes through the location chooser (decision 2026-11-10).
-  const therapiesHref = region ? `/${region}/therapies` : "/choose-your-location";
-  const evidenceHref = region ? `/${region}/evidence` : "/choose-your-location?next=evidence";
 
   return (
     <header className="border-b border-border bg-background">
@@ -46,10 +51,13 @@ export function Header({
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm md:flex" aria-label="Main">
-          <Link href="/">Welcome</Link>
-          <div className="group relative">
-            <Link href={therapiesHref} className="inline-flex items-center gap-1">
-              Therapies <span aria-hidden>▾</span>
+          {nav.menu.map((m, i) =>
+            m.kind !== "therapies" ? (
+              <Link key={i} href={menuHref(m, region)}><E r={NAV} f={`menu.${i}.label`}>{m.label}</E></Link>
+            ) : (
+          <div key={i} className="group relative">
+            <Link href={menuHref(m, region)} className="inline-flex items-center gap-1">
+              <E r={NAV} f={`menu.${i}.label`}>{m.label}</E> <span aria-hidden>▾</span>
             </Link>
             {solutionsNav.length > 0 && region && (
               <div className="invisible absolute left-0 top-full z-20 min-w-56 rounded border border-border bg-background p-2 opacity-0 shadow-md transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
@@ -69,24 +77,20 @@ export function Header({
               </div>
             )}
           </div>
-          <Link href={evidenceHref}>Evidence</Link>
-          <Link href="/news-events">News &amp; Events</Link>
-          <Link href="/about-us">About Us</Link>
-          <Link href="/careers">Careers</Link>
+            ),
+          )}
         </nav>
 
         <Link href={region ? `/contact-us?region=${region}` : "/contact-us"} className="rounded bg-accent px-3 py-1.5 text-sm text-accent-foreground">
-          Contact Us
+          <E r={NAV} f="contactLabel">{nav.contactLabel}</E>
         </Link>
       </div>
 
       {/* Mobile nav – plain links; replace with a drawer when design lands */}
       <nav className="flex gap-4 overflow-x-auto border-t border-border px-4 py-2 text-sm md:hidden" aria-label="Mobile">
-        <Link href={therapiesHref}>Therapies</Link>
-        <Link href={evidenceHref}>Evidence</Link>
-        <Link href="/news-events">News</Link>
-        <Link href="/about-us">About</Link>
-        <Link href="/careers">Careers</Link>
+        {nav.menu.filter((m) => menuHref(m, region) !== "/").map((m, i) => (
+          <Link key={i} href={menuHref(m, region)}>{m.label}</Link>
+        ))}
       </nav>
     </header>
   );

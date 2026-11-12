@@ -203,6 +203,36 @@ test("tabs of Product details: add, rename, move, delete; review says so", async
   await page.click('[role=dialog] button:has-text("Click again to discard all")');
 });
 
+test("menu and footer: a label changed on the page waits for Publish; Site settings start from the current menu", async ({ page, browser }) => {
+  test.setTimeout(150_000);
+  sql(`delete from site_settings where key='navigation'; delete from setting_drafts where key='navigation'`);
+  try {
+    await login(page);
+    await page.goto("/admin/settings?group=navigation");
+    await expect(page.getByRole("heading", { name: "Menu and footer" }).or(page.getByText("Menu and footer").first())).toBeVisible();
+    await expect(page.locator('input[name="menu"], [name="menu"]').first()).toHaveValue(/Careers/);
+
+    await open(page);
+    const label = page.locator('header [data-e*="menu.5.label"]');
+    await expect(label).toHaveText("Careers");
+    await label.click();
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.type("Join us");
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+    const anon = await (await browser.newContext()).newPage();
+    await anon.goto("/about-us");
+    await expect(anon.getByRole("navigation", { name: "Main" })).toContainText("Careers");
+    await publishFromEditor(page);
+    await anon.reload();
+    await expect(anon.getByRole("navigation", { name: "Main" })).toContainText("Join us");
+    await expect(anon.getByRole("navigation", { name: "Main" })).toContainText("About Us"); // the rest of the menu stays
+    await expect(anon.locator("footer")).toContainText("Privacy Statement");
+  } finally {
+    sql(`delete from site_settings where key='navigation'; delete from setting_drafts where key='navigation'`);
+  }
+});
+
 test("history: restore an earlier version as a draft", async ({ page }) => {
   await login(page);
   await open(page);

@@ -13,6 +13,7 @@ import { draftMode } from "next/headers";
 import { PreviewBanner } from "@/components/site/PreviewBanner";
 import { EditorLoader } from "@/components/editor/EditorLoader";
 import { isEditing } from "@/lib/editing";
+import { navigationFrom } from "@/lib/navigation";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [region, settings, dm, editing, suggested, jar] = await Promise.all([getRememberedRegion(), getAllSettings(), draftMode(), isEditing(), getSuggestedRegion(), cookies()]);
@@ -23,15 +24,16 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const regional = (settings.regional ?? {}) as { usNotice?: string; ousNotice?: string; apacNotice?: string };
   const branding = (settings.branding ?? {}) as { logoUrl?: string };
   const integrations = (settings.integrations ?? {}) as { gaMeasurementId?: string; userwayAccount?: string };
+  const navigation = navigationFrom(settings.navigation);
   const notice = region === "us" ? regional.usNotice : region === "apac" ? regional.apacNotice : region === "ous" ? regional.ousNotice : undefined;
 
   return (
     <>
       {dm.isEnabled && !editing && <PreviewBanner />}
       {showSuggestion && suggested && <RegionBanner suggested={suggested} label={REGION_LABELS[suggested]} href={`/${suggested}/therapies`} />}
-      <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} />
+      <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} nav={navigation} />
       <div className="flex-1">{children}</div>
-      <Footer contact={contact} social={social} region={region} regionalNotice={notice} />
+      <Footer contact={contact} social={social} region={region} regionalNotice={notice} nav={navigation} />
       {editing ? <EditorLoader /> : (<><Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} /><Tracking /><MediaLightbox /></>)}
     </>
   );

@@ -1,4 +1,5 @@
 import type { FieldDef } from "./fields";
+import { DEFAULT_NAVIGATION } from "@/lib/navigation";
 
 /** May this person open and save the group (ADR-006 roles)? */
 export const mayEditGroup = (user: { role: string }, g: { access?: "designer" | "admin" }) =>
@@ -16,7 +17,12 @@ export type SettingsGroup = {
   revalidate: string[];
   /** who may open and save it (ADR-006): designer — designer and admin; admin — admin only. Default: everyone signed in */
   access?: "designer" | "admin";
+  /** what the site shows while the group has never been saved (the form and on-page edits start from it) */
+  defaults?: Record<string, unknown>;
 };
+
+/** Live value of a group as the form and the page editor see it: defaults, then live, then the pending draft. */
+export const groupValue = (g: SettingsGroup | undefined, live: Record<string, unknown>, draft?: Record<string, unknown> | null) => ({ ...(g?.defaults ?? {}), ...live, ...(draft ?? {}) });
 
 export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
@@ -100,6 +106,39 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { name: "contactDescriptionApac", label: "Contact (APAC) – description", type: "text", half: true },
       { name: "contactTitle", label: "Contact (global) – title", type: "text", half: true },
       { name: "contactDescription", label: "Contact (global) – description", type: "text", half: true },
+    ],
+  },
+  {
+    key: "navigation",
+    title: "Menu and footer",
+    description: "The menu at the top of every page and the footer. Labels can also be changed right on the page.",
+    revalidate: ["/"],
+    defaults: DEFAULT_NAVIGATION,
+    fields: [
+      {
+        name: "menu",
+        label: "Menu",
+        type: "repeater",
+        fields: [
+          { name: "label", label: "Label", type: "text", required: true, half: true },
+          { name: "kind", label: "Opens", type: "select", half: true, options: [{ value: "page", label: "A page" }, { value: "therapies", label: "Therapies menu" }, { value: "evidence", label: "Evidence of the visitor's region" }] },
+          { name: "href", label: "Page address", type: "url", help: "For «A page»: /about-us or https://…" },
+        ],
+      },
+      { name: "contactLabel", label: "Contact button label", type: "text", half: true },
+      { name: "contactTitle", label: "Footer: contact column title", type: "text", half: true },
+      { name: "followTitle", label: "Footer: social column title", type: "text", half: true },
+      { name: "legalTitle", label: "Footer: legal column title", type: "text", half: true },
+      {
+        name: "legal",
+        label: "Footer: legal links",
+        type: "repeater",
+        fields: [
+          { name: "label", label: "Label", type: "text", required: true, half: true },
+          { name: "href", label: "Address", type: "url", half: true },
+        ],
+      },
+      { name: "copyright", label: "Copyright line (the year is added)", type: "text" },
     ],
   },
   {
