@@ -191,7 +191,12 @@ export async function getRevision(id: number): Promise<Revision | null> {
 export async function restoreRevision(res: Resource, revId: number, user: SessionUser): Promise<number> {
   const rev = await getRevision(revId);
   if (!rev || rev.resource !== res.slug) throw new Error("Revision not found");
-  const { id } = await saveWithWorkflow(res, rev.recordId, { ...rev.data }, user);
+  // A restore never changes whether the record is live: a revision taken while published must not publish an
+  // unpublished record (that would skip Publish and the approval check). Publishing stays a separate step.
+  const live = await getRow(res, rev.recordId);
+  if (!live) throw new Error("Record not found");
+  const data = hasWorkflow(res) ? { ...rev.data, status: live.status } : { ...rev.data };
+  const { id } = await saveWithWorkflow(res, rev.recordId, data, user);
   await addRevision(res, id, "restored", rev.data, user, `Restored revision #${rev.id}`);
   await audit(user, "restore", { resource: res.slug, recordId: id, meta: { revisionId: rev.id } });
   return id;
