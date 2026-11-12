@@ -340,7 +340,8 @@ export default function EditorOverlay() {
     async (u: Undo, word: "Undone" | "Redone"): Promise<Undo | null> => {
       if (u.kind === "field") return (await save(u.t, u.k, u.prev)) ? { ...u, prev: u.next, next: u.prev } : null;
       const before = await runOp({ op: "set", blocks: u.prev }, `${word}: ${u.label}`, false);
-      return before ? { kind: "blocks", prev: before, label: u.label } : null;
+      // the demo undoes sections by replaying its log after a reload: there is nothing to redo them with
+      return before && !DEMO ? { kind: "blocks", prev: before, label: u.label } : null;
     },
     [save, runOp],
   );
