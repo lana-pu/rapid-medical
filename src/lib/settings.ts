@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { draftMode } from "next/headers";
 import { db, siteSettings, settingDrafts } from "@/db";
 
@@ -39,11 +39,14 @@ export async function getLiveSetting<T extends Record<string, unknown>>(key: str
   return (row?.value ?? {}) as T;
 }
 
+/** Every writer of a settings group takes this lock first: one write at a time per key, even before its row exists. */
+const lockKey = (tx: { execute: typeof db.execute }, key: string) => tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${`settings:${key}`}))`);
+
 export async function setSetting(key: string, value: Record<string, unknown>) {
-  await db
-    .insert(siteSettings)
-    .values({ key, value, updatedAt: new Date() })
-    .onConflictDoUpdate({ target: siteSettings.key, set: { value, updatedAt: new Date() } });
+  await db.transaction(async (tx) => {
+    await lockKey(tx, key);
+    await tx.insert(siteSettings).values({ key, value, updatedAt: new Date() }).onConflictDoUpdate({ target: siteSettings.key, set: { value, updatedAt: new Date() } });
+  });
 }
 
 export async function getSettingDraft(key: string) {
@@ -72,11 +75,13 @@ export async function deleteSettingDraft(key: string) {
  */
 export async function publishSettingDraft(key: string, accept?: (live: Record<string, unknown>, draft: Record<string, unknown>) => boolean): Promise<boolean> {
   return db.transaction(async (tx) => {
+    await lockKey(tx, key);
     const [d] = await tx.select().from(settingDrafts).where(eq(settingDrafts.key, key)).for("update");
     if (!d) return false;
-    const [row] = await tx.select().from(siteSettings).where(eq(siteSettings.key, key)).for("update");
-    const value = d.value as Record<string, unknown>;
-    if (accept && !accept((row?.value ?? {}) as Record<string, unknown>, value)) return false;
+    const [row] = await tx.select().from(siteSettings).where(eq(siteSettings.key, key));
+    const live = (row?.value ?? {}) as Record<string, unknown>;
+    const value = { ...live, ...(d.value as Record<string, unknown>) }; // what is checked is what is written
+    if (accept && !accept(live, value)) return false;
     await tx.insert(siteSettings).values({ key, value, updatedAt: new Date() }).onConflictDoUpdate({ target: siteSettings.key, set: { value, updatedAt: new Date() } });
     await tx.delete(settingDrafts).where(and(eq(settingDrafts.key, key), eq(settingDrafts.updatedAt, d.updatedAt)));
     return true;
