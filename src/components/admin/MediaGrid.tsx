@@ -47,7 +47,10 @@ export function MediaGrid({ items }: { items: MediaItem[] }) {
           <div key={m.id} className="rounded-lg border border-neutral-200 bg-white p-2 text-xs">
             <Link href={`/admin/media?id=${m.id}`}><Thumb m={m} className="h-28" /></Link>
             <div className="mt-1 truncate font-medium" title={m.filename}>{m.filename}</div>
-            <div className="text-neutral-500">{(m.size / 1024).toFixed(0)} KB</div>
+            <div className="flex items-center gap-1 text-neutral-500">
+              {(m.size / 1024).toFixed(0)} KB
+              {m.mime.startsWith("image/") && !m.alt && <span className="rounded bg-red-50 px-1 text-[10px] font-medium text-red-700">No description</span>}
+            </div>
             <input defaultValue={m.alt} placeholder="Alt text" onBlur={(e) => e.target.value !== m.alt && saveAlt(m.id, e.target.value)} className="mt-1 w-full rounded border border-neutral-200 px-1 py-0.5" />
             <div className="mt-1 flex justify-between">
               <button type="button" onClick={() => navigator.clipboard.writeText(m.url)} className="text-neutral-500 hover:text-neutral-900">copy URL</button>

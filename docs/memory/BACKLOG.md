@@ -14,7 +14,7 @@
    https://claude.ai/artifact/LkArx5FdPAWQQqCvsigRP8 — ждёт оценки владелицы по заметкам. Проверка на людях:
    `docs/flows/site-editor-test.md` (7 заданий) — ждёт решения владелицы, кого и когда звать.
    **Флоу админки (2026-11-10):** `docs/flows/admin.json`, 14 экранов (приватная ссылка):
-   https://claude.ai/artifact/9mBBLfMDh1soj6rFuXaAPh. Решено (2026-11-11): замена файла везде — черновиком, на сайте после Publish (spec → /admin/media); не сделано.
+   https://claude.ai/artifact/9mBBLfMDh1soj6rFuXaAPh. Решено (2026-11-11): замена файла везде — черновиком, на сайте после Publish; **сделано 2026-11-12** (`screens/admin-media.md`).
    Дальше её обратная связь по нему, потом модель регионов и какая версия базовая.
    Коллекция блоков: инвентарь — `findings/block-inventory.md`, контракт блоков — `DESIGN.md → Коллекция блоков`
    (рабочий набор). **В коде (2026-11-09):** реестр `src/blocks/` (22 блока), витрина `/style-guide`; на блоках весь сайт, кроме шаблонов
@@ -88,7 +88,8 @@
 - **Письмо Emily 10.11** — разбор: `findings/client-email-2026-11-10.md`. Заголовок главной `/`: своего поля нет, стоит
   общий из `layout.tsx` с той же «Neurovascular Therapy Solutions», которую Emily просит убрать. Предложение — `metaTitle` /
   `metaDescription` в группе `home`; тексты Emily пришлёт в документе миграции.
-- Медиатека: фильтр «без alt» и массовое заполнение alt (C.9/C.10 — 60–80 % картинок без alt).
+- ~~Медиатека: фильтр «без alt» и массовое заполнение alt~~ — сделано 2026-11-12: фильтр, очередь «Describe pictures». Сами
+  описания (163 картинки без alt) пишет маркетинг — тексты за клиентом.
 
 - US Aneurysm: ссылки на другие регионы на Duda исправлены; OUS-диаграмма в сиде осталась (`content/seed/solutions.ts`).
 - Кейс «Dr. Rishi Gupta – TICI 3» (US LVO) был Wix-PDF-viewer — нужен настоящий PDF.

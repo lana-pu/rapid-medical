@@ -8,3 +8,6 @@ export const DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
 /** basePath of the build, e.g. "/rapid-medical" on GitHub Pages. Prefix hand-written absolute URLs with it. */
 export const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const withBase = (p: string) => (p.startsWith("/") ? `${BASE}${p}` : p);
+
+/** Link that opens a public page in the page editor (in the static demo the editor is always on: the page itself). */
+export const editorHref = (path: string) => (DEMO ? withBase(path) : `/api/editor?on=1&redirect=${encodeURIComponent(path)}`);

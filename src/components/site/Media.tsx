@@ -1,5 +1,6 @@
 import { youtubeId } from "@/lib/html";
 import { lookupMedia } from "@/lib/media-lookup";
+import { Img } from "./primitives";
 
 /**
  * Media primitives. Video backgrounds autoplay muted; inline videos get
@@ -21,10 +22,8 @@ export function MediaBlock({ imageUrl, videoUrl, alt = "", className = "" }: { i
     if (yt) return <Embed url={videoUrl} className={className} />;
     return <Video src={videoUrl} poster={imageUrl} className={className} />;
   }
-  if (imageUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={imageUrl} alt={alt} className={`w-full rounded ${className}`} loading="lazy" />;
-  }
+  // library pictures get their variants and description (docs/screens/admin-media.md → «Описание на сайте»)
+  if (imageUrl) return <Img src={imageUrl} alt={alt} className={`w-full rounded ${className}`} />;
   return <div className={`aspect-[4/3] w-full rounded bg-surface ${className}`} aria-hidden />;
 }
 
