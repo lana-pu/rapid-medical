@@ -239,7 +239,23 @@ export async function inviteFor(token: string): Promise<User | null> {
   const row = await db.query.passwordResets.findFirst({ where: and(eq(passwordResets.tokenHash, tokenHash), eq(passwordResets.purpose, "invite")) });
   if (!row || row.usedAt || row.expiresAt < new Date()) return null;
   const user = await db.query.users.findFirst({ where: eq(users.id, row.userId) });
-  return user && user.active ? user : null;
+  // an invite is for the first sign-in only
+  return user && user.active && !user.lastLoginAt && !user.totpEnabledAt ? user : null;
+}
+
+/** Someone else changed this person's password or two-step sign-in: every session and every open link goes. */
+export async function revokeAccess(userId: number) {
+  await db.delete(sessions).where(eq(sessions.userId, userId));
+  await db.delete(passwordResets).where(eq(passwordResets.userId, userId));
+}
+
+/** The key the setup screen shows: issued and kept by the server until it is confirmed (never taken from the browser). */
+export async function pendingTotpKey(userId: number, email: string): Promise<{ secret: string; uri: string }> {
+  const u = await db.query.users.findFirst({ where: eq(users.id, userId) });
+  if (u?.totpSecret && !u.totpEnabledAt) return { secret: u.totpSecret, uri: generateURI({ secret: u.totpSecret, issuer: "Rapid Medical Admin", label: email }) };
+  const s = totpSetup(email);
+  await db.update(users).set({ totpSecret: s.secret }).where(eq(users.id, userId));
+  return s;
 }
 
 /** Accept an invite: set the password, use up the link, sign in (two-step sign-in is set up next). */
@@ -261,5 +277,6 @@ export async function consumePasswordReset(token: string, newPassword: string): 
   await db.update(users).set({ passwordHash: await hashPassword(newPassword) }).where(eq(users.id, row.userId));
   await db.update(passwordResets).set({ usedAt: new Date() }).where(eq(passwordResets.id, row.id));
   await db.delete(sessions).where(eq(sessions.userId, row.userId)); // sign out everywhere
+  await db.delete(passwordResets).where(and(eq(passwordResets.userId, row.userId), eq(passwordResets.purpose, "invite")));
   return (await db.query.users.findFirst({ where: eq(users.id, row.userId) })) ?? null;
 }

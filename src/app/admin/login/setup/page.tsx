@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import QRCode from "qrcode";
-import { requireSignedIn, totpSetup } from "@/lib/auth";
+import { pendingTotpKey, requireSignedIn } from "@/lib/auth";
 import { TwoStepSetup } from "./TwoStepSetup";
 
 export const metadata = { title: "Two-step sign-in · Rapid Medical admin" };
@@ -9,7 +9,7 @@ export const metadata = { title: "Two-step sign-in · Rapid Medical admin" };
 export default async function SetupPage() {
   const me = await requireSignedIn();
   if (!me.needsSetup) redirect("/admin/start");
-  const s = totpSetup(me.email);
+  const s = await pendingTotpKey(me.id, me.email);
   const qr = await QRCode.toDataURL(s.uri, { margin: 1, width: 180 });
   return (
     <main className="flex min-h-screen items-center justify-center bg-neutral-100 p-6">

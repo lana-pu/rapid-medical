@@ -277,6 +277,7 @@ test("invite → welcome link → two-step sign-in set up on the first visit →
   await expect(noa).toHaveURL(/\/admin\/login\/setup$/);
   expect((await noa.request.get("/api/admin/media")).status()).toBe(401);
   const key = (await noa.getByTestId("totp-key").textContent())!.trim();
+  await noa.getByLabel("Your password").fill("noa-password-123456");
   await noa.getByLabel("Code from the app").fill(totp(key));
   await noa.getByRole("button", { name: "Turn on" }).click();
   const codes = (await noa.getByLabel("Recovery codes").textContent())!.trim().split("\n");

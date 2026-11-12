@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db, users } from "@/db";
-import { createInvite, hashPassword, requireAdmin } from "@/lib/auth";
+import { createInvite, hashPassword, requireAdmin, revokeAccess } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { sendMail } from "@/lib/mail";
 
@@ -84,6 +84,7 @@ export async function resetTwoStep(fd: FormData): Promise<void> {
   const me = await requireAdmin();
   const id = Number(fd.get("id"));
   await db.update(users).set({ totpSecret: null, totpEnabledAt: null, recoveryCodes: [] }).where(eq(users.id, id));
+  if (id !== me.id) await revokeAccess(id); // signed in again → sets it up anew
   await audit(me, "user", { recordId: id, meta: { totpReset: true } });
   revalidatePath("/admin/users");
 }
@@ -95,6 +96,7 @@ export async function setPassword(fd: FormData): Promise<{ ok: true } | { error:
   const password = String(fd.get("password") ?? "");
   if (password.length < 10) return { error: "Use 10 or more characters" };
   await db.update(users).set({ passwordHash: await hashPassword(password) }).where(eq(users.id, id));
+  if (id !== me.id) await revokeAccess(id);
   await audit(me, "user", { recordId: id, meta: { passwordReset: true } });
   return { ok: true };
 }

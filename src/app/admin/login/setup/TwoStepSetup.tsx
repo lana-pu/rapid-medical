@@ -7,6 +7,7 @@ import { enableTwoStep } from "@/admin/two-step";
 /** QR, key, code → recovery codes (shown once) → Continue. */
 export function TwoStepSetup({ secret, qr }: { secret: string; qr: string }) {
   const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [codes, setCodes] = useState<string[] | null>(null);
@@ -28,7 +29,7 @@ export function TwoStepSetup({ secret, qr }: { secret: string; qr: string }) {
         e.preventDefault();
         setBusy(true);
         setError(null);
-        const r = await enableTwoStep(secret, code);
+        const r = await enableTwoStep(password, code);
         setBusy(false);
         if ("error" in r) setError(r.error);
         else setCodes(r.codes);
@@ -38,6 +39,10 @@ export function TwoStepSetup({ secret, qr }: { secret: string; qr: string }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={qr} alt="QR code for the authenticator app" width={180} height={180} />
       <p className="font-mono text-xs text-neutral-500">Or type this key: <span data-testid="totp-key">{secret}</span></p>
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-neutral-600">Your password</span>
+        <input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full rounded border border-neutral-300 px-2 py-1.5" />
+      </label>
       <label className="block">
         <span className="mb-1 block text-xs font-medium text-neutral-600">Code from the app</span>
         <input name="code" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} required className="w-full rounded border border-neutral-300 px-2 py-1.5" />
