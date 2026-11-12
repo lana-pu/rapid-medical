@@ -61,7 +61,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ e
         </section>
 
         <section aria-label="Summary" className="space-y-3">
-          <Card href="/admin/publications" title="Evidence" text={`${sum.studies} studies${sum.lastStudy ? ` · last added ${sum.lastStudy}` : ""}`} />
+          <Card href="/admin/site/evidence" title="Evidence" text={`${sum.studies} studies${sum.lastStudy ? ` · last added ${sum.lastStudy}` : ""}`} />
           <Card href="/admin/media" title="Media library" text={`${sum.files} files · ${sum.filesNoAlt} without description`} />
           {user.role === "admin" && (
             <Card

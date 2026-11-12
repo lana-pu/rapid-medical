@@ -349,7 +349,8 @@ test("two editors: the second save is refused, not silently overwritten", async 
 test("Pages: search, open in the editor, new page from a template", async ({ page }) => {
   await login(page);
   await page.goto("/admin/editor");
-  await expect(page.getByRole("heading", { name: "Pages" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Find a page" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Therapies" })).toBeVisible(); // grouped by the site's sections
   await page.getByRole("searchbox", { name: "Search pages" }).fill("aneurysm");
   await expect(page.locator("main ul > li").first()).toBeVisible();
   for (const t of await page.locator("main ul > li").allInnerTexts()) expect(t.toLowerCase()).toContain("aneurysm");

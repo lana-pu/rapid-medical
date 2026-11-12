@@ -33,7 +33,7 @@ export default async function SubmissionPage({ params, searchParams }: { params:
 
   return (
     <>
-      <PageHeader title={s.topic || formLabel(s.form)} subtitle={`${formLabel(s.form)} · ${s.region || "no region"} · ${when(s.createdAt)}`} actions={<LinkButton href="/admin/submissions">← Requests</LinkButton>} />
+      <PageHeader crumbs={[{ label: "Website", href: "/admin" }, { label: "Contact Us", href: "/admin/site/contact" }, { label: "Requests", href: "/admin/submissions" }]} title={s.topic || formLabel(s.form)} subtitle={`${formLabel(s.form)} · ${s.region || "no region"} · ${when(s.createdAt)}`} actions={<LinkButton href="/admin/submissions">← Requests</LinkButton>} />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">

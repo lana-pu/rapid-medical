@@ -208,7 +208,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "publications",
-    title: "Evidence",
+    title: "Publications",
     titleSingular: "Publication",
     table: publications,
     labelField: "title",

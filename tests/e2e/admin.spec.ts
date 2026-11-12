@@ -118,6 +118,32 @@ test("requests: who answers, status and a note for the team; filters", async ({ 
   }
 });
 
+test("the admin by the site's sections: menu, therapies in each region, lists, breadcrumbs", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin");
+  const menu = page.getByRole("navigation", { name: "Admin" });
+  for (const s of ["Home", "Therapies", "Evidence", "Webinars", "News & Events", "About Us", "Careers", "Contact Us", "Other pages", "Menu and footer"]) await expect(menu.getByRole("link", { name: s, exact: true })).toBeVisible();
+
+  await menu.getByRole("link", { name: "Therapies", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Therapies", level: 1 })).toBeVisible();
+  await expect(page.locator('[data-cell="lvo:us"]')).toContainText("Edit on page");
+  await expect(page.locator('[data-cell="mvo:us"]')).toHaveText("No version"); // MVO is not in the Americas
+  await expect(page.locator('[data-cell="mvo:ous"]')).toContainText("Live");
+
+  await menu.getByRole("link", { name: "Evidence", exact: true }).click();
+  await expect(page.getByText(/Evidence — (Americas|Asia & Pacific|Europe & Middle East)/)).toHaveCount(3);
+  await page.getByRole("link", { name: "Publications" }).first().click();
+  await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText("Website›Evidence");
+  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Evidence" }).click();
+  await expect(page).toHaveURL(/\/admin\/site\/evidence$/);
+
+  await menu.getByRole("link", { name: "Other pages", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Legal — linked from the footer" })).toBeVisible();
+  await expect(page.getByText("Privacy Statement")).toBeVisible();
+  await menu.getByRole("link", { name: "Careers", exact: true }).click();
+  await expect(page.getByText("No open positions — the list is hidden on Careers.")).toBeVisible();
+});
+
 const addUser = (email: string, role: string) =>
   sql(`insert into users(email,name,password_hash,role,totp_secret,totp_enabled_at) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}','${TOTP_SECRET}',now()) on conflict (email) do update set role='${role}', ${TWO_STEP_SQL}`);
 
@@ -142,7 +168,7 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Branding" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Workflow" })).toHaveCount(0);
-    await expect(ed.getByRole("link", { name: "Menu and footer" })).toHaveCount(0); // the menu's structure: designers
+    await expect(ed.locator("main").getByRole("link", { name: "Menu and footer" })).toHaveCount(0); // the menu's structure: designers
     await expect(ed.locator("input[name=__group]").first()).toHaveValue("contact");
     // on the page: no layout choice for a section
     await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
@@ -165,7 +191,7 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await de.goto("/admin/settings?group=branding");
     await expect(de.locator("input[name=__group]").first()).toHaveValue("branding");
     await expect(de.getByRole("link", { name: "Integrations" })).toHaveCount(0);
-    await expect(de.getByRole("link", { name: "Menu and footer" })).toBeVisible();
+    await expect(de.locator("main").getByRole("link", { name: "Menu and footer" })).toBeVisible();
     await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
     await de.evaluate(() => window.scrollTo(0, 0));

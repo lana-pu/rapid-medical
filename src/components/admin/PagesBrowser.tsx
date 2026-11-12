@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { SECTIONS, sectionForResource } from "@/admin/site-sections";
 import type { PageCard } from "@/admin/pages-index";
 import type { Region } from "@/db/schema";
 import { createPage } from "@/admin/page-editor";
@@ -36,8 +37,8 @@ export function PagesBrowser({ cards, templates, regions, lists, demo, startCrea
   return (
     <>
       <PageHeader
-        title="Pages"
-        subtitle="Open a page to change it right on the page"
+        title="Find a page"
+        subtitle="Open a page to change it right on the page. Pages are grouped by the site's sections."
         actions={
           <Button type="button" onClick={() => setCreating(true)} disabled={demo} title={demo ? "New pages need the server; the demo has none" : undefined}>
             New page
@@ -67,8 +68,17 @@ export function PagesBrowser({ cards, templates, regions, lists, demo, startCrea
           )}
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {shown.map((c) => (
+        <div className="space-y-8">
+          {SECTIONS.map((sec) => ({ sec, cards: shown.filter((c) => sectionForResource(c.r, c.siteKey)?.key === sec.key) }))
+            .filter((g) => g.cards.length)
+            .map((g) => (
+          <section key={g.sec.key} aria-label={g.sec.title}>
+            <h2 className="mb-2 flex items-baseline gap-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+              {g.sec.title}
+              <a href={withBase(`/admin/site/${g.sec.key}`)} className="text-xs font-normal normal-case tracking-normal underline">All of {g.sec.title}</a>
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {g.cards.map((c) => (
             <li key={`${c.r}-${c.id}`} className="group relative overflow-hidden rounded-lg border border-neutral-200 bg-white hover:border-neutral-400">
               <a href={editHref(c.path)} className="block" aria-label={`Edit ${c.title} (${regionLabel(c.region)})`}>
                 <div className="aspect-[16/7] bg-neutral-100">
@@ -94,6 +104,9 @@ export function PagesBrowser({ cards, templates, regions, lists, demo, startCrea
             </li>
           ))}
         </ul>
+          </section>
+            ))}
+        </div>
       )}
 
       <section className="mt-10">

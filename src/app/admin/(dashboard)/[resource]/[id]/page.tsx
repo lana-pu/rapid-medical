@@ -7,6 +7,7 @@ import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
 import { duplicateResource } from "@/admin/actions";
 import { PageHeader, LinkButton, Notice, Button } from "@/components/admin/ui";
+import { crumbsFor } from "@/admin/site-sections";
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
@@ -35,6 +36,7 @@ export default async function EditResource({ params, searchParams }: { params: P
   return (
     <>
       <PageHeader
+        crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
         title={String(row[res.labelField] ?? res.titleSingular)}
         subtitle={`${res.titleSingular} #${row.id}`}
         actions={

@@ -3,6 +3,7 @@ import { isPast, type EventDates } from "@/lib/events";
 import { notFound } from "next/navigation";
 import { db, products, REGIONS, type Region } from "@/db";
 import { getResource } from "@/admin/resources";
+import { crumbsFor } from "@/admin/site-sections";
 import { listRows } from "@/admin/engine";
 import { bulkResource } from "@/admin/actions";
 import { PageHeader, LinkButton, StatusBadge, RegionBadge, formatDate, Notice, inputCls } from "@/components/admin/ui";
@@ -39,7 +40,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
   return (
     <>
-      <PageHeader title={res.title} subtitle={`${total} items`} actions={<LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
+      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={`${total} items`} actions={<LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
       {sp.deleted && <Notice kind="success">Deleted.</Notice>}
       {sp.bulk && <Notice kind="success">{sp.bulk === "delete" ? "Deleted" : sp.bulk === "publish" ? "Published" : "Unpublished"} {sp.n} item(s).</Notice>}
 

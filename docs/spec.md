@@ -428,6 +428,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/login`, `/admin/login/2fa` | Вход, второй фактор | спека не написана |
 | `/admin/reset` | Запрос и установка нового пароля | спека не написана |
 | `/admin/editor` | Pages: поиск страниц, статус словами, New page по шаблону, вход в редактор (в работе с 2026-11-12) | [admin-editor-pages](screens/admin-editor-pages.md) |
+| `/admin/site/{раздел}` | Раздел сайта: его страницы (Edit on page), списки записей, настройки; терапии — таблица терапии × регионы | [admin-sections](screens/admin-sections.md) |
 | `/admin/start` | После входа: Website или Training tool (инструмента пока нет — карточка неактивна) | [admin-choose](screens/admin-choose.md) |
 | `/admin` | Website — what needs you: дела (неопубликованные правки, расписание, новые заявки, картинки без описания), последние действия, сводка; меню админки | [admin-home](screens/admin-home.md) |
 | `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | спека не написана |

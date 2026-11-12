@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { destroySession, requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { DEMO, withBase } from "@/lib/demo";
+import { SECTIONS } from "@/admin/site-sections";
 
 export const metadata = { title: "Rapid Medical · Admin" };
 
@@ -16,27 +17,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin/login");
   }
 
-  // docs/screens/admin-home.md → «Меню слева»
-  const nav = [
-    { href: "/admin/editor", label: "Pages" },
-    { href: "/admin/publications", label: "Evidence" },
-    { href: "/admin/news", label: "News" },
-    { href: "/admin/events", label: "Events" },
-    { href: "/admin/webinars", label: "Webinars" },
-    { href: "/admin/jobs", label: "Jobs" },
-    { href: "/admin/team", label: "Team" },
-    { href: "/admin/submissions", label: "Requests" },
-    { href: "/admin/media", label: "Media library" },
-    ...(user.role === "admin" ? [{ href: "/admin/users", label: "People and roles" }] : []),
-    { href: "/admin/activity", label: "Activity" },
-    { href: "/admin/settings", label: "Site settings" },
-  ];
-  const more = [
-    { href: "/admin/solutions", label: "Therapies" },
-    { href: "/admin/pages", label: "Text pages" },
-    { href: "/admin/products", label: "Products" },
-    { href: "/admin/redirects", label: "Redirects" },
-    { href: "/admin/not-found-log", label: "Broken links" },
+  // the site's sections, in the order of the site's menu (docs/screens/admin-sections.md)
+  const groups = [
+    { title: "Website", items: SECTIONS.map((x) => ({ href: `/admin/site/${x.key}`, label: x.title })) },
+    { title: "Work", items: [{ href: "/admin/submissions", label: "Requests" }, { href: "/admin/media", label: "Media library" }, { href: "/admin/activity", label: "Activity" }] },
+    {
+      title: "Admin",
+      items: [
+        ...(user.role === "admin" ? [{ href: "/admin/users", label: "People and roles" }] : []),
+        { href: "/admin/settings", label: "Site settings" },
+        { href: "/admin/redirects", label: "Redirects" },
+        { href: "/admin/not-found-log", label: "Broken links" },
+      ],
+    },
   ];
   const ROLE: Record<string, string> = { editor: "Editor", designer: "Designer", admin: "Admin" };
 
@@ -47,20 +40,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin" className="text-sm font-semibold">Rapid Medical</Link>
           <div className="text-xs text-neutral-500">Content admin</div>
         </div>
-        <nav className="flex-1 space-y-0.5 p-2 text-sm">
-          {nav.map((n) => (
-            <Link key={n.href} href={n.href} className="block rounded px-2 py-1.5 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900">
-              {n.label}
-            </Link>
+        <nav className="flex-1 space-y-4 overflow-y-auto p-2 text-sm" aria-label="Admin">
+          <Link href="/admin/editor" className="block rounded bg-neutral-100 px-2 py-1.5 font-medium text-neutral-900 hover:bg-neutral-200">Find a page</Link>
+          {groups.map((g) => (
+            <div key={g.title}>
+              <div className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">{g.title}</div>
+              {g.items.map((n) => (
+                <Link key={n.href} href={n.href} className="block rounded px-2 py-1.5 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900">
+                  {n.label}
+                </Link>
+              ))}
+            </div>
           ))}
-          <details className="pt-2">
-            <summary className="cursor-pointer rounded px-2 py-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900">More</summary>
-            {more.map((n) => (
-              <Link key={n.href} href={n.href} className="block rounded px-2 py-1.5 pl-4 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900">
-                {n.label}
-              </Link>
-            ))}
-          </details>
         </nav>
         <div className="border-t border-neutral-200 p-3 text-xs text-neutral-500">
           <div className="truncate font-medium text-neutral-800">{user.name}</div>

@@ -122,7 +122,7 @@ async function main() {
   // 2. admin pages (read-only preview; forms are intercepted client-side)
   const cookie = `rm_admin=${sid}`;
   // /admin/start after sign-in (admin-choose.md), /admin = what needs you (admin-home.md), /admin/editor = Pages
-  const adminPaths = ["/admin/start", "/admin", "/admin/editor", "/admin/login", "/admin/settings", "/admin/media", "/admin/submissions", "/admin/users", "/admin/activity", "/admin/account", "/admin/not-found-log"];
+  const adminPaths = ["/admin/start", "/admin", "/admin/editor", ...["home", "therapies", "evidence", "webinars", "news-events", "about", "careers", "contact", "other", "menu"].map((k) => `/admin/site/${k}`), "/admin/login", "/admin/settings", "/admin/media", "/admin/submissions", "/admin/users", "/admin/activity", "/admin/account", "/admin/not-found-log"];
   for (const r of resources) {
     adminPaths.push(`/admin/${r}`);
     if (r !== "site-pages") adminPaths.push(`/admin/${r}/new`); // site pages exist once: no «new»

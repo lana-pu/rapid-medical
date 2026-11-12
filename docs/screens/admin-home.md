@@ -34,8 +34,7 @@
   (карточка только у админа).
 
 ## Меню слева (все экраны админки)
-Pages · Evidence · News · Events · Webinars · Jobs · Team · Requests · Media library · People and roles (только админ) ·
-Activity · Site settings · **More** (свёрнуто): Therapies (форма), Text pages, Products, Redirects, Broken links.
+По разделам сайта — см. `admin-sections.md` (2026-11-13): Find a page; Website (Home … Menu and footer); Work; Admin.
 Внизу: имя и роль словами (Editor, Designer, Admin), My account, View site ↗, Edit site ✎, выход.
 
 ## Состояния

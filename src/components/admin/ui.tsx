@@ -53,10 +53,27 @@ export function RegionBadge({ region }: { region: Region | null | undefined }) {
   return <span className="rounded bg-neutral-200 px-2 py-0.5 text-xs font-medium text-neutral-800">{REGION_SHORT[region]}</span>;
 }
 
-export function PageHeader({ title, actions, subtitle }: { title: string; subtitle?: string; actions?: ReactNode }) {
+export type Crumb = { label: string; href?: string };
+
+/** «Website › Evidence › Publications»: where this screen is in the site (docs/screens/admin-sections.md). */
+export function Crumbs({ items }: { items: Crumb[] }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-1 text-xs text-neutral-500">
+      {items.map((c, i) => (
+        <span key={i}>
+          {i > 0 && <span className="px-1">›</span>}
+          {c.href ? <a href={c.href} className="hover:underline">{c.label}</a> : c.label}
+        </span>
+      ))}
+    </nav>
+  );
+}
+
+export function PageHeader({ title, actions, subtitle, crumbs }: { title: string; subtitle?: string; actions?: ReactNode; crumbs?: Crumb[] }) {
   return (
     <div className="mb-6 flex items-start justify-between gap-4">
       <div>
+        {crumbs && <Crumbs items={crumbs} />}
         <h1 className="text-2xl font-semibold text-neutral-900">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}
       </div>

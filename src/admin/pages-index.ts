@@ -25,6 +25,8 @@ export type PageCard = {
   changedAt: string | null;
   thumb: string | null;
   adminHref: string;
+  /** site pages: their key (home, about, careers, evidence, therapies) */
+  siteKey?: string;
 };
 
 /** Regions in the order of the region menu (Americas, Asia & Pacific, Europe & Middle East). */
@@ -61,7 +63,7 @@ export async function listEditorPages(): Promise<PageCard[]> {
   return [
     ...sites
       .sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key) || regionOrder(a.region) - regionOrder(b.region))
-      .map((x) => card("site-pages", SITE_PAGE_TYPE[x.key] ?? "Page", x, sitePagePath(x.key, x.region))),
+      .map((x) => ({ ...card("site-pages", SITE_PAGE_TYPE[x.key] ?? "Page", x, sitePagePath(x.key, x.region)), siteKey: x.key })),
     ...sols.sort((a, b) => a.sortOrder - b.sortOrder).map((s) => card("solutions", "Therapy page", s, `/${s.region}/therapies/${s.slug}`)),
     ...pgs.sort((a, b) => a.title.localeCompare(b.title)).map((p) => card("pages", "Page", p, p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
   ];
