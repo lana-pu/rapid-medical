@@ -61,8 +61,10 @@ Studio, материалы в `docs/tigertriever/`. Пользователи п�
 Блок описан в одном файле: название, назначение, варианты, поля, пример данных, компонент; все блоки собраны в
 `registry.ts`. Похожие секции — один блок с вариантами. Поле `edit` связывает поля блока с полями записи для
 on-page editor (`data-e`), поэтому правка на странице пишет туда же, что и форма админки.
-Хранение пока прежнее: страницы терапий собирают блоки из полей `solutions` при показе (`src/blocks/from-solution.ts`).
-Хранение «страница = список блоков» включается вместе с новым редактором и моделью регионов (ADR-006, BACKLOG).
+**Хранение — список блоков (ADR-007, в работе с 2026-11-12).** Состав страницы — поле `blocks` записи
+(`solutions`, `pages`, `site_pages`): `{id, type, variant, data, source?}`. Списки из коллекций (`source`) и `{region}` /
+`{product}` в ссылках подставляются при показе (`src/blocks/stored.ts`). Пока `blocks` пуст, страница собирается из полей
+записи старыми адаптерами `src/blocks/from-*.ts`; перенос — `scripts/migrate-blocks.ts` (в bootstrap и после сида).
 
 ## Регионы и URL
 
@@ -130,12 +132,15 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `events` (решение 2026-11-10, сделано) | `events` | `slug`, `title`, `subtitle`, `startsOn` (первый день), `startTime` (текст), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
-| `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `bodyHtml`, SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
+| `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `blocks` (ADR-007; `bodyHtml` — до переноса), SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
+| `site_pages` (ADR-007, в работе) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`). Правятся только в редакторе страницы |
 | `products` | `products` | `slug`, `name`, `fullName`, `family`, `regions[]` (вкладка Evidence), `aliases` (напр. APAC → COLUMBUS™) | — | **Без workflow**: сохранение сразу live |
 | `redirects` | `redirects` | `from` (host+path или path), `to`, `permanent`, `hits` | — | **Без workflow** |
 
 JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (bar/stackedBar), `Feature`,
 `AnnotatedImage`, `Benefit`, `Step`, `InPracticeItem` — типы в начале `schema.ts`.
+`solutions.blocks` (ADR-007): тексты hero, intro, benefits, overview, how it works, in practice, closing и регуляторика переезжают
+в блоки; в форме записи остаются Basics и SEO, колонки старых полей пока не удаляются.
 
 ### Настройки (`site_settings`, ключ → jsonb)
 
@@ -199,8 +204,9 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
   подсветкой слов; restore = сохранение через тот же workflow.
 - **Preview**: `/api/preview?token=…` включает Next draft mode; публичный слой (`src/lib/content.ts`)
   показывает неопубликованные строки и накладывает `drafts`; баннер «Exit preview».
-- **On-page editor**: см. `docs/screens/on-page-editor.md`. Настройки-синглтоны (home, about, …) из
-  редактора пишутся в `setting_drafts`; Save на форме Site settings публикует их.
+- **On-page editor**: см. `docs/screens/on-page-editor.md`. Секции, история и проверка перед публикацией — там же.
+  Синглтоны (Home, About, Careers, Evidence, обзор терапий) после переноса — ресурс `site-pages` с тем же workflow (ADR-007);
+  до переноса их тексты пишутся в `setting_drafts`.
 
 ## Уведомления
 
@@ -412,6 +418,7 @@ reopening» в пакете S0 (2026-11-11).
 |---|---|---|
 | `/admin/login`, `/admin/login/2fa` | Вход, второй фактор | спека не написана |
 | `/admin/reset` | Запрос и установка нового пароля | спека не написана |
+| `/admin/editor` | Pages: поиск страниц, статус словами, New page по шаблону, вход в редактор (в работе с 2026-11-12) | [admin-editor-pages](screens/admin-editor-pages.md) |
 | `/admin` | Дашборд: счётчики, pending-черновики, черновики настроек | спека не написана |
 | `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | спека не написана |
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
@@ -424,7 +431,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/activity` | Журнал действий | спека не написана |
 | `/admin/account` | Пароль, 2FA, активные сессии | спека не написана |
 | `/admin/users` | Пользователи и роли (только admin) | спека не написана |
-| on-page editor (`/api/editor?on=1&redirect=…`) | Правка текстов/медиа на живых страницах | [on-page-editor](screens/on-page-editor.md) |
+| on-page editor (`/api/editor?on=1&redirect=…`) | Правка на странице: тексты, медиа, секции, регионы, проверка перед публикацией, история | [on-page-editor](screens/on-page-editor.md) |
 
 ### API
 

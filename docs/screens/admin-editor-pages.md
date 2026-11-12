@@ -1,0 +1,31 @@
+# Экран: Pages — список страниц для редактора (`/admin/editor`)
+
+Основа: флоу `docs/flows/site-editor.json` (экран «Pages»), ADR-006, ADR-007. Статус: **в работе с 2026-11-12**.
+Код: `src/app/admin/(dashboard)/editor/page.tsx`, `src/admin/pages-index.ts`.
+
+## Назначение
+Частая задача «поменять текст на странице X» начинается с поиска, а не с дерева разделов. Первый пункт сайдбара админки —
+«Pages». После входа в админку открывается этот экран.
+
+## Состав
+- Поиск по названию и адресу (на лету, без перезагрузки).
+- Фильтр региона: All · Americas · Europe & Middle East · Asia & Pacific · Global.
+- Карточки страниц: миниатюра (первая картинка страницы или серый прямоугольник с типом), название, тип
+  (Therapy page / Page / Landing page / Home / About / Careers / Evidence / Therapies overview), регион, адрес, статус
+  словами — «Live», «Live, with unpublished changes» (кто и когда правил), «Draft — not live yet».
+- Клик по карточке → страница открывается в редакторе (`/api/editor?on=1&redirect=…`).
+- Ссылка «Settings» на карточке → форма записи (slug, SEO, статус).
+- Страницы, которые собираются из коллекций (News & Events, Webinars, Open positions, Contact), — отдельной строкой внизу
+  «Lists»: ссылки на их коллекции в админке.
+
+## New page
+Кнопка «New page» → окно: шаблон (Text page · Landing page · Therapy page), название, регион (или Global для текстовой),
+адрес (подставляется из названия, можно поправить). Create → черновик создан, страница открывается в редакторе.
+Ошибки: адрес занят в этом регионе → «A page with this address already exists in {регион}»; пустое название → Required.
+Страница терапии требует регион; в меню сайта она появится после Publish.
+
+## Состояния
+| Состояние | Что видно |
+|---|---|
+| Ничего не найдено | «No pages match “…”» и «Clear search» |
+| Нет страниц в регионе | «No pages in {регион} yet» |
