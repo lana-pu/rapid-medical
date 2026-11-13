@@ -1,16 +1,20 @@
 import Link from "next/link";
-import { desc, eq, and, ilike, sql } from "drizzle-orm";
+import { desc, eq, and, ilike, notInArray, sql } from "drizzle-orm";
+import { requireUser } from "@/lib/auth";
 import { db, auditLog, users } from "@/db";
 import { PageHeader, formatDate, inputCls } from "@/components/admin/ui";
 import { getResource } from "@/admin/resources";
 
-const ACTIONS = ["login", "login_failed", "logout", "save", "publish", "unpublish", "delete", "restore", "bulk", "settings", "user", "media", "schedule", "request", "comment"];
+const ACTIONS_ALL = ["login", "login_failed", "logout", "save", "publish", "unpublish", "delete", "restore", "bulk", "settings", "user", "media", "schedule", "request", "comment"];
 
 export default async function ActivityPage({ searchParams }: { searchParams: Promise<{ action?: string; user?: string; q?: string; page?: string }> }) {
+  const me = await requireUser();
   const sp = await searchParams;
   const per = 100;
-  const page = Math.max(1, Number(sp.page ?? 1));
+  const page = Math.max(1, Math.floor(Number(sp.page)) || 1);
   const conds = [];
+  // sign-ins (with the addresses typed and IPs) are for admins only
+  if (me.role !== "admin") conds.push(notInArray(auditLog.action, ["login", "login_failed", "logout"]));
   if (sp.action) conds.push(eq(auditLog.action, sp.action));
   if (sp.user) conds.push(eq(auditLog.userId, Number(sp.user)));
   if (sp.q) conds.push(ilike(auditLog.label, `%${sp.q}%`));
@@ -20,6 +24,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
     db.select({ n: sql<number>`count(*)::int` }).from(auditLog).where(where),
     db.select({ id: users.id, name: users.name }).from(users),
   ]);
+  const ACTIONS = me.role === "admin" ? ACTIONS_ALL : ACTIONS_ALL.filter((a) => !a.startsWith("log"));
   const pages = Math.max(1, Math.ceil(n / per));
   const link = (e: typeof rows[number]) => {
     if (!e.resource) return null;

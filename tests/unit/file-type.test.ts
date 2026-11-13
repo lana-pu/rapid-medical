@@ -17,7 +17,8 @@ describe("what a file really is", () => {
   });
   it("SVG with scripts is refused", () => {
     expect(svgIsSafe(Buffer.from('<svg><circle r="1"/><use href="#a"/></svg>'))).toBe(true);
-    for (const s of ['<svg><script>alert(1)</script></svg>', '<svg onload="x()"></svg>', '<svg><a href="javascript:x()"/></svg>', "<svg><foreignObject><div/></foreignObject></svg>", '<svg><use href="https://evil/x.svg#a"/></svg>'])
+    expect(svgIsSafe(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><text>A &amp; B</text><image xlink:href="data:image/png;base64,AAAA"/></svg>'))).toBe(true);
+    for (const s of ['<svg:svg><svg:script>x()</svg:script></svg:svg>', '<svg><a href="&#106;avascript:x()"/></svg>', '<svg><set attributeName="href" to="javascript:x()"/></svg>', '<svg><a xlink:href="https://evil"/></svg>', '<!DOCTYPE svg [<!ENTITY x "y">]><svg/>', '<svg><script>alert(1)</script></svg>', '<svg onload="x()"></svg>', '<svg><a href="javascript:x()"/></svg>', "<svg><foreignObject><div/></foreignObject></svg>", '<svg><use href="https://evil/x.svg#a"/></svg>'])
       expect(svgIsSafe(Buffer.from(s))).toBe(false);
   });
 });

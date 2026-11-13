@@ -39,7 +39,9 @@ function client() {
 /** Store raw bytes under a key like "2026-11/name-ab12.webp". */
 export async function putObject(key: string, body: Buffer, mime: string): Promise<StoredFile> {
   if (driver() === "s3") {
-    await client().send(new PutObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: key, Body: body, ContentType: mime, CacheControl: "public, max-age=31536000, immutable" }));
+    // an SVG opened on its own from the bucket must not run anything (pictures in <img> ignore these)
+    const svg = mime === "image/svg+xml" ? { ContentDisposition: "attachment" } : {};
+    await client().send(new PutObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: key, Body: body, ContentType: mime, CacheControl: "public, max-age=31536000, immutable", ...svg }));
     const base = (process.env.S3_PUBLIC_URL ?? `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`).replace(/\/$/, "");
     return { url: `${base}/${key}`, key, size: body.length, mime };
   }

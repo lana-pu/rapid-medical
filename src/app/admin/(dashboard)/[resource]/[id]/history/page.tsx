@@ -1,3 +1,4 @@
+import { requireUser } from "@/lib/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { diffWords } from "diff";
@@ -25,6 +26,7 @@ function Diff({ a, b }: { a: string; b: string }) {
 }
 
 export default async function HistoryPage({ params, searchParams }: { params: Promise<{ resource: string; id: string }>; searchParams: Promise<{ a?: string; b?: string }> }) {
+  await requireUser(); // the layout checks too; a page never relies on it alone
   const { resource, id } = await params;
   const sp = await searchParams;
   const res = getResource(resource);
@@ -36,7 +38,12 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
   // Default: compare the latest revision against the one before it; "live" = current live row
   const aId = sp.a ?? String(revs[1]?.id ?? "live");
   const bId = sp.b ?? String(revs[0]?.id ?? "live");
-  const load = async (key: string) => (key === "live" ? snapshot(res, editable.live) : key === "draft" ? snapshot(res, editable.row) : (await getRevision(Number(key)))?.data ?? {});
+  // only this record's own revisions (a number from the address must not show another record)
+  const own = async (key: string) => {
+    const r = await getRevision(Number(key));
+    return r && r.resource === res.slug && r.recordId === recordId ? r.data : {};
+  };
+  const load = async (key: string) => (key === "live" ? snapshot(res, editable.live) : key === "draft" ? snapshot(res, editable.row) : await own(key));
   const [A, B] = await Promise.all([load(aId), load(bId)]);
   const keys = res.fields.map((f) => f.name);
   const changed = keys.filter((k) => JSON.stringify(A[k] ?? null) !== JSON.stringify(B[k] ?? null));

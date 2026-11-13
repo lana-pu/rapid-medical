@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { db, users } from "@/db";
+import { db, passwordResets, users } from "@/db";
 import { requireUser, listSessions, destroyAllSessions, hashPassword, verifyPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { PageHeader, Button, inputCls, Notice, formatDate } from "@/components/admin/ui";
@@ -20,6 +20,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     if (next.length < 10) redirect("/admin/account?error=Use+10%2B+characters");
     await db.update(users).set({ passwordHash: await hashPassword(next) }).where(eq(users.id, u.id));
     await destroyAllSessions(u.id, true);
+    await db.delete(passwordResets).where(eq(passwordResets.userId, u.id)); // open reset links stop working
     await audit(u, "user", { recordId: u.id, meta: { passwordChanged: true } });
     redirect("/admin/account?msg=Password+changed.+Other+sessions+were+signed+out.");
   }

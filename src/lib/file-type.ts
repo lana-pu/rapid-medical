@@ -19,8 +19,22 @@ export function sniffType(b: Buffer): Sniffed | null {
   return null;
 }
 
-/** An SVG is a document that can run scripts: only plain drawings are taken. */
+/**
+ * An SVG is a document that can run scripts: only plain drawings are taken. Refused: script-like elements under any
+ * namespace prefix, event handlers, links that are not «#…» or embedded pictures, SMIL that rewrites links, entity
+ * declarations and numeric character references (they hide «javascript:» from simple checks). Served with a CSP
+ * sandbox / as an attachment as well (next.config.ts, storage.ts) — this is the first line, not the only one.
+ */
 export function svgIsSafe(b: Buffer): boolean {
   const s = b.toString("utf8");
-  return !/<script|<foreignObject|<iframe|<embed|<object|<!ENTITY|\son[a-z]+\s*=|javascript:|data:text\/html|<use\b[^>]*\bhref\s*=\s*(?:["'](?!#)|(?!["'#]))/i.test(s);
+  const BAD = [
+    /<\s*(?:[\w.-]+:)?(?:script|foreignobject|iframe|embed|object|handler|listener|animation)\b/i,
+    /\son[a-z]+\s*=/i, // event handlers
+    /<!ENTITY|<!DOCTYPE[^>]*\[/i, // entity declarations, internal subsets
+    /&#|&[a-z]+;(?<!&amp;|&lt;|&gt;|&quot;|&apos;)/i, // character references other than the five basic ones
+    /<\s*(?:[\w.-]+:)?(?:set|animate)\b[^>]*attributeName\s*=\s*["']?(?:[\w.-]+:)?href/i, // SMIL rewriting a link
+    /\b(?:[\w.-]+:)?href\s*=\s*(?:"(?!#|data:image\/)[^"]*"|'(?!#|data:image\/)[^']*'|(?!["'#])\S)/i, // links: only #… or data:image
+    /javascript:|vbscript:|data:text\//i,
+  ];
+  return !BAD.some((re) => re.test(s));
 }

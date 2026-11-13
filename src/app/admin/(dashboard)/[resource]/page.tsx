@@ -1,3 +1,4 @@
+import { requireUser } from "@/lib/auth";
 import Link from "next/link";
 import { isPast, type EventDates } from "@/lib/events";
 import { notFound } from "next/navigation";
@@ -13,6 +14,7 @@ import { BulkBar } from "@/components/admin/BulkBar";
 type SP = { q?: string; deleted?: string; bulk?: string; n?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
 
 export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
+  await requireUser(); // the layout checks too; a page never relies on it alone
   const { resource } = await params;
   const sp = await searchParams;
   const res = getResource(resource);
@@ -22,7 +24,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
   for (const k of ["status", "region", "productId", "regions", "featured"] as const) if (sp[k]) filters[k] = sp[k]!;
 
   const [{ rows, total, page, per }, prods] = await Promise.all([
-    listRows(res, { search: sp.q, filters, sort: sp.sort, dir: sp.dir, page: Number(sp.page ?? 1) }),
+    listRows(res, { search: sp.q, filters, sort: sp.sort, dir: sp.dir, page: Math.floor(Number(sp.page)) || 1 }),
     db.select().from(products).orderBy(products.sortOrder),
   ]);
   const productName = (id: unknown) => prods.find((p) => p.id === id)?.name ?? "";

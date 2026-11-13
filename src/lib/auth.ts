@@ -225,7 +225,13 @@ export async function markSessionVerified() {
 /* ------------------------------------------------------------------ */
 
 export async function createPasswordReset(email: string): Promise<{ token: string; user: User } | null> {
-  const user = await db.query.users.findFirst({ where: eq(users.email, email.toLowerCase().trim()) });
+  // at most 3 reset emails per address (and 10 per IP) in 15 minutes; the page answers the same either way
+  const e = email.toLowerCase().trim();
+  const { ip } = await clientInfo();
+  const keys = [`reset:${e}`, ...(ip ? [`resetip:${ip}`] : [])];
+  if ((await tooManyAttempts([keys[0]], 3)) || (keys[1] && (await tooManyAttempts([keys[1]], 10)))) return null;
+  await recordAttempt(keys);
+  const user = await db.query.users.findFirst({ where: eq(users.email, e) });
   if (!user || !user.active) return null;
   const token = crypto.randomBytes(32).toString("hex");
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
@@ -293,6 +299,6 @@ export async function consumePasswordReset(token: string, newPassword: string): 
   await db.update(users).set({ passwordHash: await hashPassword(newPassword) }).where(eq(users.id, row.userId));
   await db.update(passwordResets).set({ usedAt: new Date() }).where(eq(passwordResets.id, row.id));
   await db.delete(sessions).where(eq(sessions.userId, row.userId)); // sign out everywhere
-  await db.delete(passwordResets).where(and(eq(passwordResets.userId, row.userId), eq(passwordResets.purpose, "invite")));
+  await db.delete(passwordResets).where(eq(passwordResets.userId, row.userId)); // every other open link of this person goes
   return (await db.query.users.findFirst({ where: eq(users.id, row.userId) })) ?? null;
 }

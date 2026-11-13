@@ -1,3 +1,4 @@
+import { safeLocalPath } from "@/lib/safe-path";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -9,7 +10,7 @@ import { db, products } from "@/db";
 import { PageHeader, Notice, Button } from "@/components/admin/ui";
 import { SettingsFields } from "@/components/admin/SettingsFields";
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string }> }) {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string; error?: string; f?: string }> }) {
   const sp = await searchParams;
   const me = await requireUser();
   const groups = SETTINGS_GROUPS.filter((g) => mayEditGroup(me, g));
@@ -35,12 +36,16 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             for (const k of ["lat", "lon"]) if (typeof copy[k] === "string" && copy[k] !== "") copy[k] = Number(copy[k]);
             return copy;
           });
-        } catch { out[f.name] = []; }
+        } catch {
+          redirect(`/admin/settings?group=${g.key}&error=list&f=${encodeURIComponent(f.name)}`);
+        }
       } else if (f.type === "link" || f.type === "json" || f.type === "table") {
         try { out[f.name] = s ? JSON.parse(s) : null; } catch { out[f.name] = null; }
       } else if (f.type === "boolean") out[f.name] = raw === "on";
       else if (f.type === "stringList") out[f.name] = s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
-      else out[f.name] = s;
+      else if (f.type === "url" && s && safeLocalPath(s, "") === "" && !/^(https?:\/\/|mailto:|tel:)\S+$/i.test(s)) {
+        redirect(`/admin/settings?group=${g.key}&error=address&f=${encodeURIComponent(f.name)}`);
+      } else out[f.name] = s;
     }
     // keep keys the form does not show (texts that moved to the page editor stay for rollback)
     await setSetting(g.key, { ...(await getLiveSetting(g.key)), ...out });
@@ -72,6 +77,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         ))}
       </div>
       {sp.saved && <Notice kind="success">Saved.</Notice>}
+      {sp.error && (
+        <Notice kind="error">
+          {group.fields.find((x) => x.name === sp.f)?.label ?? "A field"}:{" "}
+          {sp.error === "list" ? "the list could not be read, nothing was saved." : "use a page address (/…) or a full link (https://…). Nothing was saved."}
+        </Notice>
+      )}
       {draft && (
         <Notice kind="info">
           This group has changes made on the site by {draft.updatedByName || "an editor"} that are not live yet. The form shows them; <b>Save</b> publishes them,{" "}

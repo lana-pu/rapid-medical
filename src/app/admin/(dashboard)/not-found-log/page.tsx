@@ -1,3 +1,4 @@
+import { safeLocalPath } from "@/lib/safe-path";
 import { desc, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -7,6 +8,7 @@ import { audit } from "@/lib/audit";
 import { PageHeader, formatDate, inputCls, Button } from "@/components/admin/ui";
 
 export default async function NotFoundLogPage() {
+  await requireUser(); // the layout checks too; a page never relies on it alone
   const rows = await db.select().from(notFoundLog).where(isNull(notFoundLog.resolvedAt)).orderBy(desc(notFoundLog.hits)).limit(200);
 
   async function createRedirect(fd: FormData) {
@@ -14,7 +16,8 @@ export default async function NotFoundLogPage() {
     const user = await requireUser();
     const from = String(fd.get("from"));
     const to = String(fd.get("to") ?? "").trim();
-    if (!to.startsWith("/") && !/^https?:\/\//.test(to)) redirect("/admin/not-found-log?error=1");
+    // a path on this site (not «//host», not «\») or a full https address
+    if (safeLocalPath(to, "") === "" && !/^https:\/\/[^\s/]+(\/\S*)?$/.test(to)) redirect("/admin/not-found-log?error=1");
     await db.insert(redirects).values({ from, to }).onConflictDoUpdate({ target: redirects.from, set: { to } });
     await db.update(notFoundLog).set({ resolvedAt: new Date() }).where(eq(notFoundLog.path, from));
     await audit(user, "save", { resource: "redirects", label: `${from} → ${to}` });
