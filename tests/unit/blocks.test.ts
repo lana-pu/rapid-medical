@@ -146,7 +146,7 @@ describe("solutionToBlocks", () => {
   it("closing: demo + customer support, prefix stripped; video band only with title or video", () => {
     const [q] = of(blocks, "cta").filter((b) => b.variant === "band");
     expect(q.data.body).toBe("Call us");
-    expect(q.data.buttons).toEqual([{ label: "Demo", href: "/contact-us" }, { label: "Customer support", href: "/contact-us?region=ous" }]);
+    expect(q.data.buttons).toEqual([{ label: "Demo", href: "/contact-us" }, { label: "Customer support", href: "/contact-us?region=ous&topic=support" }]);
     const noCta = of(solutionToBlocks({ ...base, heroCta: null, closingBody: "" }, ctx), "cta").filter((b) => b.variant === "band")[0];
     expect(noCta.data.body).toBeNull();
     expect(noCta.data.buttons[0]).toEqual({ label: "Request a demo", href: "/contact-us?region=ous&topic=demo" });

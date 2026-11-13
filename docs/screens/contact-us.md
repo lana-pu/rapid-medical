@@ -60,3 +60,14 @@ Hero · `page` («Let’s connect», текст не редактируется)
 ## Не предусмотрено кодом
 CAPTCHA; маршрутизация получателей; подтверждение посетителю по e-mail; хранение согласия на обработку
 кроме `optIn`. Заголовок «Let’s connect» и подзаголовок захардкожены (не в настройках, не редактируются).
+
+## Проход по юзабилити 2026-11-13 (`memory/findings/site-ux-pass-2026-11-13.md`)
+- Ошибка от сервера **не стирает** введённое (форма отправляется из обработчика, а не через `action`, — React 19 сбрасывал
+  поля). Поле с ошибкой — рамкой и текстом под полем, `aria-invalid`; ошибка темы тоже показывается.
+- Текст успеха по типу формы: contact и webinar — «Thank you for contacting us. We will get back to you as soon as
+  possible.»; event — «You're registered for {событие}. We'll email you the details.»; careers — «Thanks — we've received
+  your details. We'll be in touch if there's a match.»
+- Подпись выбора темы по типу формы: contact — «How can we help? Select a topic.*», webinar — «Which webinar?*», careers —
+  «Area of interest*».
+- «Customer support» на страницах терапий и в шаблоне — `/contact-us?region={region}&topic=support` (тема выбрана);
+  существующие страницы обновлены миграцией `0018`.

@@ -71,7 +71,7 @@ export function templateBlocks(id: TemplateId, title: string): StoredBlock[] {
             { id: "evidence", label: "Clinical evidence", href: "/{region}/evidence#{product}", blocks: [] },
           ],
         }),
-        b("cta", "band", { title: "Questions?", buttons: [demo, { label: "Customer support", href: "/contact-us?region={region}" }] }),
+        b("cta", "band", { title: "Questions?", buttons: [demo, { label: "Customer support", href: "/contact-us?region={region}&topic=support" }] }),
         b("indications", "default", { indicationsHtml: "<p>Add the approved indications for this region before publishing.</p>", referencesHtml: "" }),
       ];
   }

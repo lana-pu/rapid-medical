@@ -80,3 +80,10 @@ actionLinks.* (label+href), actionNote, closingTitle/Body, regulatory/references
 - Внутри repeater-ов (benefits, steps, inPractice, actionLinks) обязательность и формат подполей
   **на сервере не проверяются** — только JSON-массив (см. BACKLOG).
 - Сохранение опубликованной страницы → pending-черновик (см. `docs/spec.md → Редакционный процесс`).
+
+## Проход по юзабилити 2026-11-13
+- Над заголовком «Therapies / {терапия}»: «Therapies» — ссылка на обзор терапий региона.
+- Таблица спецификаций на узком экране: первая колонка (модель) закреплена, над таблицей — «Scroll the table sideways →»,
+  если колонок больше трёх.
+- Адрес терапии, которой нет в регионе (`/us/therapies/mvo`): вместо «Page not found» — «{Терапия} is not available in
+  {регион}», ссылки на эту терапию в регионах, где она есть, и «All therapies in {регион}».

@@ -45,7 +45,10 @@ export async function proxy(req: NextRequest) {
     set.push([REGION_COOKIE, ipRegion, YEAR]);
   }
   if (ipRegion && req.cookies.get(GEO_COOKIE)?.value !== ipRegion) set.push([GEO_COOKIE, ipRegion, 60 * 60 * 24 * 30]);
-  if (set.length === 0) return withHeaders(NextResponse.next());
+  // the page path for the 404 page (it gets no params): «MVO is not available in Americas» (docs/screens/therapy.md);
+  // always overwritten here, so a visitor cannot send their own
+  req.headers.set("x-rm-path", url.pathname);
+  if (set.length === 0) return withHeaders(NextResponse.next({ request: { headers: req.headers } }));
 
   // Same request sees the new values (server components read request cookies), the browser keeps them.
   for (const [name, value] of set) req.cookies.set(name, value);

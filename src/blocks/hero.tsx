@@ -13,6 +13,8 @@ export type HeroData = {
   eyebrow?: string | null;
   /** Links after the breadcrumb (other regional versions). */
   eyebrowLinks?: ActionLink[];
+  /** the first part of a «A / B» breadcrumb links here (filled by the region-versions source) */
+  eyebrowHref?: string;
   title: string;
   /** Second title line. */
   title2?: string | null;
@@ -47,7 +49,7 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
         <Container className={large ? "py-24 md:py-40" : "py-20 md:py-28"}>
           {(d.eyebrow || links.length > 0) && (
             <Eyebrow>
-              {d.eyebrow}
+              <Crumb text={d.eyebrow} href={d.eyebrowHref} />
               {links.map((l) => (
                 <Fragment key={l.href}> · <Link href={l.href} className="underline">{l.label}</Link></Fragment>
               ))}
@@ -81,7 +83,7 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
         <div>
           {(d.eyebrow || links.length > 0) && (
             <Eyebrow>
-              {d.eyebrow}
+              <Crumb text={d.eyebrow} href={d.eyebrowHref} />
               {links.map((l) => (
                 <span key={l.href}> · <Link href={l.href} className="underline">{l.label}</Link></span>
               ))}
@@ -94,6 +96,19 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
         {variant === "image" && <FM e={e} k="imageUrl" kv="videoUrl"><Img src={d.imageUrl} className="w-full rounded object-contain" /></FM>}
       </Container>
     </VideoHero>
+  );
+}
+
+/** «Therapies / Large vessel stroke» with «Therapies» as a link, when there is one. */
+function Crumb({ text, href }: { text?: string | null; href?: string }) {
+  if (!text) return null;
+  const i = text.indexOf(" / ");
+  if (!href || i < 0) return <>{text}</>;
+  return (
+    <>
+      <Link href={href} className="underline-offset-2 hover:underline">{text.slice(0, i)}</Link>
+      {text.slice(i)}
+    </>
   );
 }
 

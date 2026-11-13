@@ -37,7 +37,8 @@ describe("homeToBlocks", () => {
 describe("careersToBlocks", () => {
   it("counts jobs in the button, skips an empty gallery", () => {
     expect((careersToBlocks({ c: {}, jobCount: 3 })[0] as BlockOf<"hero">).data.cta?.label).toBe("View open positions (3)");
-    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta?.label).toBe("View open positions");
+    // none open: the general-interest form, not an empty list (usability pass 2026-11-13)
+    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "Submit general interest", href: "#general-interest" });
     expect(types(careersToBlocks({ c: {}, jobCount: 0 }))).toEqual(["hero:bannerCompact", "columns:principles", "form:section"]);
     const full = careersToBlocks({ c: { quotes: [{ quote: "q" }] }, jobCount: 0 });
     expect(types(full)[1]).toBe("gallery:quotes");

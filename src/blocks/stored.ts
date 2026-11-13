@@ -57,8 +57,9 @@ const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.l
 export const SOURCES: Record<string, Source> = {
   /** Hero line "Europe & Middle East version · Asia & Pacific version" */
   regionVersions: {
-    keys: ["eyebrowLinks"],
-    fill: (_d, ctx) => ({ eyebrowLinks: (ctx.versions ?? []).map((v) => ({ label: `${choiceLabel(v.region)} version`, href: v.href })) }),
+    keys: ["eyebrowLinks", "eyebrowHref"],
+    // «Therapies / Large vessel stroke»: the first part leads back to the region's overview (usability pass 2026-11-13)
+    fill: (_d, ctx) => ({ eyebrowLinks: (ctx.versions ?? []).map((v) => ({ label: `${choiceLabel(v.region)} version`, href: v.href })), eyebrowHref: ctx.region ? `/${ctx.region}/therapies` : undefined }),
   },
   /** Region name above the title of a regional text page */
   regionLabel: {
@@ -70,7 +71,8 @@ export const SOURCES: Record<string, Source> = {
   /** Careers: the button to the open positions, with their number */
   openPositions: {
     keys: ["cta"],
-    fill: (_d, ctx) => ({ cta: { label: `View open positions${ctx.lists?.jobCount ? ` (${ctx.lists.jobCount})` : ""}`, href: "/open-positions" } }),
+    // with no open positions the first action is the general-interest form, not an empty list (docs/screens/careers.md)
+    fill: (_d, ctx) => ({ cta: ctx.lists?.jobCount ? { label: `View open positions (${ctx.lists.jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } }),
   },
   /** About: leadership cards (each edits its team record) */
   team: { keys: ["members"], fill: (_d, ctx) => ({ members: (ctx.lists?.team ?? []).map(teamCard) }) },

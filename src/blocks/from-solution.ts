@@ -24,6 +24,7 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     data: {
       eyebrow: s.breadcrumb || `Our solutions / ${s.navLabel}`,
       eyebrowLinks: others.map((o) => ({ label: `${REGION_CHOICES.find((c) => c.region === o)?.label ?? o} version`, href: `/${o}/therapies/${s.slug}` })),
+      eyebrowHref: `/${s.region}/therapies`,
       title: s.heroTitle,
       body: s.heroBody,
       cta: s.heroCta,
@@ -120,7 +121,7 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
     data: {
       title: "Questions?",
       body: s.closingBody ? s.closingBody.replace(/^questions\?\s*/i, "") : null,
-      buttons: [demo, { label: "Customer support", href: `/contact-us?region=${region}` }],
+      buttons: [demo, { label: "Customer support", href: `/contact-us?region=${region}&topic=support` }],
     },
     edit: bind({ body: "closingBody" }),
   });

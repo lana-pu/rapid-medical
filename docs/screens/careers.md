@@ -10,3 +10,7 @@
 | 2 | Gallery · `quotes` | `quotes[]` | есть цитаты |
 | 3 | Columns · `principles` | `principlesTitle`, `principlesBody`, `principlesImageUrl`, `principles[]` | всегда |
 | 4 | Form · `section`, якорь `#general-interest` | заголовок «Submit general interest», `eeoStatement`; форма `careers`, темы General interest · Internship · Other | всегда |
+
+## Проход по юзабилити 2026-11-13
+- Кнопка в шапке страницы: при открытых вакансиях — «View open positions (N)» → `/open-positions`; при нуле —
+  «Submit general interest» → `#general-interest` (не ведёт на пустой список).

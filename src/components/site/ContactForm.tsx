@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { startTransition, useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { submitForm, type FormState } from "@/lib/forms";
 import { attribution, track } from "@/lib/tracking";
@@ -39,16 +39,34 @@ export function ContactForm({
     if (state?.ok) track("generate_lead", { form, topic: topic.current });
   }, [state, form]);
 
-  if (state?.ok)
+  if (state?.ok) {
+    // what the visitor did, in words (docs/screens/contact-us.md → «Проход по юзабилити»)
+    const [title, body] =
+      form === "event"
+        ? [`You're registered for ${defaultTopic || "the event"}.`, "We'll email you the details."]
+        : form === "careers"
+          ? ["Thanks — we've received your details.", "We'll be in touch if there's a match."]
+          : ["Thank you for contacting us.", "We will get back to you as soon as possible."];
     return (
-      <div className="rounded border border-border bg-surface p-6">
-        <p className="font-medium">Thank you for contacting us.</p>
-        <p className="mt-1 text-sm text-muted">We will get back to you as soon as possible.</p>
+      <div className="rounded border border-border bg-surface p-6" role="status">
+        <p className="font-medium">{title}</p>
+        <p className="mt-1 text-sm text-muted">{body}</p>
       </div>
     );
+  }
 
   return (
-    <form action={action} className="space-y-4">
+    // Sent from the handler, not through `action`: React 19 resets a form after an action, which wiped what the
+    // visitor typed whenever the server answered with an error.
+    <form
+      data-form={form}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        startTransition(() => action(fd));
+      }}
+      className="space-y-4"
+    >
       <input type="hidden" name="form" value={form} />
       {/* honeypot */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
@@ -61,8 +79,11 @@ export function ContactForm({
         <input type="hidden" name="topic" value={defaultTopic ?? topics[0] ?? ""} />
       ) : (
         <label className="block text-sm">
-          <span className="mb-1 block">How can we help? Select a topic.*</span>
-          <select name="topic" required defaultValue={defaultTopic ?? ""} className={input}>
+          <span className="mb-1 flex justify-between">
+            <span>{form === "webinar" ? "Which webinar?*" : form === "careers" ? "Area of interest*" : "How can we help? Select a topic.*"}</span>
+            {err("topic") && <span className="text-red-600">{err("topic")}</span>}
+          </span>
+          <select name="topic" required defaultValue={defaultTopic ?? ""} aria-invalid={!!err("topic") || undefined} className={`${input} ${err("topic") ? "border-red-600" : ""}`}>
             <option value="" disabled>Select…</option>
             {topics.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -113,7 +134,7 @@ function Field({ name, label, type = "text", error, required }: { name: string; 
   return (
     <label className="block text-sm">
       <span className="mb-1 flex justify-between"><span>{label}</span>{error && <span className="text-red-600">{error}</span>}</span>
-      <input name={name} type={type} required={required} className={input} />
+      <input name={name} type={type} required={required} aria-invalid={!!error || undefined} className={`${input} ${error ? "border-red-600" : ""}`} />
     </label>
   );
 }

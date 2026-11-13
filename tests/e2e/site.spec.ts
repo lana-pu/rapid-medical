@@ -93,3 +93,46 @@ test("style guide shows every block, is noindex and not in the sitemap", async (
   const sitemap = await (await request.get("/sitemap.xml")).text();
   expect(sitemap).not.toContain("style-guide");
 });
+
+test.describe("usability pass 2026-11-13", () => {
+  test("a server error keeps what the visitor typed and marks the field", async ({ page }) => {
+    await page.goto("/contact-us?region=us&topic=demo");
+    await page.fill("input[name=firstName]", "Laura");
+    await page.fill("input[name=lastName]", "Mendes");
+    await page.fill("input[name=email]", "laura@clinic"); // the browser lets it through, the server does not
+    await page.fill("textarea[name=message]", "Please call me about a demo.");
+    await page.click('button:has-text("Submit")');
+    await expect(page.getByText("Please check the highlighted fields.")).toBeVisible();
+    await expect(page.locator("input[name=firstName]")).toHaveValue("Laura");
+    await expect(page.locator("textarea[name=message]")).toHaveValue("Please call me about a demo.");
+    await expect(page.locator("input[name=email]")).toHaveAttribute("aria-invalid", "true");
+  });
+
+  test("a webinar card picks its webinar in the request form", async ({ page }) => {
+    await page.goto("/ous/webinars");
+    const card = page.locator("ul li").filter({ has: page.getByRole("button", { name: "Request this recording" }) }).first();
+    const title = (await card.locator(".font-medium").first().innerText()).trim();
+    await card.getByRole("button", { name: "Request this recording" }).click();
+    await expect(page.locator('form[data-form="webinar"] select[name=topic]')).toHaveValue(title);
+    await expect(page.getByText("Which webinar?*")).toBeVisible();
+  });
+
+  test("careers with no open positions leads to the general-interest form", async ({ page }) => {
+    await page.goto("/careers");
+    await expect(page.getByRole("link", { name: "Submit general interest" }).first()).toHaveAttribute("href", /#general-interest$/);
+  });
+
+  test("therapy: the breadcrumb leads back, support opens with its topic", async ({ page }) => {
+    await page.goto("/us/therapies/lvo");
+    await expect(page.getByRole("link", { name: "Therapies", exact: true }).first()).toHaveAttribute("href", "/us/therapies");
+    await expect(page.getByRole("link", { name: "Customer support" }).first()).toHaveAttribute("href", "/contact-us?region=us&topic=support");
+  });
+
+  test("a therapy missing in a region says where it is", async ({ page }) => {
+    const res = await page.goto("/us/therapies/mvo");
+    expect(res?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("is not available in Americas");
+    await expect(page.getByRole("link", { name: /Europe & Middle East/ })).toHaveAttribute("href", "/ous/therapies/mvo");
+    await expect(page.getByRole("link", { name: "All therapies in Americas" })).toBeVisible();
+  });
+});

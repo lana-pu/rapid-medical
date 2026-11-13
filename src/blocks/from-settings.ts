@@ -79,7 +79,7 @@ export function careersToBlocks({ c, jobCount }: { c: CareersSettings; jobCount:
     {
       type: "hero",
       variant: "bannerCompact",
-      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: { label: `View open positions${jobCount ? ` (${jobCount})` : ""}`, href: "/open-positions" } },
+      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: jobCount ? { label: `View open positions (${jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } },
       edit: { r, map: { title: "heroTitle", subtitle: "heroSub", body: "heroBody" } },
     },
   ];

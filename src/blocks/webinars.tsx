@@ -1,3 +1,4 @@
+import { WebinarRequest } from "@/components/site/WebinarRequest";
 import { Section, Img } from "@/components/site/primitives";
 import { F, FM, type EditBinding } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
@@ -18,6 +19,7 @@ function Webinars({ data: d, nested }: BlockProps<"webinars">) {
           <div className="font-medium"><F e={w.edit} k="title">{w.title}</F></div>
           <div className="mt-1 text-sm text-muted">{[w.speaker, w.event].filter(Boolean).join(" · ")}</div>
           {w.productName && <div className="mt-1 text-xs uppercase text-muted">{w.productName}</div>}
+          <WebinarRequest title={w.title} />
         </li>
       ))}
     </ul>
