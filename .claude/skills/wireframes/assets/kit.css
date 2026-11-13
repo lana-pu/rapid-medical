@@ -185,6 +185,10 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .w-field.err .box { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--wf-ink) 30%, #c0392b) }
 .w-field.focus .box { box-shadow: inset 0 0 0 2px var(--sel) }
 .w-field .hint { font-size: 12px }
+.w-chips { display: flex; flex-wrap: wrap; gap: 8px }
+.w-chips span { padding: 7px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--wf-line); background: var(--wf-paper); color: var(--wf-ink); font-size: 13px }
+.w-chips span.on { background: var(--wf-btn); color: var(--wf-btn-ink); box-shadow: none; font-weight: 500 }
+.w-field.chips.err .w-chips span:not(.on) { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--wf-ink) 30%, #c0392b) }
 .w-check { display: flex; gap: 8px; align-items: center; font-size: 14px }
 .w-check i { flex: none; width: 16px; height: 16px; border-radius: 3px; box-shadow: inset 0 0 0 1.5px var(--wf-ink); display: grid; place-items: center; font-style: normal; font-size: 11px; line-height: 1 }
 .w-check.radio i { border-radius: 50% }
