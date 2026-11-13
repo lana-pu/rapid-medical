@@ -16,6 +16,15 @@ export function mediaKind(href: string): "video" | "image" | null {
   return VIDEO.test(path) ? "video" : IMAGE.test(path) ? "image" : null;
 }
 
+/** A link to a PDF file. Exported for tests. */
+export function isPdf(href: string): boolean {
+  try {
+    return /\.pdf$/i.test(new URL(href, "https://x.invalid").pathname);
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Links to a video or a picture open in a window over the page instead of a separate page
  * (decision 2026-11-10: the Duda one-video "wrapper" pages are gone). DESIGN.md → MediaLightbox.
@@ -30,7 +39,14 @@ export function MediaLightbox() {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
       if (!a || a.hasAttribute("download") || a.closest("[data-editing]")) return;
-      const kind = mediaKind(a.getAttribute("href") ?? "");
+      const href = a.getAttribute("href") ?? "";
+      // a PDF opens in a new tab: the visitor keeps the page (usability pass 2026-11-13); marked «(PDF)» in globals.css
+      if (isPdf(href)) {
+        e.preventDefault();
+        window.open(a.href, "_blank", "noopener");
+        return;
+      }
+      const kind = mediaKind(href);
       if (!kind) return;
       e.preventDefault();
       e.stopPropagation();

@@ -1,4 +1,8 @@
 import { regionOr404 } from "@/lib/region-param";
+import { and, eq } from "drizzle-orm";
+import { db, solutions } from "@/db";
+import { Section } from "@/components/site/primitives";
+import { REGION_CHOICES } from "@/lib/regions";
 import { getSitePage, getSolutionsNav } from "@/lib/content";
 import { resolveBlocks } from "@/blocks/stored";
 import { PageMark } from "@/components/editor/PageMark";
@@ -18,12 +22,27 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
   };
 }
 
-export default async function TherapiesIndex({ params }: { params: Promise<{ seg: string }> }) {
+export default async function TherapiesIndex({ params, searchParams }: { params: Promise<{ seg: string }>; searchParams: Promise<{ missing?: string }> }) {
   const region = regionOr404((await params).seg);
-  const [page, landing, items] = await Promise.all([getSitePage("therapies", region), getSetting<Landing>(`therapies:${region}`), getSolutionsNav(region)]);
-  if (!page) return <BlockList blocks={therapiesToBlocks({ region, landing, items })} />;
+  const { missing } = await searchParams;
+  const [page, landing, items, gone] = await Promise.all([
+    getSitePage("therapies", region),
+    getSetting<Landing>(`therapies:${region}`),
+    getSolutionsNav(region),
+    typeof missing === "string" && /^[a-z0-9-]{1,60}$/.test(missing) ? db.query.solutions.findFirst({ columns: { navLabel: true }, where: and(eq(solutions.slug, missing), eq(solutions.status, "published")) }) : null,
+  ]);
+  // came here from the region switcher on a therapy this region does not have
+  const notice = gone ? (
+    <Section className="pb-0 md:pb-0" aria-live="polite">
+      <p className="rounded border border-border bg-surface px-4 py-3 text-sm" role="status">
+        {gone.navLabel} is not available in {REGION_CHOICES.find((c) => c.region === region)?.label ?? region}. These are the therapies here.
+      </p>
+    </Section>
+  ) : null;
+  if (!page) return <>{notice}<BlockList blocks={therapiesToBlocks({ region, landing, items })} /></>;
   return (
     <>
+      {notice}
       <PageMark r="site-pages" id={page.id} />
       <BlockList blocks={resolveBlocks(page.blocks, { region, lists: { therapies: items } }, { r: "site-pages", id: page.id })} />
     </>

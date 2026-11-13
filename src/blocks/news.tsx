@@ -21,7 +21,7 @@ function News({ variant, data: d, edit: e }: BlockProps<"news">) {
   if (variant === "timeline") {
     const items = d.items.map((n) => {
       const date = n.publishedOn ? new Date(n.publishedOn) : null;
-      return { id: n.id, year: date ? date.getFullYear() : 0, date: date ? `${date.getMonth() + 1}/${String(date.getFullYear()).slice(2)}` : "", title: <F e={n.edit} k="title">{n.title}</F>, url: n.url };
+      return { id: n.id, year: date ? date.getFullYear() : 0, date: date ? date.toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" }) : "", title: <F e={n.edit} k="title">{n.title}</F>, url: n.url };
     });
     return <Section id={d.anchor} className="bg-surface"><NewsTimeline items={items} /></Section>;
   }

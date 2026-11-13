@@ -16,8 +16,10 @@ export function Section({ children, className = "", id }: { children: ReactNode;
   );
 }
 
-export function Eyebrow({ children }: { children: ReactNode }) {
-  return <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">{children}</div>;
+/** `as="span"`: inside a heading, so «Gain active» + «control» read as one heading (usability pass 2026-11-13). */
+export function Eyebrow({ children, as = "div" }: { children: ReactNode; as?: "div" | "span" }) {
+  const Tag = as;
+  return <Tag className="mb-2 block text-xs font-semibold uppercase tracking-widest text-muted">{children}</Tag>;
 }
 
 export function H1({ children, className = "" }: { children: ReactNode; className?: string }) {

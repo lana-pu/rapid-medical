@@ -97,7 +97,8 @@ export function solutionToBlocks(s: SolutionForBlocks, ctx: { region: Region; ot
         data: {
           title: "Webinars",
           body: "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
-          buttons: [{ label: "Request to view", href: `/${region}/webinars` }],
+          // the webinars of this product first: the form picks its webinar (usability pass 2026-11-13)
+          buttons: [{ label: "Request to view", href: `/${region}/webinars${s.product?.slug ? `?product=${s.product.slug}` : ""}` }],
         },
       });
     }

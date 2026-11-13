@@ -11,7 +11,8 @@ export function FeatureGrid({ items, render }: { items: Feature[]; render?: (f: 
     <ul className="grid gap-8 md:grid-cols-2">
       {items.map((f, i) => (
         <li key={i} className="flex gap-5">
-          {f.iconUrl ? <Img src={f.iconUrl} alt="" className="h-20 w-20 flex-none rounded-full object-cover" /> : <span className="h-20 w-20 flex-none rounded-full bg-surface" />}
+          {/* smaller on a phone: the text keeps most of the width */}
+          {f.iconUrl ? <Img src={f.iconUrl} alt="" className="h-12 w-12 flex-none rounded-full object-cover md:h-20 md:w-20" /> : <span className="h-12 w-12 flex-none rounded-full bg-surface md:h-20 md:w-20" />}
           <div>
             <h4 className="font-semibold text-accent">{render ? render(f, i, "title") : f.title}</h4>
             <p className="mt-1 text-sm">{render ? render(f, i, "body") : f.body}</p>
@@ -26,13 +27,17 @@ export function FeatureGrid({ items, render }: { items: Feature[]; render?: (f: 
 export function AnnotatedImage({ a, render }: { a: AnnotatedImageT; render?: (i: number, part: "label") => ReactNode }) {
   return (
     <figure>
-      <div className="relative">
+      {/* a wide drawing keeps a readable size on a phone and scrolls sideways (usability pass 2026-11-13) */}
+      <p className="mb-2 text-xs text-muted md:hidden">Scroll the drawing sideways →</p>
+      <div className="overflow-x-auto">
+        <div className="relative min-w-160 md:min-w-0">
         <Img src={a.imageUrl} alt={a.caption ?? ""} className="w-full rounded" sizes="100vw" />
         {a.markers.map((m, i) => (
           <span key={i} className="absolute flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground shadow" style={{ left: `${m.x}%`, top: `${m.y}%` }} title={m.label}>
             {i + 1}
           </span>
         ))}
+        </div>
       </div>
       <figcaption className="mt-3">
         {a.caption && <div className="text-sm text-muted">{a.caption}</div>}

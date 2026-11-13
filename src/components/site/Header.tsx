@@ -32,8 +32,9 @@ export function Header({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-1.5">
           <div className="flex items-center gap-4 text-muted">
             <span className="font-medium text-foreground">Get in touch</span>
-            {contact.phoneHq && <a href={`tel:${contact.phoneHq}`}>HQ: {contact.phoneHq}</a>}
-            {contact.phoneUs && <a href={`tel:${contact.phoneUs}`} className="hidden sm:inline">US: {contact.phoneUs}</a>}
+            {/* on a phone one number fits: the visitor's own — US in the Americas, HQ elsewhere (usability pass 2026-11-13) */}
+            {contact.phoneHq && <a href={`tel:${contact.phoneHq}`} className={`whitespace-nowrap ${region === "us" && contact.phoneUs ? "hidden sm:inline" : ""}`}>HQ: {contact.phoneHq}</a>}
+            {contact.phoneUs && <a href={`tel:${contact.phoneUs}`} className={`whitespace-nowrap ${region === "us" ? "" : "hidden sm:inline"}`}>US: {contact.phoneUs}</a>}
             {contact.email && <a href={`mailto:${contact.email}`} className="hidden md:inline">{contact.email}</a>}
           </div>
           <RegionSwitcher region={region} />

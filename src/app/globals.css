@@ -59,3 +59,11 @@ body {
 .rm-editor :where(td, th) { min-width: 3em; vertical-align: top; }
 .rm-editor :where(td.selectedCell, th.selectedCell) { background: #e0ecff; }
 .rm-editor :where(div[data-youtube-video] iframe) { width: 100%; aspect-ratio: 16/9; height: auto; }
+
+/* Links to PDF files say so; they open in a new tab (MediaLightbox.tsx). Site pages only. */
+main a[href$=".pdf" i]::after,
+main a[href*=".pdf?" i]::after {
+  content: " (PDF)";
+  white-space: nowrap;
+}
+

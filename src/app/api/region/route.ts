@@ -34,12 +34,15 @@ async function targetFor(to: string, back: string | null): Promise<string> {
   if (!m) return path === "/choose-your-location" ? `/${to}/therapies` : back;
 
   const rest = (m[2] ?? "").replace(/\/$/, "");
-  if (rest === "" || rest === "/therapies" || rest === "/evidence" || rest === "/webinars") return `/${to}${rest || "/therapies"}`;
+  // the open product tab (#comaneci…) comes along
+  const hash = /^#[a-z0-9-]{1,60}$/i.test(back.slice(back.indexOf("#"))) && back.includes("#") ? back.slice(back.indexOf("#")) : "";
+  if (rest === "" || rest === "/therapies" || rest === "/evidence" || rest === "/webinars") return `/${to}${rest || "/therapies"}${rest ? hash : ""}`;
 
   const therapy = /^\/therapies\/([a-z0-9-]+)$/.exec(rest);
   if (therapy) {
     const found = await db.query.solutions.findFirst({ columns: { id: true }, where: and(eq(solutions.region, to as "us"), eq(solutions.slug, therapy[1]), eq(solutions.status, "published")) });
-    return found ? `/${to}${rest}` : `/${to}/therapies`;
+    // not in that region: its overview says so (docs/screens/therapy.md, usability pass 2026-11-13)
+    return found ? `/${to}${rest}${hash}` : `/${to}/therapies?missing=${therapy[1]}`;
   }
   const page = /^\/([a-zA-Z0-9_-]+)$/.exec(rest);
   if (page) {

@@ -46,7 +46,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           url: `${site}/events/${e.slug}`,
         }}
       />
-      <Link href="/news-events#upcoming-events" className="text-sm underline">← News &amp; Events</Link>
+      <Link href={`/news-events#${past ? "past-events" : "upcoming-events"}`} className="text-sm underline">← News &amp; Events</Link>
       {e.congress && <div className="mt-6 text-sm font-semibold uppercase tracking-widest text-muted">{e.congress}</div>}
       <H1 className={e.congress ? "mt-2" : "mt-6"}><E r="events" id={e.id} f="title">{e.title}</E></H1>
       {e.subtitle && <p className="mt-3 text-lg text-muted"><E r="events" id={e.id} f="subtitle">{e.subtitle}</E></p>}

@@ -24,6 +24,7 @@ export default async function NotFound() {
     const [, region, slug] = m;
     return (
       <Section>
+        <title>{`${elsewhere[0].label} — not available in ${regionName(region)} | Rapid Medical™`}</title>
         <H1>{elsewhere[0].label} is not available in {regionName(region)}</H1>
         <p className="mt-4 text-muted">Product availability differs by region. This therapy is available in:</p>
         <ul className="mt-4 space-y-2">
@@ -39,6 +40,8 @@ export default async function NotFound() {
   }
   return (
     <Section>
+      {/* the tab and the history say what this is (metadata does not reach a group's not-found) */}
+      <title>Page not found | Rapid Medical™</title>
       <H1>Page not found</H1>
       <p className="mt-4 text-muted">The page you’re looking for doesn’t exist or has moved.</p>
       <Link href="/" className="mt-6 inline-block underline">Back to home</Link>

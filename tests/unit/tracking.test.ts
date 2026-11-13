@@ -40,3 +40,12 @@ describe("absUrl", () => {
     expect(absUrl("", "https://www.rapid-medical.com")).toBeUndefined();
   });
 });
+
+import { isPdf } from "@/components/site/MediaLightbox";
+describe("isPdf", () => {
+  it("links to PDF files, with or without a query", () => {
+    expect(isPdf("/uploads/2026-11/case.pdf")).toBe(true);
+    expect(isPdf("https://example.com/a/B.PDF?x=1")).toBe(true);
+    expect(isPdf("/news/pdf-tools")).toBe(false);
+  });
+});

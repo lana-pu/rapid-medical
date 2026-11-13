@@ -141,7 +141,7 @@ export function templateHref(href: string, region: Region | null, product?: stri
   if (region) {
     h = h.replace(new RegExp(`^/${region}(?=/|$|[?#])`), "/{region}").replace(new RegExp(`([?&]region=)${region}(?=&|#|$)`), "$1{region}");
   }
-  if (product) h = h.replace(new RegExp(`(/evidence#)${product}$`), "$1{product}");
+  if (product) h = h.replace(new RegExp(`(/evidence#)${product}$`), "$1{product}").replace(new RegExp(`([?&]product=)${product}(?=&|#|$)`), "$1{product}");
   return h;
 }
 

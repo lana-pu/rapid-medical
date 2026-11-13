@@ -227,11 +227,13 @@ export function newsPageToBlocks(items: NewsItem[], eventItems: Event[] = [], no
   return blocks;
 }
 
-export function webinarsToBlocks({ region, list }: { region: Region; list: (Webinar & { product?: Pick<Product, "name"> | null })[] }): Block[] {
+export function webinarsToBlocks({ region, list, product }: { region: Region; list: (Webinar & { product?: Pick<Product, "name" | "slug"> | null })[]; product?: string }): Block[] {
+  // coming from a therapy page (?product=…): its first webinar is chosen in the form
+  const chosen = product ? list.find((w) => w.product?.slug === product)?.title : undefined;
   return [
     { type: "hero", variant: "page", data: { title: "Webinars", body: "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below." } },
     { type: "webinars", variant: "cards", data: { items: list.map((w) => ({ id: w.id, title: w.title, speaker: w.speaker, event: w.event, productName: w.product?.name, imageUrl: w.imageUrl, edit: record("webinars", w.id) })) } },
-    { type: "form", variant: "compact", data: { form: "webinar", topics: list.length ? list.map((w) => w.title) : ["Webinar recording request"], defaultRegion: REGION_FORM_VALUE[region] } },
+    { type: "form", variant: "compact", data: { form: "webinar", topics: list.length ? list.map((w) => w.title) : ["Webinar recording request"], defaultTopic: chosen, defaultRegion: REGION_FORM_VALUE[region] } },
   ];
 }
 

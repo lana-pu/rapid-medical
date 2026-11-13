@@ -1,3 +1,4 @@
+import { absoluteTitle } from "@/lib/seo";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { isRegion } from "@/lib/regions";
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
   if (isRegion(seg)) return {};
   const page = await getPage(seg, null);
   if (!page) return {};
-  return { title: page.metaTitle || page.title, description: page.metaDescription || undefined, robots: page.noindex ? { index: false } : undefined };
+  return { title: absoluteTitle(page.metaTitle, page.title), description: page.metaDescription || undefined, robots: page.noindex ? { index: false } : undefined };
 }
 
 export default async function GlobalPage({ params }: { params: Promise<{ seg: string }> }) {

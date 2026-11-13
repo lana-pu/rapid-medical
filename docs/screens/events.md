@@ -59,3 +59,6 @@
 Duda нет (Murcia 2025, First Asia TIGERTRIEVER Workshop, International Partners Summit, Users Meeting) — даты не
 выдумываем: их адреса → 301 на `/news-events`; в архив добавит маркетинг, когда даст даты. Двухсегментные старые
 адреса вне регионов (`/event-details/…`) теперь тоже проверяют таблицу `redirects`.
+
+## Проход по юзабилити 2026-11-13
+- «← News & Events» с прошедшего события ведёт к «Past events» (`#past-events`), с предстоящего — к «Upcoming events».

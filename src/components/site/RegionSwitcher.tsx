@@ -29,7 +29,14 @@ export function RegionSwitcher({ region }: { region: Region | null }) {
             {c.region === region ? (
               <span className="block rounded px-3 py-1.5 font-medium" aria-current="true">{c.label}</span>
             ) : (
-              <a href={href(c.region)} className="block rounded px-3 py-1.5 hover:bg-surface">{c.label}</a>
+              <a
+                href={href(c.region)}
+                // the open tab (#…) is known only in the browser: added when the visitor clicks
+                onClick={(e) => { if (!DEMO && window.location.hash) e.currentTarget.href = `/api/region?to=${c.region}&back=${encodeURIComponent(pathname + window.location.hash)}`; }}
+                className="block rounded px-3 py-1.5 hover:bg-surface"
+              >
+                {c.label}
+              </a>
             )}
           </li>
         ))}

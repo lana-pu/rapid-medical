@@ -61,8 +61,10 @@ function TextMedia({ variant, data: d, edit: e }: BlockProps<"textMedia">) {
   const hasMedia = stats.length > 0 || chart || d.videoUrl || d.imageUrl;
   const text = (
     <div>
-      {d.eyebrow && <Eyebrow><F e={e} k="eyebrow">{d.eyebrow}</F></Eyebrow>}
-      <H2><F e={e} k="title">{d.title}</F></H2>
+      <H2>
+        {d.eyebrow && <Eyebrow as="span"><F e={e} k="eyebrow">{d.eyebrow}</F></Eyebrow>}
+        <F e={e} k="title">{d.title}</F>
+      </H2>
       {d.body && <p className="mt-4 text-muted"><F e={e} k="body">{d.body}</F></p>}
       {d.footnote && <p className="mt-3 text-sm text-muted"><F e={e} k="footnote">{d.footnote}</F></p>}
       {d.link?.href && (

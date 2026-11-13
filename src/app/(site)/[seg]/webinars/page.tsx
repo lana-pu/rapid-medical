@@ -16,7 +16,8 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
   };
 }
 
-export default async function WebinarsPage({ params }: { params: Promise<{ seg: string }> }) {
+export default async function WebinarsPage({ params, searchParams }: { params: Promise<{ seg: string }>; searchParams: Promise<{ product?: string }> }) {
   const region = regionOr404((await params).seg);
-  return <BlockList blocks={webinarsToBlocks({ region, list: await getWebinars(region) })} />;
+  const { product } = await searchParams;
+  return <BlockList blocks={webinarsToBlocks({ region, list: await getWebinars(region), product: typeof product === "string" ? product : undefined })} />;
 }

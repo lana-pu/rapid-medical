@@ -136,3 +136,36 @@ test.describe("usability pass 2026-11-13", () => {
     await expect(page.getByRole("link", { name: "All therapies in Americas" })).toBeVisible();
   });
 });
+
+test.describe("usability pass 2026-11-13, part 2", () => {
+  test("switching region on a therapy that the region does not have explains it", async ({ request, page }) => {
+    const r = await request.get("/api/region?to=us&back=%2Fous%2Ftherapies%2Fmvo", { maxRedirects: 0 });
+    expect(r.headers()["location"]).toContain("/us/therapies?missing=mvo");
+    await page.goto("/us/therapies?missing=mvo");
+    await expect(page.getByRole("status")).toContainText("Medium vessel stroke is not available in Americas");
+    const keep = await request.get("/api/region?to=ous&back=%2Fus%2Fevidence%23comaneci", { maxRedirects: 0 });
+    expect(keep.headers()["location"]).toMatch(/\/ous\/evidence#comaneci$/);
+  });
+
+  test("Request to view on a therapy picks that product's webinar", async ({ page }) => {
+    await page.goto("/apac/therapies/aneurysm");
+    const href = await page.locator('a:has-text("Request to view")').first().getAttribute("href"); // inside a closed tab
+    expect(href).toMatch(/\/apac\/webinars\?product=/);
+    await page.goto(href!);
+    await expect(page.locator('form[data-form="webinar"] select[name=topic]')).not.toHaveValue("");
+  });
+
+  test("titles: no doubled brand on text pages, 404 says what it is", async ({ page }) => {
+    await page.goto("/privacy-statement");
+    expect((await page.title()).match(/Rapid Medical/g)?.length ?? 0).toBeLessThanOrEqual(1);
+    await page.goto("/no-such-page-e2e");
+    await expect(page).toHaveTitle(/^Page not found/);
+  });
+
+  test("a section heading includes its eyebrow; news dates are in words", async ({ page }) => {
+    await page.goto("/ous/therapies/lvo");
+    await expect(page.getByRole("heading", { level: 2, name: /Gain active\s*control/i }).first()).toBeVisible();
+    await page.goto("/news-events");
+    await expect(page.getByText(/^[A-Z][a-z]{2} 20\d\d$/).first()).toBeVisible();
+  });
+});
