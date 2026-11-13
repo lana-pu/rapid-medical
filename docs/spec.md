@@ -428,22 +428,22 @@ reopening» в пакете S0 (2026-11-11).
 
 | Роут | Назначение | Спека |
 |---|---|---|
-| `/admin/login`, `/admin/login/2fa` | Вход, второй фактор | спека не написана |
-| `/admin/reset` | Запрос и установка нового пароля | спека не написана |
+| `/admin/login`, `/admin/login/2fa` | Вход, второй шаг (код из приложения или код восстановления), лимиты попыток | [admin-login](screens/admin-login.md) |
+| `/admin/reset` | Запрос и установка нового пароля (ссылка на 1 час, после сброса все сессии закрыты) | [admin-login](screens/admin-login.md) |
 | `/admin/editor` | Pages: поиск страниц, статус словами, New page по шаблону, вход в редактор (в работе с 2026-11-12) | [admin-editor-pages](screens/admin-editor-pages.md) |
 | `/admin/site/{раздел}` | Раздел сайта: его страницы (Edit on page), списки записей, настройки; терапии — таблица терапии × регионы | [admin-sections](screens/admin-sections.md) |
 | `/admin/start` | После входа: Website или Training tool (инструмента пока нет — карточка неактивна) | [admin-choose](screens/admin-choose.md) |
 | `/admin` | Website — what needs you: дела (неопубликованные правки, расписание, новые заявки, картинки без описания), последние действия, сводка; меню админки | [admin-home](screens/admin-home.md) |
-| `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | спека не написана |
+| `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | [admin-list](screens/admin-list.md) |
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |
-| `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | спека не написана |
-| `/admin/settings?group=` | Site settings по группам (Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | спека не написана |
+| `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | [admin-history](screens/admin-history.md) |
+| `/admin/settings?group=` | Site settings по группам (Menu and footer и Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | [admin-settings](screens/admin-settings.md) |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
 | `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
-| `/admin/not-found-log` | Битые ссылки → редирект в один клик | спека не написана |
-| `/admin/activity` | Журнал действий | спека не написана |
-| `/admin/account` | Пароль, 2FA, активные сессии | спека не написана |
+| `/admin/not-found-log` | Broken links: битые ссылки → редирект в один клик или dismiss | [admin-not-found-log](screens/admin-not-found-log.md) |
+| `/admin/activity` | Журнал действий: фильтры по действию, человеку, названию | [admin-activity](screens/admin-activity.md) |
+| `/admin/account` | My account: пароль, двухшаговый вход на новом телефоне, активные сессии | [admin-account](screens/admin-account.md) |
 | `/admin/users`, `/admin/welcome`, `/admin/login/setup` | People and roles: приглашение по ссылке, роли словами, состояние двухшагового входа; первый вход и обязательная настройка второго шага | [admin-people](screens/admin-people.md) |
 | on-page editor (`/api/editor?on=1&redirect=…`) | Правка на странице: тексты, медиа, секции, регионы, проверка перед публикацией, история | [on-page-editor](screens/on-page-editor.md) |
 
