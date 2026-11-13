@@ -296,3 +296,10 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .w-empty { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 40px 20px; color: var(--wf-muted) }
 .w-empty .ic { width: 48px; height: 48px; border-radius: 10px; background: var(--wf-fill) }
 .w-skel { display: grid; gap: 8px } .w-skel i { display: block; height: 10px; border-radius: 3px; background: var(--wf-fill) } .w-skel i:last-child { width: 60% }
+
+.w-ref { margin: 0; display: grid; gap: 8px; min-width: 0 }
+.w-ref .im { display: block; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px var(--wf-line); background: var(--wf-surface) }
+.w-ref img { display: block; width: 100%; height: auto }
+.w-ref figcaption { font-size: 13px; line-height: 1.45; color: var(--wf-muted) }
+.w-ref figcaption b { color: var(--wf-ink); font-weight: 600 }
+.w-ref figcaption a { color: var(--wf-ink) }
