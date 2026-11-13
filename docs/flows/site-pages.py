@@ -134,19 +134,64 @@ def clean(o):
     return o
 
 
+MOB = 'https://mobbin.com/'
+
+
+def ref(page, name, source, caption, path):
+    return {'c': 'ref', 'src': f'refs/{page}/{name}.webp', 'source': source, 'caption': caption, 'url': MOB + path}
+
+
+def ref_screen(sid, title, page_slug, themes):
+    body = []
+    for t in themes:
+        body.append({'c': 'section', 'pad': 's', 'items': [S([H(t['title'], 3), T(t['ask'], 'muted'),
+                                                              {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [ref(page_slug, *r) for r in t['refs']]}], 'm')]})
+    return {'id': sid, 'title': title, 'body': body}
+
+
+CONTACT_REFS = [
+    {'title': 'Раскладка: форма и «зачем писать» рядом',
+     'ask': 'Вопрос: оставить одну колонку (как сейчас) или две — слева текст, срок ответа, контакты, справа форма?',
+     'refs': [('dovetail', 'Dovetail', 'тема первой, пояснения сбоку от полей, срок ответа под заголовком', 'sites/sections/9f8b5502-cee7-4eb1-8aff-9dcd26e9e308'),
+              ('upwork', 'Upwork', 'слева заголовок и пара строк, справа короткая форма', 'sites/sections/c1e43d04-ad70-4402-ba1f-2ff400c94a0f'),
+              ('savor', 'Savor', 'почта и адрес в колонке рядом с формой', 'sites/sections/ae1f5fe6-9420-45e4-b097-64ae2aa8c06e'),
+              ('salesforce', 'Salesforce', 'рядом с формой — «Questions? Talk to an expert» и телефон', 'screens/5de38a69-8a1d-4912-bd5e-450e03a9c9f7'),
+              ('framer', 'Framer', 'форма в карточке на тёмном фоне, слева заголовок', 'sites/sections/914df681-c24d-4800-bd11-9c144d0175fb'),
+              ('mailchimp', 'Mailchimp', 'одна колонка: сначала тема, адрес компании ниже', 'sites/sections/65b34003-22ca-464c-b49d-91471fe066b4')]},
+    {'title': 'Тема обращения: список или видна сразу',
+     'ask': 'Вопрос: у нас 7 тем в выпадающем списке. Показать их кнопками-чипами сразу?',
+     'refs': [('slack', 'Slack', 'темы чипами, ниже — свободный ввод', 'sites/sections/18717c77-0049-4c84-b21d-797bee5f295b'),
+              ('harvest', 'Harvest', 'выбор продукта карточками с подписью', 'sites/sections/3a55ba42-2d51-4f8a-9bc1-439dd3d2ad0b'),
+              ('sigma', 'SIGMA', 'отдел — радиокнопками в строку', 'sites/sections/2c678388-a130-4efe-95c0-ce7b35419b7a')]},
+    {'title': 'Ошибки в полях',
+     'ask': 'Вопрос: как показывать ошибку — у поля, сводкой сверху или и так и так?',
+     'refs': [('square', 'Square', 'ошибка у поля + плашка «заполните обязательные поля»', 'screens/2d04b11c-f3d4-4937-a056-1e1898bec97d'),
+              ('claude', 'Claude', 'рамка и текст под полем, остальное не трогается', 'screens/34e3cb61-99c3-4184-a302-74d9b03bdd0e'),
+              ('evernote', 'Evernote', 'иконка в поле и одна строка объяснения', 'screens/11ca9c45-d92d-4a2d-ae18-f968c89c8095')]},
+    {'title': 'После отправки',
+     'ask': 'Вопрос: сейчас «Thank you for contacting us». Говорить, что и куда ушло, и когда ждать ответ?',
+     'refs': [('hotjar', 'Hotjar', 'называет адрес, на который придёт ответ', 'screens/1cd0a18c-fdf9-45d5-b764-d14ac7dd0ab3'),
+              ('zapier', 'Zapier', 'часы работы и срок ответа', 'screens/053f9a95-f2d0-4cbe-a89f-3f707dbf8276'),
+              ('deputy', 'Deputy', 'подтверждение и ссылка «вернуться»', 'screens/2cb200a1-53e4-424d-bb0b-d1d17d766714')]},
+]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
     'title': 'Site pages — one by one, from the least disputed',
     'project': 'Rapid Medical',
-    'description': 'Страницы сайта по одной: «как есть» (настоящие блоки из rm-pages.json) → проверка на Mobbin → предложение. Структуру сайта не меняем (миграция с Duda): меняем раскладку и поведение внутри страницы. Принятое предложение сразу идёт в DESIGN.md → Коллекция блоков. Порядок и статус страниц — docs/flows/site-pages.md. Серые экраны: визуальный стиль не обсуждаем, он решается отдельно (мудборды).',
+    'description': 'Страницы сайта по одной: «как есть» (настоящие блоки из rm-pages.json) → проверка на Mobbin → предложение. Структуру сайта не меняем (миграция с Duda): меняем раскладку и поведение внутри страницы. По каждой странице: показ → обсуждение → решение → DESIGN.md → следующая страница. Черновик предложения — повод для разговора, не решение. Порядок и статус страниц — docs/flows/site-pages.md. Серые экраны: визуальный стиль не обсуждаем, он решается отдельно (мудборды).',
     'start': 'contact-asis',
     'groups': [
         {'title': '1 · Contact Us — как есть', 'screens': ['contact-asis', 'contact-asis-phone']},
-        {'title': '1 · Contact Us — предложение', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
+        {'title': '1 · Contact Us — примеры из Mobbin', 'screens': ['contact-mobbin']},
+        {'title': '1 · Contact Us — черновик к обсуждению (не решение)', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
     ],
-    'links': [{'from': 'contact-asis', 'to': 'contact-new', 'label': 'предложение'},
+    'links': [
               {'from': 'contact-asis', 'to': 'contact-asis-phone', 'label': 'на телефоне'},
+              {'from': 'contact-asis-phone', 'to': 'contact-mobbin', 'label': 'как у других'},
+              {'from': 'contact-mobbin', 'to': 'contact-new', 'label': 'черновик'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
               {'from': 'contact-new', 'to': 'contact-new-phone', 'label': 'на телефоне'}],
     'screens': [
@@ -155,6 +200,7 @@ flow = {
         {'id': 'contact-asis-phone', 'title': 'Contact Us · as is, phone', 'device': 'mobile', 'url': CONTACT_URL,
          'body': [HEADER, page('Contact'), FOOTER],
          'notes': ['На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1).']},
+        ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
         {'id': 'contact-new', 'title': 'Contact Us · proposal', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
         {'id': 'contact-error', 'title': 'Contact Us · proposal, fields need attention', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('error')},
         {'id': 'contact-sent', 'title': 'Contact Us · proposal, request sent', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('sent')},

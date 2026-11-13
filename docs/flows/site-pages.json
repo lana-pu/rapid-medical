@@ -1,7 +1,7 @@
 {
  "title": "Site pages — one by one, from the least disputed",
  "project": "Rapid Medical",
- "description": "Страницы сайта по одной: «как есть» (настоящие блоки из rm-pages.json) → проверка на Mobbin → предложение. Структуру сайта не меняем (миграция с Duda): меняем раскладку и поведение внутри страницы. Принятое предложение сразу идёт в DESIGN.md → Коллекция блоков. Порядок и статус страниц — docs/flows/site-pages.md. Серые экраны: визуальный стиль не обсуждаем, он решается отдельно (мудборды).",
+ "description": "Страницы сайта по одной: «как есть» (настоящие блоки из rm-pages.json) → проверка на Mobbin → предложение. Структуру сайта не меняем (миграция с Duda): меняем раскладку и поведение внутри страницы. По каждой странице: показ → обсуждение → решение → DESIGN.md → следующая страница. Черновик предложения — повод для разговора, не решение. Порядок и статус страниц — docs/flows/site-pages.md. Серые экраны: визуальный стиль не обсуждаем, он решается отдельно (мудборды).",
  "start": "contact-asis",
  "groups": [
   {
@@ -12,7 +12,13 @@
    ]
   },
   {
-   "title": "1 · Contact Us — предложение",
+   "title": "1 · Contact Us — примеры из Mobbin",
+   "screens": [
+    "contact-mobbin"
+   ]
+  },
+  {
+   "title": "1 · Contact Us — черновик к обсуждению (не решение)",
    "screens": [
     "contact-new",
     "contact-error",
@@ -24,13 +30,18 @@
  "links": [
   {
    "from": "contact-asis",
-   "to": "contact-new",
-   "label": "предложение"
-  },
-  {
-   "from": "contact-asis",
    "to": "contact-asis-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "contact-asis-phone",
+   "to": "contact-mobbin",
+   "label": "как у других"
+  },
+  {
+   "from": "contact-mobbin",
+   "to": "contact-new",
+   "label": "черновик"
   },
   {
    "from": "contact-new",
@@ -130,6 +141,233 @@
    ],
    "notes": [
     "На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1)."
+   ]
+  },
+  {
+   "id": "contact-mobbin",
+   "title": "Contact Us · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Раскладка: форма и «зачем писать» рядом"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Вопрос: оставить одну колонку (как сейчас) или две — слева текст, срок ответа, контакты, справа форма?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/contact/dovetail.webp",
+           "source": "Dovetail",
+           "caption": "тема первой, пояснения сбоку от полей, срок ответа под заголовком",
+           "url": "https://mobbin.com/sites/sections/9f8b5502-cee7-4eb1-8aff-9dcd26e9e308"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/upwork.webp",
+           "source": "Upwork",
+           "caption": "слева заголовок и пара строк, справа короткая форма",
+           "url": "https://mobbin.com/sites/sections/c1e43d04-ad70-4402-ba1f-2ff400c94a0f"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/savor.webp",
+           "source": "Savor",
+           "caption": "почта и адрес в колонке рядом с формой",
+           "url": "https://mobbin.com/sites/sections/ae1f5fe6-9420-45e4-b097-64ae2aa8c06e"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/salesforce.webp",
+           "source": "Salesforce",
+           "caption": "рядом с формой — «Questions? Talk to an expert» и телефон",
+           "url": "https://mobbin.com/screens/5de38a69-8a1d-4912-bd5e-450e03a9c9f7"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/framer.webp",
+           "source": "Framer",
+           "caption": "форма в карточке на тёмном фоне, слева заголовок",
+           "url": "https://mobbin.com/sites/sections/914df681-c24d-4800-bd11-9c144d0175fb"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/mailchimp.webp",
+           "source": "Mailchimp",
+           "caption": "одна колонка: сначала тема, адрес компании ниже",
+           "url": "https://mobbin.com/sites/sections/65b34003-22ca-464c-b49d-91471fe066b4"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Тема обращения: список или видна сразу"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Вопрос: у нас 7 тем в выпадающем списке. Показать их кнопками-чипами сразу?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/contact/slack.webp",
+           "source": "Slack",
+           "caption": "темы чипами, ниже — свободный ввод",
+           "url": "https://mobbin.com/sites/sections/18717c77-0049-4c84-b21d-797bee5f295b"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/harvest.webp",
+           "source": "Harvest",
+           "caption": "выбор продукта карточками с подписью",
+           "url": "https://mobbin.com/sites/sections/3a55ba42-2d51-4f8a-9bc1-439dd3d2ad0b"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/sigma.webp",
+           "source": "SIGMA",
+           "caption": "отдел — радиокнопками в строку",
+           "url": "https://mobbin.com/sites/sections/2c678388-a130-4efe-95c0-ce7b35419b7a"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Ошибки в полях"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Вопрос: как показывать ошибку — у поля, сводкой сверху или и так и так?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/contact/square.webp",
+           "source": "Square",
+           "caption": "ошибка у поля + плашка «заполните обязательные поля»",
+           "url": "https://mobbin.com/screens/2d04b11c-f3d4-4937-a056-1e1898bec97d"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/claude.webp",
+           "source": "Claude",
+           "caption": "рамка и текст под полем, остальное не трогается",
+           "url": "https://mobbin.com/screens/34e3cb61-99c3-4184-a302-74d9b03bdd0e"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/evernote.webp",
+           "source": "Evernote",
+           "caption": "иконка в поле и одна строка объяснения",
+           "url": "https://mobbin.com/screens/11ca9c45-d92d-4a2d-ae18-f968c89c8095"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "После отправки"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Вопрос: сейчас «Thank you for contacting us». Говорить, что и куда ушло, и когда ждать ответ?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/contact/hotjar.webp",
+           "source": "Hotjar",
+           "caption": "называет адрес, на который придёт ответ",
+           "url": "https://mobbin.com/screens/1cd0a18c-fdf9-45d5-b764-d14ac7dd0ab3"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/zapier.webp",
+           "source": "Zapier",
+           "caption": "часы работы и срок ответа",
+           "url": "https://mobbin.com/screens/053f9a95-f2d0-4cbe-a89f-3f707dbf8276"
+          },
+          {
+           "c": "ref",
+           "src": "refs/contact/deputy.webp",
+           "source": "Deputy",
+           "caption": "подтверждение и ссылка «вернуться»",
+           "url": "https://mobbin.com/screens/2cb200a1-53e4-424d-bb0b-d1d17d766714"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
    ]
   },
   {
