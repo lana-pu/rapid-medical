@@ -37,80 +37,8 @@ OFFICES = next(b for b in RM['About'] if b['type'] == 'officesMap' and b['varian
 CONTACT_URL = 'rapid-medical.com/contact-us?region=us&topic=demo'
 
 
-def intro(phone=False):
-    return [
-        {'c': 'eyebrow', 'text': 'Contact us'},
-        H('Let’s connect', 1),
-        T('Tell us what you need. We send your request to the right team for your country.', 'lead',
-          annotation='Подзаголовок объясняет, что будет с заявкой, а не просит «a few contact details» (Dovetail: «We’ll route your message to the right person»). Сейчас текст зашит в код — сделать редактируемым. Формулировка — за клиентом.'),
-    ]
-
-
-def next_steps(phone=False):
-    return S([
-        H('What happens next', 4),
-        {'c': 'bullets', 'items': ['We reply by email within [1 business day — ждём цифру от Rapid Medical].',
-                                   'Orders and IFU requests go straight to customer service for your region.'],
-         'annotation': 'Срок ответа видят до отправки (Dovetail, Harvest, Zapier). Цифру даёт клиент; без неё строку не показываем. Вторая строка — правда по коду: заказы и IFU уходят на адреса региона (spec → Contact Us).'},
-    ], 's')
-
-
-def offices(phone=False):
-    cards = [S([H(o['label'] if o['label'] != 'Headquarters' else 'Headquarters · Israel', 5),
-                {'c': 'link', 'text': o['phone']},
-                T(o['ordersEmail'], 'small')], 'xs') for o in OFFICES]
-    return S([H('Prefer to call?', 4), S(cards, 'm')], 's',
-             annotation='Телефоны и почта заказов рядом с формой: врачу с заказом или вопросом по устройству «прямо сейчас» быстрее позвонить (находка 17 UX-прохода). Данные те же, что на About (Settings → Contact details), без новой сущности. Приём — Salesforce «Questions? Talk to an expert», Savor, Upwork.' )
-
-
-def form(state='empty', phone=False):
-    err = state == 'error'
-    filled = state in ('error',)
-    chips = {'c': 'chips', 'label': 'What do you need?', 'required': True, 'items': TOPICS, 'active': 0,
-             'annotation': 'Тема — первым полем и видна целиком: 7 вариантов чипами вместо выпадающего списка. Тема решает, куда уйдёт письмо, поэтому её выбирают осознанно. Предвыбрана по адресу (?topic=demo). Приём: Slack, Harvest, NEON, SIGMA (видимые варианты), Mailchimp, Discord, Dovetail (тема первой).' if state == 'empty' else None}
-    first = I('First name', required=True, value='' if err else None, placeholder='', error='Enter your first name.' if err else None)
-    last = I('Last name', required=True, value='Lee' if filled else None)
-    email = I('Email', required=True, value='anna.lee@hospital' if filled else None,
-              error='Enter a full email address, like name@hospital.org' if err else None)
-    phone_f = I('Phone', value='+1 214 555 0142' if filled else None)
-    org = I('Organization', value='Baylor Scott & White' if filled else None)
-    country = I('Country', v='select', required=True, value='United States',
-                annotation='Страна вместо «Region» (4 значения против 3 регионов сайта) + Country + State. Регион для маршрутизации выводится из страны: снимает путаницу с Ближним Востоком и Латинской Америкой (находки 4 и 7). Предвыбрана по IP. Решение: какая карта «страна → регион» верная — вопрос к Emily (BACKLOG, решения №9).' if state == 'empty' else None)
-    state_f = I('State', v='select', value='Texas' if filled else None, placeholder='Select…',
-                hint='Only for the US and Canada' if state == 'empty' else None)
-    msg = {'c': 'textarea', 'label': 'Message', 'value': 'We’d like a hands-on TIGERTRIEVER session for our neuro team in March.' if filled else None,
-           'placeholder': 'Anything that helps us prepare: device, procedure, dates'}
-    opt = {'c': 'checkbox', 'label': 'Send me news and event invitations from Rapid Medical'}
-    legal = T('By sending this form you agree to our Privacy Statement.', 'small')
-    send = {'c': 'button', 'v': 'primary', 'text': 'Send request', 'to': 'contact-sent', 'label': 'Send request'} if not err else {'c': 'button', 'v': 'primary', 'text': 'Send request'}
-    if phone:
-        send['full'] = True
-    req = T('* required', 'caption')
-    summary = {'c': 'alert', 'tone': 'danger', 'title': '2 fields need attention',
-               'text': 'First name · Email',
-               'annotation': 'Ошибка с сервера: введённое остаётся на месте (сейчас форма стирается целиком — находка 1). Сверху — сводка со ссылками на поля, у поля — что исправить. Приём: Square (сводка + поле), Claude, GoFundMe, Evernote (текст под полем). Цвет ошибки — новый токен --danger (DESIGN.md).'}
-    rows = [chips]
-    if phone:
-        rows += [first, last, email, phone_f, org, country, state_f]
-    else:
-        rows += [G([first, last]), G([email, phone_f]), org, G([country, state_f])]
-    rows += [msg, opt, legal, {'c': 'row', 'gap': 'm', 'align': 'center', 'items': [send, req]} if not phone else S([send, req], 's')]
-    if err:
-        rows = [summary] + rows
-    return {'c': 'box', 'border': not phone, 'pad': 'l' if not phone else None, 'gap': 'm', 'items': rows}
-
-
-def sent(phone=False):
-    return {'c': 'box', 'border': not phone, 'pad': 'l' if not phone else None, 'gap': 'm', 'items': [
-        {'c': 'badge', 'text': 'Request sent', 'tone': 'success', 'dot': True},
-        H('Thank you, Anna', 3),
-        T('Your demo request went to the Americas team. We’ll reply to anna.lee@hospital.org.', 'body',
-          annotation='Подтверждение говорит, что и куда ушло, и на какой адрес ждать ответ (Hotjar показывает адрес, Zapier — срок ответа). Текст — по форме: у события «You’re registered…», у Careers свой (находка 2). Письмо-подтверждение посетителю кодом не предусмотрено — его не обещаем.'),
-        {'c': 'table', 'columns': ['', ''], 'rows': [['Topic', 'Request a demo'], ['Country', 'United States · Texas']]},
-        {'c': 'row', 'gap': 'm', 'wrap': True, 'items': [
-            {'c': 'button', 'v': 'secondary', 'text': 'Explore our therapies'},
-            {'c': 'link', 'text': 'Send another request', 'to': 'contact-new', 'label': 'новая заявка'}]},
-    ]}
+US = next(o for o in OFFICES if o['label'] == 'USA')
+MAIN_TOPICS = ['Request a demo', 'Product question / Support', 'Customer Service / Orders', 'Other topic ▾']
 
 
 def strip(o):
@@ -119,13 +47,61 @@ def strip(o):
     return o
 
 
+def aside(note=True):
+    return S([
+        S([T('Response time', 'strong'), T('We reply within [1 business day — цифра от клиента].', 'small')], 'xs'),
+        S([T('Prefer to call?', 'strong'), {'c': 'link', 'text': US['phone']}, T('Americas office', 'caption')], 'xs'),
+        {'c': 'link', 'text': 'All offices and addresses →'},
+    ], 'm', annotation='Всё второстепенное — тихой колонкой из трёх строк: срок ответа, один телефон своего региона, ссылка на все офисы (About). Не конкурирует с формой. Срок ответа — только когда клиент даст цифру.' if note else None)
+
+
+def form(state='empty', phone=False):
+    err = state == 'error'
+    note = state == 'empty' and not phone
+    chips = {'c': 'chips', 'label': 'What do you need?', 'items': MAIN_TOPICS, 'active': 0,
+             'annotation': 'Три частые темы видны сразу, остальные (IFU, Meetings & Events, Investor relations, Other) — под «Other topic». Какие темы частые — гипотеза: проверить по заявкам в админке. Предвыбрана по адресу (?topic=demo).' if note else None}
+    first = I('First name', required=True, value='' if err else None, error='Enter your first name.' if err else None)
+    last = I('Last name', required=True, value='Lee' if err else None)
+    email = I('Email', required=True, value='anna.lee@hospital' if err else None,
+              error='Enter a full email address, like name@hospital.org' if err else None,
+              annotation='Ошибка — только у поля: рамка и что исправить. Введённое остаётся (находка 1, уже чинится в коде). Без сводки сверху: при 7 полях она добавляет шум (Claude, Evernote).' if err else None)
+    phone_f = I('Phone', value='+1 214 555 0142' if err else None)
+    org = I('Organization', value='Baylor Scott & White' if err else None)
+    country = I('Country', v='select', required=True, value='United States',
+                annotation='Одно поле «Country» вместо Region + Country + State. Регион для писем — из страны (находки 4 и 7). Зависит от ответа Emily, куда относить Ближний Восток и Латинскую Америку; можно отложить.' if note else None)
+    msg = {'c': 'textarea', 'label': 'Message', 'value': 'We’d like a hands-on TIGERTRIEVER session for our neuro team in March.' if err else None}
+    opt = {'c': 'checkbox', 'label': 'Send me news and event invitations'}
+    send = {'c': 'button', 'v': 'primary', 'text': 'Send request'}
+    if not err: send.update(to='contact-sent', label='Send request')
+    legal = T('By sending, you agree to our Privacy Statement.', 'caption')
+    if phone:
+        send['full'] = True
+        rows = [chips, first, last, email, phone_f, org, country, msg, opt, S([send, legal], 's')]
+    else:
+        rows = [chips, G([first, last]), G([email, phone_f]), G([org, country]), msg, opt,
+                {'c': 'row', 'gap': 'm', 'align': 'center', 'items': [send, legal]}]
+    return S(rows, 'm')
+
+
+def head(state, phone=False):
+    if state == 'sent':
+        return [H('Thanks, Anna — your request is on its way', 1),
+                T('The Americas team will reply to anna.lee@hospital.org.', 'lead',
+                  annotation='Подтверждение — одна фраза: что ушло, кому и куда ждать ответ (Hotjar, Zapier). Текст по типу формы (событие, Careers — свои). Письмо-подтверждение не обещаем: в коде его нет.'),
+                {'c': 'link', 'text': 'Send another request', 'to': 'contact-new', 'label': 'новая заявка'}]
+    return [H('Let’s connect', 1),
+            T('Tell us what you need — we’ll get it to the right team.', 'lead',
+              annotation='Иерархия: заголовок → одна строка → форма. Без надзаголовка и вводных блоков. Подзаголовок сейчас зашит в код — сделать редактируемым; формулировка за клиентом.' if state == 'empty' and not phone else None)]
+
+
 def contact_desktop(state):
-    right = sent() if state == 'sent' else form(state)
-    left = S(intro() + [next_steps(), offices()], 'l')
-    if state != 'empty': left = strip(left)
-    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [{'c': 'grid', 'cols': '5fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, right],
-                                                         'annotation': 'Две колонки: слева — зачем и что дальше, справа — форма. Самый частый приём у B2B-контактов на Mobbin (Upwork, Framer, Salesforce, Savor, Dovetail). Новый вариант блока Form — «split» (DESIGN.md).' if state == 'empty' else None}]},
-            FOOTER]
+    main = S(head(state) + ([] if state == 'sent' else [form(state)]), 'l')
+    side = aside(state == 'empty')
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [{'c': 'grid', 'cols': '7fr 1fr 3fr', 'gap': 'm', 'align': 'start', 'items': [main, {'c': 'spacer', 'size': 1}, side]}]}, FOOTER]
+
+
+def contact_phone():
+    return [HEADER, {'c': 'section', 'pad': 'm', 'items': [S(strip(head('empty', True)) + [form('empty', True), {'c': 'divider'}, strip(aside())], 'l')]}, FOOTER]
 
 
 def clean(o):
@@ -202,11 +178,11 @@ flow = {
          'notes': ['На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1).']},
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
         {'id': 'contact-new', 'title': 'Contact Us · proposal', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
-        {'id': 'contact-error', 'title': 'Contact Us · proposal, fields need attention', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('error')},
+        {'id': 'contact-error', 'title': 'Contact Us · proposal, field errors', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('error')},
         {'id': 'contact-sent', 'title': 'Contact Us · proposal, request sent', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('sent')},
         {'id': 'contact-new-phone', 'title': 'Contact Us · proposal, phone', 'device': 'mobile', 'url': CONTACT_URL,
-         'body': [HEADER, {'c': 'section', 'pad': 'm', 'items': [strip(S(intro(True) + [form('empty', True), next_steps(True), offices(True)], 'l'))]}, FOOTER],
-         'notes': ['На телефоне форма сразу под заголовком, «что дальше» и телефоны — под формой: главное действие страницы не уезжает вниз. Кнопка на всю ширину, номера — ссылки «позвонить».']},
+         'body': contact_phone(),
+         'notes': ['На телефоне: заголовок, строка, форма; срок ответа и телефон — под формой. Кнопка на всю ширину, номер — ссылка «позвонить».']},
     ],
 }
 
