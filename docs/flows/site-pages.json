@@ -1,0 +1,1113 @@
+{
+ "title": "Site pages — one by one, from the least disputed",
+ "project": "Rapid Medical",
+ "description": "Страницы сайта по одной: «как есть» (настоящие блоки из rm-pages.json) → проверка на Mobbin → предложение. Структуру сайта не меняем (миграция с Duda): меняем раскладку и поведение внутри страницы. Принятое предложение сразу идёт в DESIGN.md → Коллекция блоков. Порядок и статус страниц — docs/flows/site-pages.md. Серые экраны: визуальный стиль не обсуждаем, он решается отдельно (мудборды).",
+ "start": "contact-asis",
+ "groups": [
+  {
+   "title": "1 · Contact Us — как есть",
+   "screens": [
+    "contact-asis",
+    "contact-asis-phone"
+   ]
+  },
+  {
+   "title": "1 · Contact Us — предложение",
+   "screens": [
+    "contact-new",
+    "contact-error",
+    "contact-sent",
+    "contact-new-phone"
+   ]
+  }
+ ],
+ "links": [
+  {
+   "from": "contact-asis",
+   "to": "contact-new",
+   "label": "предложение"
+  },
+  {
+   "from": "contact-asis",
+   "to": "contact-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "contact-new",
+   "to": "contact-error",
+   "label": "отправка с ошибкой"
+  },
+  {
+   "from": "contact-new",
+   "to": "contact-new-phone",
+   "label": "на телефоне"
+  }
+ ],
+ "screens": [
+  {
+   "id": "contact-asis",
+   "title": "Contact Us · as is",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "height": 900,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Let’s connect",
+       "body": "Please provide a few contact details below."
+      },
+      {
+       "c": "rm-form",
+       "v": "default",
+       "topics": [
+        "Request a demo",
+        "Product question / Support",
+        "Customer Service / Orders",
+        "Instructions for Use (IFU)",
+        "Meetings & Events",
+        "Investor relations",
+        "Other"
+       ],
+       "defaultTopic": "Request a demo",
+       "defaultRegion": "Americas",
+       "annotation": "Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "contact-asis-phone",
+   "title": "Contact Us · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Let’s connect",
+       "body": "Please provide a few contact details below."
+      },
+      {
+       "c": "rm-form",
+       "v": "default",
+       "topics": [
+        "Request a demo",
+        "Product question / Support",
+        "Customer Service / Orders",
+        "Instructions for Use (IFU)",
+        "Meetings & Events",
+        "Investor relations",
+        "Other"
+       ],
+       "defaultTopic": "Request a demo",
+       "defaultRegion": "Americas"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1)."
+   ]
+  },
+  {
+   "id": "contact-new",
+   "title": "Contact Us · proposal",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "height": 900,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "5fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "l",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Contact us"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "Let’s connect"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "Tell us what you need. We send your request to the right team for your country.",
+           "annotation": "Подзаголовок объясняет, что будет с заявкой, а не просит «a few contact details» (Dovetail: «We’ll route your message to the right person»). Сейчас текст зашит в код — сделать редактируемым. Формулировка — за клиентом."
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "What happens next"
+            },
+            {
+             "c": "bullets",
+             "items": [
+              "We reply by email within [1 business day — ждём цифру от Rapid Medical].",
+              "Orders and IFU requests go straight to customer service for your region."
+             ],
+             "annotation": "Срок ответа видят до отправки (Dovetail, Harvest, Zapier). Цифру даёт клиент; без неё строку не показываем. Вторая строка — правда по коду: заказы и IFU уходят на адреса региона (spec → Contact Us)."
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Prefer to call?"
+            },
+            {
+             "c": "stack",
+             "gap": "m",
+             "items": [
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Headquarters · Israel"
+                },
+                {
+                 "c": "link",
+                 "text": "+972-72-250-3331"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "customerservice.ltd@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "USA"
+                },
+                {
+                 "c": "link",
+                 "text": "+1-469-991-7712"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "orders.inc@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Germany"
+                },
+                {
+                 "c": "link",
+                 "text": "+49 69 795 888 718"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "ordersgmbh@rapid-medical.com"
+                }
+               ]
+              }
+             ]
+            }
+           ],
+           "annotation": "Телефоны и почта заказов рядом с формой: врачу с заказом или вопросом по устройству «прямо сейчас» быстрее позвонить (находка 17 UX-прохода). Данные те же, что на About (Settings → Contact details), без новой сущности. Приём — Salesforce «Questions? Talk to an expert», Savor, Upwork."
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "l",
+         "gap": "m",
+         "items": [
+          {
+           "c": "chips",
+           "label": "What do you need?",
+           "required": true,
+           "items": [
+            "Request a demo",
+            "Product question / Support",
+            "Customer Service / Orders",
+            "Instructions for Use (IFU)",
+            "Meetings & Events",
+            "Investor relations",
+            "Other"
+           ],
+           "active": 0,
+           "annotation": "Тема — первым полем и видна целиком: 7 вариантов чипами вместо выпадающего списка. Тема решает, куда уйдёт письмо, поэтому её выбирают осознанно. Предвыбрана по адресу (?topic=demo). Приём: Slack, Harvest, NEON, SIGMA (видимые варианты), Mailchimp, Discord, Dovetail (тема первой)."
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "First name",
+             "required": true,
+             "placeholder": ""
+            },
+            {
+             "c": "input",
+             "label": "Last name",
+             "required": true
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Email",
+             "required": true
+            },
+            {
+             "c": "input",
+             "label": "Phone"
+            }
+           ]
+          },
+          {
+           "c": "input",
+           "label": "Organization"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Country",
+             "v": "select",
+             "required": true,
+             "value": "United States",
+             "annotation": "Страна вместо «Region» (4 значения против 3 регионов сайта) + Country + State. Регион для маршрутизации выводится из страны: снимает путаницу с Ближним Востоком и Латинской Америкой (находки 4 и 7). Предвыбрана по IP. Решение: какая карта «страна → регион» верная — вопрос к Emily (BACKLOG, решения №9)."
+            },
+            {
+             "c": "input",
+             "label": "State",
+             "v": "select",
+             "placeholder": "Select…",
+             "hint": "Only for the US and Canada"
+            }
+           ]
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "placeholder": "Anything that helps us prepare: device, procedure, dates"
+          },
+          {
+           "c": "checkbox",
+           "label": "Send me news and event invitations from Rapid Medical"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "By sending this form you agree to our Privacy Statement."
+          },
+          {
+           "c": "row",
+           "gap": "m",
+           "align": "center",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send request",
+             "to": "contact-sent",
+             "label": "Send request"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "* required"
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "annotation": "Две колонки: слева — зачем и что дальше, справа — форма. Самый частый приём у B2B-контактов на Mobbin (Upwork, Framer, Salesforce, Savor, Dovetail). Новый вариант блока Form — «split» (DESIGN.md)."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "contact-error",
+   "title": "Contact Us · proposal, fields need attention",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "height": 900,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "5fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "l",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Contact us"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "Let’s connect"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "Tell us what you need. We send your request to the right team for your country."
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "What happens next"
+            },
+            {
+             "c": "bullets",
+             "items": [
+              "We reply by email within [1 business day — ждём цифру от Rapid Medical].",
+              "Orders and IFU requests go straight to customer service for your region."
+             ]
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Prefer to call?"
+            },
+            {
+             "c": "stack",
+             "gap": "m",
+             "items": [
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Headquarters · Israel"
+                },
+                {
+                 "c": "link",
+                 "text": "+972-72-250-3331"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "customerservice.ltd@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "USA"
+                },
+                {
+                 "c": "link",
+                 "text": "+1-469-991-7712"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "orders.inc@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Germany"
+                },
+                {
+                 "c": "link",
+                 "text": "+49 69 795 888 718"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "ordersgmbh@rapid-medical.com"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "l",
+         "gap": "m",
+         "items": [
+          {
+           "c": "alert",
+           "tone": "danger",
+           "title": "2 fields need attention",
+           "text": "First name · Email",
+           "annotation": "Ошибка с сервера: введённое остаётся на месте (сейчас форма стирается целиком — находка 1). Сверху — сводка со ссылками на поля, у поля — что исправить. Приём: Square (сводка + поле), Claude, GoFundMe, Evernote (текст под полем). Цвет ошибки — новый токен --danger (DESIGN.md)."
+          },
+          {
+           "c": "chips",
+           "label": "What do you need?",
+           "required": true,
+           "items": [
+            "Request a demo",
+            "Product question / Support",
+            "Customer Service / Orders",
+            "Instructions for Use (IFU)",
+            "Meetings & Events",
+            "Investor relations",
+            "Other"
+           ],
+           "active": 0
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "First name",
+             "required": true,
+             "value": "",
+             "placeholder": "",
+             "error": "Enter your first name."
+            },
+            {
+             "c": "input",
+             "label": "Last name",
+             "required": true,
+             "value": "Lee"
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Email",
+             "required": true,
+             "value": "anna.lee@hospital",
+             "error": "Enter a full email address, like name@hospital.org"
+            },
+            {
+             "c": "input",
+             "label": "Phone",
+             "value": "+1 214 555 0142"
+            }
+           ]
+          },
+          {
+           "c": "input",
+           "label": "Organization",
+           "value": "Baylor Scott & White"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Country",
+             "v": "select",
+             "required": true,
+             "value": "United States"
+            },
+            {
+             "c": "input",
+             "label": "State",
+             "v": "select",
+             "value": "Texas",
+             "placeholder": "Select…"
+            }
+           ]
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "value": "We’d like a hands-on TIGERTRIEVER session for our neuro team in March.",
+           "placeholder": "Anything that helps us prepare: device, procedure, dates"
+          },
+          {
+           "c": "checkbox",
+           "label": "Send me news and event invitations from Rapid Medical"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "By sending this form you agree to our Privacy Statement."
+          },
+          {
+           "c": "row",
+           "gap": "m",
+           "align": "center",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send request"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "* required"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "contact-sent",
+   "title": "Contact Us · proposal, request sent",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "height": 900,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "5fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "l",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Contact us"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "Let’s connect"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "Tell us what you need. We send your request to the right team for your country."
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "What happens next"
+            },
+            {
+             "c": "bullets",
+             "items": [
+              "We reply by email within [1 business day — ждём цифру от Rapid Medical].",
+              "Orders and IFU requests go straight to customer service for your region."
+             ]
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Prefer to call?"
+            },
+            {
+             "c": "stack",
+             "gap": "m",
+             "items": [
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Headquarters · Israel"
+                },
+                {
+                 "c": "link",
+                 "text": "+972-72-250-3331"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "customerservice.ltd@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "USA"
+                },
+                {
+                 "c": "link",
+                 "text": "+1-469-991-7712"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "orders.inc@rapid-medical.com"
+                }
+               ]
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "heading",
+                 "level": 5,
+                 "text": "Germany"
+                },
+                {
+                 "c": "link",
+                 "text": "+49 69 795 888 718"
+                },
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "ordersgmbh@rapid-medical.com"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "l",
+         "gap": "m",
+         "items": [
+          {
+           "c": "badge",
+           "text": "Request sent",
+           "tone": "success",
+           "dot": true
+          },
+          {
+           "c": "heading",
+           "level": 3,
+           "text": "Thank you, Anna"
+          },
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Your demo request went to the Americas team. We’ll reply to anna.lee@hospital.org.",
+           "annotation": "Подтверждение говорит, что и куда ушло, и на какой адрес ждать ответ (Hotjar показывает адрес, Zapier — срок ответа). Текст — по форме: у события «You’re registered…», у Careers свой (находка 2). Письмо-подтверждение посетителю кодом не предусмотрено — его не обещаем."
+          },
+          {
+           "c": "table",
+           "columns": [
+            "",
+            ""
+           ],
+           "rows": [
+            [
+             "Topic",
+             "Request a demo"
+            ],
+            [
+             "Country",
+             "United States · Texas"
+            ]
+           ]
+          },
+          {
+           "c": "row",
+           "gap": "m",
+           "wrap": true,
+           "items": [
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Explore our therapies"
+            },
+            {
+             "c": "link",
+             "text": "Send another request",
+             "to": "contact-new",
+             "label": "новая заявка"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "contact-new-phone",
+   "title": "Contact Us · proposal, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Contact us"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Let’s connect"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Tell us what you need. We send your request to the right team for your country."
+        },
+        {
+         "c": "box",
+         "border": false,
+         "gap": "m",
+         "items": [
+          {
+           "c": "chips",
+           "label": "What do you need?",
+           "required": true,
+           "items": [
+            "Request a demo",
+            "Product question / Support",
+            "Customer Service / Orders",
+            "Instructions for Use (IFU)",
+            "Meetings & Events",
+            "Investor relations",
+            "Other"
+           ],
+           "active": 0
+          },
+          {
+           "c": "input",
+           "label": "First name",
+           "required": true,
+           "placeholder": ""
+          },
+          {
+           "c": "input",
+           "label": "Last name",
+           "required": true
+          },
+          {
+           "c": "input",
+           "label": "Email",
+           "required": true
+          },
+          {
+           "c": "input",
+           "label": "Phone"
+          },
+          {
+           "c": "input",
+           "label": "Organization"
+          },
+          {
+           "c": "input",
+           "label": "Country",
+           "v": "select",
+           "required": true,
+           "value": "United States"
+          },
+          {
+           "c": "input",
+           "label": "State",
+           "v": "select",
+           "placeholder": "Select…",
+           "hint": "Only for the US and Canada"
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "placeholder": "Anything that helps us prepare: device, procedure, dates"
+          },
+          {
+           "c": "checkbox",
+           "label": "Send me news and event invitations from Rapid Medical"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "By sending this form you agree to our Privacy Statement."
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send request",
+             "to": "contact-sent",
+             "label": "Send request",
+             "full": true
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "* required"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "What happens next"
+          },
+          {
+           "c": "bullets",
+           "items": [
+            "We reply by email within [1 business day — ждём цифру от Rapid Medical].",
+            "Orders and IFU requests go straight to customer service for your region."
+           ]
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Prefer to call?"
+          },
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "heading",
+               "level": 5,
+               "text": "Headquarters · Israel"
+              },
+              {
+               "c": "link",
+               "text": "+972-72-250-3331"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "customerservice.ltd@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "heading",
+               "level": 5,
+               "text": "USA"
+              },
+              {
+               "c": "link",
+               "text": "+1-469-991-7712"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "orders.inc@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "heading",
+               "level": 5,
+               "text": "Germany"
+              },
+              {
+               "c": "link",
+               "text": "+49 69 795 888 718"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "ordersgmbh@rapid-medical.com"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "На телефоне форма сразу под заголовком, «что дальше» и телефоны — под формой: главное действие страницы не уезжает вниз. Кнопка на всю ширину, номера — ссылки «позвонить»."
+   ]
+  }
+ ]
+}
