@@ -1,18 +1,21 @@
 import "server-only";
 import { db, media, type Media } from "@/db";
 import { processImage, videoPoster } from "./images";
-import { storeFile, deleteObject } from "./storage";
+import { putObject, safeName, deleteObject } from "./storage";
 
 const PREFIX = () => new Date().toISOString().slice(0, 7);
 
-/** Ingest an uploaded file: optimise images, poster videos, register in the library. */
-export async function ingestFile(file: File, alt = ""): Promise<Media> {
-  const buf = Buffer.from(await file.arrayBuffer());
-  const mime = file.type || "application/octet-stream";
+/**
+ * Ingest an uploaded file: optimise images, poster videos, register in the library. `mime` and `ext` come from the
+ * file's bytes (lib/file-type.ts); the stored name keeps the original's words with that extension.
+ */
+export async function ingestFile(file: { name: string; buf: Buffer; mime: string; ext: string }, alt = ""): Promise<Media> {
+  const { buf, mime } = file;
+  const name = `${file.name.replace(/\.[^.]*$/, "") || "file"}${file.ext}`;
   const prefix = PREFIX();
 
   if (mime.startsWith("image/")) {
-    const p = await processImage(file.name, buf, mime, prefix);
+    const p = await processImage(name, buf, mime, prefix);
     const [row] = await db
       .insert(media)
       .values({ url: p.original.url, key: p.original.key, filename: p.original.key.split("/").pop()!, mime, size: p.original.size, width: p.width, height: p.height, variants: p.variants, placeholder: p.placeholder, alt })
@@ -20,9 +23,9 @@ export async function ingestFile(file: File, alt = ""): Promise<Media> {
     return row;
   }
 
-  const stored = await storeFile(file, prefix);
+  const stored = await putObject(`${prefix}/${safeName(name)}`, buf, mime);
   let posterUrl: string | null = null;
-  if (mime.startsWith("video/")) posterUrl = (await videoPoster(file.name, buf, prefix))?.url ?? null;
+  if (mime.startsWith("video/")) posterUrl = (await videoPoster(name, buf, prefix))?.url ?? null;
   const [row] = await db.insert(media).values({ url: stored.url, key: stored.key, filename: stored.key.split("/").pop()!, mime, size: stored.size, posterUrl, alt }).returning();
   return row;
 }

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { login, sql, ADMIN, totp, freshCodeWindow, publishFromEditor, TOTP_SECRET, TWO_STEP_SQL } from "./helpers";
+import { E2E_CRON_SECRET } from "./secrets";
 
 test.describe.configure({ mode: "serial" });
 
@@ -254,11 +255,11 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
   await page.click('button:has-text("Set")');
   await page.waitForURL(/scheduled=1/);
-  const res = await (await request.get("/api/cron/publish")).json();
+  const res = await (await request.get("/api/cron/publish", { headers: { authorization: `Bearer ${E2E_CRON_SECRET}` } })).json();
   expect(res.published).toContainEqual({ resource: "solutions", id: Number(id) });
   // the schedule went with the draft: the next run does not publish it again
   expect(sql(`select count(*) from drafts where resource='solutions' and record_id=${id}`)).toBe("0");
-  const again = await (await request.get("/api/cron/publish")).json();
+  const again = await (await request.get("/api/cron/publish", { headers: { authorization: `Bearer ${E2E_CRON_SECRET}` } })).json();
   expect(again.published).not.toContainEqual({ resource: "solutions", id: Number(id) });
   const site = await request.get("/apac/therapies/drivewire");
   expect(await site.text()).toContain("Scheduled title");
@@ -347,6 +348,46 @@ test("invite → welcome link → two-step sign-in set up on the first visit →
   await page.reload();
   await expect(page.locator('[data-person="invited@e2e.test"]')).toContainText("On");
   sql(`delete from users where email='invited@e2e.test'`);
+});
+
+test("security: uploads by content, redirects stay on the site, two-step codes are limited", async ({ page, browser }) => {
+  await login(page);
+  // a page named and typed as a picture, and an SVG with a script, are refused
+  const html = await page.request.post("/api/admin/upload", { multipart: { file: { name: "x.png", mimeType: "image/png", buffer: Buffer.from("<!doctype html><script>alert(1)</script>") } } });
+  expect(html.status()).toBe(400);
+  const svg = await page.request.post("/api/admin/upload", { multipart: { file: { name: "x.svg", mimeType: "image/svg+xml", buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"></svg>') } } });
+  expect(await svg.json()).toEqual({ error: "This SVG contains scripts" });
+  // a real picture with a lying name gets the extension of what it is
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", "base64");
+  const ok = await (await page.request.post("/api/admin/upload", { multipart: { file: { name: "e2e-sniff.html", mimeType: "text/html", buffer: png } } })).json();
+  expect(ok.url).toMatch(/\.png$/);
+  const served = await page.request.get(ok.url);
+  expect(served.headers()["x-content-type-options"]).toBe("nosniff");
+  expect((await page.request.delete(`/api/admin/media?id=${ok.id}`)).status()).toBe(200);
+
+  // redirects from parameters never leave the site
+  for (const url of ["/api/preview?exit=1&redirect=https://evil.example", "/api/preview?exit=1&redirect=/%5Cevil.example", "/api/editor?on=1&redirect=/%5Cevil.example"]) {
+    const r = await page.request.get(url, { maxRedirects: 0 });
+    expect(new URL(r.headers()["location"], "http://localhost:3100").host).toBe("localhost:3100");
+  }
+  await page.goto("/admin/login?next=/%5Cevil.example");
+  expect(new URL(page.url()).host).toBe("localhost:3100");
+
+  // five wrong codes from the phone: the session is closed, the password is needed again
+  const p2 = await (await browser.newContext()).newPage();
+  await p2.goto("/admin/login");
+  await p2.fill("input[name=email]", ADMIN.email);
+  await p2.fill("input[name=password]", ADMIN.password);
+  await p2.click('button:has-text("Sign in")');
+  await p2.waitForURL(/\/admin\/login\/2fa/);
+  for (let i = 0; i < 5; i++) {
+    await p2.fill("input[name=code]", "000000");
+    await Promise.all([p2.waitForResponse((r) => r.request().method() === "POST"), p2.click('button:has-text("Verify")')]);
+    await p2.waitForLoadState("networkidle");
+  }
+  await expect(p2).toHaveURL(/\/admin\/login\?error=throttled/);
+  await expect(p2.getByText("Too many attempts")).toBeVisible();
+  sql(`delete from login_attempts where key = 'totp:' || (select id from users where email='${ADMIN.email}')`);
 });
 
 test("login throttling", async ({ page }) => {

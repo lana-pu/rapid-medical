@@ -4,13 +4,14 @@ import { resolveEditorNext } from "@/lib/editing";
 import { authenticate, createSession, getSession } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { inputCls } from "@/components/admin/ui";
+import { safeLocalPath } from "@/lib/safe-path";
 
 export const metadata = { title: "Sign in · Rapid Medical admin" };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string; reset?: string }> }) {
   const sp = await searchParams;
   const session = await getSession();
-  if (session && !session.totpPending) redirect(sp.next ?? "/admin/start");
+  if (session && !session.totpPending) redirect(safeLocalPath(sp.next, "/admin/start"));
 
   async function login(fd: FormData) {
     "use server";
@@ -25,7 +26,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     const { needsTotp } = await createSession(result.user);
     const u = result.user;
     await audit({ id: u.id, email: u.email, name: u.name, role: u.role }, "login", { meta: needsTotp ? { step: "password" } : {} });
-    const target = next.startsWith("/admin") || next.startsWith("/api/editor") ? next : "/admin/start";
+    const safe = safeLocalPath(next, "");
+    const target = safe.startsWith("/admin") || safe.startsWith("/api/editor") ? safe : "/admin/start";
     if (needsTotp) redirect(`/admin/login/2fa?next=${encodeURIComponent(target)}`);
     const editorPath = await resolveEditorNext(target);
     redirect(editorPath ?? target);

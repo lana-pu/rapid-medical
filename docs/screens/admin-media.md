@@ -6,7 +6,11 @@
 `src/admin/media-actions.ts`, `src/lib/media-usage.ts`, `src/app/api/admin/media/route.ts`.
 
 ## Список
-- Загрузка (кнопка и перетаскивание): картинки, mp4/webm, PDF, до 200 МБ. Картинки → WebP-варианты, видео → постер.
+- Загрузка (кнопка и перетаскивание): PNG, JPEG, WebP, GIF, SVG, MP4, WebM, PDF, до 200 МБ. Тип определяется по
+  содержимому файла, а не по имени и не по тому, что сообщил браузер; расширение на диске — от найденного типа. SVG со
+  скриптами, обработчиками событий, `foreignObject` или `javascript:` не принимается: «This SVG contains scripts».
+  Файлы из `/uploads` отдаются с `nosniff`, SVG — ещё и с `Content-Security-Policy: sandbox` (аудит 2026-11-13).
+  Картинки → WebP-варианты, видео → постер.
 - Поиск по имени и описанию; фильтр типа: All · Pictures · Videos · Documents · **No description (N)** — картинки без alt.
 - Карточка: миниатюра, имя, размер, поле описания (сохраняется при уходе из поля), пометка **No description** у картинок
   без alt, copy URL, delete (используемый файл удалить нельзя — список мест).

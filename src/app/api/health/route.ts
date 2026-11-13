@@ -11,6 +11,7 @@ export async function GET() {
     await db.execute(sql`select 1`);
     return NextResponse.json({ ok: true, db: "up", ms: Date.now() - t0 });
   } catch (e) {
-    return NextResponse.json({ ok: false, db: "down", error: (e as Error).message }, { status: 503 });
+    console.error("health: database down", e); // the reason goes to the log, not to whoever asks
+    return NextResponse.json({ ok: false, db: "down" }, { status: 503 });
   }
 }

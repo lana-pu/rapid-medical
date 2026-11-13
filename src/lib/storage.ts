@@ -56,9 +56,3 @@ export async function deleteObject(key: string): Promise<void> {
   }
   await unlink(path.join(process.cwd(), "public", "uploads", key)).catch(() => {});
 }
-
-/** Convenience: store an uploaded File as-is. */
-export async function storeFile(file: File, keyPrefix = new Date().toISOString().slice(0, 7)): Promise<StoredFile> {
-  const buf = Buffer.from(await file.arrayBuffer());
-  return putObject(`${keyPrefix}/${safeName(file.name)}`, buf, file.type || "application/octet-stream");
-}

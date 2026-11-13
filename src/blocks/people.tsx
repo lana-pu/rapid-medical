@@ -1,3 +1,4 @@
+import { safeHtml } from "@/lib/html";
 import Link from "next/link";
 import type { InPracticeItem } from "@/db/schema";
 import { Section, H2, Img, Prose } from "@/components/site/primitives";
@@ -36,7 +37,7 @@ function People({ variant, data: d, edit: e, nested }: BlockProps<"people">) {
                 <details className="group mt-2 text-sm">
                   <summary className="cursor-pointer list-none underline">Read bio</summary>
                   {m.longTitle && m.longTitle !== m.title && <div className="mt-2 text-xs uppercase text-muted">{m.longTitle}</div>}
-                  <Prose html={m.bioHtml} className="mt-2" />
+                  <Prose html={safeHtml(m.bioHtml)} className="mt-2" />
                 </details>
               ) : m.href ? (
                 <Link href={m.href} className="mt-2 inline-block text-sm underline">Profile →</Link>

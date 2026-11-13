@@ -136,13 +136,23 @@ export async function requireAdmin(): Promise<SessionUser> {
 /*  Login + throttling                                                 */
 /* ------------------------------------------------------------------ */
 
-async function tooManyAttempts(keys: string[]): Promise<boolean> {
+async function tooManyAttempts(keys: string[], max = MAX_ATTEMPTS): Promise<boolean> {
   const since = new Date(Date.now() - WINDOW_MS);
   for (const key of keys) {
     const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
-    if (n >= MAX_ATTEMPTS) return true;
+    if (n >= max) return true;
   }
   return false;
+}
+
+/** Codes from the phone: 5 wrong ones in 15 minutes and the session is closed — the password is needed again. */
+const MAX_CODE_ATTEMPTS = 5;
+export async function codeAttemptsExhausted(userId: number): Promise<boolean> {
+  return tooManyAttempts([`totp:${userId}`], MAX_CODE_ATTEMPTS);
+}
+export async function recordWrongCode(userId: number): Promise<boolean> {
+  await recordAttempt([`totp:${userId}`]);
+  return codeAttemptsExhausted(userId);
 }
 
 async function recordAttempt(keys: string[]) {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { setEditorMode } from "@/lib/editing";
+import { safeLocalPath } from "@/lib/safe-path";
 
 /**
  * GET /api/editor?on=1&redirect=/path  → turn on the on-page editor (draft mode + rm_edit cookie)
@@ -10,7 +11,7 @@ import { setEditorMode } from "@/lib/editing";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const to = url.searchParams.get("redirect") ?? "/";
-  const safe = to.startsWith("/") && !to.startsWith("//") ? to : "/";
+  const safe = safeLocalPath(to, "/");
   if (url.searchParams.get("off")) {
     await setEditorMode(false);
     return NextResponse.redirect(new URL(safe, url.origin));

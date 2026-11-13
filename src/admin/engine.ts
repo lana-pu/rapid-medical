@@ -35,7 +35,7 @@ export async function listRows(res: Resource, q: ListQuery = {}): Promise<{ rows
   const conds: ReturnType<typeof sql>[] = [];
   if (q.search) conds.push(sql`${col(res.table, res.labelField)} ILIKE ${"%" + q.search + "%"}`);
   for (const [k, v] of Object.entries(q.filters ?? {})) {
-    if (!v || !cols[k]) continue;
+    if (!v || !Object.hasOwn(cols, k)) continue; // only the table's own columns («constructor» is not one)
     if (k === "regions") conds.push(sql`(jsonb_array_length(${cols[k]}) = 0 OR ${cols[k]} @> ${JSON.stringify([v])}::jsonb)`);
     else if (v === "__null") conds.push(sql`${cols[k]} IS NULL`);
     else if (cols[k].dataType === "number") conds.push(sql`${cols[k]} = ${Number(v)}`);

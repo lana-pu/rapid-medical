@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { getSession, isReady } from "@/lib/auth";
 import { ingestFile } from "@/lib/media";
 import { audit } from "@/lib/audit";
+import { sniffType, svgIsSafe } from "@/lib/file-type";
 
 const MAX = 200 * 1024 * 1024;
-const ALLOWED = /^(image\/(png|jpe?g|webp|gif|svg\+xml)|application\/pdf|video\/(mp4|webm))$/;
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -13,13 +13,17 @@ export async function POST(req: Request) {
   const file = fd.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "No file" }, { status: 400 });
   if (file.size > MAX) return NextResponse.json({ error: "File too large (max 200 MB)" }, { status: 400 });
-  if (!ALLOWED.test(file.type)) return NextResponse.json({ error: `Unsupported type ${file.type}` }, { status: 400 });
+  // the type from the file's own bytes, never from its name or the browser (security check 2026-11-13)
+  const buf = Buffer.from(await file.arrayBuffer());
+  const kind = sniffType(buf);
+  if (!kind) return NextResponse.json({ error: "Upload a PNG, JPEG, WebP, GIF, SVG, MP4, WebM or PDF file" }, { status: 400 });
+  if (kind.mime === "image/svg+xml" && !svgIsSafe(buf)) return NextResponse.json({ error: "This SVG contains scripts" }, { status: 400 });
 
   if ((process.env.STORAGE_DRIVER ?? "local") === "local" && process.env.VERCEL)
     return NextResponse.json({ error: "Uploads are not available on this host yet: configure S3 storage (STORAGE_DRIVER=s3) — see README › Media." }, { status: 503 });
   let row;
   try {
-    row = await ingestFile(file, String(fd.get("alt") ?? ""));
+    row = await ingestFile({ name: file.name, buf, ...kind }, String(fd.get("alt") ?? ""));
   } catch (e) {
     return NextResponse.json({ error: `Upload failed: ${(e as Error).message}` }, { status: 500 });
   }

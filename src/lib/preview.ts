@@ -2,7 +2,10 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 
 function secret() {
-  return new TextEncoder().encode(process.env.AUTH_SECRET!);
+  const s = process.env.AUTH_SECRET;
+  // no silent signing with «undefined»: a missing or short secret is a configuration error
+  if (!s || s.length < 32) throw new Error("AUTH_SECRET must be set (32+ characters)");
+  return new TextEncoder().encode(s);
 }
 
 /** Shareable preview token: anyone with the link sees pending drafts for 7 days. */

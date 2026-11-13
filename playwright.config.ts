@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { E2E_CRON_SECRET } from "./tests/e2e/secrets";
 
 /**
  * E2E tests run against a production build on a scratch database.
@@ -14,6 +15,7 @@ export default defineConfig({
     ? undefined
     : {
         command: "npm run build && npx next start -p 3100",
+        env: { CRON_SECRET: E2E_CRON_SECRET },
         url: "http://localhost:3100/api/health",
         timeout: 240_000,
         reuseExistingServer: true,

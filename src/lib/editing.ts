@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { cookies, draftMode } from "next/headers";
 import { getSession, isReady, type SessionUser } from "./auth";
+import { safeLocalPath } from "./safe-path";
 import { DEMO } from "./demo";
 
 export const EDIT_COOKIE = "rm_edit";
@@ -49,5 +50,5 @@ export async function resolveEditorNext(next: string): Promise<string | null> {
   if (u.searchParams.get("on") !== "1") return null;
   const to = u.searchParams.get("redirect") ?? "/";
   await setEditorMode(true);
-  return to.startsWith("/") && !to.startsWith("//") ? to : "/";
+  return safeLocalPath(to, "/");
 }

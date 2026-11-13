@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { db, solutions, pages } from "@/db";
 import { isRegion } from "@/lib/regions";
+import { safeLocalPath } from "@/lib/safe-path";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
 
 async function targetFor(to: string, back: string | null): Promise<string> {
   // Local paths only: no "//host", no scheme, no backslashes (open-redirect guard).
-  if (!back || !back.startsWith("/") || back.startsWith("//") || back.includes("\\")) return `/${to}/therapies`;
+  if (!back || safeLocalPath(back, "") === "") return `/${to}/therapies`;
   const path = back.split(/[?#]/)[0];
   const m = /^\/(us|ous|apac)(\/.*)?$/.exec(path);
   if (!m) return path === "/choose-your-location" ? `/${to}/therapies` : back;

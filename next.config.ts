@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "lirp.cdn-website.com" },
     ],
   },
+  // Uploaded files: never sniffed into another type; an SVG opened on its own cannot run anything
+  // (proxy.ts skips /uploads, so these are set here; security check 2026-11-13).
+  async headers() {
+    return [
+      { source: "/uploads/:path*", headers: [{ key: "X-Content-Type-Options", value: "nosniff" }] },
+      { source: "/uploads/:path*.svg", headers: [{ key: "Content-Security-Policy", value: "default-src 'none'; img-src data:; style-src 'unsafe-inline'; sandbox" }] },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
