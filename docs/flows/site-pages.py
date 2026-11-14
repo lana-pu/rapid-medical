@@ -650,7 +650,7 @@ REGION_REFS = [
               ('lululemon', 'lululemon', 'боковая панель: текущий выбор сверху, регионы раскрываются', 'screens/12f18935-81ee-4da0-ba09-4e9a356b70fe'),
               ('klook', 'Klook', 'поиск по стране и «Current selection» сверху', 'screens/2e39ace1-9e86-44f1-934e-a69ac802418d')]},
     {'title': 'Подсказка и простой выбор',
-     'ask': 'Решено: текущий регион — только в панели из шапки (на странице выбора регион неизвестен по определению).',
+     'ask': 'Решено: одно модальное окно; из шапки — с текущим регионом сверху.',
      'refs': [('kiwi', 'Kiwi.com', '«Suggested region» сверху, ниже — все', 'screens/a1262f9f-69c0-4a8f-a3af-88b0376b93b8'),
               ('gemini', 'Gemini', 'одно поле «Country» и «Apply» — без списка регионов', 'screens/ba2a28e5-3c06-47c0-a6c2-6450617af3af')]},
 ]
@@ -693,30 +693,30 @@ def region_search(value=None):
     return I('Find your country', v='search', value=value, placeholder='Start typing, e.g. Brazil')
 
 
-def region_new(state='empty', phone=False):
+def region_modal(state='empty', current=None, phone=False):
     hit = state == 'search'
     cols = [region_col(n, c, k, hit and n == 'Asia & Pacific') for n, c, k in REGIONS]
-    if not phone:
-        cols[0]['annotation'] = None if hit else 'Под регионом — страны, которые в него входят. Список берётся из той же таблицы, по которой сайт определяет регион по IP (regionForCountry): что бы ни решила Emily (вопрос №9), страница показывает, как сайт работает на самом деле. Последний регион честно — «все остальные страны».'
     srch = region_search('United Arab' if hit else None)
-    if not phone:
-        srch['annotation'] = ('Поиск по стране: ввёл — подсветился нужный регион и кнопка стала основной. Пример неочевидного: ОАЭ — в Asia & Pacific, не в «Europe & Middle East». Израиль (головной офис) по текущей таблице тоже в Asia & Pacific — проверить у Emily.'
-                              if hit else 'Поиск по стране (Klook, H&M): быстрее, чем читать списки.')
-    head = [H('Choose your location', 1), T('Product availability and regulatory information differ by region. Pick the region you practice in.', 'lead'), {'c': 'divider'}]
-    if phone:
-        return [HEADER_NONE, {'c': 'section', 'pad': 'm', 'items': [S(head + [srch] + cols, 'm')]}, FOOTER]
-    body = S(head + [{'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'items': [srch, {'c': 'spacer', 'size': 1}, T('', 'small')]},
-                     {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cols}], 'l')
-    return [HEADER_NONE, {'c': 'section', 'pad': 'l', 'items': [body]}, FOOTER]
+    items = [T('Product availability and regulatory information differ by region. Pick the region you practice in.', 'muted')]
+    if current:
+        items.append({'c': 'row', 'justify': 'between', 'items': [S([T('Current region', 'caption'), T(current, 'strong')], 'xs'), {'c': 'badge', 'text': 'From your location', 'tone': 'neutral'}]})
+    items.append(srch)
+    items.append(S(cols, 'm') if phone else {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cols})
+    m = {'c': 'modal', 'title': 'Choose your location', 'wide': True, 'items': items}
+    if not phone and state == 'empty' and not current:
+        m['annotation'] = ('Модалка вместо отдельной страницы: посетитель остаётся там, где был. Открывается только когда регион нужен — '
+                           'клик по Therapies, Evidence, региональной ссылке — и страна по IP не определилась; при первом заходе не всплывает (заслон на входе раздражает). '
+                           'Страны под регионом — из той же таблицы, что IP (regionForCountry); у последнего — «all other countries». '
+                           'Страница /choose-your-location остаётся запасной: прямые ссылки, без JavaScript; noindex.')
+    if hit and not phone:
+        m['annotation'] = 'Поиск по стране подсвечивает её регион. Неочевидное: ОАЭ — в Asia & Pacific, не в «Europe & Middle East». Израиль (головной офис) по текущей таблице тоже там — вопрос к Emily.'
+    if current and not phone:
+        m['annotation'] = 'Из переключателя в шапке — то же окно, сверху текущий регион и откуда он (по IP или выбран). Выбор возвращает на ту же страницу в новом регионе (/api/region).'
+    return m
 
 
-def switcher_new():
-    items = [S([T('Current region', 'caption'), {'c': 'row', 'justify': 'between', 'items': [T('Americas', 'strong'), {'c': 'badge', 'text': 'From your location', 'tone': 'neutral'}]}], 'xs'),
-             {'c': 'divider'}, region_search()]
-    for n, c, k in REGIONS:
-        items += [S([{'c': 'row', 'justify': 'between', 'items': [T(n + (' ✓' if n == 'Americas' else ''), 'strong'), T(k, 'caption')]}, T(c, 'small')], 'xs'), {'c': 'divider'}]
-    return {'c': 'drawer', 'title': 'Region', 'items': items,
-            'annotation': 'Переключатель в шапке открывает ту же панель, что и страница выбора: текущий регион сверху (и откуда он — по IP или выбран), поиск, регионы со странами (lululemon). Выбор возвращает на ту же страницу в новом регионе, как сейчас (/api/region).'}
+def region_bg(region=None):
+    return [dict(HEADER, region=region) if region else HEADER_NONE, page('Home', [0]), FOOTER]
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -829,11 +829,11 @@ flow = {
         {'id': 'region-switcher-asis', 'title': 'Region switcher in the header · as is', 'url': 'rapid-medical.com/us', 'height': 620, 'body': switcher_asis()},
         {'id': 'region-banner-asis', 'title': 'Other region by a link · as is', 'url': 'rapid-medical.com/ous/therapies/lvo', 'height': 620, 'body': banner_asis()},
         ref_screen('region-mobbin', 'Choose location · examples from Mobbin', 'region', REGION_REFS),
-        {'id': 'region-new', 'title': 'Choose location · decided', 'url': 'rapid-medical.com/choose-your-location', 'height': 760, 'body': region_new()},
-        {'id': 'region-new-search', 'title': 'Choose location · decided, country search', 'url': 'rapid-medical.com/choose-your-location', 'height': 760, 'body': region_new('search')},
-        {'id': 'region-new-phone', 'title': 'Choose location · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/choose-your-location', 'body': region_new('empty', True),
-         'notes': ['Телефон: поиск сверху, регионы карточками друг под другом.']},
-        {'id': 'region-switcher-new', 'title': 'Region panel from the header · decided', 'url': 'rapid-medical.com/us', 'height': 760, 'body': [dict(HEADER, region='us'), page('Home', [0]), FOOTER], 'overlay': switcher_new()},
+        {'id': 'region-new', 'title': 'Choose location · decided, modal', 'url': 'rapid-medical.com', 'height': 820, 'body': region_bg(), 'overlay': region_modal()},
+        {'id': 'region-new-search', 'title': 'Choose location · decided, country search', 'url': 'rapid-medical.com', 'height': 820, 'body': region_bg(), 'overlay': region_modal('search')},
+        {'id': 'region-new-phone', 'title': 'Choose location · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com', 'height': 900, 'body': region_bg(), 'overlay': region_modal('empty', phone=True),
+         'notes': ['Телефон: то же окно на весь экран — поиск сверху, регионы карточками столбиком.']},
+        {'id': 'region-switcher-new', 'title': 'Region from the header · decided, same modal', 'url': 'rapid-medical.com/us', 'height': 820, 'body': region_bg('us'), 'overlay': region_modal('empty', current='Americas')},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
