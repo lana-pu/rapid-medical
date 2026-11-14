@@ -72,6 +72,20 @@
    ]
   },
   {
+   "title": "3 · News & Events — как есть",
+   "screens": [
+    "news-asis",
+    "news-asis-phone",
+    "event-past-asis"
+   ]
+  },
+  {
+   "title": "3 · News & Events — примеры из Mobbin",
+   "screens": [
+    "news-mobbin"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -159,6 +173,26 @@
    "from": "study-full",
    "to": "news-page",
    "label": "тот же механизм для новости"
+  },
+  {
+   "from": "news-page",
+   "to": "news-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "news-asis",
+   "to": "news-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "news-asis",
+   "to": "event-past-asis",
+   "label": "прошедшее событие"
+  },
+  {
+   "from": "event-past-asis",
+   "to": "news-mobbin",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -4542,6 +4576,2119 @@
     {
      "c": "rm-footer",
      "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "news-asis",
+   "title": "News & Events · as is",
+   "url": "rapid-medical.com/news-events",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "title",
+       "title": "News &",
+       "title2": "Events"
+      },
+      {
+       "c": "rm-news",
+       "v": "carousel",
+       "title": "Latest news",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        }
+       ],
+       "allHref": "#all-news",
+       "allLabel": "View all news ↓",
+       "annotation": "Карусель: 5 отмеченных featured (или последних). Клик по новости — уход на BusinessWire / NeuroNews: своих страниц у новостей нет."
+      },
+      {
+       "c": "rm-news",
+       "v": "timeline",
+       "anchor": "all-news",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 6,
+         "title": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions",
+         "url": "https://www.businesswire.com/news/home/20251209893485/en/Rapid-Medical-Completes-Enrollment-in-DISTALS-Trial-Evaluating-TIGERTRIEVER-13-for-Distal-Vessel-Occlusions",
+         "publishedOn": "2025-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 6,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 5,
+         "title": "Comaneci-­ assisted embolization of wide-­ neckedaneurysms: results from the SUCCESS postmarketUS study",
+         "url": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+         "imageUrl": "/uploads/duda/Screenshot-2025-12-17-at-23.00.17-a3c91a.png",
+         "publishedOn": "2025-12-01T00:00:00.000Z",
+         "source": "Rapid Medical",
+         "edit": {
+          "r": "news",
+          "id": 5,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 8,
+         "title": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors",
+         "url": "https://www.businesswire.com/news/home/20250925205449/en/Rapid-Medical-Appoints-Industry-Veteran-Nir-Nimrodi-to-Its-Board-of-Directors",
+         "publishedOn": "2025-09-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 8,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 7,
+         "title": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe With MDR Approval",
+         "url": "https://www.businesswire.com/news/home/20250903530140/en/Rapid-Medical-Surpasses-1000-Cases-With-DRIVEWIRE-24-in-North-America-and-Expands-Into-Europe-With-MDR-Approval",
+         "imageUrl": "/uploads/duda/3719-Rapid-Medical-DW24-2025---Short---Stages---Hands-V2-1--8d3de3.png",
+         "publishedOn": "2025-09-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 7,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 10,
+         "title": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy Device",
+         "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+         "publishedOn": "2025-01-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 10,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 9,
+         "title": "Rapid Medical announces enrollment in “first-ever” study on cognitive benefits of thrombectomy device",
+         "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+         "imageUrl": "/uploads/duda/Cognitive-Logo-Resized-7b6cec2c-48cfed.jpg",
+         "publishedOn": "2025-01-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 9,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 11,
+         "title": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device",
+         "url": "https://neuronewsinternational.com/rapid-medical-interim-safety-analysis-distals-study-tigertriever-13-device/",
+         "publishedOn": "2024-09-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 11,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 12,
+         "title": "Rapid Medical™ Completes Initial Neurovascular Cases in the USA Following FDA Clearance of Its Active Access Solution",
+         "url": "https://www.businesswire.com/news/home/20240722355520/en/Rapid-Medical-Completes-Initial-Neurovascular-Cases-in-the-USA-Following-FDA-Clearance-of-Its-Active-Access-Solution",
+         "publishedOn": "2024-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 12,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 13,
+         "title": "Rapid Medical™ Completes Successful Ischemic Stroke Procedures with the World’s First Robotic Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20240513456936/en/5650977/Rapid-Medical%E2%84%A2-Completes-Successful-Ischemic-Stroke-Procedures-with-the-World%E2%80%99s-First-Robotic-Thrombectomy-Device",
+         "publishedOn": "2024-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 13,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 14,
+         "title": "Rapid Announces Japanese Approval and Exclusive Partnership With Kaneka for Tigertriever",
+         "url": "https://www.businesswire.com/news/home/20231213398321/en/Rapid-Medical%E2%84%A2-Announces-Japanese-Approval-and-Exclusive-Partnership-With-Kaneka-for-TIGERTRIEVER%E2%80%93The-World%E2%80%99s-Only-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2023-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 14,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 15,
+         "title": "Rapid Medical's TIGERTRIEVER™ Delivers First-Pass Success in Challenging Ischemic Stroke Patients with ICAD",
+         "url": "https://www.businesswire.com/news/home/20231116284748/en/Rapid-Medicals-TIGERTRIEVER%E2%84%A2-Delivers-First-Pass-Success-in-Challenging-Ischemic-Stroke-Patients-with-ICAD",
+         "publishedOn": "2023-11-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 15,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 16,
+         "title": "Rapid Medical’s Tigertriever Thrombectomy Device Gains Approval in China",
+         "url": "https://evtoday.com/news/rapid-medicals-tigertriever-thrombectomy-device-gains-approval-in-china",
+         "publishedOn": "2023-08-01T00:00:00.000Z",
+         "source": "Endovascular Today",
+         "edit": {
+          "r": "news",
+          "id": 16,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 17,
+         "title": "New Data Shows Advantages of Rapid Medical’s COMANECI™ Embolization Assist Device",
+         "url": "https://www.businesswire.com/news/home/20230719475474/en/New-Data-Shows-Advantages-of-Rapid-Medical%E2%80%99s-COMANECI%E2%84%A2-Embolization-Assist-Device?_gl=1*fv1sl8*_ga*MjcyNTk5MTcuMTYxNjE2MDQxMg..*_ga_ZQWF70T3FK*MTY4OTc3NTYxMi4xMS4xLjE2ODk3ODczNDguNjAuMC4w",
+         "publishedOn": "2023-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 17,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 18,
+         "title": "Rapid Medical Gains FDA Clearance for the Smallest & Only Adjustable Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20220726006092/en/Rapid-Medical-Gains-FDA-Clearance-for-the-Smallest-Only-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2022-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 18,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 20,
+         "title": "Rapid Medical Marks First Procedures with Numen™ Coil from MicroPort Scientific",
+         "url": "https://www.businesswire.com/news/home/20220628005724/en/Rapid-Medical-Marks-First-Procedures-with-Numen%E2%84%A2-Coil-from-MicroPort-Scientific",
+         "publishedOn": "2022-06-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 20,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 19,
+         "title": "Rapid Medical Enrolls the First Patient in the DISTALS Stroke Trial–Offering Treatment to New Ischemic Stroke Patient Population",
+         "url": "https://www.businesswire.com/news/home/20220602005497/en/Rapid-Medical-Enrolls-the-First-Patient-in-the-DISTALS-Stroke-Trial%E2%80%93Offering-Treatment-to-New-Ischemic-Stroke-Patient-Population",
+         "publishedOn": "2022-06-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 19,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 21,
+         "title": "SVIN’s The Cutting Edge: Precise Intravascular Navigation With the World’s First Steerable Neurovascular Guidewire by Mohammad El-Ghanem",
+         "url": "https://view.flipdocs.com/?ID=10004296_631356",
+         "publishedOn": "2022-04-01T00:00:00.000Z",
+         "source": "view.flipdocs.com",
+         "edit": {
+          "r": "news",
+          "id": 21,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 22,
+         "title": "NeuroNews: Rapid Medical Receives FDA Breakthrough Device Designation for Vasospasm Treatment",
+         "url": "https://neuronewsinternational.com/rapid-medical-receives-fda-breakthrough-device-designation-for-vasospasm-treatment/",
+         "publishedOn": "2022-03-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 22,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 23,
+         "title": "Rapid Medical to Initiate the First-Ever Trial to Evaluate Mechanical Thrombectomy in Distal Regions of the Brain",
+         "url": "https://evtoday.com/news/rapid-medical-commences-distals-ide-trial-of-tigertriever-13-thrombectomy-device-in-distal-stroke",
+         "publishedOn": "2021-11-01T00:00:00.000Z",
+         "source": "Endovascular Today",
+         "edit": {
+          "r": "news",
+          "id": 23,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 24,
+         "title": "St. Mary's Medical Center Uses New Stent Tool to Help Stroke Recovery",
+         "url": "https://www.palmbeachpost.com/story/news/local/westpb/2021/07/26/new-tigertriever-tool-prevent-strokes-debuts-st-marys/8072722002/",
+         "publishedOn": "2021-07-01T00:00:00.000Z",
+         "source": "palmbeachpost.com",
+         "edit": {
+          "r": "news",
+          "id": 24,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 27,
+         "title": "Wellstar First In Country To Use Blood Clot-Clearing Device",
+         "url": "https://cobbcountycourier.com/2021/05/wellstar-blood-clot-device/",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "cobbcountycourier.com",
+         "edit": {
+          "r": "news",
+          "id": 27,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 26,
+         "title": "Rapid Medical Announces Closing of $50m Series D Financing",
+         "url": "https://www.businesswire.com/news/home/20210525005608/en/Rapid-Medical-Announces-Closing-of-50m-Series-D-Financing",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 26,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 25,
+         "title": "First US Ischemic Stroke Patients Treated with Rapid Medical’s Novel Clot Retriever",
+         "url": "https://www.businesswire.com/news/home/20210505005846/en/First-US-Ischemic-Stroke-Patients-Treated-with-Rapid-Medical%E2%80%99s-Novel-Clot-Retriever",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 25,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 29,
+         "title": "St. Vincenz-Radiologie setzt kleinsten Stent-Retriever der Welt ein",
+         "url": "https://www.vincenz.de/aktuelles-termine/aktuelles-presse/pressemeldung/st-vincenz-radiologie-setzt-kleinsten-stent-retriever-der-welt-ein.html",
+         "publishedOn": "2021-04-01T00:00:00.000Z",
+         "source": "vincenz.de",
+         "edit": {
+          "r": "news",
+          "id": 29,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 28,
+         "title": "NeuroNews: New Thrombectomy Device Offers Promising Results",
+         "url": "https://neuronewsinternational.com/new-thrombectomy-device-offers-promising-results/",
+         "publishedOn": "2021-04-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 28,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 32,
+         "title": "Rapid Medical Receives FDA Clearance for the First Adjustable Stent Retriever for Use in Ischemic Stroke Treatment",
+         "url": "https://www.businesswire.com/news/home/20210324005703/en/TIGER-Trial-Demonstrates-High-Safety-and-Efficacy-for-World%E2%80%99s-First-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 32,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 31,
+         "title": "TIGER Trial Demonstrates High Safety and Efficacy for World’s First Adjustable Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 31,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 30,
+         "title": "Medscape: Radially Adjustable 'Tigertriever' Safe, Effective in Stroke",
+         "url": "https://www.medscape.com/viewarticle/948158",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "Medscape",
+         "edit": {
+          "r": "news",
+          "id": 30,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 33,
+         "title": "Rapid Medical Receives FDA Clearance for the World’s First Steerable Neurovascular Guidewire",
+         "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+         "publishedOn": "2020-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 33,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 34,
+         "title": "Rapid Medical Expands Comaneci™ CE Mark Indication to Include Vasospasm Treatment",
+         "url": "https://www.prnewswire.co.uk/news-releases/rapid-medical-expands-comaneci-tm-ce-mark-indication-to-include-vasospasm-treatment-882969481.html",
+         "publishedOn": "2020-11-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 34,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 36,
+         "title": "NBC News: UVA Neurosurgeon First in Virginia to Use New Device Which Could Treat Brain Aneurysms More Safely",
+         "url": "https://www.nbc12.com/2020/10/30/uva-neurosurgeon-first-virginia-use-new-device-which-could-treat-brain-aneurysms-more-safely/",
+         "publishedOn": "2020-10-01T00:00:00.000Z",
+         "source": "nbc12.com",
+         "edit": {
+          "r": "news",
+          "id": 36,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 35,
+         "title": "SVIN’s The Cutting Edge: Technology Updates on the Novel Comaneci device by Mohammad El-Ghanem",
+         "url": "http://pages.svin.org/2020/09/18/the-cutting-edge-technology-updates/",
+         "publishedOn": "2020-10-01T00:00:00.000Z",
+         "source": "pages.svin.org",
+         "edit": {
+          "r": "news",
+          "id": 35,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 37,
+         "title": "Rapid Medical Receives CE Mark for TIGERTRIEVER™ XL",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-for-tigertriever-xl-301100032.html",
+         "publishedOn": "2020-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 37,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 38,
+         "title": "Tigertriever® Revascularization Device Produced by Rapid Medical Ltd., an Affiliate Company of MicroPort® NeuroTech, Enters",
+         "url": "https://www.microport.com/en/news/tigertriever-revascularization-device-produced-rapid-medical-ltd-affiliate-company-microport-neurotech-enters",
+         "publishedOn": "2020-06-01T00:00:00.000Z",
+         "source": "microport.com",
+         "edit": {
+          "r": "news",
+          "id": 38,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 39,
+         "title": "Rapid Medical Announces Ahead of Schedule Completion of Patient Enrollment for the TIGER Clinical Study for TIGERTRIEVER Thrombectomy Device",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-ahead-of-schedule-completion-of-patient-enrollment-for-the-tiger-clinical-study-for-tigertriever-thrombectomy-device-301036466.html",
+         "publishedOn": "2020-04-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 39,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 41,
+         "title": "Los Robles Hospital Treats Stroke With New Device",
+         "url": "https://www.toacorn.com/articles/los-robles-hospital-treats-stroke-with-new-device/",
+         "publishedOn": "2019-12-01T00:00:00.000Z",
+         "source": "toacorn.com",
+         "edit": {
+          "r": "news",
+          "id": 41,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 40,
+         "title": "USA Health Neurologist First in the State to Perform New Aneurysm Procedure",
+         "url": "https://www.fox10tv.com/news/mobile_county/usa-health-neurologist-first-in-the-state-to-perform-new/article_9960a398-211c-11ea-b6a8-334a3590d01d.html",
+         "publishedOn": "2019-12-01T00:00:00.000Z",
+         "source": "fox10tv.com",
+         "edit": {
+          "r": "news",
+          "id": 40,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 43,
+         "title": "UMass Doctors Pilot First New England Use of Israeli Aneurysm Device",
+         "url": "https://www.wbjournal.com/article/umass-doctors-pilot-first-new-england-use-of-israeli-aneurysm-device",
+         "publishedOn": "2019-08-01T00:00:00.000Z",
+         "source": "wbjournal.com",
+         "edit": {
+          "r": "news",
+          "id": 43,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 42,
+         "title": "The 1st International Distal Thrombectomy Summit Called for a Need to “Define Indications for Distal Thrombectomy and Invest in Registries”",
+         "url": "https://neuronewsinternational.com/1st-international-distal-thrombectomy-summit/",
+         "publishedOn": "2019-08-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 42,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 44,
+         "title": "Life-Threatening Brain Aneurysm Treated With First-in-U.S. Device at Los Robles",
+         "url": "https://www.vcstar.com/story/news/local/2019/07/26/brain-aneurysm-treated-comaneci-device-first-time-u-s/1832108001/",
+         "publishedOn": "2019-07-01T00:00:00.000Z",
+         "source": "vcstar.com",
+         "edit": {
+          "r": "news",
+          "id": 44,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 45,
+         "title": "Mechanical Thrombectomy in Distal MCA Occlusion Using Tiger 13",
+         "url": "https://www.linnc.com/Course-programs/LINNC-2019/Mechanical-Thrombectomy-in-distal-MCA-occlusion-using-Tiger-13",
+         "publishedOn": "2019-06-01T00:00:00.000Z",
+         "source": "linnc.com",
+         "edit": {
+          "r": "news",
+          "id": 45,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 46,
+         "title": "Rapid Medical Announces FDA Approval of Novel Temporary Aneurysm Embolization Assist Device",
+         "url": "https://www.prnewswire.com/il/news-releases/rapid-medical-announces-fda-approval-of-novel-temporary-aneurysm-embolization-assist-device-300844039.html",
+         "publishedOn": "2019-05-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 46,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 47,
+         "title": "Rapid Medical Raises $20 Million in New Funding to Support Clinical and Commercialization of First-in-class Stroke Treatment Products",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-raises-20-million-in-new-funding-to-support-clinical-and-commercialization-of-first-in-class-stroke-treatment-products-300835469.html",
+         "publishedOn": "2019-04-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 47,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 48,
+         "title": "Rapid Medical Receives CE Mark Approval for TIGERTRIEVER 13",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-approval-for-tigertriever-13-300689172.html",
+         "publishedOn": "2018-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 48,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 49,
+         "title": "Rapid Medical First Patient Enrolled to the TIGER Pivotal Clinical Study",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tiger-pivotal-clinical-study-682789031.html",
+         "publishedOn": "2018-05-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 49,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 50,
+         "title": "Rapid Medical: First Patient Enrolled to the TIGERTRIEVER Acute Ischemic Stroke Registry",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tigertriever-acute-ischemic-stroke-registry-645690163.html",
+         "publishedOn": "2017-09-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 50,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 51,
+         "title": "Rapid Medical Announces $9M in New Funding to Advance Commercialization of First-In-Class Stroke Treatment Products",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-9m-in-new-funding-to-advance-commercialization-of-first-in-class-stroke-treatment-products-634938533.html",
+         "publishedOn": "2017-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 51,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 52,
+         "title": "Rapid Medical's Comaneci Adjustable Remodeling Mesh Exceeds 500 Successful Aneurysm Treatments",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medicals-comaneci-adjustable-remodeling-mesh-exceeds-500-successful-aneurysm-treatments-592723241.html",
+         "publishedOn": "2016-09-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 52,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 53,
+         "title": "Rapid Medical Announces First Stroke Patient Treated With TIGERTRIEVER",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-first-stroke-patient-treated-with-tigertriever-565743841.html",
+         "publishedOn": "2016-01-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 53,
+          "prefix": ""
+         }
+        }
+       ],
+       "annotation": "Лента по годам начинается с тех же новостей, что в карусели (находка 15). Все 53 — внешние ссылки; исследования (SUCCESS, DISTALS) в ленте — только если заведены новостью."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Past events"
+        },
+        {
+         "c": "heading",
+         "level": 4,
+         "text": "2026"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Oct 12"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "From Physics to Practice"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Busan · Park Hyatt Busan"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Sep 15–16"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "TIGERTRIEVER™ Workshop in partnership with Kaneka"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Sep 3"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "DRIVEWIRE™ 24 in Clinical Practice"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Marseille · ESMINT"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Jun 1"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "More than Conventional"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Paris · Hôtel Regina Louvre · LINNC"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "heading",
+         "level": 4,
+         "text": "2025"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Oct 22"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Meet The Experts Dinner event at DGNR 2025"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "DGNR"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        }
+       ],
+       "annotation": "Предстоящих событий сейчас нет (последнее — 12 окт 2026), и блок «Upcoming events» пропадает целиком; на странице остаётся только архив внизу. Ссылка «← News & Events» со страницы прошедшего события ведёт на якорь предстоящих, которого нет (находка 21)."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "news-asis-phone",
+   "title": "News & Events · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/news-events",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "title",
+       "title": "News &",
+       "title2": "Events"
+      },
+      {
+       "c": "rm-news",
+       "v": "carousel",
+       "title": "Latest news",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        }
+       ],
+       "allHref": "#all-news",
+       "allLabel": "View all news ↓"
+      },
+      {
+       "c": "rm-news",
+       "v": "timeline",
+       "anchor": "all-news",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 6,
+         "title": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions",
+         "url": "https://www.businesswire.com/news/home/20251209893485/en/Rapid-Medical-Completes-Enrollment-in-DISTALS-Trial-Evaluating-TIGERTRIEVER-13-for-Distal-Vessel-Occlusions",
+         "publishedOn": "2025-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 6,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 5,
+         "title": "Comaneci-­ assisted embolization of wide-­ neckedaneurysms: results from the SUCCESS postmarketUS study",
+         "url": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+         "imageUrl": "/uploads/duda/Screenshot-2025-12-17-at-23.00.17-a3c91a.png",
+         "publishedOn": "2025-12-01T00:00:00.000Z",
+         "source": "Rapid Medical",
+         "edit": {
+          "r": "news",
+          "id": 5,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 8,
+         "title": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors",
+         "url": "https://www.businesswire.com/news/home/20250925205449/en/Rapid-Medical-Appoints-Industry-Veteran-Nir-Nimrodi-to-Its-Board-of-Directors",
+         "publishedOn": "2025-09-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 8,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 7,
+         "title": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe With MDR Approval",
+         "url": "https://www.businesswire.com/news/home/20250903530140/en/Rapid-Medical-Surpasses-1000-Cases-With-DRIVEWIRE-24-in-North-America-and-Expands-Into-Europe-With-MDR-Approval",
+         "imageUrl": "/uploads/duda/3719-Rapid-Medical-DW24-2025---Short---Stages---Hands-V2-1--8d3de3.png",
+         "publishedOn": "2025-09-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 7,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 10,
+         "title": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy Device",
+         "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+         "publishedOn": "2025-01-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 10,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 9,
+         "title": "Rapid Medical announces enrollment in “first-ever” study on cognitive benefits of thrombectomy device",
+         "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+         "imageUrl": "/uploads/duda/Cognitive-Logo-Resized-7b6cec2c-48cfed.jpg",
+         "publishedOn": "2025-01-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 9,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 11,
+         "title": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device",
+         "url": "https://neuronewsinternational.com/rapid-medical-interim-safety-analysis-distals-study-tigertriever-13-device/",
+         "publishedOn": "2024-09-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 11,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 12,
+         "title": "Rapid Medical™ Completes Initial Neurovascular Cases in the USA Following FDA Clearance of Its Active Access Solution",
+         "url": "https://www.businesswire.com/news/home/20240722355520/en/Rapid-Medical-Completes-Initial-Neurovascular-Cases-in-the-USA-Following-FDA-Clearance-of-Its-Active-Access-Solution",
+         "publishedOn": "2024-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 12,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 13,
+         "title": "Rapid Medical™ Completes Successful Ischemic Stroke Procedures with the World’s First Robotic Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20240513456936/en/5650977/Rapid-Medical%E2%84%A2-Completes-Successful-Ischemic-Stroke-Procedures-with-the-World%E2%80%99s-First-Robotic-Thrombectomy-Device",
+         "publishedOn": "2024-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 13,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 14,
+         "title": "Rapid Announces Japanese Approval and Exclusive Partnership With Kaneka for Tigertriever",
+         "url": "https://www.businesswire.com/news/home/20231213398321/en/Rapid-Medical%E2%84%A2-Announces-Japanese-Approval-and-Exclusive-Partnership-With-Kaneka-for-TIGERTRIEVER%E2%80%93The-World%E2%80%99s-Only-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2023-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 14,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 15,
+         "title": "Rapid Medical's TIGERTRIEVER™ Delivers First-Pass Success in Challenging Ischemic Stroke Patients with ICAD",
+         "url": "https://www.businesswire.com/news/home/20231116284748/en/Rapid-Medicals-TIGERTRIEVER%E2%84%A2-Delivers-First-Pass-Success-in-Challenging-Ischemic-Stroke-Patients-with-ICAD",
+         "publishedOn": "2023-11-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 15,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 16,
+         "title": "Rapid Medical’s Tigertriever Thrombectomy Device Gains Approval in China",
+         "url": "https://evtoday.com/news/rapid-medicals-tigertriever-thrombectomy-device-gains-approval-in-china",
+         "publishedOn": "2023-08-01T00:00:00.000Z",
+         "source": "Endovascular Today",
+         "edit": {
+          "r": "news",
+          "id": 16,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 17,
+         "title": "New Data Shows Advantages of Rapid Medical’s COMANECI™ Embolization Assist Device",
+         "url": "https://www.businesswire.com/news/home/20230719475474/en/New-Data-Shows-Advantages-of-Rapid-Medical%E2%80%99s-COMANECI%E2%84%A2-Embolization-Assist-Device?_gl=1*fv1sl8*_ga*MjcyNTk5MTcuMTYxNjE2MDQxMg..*_ga_ZQWF70T3FK*MTY4OTc3NTYxMi4xMS4xLjE2ODk3ODczNDguNjAuMC4w",
+         "publishedOn": "2023-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 17,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 18,
+         "title": "Rapid Medical Gains FDA Clearance for the Smallest & Only Adjustable Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20220726006092/en/Rapid-Medical-Gains-FDA-Clearance-for-the-Smallest-Only-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2022-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 18,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 20,
+         "title": "Rapid Medical Marks First Procedures with Numen™ Coil from MicroPort Scientific",
+         "url": "https://www.businesswire.com/news/home/20220628005724/en/Rapid-Medical-Marks-First-Procedures-with-Numen%E2%84%A2-Coil-from-MicroPort-Scientific",
+         "publishedOn": "2022-06-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 20,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 19,
+         "title": "Rapid Medical Enrolls the First Patient in the DISTALS Stroke Trial–Offering Treatment to New Ischemic Stroke Patient Population",
+         "url": "https://www.businesswire.com/news/home/20220602005497/en/Rapid-Medical-Enrolls-the-First-Patient-in-the-DISTALS-Stroke-Trial%E2%80%93Offering-Treatment-to-New-Ischemic-Stroke-Patient-Population",
+         "publishedOn": "2022-06-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 19,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 21,
+         "title": "SVIN’s The Cutting Edge: Precise Intravascular Navigation With the World’s First Steerable Neurovascular Guidewire by Mohammad El-Ghanem",
+         "url": "https://view.flipdocs.com/?ID=10004296_631356",
+         "publishedOn": "2022-04-01T00:00:00.000Z",
+         "source": "view.flipdocs.com",
+         "edit": {
+          "r": "news",
+          "id": 21,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 22,
+         "title": "NeuroNews: Rapid Medical Receives FDA Breakthrough Device Designation for Vasospasm Treatment",
+         "url": "https://neuronewsinternational.com/rapid-medical-receives-fda-breakthrough-device-designation-for-vasospasm-treatment/",
+         "publishedOn": "2022-03-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 22,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 23,
+         "title": "Rapid Medical to Initiate the First-Ever Trial to Evaluate Mechanical Thrombectomy in Distal Regions of the Brain",
+         "url": "https://evtoday.com/news/rapid-medical-commences-distals-ide-trial-of-tigertriever-13-thrombectomy-device-in-distal-stroke",
+         "publishedOn": "2021-11-01T00:00:00.000Z",
+         "source": "Endovascular Today",
+         "edit": {
+          "r": "news",
+          "id": 23,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 24,
+         "title": "St. Mary's Medical Center Uses New Stent Tool to Help Stroke Recovery",
+         "url": "https://www.palmbeachpost.com/story/news/local/westpb/2021/07/26/new-tigertriever-tool-prevent-strokes-debuts-st-marys/8072722002/",
+         "publishedOn": "2021-07-01T00:00:00.000Z",
+         "source": "palmbeachpost.com",
+         "edit": {
+          "r": "news",
+          "id": 24,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 27,
+         "title": "Wellstar First In Country To Use Blood Clot-Clearing Device",
+         "url": "https://cobbcountycourier.com/2021/05/wellstar-blood-clot-device/",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "cobbcountycourier.com",
+         "edit": {
+          "r": "news",
+          "id": 27,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 26,
+         "title": "Rapid Medical Announces Closing of $50m Series D Financing",
+         "url": "https://www.businesswire.com/news/home/20210525005608/en/Rapid-Medical-Announces-Closing-of-50m-Series-D-Financing",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 26,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 25,
+         "title": "First US Ischemic Stroke Patients Treated with Rapid Medical’s Novel Clot Retriever",
+         "url": "https://www.businesswire.com/news/home/20210505005846/en/First-US-Ischemic-Stroke-Patients-Treated-with-Rapid-Medical%E2%80%99s-Novel-Clot-Retriever",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 25,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 29,
+         "title": "St. Vincenz-Radiologie setzt kleinsten Stent-Retriever der Welt ein",
+         "url": "https://www.vincenz.de/aktuelles-termine/aktuelles-presse/pressemeldung/st-vincenz-radiologie-setzt-kleinsten-stent-retriever-der-welt-ein.html",
+         "publishedOn": "2021-04-01T00:00:00.000Z",
+         "source": "vincenz.de",
+         "edit": {
+          "r": "news",
+          "id": 29,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 28,
+         "title": "NeuroNews: New Thrombectomy Device Offers Promising Results",
+         "url": "https://neuronewsinternational.com/new-thrombectomy-device-offers-promising-results/",
+         "publishedOn": "2021-04-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 28,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 32,
+         "title": "Rapid Medical Receives FDA Clearance for the First Adjustable Stent Retriever for Use in Ischemic Stroke Treatment",
+         "url": "https://www.businesswire.com/news/home/20210324005703/en/TIGER-Trial-Demonstrates-High-Safety-and-Efficacy-for-World%E2%80%99s-First-Adjustable-Thrombectomy-Device",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 32,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 31,
+         "title": "TIGER Trial Demonstrates High Safety and Efficacy for World’s First Adjustable Thrombectomy Device",
+         "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 31,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 30,
+         "title": "Medscape: Radially Adjustable 'Tigertriever' Safe, Effective in Stroke",
+         "url": "https://www.medscape.com/viewarticle/948158",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "source": "Medscape",
+         "edit": {
+          "r": "news",
+          "id": 30,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 33,
+         "title": "Rapid Medical Receives FDA Clearance for the World’s First Steerable Neurovascular Guidewire",
+         "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+         "publishedOn": "2020-12-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 33,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 34,
+         "title": "Rapid Medical Expands Comaneci™ CE Mark Indication to Include Vasospasm Treatment",
+         "url": "https://www.prnewswire.co.uk/news-releases/rapid-medical-expands-comaneci-tm-ce-mark-indication-to-include-vasospasm-treatment-882969481.html",
+         "publishedOn": "2020-11-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 34,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 36,
+         "title": "NBC News: UVA Neurosurgeon First in Virginia to Use New Device Which Could Treat Brain Aneurysms More Safely",
+         "url": "https://www.nbc12.com/2020/10/30/uva-neurosurgeon-first-virginia-use-new-device-which-could-treat-brain-aneurysms-more-safely/",
+         "publishedOn": "2020-10-01T00:00:00.000Z",
+         "source": "nbc12.com",
+         "edit": {
+          "r": "news",
+          "id": 36,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 35,
+         "title": "SVIN’s The Cutting Edge: Technology Updates on the Novel Comaneci device by Mohammad El-Ghanem",
+         "url": "http://pages.svin.org/2020/09/18/the-cutting-edge-technology-updates/",
+         "publishedOn": "2020-10-01T00:00:00.000Z",
+         "source": "pages.svin.org",
+         "edit": {
+          "r": "news",
+          "id": 35,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 37,
+         "title": "Rapid Medical Receives CE Mark for TIGERTRIEVER™ XL",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-for-tigertriever-xl-301100032.html",
+         "publishedOn": "2020-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 37,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 38,
+         "title": "Tigertriever® Revascularization Device Produced by Rapid Medical Ltd., an Affiliate Company of MicroPort® NeuroTech, Enters",
+         "url": "https://www.microport.com/en/news/tigertriever-revascularization-device-produced-rapid-medical-ltd-affiliate-company-microport-neurotech-enters",
+         "publishedOn": "2020-06-01T00:00:00.000Z",
+         "source": "microport.com",
+         "edit": {
+          "r": "news",
+          "id": 38,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 39,
+         "title": "Rapid Medical Announces Ahead of Schedule Completion of Patient Enrollment for the TIGER Clinical Study for TIGERTRIEVER Thrombectomy Device",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-ahead-of-schedule-completion-of-patient-enrollment-for-the-tiger-clinical-study-for-tigertriever-thrombectomy-device-301036466.html",
+         "publishedOn": "2020-04-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 39,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 41,
+         "title": "Los Robles Hospital Treats Stroke With New Device",
+         "url": "https://www.toacorn.com/articles/los-robles-hospital-treats-stroke-with-new-device/",
+         "publishedOn": "2019-12-01T00:00:00.000Z",
+         "source": "toacorn.com",
+         "edit": {
+          "r": "news",
+          "id": 41,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 40,
+         "title": "USA Health Neurologist First in the State to Perform New Aneurysm Procedure",
+         "url": "https://www.fox10tv.com/news/mobile_county/usa-health-neurologist-first-in-the-state-to-perform-new/article_9960a398-211c-11ea-b6a8-334a3590d01d.html",
+         "publishedOn": "2019-12-01T00:00:00.000Z",
+         "source": "fox10tv.com",
+         "edit": {
+          "r": "news",
+          "id": 40,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 43,
+         "title": "UMass Doctors Pilot First New England Use of Israeli Aneurysm Device",
+         "url": "https://www.wbjournal.com/article/umass-doctors-pilot-first-new-england-use-of-israeli-aneurysm-device",
+         "publishedOn": "2019-08-01T00:00:00.000Z",
+         "source": "wbjournal.com",
+         "edit": {
+          "r": "news",
+          "id": 43,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 42,
+         "title": "The 1st International Distal Thrombectomy Summit Called for a Need to “Define Indications for Distal Thrombectomy and Invest in Registries”",
+         "url": "https://neuronewsinternational.com/1st-international-distal-thrombectomy-summit/",
+         "publishedOn": "2019-08-01T00:00:00.000Z",
+         "source": "NeuroNews",
+         "edit": {
+          "r": "news",
+          "id": 42,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 44,
+         "title": "Life-Threatening Brain Aneurysm Treated With First-in-U.S. Device at Los Robles",
+         "url": "https://www.vcstar.com/story/news/local/2019/07/26/brain-aneurysm-treated-comaneci-device-first-time-u-s/1832108001/",
+         "publishedOn": "2019-07-01T00:00:00.000Z",
+         "source": "vcstar.com",
+         "edit": {
+          "r": "news",
+          "id": 44,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 45,
+         "title": "Mechanical Thrombectomy in Distal MCA Occlusion Using Tiger 13",
+         "url": "https://www.linnc.com/Course-programs/LINNC-2019/Mechanical-Thrombectomy-in-distal-MCA-occlusion-using-Tiger-13",
+         "publishedOn": "2019-06-01T00:00:00.000Z",
+         "source": "linnc.com",
+         "edit": {
+          "r": "news",
+          "id": 45,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 46,
+         "title": "Rapid Medical Announces FDA Approval of Novel Temporary Aneurysm Embolization Assist Device",
+         "url": "https://www.prnewswire.com/il/news-releases/rapid-medical-announces-fda-approval-of-novel-temporary-aneurysm-embolization-assist-device-300844039.html",
+         "publishedOn": "2019-05-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 46,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 47,
+         "title": "Rapid Medical Raises $20 Million in New Funding to Support Clinical and Commercialization of First-in-class Stroke Treatment Products",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-raises-20-million-in-new-funding-to-support-clinical-and-commercialization-of-first-in-class-stroke-treatment-products-300835469.html",
+         "publishedOn": "2019-04-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 47,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 48,
+         "title": "Rapid Medical Receives CE Mark Approval for TIGERTRIEVER 13",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-approval-for-tigertriever-13-300689172.html",
+         "publishedOn": "2018-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 48,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 49,
+         "title": "Rapid Medical First Patient Enrolled to the TIGER Pivotal Clinical Study",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tiger-pivotal-clinical-study-682789031.html",
+         "publishedOn": "2018-05-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 49,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 50,
+         "title": "Rapid Medical: First Patient Enrolled to the TIGERTRIEVER Acute Ischemic Stroke Registry",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tigertriever-acute-ischemic-stroke-registry-645690163.html",
+         "publishedOn": "2017-09-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 50,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 51,
+         "title": "Rapid Medical Announces $9M in New Funding to Advance Commercialization of First-In-Class Stroke Treatment Products",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-9m-in-new-funding-to-advance-commercialization-of-first-in-class-stroke-treatment-products-634938533.html",
+         "publishedOn": "2017-07-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 51,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 52,
+         "title": "Rapid Medical's Comaneci Adjustable Remodeling Mesh Exceeds 500 Successful Aneurysm Treatments",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medicals-comaneci-adjustable-remodeling-mesh-exceeds-500-successful-aneurysm-treatments-592723241.html",
+         "publishedOn": "2016-09-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 52,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 53,
+         "title": "Rapid Medical Announces First Stroke Patient Treated With TIGERTRIEVER",
+         "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-first-stroke-patient-treated-with-tigertriever-565743841.html",
+         "publishedOn": "2016-01-01T00:00:00.000Z",
+         "source": "PR Newswire",
+         "edit": {
+          "r": "news",
+          "id": 53,
+          "prefix": ""
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Past events"
+        },
+        {
+         "c": "heading",
+         "level": 4,
+         "text": "2026"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Oct 12"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "From Physics to Practice"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Busan · Park Hyatt Busan"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Sep 15–16"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "TIGERTRIEVER™ Workshop in partnership with Kaneka"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Sep 3"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "DRIVEWIRE™ 24 in Clinical Practice"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Marseille · ESMINT"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Jun 1"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "More than Conventional"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Paris · Hôtel Regina Louvre · LINNC"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "heading",
+         "level": 4,
+         "text": "2025"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Oct 22"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Meet The Experts Dinner event at DGNR 2025"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "DGNR"
+            }
+           ],
+           "grow": true
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Телефон: карусель листается пальцем, лента по годам длинная (53 новости, «Show more»), архив событий — в самом низу."
+   ]
+  },
+  {
+   "id": "event-past-asis",
+   "title": "Past event · as is",
+   "url": "rapid-medical.com/events/drivewire-24-esmint-2026",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "link",
+         "text": "← News & Events"
+        },
+        {
+         "c": "eyebrow",
+         "text": "ESMINT · Marseille"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "DRIVEWIRE™ 24 in Clinical Practice"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Real-World Experience from Two Perspectives with Dr. Rui de Carvalho and Dr. Markus Holtmannspötter"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "September 3, 2026"
+        },
+        {
+         "c": "alert",
+         "tone": "info",
+         "title": "This event has taken place",
+         "annotation": "Как есть: после даты — плашка и описание; итогов (recap) нет — и больше ничего. Нет связи с тем, что представили (исследования, видео докладов), и с ближайшими событиями."
+        },
+        {
+         "c": "media",
+         "kind": "page",
+         "label": "Event description",
+         "ratio": "21/9"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "news-mobbin",
+   "title": "News & Events · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Верх раздела: главная новость и лента без повторов"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас карусель из 5 новостей, а сразу под ней лента начинается с тех же новостей (находка 15). Как показать главное один раз?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/news/cohere.webp",
+           "source": "Cohere",
+           "caption": "одна главная новость крупно, ниже лента: дата в левой колонке, заголовок справа",
+           "url": "https://mobbin.com/sites/sections/f69a1b3c-6ba4-4179-b582-56d2e975aa3f"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/canva.webp",
+           "source": "Canva",
+           "caption": "главная крупно + 3 рядом списком, без карусели",
+           "url": "https://mobbin.com/sites/sections/f2c4e533-861b-4e23-8b91-d7fd68b49c09"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/anthropic.webp",
+           "source": "Anthropic",
+           "caption": "featured-карточки + контакты для прессы рядом",
+           "url": "https://mobbin.com/sites/sections/1b865afc-0b4a-47df-aa83-4417633c5bb3"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/airtable.webp",
+           "source": "Airtable",
+           "caption": "«Top stories» с подписью раздела над карточкой",
+           "url": "https://mobbin.com/sites/sections/70ed3e3c-c7b2-4b46-9cdd-80981ad21bae"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Лента: виды материалов и куда ведёт ссылка"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Новости, исследования и апдейты теперь одна сущность (ADR-009). Нужен ли фильтр по виду? Как отличить «откроется у нас» от «уйдёт на BusinessWire»?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/news/wix.webp",
+           "source": "Wix",
+           "caption": "фильтр-метки «Press Releases · In the News · Company Updates» и метка вида на карточке",
+           "url": "https://mobbin.com/sites/sections/29512bfc-9455-41ce-9e68-747c125e9a68"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/qatalog.webp",
+           "source": "Qatalog",
+           "caption": "строки: дата · заголовок · стрелка ↗ — видно, что ссылка внешняя",
+           "url": "https://mobbin.com/sites/sections/85686f39-90c9-488b-b73c-25c3f920d425"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/headspace.webp",
+           "source": "Headspace Health",
+           "caption": "заголовок раздела слева, лента справа — «общая линия»",
+           "url": "https://mobbin.com/sites/sections/6ff103ae-a58a-4929-8f9b-e7cc58b36099"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Страница новости"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Своих страниц у новостей сейчас нет. Как выглядит пресс-релиз у себя на сайте?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/news/upwork.webp",
+           "source": "Upwork",
+           "caption": "крупный заголовок, вводка курсивом, «город — дата —» в начале текста, «Share» сбоку",
+           "url": "https://mobbin.com/sites/sections/566d805d-5d8d-4c7a-aae3-f63974151edb"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "События: предстоящие и прошедшие"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас предстоящих нет — блок исчезает целиком. Показывать пустое состояние? Переключатель «Upcoming / Past»?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/news/sketch.webp",
+           "source": "Sketch",
+           "caption": "переключатель «Upcoming events / Past events»",
+           "url": "https://mobbin.com/sites/sections/8c0f223c-c7c6-407b-a93c-185a6f940927"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/slack.webp",
+           "source": "Slack",
+           "caption": "честное пустое состояние «There are currently no upcoming events»",
+           "url": "https://mobbin.com/sites/sections/8d4f0086-b2ce-4730-a20f-8e3b5524e313"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/customerio.webp",
+           "source": "Customer.io",
+           "caption": "ближайшее событие крупно, остальные строками: город, дата, тип",
+           "url": "https://mobbin.com/sites/sections/ca975cb9-511e-4117-ace5-17ae19799a84"
+          },
+          {
+           "c": "ref",
+           "src": "refs/news/koto.webp",
+           "source": "Koto",
+           "caption": "прошедшие строками: номер, название, дата, описание — моно-подписи",
+           "url": "https://mobbin.com/sites/sections/52eb4549-452c-4e5f-882b-8bd6771150bd"
+          }
+         ]
+        }
+       ]
+      }
+     ]
     }
    ]
   },
