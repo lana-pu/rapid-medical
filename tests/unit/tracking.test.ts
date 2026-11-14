@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { eventForLink } from "@/lib/tracking";
+import { describe, expect, it, vi } from "vitest";
+import { attribution, eventForLink, rememberPage, sourceLabel } from "@/lib/tracking";
 
 describe("eventForLink", () => {
   const ctx = { inHeader: false, pathname: "/ous/therapies" };
@@ -47,5 +47,21 @@ describe("isPdf", () => {
     expect(isPdf("/uploads/2026-11/case.pdf")).toBe(true);
     expect(isPdf("https://example.com/a/B.PDF?x=1")).toBe(true);
     expect(isPdf("/news/pdf-tools")).toBe(false);
+  });
+});
+
+describe("the page before the form (UX walk 2026-11-14)", () => {
+  it("a request says which therapy led to the form", () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal("sessionStorage", { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) });
+    vi.stubGlobal("location", { pathname: "/contact-us" });
+    rememberPage("/");
+    rememberPage("/us/therapies/lvo");
+    rememberPage("/contact-us");
+    rememberPage("/contact-us"); // a re-render is not a new page
+    expect(attribution()).toMatchObject({ form_page: "/contact-us", previous_page: "/us/therapies/lvo" });
+    expect(sourceLabel("previous_page")).toBe("Page before the form");
+    expect(sourceLabel("something_else")).toBe("something_else");
+    vi.unstubAllGlobals();
   });
 });

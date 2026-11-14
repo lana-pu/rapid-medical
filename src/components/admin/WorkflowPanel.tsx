@@ -3,6 +3,7 @@ import { unpublishResource, discardDraftAction, scheduleAction, restoreAction } 
 import { Button, StatusBadge, formatDate } from "./ui";
 import Link from "next/link";
 import { israelZoneLabel, toIsraelInput } from "@/lib/israel-time";
+import { DeleteDraftButton } from "./DeleteDraftButton";
 
 export function WorkflowPanel({
   resourceSlug,
@@ -13,6 +14,7 @@ export function WorkflowPanel({
   previewHref,
   editHref,
   alwaysLive = false,
+  label = "",
 }: {
   resourceSlug: string;
   id: number;
@@ -23,6 +25,8 @@ export function WorkflowPanel({
   editHref?: string | null;
   /** Home, About…: the site needs them, no Unpublish */
   alwaysLive?: boolean;
+  /** the record's name, for «Delete draft»'s question */
+  label?: string;
 }) {
   const hidden = (
     <>
@@ -37,7 +41,8 @@ export function WorkflowPanel({
       {/* State */}
       <div className="rounded-lg border border-neutral-200 bg-white p-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs uppercase text-neutral-500">Live</span>
+          {/* «Live» over a «draft» badge read as a contradiction (UX walk 2026-11-14) */}
+          <span className="text-xs uppercase text-neutral-500">Status</span>
           <StatusBadge status={liveStatus} />
         </div>
         {pending && (
@@ -57,6 +62,7 @@ export function WorkflowPanel({
           {pending && (
             <form action={discardDraftAction}>{hidden}<Button type="submit" variant="danger">Discard changes</Button></form>
           )}
+          {liveStatus !== "published" && !alwaysLive && <DeleteDraftButton resourceSlug={resourceSlug} id={id} label={label} />}
         </div>
         {previewHref && (
           <div className="mt-3 text-xs">

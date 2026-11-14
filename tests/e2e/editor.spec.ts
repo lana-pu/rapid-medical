@@ -298,6 +298,17 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   await expect(page.locator("h1")).toHaveText(original);
   await publishFromEditor(page);
 
+  // restoring the version that is live leaves nothing to publish (UX walk 2026-11-14)
+  await h1.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("Restore same test");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).first().getByRole("button", { name: "Restore this version" }).click();
+  await expect(page.getByRole("status")).toHaveText(/nothing to publish/);
+  await expect(page.locator('#rm-editor-ui button:has-text("Publish")')).toBeDisabled();
+
   // restoring a version taken while live does not publish an unpublished page (Publish stays a step)
   const id = sql("select id from solutions where region='apac' and slug='mvo'");
   sql(`update solutions set status='draft' where id=${id}`);
@@ -374,4 +385,26 @@ test("Pages: search, open in the editor, new page from a template", async ({ pag
   await dlg.getByRole("button", { name: "Create and open" }).click();
   await expect(dlg).toContainText("already exists in Americas");
   sql("delete from pages where slug='e2e-campaign'");
+});
+
+test("user walk 2026-11-14: the Statement media takes a picture or a video; the library opens above the panel", async ({ page }) => {
+  await login(page);
+  await open(page, "/");
+  // the media slot of the Statement section names both fields: a picture goes to the picture, not into the video
+  const slot = page.locator(".rm-e-media", { has: page.locator("video") }).first();
+  const tag = JSON.parse((await slot.getAttribute("data-e")) ?? "{}") as { f: string; fv?: string };
+  expect(tag.f).toMatch(/imageUrl$/);
+  expect(tag.fv).toMatch(/videoUrl$/);
+  await slot.scrollIntoViewIfNeeded();
+  await slot.click();
+  const panel = page.getByRole("complementary", { name: "Picture or video" });
+  await expect(panel.locator("video")).toBeVisible(); // the current clip, not a broken picture
+  await panel.getByRole("button", { name: "Replace image…" }).click();
+  const lib = page.getByRole("dialog", { name: "Media library" });
+  await expect(lib).toBeVisible();
+  // nothing of the editor covers the library: its right edge is clickable
+  const box = (await lib.locator("xpath=./div").boundingBox())!;
+  const top = await page.evaluate(([x, y]) => (document.elementFromPoint(x, y)?.closest('[aria-label="Media library"]') ? "library" : "other"), [box.x + box.width - 20, box.y + 20]);
+  expect(top).toBe("library");
+  await page.keyboard.press("Escape");
 });

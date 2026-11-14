@@ -25,6 +25,9 @@ describe("homeToBlocks", () => {
     expect(h.data.cta?.href).toBe("/choose-your-location");
     expect(fieldPath(h.edit, "cta.href")).toBe("heroCtaHref");
     expect(fieldPath(bs[1].edit, "stats.0.value")).toBe("stats.0.value");
+    // one media slot, picture or video: a picture never lands in the video field (UX walk 2026-11-14)
+    expect(fieldPath(bs[1].edit, "imageUrl")).toBe("problemImageUrl");
+    expect(fieldPath(bs[1].edit, "videoUrl")).toBe("problemVideoUrl");
   });
   it("uses the remembered region and shows the dark band only with content", () => {
     const bs = homeToBlocks({ home: { engineeredBody: "x" }, news: [], region: "us" });

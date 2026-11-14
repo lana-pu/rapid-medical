@@ -13,6 +13,18 @@ export function track(name: string, params: Record<string, string> = {}) {
 }
 
 const KEY = "rm_attr";
+
+/** How a source field reads in the admin and in the notification email (keys stay as stored). */
+export const SOURCE_LABELS: Record<string, string> = {
+  form_page: "Form sent from",
+  previous_page: "Page before the form",
+  landing_page: "First page of the visit",
+  referrer: "Came from",
+  utm_source: "Campaign source",
+  utm_medium: "Campaign medium",
+  utm_campaign: "Campaign",
+};
+export const sourceLabel = (k: string) => SOURCE_LABELS[k] ?? k;
 const UTM = ["utm_source", "utm_medium", "utm_campaign"] as const;
 const cut = (s: string) => s.slice(0, 300);
 
@@ -33,11 +45,26 @@ export function captureFirstTouch() {
   }
 }
 
-/** Source fields for a form submission: the page it is sent from plus the first touch of the visit. */
+const PAGES = "rm_pages";
+
+/** The site page before this one in the tab, e.g. the therapy whose «Request a demo» led to the form. Call on every page. */
+export function rememberPage(pathname: string) {
+  try {
+    const [cur] = JSON.parse(sessionStorage.getItem(PAGES) ?? "[]") as string[];
+    if (cur === pathname) return;
+    sessionStorage.setItem(PAGES, JSON.stringify([cut(pathname), ...(cur ? [cur] : [])]));
+  } catch {
+    /* storage blocked */
+  }
+}
+
+/** Source fields for a form submission: the page it is sent from, the page before it and the first touch of the visit. */
 export function attribution(): Record<string, string> {
   const out: Record<string, string> = {};
   try {
     out.form_page = cut(location.pathname);
+    const [cur, prev] = JSON.parse(sessionStorage.getItem(PAGES) ?? "[]") as unknown[];
+    if (cur === location.pathname && typeof prev === "string" && prev) out.previous_page = cut(prev);
     const first = JSON.parse(sessionStorage.getItem(KEY) ?? "{}") as Record<string, unknown>;
     for (const [k, v] of Object.entries(first)) if (typeof v === "string") out[k] = cut(v);
   } catch {

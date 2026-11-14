@@ -60,11 +60,12 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 ## Панель workflow (только ресурсы со `status`)
 | Элемент | Когда показан | Кто может |
 |---|---|---|
-| Live-статус, плашка «Unpublished changes by … · дата» | всегда / при pending | — |
+| «Status» + метка статуса, плашка «Unpublished changes by … · дата» | всегда / при pending | — |
 | «Scheduled to publish …» | если `publishAt` | — |
 | **Publish / Publish changes** | в нижней панели формы (не в панели справа: публикуется то, что в форме, а не последнее автосохранение) | любая роль (согласования нет, ADR-006) |
 | **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись (ревизия «Unpublished: pending changes kept in the record»), одобрение сбрасывается, расписание отменяется |
 | **Discard changes** | есть pending | любая роль |
+| **Delete draft** | запись не на сайте (не `published`), не Home/About… | любая роль; «Delete «{название}»? This cannot be undone.» → запись и её расписание удаляются, возврат в список с «Deleted 1 item(s).». Опубликованную — сначала Unpublish (UX-прогон 2026-11-14: удалить черновик можно было только из списка) |
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
 | **Schedule publication** (datetime-local, Set, clear) — «Publish later» | всегда | любая роль; время — по Израилю, подпись «Time zone: Israel (UTC+2/+3)» по дате |
 | **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |

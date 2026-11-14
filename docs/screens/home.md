@@ -8,7 +8,7 @@
 | Порядок | Блок · вариант | Из полей |
 |---|---|---|
 | 1 | Hero · `banner` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, кнопка, `heroVideoUrl` |
-| 2 | Text and media · `statement` | `problemTitle`, `problemVideoUrl`, `stats[]`, `solutionLine`, кнопка «Request a demo» |
+| 2 | Text and media · `statement` | `problemTitle`, `problemVideoUrl` / `problemImageUrl`, `stats[]`, `solutionLine`, кнопка «Request a demo» |
 | 3 | Text · `dark` | `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`; есть заголовок или текст |
 | 4 | News · `cards` | `newsTitle`, 4 новости, кнопка «View all news» |
 
@@ -18,7 +18,7 @@
 ## Данные
 | Источник | Что |
 |---|---|
-| `site_settings.home` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, `heroCtaLabel`, `heroCtaHref`, `heroVideoUrl`, `problemTitle`, `problemVideoUrl`, `stats[] {value,label,iconUrl}`, `solutionLine`, `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`, `newsTitle` |
+| `site_settings.home` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, `heroCtaLabel`, `heroCtaHref`, `heroVideoUrl`, `problemTitle`, `problemVideoUrl`, `problemImageUrl`, `stats[] {value,label,iconUrl}`, `solutionLine`, `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`, `newsTitle` |
 | `news_items` | `getFeaturedNews(4)`: опубликованные с `featured = true` по дате; если таких нет — 4 последних опубликованных |
 | cookie `rm_region` | Куда ведут CTA (регион последнего визита) |
 
@@ -27,7 +27,8 @@
    Заголовок: `heroLine1` / `heroLine2` (дефолты «EXPAND» / «WHAT’S POSSIBLE»). `heroSub`, `heroBody` —
    только если заполнены. CTA: `heroCtaLabel` (дефолт «Explore Our Therapies») → `heroCtaHref`, иначе
    `/{region}/therapies`, а без региона — `/choose-your-location`.
-2. **Проблема**: `problemTitle` + `problemVideoUrl` (каждый — если заполнен); ряд `stats` (если есть);
+2. **Проблема**: `problemTitle` + медиа: видео `problemVideoUrl`, без видео — картинка `problemImageUrl` (она же
+   постер видео; каждый — если заполнен); ряд `stats` (если есть);
    `solutionLine`; кнопка «Request a demo» → `/contact-us?region={region}&topic=demo` (без региона — без `region`).
 3. **Engineered-баннер** (`Banner`): только если есть `engineeredTitle` или `engineeredBody`; фон — `engineeredImageUrl`.
 4. **Новости**: заголовок `newsTitle` (дефолт «At the forefront of advancing stroke intervention»), до 4 карточек
@@ -45,7 +46,8 @@
 
 ## On-page editor
 Редактируются: `heroLine1/2`, `heroSub`, `heroBody`, CTA (label+href как ссылка), `problemTitle`,
-`problemVideoUrl` (медиа), `stats.{i}.value|label`, `solutionLine`, `engineeredTitle`, `engineeredBody`,
+`problemImageUrl` + `problemVideoUrl` (одно медиа: «Replace image…», «Replace video…», «Remove video (show image)» —
+как у остальных секций с медиа; UX-прогон 2026-11-14: картинка раньше попадала в поле видео), `stats.{i}.value|label`, `solutionLine`, `engineeredTitle`, `engineeredBody`,
 `newsTitle`, заголовки новостей (`news.title`).
 Не редактируются на странице (только Site settings → Home): `heroVideoUrl`, `engineeredImageUrl`,
 `stats.{i}.iconUrl`; текст кнопок «Request a demo», «Continue reading», «View all news» захардкожен.

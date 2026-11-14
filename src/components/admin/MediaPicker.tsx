@@ -73,7 +73,8 @@ export function MediaPicker({ kind = "any", onPick, onClose }: { kind?: MediaKin
   const pages = Math.max(1, Math.ceil(total / 48));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose} role="dialog" aria-modal>
+    // above the page editor's bar and side panel (z 1000–1004): opened from «Picture or video» it was half hidden (UX walk 2026-11-14)
+    <div className="fixed inset-0 z-[1005] flex items-center justify-center bg-black/50 p-4" onClick={onClose} role="dialog" aria-modal aria-label="Media library">
       <div className="flex h-[85vh] w-full max-w-5xl flex-col rounded-lg bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3">
           <h2 className="text-sm font-semibold">Media library</h2>

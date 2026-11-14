@@ -216,8 +216,9 @@ export function LinkForm({ label, href, hasHref, onSave, onCancel }: { label: st
 export function MediaActions({ image, video, hasVideo, onReplace, onRemoveVideo, onClear }: { image: string; video: string; hasVideo: boolean; onReplace: (kind: "image" | "video") => void; onRemoveVideo: () => void; onClear: () => void }) {
   return (
     <div className="space-y-4 text-sm">
-      {video ? (
-        <video src={video} className="w-full rounded border border-neutral-200" muted controls />
+      {/* imported pages sometimes keep a clip in the picture field: show it as a clip, not a broken picture */}
+      {video || /\.(mp4|webm|mov)(\?|$)/i.test(image) ? (
+        <video src={video || image} className="w-full rounded border border-neutral-200" muted controls />
       ) : image ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={image} alt="" className="w-full rounded border border-neutral-200" />

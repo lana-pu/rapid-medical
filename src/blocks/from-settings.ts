@@ -22,7 +22,7 @@ export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id,
 export type HomeSettings = {
   heroLine1?: string; heroLine2?: string; heroSub?: string; heroBody?: string;
   heroCtaLabel?: string; heroCtaHref?: string; heroVideoUrl?: string;
-  problemTitle?: string; problemVideoUrl?: string; stats?: Stat[]; solutionLine?: string;
+  problemTitle?: string; problemVideoUrl?: string; problemImageUrl?: string; stats?: Stat[]; solutionLine?: string;
   engineeredTitle?: string; engineeredBody?: string; engineeredImageUrl?: string; newsTitle?: string;
 };
 
@@ -48,11 +48,12 @@ export function homeToBlocks({ home, news, region }: { home: HomeSettings; news:
       data: {
         title: home.problemTitle ?? "",
         videoUrl: home.problemVideoUrl,
+        imageUrl: home.problemImageUrl,
         stats: home.stats,
         body: home.solutionLine,
         link: { label: "Request a demo", href: region ? `/contact-us?region=${region}&topic=demo` : "/contact-us?topic=demo" },
       },
-      edit: { r, map: { title: "problemTitle", videoUrl: "problemVideoUrl", stats: "stats", body: "solutionLine" } },
+      edit: { r, map: { title: "problemTitle", videoUrl: "problemVideoUrl", imageUrl: "problemImageUrl", stats: "stats", body: "solutionLine" } },
     },
   ];
   if (home.engineeredTitle || home.engineeredBody) {

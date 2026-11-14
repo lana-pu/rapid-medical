@@ -462,3 +462,39 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
   await page.goto("/api/editor?off=1&redirect=/");
   await expect(page.locator("[data-e]")).toHaveCount(0);
 });
+
+test("user walk 2026-11-14: a draft is deleted from its own page; a request names the page before the form", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/news/new");
+  await page.getByLabel(/^Title/).fill("E2E draft to delete");
+  await page.getByLabel(/^Date/).fill("2026-11-14");
+  await page.getByLabel(/^External link/).fill("https://example.com/e2e");
+  await page.getByRole("button", { name: "Create draft" }).click();
+  await page.waitForURL(/\/admin\/news\/\d+/);
+  await expect(page.getByText("Status", { exact: true })).toBeVisible();
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "Delete draft" }).click();
+  await page.waitForURL(/\/admin\/news\?bulk=delete&n=1/);
+  expect(sql("select count(*) from news_items where title = 'E2E draft to delete'")).toBe("0");
+
+  // a published item has no Delete draft: Unpublish first
+  const live = sql("select id from news_items where status = 'published' order by id limit 1");
+  await page.goto(`/admin/news/${live}`);
+  await expect(page.getByRole("button", { name: "Delete draft" })).toHaveCount(0);
+
+  // the therapy whose «Request a demo» led to the form is in the request
+  await page.goto("/us/therapies/lvo");
+  await page.getByRole("link", { name: "Request a demo" }).first().click();
+  await page.waitForURL(/\/contact-us/);
+  const form = page.locator("form[data-form]").first();
+  await form.locator("input[name=firstName]").fill("Walk");
+  await form.locator("input[name=lastName]").fill("Tester");
+  await form.locator("input[name=email]").fill("walk@example.com");
+  await form.getByRole("button", { name: "Submit" }).click();
+  await expect(page.getByText(/Thank you/)).toBeVisible();
+  const id = sql("select id from contact_submissions where email = 'walk@example.com' order by id desc limit 1");
+  expect(sql(`select meta->>'previous_page' from contact_submissions where id = ${id}`)).toBe("/us/therapies/lvo");
+  await page.goto(`/admin/submissions/${id}`);
+  await expect(page.getByText("Page before the form")).toBeVisible();
+  sql(`delete from contact_submissions where id = ${id}`);
+});

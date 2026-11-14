@@ -198,7 +198,7 @@ export async function pageHistory(ref: PageRef): Promise<{ items: HistoryItem[] 
 }
 
 /** Put a version back on the page as a draft (live after Publish). */
-export async function restorePage(ref: PageRef, revisionId: number, base?: string): Promise<{ version: string; undo: StoredBlock[] } | Fail> {
+export async function restorePage(ref: PageRef, revisionId: number, base?: string): Promise<{ version: string; undo: StoredBlock[]; same: boolean } | Fail> {
   try {
     const user = await requireEditor();
     const res = pageResource(ref.r);
@@ -207,7 +207,9 @@ export async function restorePage(ref: PageRef, revisionId: number, base?: strin
     await checkBase(res, ref.id, base, user);
     const before = await getEditable(res, ref.id);
     await restoreRevision(res, revisionId, user);
-    return { version: await pageVersion(res, ref.id), undo: (before?.row.blocks as StoredBlock[] | null) ?? [] };
+    const after = await getEditable(res, ref.id);
+    const same = after?.live.status === "published" && !after.draft?.data;
+    return { version: await pageVersion(res, ref.id), undo: (before?.row.blocks as StoredBlock[] | null) ?? [], same };
   } catch (err) {
     return fail(err);
   }

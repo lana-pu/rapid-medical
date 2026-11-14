@@ -553,7 +553,7 @@ export default function EditorOverlay() {
       }
       version.current = res.version;
       pushUndo({ kind: "blocks", prev: res.undo, label: "Restored a version" });
-      say("Version restored. Not live yet — check it, then Publish");
+      say(res.same ? "Version restored — it is what is live, nothing to publish" : "Version restored. Not live yet — check it, then Publish");
       setPanel(null);
       await afterChange();
     } finally {

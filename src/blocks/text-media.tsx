@@ -1,6 +1,6 @@
 import type { ActionLink, Chart, Stat } from "@/db/schema";
 import { Section, H2, Btn, Img, Eyebrow } from "@/components/site/primitives";
-import { MediaBlock, Video } from "@/components/site/Media";
+import { MediaBlock } from "@/components/site/Media";
 import { StatCircles, StatRow } from "@/components/site/blocks/Stats";
 import { BarChart } from "@/components/site/blocks/BarChart";
 import { F, FM } from "./edit";
@@ -34,7 +34,8 @@ function TextMedia({ variant, data: d, edit: e }: BlockProps<"textMedia">) {
       <Section>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>{d.title && <p className="max-w-xl text-2xl font-medium leading-snug"><F e={e} k="title">{d.title}</F></p>}</div>
-          {d.videoUrl && <FM e={e} k="videoUrl"><Video src={d.videoUrl} /></FM>}
+          {/* one media slot, picture or video, like the other variants: a picture never lands in the video field */}
+          {(d.videoUrl || d.imageUrl) && <FM e={e} k="imageUrl" kv="videoUrl"><MediaBlock videoUrl={d.videoUrl} imageUrl={d.imageUrl} alt={d.title} /></FM>}
         </div>
         {d.stats && d.stats.length > 0 && <div className="mt-16"><StatRow items={d.stats} render={(s, i, part) => <F e={e} k={`stats.${i}.${part}`}>{s[part]}</F>} /></div>}
         {d.body && <p className="mt-12 text-lg"><F e={e} k="body">{d.body}</F></p>}
@@ -116,7 +117,7 @@ export const textMedia: BlockDef<"textMedia"> = {
     { id: "mediaLeft", label: "Media left" },
     { id: "threeColumn", label: "Three columns", description: "Media, text and a second image (device photo)" },
     { id: "links", label: "With link buttons", description: "On white, image on the right, several buttons" },
-    { id: "statement", label: "Statement", description: "Large line and video, then key numbers, a closing line and a button" },
+    { id: "statement", label: "Statement", description: "Large line and a video or picture, then key numbers, a closing line and a button" },
   ],
   fields: [
     { key: "eyebrow", label: "Eyebrow", kind: "text" },

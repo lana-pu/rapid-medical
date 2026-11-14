@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { captureFirstTouch, eventForLink, track } from "@/lib/tracking";
+import { captureFirstTouch, eventForLink, rememberPage, track } from "@/lib/tracking";
 
 /**
  * Remembers where the visit came from (for form submissions) and reports link clicks that matter:
@@ -14,6 +14,7 @@ export function Tracking() {
 
   useEffect(() => {
     captureFirstTouch();
+    rememberPage(pathname);
   }, [pathname]);
 
   useEffect(() => {

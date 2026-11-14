@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth";
 import { saveRequest, takeRequest } from "@/admin/requests";
 import { STATUS_LABEL, formLabel } from "@/admin/request-labels";
 import { Button, LinkButton, Notice, PageHeader, formatDate, inputCls } from "@/components/admin/ui";
+import { sourceLabel } from "@/lib/tracking";
 
 const when = (d: Date) => formatDate(d, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jerusalem" });
 
@@ -46,7 +47,7 @@ export default async function SubmissionPage({ params, searchParams }: { params:
             ))}
             {Object.entries(s.meta).map(([k, v]) => (
               <div key={k} className="contents">
-                <dt className="text-neutral-500">{k}</dt>
+                <dt className="text-neutral-500">{sourceLabel(k)}</dt>
                 <dd>{v}</dd>
               </div>
             ))}

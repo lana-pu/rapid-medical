@@ -7,7 +7,7 @@ import { audit } from "@/lib/audit";
 import { fromIsraelInput } from "@/lib/israel-time";
 import { getResource } from "./resources";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
-import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, schedule, restoreRevision, hasWorkflow } from "./workflow";
+import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, schedule, restoreRevision, hasWorkflow } from "./workflow";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -107,6 +107,14 @@ export async function discardDraftAction(fd: FormData) {
   const { user, res, id } = await ctx(fd);
   await discardDraft(res, id, user);
   redirect(`/admin/${res.slug}/${id}?discarded=1`);
+}
+
+/** «Delete draft» on the record's page: only what is not on the site (UX walk 2026-11-14). */
+export async function deleteDraftRecordAction(fd: FormData) {
+  const { user, res, id } = await ctx(fd);
+  if (!(await deleteUnpublished(res, id, user))) redirect(`/admin/${res.slug}/${id}?error=Unpublish+it+first%3A+only+a+draft+can+be+deleted+here`);
+  revalidate(res.revalidate);
+  redirect(`/admin/${res.slug}?bulk=delete&n=1`);
 }
 
 export async function scheduleAction(fd: FormData) {

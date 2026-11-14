@@ -6,6 +6,7 @@ import { db, contactSubmissions } from "@/db";
 import { sendMail } from "@/lib/mail";
 import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
+import { sourceLabel } from "./tracking";
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
@@ -76,7 +77,7 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
   const lines = [
     `Form: ${d.form}`, `Topic: ${d.topic}`, `Name: ${d.firstName} ${d.lastName}`, `Organization: ${d.organization}`,
     `Email: ${d.email}`, `Phone: ${d.phone}`, `Region: ${d.region}`, `Country: ${d.country}`, `State: ${d.state}`,
-    `Opt-in: ${d.optIn ? "yes" : "no"}`, ...Object.entries(d.meta).map(([k, v]) => `${k}: ${v}`), "", d.message,
+    `Opt-in: ${d.optIn ? "yes" : "no"}`, ...Object.entries(d.meta).map(([k, v]) => `${sourceLabel(k)}: ${v}`), "", d.message,
     "", `View in admin: ${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions/${row.id}`,
   ];
   try {

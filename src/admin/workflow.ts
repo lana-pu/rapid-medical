@@ -4,7 +4,7 @@ import { db, drafts, revisions, type Draft, type Revision } from "@/db";
 import type { SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getResource, type Resource } from "./resources";
-import { getRow, saveRow, type Row } from "./engine";
+import { bulk, getRow, saveRow, type Row } from "./engine";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -26,6 +26,12 @@ export async function getEditable(res: Resource, id: number): Promise<{ row: Row
 }
 
 /** Strip server-managed columns before snapshotting / diffing. */
+/** Same stored values, compared as they are kept in JSON (dates as strings, missing = null). */
+export function sameData(a: Row, b: Row): boolean {
+  const norm = (r: Row) => JSON.stringify(Object.keys({ ...a, ...b }).sort().map((k) => [k, r[k] ?? null]));
+  return norm(a) === norm(b);
+}
+
 export function snapshot(res: Resource, row: Row): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const f of res.fields) out[f.name] = row[f.name] ?? null;
@@ -144,6 +150,16 @@ export async function discardDraft(res: Resource, id: number, user: SessionUser)
   await audit(user, "save", { resource: res.slug, recordId: id, meta: { discardedDraft: true } });
 }
 
+/** Delete a record that is not on the site (its page: «Delete draft»). A live record is unpublished first, on purpose. */
+export async function deleteUnpublished(res: Resource, id: number, user: SessionUser): Promise<boolean> {
+  const live = await getRow(res, id);
+  if (!live || res.alwaysLive || live.status === "published") return false;
+  await db.delete(drafts).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id))); // a schedule goes with it
+  await bulk(res, [id], "delete");
+  await audit(user, "bulk", { resource: res.slug, meta: { action: "delete", ids: [id] } });
+  return true;
+}
+
 export async function schedule(res: Resource, id: number, at: Date | null, user: SessionUser): Promise<void> {
   await db
     .insert(drafts)
@@ -189,6 +205,15 @@ export async function restoreRevision(res: Resource, revId: number, user: Sessio
   if (!live) throw new Error("Record not found");
   const data = hasWorkflow(res) ? { ...rev.data, status: live.status } : { ...rev.data };
   const { id } = await saveWithWorkflow(res, rev.recordId, data, user);
+  // Restoring what is live already leaves nothing to publish: no draft, so the editor does not say «unpublished
+  // changes» while Review says «No changes to publish» (UX walk 2026-11-14). A schedule, if any, stays.
+  if (hasWorkflow(res) && live.status === "published") {
+    const d = await getDraft(res, id);
+    if (d?.data && sameData(snapshot(res, live), d.data as Row)) {
+      if (d.publishAt) await db.update(drafts).set({ data: null }).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id)));
+      else await db.delete(drafts).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id)));
+    }
+  }
   await addRevision(res, id, "restored", rev.data, user, `Restored revision #${rev.id}`);
   await audit(user, "restore", { resource: res.slug, recordId: id, meta: { revisionId: rev.id } });
   return id;
