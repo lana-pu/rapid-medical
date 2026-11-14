@@ -72,7 +72,8 @@ def form(state='empty', phone=False):
     phone_f = I('Phone', value='+1 214 555 0142' if err else None)
     org = I('Organization', value='Baylor Scott & White' if err else None)
     country = I('Country', v='select', required=True, value='United States',
-                annotation='Одно поле «Country» вместо Region + Country + State. Регион для писем — из страны (находки 4 и 7). Зависит от ответа Emily; можно отложить.' if note else None)
+                annotation='«Country» вместо Region + Country. Регион для писем — из страны (находки 4 и 7); зависит от ответа Emily. «State» — только когда актуально: страна США или Канада (решение владелицы 2026-11-15).' if note else None)
+    state_f = I('State / Province', v='select', value='Texas' if err else None, placeholder='Select…', hint='Shown for the US and Canada' if note else None)
     msg = {'c': 'textarea', 'label': 'Message', 'value': 'We’d like a hands-on TIGERTRIEVER session for our neuro team in March.' if err else None}
     opt = {'c': 'checkbox', 'label': 'Send me news and event invitations'}
     send = {'c': 'button', 'v': 'primary', 'text': 'Send request', 'full': True,
@@ -80,9 +81,9 @@ def form(state='empty', phone=False):
     if not err: send.update(to='contact-sent', label='Send request')
     legal = T('By sending, you agree to our Privacy Statement.', 'caption')
     if phone:
-        rows = [chips, first, last, email, phone_f, org, country, msg, opt, S([send, legal], 's')]
+        rows = [chips, first, last, email, phone_f, org, country, state_f, msg, opt, S([send, legal], 's')]
     else:
-        rows = [chips, G([first, last]), G([email, phone_f]), G([org, country]), msg, opt, S([send, legal], 's')]
+        rows = [chips, G([first, last]), G([email, phone_f]), G([org, country]), G([state_f, {'c': 'spacer', 'size': 1}]), msg, opt, S([send, legal], 's')]
     return S(rows, 'm')
 
 
@@ -886,10 +887,10 @@ def about_new(phone=False):
             {'c': 'link', 'text': 'Get directions ↗'}]})
     off = S([H('Offices', 2), S(offices, 'm') if phone else dict({'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': offices},
                                                                 annotation='Офисы — один раз, карточками: адрес, телефон, почта заказов, «Get directions» (Slack, Sprout). Те же данные, что на Contact Us (Settings → Contact details).')], 'm')
-    footprint = S([H(RM['About'][5]['data']['title'], 3),
-                   {'c': 'media', 'kind': 'map', 'label': 'World map · 30+ countries · 3 offices (без кликов по регионам)', 'ratio': '21/9'},
-                   {'c': 'row', 'gap': 'm', 'align': 'center', 'items': [T('Have a question?', 'body'), {'c': 'button', 'v': 'primary', 'text': 'Contact a local representative'}]}], 'm',
-                  annotation=None if phone else 'Карта — картинка присутствия, без кликов по регионам: у неё была своя, третья разбивка стран по регионам. Кнопка ведёт в Contact Us, где регион выводится из страны — одна таблица на весь сайт.')
+    footprint = S([H(RM['About'][5]['data']['title'], 3), T(RM['About'][5]['data']['subtitle'], 'muted'),
+                   {'c': 'media', 'kind': 'map', 'label': 'Interactive map · 7 regions → Contact Us · office pins (как сейчас)', 'ratio': '21/9'},
+                   {'c': 'row', 'gap': 'm', 'align': 'center', 'items': [T(RM['About'][5]['data']['closingLine'], 'body'), {'c': 'button', 'v': 'primary', 'text': 'Contact us'}]}], 'm',
+                  annotation=None if phone else 'Карта — как сейчас (решение владелицы 2026-11-15): клик по региону → Contact Us с этим регионом, пины офисов, «Have a question?» + «Contact us». После ответа Emily регионы карты берутся из той же таблицы «страна → регион», что и IP, — чтобы разбивка на сайте была одна.')
     pad = 'm' if phone else 'l'
     return [HEADER, {'c': 'section', 'pad': pad, 'items': [intro]},
             {'c': 'section', 'pad': pad, 'rule': True, 'items': [S([lead, team_grid], 'l')]},

@@ -1112,7 +1112,25 @@
                "v": "select",
                "required": true,
                "value": "United States",
-               "annotation": "Одно поле «Country» вместо Region + Country + State. Регион для писем — из страны (находки 4 и 7). Зависит от ответа Emily; можно отложить."
+               "annotation": "«Country» вместо Region + Country. Регион для писем — из страны (находки 4 и 7); зависит от ответа Emily. «State» — только когда актуально: страна США или Канада (решение владелицы 2026-11-15)."
+              }
+             ]
+            },
+            {
+             "c": "grid",
+             "cols": 2,
+             "gap": "s",
+             "items": [
+              {
+               "c": "input",
+               "label": "State / Province",
+               "v": "select",
+               "placeholder": "Select…",
+               "hint": "Shown for the US and Canada"
+              },
+              {
+               "c": "spacer",
+               "size": 1
               }
              ]
             },
@@ -1345,6 +1363,24 @@
                "v": "select",
                "required": true,
                "value": "United States"
+              }
+             ]
+            },
+            {
+             "c": "grid",
+             "cols": 2,
+             "gap": "s",
+             "items": [
+              {
+               "c": "input",
+               "label": "State / Province",
+               "v": "select",
+               "value": "Texas",
+               "placeholder": "Select…"
+              },
+              {
+               "c": "spacer",
+               "size": 1
               }
              ]
             },
@@ -1621,6 +1657,12 @@
            "v": "select",
            "required": true,
            "value": "United States"
+          },
+          {
+           "c": "input",
+           "label": "State / Province",
+           "v": "select",
+           "placeholder": "Select…"
           },
           {
            "c": "textarea",
@@ -12978,9 +13020,14 @@
          "text": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting."
         },
         {
+         "c": "text",
+         "v": "muted",
+         "text": "Select a region to get in touch with a local representative."
+        },
+        {
          "c": "media",
          "kind": "map",
-         "label": "World map · 30+ countries · 3 offices (без кликов по регионам)",
+         "label": "Interactive map · 7 regions → Contact Us · office pins (как сейчас)",
          "ratio": "21/9"
         },
         {
@@ -12991,17 +13038,17 @@
           {
            "c": "text",
            "v": "body",
-           "text": "Have a question?"
+           "text": "Have a question? We’d love to hear from you."
           },
           {
            "c": "button",
            "v": "primary",
-           "text": "Contact a local representative"
+           "text": "Contact us"
           }
          ]
         }
        ],
-       "annotation": "Карта — картинка присутствия, без кликов по регионам: у неё была своя, третья разбивка стран по регионам. Кнопка ведёт в Contact Us, где регион выводится из страны — одна таблица на весь сайт."
+       "annotation": "Карта — как сейчас (решение владелицы 2026-11-15): клик по региону → Contact Us с этим регионом, пины офисов, «Have a question?» + «Contact us». После ответа Emily регионы карты берутся из той же таблицы «страна → регион», что и IP, — чтобы разбивка на сайте была одна."
       }
      ]
     },
@@ -13638,9 +13685,14 @@
          "text": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting."
         },
         {
+         "c": "text",
+         "v": "muted",
+         "text": "Select a region to get in touch with a local representative."
+        },
+        {
          "c": "media",
          "kind": "map",
-         "label": "World map · 30+ countries · 3 offices (без кликов по регионам)",
+         "label": "Interactive map · 7 regions → Contact Us · office pins (как сейчас)",
          "ratio": "21/9"
         },
         {
@@ -13651,12 +13703,12 @@
           {
            "c": "text",
            "v": "body",
-           "text": "Have a question?"
+           "text": "Have a question? We’d love to hear from you."
           },
           {
            "c": "button",
            "v": "primary",
-           "text": "Contact a local representative"
+           "text": "Contact us"
           }
          ]
         }
