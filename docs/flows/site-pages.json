@@ -67,8 +67,7 @@
     "imp-new",
     "imp-prompt",
     "imp-review",
-    "study-full",
-    "news-page"
+    "study-full"
    ]
   },
   {
@@ -83,6 +82,16 @@
    "title": "3 · News & Events — примеры из Mobbin",
    "screens": [
     "news-mobbin"
+   ]
+  },
+  {
+   "title": "3 · News & Events — решение (закрыта 2026-11-14)",
+   "screens": [
+    "news-new",
+    "news-new-upcoming",
+    "news-new-phone",
+    "news-page",
+    "event-past-new"
    ]
   },
   {
@@ -171,11 +180,6 @@
   },
   {
    "from": "study-full",
-   "to": "news-page",
-   "label": "тот же механизм для новости"
-  },
-  {
-   "from": "news-page",
    "to": "news-asis",
    "label": "следующая страница"
   },
@@ -193,6 +197,21 @@
    "from": "event-past-asis",
    "to": "news-mobbin",
    "label": "как у других"
+  },
+  {
+   "from": "news-mobbin",
+   "to": "news-new",
+   "label": "решение"
+  },
+  {
+   "from": "news-new",
+   "to": "news-new-upcoming",
+   "label": "когда есть события"
+  },
+  {
+   "from": "news-new",
+   "to": "news-new-phone",
+   "label": "на телефоне"
   },
   {
    "from": "text-new-phone",
@@ -4445,141 +4464,6 @@
    ]
   },
   {
-   "id": "news-page",
-   "title": "News page · same mechanism, no passport",
-   "url": "rapid-medical.com/news/drivewire-24-1000-cases",
-   "body": [
-    {
-     "c": "rm-header",
-     "region": "us"
-    },
-    {
-     "c": "section",
-     "pad": "l",
-     "items": [
-      {
-       "c": "stack",
-       "gap": "l",
-       "items": [
-        {
-         "c": "eyebrow",
-         "text": "News · DRIVEWIRE™"
-        },
-        {
-         "c": "heading",
-         "level": 1,
-         "text": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe"
-        },
-        {
-         "c": "divider"
-        },
-        {
-         "c": "grid",
-         "cols": "4fr 1fr 7fr",
-         "gap": "m",
-         "align": "start",
-         "items": [
-          {
-           "c": "stack",
-           "gap": "s",
-           "items": [
-            {
-             "c": "row",
-             "justify": "between",
-             "align": "center",
-             "items": [
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Published"
-              },
-              {
-               "c": "text",
-               "v": "small",
-               "text": "September 2025"
-              }
-             ]
-            },
-            {
-             "c": "divider"
-            },
-            {
-             "c": "row",
-             "justify": "between",
-             "align": "center",
-             "items": [
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Type"
-              },
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Press release"
-              }
-             ]
-            },
-            {
-             "c": "divider"
-            },
-            {
-             "c": "link",
-             "text": "Originally published on BusinessWire ↗"
-            }
-           ],
-           "annotation": "Сейчас новость на сайте — только заголовок и ссылка на BusinessWire: врач уходит с сайта. Здесь — своя страница с полным текстом пресс-релиза (свой материал — можно копировать) и ссылкой на оригинал."
-          },
-          {
-           "c": "spacer",
-           "size": 1
-          },
-          {
-           "c": "stack",
-           "gap": "m",
-           "items": [
-            {
-             "c": "grid",
-             "cols": 2,
-             "gap": "m",
-             "items": [
-              {
-               "c": "stat",
-               "value": "1,000+",
-               "label": "cases with DRIVEWIRE™ 24 in North America"
-              },
-              {
-               "c": "stat",
-               "value": "Europe",
-               "label": "expansion announced"
-              }
-             ],
-             "annotation": "Цифры сверху — только если они есть в тексте (ИИ предлагает, цитата проверяется по документу). Паспорта у новости нет."
-            },
-            {
-             "c": "divider"
-            },
-            {
-             "c": "media",
-             "kind": "page",
-             "label": "Full press release text — copied from BusinessWire (headings, paragraphs, quotes, About Rapid Medical)",
-             "ratio": "16/9"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "rm-footer",
-     "region": "us"
-    }
-   ]
-  },
-  {
    "id": "news-asis",
    "title": "News & Events · as is",
    "url": "rapid-medical.com/news-events",
@@ -6506,7 +6390,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас карусель из 5 новостей, а сразу под ней лента начинается с тех же новостей (находка 15). Как показать главное один раз?"
+         "text": "Решено 2026-11-14: без карусели — главная крупно и 3 рядом, лента без повторов."
         },
         {
          "c": "grid",
@@ -6563,7 +6447,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Новости, исследования и апдейты теперь одна сущность (ADR-009). Нужен ли фильтр по виду? Как отличить «откроется у нас» от «уйдёт на BusinessWire»?"
+         "text": "Решено: фильтр по виду (All · News · Studies · Company updates), «↗ источник» у внешних ссылок, дата в своей колонке."
         },
         {
          "c": "grid",
@@ -6613,7 +6497,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Своих страниц у новостей сейчас нет. Как выглядит пресс-релиз у себя на сайте?"
+         "text": "Решено: заголовок, «ключ — значение» слева (дата, вид, продукт, оригинал, поделиться), полный текст справа, материалы продукта внизу."
         },
         {
          "c": "grid",
@@ -6649,7 +6533,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас предстоящих нет — блок исчезает целиком. Показывать пустое состояние? Переключатель «Upcoming / Past»?"
+         "text": "Решено: пустое состояние строкой, ближайшее событие карточкой, остальные и архив — строками."
         },
         {
          "c": "grid",
@@ -6689,6 +6573,2422 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "news-new",
+   "title": "News & Events · decided",
+   "url": "rapid-medical.com/news-events",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "News & Events"
+        },
+        {
+         "c": "divider",
+         "annotation": "Композиция «общая линия»: заголовок, линия; ниже секции — название слева (4/12), содержимое справа (7/12). Как Contact Us и текстовые страницы."
+        },
+        {
+         "c": "grid",
+         "cols": "7fr 1fr 4fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "card",
+           "media": {
+            "kind": "image",
+            "label": "WhatsApp-Image-2026-07-21",
+            "ratio": "16/9"
+           },
+           "eyebrow": "News · Jul 2026",
+           "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+           "actions": [
+            {
+             "c": "link",
+             "text": "Read →"
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · May 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "News · Apr 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · Feb 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            }
+           ]
+          }
+         ],
+         "annotation": "Вместо карусели — главная крупно и 3 рядом (Canva, Cohere): всё главное видно сразу, без листания. Это «хайлайты» (ADR-009): самые свежие отмеченные, новые отмечены по умолчанию. Вид материала — надпись над заголовком."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Upcoming events"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "No upcoming events right now."
+          },
+          {
+           "c": "link",
+           "text": "See past events ↓"
+          }
+         ],
+         "annotation": "Предстоящих нет — честная строка и ссылка на архив (Slack), а не пропавший блок. Так раздел «Events» в названии страницы не теряется."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "All news"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "chips",
+           "items": [
+            "All",
+            "News",
+            "Studies",
+            "Company updates"
+           ],
+           "active": 0,
+           "annotation": "Фильтр по виду материала (Wix): одна лента для новостей, исследований и апдейтов (ADR-009). Ведёт и на свои страницы, и наружу."
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · BusinessWire ↗"
+              }
+             ]
+            }
+           ],
+           "annotation": "Лента начинается со следующих после главных — без повторов (находка 15). Строка: дата в своей колонке, заголовок, вид и источник. «↗ BusinessWire» — честно, что уйдёт с сайта (Qatalog); без стрелки — своя страница."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS postmarket US study"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Study"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News"
+              }
+             ]
+            }
+           ],
+           "to": "news-page",
+           "label": "своя страница"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Company · BusinessWire ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jan 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2024"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Show more"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": false,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Past events"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2026"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 12"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "From Physics to Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Busan · Park Hyatt Busan"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 15–16"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "TIGERTRIEVER™ Workshop in partnership with Kaneka"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Event"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 3"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "DRIVEWIRE™ 24 in Clinical Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Marseille · ESMINT"
+              }
+             ]
+            }
+           ],
+           "to": "event-past-new",
+           "label": "событие"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jun 1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "More than Conventional"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Paris · Hôtel Regina Louvre · LINNC"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2025"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 22"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Meet The Experts Dinner event at DGNR 2025"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "DGNR"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          }
+         ]
+        }
+       ],
+       "annotation": "Архив событий — той же строкой, что и новости: дата, название, город · конгресс. Якорь #past-events — сюда ведёт «← News & Events» с прошедшего события."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "news-new-upcoming",
+   "title": "News & Events · decided, with an upcoming event",
+   "url": "rapid-medical.com/news-events",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "News & Events"
+        },
+        {
+         "c": "divider",
+         "annotation": "Композиция «общая линия»: заголовок, линия; ниже секции — название слева (4/12), содержимое справа (7/12). Как Contact Us и текстовые страницы."
+        },
+        {
+         "c": "grid",
+         "cols": "7fr 1fr 4fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "card",
+           "media": {
+            "kind": "image",
+            "label": "WhatsApp-Image-2026-07-21",
+            "ratio": "16/9"
+           },
+           "eyebrow": "News · Jul 2026",
+           "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+           "actions": [
+            {
+             "c": "link",
+             "text": "Read →"
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · May 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "News · Apr 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · Feb 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            }
+           ]
+          }
+         ],
+         "annotation": "Вместо карусели — главная крупно и 3 рядом (Canva, Cohere): всё главное видно сразу, без листания. Это «хайлайты» (ADR-009): самые свежие отмеченные, новые отмечены по умолчанию. Вид материала — надпись над заголовком."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Upcoming events"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "card",
+           "eyebrow": "Oct 12, 2026 · 12:45 PM · Busan",
+           "title": "From Physics to Practice",
+           "text": "Innovation and the Future of Neurointervention · Park Hyatt Busan",
+           "actions": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Register"
+            },
+            {
+             "c": "link",
+             "text": "Details →"
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Nov 2026"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "[следующее событие — пример строки]"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Workshop"
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "annotation": "Когда события есть: ближайшее — карточкой с датой, местом и «Register», остальные — строками (Customer.io). Пример — как выглядело до 12 октября."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "All news"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "chips",
+           "items": [
+            "All",
+            "News",
+            "Studies",
+            "Company updates"
+           ],
+           "active": 0,
+           "annotation": "Фильтр по виду материала (Wix): одна лента для новостей, исследований и апдейтов (ADR-009). Ведёт и на свои страницы, и наружу."
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · BusinessWire ↗"
+              }
+             ]
+            }
+           ],
+           "annotation": "Лента начинается со следующих после главных — без повторов (находка 15). Строка: дата в своей колонке, заголовок, вид и источник. «↗ BusinessWire» — честно, что уйдёт с сайта (Qatalog); без стрелки — своя страница."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS postmarket US study"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Study"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News"
+              }
+             ]
+            }
+           ],
+           "to": "news-page",
+           "label": "своя страница"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Company · BusinessWire ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jan 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2024"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Show more"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": false,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Past events"
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2026"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 12"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "From Physics to Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Busan · Park Hyatt Busan"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 15–16"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "TIGERTRIEVER™ Workshop in partnership with Kaneka"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Event"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 3"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "DRIVEWIRE™ 24 in Clinical Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Marseille · ESMINT"
+              }
+             ]
+            }
+           ],
+           "to": "event-past-new",
+           "label": "событие"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jun 1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "More than Conventional"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Paris · Hôtel Regina Louvre · LINNC"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2025"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 22"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Meet The Experts Dinner event at DGNR 2025"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "DGNR"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          }
+         ]
+        }
+       ],
+       "annotation": "Архив событий — той же строкой, что и новости: дата, название, город · конгресс. Якорь #past-events — сюда ведёт «← News & Events» с прошедшего события."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "news-new-phone",
+   "title": "News & Events · decided, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/news-events",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "News & Events"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "card",
+           "media": {
+            "kind": "image",
+            "label": "WhatsApp-Image-2026-07-21",
+            "ratio": "16/9"
+           },
+           "eyebrow": "News · Jul 2026",
+           "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+           "actions": [
+            {
+             "c": "link",
+             "text": "Read →"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · May 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "News · Apr 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · Feb 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Upcoming events"
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "No upcoming events right now."
+          },
+          {
+           "c": "link",
+           "text": "See past events ↓"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "All news"
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "chips",
+           "items": [
+            "All",
+            "News",
+            "Studies",
+            "Company updates"
+           ],
+           "active": 0
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · BusinessWire ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dec 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS postmarket US study"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Study"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News"
+              }
+             ]
+            }
+           ],
+           "to": "news-page",
+           "label": "своя страница"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Company · BusinessWire ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jan 2025"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 2024"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "News · NeuroNews ↗"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Show more"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": false,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Past events"
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2026"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 12"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "From Physics to Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Busan · Park Hyatt Busan"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 15–16"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "TIGERTRIEVER™ Workshop in partnership with Kaneka"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Event"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Sep 3"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "DRIVEWIRE™ 24 in Clinical Practice"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Marseille · ESMINT"
+              }
+             ]
+            }
+           ],
+           "to": "event-past-new",
+           "label": "событие"
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Jun 1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "More than Conventional"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Paris · Hôtel Regina Louvre · LINNC"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "2025"
+          },
+          {
+           "c": "grid",
+           "cols": "120px minmax(0,1fr)",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Oct 22"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Meet The Experts Dinner event at DGNR 2025"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "DGNR"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Телефон: заголовок, главная карточка, 3 строки, события, фильтр чипами (прокручивается вбок), лента, архив. Секции — одной колонкой: название над содержимым."
+   ]
+  },
+  {
+   "id": "news-page",
+   "title": "News page · decided",
+   "url": "rapid-medical.com/news/drivewire-24-1000-cases",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "link",
+         "text": "← News & Events"
+        },
+        {
+         "c": "eyebrow",
+         "text": "News · DRIVEWIRE™"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Published"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "September 3, 2025"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Type"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Press release"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Product"
+              },
+              {
+               "c": "link",
+               "text": "DRIVEWIRE™"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "link",
+             "text": "Originally published on BusinessWire ↗"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "secondary",
+               "size": "s",
+               "text": "LinkedIn"
+              },
+              {
+               "c": "button",
+               "v": "secondary",
+               "size": "s",
+               "text": "X"
+              },
+              {
+               "c": "button",
+               "v": "secondary",
+               "size": "s",
+               "text": "Copy link"
+              }
+             ]
+            }
+           ],
+           "annotation": "Слева — «ключ — значение»: дата, вид, продукт (ссылка на терапию), оригинал и «поделиться» (Upwork). LinkedIn первым — туда идут посты (бриф linkedin-leads)."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "grid",
+             "cols": 2,
+             "gap": "m",
+             "items": [
+              {
+               "c": "stat",
+               "value": "1,000+",
+               "label": "cases with DRIVEWIRE™ 24 in North America"
+              },
+              {
+               "c": "stat",
+               "value": "Europe",
+               "label": "expansion announced"
+              }
+             ],
+             "annotation": "Цифры сверху — только если они есть в тексте пресс-релиза (ИИ предлагает, цитата сверяется с текстом)."
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "text",
+             "v": "body",
+             "text": "[City], September 3, 2025 — Rapid Medical™ … [первый абзац пресс-релиза]",
+             "annotation": "Текст — полный пресс-релиз, скопированный с оригинала: в начале «город, дата —», как в пресс-релизе (Upwork). Свой материал — можно копировать."
+            },
+            {
+             "c": "media",
+             "kind": "page",
+             "label": "Full press release text — headings, quotes, About Rapid Medical",
+             "ratio": "16/9"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "More about DRIVEWIRE™"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "120px minmax(0,1fr)",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Jul 2026"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "News · BusinessWire ↗"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "120px minmax(0,1fr)",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "[дата]"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "DRIVEWIRE™ 24 SVIN Poster"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Study"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "annotation": "Внизу — другие материалы того же продукта (из записей, по полю «продукт»). Вместо тупика — следующий шаг."
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "event-past-new",
+   "title": "Past event · decided",
+   "url": "rapid-medical.com/events/drivewire-24-esmint-2026",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "link",
+         "text": "← Past events",
+         "annotation": "Назад — на #past-events, а не на пустой якорь предстоящих (находка 21)."
+        },
+        {
+         "c": "eyebrow",
+         "text": "Event · ESMINT"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "DRIVEWIRE™ 24 in Clinical Practice"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Real-World Experience from Two Perspectives with Dr. Rui de Carvalho and Dr. Markus Holtmannspötter"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Date"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "September 3, 2026"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "City"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Marseille"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Congress"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "ESMINT"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "badge",
+             "text": "This event has taken place"
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "media",
+             "kind": "page",
+             "label": "Event description (or recap and photos, if filled in)",
+             "ratio": "21/9"
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Presented at this event"
+            },
+            {
+             "c": "stack",
+             "gap": "s",
+             "items": [
+              {
+               "c": "grid",
+               "cols": "120px minmax(0,1fr)",
+               "gap": "m",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "small",
+                 "text": "[дата]"
+                },
+                {
+                 "c": "stack",
+                 "gap": "xs",
+                 "items": [
+                  {
+                   "c": "text",
+                   "v": "strong",
+                   "text": "[материалы, привязанные к событию — исследование, видео доклада]"
+                  },
+                  {
+                   "c": "text",
+                   "v": "caption",
+                   "text": "Study"
+                  }
+                 ]
+                }
+               ]
+              }
+             ],
+             "annotation": "«Что представили»: материалы, привязанные к событию (ADR-009, идея из п. 6). Если ничего не привязано — блока нет."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "text",
+         "v": "body",
+         "text": "No upcoming events right now."
+        },
+        {
+         "c": "link",
+         "text": "All news and events →"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },

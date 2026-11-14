@@ -470,21 +470,21 @@ def news_desktop():
 # ---------- News & Events ----------
 NEWS_REFS = [
     {'title': 'Верх раздела: главная новость и лента без повторов',
-     'ask': 'Сейчас карусель из 5 новостей, а сразу под ней лента начинается с тех же новостей (находка 15). Как показать главное один раз?',
+     'ask': 'Решено 2026-11-14: без карусели — главная крупно и 3 рядом, лента без повторов.',
      'refs': [('cohere', 'Cohere', 'одна главная новость крупно, ниже лента: дата в левой колонке, заголовок справа', 'sites/sections/f69a1b3c-6ba4-4179-b582-56d2e975aa3f'),
               ('canva', 'Canva', 'главная крупно + 3 рядом списком, без карусели', 'sites/sections/f2c4e533-861b-4e23-8b91-d7fd68b49c09'),
               ('anthropic', 'Anthropic', 'featured-карточки + контакты для прессы рядом', 'sites/sections/1b865afc-0b4a-47df-aa83-4417633c5bb3'),
               ('airtable', 'Airtable', '«Top stories» с подписью раздела над карточкой', 'sites/sections/70ed3e3c-c7b2-4b46-9cdd-80981ad21bae')]},
     {'title': 'Лента: виды материалов и куда ведёт ссылка',
-     'ask': 'Новости, исследования и апдейты теперь одна сущность (ADR-009). Нужен ли фильтр по виду? Как отличить «откроется у нас» от «уйдёт на BusinessWire»?',
+     'ask': 'Решено: фильтр по виду (All · News · Studies · Company updates), «↗ источник» у внешних ссылок, дата в своей колонке.',
      'refs': [('wix', 'Wix', 'фильтр-метки «Press Releases · In the News · Company Updates» и метка вида на карточке', 'sites/sections/29512bfc-9455-41ce-9e68-747c125e9a68'),
               ('qatalog', 'Qatalog', 'строки: дата · заголовок · стрелка ↗ — видно, что ссылка внешняя', 'sites/sections/85686f39-90c9-488b-b73c-25c3f920d425'),
               ('headspace', 'Headspace Health', 'заголовок раздела слева, лента справа — «общая линия»', 'sites/sections/6ff103ae-a58a-4929-8f9b-e7cc58b36099')]},
     {'title': 'Страница новости',
-     'ask': 'Своих страниц у новостей сейчас нет. Как выглядит пресс-релиз у себя на сайте?',
+     'ask': 'Решено: заголовок, «ключ — значение» слева (дата, вид, продукт, оригинал, поделиться), полный текст справа, материалы продукта внизу.',
      'refs': [('upwork', 'Upwork', 'крупный заголовок, вводка курсивом, «город — дата —» в начале текста, «Share» сбоку', 'sites/sections/566d805d-5d8d-4c7a-aae3-f63974151edb')]},
     {'title': 'События: предстоящие и прошедшие',
-     'ask': 'Сейчас предстоящих нет — блок исчезает целиком. Показывать пустое состояние? Переключатель «Upcoming / Past»?',
+     'ask': 'Решено: пустое состояние строкой, ближайшее событие карточкой, остальные и архив — строками.',
      'refs': [('sketch', 'Sketch', 'переключатель «Upcoming events / Past events»', 'sites/sections/8c0f223c-c7c6-407b-a93c-185a6f940927'),
               ('slack', 'Slack', 'честное пустое состояние «There are currently no upcoming events»', 'sites/sections/8d4f0086-b2ce-4730-a20f-8e3b5524e313'),
               ('customerio', 'Customer.io', 'ближайшее событие крупно, остальные строками: город, дата, тип', 'sites/sections/ca975cb9-511e-4117-ace5-17ae19799a84'),
@@ -526,6 +526,121 @@ def event_past():
         {'c': 'media', 'kind': 'page', 'label': 'Event description', 'ratio': '21/9'}], 'm')]}, FOOTER]
 
 
+# ---------- News & Events — decided ----------
+TOP = [('News', 'Jul 2026', 'Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases', 'WhatsApp-Image-2026-07-21'),
+       ('Study', 'May 2026', 'TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial', ''),
+       ('News', 'Apr 2026', 'Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases', ''),
+       ('Study', 'Feb 2026', 'DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion', '')]
+FEED = [('Dec 2025', 'News', 'Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions', 'BusinessWire'),
+        ('Dec 2025', 'Study', 'Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS postmarket US study', None),
+        ('Sep 2025', 'News', 'Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe', None),
+        ('Sep 2025', 'Company', 'Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors', 'BusinessWire'),
+        ('Jan 2025', 'News', 'Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy', 'NeuroNews'),
+        ('Sep 2024', 'News', 'Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device', 'NeuroNews')]
+
+
+def feed_row(date, kind, title, ext, to=None):
+    meta = kind + (f' · {ext} ↗' if ext else '')
+    r = {'c': 'grid', 'cols': '120px minmax(0,1fr)', 'gap': 'm', 'items': [T(date, 'small'), S([T(title, 'strong'), T(meta, 'caption')], 'xs')]}
+    if to: r.update(to=to, label='своя страница')
+    return r
+
+
+def top_block(phone=False):
+    k, d, t, img = TOP[0]
+    big = {'c': 'card', 'media': {'kind': 'image', 'label': img, 'ratio': '16/9'}, 'eyebrow': f'{k} · {d}', 'title': t, 'actions': [{'c': 'link', 'text': 'Read →'}]}
+    side = S(sum([[{'c': 'grid', 'cols': '96px minmax(0,1fr)', 'gap': 'm', 'align': 'start', 'items': [{'c': 'media', 'kind': 'image', 'ratio': '4/3', 'tiny': True}, S([T(f'{k2} · {d2}', 'caption'), T(t2, 'strong')], 'xs')]}, {'c': 'divider'}]
+                   for k2, d2, t2, _ in TOP[1:]], []), 's')
+    note = None if phone else 'Вместо карусели — главная крупно и 3 рядом (Canva, Cohere): всё главное видно сразу, без листания. Это «хайлайты» (ADR-009): самые свежие отмеченные, новые отмечены по умолчанию. Вид материала — надпись над заголовком.'
+    if phone:
+        return S([big, side], 'm')
+    return dict({'c': 'grid', 'cols': '7fr 1fr 4fr', 'gap': 'm', 'align': 'start', 'items': [big, {'c': 'spacer', 'size': 1}, side]}, annotation=note)
+
+
+def upcoming(state, phone=False):
+    if state == 'none':
+        body = S([T('No upcoming events right now.', 'body'), {'c': 'link', 'text': 'See past events ↓'}], 's',
+                 annotation=None if phone else 'Предстоящих нет — честная строка и ссылка на архив (Slack), а не пропавший блок. Так раздел «Events» в названии страницы не теряется.')
+    else:
+        body = S([{'c': 'card', 'eyebrow': 'Oct 12, 2026 · 12:45 PM · Busan', 'title': 'From Physics to Practice', 'text': 'Innovation and the Future of Neurointervention · Park Hyatt Busan',
+                   'actions': [{'c': 'button', 'v': 'primary', 'text': 'Register'}, {'c': 'link', 'text': 'Details →'}]},
+                  feed_row('Nov 2026', 'Workshop', '[следующее событие — пример строки]', None)], 'm',
+                 annotation='Когда события есть: ближайшее — карточкой с датой, местом и «Register», остальные — строками (Customer.io). Пример — как выглядело до 12 октября.')
+    if phone:
+        return S([H('Upcoming events', 3), body], 's')
+    return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [H('Upcoming events', 3), {'c': 'spacer', 'size': 1}, body]}
+
+
+def all_news(phone=False):
+    chips = {'c': 'chips', 'items': ['All', 'News', 'Studies', 'Company updates'], 'active': 0,
+             'annotation': None if phone else 'Фильтр по виду материала (Wix): одна лента для новостей, исследований и апдейтов (ADR-009). Ведёт и на свои страницы, и наружу.'}
+    rows = []
+    for i, (d, k, t, ext) in enumerate(FEED):
+        rows += [feed_row(d, k, t, ext, to='news-page' if 'DRIVEWIRE™ 24' in t else None), {'c': 'divider'}]
+    if not phone:
+        rows[0]['annotation'] = 'Лента начинается со следующих после главных — без повторов (находка 15). Строка: дата в своей колонке, заголовок, вид и источник. «↗ BusinessWire» — честно, что уйдёт с сайта (Qatalog); без стрелки — своя страница.'
+    lst = S([chips] + rows + [{'c': 'button', 'v': 'secondary', 'text': 'Show more'}], 's')
+    if phone:
+        return S([H('All news', 3), lst], 's')
+    return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [H('All news', 3), {'c': 'spacer', 'size': 1}, lst]}
+
+
+def past_block(phone=False):
+    rows = []
+    for year, items in PAST_EVENTS:
+        rows.append(T(year, 'strong'))
+        for d, t, place, cong in items:
+            meta = ' · '.join(x for x in (place, cong) if x)
+            rows += [dict(feed_row(d, 'Event', t, None), **({'to': 'event-past-new', 'label': 'событие'} if 'DRIVEWIRE' in t else {})), {'c': 'divider'}]
+            if meta: rows[-2]['items'][1]['items'][1]['text'] = meta
+    lst = S(rows, 's')
+    if phone:
+        return S([H('Past events', 3), lst], 's')
+    return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [H('Past events', 3), {'c': 'spacer', 'size': 1}, lst],
+            'annotation': 'Архив событий — той же строкой, что и новости: дата, название, город · конгресс. Якорь #past-events — сюда ведёт «← News & Events» с прошедшего события.'}
+
+
+def news_events_new(state='none', phone=False):
+    head = [H('News & Events', 1), {'c': 'divider'}]
+    if not phone:
+        head[1]['annotation'] = 'Композиция «общая линия»: заголовок, линия; ниже секции — название слева (4/12), содержимое справа (7/12). Как Contact Us и текстовые страницы.'
+    secs = [S(head + [top_block(phone)], 'l'), upcoming(state, phone), all_news(phone), past_block(phone)]
+    return [HEADER] + [{'c': 'section', 'pad': 'l' if not phone else 'm', 'rule': i < 3, 'items': [x]} for i, x in enumerate(secs)] + [FOOTER]
+
+
+def news_article():
+    left = S([line('Published', T('September 3, 2025', 'small')), {'c': 'divider'}, line('Type', T('Press release', 'small')), {'c': 'divider'},
+              line('Product', {'c': 'link', 'text': 'DRIVEWIRE™'}), {'c': 'divider'},
+              {'c': 'link', 'text': 'Originally published on BusinessWire ↗'}, {'c': 'row', 'gap': 's', 'items': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'LinkedIn'}, {'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'X'}, {'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Copy link'}]}], 's',
+             annotation='Слева — «ключ — значение»: дата, вид, продукт (ссылка на терапию), оригинал и «поделиться» (Upwork). LinkedIn первым — туда идут посты (бриф linkedin-leads).')
+    text = S([{'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('1,000+', 'cases with DRIVEWIRE™ 24 in North America'), stat('Europe', 'expansion announced')],
+               'annotation': 'Цифры сверху — только если они есть в тексте пресс-релиза (ИИ предлагает, цитата сверяется с текстом).'},
+              {'c': 'divider'},
+              T('[City], September 3, 2025 — Rapid Medical™ … [первый абзац пресс-релиза]', 'body', annotation='Текст — полный пресс-релиз, скопированный с оригинала: в начале «город, дата —», как в пресс-релизе (Upwork). Свой материал — можно копировать.'),
+              {'c': 'media', 'kind': 'page', 'label': 'Full press release text — headings, quotes, About Rapid Medical', 'ratio': '16/9'}], 'm')
+    related = {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([H('More about DRIVEWIRE™', 3), {'c': 'divider'},
+               feed_row('Jul 2026', 'News', 'Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases', 'BusinessWire'), {'c': 'divider'},
+               feed_row('[дата]', 'Study', 'DRIVEWIRE™ 24 SVIN Poster', None)], 's')],
+               'annotation': 'Внизу — другие материалы того же продукта (из записей, по полю «продукт»). Вместо тупика — следующий шаг.'}
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'link', 'text': '← News & Events'}, {'c': 'eyebrow', 'text': 'News · DRIVEWIRE™'},
+            H('Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe', 1), {'c': 'divider'},
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, text]}], 'l')]}, related, FOOTER]
+
+
+def event_past_new():
+    left = S([line('Date', T('September 3, 2026', 'small')), {'c': 'divider'}, line('City', T('Marseille', 'small')), {'c': 'divider'},
+              line('Congress', T('ESMINT', 'small')), {'c': 'divider'}, {'c': 'badge', 'text': 'This event has taken place'}], 's')
+    right = S([{'c': 'media', 'kind': 'page', 'label': 'Event description (or recap and photos, if filled in)', 'ratio': '21/9'},
+               H('Presented at this event', 4),
+               S([feed_row('[дата]', 'Study', '[материалы, привязанные к событию — исследование, видео доклада]', None)], 's',
+                 annotation='«Что представили»: материалы, привязанные к событию (ADR-009, идея из п. 6). Если ничего не привязано — блока нет.')], 'm')
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'link', 'text': '← Past events', 'annotation': 'Назад — на #past-events, а не на пустой якорь предстоящих (находка 21).'},
+            {'c': 'eyebrow', 'text': 'Event · ESMINT'}, H('DRIVEWIRE™ 24 in Clinical Practice', 1),
+            T('Real-World Experience from Two Perspectives with Dr. Rui de Carvalho and Dr. Markus Holtmannspötter', 'lead'), {'c': 'divider'},
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, right]}], 'l')]},
+            {'c': 'section', 'pad': 'm', 'tone': 'surface', 'items': [S([T('No upcoming events right now.', 'body'), {'c': 'link', 'text': 'All news and events →'}], 's')]}, FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -542,9 +657,10 @@ flow = {
         {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-phone']},
         {'title': '2a · Страница исследования — примеры из Mobbin', 'screens': ['study-mobbin']},
         {'title': '2a · Набор инфографики — на двух исследованиях', 'screens': ['study-success', 'study-success-phone', 'study-distals']},
-        {'title': '2a · Создать из документа: статистика сверху, полный текст ниже (исследования и новости)', 'screens': ['imp-new', 'imp-prompt', 'imp-review', 'study-full', 'news-page']},
+        {'title': '2a · Создать из документа: статистика сверху, полный текст ниже (исследования и новости)', 'screens': ['imp-new', 'imp-prompt', 'imp-review', 'study-full']},
         {'title': '3 · News & Events — как есть', 'screens': ['news-asis', 'news-asis-phone', 'event-past-asis']},
         {'title': '3 · News & Events — примеры из Mobbin', 'screens': ['news-mobbin']},
+        {'title': '3 · News & Events — решение (закрыта 2026-11-14)', 'screens': ['news-new', 'news-new-upcoming', 'news-new-phone', 'news-page', 'event-past-new']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -563,11 +679,14 @@ flow = {
               {'from': 'study-success', 'to': 'study-distals', 'label': 'тот же шаблон'},
               {'from': 'study-distals', 'to': 'imp-new', 'label': 'как это собирается'},
               {'from': 'imp-review', 'to': 'study-full', 'label': 'Publish'},
-              {'from': 'study-full', 'to': 'news-page', 'label': 'тот же механизм для новости'},
-              {'from': 'news-page', 'to': 'news-asis', 'label': 'следующая страница'},
+              {'from': 'study-full', 'to': 'news-asis', 'label': 'следующая страница'},
+
               {'from': 'news-asis', 'to': 'news-asis-phone', 'label': 'на телефоне'},
               {'from': 'news-asis', 'to': 'event-past-asis', 'label': 'прошедшее событие'},
               {'from': 'event-past-asis', 'to': 'news-mobbin', 'label': 'как у других'},
+              {'from': 'news-mobbin', 'to': 'news-new', 'label': 'решение'},
+              {'from': 'news-new', 'to': 'news-new-upcoming', 'label': 'когда есть события'},
+              {'from': 'news-new', 'to': 'news-new-phone', 'label': 'на телефоне'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -604,12 +723,17 @@ flow = {
         {'id': 'imp-prompt', 'title': 'Admin · summary with your own AI', 'url': ADMIN_URL, 'height': 820, 'body': pages_list(), 'overlay': imp_modal('prompt')},
         {'id': 'imp-review', 'title': 'Editor · check against the PDF', 'url': ADMIN_URL + '/success-study-final-results', 'height': 840, 'body': imp_review()},
         {'id': 'study-full', 'title': 'Study page · statistics on top, full study below', 'url': SUCCESS_URL, 'body': study_full_desktop()},
-        {'id': 'news-page', 'title': 'News page · same mechanism, no passport', 'url': 'rapid-medical.com/news/drivewire-24-1000-cases', 'body': news_desktop()},
         {'id': 'news-asis', 'title': 'News & Events · as is', 'url': 'rapid-medical.com/news-events', 'body': news_events_asis()},
         {'id': 'news-asis-phone', 'title': 'News & Events · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/news-events', 'body': news_events_asis(True),
          'notes': ['Телефон: карусель листается пальцем, лента по годам длинная (53 новости, «Show more»), архив событий — в самом низу.']},
         {'id': 'event-past-asis', 'title': 'Past event · as is', 'url': 'rapid-medical.com/events/drivewire-24-esmint-2026', 'body': event_past()},
         ref_screen('news-mobbin', 'News & Events · examples from Mobbin', 'news', NEWS_REFS),
+        {'id': 'news-new', 'title': 'News & Events · decided', 'url': 'rapid-medical.com/news-events', 'body': news_events_new('none')},
+        {'id': 'news-new-upcoming', 'title': 'News & Events · decided, with an upcoming event', 'url': 'rapid-medical.com/news-events', 'body': news_events_new('upcoming')},
+        {'id': 'news-new-phone', 'title': 'News & Events · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/news-events', 'body': news_events_new('none', True),
+         'notes': ['Телефон: заголовок, главная карточка, 3 строки, события, фильтр чипами (прокручивается вбок), лента, архив. Секции — одной колонкой: название над содержимым.']},
+        {'id': 'news-page', 'title': 'News page · decided', 'url': 'rapid-medical.com/news/drivewire-24-1000-cases', 'body': news_article()},
+        {'id': 'event-past-new', 'title': 'Past event · decided', 'url': 'rapid-medical.com/events/drivewire-24-esmint-2026', 'body': event_past_new()},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
