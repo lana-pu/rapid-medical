@@ -107,17 +107,6 @@ def contact_desktop(state):
         title, rule, {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, right]}], 'l')]}, FOOTER]
 
 
-def contact_desktop_b():
-    """Variant B: one card on a grey band; contacts as one line under the card."""
-    card = {'c': 'box', 'tone': 'paper', 'border': True, 'pad': 'l', 'gap': 'l', 'items': [
-        S([H('Let’s connect', 1), T(LEAD, 'lead')], 's'), strip(form('empty'))],
-        'annotation': 'Композиция B — «одна карточка»: всё внутри белой карточки на серой полосе, ширина ~2/3 страницы (Maxima Therapy, Farfetch, Mural). Самая собранная, но контакты уходят строкой под карточку.'}
-    under = {'c': 'row', 'gap': 'l', 'justify': 'center', 'wrap': True, 'items': [
-        T('We reply within [1 business day]', 'small'), {'c': 'link', 'text': 'Call Americas ' + US['phone']}, {'c': 'link', 'text': 'All offices →'}]}
-    return [HEADER, {'c': 'section', 'tone': 'surface', 'pad': 'l', 'items': [
-        {'c': 'grid', 'cols': '1fr 6fr 1fr', 'gap': 'm', 'items': [{'c': 'spacer', 'size': 1}, S([card, under], 'm'), {'c': 'spacer', 'size': 1}]}]}, FOOTER]
-
-
 def contact_phone():
     return [HEADER, {'c': 'section', 'pad': 'm', 'items': [S([H('Let’s connect', 1), {'c': 'divider'}, T(LEAD, 'lead'), form('empty', True), {'c': 'divider'}, contacts()], 'l')]}, FOOTER]
 
@@ -145,7 +134,7 @@ def ref_screen(sid, title, page_slug, themes):
 
 CONTACT_REFS = [
     {'title': 'Композиция: что держит страницу вместе',
-     'ask': 'Вопрос: какая композиция ближе — общая линия и две колонки (A) или всё в одной карточке (B)?',
+     'ask': 'Решено 2026-11-14: композиция «общая линия» (YLLW, In Common With). Вариант «одна карточка» отклонён.',
      'refs': [('yllw', 'YLLW', 'заголовок, линия, под ней текст и форма стартуют на одной высоте', 'sites/sections/a45b58fa-4ac0-49f8-957e-47be93d4f4e1'),
               ('incommonwith', 'In Common With', 'контакты таблицей с тонкими линиями, форма рядом на той же линии', 'sites/sections/dd7619d6-0abf-4c9a-843e-e4cb41a86415'),
               ('yellowbird', 'Yellowbird', 'две половины через вертикальную линию', 'sites/sections/71e78a07-6cd1-4922-84ab-0fb803376279'),
@@ -190,13 +179,12 @@ flow = {
     'groups': [
         {'title': '1 · Contact Us — как есть', 'screens': ['contact-asis', 'contact-asis-phone']},
         {'title': '1 · Contact Us — примеры из Mobbin', 'screens': ['contact-mobbin']},
-        {'title': '1 · Contact Us — черновик к обсуждению (не решение)', 'screens': ['contact-new', 'contact-new-b', 'contact-error', 'contact-sent', 'contact-new-phone']},
+        {'title': '1 · Contact Us — решение (закрыта 2026-11-14)', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
     ],
     'links': [
               {'from': 'contact-asis', 'to': 'contact-asis-phone', 'label': 'на телефоне'},
               {'from': 'contact-asis-phone', 'to': 'contact-mobbin', 'label': 'как у других'},
               {'from': 'contact-mobbin', 'to': 'contact-new', 'label': 'черновик'},
-              {'from': 'contact-new', 'to': 'contact-new-b', 'label': 'вариант B'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
               {'from': 'contact-new', 'to': 'contact-new-phone', 'label': 'на телефоне'}],
     'screens': [
@@ -206,8 +194,7 @@ flow = {
          'body': [HEADER, page('Contact'), FOOTER],
          'notes': ['На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1).']},
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
-        {'id': 'contact-new-b', 'title': 'Contact Us · proposal B, one card', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop_b()},
-        {'id': 'contact-new', 'title': 'Contact Us · proposal A, shared line', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
+        {'id': 'contact-new', 'title': 'Contact Us · decided', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
         {'id': 'contact-error', 'title': 'Contact Us · proposal, field errors', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('error')},
         {'id': 'contact-sent', 'title': 'Contact Us · proposal, request sent', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('sent')},
         {'id': 'contact-new-phone', 'title': 'Contact Us · proposal, phone', 'device': 'mobile', 'url': CONTACT_URL,
