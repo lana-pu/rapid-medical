@@ -384,17 +384,23 @@ def pages_list():
 
 def imp_modal(step):
     if step == 'new':
-        items = [{'c': 'chips', 'label': 'What are you adding?', 'items': ['Study results', 'News / company update'], 'active': 0,
-                  'annotation': 'Один механизм для разных материалов. Тип решает, какие блоки будут сверху: у исследования — паспорт и инфографика, у новости — только ключевые цифры (если есть). Позже — клинический случай, публикация.'},
-                 {'c': 'upload', 'label': 'Comaneci-assisted-embolization-SUCCESS.pdf · 9 pages', 'hint': 'PDF of the paper, poster or press release — or paste a link below'},
+        items = [{'c': 'upload', 'label': 'Comaneci-assisted-embolization-SUCCESS.pdf · 9 pages', 'hint': 'PDF of the paper, poster, press release, IFU or brochure — or paste a link below'},
                  I('…or a link', placeholder='BusinessWire, journal, DOI'),
+                 S([{'c': 'chips', 'label': 'What is it?', 'items': ['Study', 'Publication', 'News / update', 'Clinical case', 'Document (IFU, brochure)'], 'active': 0},
+                    {'c': 'row', 'gap': 's', 'items': [{'c': 'badge', 'text': 'Suggested from the file', 'tone': 'info'}, T('Has Methods, Results and patient numbers', 'caption')]}], 's',
+                   annotation='Вид определяется до ИИ, бесплатно, по самому файлу: адрес ссылки (businesswire → новость, doi / журнал → публикация), слова в PDF («Instructions for Use» → документ, «Methods / Results» → исследование, «About Rapid Medical» → новость). Сайт подставляет вид и объясняет почему; человек меняет одним кликом. Вид решает дальнейшие шаги: у документа нет сводки от ИИ — только PDF.'),
                  G([I('Region', v='select', value='All regions'), I('Product', v='select', value='COMANECI™')]),
                  I('ClinicalTrials.gov number', placeholder='NCT…', hint='Studies only — fills the study passport from the registry, free'),
                  S([T('Full text on the page', 'strong'),
                     {'c': 'radio', 'label': 'Copy the text into the page — readable on a phone, found by search', 'on': True},
                     {'c': 'radio', 'label': 'Show the PDF on the page'},
                     {'c': 'radio', 'label': 'Link to the original only'}], 'xs',
-                   annotation='Полный текст — тремя способами. Скопировать на страницу: читается на телефоне, находится поиском. Встроить PDF: точный оригинал, быстро. Только ссылка: когда нет прав на текст (статьи в платных журналах). Свои материалы (пресс-релизы, постеры) — копировать; статьи журналов — по лицензии.')]
+                   annotation='Полный текст — тремя способами. Скопировать на страницу: читается на телефоне, находится поиском. Встроить PDF: точный оригинал, быстро. Только ссылка: когда нет прав на текст (статьи в платных журналах). Свои материалы (пресс-релизы, постеры) — копировать; статьи журналов — по лицензии.'),
+                 S([T('Where it appears', 'strong'),
+                    {'c': 'checkbox', 'label': 'Evidence — COMANECI™ tab', 'on': True},
+                    {'c': 'checkbox', 'label': 'News feed — as a new study', 'on': True},
+                    {'c': 'checkbox', 'label': 'Highlights — carousels on Home, News & Events and Evidence', 'on': True}], 'xs',
+                   annotation='Featured (хайлайты) по умолчанию включён у нового: карусели показывают самые свежие отмеченные (главная — 4, News & Events — 5, Evidence — featured), старые уходят сами по мере добавления новых. Снять галочку — материал не попадёт в карусели. То же меняется потом в карточке материала. Отметки по виду: исследование — Evidence + новости; новость — только новости; документ — нигде автоматически.')]
         return {'c': 'modal', 'title': 'Create from a document', 'items': items, 'wide': True,
                 'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Next', 'to': 'imp-prompt', 'label': 'Next'}]}
     items = [T('The summary on top comes from your AI assistant — ChatGPT, Claude or Copilot, whichever you already use. The site does not pay for AI.', 'muted',
@@ -528,7 +534,7 @@ flow = {
         {'id': 'study-success-phone', 'title': 'Study page · SUCCESS, phone', 'device': 'mobile', 'url': SUCCESS_URL, 'body': success_phone(),
          'notes': ['Телефон: название и вывод, 4 итога, паспорт, график с переключателем по времени, матрица пациентов, постер. Графики из чисел перестраиваются под ширину — скриншот постера на телефоне не читается.']},
         {'id': 'study-distals', 'title': 'Study page · DISTALS, same template', 'url': 'rapid-medical.com/distals-results', 'body': distals_desktop()},
-        {'id': 'imp-new', 'title': 'Admin · create from a document', 'url': ADMIN_URL, 'height': 820, 'body': pages_list(), 'overlay': imp_modal('new'),
+        {'id': 'imp-new', 'title': 'Admin · create from a document', 'url': ADMIN_URL, 'height': 1120, 'body': pages_list(), 'overlay': imp_modal('new'),
          'notes': ['Вход: Pages → New page → «Create from a document» (и то же из списка News). Регистр ClinicalTrials.gov — бесплатный открытый API.']},
         {'id': 'imp-prompt', 'title': 'Admin · summary with your own AI', 'url': ADMIN_URL, 'height': 820, 'body': pages_list(), 'overlay': imp_modal('prompt')},
         {'id': 'imp-review', 'title': 'Editor · check against the PDF', 'url': ADMIN_URL + '/success-study-final-results', 'height': 840, 'body': imp_review()},

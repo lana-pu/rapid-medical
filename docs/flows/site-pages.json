@@ -3368,7 +3368,7 @@
    "id": "imp-new",
    "title": "Admin · create from a document",
    "url": "rapid-medical.com/admin/editor",
-   "height": 820,
+   "height": 1120,
    "body": [
     {
      "c": "appbar",
@@ -3437,24 +3437,49 @@
     "title": "Create from a document",
     "items": [
      {
-      "c": "chips",
-      "label": "What are you adding?",
-      "items": [
-       "Study results",
-       "News / company update"
-      ],
-      "active": 0,
-      "annotation": "Один механизм для разных материалов. Тип решает, какие блоки будут сверху: у исследования — паспорт и инфографика, у новости — только ключевые цифры (если есть). Позже — клинический случай, публикация."
-     },
-     {
       "c": "upload",
       "label": "Comaneci-assisted-embolization-SUCCESS.pdf · 9 pages",
-      "hint": "PDF of the paper, poster or press release — or paste a link below"
+      "hint": "PDF of the paper, poster, press release, IFU or brochure — or paste a link below"
      },
      {
       "c": "input",
       "label": "…or a link",
       "placeholder": "BusinessWire, journal, DOI"
+     },
+     {
+      "c": "stack",
+      "gap": "s",
+      "items": [
+       {
+        "c": "chips",
+        "label": "What is it?",
+        "items": [
+         "Study",
+         "Publication",
+         "News / update",
+         "Clinical case",
+         "Document (IFU, brochure)"
+        ],
+        "active": 0
+       },
+       {
+        "c": "row",
+        "gap": "s",
+        "items": [
+         {
+          "c": "badge",
+          "text": "Suggested from the file",
+          "tone": "info"
+         },
+         {
+          "c": "text",
+          "v": "caption",
+          "text": "Has Methods, Results and patient numbers"
+         }
+        ]
+       }
+      ],
+      "annotation": "Вид определяется до ИИ, бесплатно, по самому файлу: адрес ссылки (businesswire → новость, doi / журнал → публикация), слова в PDF («Instructions for Use» → документ, «Methods / Results» → исследование, «About Rapid Medical» → новость). Сайт подставляет вид и объясняет почему; человек меняет одним кликом. Вид решает дальнейшие шаги: у документа нет сводки от ИИ — только PDF."
      },
      {
       "c": "grid",
@@ -3505,6 +3530,33 @@
        }
       ],
       "annotation": "Полный текст — тремя способами. Скопировать на страницу: читается на телефоне, находится поиском. Встроить PDF: точный оригинал, быстро. Только ссылка: когда нет прав на текст (статьи в платных журналах). Свои материалы (пресс-релизы, постеры) — копировать; статьи журналов — по лицензии."
+     },
+     {
+      "c": "stack",
+      "gap": "xs",
+      "items": [
+       {
+        "c": "text",
+        "v": "strong",
+        "text": "Where it appears"
+       },
+       {
+        "c": "checkbox",
+        "label": "Evidence — COMANECI™ tab",
+        "on": true
+       },
+       {
+        "c": "checkbox",
+        "label": "News feed — as a new study",
+        "on": true
+       },
+       {
+        "c": "checkbox",
+        "label": "Highlights — carousels on Home, News & Events and Evidence",
+        "on": true
+       }
+      ],
+      "annotation": "Featured (хайлайты) по умолчанию включён у нового: карусели показывают самые свежие отмеченные (главная — 4, News & Events — 5, Evidence — featured), старые уходят сами по мере добавления новых. Снять галочку — материал не попадёт в карусели. То же меняется потом в карточке материала. Отметки по виду: исследование — Evidence + новости; новость — только новости; документ — нигде автоматически."
      }
     ],
     "wide": true,
