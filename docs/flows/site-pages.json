@@ -15534,7 +15534,7 @@
               {
                "c": "text",
                "v": "small",
-               "text": "[N — по разметке]"
+               "text": "[N] in classified"
               }
              ]
             },
@@ -15549,17 +15549,17 @@
               {
                "c": "text",
                "v": "small",
-               "text": "Patients in our studies"
+               "text": "Patients"
               },
               {
                "c": "text",
                "v": "small",
-               "text": "[N — сумма по исследованиям]"
+               "text": "[N] in classified studies"
               }
              ]
             }
            ],
-           "annotation": "Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа считаются из разметки публикаций — не вручную."
+           "annotation": "Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа — из разметки; пока размечены не все, подпись «in classified», чтобы цифра не вводила в заблуждение."
           },
           {
            "c": "spacer",
@@ -16084,6 +16084,76 @@
         },
         {
          "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "80px minmax(0,1fr) 120px",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "2024"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "[First author] et al. · [journal] · 2024"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "wrap": true,
+             "items": [
+              {
+               "c": "badge",
+               "text": "COMANECI™",
+               "tone": "neutral"
+              }
+             ]
+            }
+           ],
+           "annotation": "Неразмеченная публикация (разметка по желанию): вместо вывода — «первый автор et al. · журнал · год», из бейджей — только продукт (он есть у всех). Строка аккуратная, просто беднее."
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "link",
+             "text": "Journal ↗"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "74 publications not yet classified are hidden by the study-type filter."
+          },
+          {
+           "c": "link",
+           "text": "Show them"
+          }
+         ],
+         "annotation": "Фильтры по типу и показанию видят только размеченные — честная строка с числом и «Show them», чтобы ничего не терялось молча."
         },
         {
          "c": "button",

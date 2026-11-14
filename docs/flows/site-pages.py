@@ -968,8 +968,8 @@ def pub_row(year, title, tldr, badges):
 
 def evidence_concept():
     facts = S([line('Publications', T('102', 'strong')), {'c': 'divider'}, line('Randomized trials', T('1 (DISTALS)', 'small')), {'c': 'divider'},
-               line('Prospective multicenter', T('[N — по разметке]', 'small')), {'c': 'divider'}, line('Patients in our studies', T('[N — сумма по исследованиям]', 'small'))], 's',
-              annotation='Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа считаются из разметки публикаций — не вручную.')
+               line('Prospective multicenter', T('[N] in classified', 'small')), {'c': 'divider'}, line('Patients', T('[N] in classified studies', 'small'))], 's',
+              annotation='Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа — из разметки; пока размечены не все, подпись «in classified», чтобы цифра не вводила в заблуждение.')
     head = S([{'c': 'eyebrow', 'text': 'Americas · change'}, H('Evidence', 1), {'c': 'divider'},
               {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [facts, {'c': 'spacer', 'size': 1},
                T('Clinical data behind TIGERTRIEVER™, COMANECI™ and DRIVEWIRE™ — key studies first, every publication below.', 'lead')]}], 'l')
@@ -996,7 +996,14 @@ def evidence_concept():
             {'c': 'divider'},
             pub_row('2025', 'Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion',
                     '[Вывод одной фразой]', [('Review', 'info'), ('MeVO', 'neutral'), ('TIGERTRIEVER™ 13', 'neutral')]),
-            {'c': 'divider'}]
+            {'c': 'divider'},
+            {'c': 'grid', 'cols': '80px minmax(0,1fr) 120px', 'gap': 'm', 'items': [T('2024', 'small'), S([T('Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent', 'strong'),
+                T('[First author] et al. · [journal] · 2024', 'small'), badge_row([('COMANECI™', 'neutral')])], 'xs',
+                annotation='Неразмеченная публикация (разметка по желанию): вместо вывода — «первый автор et al. · журнал · год», из бейджей — только продукт (он есть у всех). Строка аккуратная, просто беднее.'),
+                S([{'c': 'link', 'text': 'Journal ↗'}], 'xs')]},
+            {'c': 'divider'},
+            {'c': 'row', 'gap': 's', 'items': [T('74 publications not yet classified are hidden by the study-type filter.', 'caption'), {'c': 'link', 'text': 'Show them'}],
+             'annotation': 'Фильтры по типу и показанию видят только размеченные — честная строка с числом и «Show them», чтобы ничего не терялось молча.'}]
     lib = S([{'c': 'row', 'justify': 'between', 'items': [H('All publications', 2), T('Showing 1–20 of 102', 'caption')]}, lib_filters] + rows + [{'c': 'button', 'v': 'secondary', 'text': 'Show more', 'full': True}], 'm',
             annotation='Уровень 2 — архив: поиск и фильтры по продукту, показанию, типу исследования, сортировка, счётчик (Shockwave). Строка: год · заголовок · вывод одной фразой (Semantic Scholar TLDR) · бейджи: дизайн, N, показание, продукт · PDF / журнал. Авторы — на странице статьи, не в списке. Пресс-релизы из списка уходят в новости (ADR-009: вид материала).')
     ongoing = S([H('Ongoing studies', 3), T('[Идущие исследования — например, исследование когнитивных исходов тромбэктомии (новость, янв. 2025); список — от клиента]', 'small')], 's',
