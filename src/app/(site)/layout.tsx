@@ -5,6 +5,7 @@ import { Tracking } from "@/components/site/Tracking";
 import { MediaLightbox } from "@/components/site/MediaLightbox";
 import { getRememberedRegion, getSuggestedRegion } from "@/lib/region-cookie";
 import { RegionBanner } from "@/components/site/RegionBanner";
+import { RegionMemory } from "@/components/site/RegionMemory";
 import { REGION_LABELS } from "@/lib/regions";
 import { cookies } from "next/headers";
 import { getAllSettings } from "@/lib/settings";
@@ -34,6 +35,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} nav={navigation} />
       <div className="flex-1">{children}</div>
       <Footer contact={contact} social={social} region={region} regionalNotice={notice} nav={navigation} />
+      <RegionMemory />
       {editing ? <EditorLoader /> : (<><Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} /><Tracking /><MediaLightbox /></>)}
     </>
   );

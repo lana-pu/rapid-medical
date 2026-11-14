@@ -171,3 +171,18 @@ test.describe("usability pass 2026-11-13, part 2", () => {
     await expect(page.getByText(/^[A-Z][a-z]{2} 20\d\d$/).first()).toBeVisible();
   });
 });
+
+test.describe("user walk 2026-11-14", () => {
+  test("links to other regions prefetched on screen do not switch the visitor's region; a click does", async ({ page, context }) => {
+    const region = async () => (await context.cookies()).find((c) => c.name === "rm_region")?.value;
+    await page.goto("/ous/therapies/mvo");
+    await page.waitForLoadState("networkidle");
+    expect(await region()).toBe("ous");
+    await page.goto("/");
+    await expect(page.getByLabel(/^Region:/).first()).toContainText("Europe & Middle East");
+    await page.goto("/ous/therapies/mvo");
+    await page.getByRole("link", { name: "Asia & Pacific version" }).click();
+    await page.waitForURL(/\/apac\/therapies\/mvo/);
+    await expect.poll(region).toBe("apac");
+  });
+});

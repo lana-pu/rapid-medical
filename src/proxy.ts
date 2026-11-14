@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LEGACY_HOSTS, regionForCountry } from "@/lib/regions";
+import { isPageLoad } from "@/lib/visit";
 
 const SOLUTION_SLUGS = /^(lvo|mvo|aneurysm|vasospasm|access|drivewire)$/;
 
@@ -39,7 +40,10 @@ export async function proxy(req: NextRequest) {
   const cc = req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? req.headers.get("x-country-code");
   const ipRegion = regionForCountry(cc);
   const set: [name: string, value: string, maxAge: number][] = [];
-  if (m) {
+  // Only a page load remembers the region. A link the router fetches ahead of a click (prefetch) is not a visit: the
+  // «Asia & Pacific version» link on a therapy page used to switch the visitor's region by merely being on screen
+  // (UX walk 2026-11-14). Client-side navigations record it in the browser when the page opens (RegionMemory).
+  if (m && isPageLoad(req.headers)) {
     if (req.cookies.get(REGION_COOKIE)?.value !== m[1]) set.push([REGION_COOKIE, m[1], YEAR]);
   } else if (!req.cookies.get(REGION_COOKIE) && ipRegion) {
     set.push([REGION_COOKIE, ipRegion, YEAR]);
