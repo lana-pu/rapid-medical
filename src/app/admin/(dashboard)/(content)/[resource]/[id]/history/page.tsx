@@ -6,6 +6,8 @@ import { getResource } from "@/admin/resources";
 import { listRevisions, getRevision, getEditable, snapshot } from "@/admin/workflow";
 import { restoreAction } from "@/admin/actions";
 import { PageHeader, LinkButton, formatDate, inputCls, Button } from "@/components/admin/ui";
+import { PageTabs } from "@/components/admin/PageTabs";
+import { pageKey } from "@/admin/page-tree";
 
 function asText(v: unknown): string {
   if (v == null) return "";
@@ -34,6 +36,9 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
   const recordId = Number(id);
   const [editable, revs] = await Promise.all([getEditable(res, recordId), listRevisions(res, recordId, 200)]);
   if (!editable) notFound();
+  // a page of the site: the History tab of its page (docs/screens/admin-sections.md → «Экран страницы»)
+  const path = ["solutions", "pages", "site-pages"].includes(res.slug) ? (res.previewUrl?.(editable.live) ?? null) : null;
+  const pageOf = path ? pageKey(path) : null;
 
   // Default: compare the latest revision against the one before it; "live" = current live row
   const aId = sp.a ?? String(revs[1]?.id ?? "live");
@@ -57,7 +62,11 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
 
   return (
     <>
-      <PageHeader title={`History · ${editable.row[res.labelField]}`} subtitle={`${revs.length} revisions`} actions={<LinkButton href={`/admin/${res.slug}/${recordId}`}>← Back to record</LinkButton>} />
+      {pageOf ? (
+        <PageTabs pageKey={pageOf} active="history" current={{ r: res.slug, id: recordId }} />
+      ) : (
+        <PageHeader title={`History · ${editable.row[res.labelField]}`} subtitle={`${revs.length} revisions`} actions={<LinkButton href={`/admin/${res.slug}/${recordId}`}>← Back to record</LinkButton>} />
+      )}
       <form className="mb-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 md:grid-cols-[1fr_1fr_auto]">
         <label className="text-sm">From
           <select name="a" defaultValue={aId} className={inputCls}>

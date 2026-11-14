@@ -1,6 +1,6 @@
 import "server-only";
 import { and, count, desc, eq, isNull, like, max, notInArray } from "drizzle-orm";
-import { auditLog, comments, contactSubmissions, db, media, publications, users } from "@/db";
+import { auditLog, comments, contactSubmissions, db, media, notFoundLog, publications, users } from "@/db";
 import { listSettingDrafts } from "@/lib/settings";
 import { getSettingsGroup, mayEditGroup, mayEditOnPage } from "./settings";
 import { getResource } from "./resources";
@@ -9,7 +9,9 @@ import { getRow } from "./engine";
 
 /** «Website — what needs you» (docs/screens/admin-home.md): what waits for someone, recent activity, a summary. */
 
-export type Attention = { key: string; text: string; by?: string; at?: Date; action: string; href: string };
+/** Inbox kinds (docs/admin-ia.md): requests, comments, changes to publish, pictures without a description, broken links. */
+export type AttentionKind = "request" | "comment" | "publish" | "media" | "links";
+export type Attention = { key: string; kind: AttentionKind; text: string; by?: string; at?: Date; action: string; href: string };
 
 const TZ = "Asia/Jerusalem";
 const when = (d: Date) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: TZ }).format(d);
@@ -28,6 +30,7 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
     const path = res && d.data ? res.previewUrl?.({ ...(d.data as Record<string, unknown>), id: d.recordId }) : null;
     if (d.data) {
       out.push({
+        kind: "publish",
         key: `d${d.id}`,
         text: `${d.label} — unpublished changes`,
         by: d.updatedByName,
@@ -36,17 +39,17 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
         href: path ? `/api/editor?on=1&redirect=${encodeURIComponent(path)}` : `/admin/${d.resource}/${d.recordId}`,
       });
     }
-    if (d.publishAt) out.push({ key: `s${d.id}`, text: `${d.label} — publishes ${when(d.publishAt)} (Israel time)`, at: d.updatedAt, action: "Open", href: `/admin/${d.resource}/${d.recordId}` });
+    if (d.publishAt) out.push({ kind: "publish", key: `s${d.id}`, text: `${d.label} — publishes ${when(d.publishAt)} (Israel time)`, at: d.updatedAt, action: "Open", href: `/admin/${d.resource}/${d.recordId}` });
   }
   for (const s of settingDrafts) {
     const g = getSettingsGroup(s.key);
     if (!g || !mayEditOnPage(user, g)) continue;
     // page-label rights only: the way in is the page, not the limited settings screen
     const own = mayEditGroup(user, g);
-    out.push({ key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: own ? "Open" : "Open on page", href: own ? `/admin/settings?group=${s.key}` : "/api/editor?on=1&redirect=%2F" });
+    out.push({ kind: "publish", key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: own ? "Open" : "Open on page", href: own ? `/admin/settings?group=${s.key}` : "/api/editor?on=1&redirect=%2F" });
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));
-  if (newRequests) out.unshift({ key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });
+  if (newRequests) out.unshift({ kind: "request", key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });
   // open comment threads, per page
   const open = await db.select({ resource: comments.resource, recordId: comments.recordId, n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt))).groupBy(comments.resource, comments.recordId);
   for (const c of open) {
@@ -54,9 +57,11 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
     const row = res ? await getRow(res, c.recordId) : null;
     if (!res || !row) continue;
     const path = res.previewUrl?.(row) ?? null;
-    out.push({ key: `c${c.resource}${c.recordId}`, text: `${c.n} open comment${c.n > 1 ? "s" : ""} on ${String(row[res.labelField] ?? `#${c.recordId}`)}`, action: path ? "Open on page" : "Open", href: path ? `/api/editor?on=1&redirect=${encodeURIComponent(path)}` : `/admin/${res.slug}/${c.recordId}` });
+    out.push({ kind: "comment", key: `c${c.resource}${c.recordId}`, text: `${c.n} open comment${c.n > 1 ? "s" : ""} on ${String(row[res.labelField] ?? `#${c.recordId}`)}`, action: path ? "Open on page" : "Open", href: path ? `/api/editor?on=1&redirect=${encodeURIComponent(path)}` : `/admin/${res.slug}/${c.recordId}` });
   }
-  if (noAlt) out.push({ key: "alt", text: `${noAlt} picture${noAlt > 1 ? "s" : ""} without a description`, action: "Describe pictures", href: "/admin/media?describe=1" });
+  if (noAlt) out.push({ kind: "media", key: "alt", text: `${noAlt} picture${noAlt > 1 ? "s" : ""} without a description`, action: "Describe pictures", href: "/admin/media?describe=1" });
+  const [{ n: broken }] = await db.select({ n: count() }).from(notFoundLog).where(isNull(notFoundLog.resolvedAt));
+  if (broken) out.push({ kind: "links", key: "links", text: `${broken} broken link${broken > 1 ? "s" : ""} visitors hit`, action: "Fix links", href: "/admin/not-found-log" });
   return out;
 }
 

@@ -1,5 +1,10 @@
 # Экран: Website — what needs you (`/admin`)
 
+> **2026-11-14: главная стала Inbox** (`docs/admin-ia.md`): одна лента «Everything waiting» с видами (Requests ·
+> Comments · To publish · Pictures without description · Broken links) во второй колонке; «Recent activity» — в
+> Settings → Activity log, сводка убрана. Ниже — прежнее описание ленты, оно в силе.
+
+
 Основа: флоу админки `docs/flows/admin.json` (экран home), разбор админки сценарий №12 («первым — что не опубликовано и
 что ждёт ответа, а не счётчики записей»), ADR-006. Код: `src/app/admin/(dashboard)/page.tsx`, `src/admin/home.ts`.
 

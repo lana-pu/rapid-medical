@@ -9,6 +9,10 @@ import { duplicateResource } from "@/admin/actions";
 import { PageHeader, LinkButton, Notice, Button } from "@/components/admin/ui";
 import { crumbsFor } from "@/admin/site-sections";
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { PageTabs } from "@/components/admin/PageTabs";
+import { pageKey } from "@/admin/page-tree";
+
+const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
 
@@ -32,10 +36,27 @@ export default async function EditResource({ params, searchParams }: { params: P
   const previewHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/preview?token=${await makePreviewToken(previewPath)}`) : null;
   const editHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
   const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => r !== row.region) : [];
+  // records that are pages of the site (therapy, text and site pages) show as a tab of their page
+  const pageOf = PAGE_RESOURCES.includes(res.slug) && previewPath ? pageKey(previewPath) : null;
 
   return (
     <>
-      <PageHeader
+      {pageOf ? (
+        // a page of the site: the page's header with its tabs (docs/screens/admin-sections.md → «Экран страницы»)
+        <PageTabs pageKey={pageOf} active="google" current={{ r: res.slug, id: Number(row.id) }} actions={
+          <>
+            {otherRegions.map((r) => (
+              <form key={r} action={duplicateResource}>
+                <input type="hidden" name="__resource" value={res.slug} />
+                <input type="hidden" name="__id" value={row.id} />
+                <input type="hidden" name="region" value={r} />
+                <Button type="submit" variant="secondary">Copy to {r.toUpperCase()}</Button>
+              </form>
+            ))}
+          </>
+        } />
+      ) : (
+        <PageHeader
         crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
         title={String(row[res.labelField] ?? res.titleSingular)}
         subtitle={`${res.titleSingular} #${row.id}`}
@@ -53,6 +74,7 @@ export default async function EditResource({ params, searchParams }: { params: P
           </>
         }
       />
+      )}
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.pending && <Notice kind="info">Saved as pending changes. The live page is unchanged until you publish.</Notice>}
       {sp.published && (

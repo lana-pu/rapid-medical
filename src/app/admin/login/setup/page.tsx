@@ -8,7 +8,7 @@ export const metadata = { title: "Two-step sign-in · Rapid Medical admin" };
 /** Mandatory two-step sign-in, set up on the first visit (docs/screens/admin-people.md). */
 export default async function SetupPage() {
   const me = await requireSignedIn();
-  if (!me.needsSetup) redirect("/admin/start");
+  if (!me.needsSetup) redirect("/admin");
   const s = await pendingTotpKey(me.id, me.email);
   const qr = await QRCode.toDataURL(s.uri, { margin: 1, width: 180 });
   return (

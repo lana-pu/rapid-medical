@@ -4,20 +4,21 @@ import { E2E_CRON_SECRET } from "./secrets";
 
 test.describe.configure({ mode: "serial" });
 
-test("login → website or training tool → what needs you; list filters", async ({ page }) => {
+test("login → Inbox: everything waiting, by kind; list filters", async ({ page }) => {
   sql(`insert into contact_submissions(form,first_name,last_name,email,status) values ('contact','E2E','Home','home@example.com','new')`);
   await login(page);
-  await expect(page).toHaveURL(/\/admin\/start$/);
-  await expect(page.getByRole("heading", { name: "What do you want to work on?" })).toBeVisible();
-  await expect(page.getByText("Training tool")).toBeVisible();
-  await page.getByRole("link", { name: /Website/ }).click();
-  await expect(page).toHaveURL(/\/admin$/);
-  await expect(page.getByRole("heading", { name: /^Hello, / })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Needs your attention" })).toBeVisible();
+  await expect(page).toHaveURL(/\/admin$/); // the old «website or training tool» step leads here
+  await expect(page.getByRole("heading", { name: "Everything waiting" })).toBeVisible();
   await expect(page.getByText(/\d+ new requests?/)).toBeVisible();
   await expect(page.getByText(/pictures? without a description/).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "Evidence" }).first()).toBeVisible();
-  await page.getByRole("link", { name: "New page" }).click();
+  const inbox = page.getByRole("navigation", { name: "Inbox" });
+  await inbox.getByRole("link", { name: /^Pictures without description/ }).click();
+  await expect(page.getByRole("heading", { name: "Pictures without description" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Waiting" }).locator("li")).toHaveCount(1);
+  // Content: the tree and + New page
+  await page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Content/ }).click();
+  await expect(page.getByRole("navigation", { name: "Site" }).getByRole("link", { name: "Evidence", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "+ New page" }).click();
   await expect(page.getByRole("dialog")).toBeVisible(); // the template choice opens straight away
   sql(`delete from contact_submissions where email='home@example.com'`);
   await page.goto("/admin/solutions?region=apac");
@@ -123,11 +124,16 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await login(page);
   await page.goto("/admin");
   // functions apart from navigation (docs/screens/admin-sections.md → «Меню слева»)
-  const rail = page.getByRole("navigation", { name: "Admin functions" });
-  for (const s of ["Find a page", "Requests", "Media library", "Activity"]) await expect(rail.getByRole("link", { name: s })).toBeVisible();
-  await rail.getByRole("button", { name: "Settings" }).click();
-  await expect(page.getByRole("menu", { name: "Settings" }).getByRole("menuitem", { name: "Site settings" })).toBeVisible();
-  await page.keyboard.press("Escape");
+  // four spaces; the site tree only in Content (docs/admin-ia.md)
+  const rail = page.getByRole("navigation", { name: "Admin spaces" });
+  for (const s of [/^Content/, /^Inbox/, /^Media/, /^Settings/]) await expect(rail.getByRole("link", { name: s })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Site" })).toHaveCount(0); // the Inbox has its own column
+  await rail.getByRole("link", { name: /^Settings/ }).click();
+  const settings = page.getByRole("navigation", { name: "Settings" });
+  await expect(settings.getByRole("link", { name: "Redirects" })).toBeVisible();
+  await settings.getByRole("link", { name: "Activity log" }).click();
+  await expect(page).toHaveURL(/\/admin\/activity$/);
+  await rail.getByRole("link", { name: /^Content/ }).click();
 
   // the site tree: every page once, collections under their page, marked
   const tree = page.getByRole("navigation", { name: "Site" });
@@ -135,15 +141,25 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(tree.getByRole("link", { name: "Large vessel stroke", exact: true })).toHaveCount(1);
   await expect(tree.getByRole("link", { name: /^▤?\s*Publications/ })).toContainText("▤");
 
-  // a page screen: its regions
+  // a page screen: its regions; tabs Overview · Google & address · History
   await tree.getByRole("link", { name: "Medium vessel stroke", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/page\/therapies\/mvo$/);
   await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
   const regions = page.getByRole("region", { name: "Regions" });
   await expect(regions).toContainText("No version in this region"); // MVO is not in the Americas
   await expect(regions.getByRole("link", { name: "Edit on page ✎" })).toHaveCount(2);
+  const tabs = page.getByRole("navigation", { name: "Page tabs" });
+  await tabs.getByRole("link", { name: "Google & address" }).click();
+  await expect(page.locator("input[name=metaTitle]")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
+  await page.getByRole("group", { name: "Region" }).getByRole("link", { name: "Europe & Middle East" }).click();
+  await expect(page.getByRole("group", { name: "Region" }).getByRole("link", { name: "Europe & Middle East" })).toHaveAttribute("aria-current", "page");
+  await tabs.getByRole("link", { name: "History" }).click();
+  await expect(page).toHaveURL(/\/history$/);
+  await tabs.getByRole("link", { name: "Overview" }).click();
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Therapies" }).click();
   await expect(page.getByRole("region", { name: "Pages under it" })).toContainText("Large vessel stroke");
+  await expect(page.locator('[data-cell="/therapies/mvo:us"]')).toHaveText("No version"); // the therapy × region table
 
   // a collection opens its records
   await tree.getByRole("link", { name: /Publications/ }).click();
@@ -183,7 +199,8 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Branding" })).toHaveCount(0);
     await expect(ed.getByRole("link", { name: "Workflow" })).toHaveCount(0);
-    await expect(ed.locator("main").getByRole("link", { name: "Menu and footer" })).toHaveCount(0); // the menu's structure: designers
+    await expect(ed.locator("input[name=__group]").first()).toHaveValue("contact");
+    await ed.goto("/admin/settings?group=navigation"); // the menu's structure: designers
     await expect(ed.locator("input[name=__group]").first()).toHaveValue("contact");
     // on the page: no layout choice for a section
     await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
@@ -207,7 +224,8 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await de.goto("/admin/settings?group=branding");
     await expect(de.locator("input[name=__group]").first()).toHaveValue("branding");
     await expect(de.getByRole("link", { name: "Integrations" })).toHaveCount(0);
-    await expect(de.locator("main").getByRole("link", { name: "Menu and footer" })).toBeVisible();
+    await de.goto("/admin/settings?group=navigation");
+    await expect(de.locator("input[name=__group]").first()).toHaveValue("navigation");
     await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
     await de.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Sections" }).click();
@@ -339,7 +357,7 @@ test("invite → welcome link → two-step sign-in set up on the first visit →
   expect(codes).toHaveLength(8);
   expect(noa.url()).not.toContain(codes[0]); // never in the address
   await noa.getByRole("link", { name: "Continue" }).click();
-  await noa.waitForURL(/\/admin\/start$/);
+  await noa.waitForURL(/\/admin$/);
   expect(sql("select role from users where email='invited@e2e.test'")).toBe("designer");
 
   // the invite link is used up
@@ -355,7 +373,7 @@ test("invite → welcome link → two-step sign-in set up on the first visit →
   await again.waitForURL(/\/admin\/login\/2fa/);
   await again.fill("input[name=code]", codes[0]);
   await again.click('button:has-text("Verify")');
-  await again.waitForURL(/\/admin\/start$/);
+  await again.waitForURL(/\/admin$/);
   expect(sql(`select jsonb_array_length(recovery_codes) from users where email='invited@e2e.test'`)).toBe("7");
   await again.goto("/admin/account");
   await expect(again.getByRole("button", { name: "Set up on a new phone" })).toBeVisible();

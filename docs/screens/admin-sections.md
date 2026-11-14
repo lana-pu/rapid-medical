@@ -5,43 +5,37 @@
 странице терапии», «добавить исследование в Evidence»), а не таблицами базы. Код: `src/admin/site-sections.ts`,
 `src/app/admin/(dashboard)/site/[section]/page.tsx`.
 
-## Меню слева (решение владелицы 2026-11-14: функции отдельно от навигации, как в редакторах)
-Две колонки — как в редакторе страниц (`on-page-editor.md`) и в Mintlify:
-```
-┌──┬─────────────────────────┬──────────────────────
-│🔍│ SITE                    │
-│🏠│ ▾ Home                  │   экран
-│📥│ ▾ Therapies             │
-│ 3│     Large vessel stroke │
-│🖼│     Medium vessel stroke│
-│🕘│ ▾ Evidence              │
-│  │     ▤ Publications  102 │
-│  │ ▾ News & Events         │
-│  │     ▤ News           53 │
-│✎ │     ▤ Events          5 │
-│⚙ │ ▸ About … Menu and footer│
-│👤│                         │
-└──┴─────────────────────────┴──────────────────────
-```
-- **Полоска функций** (узкая, тёмная, значки с подписью при наведении): 🔍 Find a page · 🏠 Home («What needs you») ·
-  📥 Requests (число новых) · 🖼 Media library · 🕘 Activity; внизу ✎ Edit site (редактор страниц) · ↗ View site ·
-  ⚙ Settings (меню: Site settings · Redirects · Broken links · People and roles — админ) · 👤 аккаунт (имя, роль,
-  My account & security, Sign out). Текущая функция подсвечена.
-- **Дерево сайта** (колонка «Site», светлая): то же дерево, что в редакторе (`src/admin/page-tree.ts`) — каждая страница
-  один раз; ветки сворачиваются (запоминается в этом браузере); текущая страница или коллекция подсвечена.
-  **Коллекции — в дереве под страницей, где они показаны**, со значком ▤ и числом записей: Evidence → Publications,
-  Products · Webinars → Webinars · News & Events → News, Events · About → Team · Careers → Open positions → Jobs.
-  В конце — **Menu and footer** (значок ☰, весь сайт). Клик по странице → **экран страницы**, по коллекции → её
-  записи (`/admin/{коллекция}`).
+## Меню слева: четыре пространства (решение владелицы 2026-11-14, `docs/admin-ia.md`)
+Полоска слева (узкая, тёмная) — **пространства**, а не страницы: 📝 **Content** · 📥 **Inbox** (число того, что ждёт) ·
+🖼 **Media** · ⚙ **Settings**; внизу ✎ Edit site · ↗ View site · аккаунт (My account & security, Sign out).
+Вторая колонка у каждого пространства своя:
+- **Content** — дерево сайта: поиск по дереву и **+ New page** сверху; страницы один раз (дерево редактора,
+  `src/admin/page-tree.ts`); коллекции под своей страницей со значком ▤ и числом (Evidence → Publications, Products ·
+  Webinars → Webinars · News & Events → News, Events · About → Team · Careers → Open positions → Jobs); в конце
+  Menu and footer. Ветки сворачиваются (запоминается в браузере). Клик по странице — экран страницы, по коллекции —
+  её записи.
+- **Inbox** — виды того, что ждёт, с числами: All · Requests · Comments · To publish · Pictures without description ·
+  Broken links. `/admin` — Inbox (главная).
+- **Media** — без второй колонки.
+- **Settings** — группы: *Site* — Contact details · Social links · Regional notices · Google defaults · Branding
+  (дизайнер, админ) · Integrations (админ) · Redirects; *Team* — People and roles (админ) · Activity log;
+  *You* — My account & security. Menu and footer — в Content, не здесь.
+`/admin/start` (выбор «Website / Training tool») ведёт в Inbox; когда появится Training tool — переключатель над полоской.
 
 ## Экран страницы (`/admin/page/…` — адрес страницы на сайте без региона, Home — `/admin/page`)
-Хлебные крошки по дереву («Site › Therapies › Large vessel stroke»), название и вид страницы, затем:
+Шапка: хлебные крошки по дереву («Site › Therapies › Large vessel stroke»), название и вид страницы, **вкладки**
+(решение владелицы 2026-11-14): **Overview** (ниже) · **Google & address** — форма страницы (Google-тексты, адрес,
+расписание, Publish) одного региона, переключатель регионов справа · **History** — версии одного региона.
+Вкладки Google & address и History — это форма и история записи страницы (`/admin/{solutions|pages|site-pages}/{id}`)
+под той же шапкой, поэтому отдельного входа в «форму страницы» больше нет.
+Overview:
 1. **Регионы** — по строке на версию: регион, статус словами, кто и когда менял, **Edit on page ✎**, **Settings**
-   (форма страницы: Google-тексты, адрес), **View ↗**. Нет версии в регионе — «No version». Страница-список
+   (вкладка Google & address), **History**, **View ↗**. Нет версии в регионе — «No version». Страница-список
    (Webinars, News & Events, Open positions, Contact) — «Its texts are edited on the page, its items in the
    collections below».
 2. **Collections on this page** — коллекции страницы: значок ▤, название, число, где показываются, **Open**, **+ New**.
-3. **Pages under it** — дочерние страницы дерева со статусами.
+3. **Pages under it** — дочерние страницы дерева; у региональных — колонки регионов (статус и Edit ✎ или «No
+   version»): так на экране Therapies видна таблица терапии × регион.
 Экраны разделов (`/admin/site/{раздел}`, ниже) остаются по прямым ссылкам; из меню ведёт дерево.
 
 ## Экран раздела

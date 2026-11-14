@@ -1,5 +1,4 @@
 import { safeLocalPath } from "@/lib/safe-path";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
@@ -68,14 +67,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader title="Site settings" />
-      <div className="mb-6 flex gap-1 border-b border-neutral-200">
-        {groups.map((g) => (
-          <Link key={g.key} href={`/admin/settings?group=${g.key}`} className={`-mb-px border-b-2 px-3 py-2 text-sm ${g.key === group.key ? "border-neutral-900 font-medium" : "border-transparent text-neutral-500 hover:text-neutral-800"}`}>
-            {g.title}
-          </Link>
-        ))}
-      </div>
+      {/* the groups are listed in the Settings column (docs/admin-ia.md); the page shows one */}
+      <PageHeader crumbs={[{ label: "Settings" }]} title={group.title} />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.error && (
         <Notice kind="error">

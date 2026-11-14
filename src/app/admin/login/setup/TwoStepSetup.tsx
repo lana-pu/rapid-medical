@@ -18,7 +18,7 @@ export function TwoStepSetup({ secret, qr }: { secret: string; qr: string }) {
         <p className="font-medium text-green-800">Two-step sign-in is on.</p>
         <p>Save these recovery codes somewhere safe. Each works once if you lose your phone; they are not shown again.</p>
         <pre className="rounded bg-neutral-100 p-3 font-mono text-xs" aria-label="Recovery codes">{codes.join("\n")}</pre>
-        <Link href="/admin/start" className="block w-full rounded bg-neutral-900 px-3 py-2 text-center font-medium text-white">Continue</Link>
+        <Link href="/admin" className="block w-full rounded bg-neutral-900 px-3 py-2 text-center font-medium text-white">Continue</Link>
       </div>
     );
   }

@@ -131,10 +131,23 @@ export function sectionForResource(resource: string, siteKey?: string): Section 
 }
 
 /** Breadcrumbs of an admin list / record: Website › {section} › {list}. The last item is the list (dropped on the list itself). */
+/** A section's page screen in Content (sections without one keep their section screen). */
+const SECTION_PAGE: Record<string, string> = {
+  home: "/admin/page",
+  therapies: "/admin/page/therapies",
+  evidence: "/admin/page/evidence",
+  webinars: "/admin/page/webinars",
+  "news-events": "/admin/page/news-events",
+  about: "/admin/page/about-us",
+  careers: "/admin/page/careers",
+  contact: "/admin/page/contact-us",
+};
+
 export function crumbsFor(resource: string, listTitle?: string, siteKey?: string): { label: string; href?: string }[] {
   const sec = sectionForResource(resource, siteKey);
-  const out: { label: string; href?: string }[] = [{ label: "Website", href: "/admin" }];
-  if (sec) out.push({ label: sec.title, href: `/admin/site/${sec.key}` });
+  // «Site › Evidence › Publications»: the page that shows the list, by the site tree (docs/admin-ia.md)
+  const out: { label: string; href?: string }[] = [{ label: "Site", href: "/admin/page" }];
+  if (sec) out.push({ label: sec.title, href: SECTION_PAGE[sec.key] ?? `/admin/site/${sec.key}` });
   if (resource !== "site-pages") out.push({ label: listTitle ?? "", href: `/admin/${resource}` });
   return out;
 }

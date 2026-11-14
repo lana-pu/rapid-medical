@@ -8,11 +8,11 @@
 
 ## Вход (`/admin/login`)
 - Карточка «Rapid Medical · Admin»: **Email**, **Password**, **Sign in**, ссылка «Forgot your password?» → `/admin/reset`.
-- Уже вошедший (пароль и код пройдены) сразу уходит на `?next=` или `/admin/start`.
+- Уже вошедший (пароль и код пройдены) сразу уходит на `?next=` или `/admin` (Inbox).
 - Пароль верный → сессия на 7 дней (cookie `rm_admin`, в базе — устройство и IP для My account).
   - второй шаг настроен → `/admin/login/2fa` (с тем же `next`);
   - не настроен → `next`, а любой экран админки отправляет на обязательную настройку ([admin-people](admin-people.md)).
-  `next` — только путь внутри `/admin` или `/api/editor` (вход в редактор на странице), остальное → `/admin/start`.
+  `next` — только путь внутри `/admin` или `/api/editor` (вход в редактор на странице), остальное → `/admin` (Inbox).
 - Сообщения: «Invalid email or password.» (нет такой почты, учётная запись отключена или пароль неверный — одно и то же
   сообщение); «Too many attempts. Try again in 15 minutes.»; после сброса пароля — «Password updated. Please sign in.»
 - Лимит: 8 неудачных попыток за 15 минут **по почте** и отдельно **по IP**; пока лимит исчерпан, не пускает и с верным паролем.
@@ -23,7 +23,7 @@
 - Принимает код из приложения (6–8 цифр) или код восстановления (`xxxxx-xxxxx`, каждый — один раз).
 - Неверный код → «That code didn’t work.». 5 неверных кодов за 15 минут → сессия закрывается, `/admin/login` с
   «Too many attempts. Try again in 15 minutes.»; пока 15 минут не прошли, первая же попытка кода снова закрывает сессию.
-- Без сессии → `/admin/login`; код уже пройден → `next` или `/admin/start`.
+- Без сессии → `/admin/login`; код уже пройден → `next` или `/admin` (Inbox).
 
 ## Сброс пароля (`/admin/reset`)
 - **Запрос**: «Reset password», поле «Your email», **Send reset link**, «Back to sign in». Ответ всегда один, есть почта

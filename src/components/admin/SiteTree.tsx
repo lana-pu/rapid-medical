@@ -14,6 +14,9 @@ const KEY = "rm-admin-tree-closed";
 export function SiteTree({ tree }: { tree: SiteNode[] }) {
   const path = usePathname();
   const [closed, setClosed] = useState<Set<string>>(new Set());
+  const [q, setQ] = useState("");
+  const needle = q.trim().toLowerCase();
+  const matches = (n: SiteNode): boolean => !needle || n.title.toLowerCase().includes(needle) || n.children.some(matches);
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(KEY) ?? "[]") as string[];
@@ -38,7 +41,8 @@ export function SiteTree({ tree }: { tree: SiteNode[] }) {
   const active = (n: SiteNode) => !!n.href && (n.kind === "page" ? path === n.href : path === n.href || path.startsWith(`${n.href}/`));
 
   const row = (n: SiteNode, depth: number) => {
-    const open = !closed.has(n.key);
+    if (!matches(n)) return null;
+    const open = !!needle || !closed.has(n.key);
     const pad = { paddingLeft: 4 + depth * 14 };
     const caret = n.children.length ? (
       <button type="button" onClick={() => toggle(n.key)} aria-label={open ? `Collapse ${n.title}` : `Expand ${n.title}`} aria-expanded={open} className="w-5 shrink-0 text-xs text-neutral-400 hover:text-neutral-900">
@@ -77,9 +81,13 @@ export function SiteTree({ tree }: { tree: SiteNode[] }) {
 
   return (
     <nav aria-label="Site" className="sticky top-0 flex h-screen w-64 flex-none flex-col border-r border-neutral-200 bg-white">
-      <div className="flex items-baseline justify-between px-4 pb-2 pt-4">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Site</span>
-        <span className="text-[10px] text-neutral-400">▤ collection</span>
+      <div className="space-y-2 px-3 pb-2 pt-4">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Site</span>
+          <Link href="/admin/editor?new=1" className="rounded border border-neutral-300 px-2 py-0.5 text-xs hover:bg-neutral-50">+ New page</Link>
+        </div>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a page or collection" aria-label="Find a page or collection" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
+        <p className="px-1 text-[10px] text-neutral-400">▤ collection — records of one kind</p>
       </div>
       <ul className="flex-1 overflow-y-auto px-2 pb-4">{tree.map((n) => row(n, 0))}</ul>
     </nav>
