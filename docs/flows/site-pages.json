@@ -95,6 +95,21 @@
    ]
   },
   {
+   "title": "4 · Выбор региона — как есть",
+   "screens": [
+    "region-asis",
+    "region-asis-phone",
+    "region-switcher-asis",
+    "region-banner-asis"
+   ]
+  },
+  {
+   "title": "4 · Выбор региона — примеры из Mobbin",
+   "screens": [
+    "region-mobbin"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -212,6 +227,31 @@
    "from": "news-new",
    "to": "news-new-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "event-past-new",
+   "to": "region-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "region-asis",
+   "to": "region-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "region-asis",
+   "to": "region-switcher-asis",
+   "label": "переключатель в шапке"
+  },
+  {
+   "from": "region-switcher-asis",
+   "to": "region-banner-asis",
+   "label": "чужой регион по ссылке"
+  },
+  {
+   "from": "region-banner-asis",
+   "to": "region-mobbin",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -8989,6 +9029,291 @@
     {
      "c": "rm-footer",
      "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-asis",
+   "title": "Choose location · as is",
+   "url": "rapid-medical.com/choose-your-location",
+   "height": 760,
+   "body": [
+    {
+     "c": "rm-header"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Choose your location.",
+       "body": "Product availability and regulatory information differ by region."
+      },
+      {
+       "c": "rm-regionChooser",
+       "v": "default",
+       "options": [
+        {
+         "label": "Americas",
+         "href": "/us/therapies",
+         "suggested": false
+        },
+        {
+         "label": "Asia & Pacific",
+         "href": "/apac/therapies",
+         "suggested": false
+        },
+        {
+         "label": "Europe & Middle East",
+         "href": "/ous/therapies",
+         "suggested": false
+        }
+       ],
+       "annotation": "Как есть: три кнопки — Americas · Asia & Pacific · Europe & Middle East — без стран. Под Europe & Middle East по коду (regionForCountry) живут ещё Австралия и Африка, а Ближний Восток и Турция по IP уходят в Asia & Pacific, Латинская Америка — в Americas. В подписях региона на сайте — «Europe, Middle East, Latin America & Australia». Врач из ОАЭ или Бразилии выбирает наугад. Карта «страна → регион» — вопрос к Emily (BACKLOG, решения №9)."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-asis-phone",
+   "title": "Choose location · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/choose-your-location",
+   "body": [
+    {
+     "c": "rm-header"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Choose your location.",
+       "body": "Product availability and regulatory information differ by region."
+      },
+      {
+       "c": "rm-regionChooser",
+       "v": "default",
+       "options": [
+        {
+         "label": "Americas",
+         "href": "/us/therapies",
+         "suggested": false
+        },
+        {
+         "label": "Asia & Pacific",
+         "href": "/apac/therapies",
+         "suggested": false
+        },
+        {
+         "label": "Europe & Middle East",
+         "href": "/ous/therapies",
+         "suggested": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-switcher-asis",
+   "title": "Region switcher in the header · as is",
+   "url": "rapid-medical.com/us",
+   "height": 620,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us",
+     "switcherOpen": true,
+     "annotation": "Переключатель в шапке: тот же список из трёх названий, без стран. Видна только тем, кто уже на сайте; страницу выбора видят лишь те, чью страну не определили."
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "banner",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "cta": {
+        "label": "Explore Therapies",
+        "href": "/us/therapies"
+       },
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-banner-asis",
+   "title": "Other region by a link · as is",
+   "url": "rapid-medical.com/ous/therapies/lvo",
+   "height": 620,
+   "body": [
+    {
+     "c": "rm-regionBanner",
+     "suggested": "us",
+     "annotation": "Плашка, когда регион страницы и регион по IP разные (врач из США открыл ссылку коллеги из Европы): «It looks like you are in Americas…». Не перекидывает сама, скрывается на 30 дней."
+    },
+    {
+     "c": "rm-header",
+     "region": "ous"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
+        {
+         "label": "Americas version",
+         "href": "/us/therapies/lvo"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-mobbin",
+   "title": "Choose location · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Какой регион мой: страны под регионом"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Врач из ОАЭ, Бразилии или Австралии не знает, что нажать. Показать страны под каждым регионом? Поиск по стране?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/region/aws.webp",
+           "source": "AWS",
+           "caption": "регионы группами, под каждым — конкретные места",
+           "url": "https://mobbin.com/screens/4060282b-6ba4-4637-a9ad-cd62b591f25b"
+          },
+          {
+           "c": "ref",
+           "src": "refs/region/hm.webp",
+           "source": "H&M",
+           "caption": "часть света раскрывается в список стран",
+           "url": "https://mobbin.com/screens/7765267e-dbed-488f-bc9b-84f76f26a446"
+          },
+          {
+           "c": "ref",
+           "src": "refs/region/lululemon.webp",
+           "source": "lululemon",
+           "caption": "боковая панель: текущий выбор сверху, регионы раскрываются",
+           "url": "https://mobbin.com/screens/12f18935-81ee-4da0-ba09-4e9a356b70fe"
+          },
+          {
+           "c": "ref",
+           "src": "refs/region/klook.webp",
+           "source": "Klook",
+           "caption": "поиск по стране и «Current selection» сверху",
+           "url": "https://mobbin.com/screens/2e39ace1-9e86-44f1-934e-a69ac802418d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Подсказка и простой выбор"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сайт обычно знает страну по IP. Показывать «ваш регион» первым и одним кликом?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/region/kiwi.webp",
+           "source": "Kiwi.com",
+           "caption": "«Suggested region» сверху, ниже — все",
+           "url": "https://mobbin.com/screens/a1262f9f-69c0-4a8f-a3af-88b0376b93b8"
+          },
+          {
+           "c": "ref",
+           "src": "refs/region/gemini.webp",
+           "source": "Gemini",
+           "caption": "одно поле «Country» и «Apply» — без списка регионов",
+           "url": "https://mobbin.com/screens/ba2a28e5-3c06-47c0-a6c2-6450617af3af"
+          }
+         ]
+        }
+       ]
+      }
+     ]
     }
    ]
   },

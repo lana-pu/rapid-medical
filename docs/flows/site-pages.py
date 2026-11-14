@@ -641,6 +641,39 @@ def event_past_new():
             {'c': 'section', 'pad': 'm', 'tone': 'surface', 'items': [S([T('No upcoming events right now.', 'body'), {'c': 'link', 'text': 'All news and events →'}], 's')]}, FOOTER]
 
 
+# ---------- Choose location ----------
+REGION_REFS = [
+    {'title': 'Какой регион мой: страны под регионом',
+     'ask': 'Врач из ОАЭ, Бразилии или Австралии не знает, что нажать. Показать страны под каждым регионом? Поиск по стране?',
+     'refs': [('aws', 'AWS', 'регионы группами, под каждым — конкретные места', 'screens/4060282b-6ba4-4637-a9ad-cd62b591f25b'),
+              ('hm', 'H&M', 'часть света раскрывается в список стран', 'screens/7765267e-dbed-488f-bc9b-84f76f26a446'),
+              ('lululemon', 'lululemon', 'боковая панель: текущий выбор сверху, регионы раскрываются', 'screens/12f18935-81ee-4da0-ba09-4e9a356b70fe'),
+              ('klook', 'Klook', 'поиск по стране и «Current selection» сверху', 'screens/2e39ace1-9e86-44f1-934e-a69ac802418d')]},
+    {'title': 'Подсказка и простой выбор',
+     'ask': 'Сайт обычно знает страну по IP. Показывать «ваш регион» первым и одним кликом?',
+     'refs': [('kiwi', 'Kiwi.com', '«Suggested region» сверху, ниже — все', 'screens/a1262f9f-69c0-4a8f-a3af-88b0376b93b8'),
+              ('gemini', 'Gemini', 'одно поле «Country» и «Apply» — без списка регионов', 'screens/ba2a28e5-3c06-47c0-a6c2-6450617af3af')]},
+]
+
+HEADER_NONE = {'c': 'rm-header'}
+
+
+def region_asis(phone=False):
+    ex = None if phone else {1: {'annotation': 'Как есть: три кнопки — Americas · Asia & Pacific · Europe & Middle East — без стран. Под Europe & Middle East по коду (regionForCountry) живут ещё Австралия и Африка, а Ближний Восток и Турция по IP уходят в Asia & Pacific, Латинская Америка — в Americas. В подписях региона на сайте — «Europe, Middle East, Latin America & Australia». Врач из ОАЭ или Бразилии выбирает наугад. Карта «страна → регион» — вопрос к Emily (BACKLOG, решения №9).'}}
+    return [HEADER_NONE, page('Choose location', None, ex), FOOTER]
+
+
+def switcher_asis():
+    return [dict(HEADER, switcherOpen=True, region='us',
+                 annotation='Переключатель в шапке: тот же список из трёх названий, без стран. Видна только тем, кто уже на сайте; страницу выбора видят лишь те, чью страну не определили.'),
+            page('Home', [0]), FOOTER]
+
+
+def banner_asis():
+    return [{'c': 'rm-regionBanner', 'suggested': 'us', 'annotation': 'Плашка, когда регион страницы и регион по IP разные (врач из США открыл ссылку коллеги из Европы): «It looks like you are in Americas…». Не перекидывает сама, скрывается на 30 дней.'},
+            dict(HEADER, region='ous'), page('OUS · Large vessel stroke', [0]), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -661,6 +694,8 @@ flow = {
         {'title': '3 · News & Events — как есть', 'screens': ['news-asis', 'news-asis-phone', 'event-past-asis']},
         {'title': '3 · News & Events — примеры из Mobbin', 'screens': ['news-mobbin']},
         {'title': '3 · News & Events — решение (закрыта 2026-11-14)', 'screens': ['news-new', 'news-new-upcoming', 'news-new-phone', 'news-page', 'event-past-new']},
+        {'title': '4 · Выбор региона — как есть', 'screens': ['region-asis', 'region-asis-phone', 'region-switcher-asis', 'region-banner-asis']},
+        {'title': '4 · Выбор региона — примеры из Mobbin', 'screens': ['region-mobbin']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -687,6 +722,11 @@ flow = {
               {'from': 'news-mobbin', 'to': 'news-new', 'label': 'решение'},
               {'from': 'news-new', 'to': 'news-new-upcoming', 'label': 'когда есть события'},
               {'from': 'news-new', 'to': 'news-new-phone', 'label': 'на телефоне'},
+              {'from': 'event-past-new', 'to': 'region-asis', 'label': 'следующая страница'},
+              {'from': 'region-asis', 'to': 'region-asis-phone', 'label': 'на телефоне'},
+              {'from': 'region-asis', 'to': 'region-switcher-asis', 'label': 'переключатель в шапке'},
+              {'from': 'region-switcher-asis', 'to': 'region-banner-asis', 'label': 'чужой регион по ссылке'},
+              {'from': 'region-banner-asis', 'to': 'region-mobbin', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -734,6 +774,11 @@ flow = {
          'notes': ['Телефон: заголовок, главная карточка, 3 строки, события, фильтр чипами (прокручивается вбок), лента, архив. Секции — одной колонкой: название над содержимым.']},
         {'id': 'news-page', 'title': 'News page · decided', 'url': 'rapid-medical.com/news/drivewire-24-1000-cases', 'body': news_article()},
         {'id': 'event-past-new', 'title': 'Past event · decided', 'url': 'rapid-medical.com/events/drivewire-24-esmint-2026', 'body': event_past_new()},
+        {'id': 'region-asis', 'title': 'Choose location · as is', 'url': 'rapid-medical.com/choose-your-location', 'height': 760, 'body': region_asis()},
+        {'id': 'region-asis-phone', 'title': 'Choose location · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/choose-your-location', 'body': region_asis(True)},
+        {'id': 'region-switcher-asis', 'title': 'Region switcher in the header · as is', 'url': 'rapid-medical.com/us', 'height': 620, 'body': switcher_asis()},
+        {'id': 'region-banner-asis', 'title': 'Other region by a link · as is', 'url': 'rapid-medical.com/ous/therapies/lvo', 'height': 620, 'body': banner_asis()},
+        ref_screen('region-mobbin', 'Choose location · examples from Mobbin', 'region', REGION_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
