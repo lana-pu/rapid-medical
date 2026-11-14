@@ -28,11 +28,14 @@
 - [website-audit-ga4-oct-2026](findings/website-audit-ga4-oct-2026.md) — аудит Emily по GA4 (13.10.2026): что закрыто сборкой, что нет, предложения (2026-11-10)
 - [client-email-2026-11-10](findings/client-email-2026-11-10.md) — письмо Emily: COMANECI US = только номера каталога, доступы, Mailchimp, лидов нет, запрос DAM, заголовок главной (2026-11-10)
 - [design-references](findings/design-references.md) — референсы визуала: решено — тёмная тема; v3 — 12 сайтов с сильной арт-дирекцией, рецепт для Rapid Medical (2026-11-11)
+- [site-ux-pass-2026-11-13](findings/site-ux-pass-2026-11-13.md) — юзабилити публичного сайта глазами нового посетителя (2026-11-13)
+- [evidence-benchmark-2026-11-14](findings/evidence-benchmark-2026-11-14.md) — как конкуренты и смежные компании показывают клинические данные; практики и анти-паттерны (2026-11-14)
 
 ## Сессии — `sessions/`
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-14 | Страницы сайта на вайрфреймах по одной: 7 закрыто, страница из документа, ADR-009, Evidence-ресёрч | [2026-11-14-site-pages-wireframes.md](sessions/2026-11-14-site-pages-wireframes.md) |
 | 2026-11-12 | Рабочий редактор страниц: список блоков в базе, секции, проверка, история, Pages, демо | [2026-11-12-page-editor.md](sessions/2026-11-12-page-editor.md) |
 | 2026-11-11 | Аудит Emily по GA4: регионы, кнопки продукта, аналитика, события, медиа-окно, JSON-LD | [2026-11-11-emily-audit-site.md](sessions/2026-11-11-emily-audit-site.md) |
 | 2026-11-11 | Инструмент Tigertriever: атлас 00–10, учебные v0.4–v0.5, Studio (время пунктов, различия), S0 с проверкой хранения | [2026-11-11-tigertriever-learner-v05.md](sessions/2026-11-11-tigertriever-learner-v05.md) |
