@@ -172,7 +172,7 @@ CONTACT_REFS = [
 # ---------- Text page + 404 ----------
 TEXT_REFS = [
     {'title': 'Юридические страницы: как читать длинный текст',
-     'ask': 'Вопрос: добавить оглавление по разделам и строку «Last revised»? Где оглавление — слева, справа или списком сверху?',
+     'ask': 'Решено 2026-11-14: композиция «общая линия» как у Contact Us — дата, оглавление и документы слева (Miro, Zendesk, ClickUp).',
      'refs': [('miro', 'Miro', 'оглавление слева, даты публикации и вступления в силу под заголовком', 'sites/sections/47c3e6ab-e2e1-401e-baa3-79e8954e5919'),
               ('dub', 'Dub', '«On this page» справа, разделы пронумерованы', 'sites/sections/825205b6-8aa3-4195-893d-0c348638a02e'),
               ('webflow', 'Webflow', 'полоса «Legal» со ссылками на все документы, ниже оглавление списком', 'sites/sections/2ec91fae-596b-46bc-99eb-34d3ddf3a461'),
@@ -185,7 +185,7 @@ TEXT_REFS = [
               ('copilot', 'Microsoft Copilot', 'разделы через тонкие линии, узкая колонка текста', 'screens/d77fe48b-77a6-4da7-a14a-54d00682b7dc'),
               ('hims', 'Hims', 'одна цифра крупно и сноска с условиями исследования', 'screens/5e50843e-b295-4b23-9bff-bd1ba2526f3f')]},
     {'title': '404: куда идти дальше',
-     'ask': 'Вопрос: сейчас только «Back to home». Добавить выходы — терапии своего региона, Contact Us — или оставить одну ссылку?',
+     'ask': 'Решено 2026-11-14: 404 отложена до графического дизайна — там сделать что-то запоминающееся.',
      'refs': [('littleamps', 'Little Amps Coffee', 'заголовок слева, «404» справа на той же линии, одна кнопка', 'sites/sections/a04a13b7-ed87-42e6-b3a1-ed653c00ea4d'),
               ('klarna', 'Klarna', 'крупный заголовок и два выхода', 'sites/sections/573d3727-5257-4575-9dbb-26cd9623424f'),
               ('apple', 'Apple', 'вместо кнопки — поиск и карта сайта', 'sites/sections/30ac6f25-887c-4761-bf4f-d2c08e7ca01f'),
@@ -195,6 +195,41 @@ TEXT_REFS = [
 
 def nf_page(title, lines):
     return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([H(title, 1)] + lines, 'm')]}, FOOTER]
+
+
+import re
+TERMS_HTML = RM['Terms'][1]['data']['html']
+TERMS_SECTIONS = [re.sub(r'&#39;', '’', h) for h in [re.sub(r'<[^>]+>', '', h) for h in re.findall(r'<h[3-6][^>]*>(.*?)</h[3-6]>', TERMS_HTML, re.S) if not h.startswith('Last Revised')]]
+TERMS_BODY = re.sub(r'^<h3>.*?</h3>\s*', '', TERMS_HTML)
+LEGAL = ['Privacy Statement', 'Terms of Use', 'Compliance Statement', 'Patents']
+
+
+def text_left(note=True):
+    toc = S([T('On this page', 'strong')] + [{'c': 'link', 'text': t} for t in TERMS_SECTIONS], 'xs',
+            annotation='«On this page» собирается сам из заголовков разделов и прилипает при прокрутке (Miro, Dub). Условие: разделы — одним уровнем заголовка; сейчас в тексте с Duda h3, h4 и h6 вперемешку — выровнять при переносе.' if note else None)
+    docs = S([T('Legal', 'strong')] + [T(d, 'strong') if d == 'Terms of Use' else {'c': 'link', 'text': d} for d in LEGAL], 'xs',
+             annotation='Все юридические документы рядом, текущий выделен (ClickUp, Zendesk). Переход между ними без футера. Список — те же 4 страницы из футера, новых страниц нет.' if note else None)
+    return S([line('Last revised', T('January 8, 2024', 'small')), {'c': 'divider'}, toc, {'c': 'divider'}, docs], 'm')
+
+
+def text_desktop():
+    rule = {'c': 'divider', 'annotation': 'Та же композиция «общая линия», что у Contact Us: заголовок, линия, под ней слева (4/12) дата редакции, оглавление и документы раздела, справа (7/12) текст. Дата редакции вынесена из текста в таблицу «ключ — значение» (Miro).'}
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([H('Terms of Use', 1), rule,
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [text_left(), {'c': 'spacer', 'size': 1}, {'c': 'prose', 'html': TERMS_BODY, 'limit': 14}]}], 'l')]}, FOOTER]
+
+
+def text_phone():
+    return [HEADER, {'c': 'section', 'pad': 'm', 'items': [S([H('Terms of Use', 1), {'c': 'divider'}, line('Last revised', T('January 8, 2024', 'small')),
+            I('On this page', v='select', value='1. Acceptance of the Terms'), {'c': 'prose', 'html': TERMS_BODY, 'limit': 8}], 'm')]}, FOOTER]
+
+
+def study_desktop():
+    left = S([line('Region', T('Americas', 'small')), {'c': 'divider'}, line('Published', T('[дата — от клиента]', 'small')), {'c': 'divider'},
+              {'c': 'link', 'text': 'Download full results (PDF)'}], 's')
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([H('SUCCESS Study – Final Results', 1), {'c': 'divider'},
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1},
+             {'c': 'media', 'kind': 'image', 'label': 'Screenshot-2025-07-21 (как сейчас)', 'ratio': '4/3',
+              'annotation': 'Тот же шаблон для страниц исследований: слева регион, дата, PDF; справа содержание. Содержание пока прежнее (скриншот); перевод в текст и цифры — за клиентом и MLR (BACKLOG).'}]}], 'l')]}, FOOTER]
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -208,8 +243,10 @@ flow = {
         {'title': '1 · Contact Us — как есть', 'screens': ['contact-asis', 'contact-asis-phone']},
         {'title': '1 · Contact Us — примеры из Mobbin', 'screens': ['contact-mobbin']},
         {'title': '1 · Contact Us — решение (закрыта 2026-11-14)', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
-        {'title': '2 · Текстовая страница и 404 — как есть', 'screens': ['text-asis', 'text-asis-study', 'text-asis-phone', 'nf-asis', 'nf-region']},
-        {'title': '2 · Текстовая страница и 404 — примеры из Mobbin', 'screens': ['text-mobbin']},
+        {'title': '2 · Текстовая страница — как есть', 'screens': ['text-asis', 'text-asis-study', 'text-asis-phone']},
+        {'title': '2 · Текстовая страница — примеры из Mobbin', 'screens': ['text-mobbin']},
+        {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-study', 'text-new-phone']},
+        {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
               {'from': 'contact-asis', 'to': 'contact-asis-phone', 'label': 'на телефоне'},
@@ -218,9 +255,12 @@ flow = {
               {'from': 'contact-new-phone', 'to': 'text-asis', 'label': 'следующая страница'},
               {'from': 'text-asis', 'to': 'text-asis-study', 'label': 'страница исследования'},
               {'from': 'text-asis', 'to': 'text-asis-phone', 'label': 'на телефоне'},
-              {'from': 'text-asis-study', 'to': 'nf-asis', 'label': 'битая ссылка'},
+              {'from': 'text-asis-phone', 'to': 'text-mobbin', 'label': 'как у других'},
+              {'from': 'text-mobbin', 'to': 'text-new', 'label': 'решение'},
+              {'from': 'text-new', 'to': 'text-new-study', 'label': 'страница исследования'},
+              {'from': 'text-new', 'to': 'text-new-phone', 'label': 'на телефоне'},
+              {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
-              {'from': 'nf-region', 'to': 'text-mobbin', 'label': 'как у других'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
               {'from': 'contact-new', 'to': 'contact-new-phone', 'label': 'на телефоне'}],
     'screens': [
@@ -242,7 +282,11 @@ flow = {
          'body': nf_page('Vasospasm is not available in Americas', [T('Product availability differs by region. This therapy is available in:', 'muted'),
                                                                     {'c': 'bullets', 'items': ['Vasospasm — Europe & Middle East', 'Vasospasm — Asia & Pacific']},
                                                                     {'c': 'link', 'text': 'All therapies in Americas'}]),
-         'notes': ['Новое состояние из параллельной сессии (2026-11-13, в коде, не закоммичено): терапия есть в других регионах — страница говорит об этом и ведёт туда. Пример — /us/therapies/vasospasm (вопрос 1 из site-ia.md).']},
+         'notes': ['Состояние из параллельной сессии: терапия есть в других регионах — страница говорит об этом. Внутренних ссылок сюда быть не должно: переключатель региона ведёт на обзор терапий (?missing=), ссылки «версия в другом регионе» — только на существующие. Единственный внутренний источник — редирект с Duda /us/vasospasm → /us/therapies/vasospasm (site-ia, вопрос 1). Остальное — внешнее: старые закладки, поиск, ручная правка адреса. Это страховка, не основной путь.']},
+        {'id': 'text-new', 'title': 'Terms of Use · decided', 'url': 'rapid-medical.com/terms-of-use', 'height': 900, 'body': text_desktop()},
+        {'id': 'text-new-study', 'title': 'Study page · same template', 'url': 'rapid-medical.com/us/success-study-final-results', 'body': study_desktop()},
+        {'id': 'text-new-phone', 'title': 'Terms of Use · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/terms-of-use', 'body': text_phone(),
+         'notes': ['Телефон: заголовок, линия, дата редакции, оглавление — выпадающим списком «On this page» (переход к разделу), затем текст.']},
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
         {'id': 'contact-new', 'title': 'Contact Us · decided', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
