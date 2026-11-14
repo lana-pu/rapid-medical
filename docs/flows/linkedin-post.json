@@ -1,0 +1,2064 @@
+{
+ "title": "LinkedIn post from a study — draft, link, check, request",
+ "project": "Rapid Medical",
+ "description": "Путь Emily или Alyssa: опубликованная страница исследования → черновик поста из её проверенных блоков → ссылка с UTM в регион читателя → копировать и выложить → заявка с источником «LinkedIn». И путь врача: лента → страница → заявка. Основание: docs/briefs/linkedin-leads.md (цепочка из 6 звеньев), страница исследования и «Create from a document» — docs/flows/site-pages.md, DESIGN.md → «Страница из документа». Пример — SUCCESS, все цифры с постера.",
+ "start": "ed-live",
+ "groups": [
+  {
+   "title": "1 · Пост из страницы (Emily / Alyssa)",
+   "screens": [
+    "ed-live",
+    "post-draft",
+    "post-image",
+    "post-ai"
+   ]
+  },
+  {
+   "title": "2 · Выложить и связать с заявками",
+   "screens": [
+    "post-copied",
+    "post-history"
+   ]
+  },
+  {
+   "title": "3 · Путь врача: лента → страница → заявка",
+   "screens": [
+    "feed",
+    "feed-phone",
+    "landing",
+    "contact",
+    "requests"
+   ]
+  }
+ ],
+ "links": [
+  {
+   "from": "post-draft",
+   "to": "post-image",
+   "label": "формат «Text + image»"
+  },
+  {
+   "from": "post-history",
+   "to": "feed",
+   "label": "пост в ленте"
+  },
+  {
+   "from": "feed",
+   "to": "feed-phone",
+   "label": "то же на телефоне"
+  },
+  {
+   "from": "feed-phone",
+   "to": "landing",
+   "label": "клик"
+  }
+ ],
+ "screens": [
+  {
+   "id": "ed-live",
+   "title": "Editor · study page is live",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results",
+   "height": 900,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "box",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Clinical study · COMANECI™"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "SUCCESS"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "stat",
+           "value": "95%",
+           "label": "successful occlusion at ≤6 months"
+          },
+          {
+           "c": "stat",
+           "value": "82%",
+           "label": "good clinical outcome at 6 months"
+          },
+          {
+           "c": "stat",
+           "value": "0",
+           "label": "symptomatic thromboembolic events"
+          },
+          {
+           "c": "stat",
+           "value": "0.3%",
+           "label": "coil entanglement · 1 of 356 coils"
+          }
+         ]
+        },
+        {
+         "c": "media",
+         "kind": "chart",
+         "label": "Occlusion over time · bars from numbers",
+         "ratio": "21/6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "toast",
+     "text": "Published. The page is live in 3 regions.",
+     "action": "Prepare a LinkedIn post",
+     "float": true
+    }
+   ],
+   "notes": [
+    "После Publish тост предлагает сразу подготовить пост — момент, когда материал свежий. Это предложение, не автоматическое действие (propose → confirm)."
+   ]
+  },
+  {
+   "id": "post-draft",
+   "title": "LinkedIn post · draft from the page",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results?panel=linkedin",
+   "height": 1500,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 440px",
+     "height": 900,
+     "items": [
+      {
+       "c": "box",
+       "pad": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "media",
+           "kind": "chart",
+           "label": "Occlusion over time · bars from numbers",
+           "ratio": "21/6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "LinkedIn post",
+       "items": [
+        {
+         "c": "chips",
+         "label": "Format",
+         "items": [
+          "Text + link preview",
+          "Text + image"
+         ],
+         "active": 0,
+         "annotation": "Два формата. «Text + link preview»: LinkedIn сам рисует карточку ссылки из картинки страницы (og:image) — её мы и делаем из ключевых цифр. «Text + image»: квадратная картинка в ленте крупнее, ссылка — в тексте. Карусель из PDF — позже, если пилот покажет, что канал работает."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Link"
+          },
+          {
+           "c": "radio",
+           "label": "Reader’s own region (recommended) — rapid-medical.com/success-study-final-results",
+           "on": true
+          },
+          {
+           "c": "radio",
+           "label": "Americas only — /us/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Europe & Middle East only — /ous/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Asia & Pacific only — /apac/success-study-final-results"
+          },
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "badge",
+             "text": "Page live in all 3 regions",
+             "tone": "info"
+            },
+            {
+             "c": "badge",
+             "text": "COMANECI™ on the site in all 3 regions",
+             "tone": "info"
+            }
+           ],
+           "wrap": true,
+           "annotation": "Аккаунт LinkedIn один на все регионы, а утверждения региональные. Панель честно показывает, где живёт страница и где продукт есть на сайте, — это подсказка Emily/Alyssa, а не регуляторная проверка (регион на сайте ≠ одобрение). Если страница есть не во всех регионах, варианта «Reader’s own region» нет, а бейдж жёлтый: «Not live in Americas»."
+          }
+         ],
+         "annotation": "Ссылка без региона: сайт сам переводит врача в его регион по стране, как уже делает для /evidence; страна не определилась — выбор региона. Для страниц исследований это маленькая доработка (сейчас так умеют только Evidence и обзор терапий). UTM ставится сам: utm_source=linkedin, utm_medium=social, utm_campaign — своё у каждого поста, потому что в заявку сейчас попадают только source/medium/campaign."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Post text"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "888 / 3,000 characters"
+            }
+           ],
+           "justify": "between"
+          },
+          {
+           "c": "textarea",
+           "value": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial aneurysms, treated at 17 US centers. FDA-regulated post-market study; imaging adjudicated by an independent core lab (UCLA).\n\n→ 95% successful occlusion (Raymond Roy I–II) at 6 months\n→ 82% good clinical outcome (mRS 0–2) at 6 months\n→ 0 symptomatic thromboembolic events\n\nLead author: Jason M. Davies, Jacobs Institute, University at Buffalo, with the SUCCESS Study investigators.\n\nFull results, charts and the poster: rapid-medical.com/​success-study-final-results?​utm_source=linkedin&​utm_medium=social&​utm_campaign=success-final-results-2026-11\n\nRefer to the Instructions for Use for indications, contraindications, warnings and precautions.\n\n#aneurysm #neurointervention #COMANECI"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Before «…see more»: “Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial…”",
+           "annotation": "Над текстом видно, что попадёт в ленту до «…see more» (около 210 знаков на компьютере, меньше на телефоне — гипотеза, проверить на странице компании). Поэтому первой идёт цифра, а не «We are excited to share…»."
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Built from the page"
+          },
+          {
+           "c": "list",
+           "items": [
+            {
+             "title": "Hook",
+             "meta": "Study conclusion + key number",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Context",
+             "meta": "Study passport",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Findings",
+             "meta": "Key numbers (3 of 4)",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Credit",
+             "meta": "Authors from the document · tag people yourself in LinkedIn",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Link",
+             "meta": "Page link with UTM",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Safety line",
+             "meta": "Product regulatory line",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Hashtags",
+             "meta": "Therapy + product",
+             "badge": "Checked",
+             "tone": "success"
+            }
+           ]
+          }
+         ],
+         "annotation": "Пост собирается по шаблону из уже проверенных блоков страницы — без ИИ и без новых утверждений: зацепка = вывод + главная цифра, контекст = паспорт, 3 итога = ключевые цифры, автор = из документа, ссылка, регуляторная строка продукта, хэштеги терапии. Каждая часть подписана, откуда она. Шаблон один раз проверяет MLR клиента, дальше меняются только цифры."
+        },
+        {
+         "c": "alert",
+         "tone": "success",
+         "title": "All 6 numbers in the post are on the page",
+         "text": "86%, 95%, 90, 17, 82%, 0 — each checked against the PDF.",
+         "annotation": "Сверка цифр бесплатная и автоматическая: каждое число в тексте поста ищется среди проверенных значений страницы. Правите текст руками — проверка повторяется на лету."
+        }
+       ],
+       "actions": [
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Copy post text",
+         "to": "post-copied",
+         "label": "copy"
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "Open LinkedIn ↗"
+        },
+        {
+         "c": "button",
+         "v": "ghost",
+         "text": "Other wording with your AI",
+         "to": "post-ai",
+         "label": "варианты ИИ"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "post-image",
+   "title": "LinkedIn post · text + image",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results?panel=linkedin",
+   "height": 1300,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 440px",
+     "height": 900,
+     "items": [
+      {
+       "c": "box",
+       "pad": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "media",
+           "kind": "chart",
+           "label": "Occlusion over time · bars from numbers",
+           "ratio": "21/6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "LinkedIn post",
+       "items": [
+        {
+         "c": "chips",
+         "label": "Format",
+         "items": [
+          "Text + link preview",
+          "Text + image"
+         ],
+         "active": 1,
+         "annotation": "Два формата. «Text + link preview»: LinkedIn сам рисует карточку ссылки из картинки страницы (og:image) — её мы и делаем из ключевых цифр. «Text + image»: квадратная картинка в ленте крупнее, ссылка — в тексте. Карусель из PDF — позже, если пилот покажет, что канал работает."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Image"
+          },
+          {
+           "c": "media",
+           "kind": "image",
+           "label": "1200 × 1200 · SUCCESS · 95% successful occlusion at 6 months · 82% good outcome · COMANECI™ · rapid-medical.com",
+           "ratio": "1/1",
+           "annotation": "Картинка собирается из блока «Ключевые цифры» по шаблону из набора инфографики (DESIGN.md): те же цифры и подписи, в стиле сайта. Не рисуется руками и не генерируется ИИ — поэтому её проверяют один раз как шаблон. Та же картинка в формате 1200×627 — превью ссылки (og:image) самой страницы: сейчас у текстовых страниц там общая заглушка."
+          },
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Download image (PNG)"
+            },
+            {
+             "c": "segmented",
+             "items": [
+              "Square",
+              "Landscape"
+             ],
+             "active": 0
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Post text"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "888 / 3,000 characters"
+            }
+           ],
+           "justify": "between"
+          },
+          {
+           "c": "textarea",
+           "value": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial aneurysms, treated at 17 US centers. FDA-regulated post-market study; imaging adjudicated by an independent core lab (UCLA).\n\n→ 95% successful occlusion (Raymond Roy I–II) at 6 months\n→ 82% good clinical outcome (mRS 0–2) at 6 months\n→ 0 symptomatic thromboembolic events\n\nLead author: Jason M. Davies, Jacobs Institute, University at Buffalo, with the SUCCESS Study investigators.\n\nFull results, charts and the poster: rapid-medical.com/​success-study-final-results?​utm_source=linkedin&​utm_medium=social&​utm_campaign=success-final-results-2026-11\n\nRefer to the Instructions for Use for indications, contraindications, warnings and precautions.\n\n#aneurysm #neurointervention #COMANECI"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Before «…see more»: “Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial…”",
+           "annotation": null
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Link"
+          },
+          {
+           "c": "radio",
+           "label": "Reader’s own region (recommended) — rapid-medical.com/success-study-final-results",
+           "on": true
+          },
+          {
+           "c": "radio",
+           "label": "Americas only — /us/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Europe & Middle East only — /ous/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Asia & Pacific only — /apac/success-study-final-results"
+          },
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "badge",
+             "text": "Page live in all 3 regions",
+             "tone": "info"
+            },
+            {
+             "c": "badge",
+             "text": "COMANECI™ on the site in all 3 regions",
+             "tone": "info"
+            }
+           ],
+           "wrap": true,
+           "annotation": null
+          }
+         ],
+         "annotation": null
+        }
+       ],
+       "actions": [
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Copy post text",
+         "to": "post-copied",
+         "label": "copy"
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "Open LinkedIn ↗"
+        },
+        {
+         "c": "button",
+         "v": "ghost",
+         "text": "Other wording with your AI",
+         "to": "post-ai",
+         "label": "варианты ИИ"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "post-ai",
+   "title": "LinkedIn post · other wording with your AI",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results?panel=linkedin",
+   "height": 1000,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 440px",
+     "height": 900,
+     "items": [
+      {
+       "c": "box",
+       "pad": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "media",
+           "kind": "chart",
+           "label": "Occlusion over time · bars from numbers",
+           "ratio": "21/6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "LinkedIn post",
+       "items": [
+        {
+         "c": "chips",
+         "label": "Format",
+         "items": [
+          "Text + link preview",
+          "Text + image"
+         ],
+         "active": 0,
+         "annotation": "Два формата. «Text + link preview»: LinkedIn сам рисует карточку ссылки из картинки страницы (og:image) — её мы и делаем из ключевых цифр. «Text + image»: квадратная картинка в ленте крупнее, ссылка — в тексте. Карусель из PDF — позже, если пилот покажет, что канал работает."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Link"
+          },
+          {
+           "c": "radio",
+           "label": "Reader’s own region (recommended) — rapid-medical.com/success-study-final-results",
+           "on": true
+          },
+          {
+           "c": "radio",
+           "label": "Americas only — /us/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Europe & Middle East only — /ous/success-study-final-results"
+          },
+          {
+           "c": "radio",
+           "label": "Asia & Pacific only — /apac/success-study-final-results"
+          },
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "badge",
+             "text": "Page live in all 3 regions",
+             "tone": "info"
+            },
+            {
+             "c": "badge",
+             "text": "COMANECI™ on the site in all 3 regions",
+             "tone": "info"
+            }
+           ],
+           "wrap": true,
+           "annotation": "Аккаунт LinkedIn один на все регионы, а утверждения региональные. Панель честно показывает, где живёт страница и где продукт есть на сайте, — это подсказка Emily/Alyssa, а не регуляторная проверка (регион на сайте ≠ одобрение). Если страница есть не во всех регионах, варианта «Reader’s own region» нет, а бейдж жёлтый: «Not live in Americas»."
+          }
+         ],
+         "annotation": "Ссылка без региона: сайт сам переводит врача в его регион по стране, как уже делает для /evidence; страна не определилась — выбор региона. Для страниц исследований это маленькая доработка (сейчас так умеют только Evidence и обзор терапий). UTM ставится сам: utm_source=linkedin, utm_medium=social, utm_campaign — своё у каждого поста, потому что в заявку сейчас попадают только source/medium/campaign."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Post text"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "888 / 3,000 characters"
+            }
+           ],
+           "justify": "between"
+          },
+          {
+           "c": "textarea",
+           "value": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial aneurysms, treated at 17 US centers. FDA-regulated post-market study; imaging adjudicated by an independent core lab (UCLA).\n\n→ 95% successful occlusion (Raymond Roy I–II) at 6 months\n→ 82% good clinical outcome (mRS 0–2) at 6 months\n→ 0 symptomatic thromboembolic events\n\nLead author: Jason M. Davies, Jacobs Institute, University at Buffalo, with the SUCCESS Study investigators.\n\nFull results, charts and the poster: rapid-medical.com/​success-study-final-results?​utm_source=linkedin&​utm_medium=social&​utm_campaign=success-final-results-2026-11\n\nRefer to the Instructions for Use for indications, contraindications, warnings and precautions.\n\n#aneurysm #neurointervention #COMANECI"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Before «…see more»: “Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial…”",
+           "annotation": "Над текстом видно, что попадёт в ленту до «…see more» (около 210 знаков на компьютере, меньше на телефоне — гипотеза, проверить на странице компании). Поэтому первой идёт цифра, а не «We are excited to share…»."
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "Built from the page"
+          },
+          {
+           "c": "list",
+           "items": [
+            {
+             "title": "Hook",
+             "meta": "Study conclusion + key number",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Context",
+             "meta": "Study passport",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Findings",
+             "meta": "Key numbers (3 of 4)",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Credit",
+             "meta": "Authors from the document · tag people yourself in LinkedIn",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Link",
+             "meta": "Page link with UTM",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Safety line",
+             "meta": "Product regulatory line",
+             "badge": "Checked",
+             "tone": "success"
+            },
+            {
+             "title": "Hashtags",
+             "meta": "Therapy + product",
+             "badge": "Checked",
+             "tone": "success"
+            }
+           ]
+          }
+         ],
+         "annotation": "Пост собирается по шаблону из уже проверенных блоков страницы — без ИИ и без новых утверждений: зацепка = вывод + главная цифра, контекст = паспорт, 3 итога = ключевые цифры, автор = из документа, ссылка, регуляторная строка продукта, хэштеги терапии. Каждая часть подписана, откуда она. Шаблон один раз проверяет MLR клиента, дальше меняются только цифры."
+        },
+        {
+         "c": "alert",
+         "tone": "success",
+         "title": "All 6 numbers in the post are on the page",
+         "text": "86%, 95%, 90, 17, 82%, 0 — each checked against the PDF.",
+         "annotation": "Сверка цифр бесплатная и автоматическая: каждое число в тексте поста ищется среди проверенных значений страницы. Правите текст руками — проверка повторяется на лету."
+        }
+       ],
+       "actions": [
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Copy post text",
+         "to": "post-copied",
+         "label": "copy"
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "Open LinkedIn ↗"
+        },
+        {
+         "c": "button",
+         "v": "ghost",
+         "text": "Other wording with your AI",
+         "to": "post-ai",
+         "label": "варианты ИИ"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "overlay": {
+    "c": "modal",
+    "title": "LinkedIn post · other wording",
+    "items": [
+     {
+      "c": "text",
+      "v": "muted",
+      "text": "Want a different wording? Your AI assistant writes 3 versions from the same checked facts. The site does not call or pay for AI.",
+      "annotation": "Как у «Create from a document»: сайт ИИ не вызывает и за него не платит. Инструкция содержит только проверенные факты страницы и правило «не добавлять цифр и утверждений»."
+     },
+     {
+      "c": "stack",
+      "gap": "s",
+      "items": [
+       {
+        "c": "text",
+        "v": "strong",
+        "text": "1. Copy the instructions — they include the checked facts of this page"
+       },
+       {
+        "c": "button",
+        "v": "secondary",
+        "text": "Copy instructions for AI"
+       }
+      ]
+     },
+     {
+      "c": "stack",
+      "gap": "s",
+      "items": [
+       {
+        "c": "text",
+        "v": "strong",
+        "text": "2. Paste the answer here"
+       },
+       {
+        "c": "textarea",
+        "value": "VERSION 1\n95% occlusion at 6 months in wide-neck aneurysms…\nVERSION 2\n…"
+       }
+      ]
+     },
+     {
+      "c": "stack",
+      "gap": "s",
+      "items": [
+       {
+        "c": "text",
+        "v": "strong",
+        "text": "Versions"
+       },
+       {
+        "c": "card",
+        "items": [
+         {
+          "c": "text",
+          "v": "body",
+          "text": "95% of wide-neck aneurysms stayed successfully occluded at 6 months with COMANECI™ in the SUCCESS study — 90 patients, 17 US centers."
+         },
+         {
+          "c": "row",
+          "gap": "s",
+          "items": [
+           {
+            "c": "badge",
+            "text": "All numbers on the page",
+            "tone": "success"
+           },
+           {
+            "c": "button",
+            "v": "secondary",
+            "text": "Use this",
+            "size": "s"
+           }
+          ],
+          "justify": "between"
+         }
+        ]
+       },
+       {
+        "c": "card",
+        "items": [
+         {
+          "c": "text",
+          "v": "body",
+          "text": "What happens after the procedure? In SUCCESS, successful occlusion rose from 86% to 95% by 6 months…"
+         },
+         {
+          "c": "row",
+          "gap": "s",
+          "items": [
+           {
+            "c": "badge",
+            "text": "All numbers on the page",
+            "tone": "success"
+           },
+           {
+            "c": "button",
+            "v": "secondary",
+            "text": "Use this",
+            "size": "s"
+           }
+          ],
+          "justify": "between"
+         }
+        ]
+       },
+       {
+        "c": "card",
+        "items": [
+         {
+          "c": "text",
+          "v": "body",
+          "text": "SUCCESS: 97% of patients had a good outcome with COMANECI™…"
+         },
+         {
+          "c": "row",
+          "gap": "s",
+          "items": [
+           {
+            "c": "badge",
+            "text": "“97%” is not on this page",
+            "tone": "danger"
+           }
+          ],
+          "justify": "between"
+         }
+        ],
+        "annotation": "Вариант с цифрой, которой нет среди проверенных, помечен и не вставляется: ИИ мог ошибиться. Это та же сверка, что в черновике."
+       }
+      ]
+     }
+    ],
+    "wide": true,
+    "actions": [
+     {
+      "c": "button",
+      "v": "ghost",
+      "text": "Back to the draft",
+      "to": "post-draft",
+      "label": "назад"
+     }
+    ]
+   }
+  },
+  {
+   "id": "post-copied",
+   "title": "LinkedIn post · copied, waiting for the post link",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results?panel=linkedin",
+   "height": 1000,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 440px",
+     "height": 900,
+     "items": [
+      {
+       "c": "box",
+       "pad": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "media",
+           "kind": "chart",
+           "label": "Occlusion over time · bars from numbers",
+           "ratio": "21/6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "LinkedIn post",
+       "items": [
+        {
+         "c": "stepper",
+         "steps": [
+          "Copy the text",
+          "Post on LinkedIn",
+          "Paste the post link"
+         ],
+         "current": 2
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Paste the text on the Rapid Medical page in LinkedIn and post it. Then paste the link to the post here, so requests from it are counted."
+        },
+        {
+         "c": "input",
+         "label": "Link to the LinkedIn post",
+         "placeholder": "https://www.linkedin.com/feed/update/urn:li:activity:…",
+         "annotation": "Публикует человек — сайт в LinkedIn ничего не отправляет (автопостинг — только если пилот покажет, что канал работает; API страниц компании требует одобрения приложения — гипотеза). Ссылка на пост нужна, чтобы связать его с заявками: у поста своя utm_campaign."
+        },
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Post text"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "888 / 3,000 characters"
+            }
+           ],
+           "justify": "between"
+          },
+          {
+           "c": "textarea",
+           "value": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial aneurysms, treated at 17 US centers. FDA-regulated post-market study; imaging adjudicated by an independent core lab (UCLA).\n\n→ 95% successful occlusion (Raymond Roy I–II) at 6 months\n→ 82% good clinical outcome (mRS 0–2) at 6 months\n→ 0 symptomatic thromboembolic events\n\nLead author: Jason M. Davies, Jacobs Institute, University at Buffalo, with the SUCCESS Study investigators.\n\nFull results, charts and the poster: rapid-medical.com/​success-study-final-results?​utm_source=linkedin&​utm_medium=social&​utm_campaign=success-final-results-2026-11\n\nRefer to the Instructions for Use for indications, contraindications, warnings and precautions.\n\n#aneurysm #neurointervention #COMANECI"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Before «…see more»: “Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial…”",
+           "annotation": null
+          }
+         ]
+        }
+       ],
+       "actions": [
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Save as posted",
+         "to": "post-history",
+         "label": "posted"
+        },
+        {
+         "c": "button",
+         "v": "ghost",
+         "text": "Later"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "toast",
+     "text": "Post text copied. Paste it on the Rapid Medical page in LinkedIn.",
+     "action": "Open LinkedIn ↗",
+     "float": true
+    }
+   ]
+  },
+  {
+   "id": "post-history",
+   "title": "LinkedIn post · posts about this page",
+   "url": "rapid-medical.com/admin/editor/success-study-final-results?panel=linkedin",
+   "height": 900,
+   "body": [
+    {
+     "c": "toolbar",
+     "left": [
+      {
+       "c": "button",
+       "v": "ghost",
+       "text": "← Pages"
+      },
+      {
+       "c": "stack",
+       "gap": "xs",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "SUCCESS Study – Final Results"
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Study · COMANECI™ · Americas · Europe & Middle East · Asia & Pacific"
+        }
+       ]
+      }
+     ],
+     "right": [
+      {
+       "c": "badge",
+       "text": "Live",
+       "tone": "success",
+       "dot": true
+      },
+      {
+       "c": "button",
+       "v": "primary",
+       "text": "LinkedIn post",
+       "to": "post-draft",
+       "label": "LinkedIn post",
+       "annotation": "Вход — из страницы исследования в редакторе: пост живёт рядом с тем, на что ссылается. Кнопка активна только у опубликованной страницы, где все блоки проверены по PDF: пост ведёт на эту страницу и берёт из неё цифры. До Publish кнопка честно неактивна с подсказкой «Publish the page first — the post links to it»."
+      }
+     ]
+    },
+    {
+     "c": "split",
+     "cols": "minmax(0,1fr) 440px",
+     "height": 900,
+     "items": [
+      {
+       "c": "box",
+       "pad": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "media",
+           "kind": "chart",
+           "label": "Occlusion over time · bars from numbers",
+           "ratio": "21/6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "c": "panel",
+       "title": "LinkedIn post",
+       "items": [
+        {
+         "c": "text",
+         "v": "strong",
+         "text": "Posts about this page"
+        },
+        {
+         "c": "list",
+         "items": [
+          {
+           "title": "Final results of the SUCCESS study: successful aneurysm occlusion…",
+           "meta": "Posted 20 Nov 2026 by Emily R · reader’s own region · text + link preview",
+           "badge": "2 requests",
+           "tone": "success",
+           "actions": [
+            {
+             "c": "button",
+             "v": "ghost",
+             "text": "Open post ↗",
+             "size": "s"
+            }
+           ]
+          },
+          {
+           "title": "90 patients, 17 US centers, independent core lab — SUCCESS…",
+           "meta": "Draft · not posted",
+           "badge": "Draft",
+           "tone": "neutral",
+           "actions": [
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Continue",
+             "size": "s"
+            }
+           ]
+          }
+         ],
+         "annotation": "У страницы — свои посты: что выложено, когда, кем и сколько заявок пришло по его ссылке (заявки — из нашей базы, по utm_campaign). Клики и охват здесь не показываем: их знает LinkedIn и GA4, не сайт — выдумывать цифры не будем."
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Clicks and reach — in LinkedIn page analytics and Google Analytics."
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "+ New post",
+         "to": "post-draft",
+         "label": "ещё пост"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feed",
+   "title": "LinkedIn feed · computer",
+   "height": 820,
+   "body": [
+    {
+     "c": "box",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "1fr 560px 1fr",
+       "gap": "l",
+       "items": [
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "LinkedIn feed — approximate, grey wireframe"
+          },
+          {
+           "c": "box",
+           "pad": "m",
+           "border": true,
+           "gap": "m",
+           "items": [
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "avatar",
+               "name": "Rapid Medical"
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "Rapid Medical"
+                },
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Company page · 1 d"
+                }
+               ]
+              }
+             ],
+             "align": "center"
+            },
+            {
+             "c": "text",
+             "v": "body",
+             "text": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at 6-month follow-up.\n\n90 consecutive patients with wide-neck intracranial…",
+             "annotation": "Первые строки — цифра и название исследования: это решает, нажмут ли «…see more» и ссылку."
+            },
+            {
+             "c": "link",
+             "text": "…see more"
+            },
+            {
+             "c": "card",
+             "media": {
+              "kind": "image",
+              "label": "1200 × 627 · page image built from key numbers",
+              "ratio": "1200/627"
+             },
+             "title": "SUCCESS Study – Final Results | Rapid Medical™",
+             "meta": "rapid-medical.com",
+             "to": "landing",
+             "label": "клик по карточке",
+             "annotation": "Карточка ссылки — из og:image и заголовка страницы. Сейчас у страниц исследований превью — общая картинка сайта; с этой фичей у каждой своя, из её цифр."
+            },
+            {
+             "c": "row",
+             "gap": "l",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Like"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Comment"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Repost"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "feed-phone",
+   "title": "LinkedIn feed · phone",
+   "device": "mobile",
+   "height": 760,
+   "body": [
+    {
+     "c": "box",
+     "pad": "s",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "LinkedIn app — approximate"
+        },
+        {
+         "c": "box",
+         "pad": "m",
+         "border": true,
+         "gap": "m",
+         "items": [
+          {
+           "c": "row",
+           "gap": "s",
+           "items": [
+            {
+             "c": "avatar",
+             "name": "Rapid Medical"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Company page · 1 d"
+              }
+             ]
+            }
+           ],
+           "align": "center"
+          },
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Final results of the SUCCESS study: successful aneurysm occlusion with COMANECI™ rose from 86% at the end of the procedure to 95% at…",
+           "annotation": null
+          },
+          {
+           "c": "link",
+           "text": "…see more"
+          },
+          {
+           "c": "card",
+           "media": {
+            "kind": "image",
+            "label": "1200 × 627 · page image built from key numbers",
+            "ratio": "1200/627"
+           },
+           "title": "SUCCESS Study – Final Results | Rapid Medical™",
+           "meta": "rapid-medical.com",
+           "to": "landing",
+           "label": "клик по карточке",
+           "annotation": null
+          },
+          {
+           "c": "row",
+           "gap": "l",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Like"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Comment"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Repost"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "landing",
+   "title": "Study page · from LinkedIn, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/success-study-final-results?utm_source=linkedin…",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Clinical study · COMANECI™ · Americas"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "SUCCESS"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "s",
+         "items": [
+          {
+           "c": "stat",
+           "value": "95%",
+           "label": "occlusion at ≤6 months"
+          },
+          {
+           "c": "stat",
+           "value": "82%",
+           "label": "good outcome at 6 months"
+          }
+         ]
+        },
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Discuss SUCCESS with our team",
+         "full": true,
+         "to": "contact",
+         "label": "заявка",
+         "annotation": "Посетитель из LinkedIn попал сразу в свой регион (здесь — Americas по стране). Страница и её следующий шаг — из дорожки «страница исследования» (site-pages). Кнопку стоит показывать и сверху на телефоне, не только в конце: из ленты приходят на минуту."
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Full study, charts and the poster below ↓"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "contact",
+   "title": "Contact Us · from the study page, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/contact-us?region=us&topic=demo&about=success-study-final-results",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Let’s connect"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "chips",
+         "label": "Topic",
+         "items": [
+          "Request a demo",
+          "Product question",
+          "Orders",
+          "Other topic ▾"
+         ],
+         "active": 0
+        },
+        {
+         "c": "input",
+         "label": "About",
+         "value": "SUCCESS Study – Final Results",
+         "annotation": "Форма уже знает, откуда пришли: тема demo и «About» подставлены со страницы исследования; источник (utm_*, landing_page) уходит в заявку сам — так сайт работает уже сейчас (spec → Аналитика, вариант Г)."
+        },
+        {
+         "c": "input",
+         "label": "First name",
+         "required": true
+        },
+        {
+         "c": "input",
+         "label": "Last name",
+         "required": true
+        },
+        {
+         "c": "input",
+         "label": "Work e-mail",
+         "required": true
+        },
+        {
+         "c": "input",
+         "label": "Hospital or organization"
+        },
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Send request",
+         "full": true,
+         "to": "requests",
+         "label": "отправлено"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "requests",
+   "title": "Admin · requests, where they came from",
+   "url": "rapid-medical.com/admin/requests",
+   "height": 760,
+   "body": [
+    {
+     "c": "appbar",
+     "logo": "Rapid Medical",
+     "nav": [
+      "Website",
+      "Training tool"
+     ],
+     "active": 0,
+     "actions": [
+      {
+       "c": "avatar",
+       "name": "Emily R"
+      }
+     ]
+    },
+    {
+     "c": "box",
+     "pad": "l",
+     "gap": "m",
+     "items": [
+      {
+       "c": "row",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Requests"
+        },
+        {
+         "c": "chips",
+         "items": [
+          "All",
+          "From LinkedIn",
+          "Mine"
+         ],
+         "active": 0
+        }
+       ],
+       "justify": "between",
+       "align": "center"
+      },
+      {
+       "c": "table",
+       "columns": [
+        "Name",
+        "Topic",
+        "Region",
+        "Came from",
+        "When"
+       ],
+       "rows": [
+        {
+         "cells": [
+          "Dr. A. Patel",
+          "Request a demo",
+          "Americas",
+          {
+           "c": "badge",
+           "text": "LinkedIn · SUCCESS final results",
+           "tone": "info"
+          },
+          "Today"
+         ],
+         "on": true
+        },
+        {
+         "cells": [
+          "M. Rossi",
+          "Product question",
+          "Europe & ME",
+          {
+           "c": "badge",
+           "text": "Google",
+           "tone": "neutral"
+          },
+          "Yesterday"
+         ]
+        },
+        {
+         "cells": [
+          "J. Kim",
+          "Request a demo",
+          "Asia & Pacific",
+          {
+           "c": "badge",
+           "text": "Direct",
+           "tone": "neutral"
+          },
+          "12 Nov"
+         ]
+        }
+       ],
+       "annotation": "Источник заявки уже записывается сейчас — не хватает только колонки «Came from» в списке, фильтра «From LinkedIn» и названия поста вместо сырой utm_campaign. Это и есть замер пилота: сколько заявок принёс LinkedIn и какой пост."
+      },
+      {
+       "c": "card",
+       "title": "Dr. A. Patel · Request a demo",
+       "text": "Came from: LinkedIn post «SUCCESS final results» (20 Nov) · landed on /us/success-study-final-results · sent from Contact Us",
+       "meta": "utm_source=linkedin · utm_medium=social · utm_campaign=success-final-results-2026-11",
+       "actions": [
+        {
+         "c": "button",
+         "v": "ghost",
+         "text": "Open the post ↗",
+         "size": "s",
+         "to": "post-history",
+         "label": "к посту",
+         "quiet": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
