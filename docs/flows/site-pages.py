@@ -719,6 +719,38 @@ def region_bg(region=None):
     return [dict(HEADER, region=region) if region else HEADER_NONE, page('Home', [0]), FOOTER]
 
 
+# ---------- Careers ----------
+CAREERS_REFS = [
+    {'title': 'Страница карьеры: культура и вакансии на одной странице',
+     'ask': 'Сейчас Careers и Open positions — две страницы, а вакансий 0. Держать вакансии прямо на Careers?',
+     'refs': [('linear', 'Linear', '«Join us» и сразу список ролей по отделам, регион у каждой', 'sites/sections/b94b791e-21d7-46d0-95e8-cd3ec25fc5ee'),
+              ('mixpanel', 'Mixpanel', 'заголовок, строка и «See open roles», ниже фото команды', 'sites/sections/c6860f1b-d4fa-4ba3-b498-443cf317abff'),
+              ('braintrust', 'Braintrust', 'ценности и условия сеткой, внизу «Explore open roles»', 'sites/sections/bd36a1b9-baf7-4794-ae3b-28929b65d147')]},
+    {'title': 'Список вакансий',
+     'ask': 'Как показывать вакансии, когда они есть: по отделам, с городом?',
+     'refs': [('upwork', 'Upwork', 'отдел крупно слева, вакансии и город справа — «общая линия»', 'sites/sections/cf9adcf9-daec-42d3-b942-1fd3152db0a4'),
+              ('dropbox', 'Dropbox', 'отдел слева с описанием и числом вакансий', 'sites/sections/feb8fff1-fb42-4d02-ba14-ac0a25053b0b'),
+              ('tines', 'Tines', 'группы по отделам, строка: роль, место, стрелка', 'sites/sections/930c8997-584e-424d-9ee6-645f7232ebe3')]},
+    {'title': 'Когда вакансий нет',
+     'ask': 'Сейчас кнопка «View open positions» ведёт на пустую страницу (находка 5). Что показывать вместо?',
+     'refs': [('lyssna', 'Lyssna', '«We currently have no open positions» + «Send us your details anyway»', 'sites/sections/bc7affd2-b934-4719-8d32-39e0ec690399'),
+              ('jeton', 'Jeton', 'нет ролей — сразу «Spontaneous application»', 'sites/sections/658f06c7-2c20-4c09-a057-ff7bce698fe2'),
+              ('intercom', 'Intercom', '«Don’t see the role?» — подписка на Talent Community', 'sites/sections/9075aadc-5725-4a46-945d-a4a303726f85')]},
+]
+
+
+def careers_asis(phone=False):
+    ex = None if phone else {
+        0: {'annotation': 'Кнопка «View open positions» видна и при 0 вакансий и ведёт на пустую страницу (находка 5): первое действие — тупик.'},
+        2: {'annotation': '5 принципов показаны дважды: картинкой «WE ARE RAPID» и текстом под ней.'},
+        3: {'annotation': 'Форма «Submit general interest» — та же, что для клиентов: Organization, тема, нет поля для CV или LinkedIn (находка 20). HR при этом ведёт кандидатов в Spark Hire (на Duda был его виджет на /open-positions) — на сайте ссылки туда нет.'}}
+    return [HEADER, page('Careers', None, ex), FOOTER]
+
+
+def openpos_asis():
+    return [HEADER, page('Open positions', None, {1: {'annotation': 'Как есть: «Join us» и строка «There are no open positions right now» со ссылкой на общую заявку. Вакансии на новом сайте — своя таблица в админке (0 записей), а HR ведёт их в Spark Hire: на Duda здесь стоял его виджет (Comeet). Две системы — двойной ввод.'}}), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -742,6 +774,8 @@ flow = {
         {'title': '4 · Выбор региона — как есть', 'screens': ['region-asis', 'region-asis-phone', 'region-switcher-asis', 'region-banner-asis']},
         {'title': '4 · Выбор региона — примеры из Mobbin', 'screens': ['region-mobbin']},
         {'title': '4 · Выбор региона — решение (закрыта 2026-11-14)', 'screens': ['region-new', 'region-new-search', 'region-new-phone', 'region-switcher-new']},
+        {'title': '5 · Careers и вакансии — как есть', 'screens': ['careers-asis', 'careers-asis-phone', 'openpos-asis']},
+        {'title': '5 · Careers и вакансии — примеры из Mobbin', 'screens': ['careers-mobbin']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -777,6 +811,10 @@ flow = {
               {'from': 'region-new', 'to': 'region-new-search', 'label': 'поиск страны'},
               {'from': 'region-new', 'to': 'region-new-phone', 'label': 'на телефоне'},
               {'from': 'region-new', 'to': 'region-switcher-new', 'label': 'то же в шапке'},
+              {'from': 'region-switcher-new', 'to': 'careers-asis', 'label': 'следующая страница'},
+              {'from': 'careers-asis', 'to': 'careers-asis-phone', 'label': 'на телефоне'},
+              {'from': 'careers-asis', 'to': 'openpos-asis', 'label': 'View open positions'},
+              {'from': 'openpos-asis', 'to': 'careers-mobbin', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -834,6 +872,10 @@ flow = {
         {'id': 'region-new-phone', 'title': 'Choose location · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com', 'height': 900, 'body': region_bg(), 'overlay': region_modal('empty', phone=True),
          'notes': ['Телефон: то же окно на весь экран — поиск сверху, регионы карточками столбиком.']},
         {'id': 'region-switcher-new', 'title': 'Region from the header · decided, same modal', 'url': 'rapid-medical.com/us', 'height': 820, 'body': region_bg('us'), 'overlay': region_modal('empty', current='Americas')},
+        {'id': 'careers-asis', 'title': 'Careers · as is', 'url': 'rapid-medical.com/careers', 'body': careers_asis()},
+        {'id': 'careers-asis-phone', 'title': 'Careers · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/careers', 'body': careers_asis(True)},
+        {'id': 'openpos-asis', 'title': 'Open positions · as is (0 jobs)', 'url': 'rapid-medical.com/open-positions', 'height': 600, 'body': openpos_asis()},
+        ref_screen('careers-mobbin', 'Careers · examples from Mobbin', 'careers', CAREERS_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

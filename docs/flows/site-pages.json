@@ -119,6 +119,20 @@
    ]
   },
   {
+   "title": "5 · Careers и вакансии — как есть",
+   "screens": [
+    "careers-asis",
+    "careers-asis-phone",
+    "openpos-asis"
+   ]
+  },
+  {
+   "title": "5 · Careers и вакансии — примеры из Mobbin",
+   "screens": [
+    "careers-mobbin"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -281,6 +295,26 @@
    "from": "region-new",
    "to": "region-switcher-new",
    "label": "то же в шапке"
+  },
+  {
+   "from": "region-switcher-new",
+   "to": "careers-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "careers-asis",
+   "to": "careers-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "careers-asis",
+   "to": "openpos-asis",
+   "label": "View open positions"
+  },
+  {
+   "from": "openpos-asis",
+   "to": "careers-mobbin",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -10040,6 +10074,381 @@
     ],
     "annotation": "Из переключателя в шапке — то же окно, сверху текущий регион и откуда он (по IP или выбран). Выбор возвращает на ту же страницу в новом регионе (/api/region)."
    }
+  },
+  {
+   "id": "careers-asis",
+   "title": "Careers · as is",
+   "url": "rapid-medical.com/careers",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "title": "Unlock your potential",
+       "subtitle": "Our greatest strength is our team.",
+       "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
+       "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+       "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+       "cta": {
+        "label": "View open positions",
+        "href": "/open-positions"
+       },
+       "annotation": "Кнопка «View open positions» видна и при 0 вакансий и ведёт на пустую страницу (находка 5): первое действие — тупик."
+      },
+      {
+       "c": "rm-gallery",
+       "v": "quotes",
+       "items": [
+        {
+         "quote": "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career.",
+         "author": "Isaac, Clinical Specialist",
+         "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg"
+        },
+        {
+         "quote": "The most rewarding aspect is knowing that with each shipment a potential life is saved.",
+         "author": "Morgan, Customer Service",
+         "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "principles",
+       "title": "Our guiding principles",
+       "intro": "What we at Rapid Medical believe in above all else.",
+       "imageUrl": "/uploads/duda/We-are-Rapid-Graphic-Resized-60cfae.svg",
+       "items": [
+        {
+         "body": "We champion team collaboration to cultivate continuous learning.",
+         "title": "Relationship-centric"
+        },
+        {
+         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
+         "title": "Authentic"
+        },
+        {
+         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
+         "title": "Physician-focused"
+        },
+        {
+         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
+         "title": "Inventive"
+        },
+        {
+         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
+         "title": "Daring"
+        }
+       ],
+       "annotation": "5 принципов показаны дважды: картинкой «WE ARE RAPID» и текстом под ней."
+      },
+      {
+       "c": "rm-form",
+       "v": "section",
+       "anchor": "general-interest",
+       "title": "Submit general interest",
+       "note": "Rapid Medical is an equal opportunity employer and prohibits discrimination and harassment of any kind. We are committed to the principle of equal employment opportunity for all employees and to providing employees with a work environment free of discrimination and harassment. All employment decisions at Rapid Medical are based on business needs, job requirements, and individual qualifications, without regard to race, color, religion or belief, national, social or ethnic origin, sex (including pregnancy), age, disability, sexual orientation, gender identity and/or expression, marital or domestic partnership status, military service, or any other status protected by the laws or regulations in the locations where we operate. Rapid Medical will not tolerate discrimination or harassment based on any of these characteristics.",
+       "form": "careers",
+       "topics": [
+        "General interest",
+        "Internship",
+        "Other"
+       ],
+       "annotation": "Форма «Submit general interest» — та же, что для клиентов: Organization, тема, нет поля для CV или LinkedIn (находка 20). HR при этом ведёт кандидатов в Spark Hire (на Duda был его виджет на /open-positions) — на сайте ссылки туда нет."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "careers-asis-phone",
+   "title": "Careers · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/careers",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "title": "Unlock your potential",
+       "subtitle": "Our greatest strength is our team.",
+       "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
+       "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+       "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+       "cta": {
+        "label": "View open positions",
+        "href": "/open-positions"
+       }
+      },
+      {
+       "c": "rm-gallery",
+       "v": "quotes",
+       "items": [
+        {
+         "quote": "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career.",
+         "author": "Isaac, Clinical Specialist",
+         "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg"
+        },
+        {
+         "quote": "The most rewarding aspect is knowing that with each shipment a potential life is saved.",
+         "author": "Morgan, Customer Service",
+         "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "principles",
+       "title": "Our guiding principles",
+       "intro": "What we at Rapid Medical believe in above all else.",
+       "imageUrl": "/uploads/duda/We-are-Rapid-Graphic-Resized-60cfae.svg",
+       "items": [
+        {
+         "body": "We champion team collaboration to cultivate continuous learning.",
+         "title": "Relationship-centric"
+        },
+        {
+         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
+         "title": "Authentic"
+        },
+        {
+         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
+         "title": "Physician-focused"
+        },
+        {
+         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
+         "title": "Inventive"
+        },
+        {
+         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
+         "title": "Daring"
+        }
+       ]
+      },
+      {
+       "c": "rm-form",
+       "v": "section",
+       "anchor": "general-interest",
+       "title": "Submit general interest",
+       "note": "Rapid Medical is an equal opportunity employer and prohibits discrimination and harassment of any kind. We are committed to the principle of equal employment opportunity for all employees and to providing employees with a work environment free of discrimination and harassment. All employment decisions at Rapid Medical are based on business needs, job requirements, and individual qualifications, without regard to race, color, religion or belief, national, social or ethnic origin, sex (including pregnancy), age, disability, sexual orientation, gender identity and/or expression, marital or domestic partnership status, military service, or any other status protected by the laws or regulations in the locations where we operate. Rapid Medical will not tolerate discrimination or harassment based on any of these characteristics.",
+       "form": "careers",
+       "topics": [
+        "General interest",
+        "Internship",
+        "Other"
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "openpos-asis",
+   "title": "Open positions · as is (0 jobs)",
+   "url": "rapid-medical.com/open-positions",
+   "height": 600,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Join us"
+      },
+      {
+       "c": "rm-jobs",
+       "v": "list",
+       "generalHref": "/careers#general-interest",
+       "items": [],
+       "annotation": "Как есть: «Join us» и строка «There are no open positions right now» со ссылкой на общую заявку. Вакансии на новом сайте — своя таблица в админке (0 записей), а HR ведёт их в Spark Hire: на Duda здесь стоял его виджет (Comeet). Две системы — двойной ввод."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "careers-mobbin",
+   "title": "Careers · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Страница карьеры: культура и вакансии на одной странице"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас Careers и Open positions — две страницы, а вакансий 0. Держать вакансии прямо на Careers?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/careers/linear.webp",
+           "source": "Linear",
+           "caption": "«Join us» и сразу список ролей по отделам, регион у каждой",
+           "url": "https://mobbin.com/sites/sections/b94b791e-21d7-46d0-95e8-cd3ec25fc5ee"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/mixpanel.webp",
+           "source": "Mixpanel",
+           "caption": "заголовок, строка и «See open roles», ниже фото команды",
+           "url": "https://mobbin.com/sites/sections/c6860f1b-d4fa-4ba3-b498-443cf317abff"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/braintrust.webp",
+           "source": "Braintrust",
+           "caption": "ценности и условия сеткой, внизу «Explore open roles»",
+           "url": "https://mobbin.com/sites/sections/bd36a1b9-baf7-4794-ae3b-28929b65d147"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Список вакансий"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Как показывать вакансии, когда они есть: по отделам, с городом?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/careers/upwork.webp",
+           "source": "Upwork",
+           "caption": "отдел крупно слева, вакансии и город справа — «общая линия»",
+           "url": "https://mobbin.com/sites/sections/cf9adcf9-daec-42d3-b942-1fd3152db0a4"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/dropbox.webp",
+           "source": "Dropbox",
+           "caption": "отдел слева с описанием и числом вакансий",
+           "url": "https://mobbin.com/sites/sections/feb8fff1-fb42-4d02-ba14-ac0a25053b0b"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/tines.webp",
+           "source": "Tines",
+           "caption": "группы по отделам, строка: роль, место, стрелка",
+           "url": "https://mobbin.com/sites/sections/930c8997-584e-424d-9ee6-645f7232ebe3"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Когда вакансий нет"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас кнопка «View open positions» ведёт на пустую страницу (находка 5). Что показывать вместо?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/careers/lyssna.webp",
+           "source": "Lyssna",
+           "caption": "«We currently have no open positions» + «Send us your details anyway»",
+           "url": "https://mobbin.com/sites/sections/bc7affd2-b934-4719-8d32-39e0ec690399"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/jeton.webp",
+           "source": "Jeton",
+           "caption": "нет ролей — сразу «Spontaneous application»",
+           "url": "https://mobbin.com/sites/sections/658f06c7-2c20-4c09-a057-ff7bce698fe2"
+          },
+          {
+           "c": "ref",
+           "src": "refs/careers/intercom.webp",
+           "source": "Intercom",
+           "caption": "«Don’t see the role?» — подписка на Talent Community",
+           "url": "https://mobbin.com/sites/sections/9075aadc-5725-4a46-945d-a4a303726f85"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "nf-asis",
