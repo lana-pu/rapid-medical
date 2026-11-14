@@ -356,77 +356,106 @@ def distals_desktop():
             FOOTER]
 
 
-# ---------- Study page from a poster with AI (idea) ----------
+# ---------- Create a page from a document (studies, news) — idea ----------
 ADMIN_URL = 'rapid-medical.com/admin/editor'
 APPBAR = {'c': 'appbar', 'logo': 'Rapid Medical', 'nav': ['Website', 'Training tool'], 'active': 0, 'actions': [{'c': 'avatar', 'name': 'Emily R'}]}
+
+POSTER_TEXT = (
+    '<h3>Background</h3><p>Comaneci™ is a novel coil embolization assist device that is retrievable, radially adjustable, and designed as an adjunct to '
+    'coiling of wide-necked aneurysms without limiting blood flow. Comaneci was introduced to the US market in 2019. The objective of this FDA-regulated '
+    'post-market study is to assess the safety and performance of the device in US clinical practice.</p>'
+    '<h3>Method</h3><p>SUCCESS is a multicenter, single arm, open, prospective study, enrolling 90 consecutive subjects in 17 US centers between November '
+    '2020 and October 2023. Subjects had a wide neck (4-10 mm or dome to neck ratio &lt;2) intracranial aneurysm, ruptured or unruptured, that is suitable '
+    'for coil embolization.</p>'
+    '<h3>Results</h3><p>Ninety (90) consecutive subjects were enrolled with mean age 62 (range 29-82) years. Of these, 63% were female and 36% had ruptured '
+    'aneurysms. Successful Occlusion (Raymond Roy I and II) at end of procedure was 86%, and 95% at 6 month follow up (Fig. 1), good clinical outcome '
+    '(mRS 0-2) was 73% at baseline, 80% at 30 days follow up and 82% at 6 months follow up (Fig. 2).</p>'
+    '<h3>Conclusions</h3><ul><li>Data demonstrates a high rate of successful aneurysm occlusion when using Comaneci as an assist device in wide neck '
+    'aneurysms.</li><li>Safety profile is favorable with low thromboembolic rates compared with other modalities, such as balloons.</li></ul>')
 
 
 def pages_list():
     return [APPBAR, {'c': 'box', 'pad': 'l', 'gap': 'm', 'items': [
         {'c': 'row', 'justify': 'between', 'items': [H('Pages', 2), {'c': 'button', 'v': 'primary', 'text': '+ New page'}]},
-        {'c': 'list', 'items': [{'title': 'SUCCESS Study – Final Results', 'meta': 'Americas · Europe · Asia & Pacific', 'badge': 'Live', 'tone': 'success'},
-                                {'title': 'DISTALS Trial Results', 'meta': 'All regions', 'badge': 'Live', 'tone': 'success'},
-                                {'title': 'Privacy Statement', 'meta': 'All regions', 'badge': 'Live', 'tone': 'success'}]}]}]
+        {'c': 'list', 'items': [{'title': 'SUCCESS Study – Final Results', 'meta': 'Study · Americas · Europe · Asia & Pacific', 'badge': 'Live', 'tone': 'success'},
+                                {'title': 'DISTALS Trial Results', 'meta': 'Study · All regions', 'badge': 'Live', 'tone': 'success'},
+                                {'title': 'Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24…', 'meta': 'News · Sep 2025', 'badge': 'Link to BusinessWire', 'tone': 'neutral'}]}]}]
 
 
-def ai_modal(step):
+def imp_modal(step):
     if step == 'new':
-        items = [T('Upload the approved poster or paper. The page is built from it — you check the numbers before anything goes live.', 'muted'),
-                 dict({'c': 'upload', 'label': 'SUCCESS-poster-final.pdf · 1 page', 'hint': 'PDF or image of the approved poster, paper or slides'},
-                      annotation='Один файл — одобренный постер или статья, как есть. Ничего не перепечатывать. ИИ (Claude) читает PDF и картинки целиком: текст, таблицы, графики.'),
-                 G([I('Region', v='select', value='Americas'), I('Product', v='select', value='COMANECI™')]),
-                 I('ClinicalTrials.gov number', placeholder='NCT…', hint='Optional — fills the study passport from the registry')]
-        actions = [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Build the page', 'to': 'ai-building', 'label': 'Build the page'}]
-        return {'c': 'modal', 'title': 'New study page from a poster', 'items': items, 'actions': actions}
-    items = [{'c': 'progress', 'value': 75, 'label': 'Building the page… about 30 seconds'},
-             {'c': 'bullets', 'items': ['✓ Read the poster: 1 page, 2 tables, 2 charts', '✓ Found 41 numbers and their sources',
-                                        '✓ Picked 6 infographics from the site set', '… Laying out the page'],
-              'annotation': 'ИИ не придумывает дизайн: раскладывает данные по фиксированному набору инфографик (паспорт, ключевые цифры, сравнение, распределение по времени, матрица точек, таблица). Тексты — дословно с постера, без новых формулировок (MLR).'}]
-    return {'c': 'modal', 'title': 'New study page from a poster', 'items': items, 'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Open the draft', 'to': 'ai-review', 'label': 'черновик готов'}]}
+        items = [{'c': 'chips', 'label': 'What are you adding?', 'items': ['Study results', 'News / company update'], 'active': 0,
+                  'annotation': 'Один механизм для разных материалов. Тип решает, какие блоки будут сверху: у исследования — паспорт и инфографика, у новости — только ключевые цифры (если есть). Позже — клинический случай, публикация.'},
+                 {'c': 'upload', 'label': 'Comaneci-assisted-embolization-SUCCESS.pdf · 9 pages', 'hint': 'PDF of the paper, poster or press release — or paste a link below'},
+                 I('…or a link', placeholder='BusinessWire, journal, DOI'),
+                 G([I('Region', v='select', value='All regions'), I('Product', v='select', value='COMANECI™')]),
+                 I('ClinicalTrials.gov number', placeholder='NCT…', hint='Studies only — fills the study passport from the registry, free'),
+                 S([T('Full text on the page', 'strong'),
+                    {'c': 'radio', 'label': 'Copy the text into the page — readable on a phone, found by search', 'on': True},
+                    {'c': 'radio', 'label': 'Show the PDF on the page'},
+                    {'c': 'radio', 'label': 'Link to the original only'}], 'xs',
+                   annotation='Полный текст — тремя способами. Скопировать на страницу: читается на телефоне, находится поиском. Встроить PDF: точный оригинал, быстро. Только ссылка: когда нет прав на текст (статьи в платных журналах). Свои материалы (пресс-релизы, постеры) — копировать; статьи журналов — по лицензии.')]
+        return {'c': 'modal', 'title': 'Create from a document', 'items': items, 'wide': True,
+                'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Next', 'to': 'imp-prompt', 'label': 'Next'}]}
+    items = [T('The summary on top comes from your AI assistant — ChatGPT, Claude or Copilot, whichever you already use. The site does not pay for AI.', 'muted',
+               annotation='Бесплатно для проекта: сайт сам ИИ не вызывает. Инструкция уже написана; человек прогоняет её в своём чате и вставляет ответ. Полный текст сайт достаёт из PDF сам, без ИИ, — поэтому ИИ не может его исказить.'),
+             S([T('1. Copy the instructions', 'strong'), {'c': 'button', 'v': 'secondary', 'text': 'Copy instructions for AI'}], 's'),
+             S([T('2. In your AI chat: attach the PDF and paste the instructions', 'strong'), T('The answer lists key numbers and charts, each with the exact sentence it came from.', 'small')], 's'),
+             S([T('3. Paste the answer here', 'strong'), {'c': 'textarea', 'value': 'KEY NUMBERS\n95% | successful occlusion at 6 months | “Successful Occlusion … was 86%, and 95% at 6 month follow up”\n82% | good clinical outcome (mRS 0–2) at 6 months | “… and 82% at 6 months follow up”\n…'}], 's')]
+    return {'c': 'modal', 'title': 'Create from a document · summary', 'items': items, 'wide': True,
+            'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Back'}, {'c': 'button', 'v': 'primary', 'text': 'Build the draft', 'to': 'imp-review', 'label': 'черновик'}]}
 
 
-def review_toolbar(done):
-    right = [{'c': 'badge', 'text': 'Draft', 'tone': 'neutral', 'dot': True},
-             T('6 of 6 blocks checked' if done else '4 of 6 blocks checked', 'small'),
-             {'c': 'button', 'v': 'primary', 'text': 'Publish', 'to': None} if done else {'c': 'button', 'v': 'secondary', 'text': 'Publish — check 2 blocks first'}]
-    return {'c': 'toolbar', 'left': [{'c': 'button', 'v': 'ghost', 'text': '← Pages'}, S([T('SUCCESS Study – Final Results', 'strong'), T('Built from SUCCESS-poster-final.pdf', 'caption')], 'xs')],
-            'center': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Showing: Americas ▾'}], 'right': right}
-
-
-def review_preview(done):
-    stats = {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('95%', 'successful occlusion at ≤6 months'), dict(stat('82%', 'good clinical outcome (mRS 0–2) at 6 months'), selected=not done),
-                                                          stat('0', 'symptomatic thromboembolic events'), stat('0.3%', 'coil entanglement · 1 of 356 coils')]}
-    if not done:
-        stats['annotation'] = 'Клик по любой цифре на странице — справа подсвечивается место на постере, откуда она взята. Сверка — глазами, а не перепечаткой.'
-    chart = {'c': 'bars', 'legend': ['RR I', 'RR II', 'RR III'], 'rows': RR_ROWS, 'caption': 'P = 0.05'}
-    return S([{'c': 'eyebrow', 'text': 'Clinical study · COMANECI™ · Americas'}, H('SUCCESS', 1),
-              T('Data demonstrates a high rate of successful aneurysm occlusion when using Comaneci as an assist device in wide neck aneurysms.', 'lead'),
-              {'c': 'divider'}, stats, {'c': 'divider'}, H('Occlusion holds over time', 3), dict(chart, hover=not done)], 'm')
-
-
-def review_panel(done):
-    def item(title, meta, ok, warn=False):
-        if ok: return {'title': title, 'meta': meta, 'badge': 'Checked', 'tone': 'success'}
-        if warn: return {'title': title, 'meta': meta, 'badge': 'Check', 'tone': 'warning', 'actions': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Fix'}]}
+def imp_review():
+    def item(title, meta, state):
+        if state == 'auto': return {'title': title, 'meta': meta, 'badge': 'Checked', 'tone': 'success'}
+        if state == 'warn': return {'title': title, 'meta': meta, 'badge': 'Check', 'tone': 'warning', 'actions': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Fix'}]}
         return {'title': title, 'meta': meta, 'actions': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Looks right'}]}
-    rows = [item('Study passport', '6 values · all on the poster', True),
-            item('Key numbers', '4 values · all on the poster', done or False) if done else dict(item('Key numbers', '4 values · all on the poster', False), on=True),
-            item('Occlusion over time', '5 values · not sure which chart “P = 0.05” belongs to', done, warn=not done),
-            item('Good outcome over time', '21 values · all on the poster', True),
-            item('Who was treated', '5 values · all on the poster', True),
-            item('Safety table', '12 values · all on the poster', True)]
-    items = [{'c': 'media', 'kind': 'image', 'label': 'SUCCESS-poster-final.pdf · highlighted: “82% at 6 month follow up” (Results)', 'ratio': '16/9'},
-             dict({'c': 'list', 'items': rows},
-                  annotation=None if done else 'Проверка по блокам, а не по цифрам: «Looks right» — один клик на блок. Блоки, где ИИ не уверен (цифра не найдена дословно, расходится с таблицей), помечены «Check» и не дают опубликовать. Честный disabled у Publish, пока всё не проверено.')]
-    return {'c': 'panel', 'title': 'Check against the poster', 'items': items}
+    rows = [item('Study passport', 'From ClinicalTrials.gov', 'auto'),
+            item('Key numbers', '4 values · all 4 sentences found in the PDF', 'auto'),
+            item('Occlusion over time', '5 values · 1 sentence not found in the PDF', 'warn'),
+            item('Good outcome over time', '3 values · found in the PDF', 'ok'),
+            item('Full text', 'Copied from the PDF · 3,180 words · matches word for word', 'auto')]
+    panel = {'c': 'panel', 'title': 'Check against the PDF', 'items': [
+        {'c': 'media', 'kind': 'page', 'ratio': '3/4'},
+        dict({'c': 'list', 'items': rows}, annotation='Проверка бесплатная и автоматическая там, где можно: цитату из ответа ИИ сайт ищет в тексте PDF — нашлась дословно, блок проверен сам. Полный текст сверяется с PDF слово в слово. Человеку остаются только блоки с «Check» и «Looks right». Publish — когда всё проверено.')]}
+    toolbar = {'c': 'toolbar', 'left': [{'c': 'button', 'v': 'ghost', 'text': '← Pages'}, S([T('SUCCESS Study – Final Results', 'strong'), T('Built from Comaneci-assisted-embolization-SUCCESS.pdf', 'caption')], 'xs')],
+               'right': [{'c': 'badge', 'text': 'Draft', 'tone': 'neutral', 'dot': True}, T('3 of 5 checked', 'small'), {'c': 'button', 'v': 'secondary', 'text': 'Publish — check 2 blocks first'}]}
+    preview = S([{'c': 'eyebrow', 'text': 'Clinical study · COMANECI™'}, H('SUCCESS', 1), {'c': 'divider'},
+                 {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('95%', 'successful occlusion at ≤6 months'), stat('82%', 'good clinical outcome at 6 months')]},
+                 dict({'c': 'bars', 'legend': ['RR I', 'RR II', 'RR III'], 'rows': RR_ROWS}, hover=True), {'c': 'divider'}, H('Full study', 3), {'c': 'prose', 'html': POSTER_TEXT, 'limit': 3}], 'm')
+    return [toolbar, {'c': 'split', 'cols': 'minmax(0,1fr) 380px', 'height': 780, 'items': [{'c': 'box', 'pad': 'l', 'items': [preview]}, panel]}]
 
 
-def ai_review(done=False):
-    body = [review_toolbar(done), {'c': 'split', 'cols': 'minmax(0,1fr) 380px', 'height': 760, 'items': [
-        {'c': 'box', 'pad': 'l', 'items': [review_preview(done)]}, review_panel(done)]}]
-    if done:
-        body[0]['annotation'] = 'Все блоки проверены — Publish активен. В истории записано: кто проверил и с каким файлом сверял. Инфографику можно поменять обычным выбором варианта блока в редакторе. Одобрение MLR — как сейчас, вне сайта.'
-    return body
+def full_text_band(mode='copy'):
+    tabs = {'c': 'segmented', 'items': ['Read here', 'Original PDF'], 'active': 0 if mode == 'copy' else 1}
+    left = S([line('Source', T('Peer-reviewed paper', 'small')), {'c': 'divider'}, line('Published', T('[журнал, дата — из PDF]', 'small')), {'c': 'divider'},
+              {'c': 'link', 'text': 'Download PDF'}, {'c': 'link', 'text': 'Open on the journal site ↗'}], 's')
+    body = S([tabs, {'c': 'prose', 'html': POSTER_TEXT}, SAFETY], 'm') if mode == 'copy' else S([tabs, {'c': 'media', 'kind': 'page', 'label': 'PDF viewer · page 1 of 9 · zoom · download', 'ratio': '3/4'}], 'm')
+    return band('Full study', left, body, None,
+                'Под статистикой — полный текст: скопирован на страницу (заголовки, абзацы, таблицы — как в оригинале) или встроенный PDF. Переключатель «Read here / Original PDF» — если есть и то и другое. Слева — откуда текст и ссылка на оригинал.')
+
+
+def study_full_desktop():
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [success_hero()]},
+            band('Occlusion holds over time', T('Successful occlusion (Raymond Roy I + II): 86% at the end of the procedure, 95% at follow-up.', 'body'),
+                 {'c': 'bars', 'legend': ['Raymond Roy I', 'Raymond Roy II', 'Raymond Roy III'], 'rows': RR_ROWS}, 'surface'),
+            full_text_band('copy'),
+            {'c': 'section', 'pad': 'm', 'items': [T('Refer to the Instructions for Use for indications, contraindications, warnings and precautions.', 'caption')]},
+            FOOTER]
+
+
+def news_desktop():
+    left = S([line('Published', T('September 2025', 'small')), {'c': 'divider'}, line('Type', T('Press release', 'small')), {'c': 'divider'},
+              {'c': 'link', 'text': 'Originally published on BusinessWire ↗'}], 's',
+             annotation='Сейчас новость на сайте — только заголовок и ссылка на BusinessWire: врач уходит с сайта. Здесь — своя страница с полным текстом пресс-релиза (свой материал — можно копировать) и ссылкой на оригинал.')
+    text = S([{'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('1,000+', 'cases with DRIVEWIRE™ 24 in North America'), stat('Europe', 'expansion announced')],
+               'annotation': 'Цифры сверху — только если они есть в тексте (ИИ предлагает, цитата проверяется по документу). Паспорта у новости нет.'},
+              {'c': 'divider'},
+              {'c': 'media', 'kind': 'page', 'label': 'Full press release text — copied from BusinessWire (headings, paragraphs, quotes, About Rapid Medical)', 'ratio': '16/9'}], 'm')
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'eyebrow', 'text': 'News · DRIVEWIRE™'},
+            H('Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe', 1), {'c': 'divider'},
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, text]}], 'l')]}, FOOTER]
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -444,8 +473,8 @@ flow = {
         {'title': '2 · Текстовая страница — примеры из Mobbin', 'screens': ['text-mobbin']},
         {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-phone']},
         {'title': '2a · Страница исследования — примеры из Mobbin', 'screens': ['study-mobbin']},
-        {'title': '2a · Страница исследования — идея к обсуждению', 'screens': ['study-success', 'study-success-phone', 'study-distals']},
-        {'title': '2a · Страница исследования — собрать из постера с ИИ (идея)', 'screens': ['ai-new', 'ai-building', 'ai-review', 'ai-ready']},
+        {'title': '2a · Набор инфографики — на двух исследованиях', 'screens': ['study-success', 'study-success-phone', 'study-distals']},
+        {'title': '2a · Создать из документа: статистика сверху, полный текст ниже (исследования и новости)', 'screens': ['imp-new', 'imp-prompt', 'imp-review', 'study-full', 'news-page']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -462,8 +491,9 @@ flow = {
               {'from': 'study-mobbin', 'to': 'study-success', 'label': 'идея'},
               {'from': 'study-success', 'to': 'study-success-phone', 'label': 'на телефоне'},
               {'from': 'study-success', 'to': 'study-distals', 'label': 'тот же шаблон'},
-              {'from': 'study-distals', 'to': 'ai-new', 'label': 'как это собирается'},
-              {'from': 'ai-review', 'to': 'ai-ready', 'label': 'Looks right × 2'},
+              {'from': 'study-distals', 'to': 'imp-new', 'label': 'как это собирается'},
+              {'from': 'imp-review', 'to': 'study-full', 'label': 'Publish'},
+              {'from': 'study-full', 'to': 'news-page', 'label': 'тот же механизм для новости'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -495,12 +525,12 @@ flow = {
         {'id': 'study-success-phone', 'title': 'Study page · SUCCESS, phone', 'device': 'mobile', 'url': SUCCESS_URL, 'body': success_phone(),
          'notes': ['Телефон: название и вывод, 4 итога, паспорт, график с переключателем по времени, матрица пациентов, постер. Графики из чисел перестраиваются под ширину — скриншот постера на телефоне не читается.']},
         {'id': 'study-distals', 'title': 'Study page · DISTALS, same template', 'url': 'rapid-medical.com/distals-results', 'body': distals_desktop()},
-        {'id': 'ai-new', 'title': 'Admin · new study page from a poster', 'url': ADMIN_URL, 'height': 720, 'body': pages_list(), 'overlay': ai_modal('new'),
-         'notes': ['Вход: Pages → New page → «Study from a poster». Клик 1 — выбрать файл, клик 2 — Build the page.']},
-        {'id': 'ai-building', 'title': 'Admin · AI builds the draft', 'url': ADMIN_URL, 'height': 720, 'body': pages_list(), 'overlay': ai_modal('building')},
-        {'id': 'ai-review', 'title': 'Editor · check the numbers against the poster', 'url': ADMIN_URL + '/success-study-final-results', 'height': 820, 'body': ai_review(False)},
-        {'id': 'ai-ready', 'title': 'Editor · all checked, ready to publish', 'url': ADMIN_URL + '/success-study-final-results', 'height': 820, 'body': ai_review(True),
-         'notes': ['Итого от постера до публикации: файл → Build → «Looks right» по блокам, где ИИ уверен (часть уже проверена автоматически, если цифра найдена дословно), → Publish. Порядка 5–8 кликов и несколько минут на сверку.']},
+        {'id': 'imp-new', 'title': 'Admin · create from a document', 'url': ADMIN_URL, 'height': 820, 'body': pages_list(), 'overlay': imp_modal('new'),
+         'notes': ['Вход: Pages → New page → «Create from a document» (и то же из списка News). Регистр ClinicalTrials.gov — бесплатный открытый API.']},
+        {'id': 'imp-prompt', 'title': 'Admin · summary with your own AI', 'url': ADMIN_URL, 'height': 820, 'body': pages_list(), 'overlay': imp_modal('prompt')},
+        {'id': 'imp-review', 'title': 'Editor · check against the PDF', 'url': ADMIN_URL + '/success-study-final-results', 'height': 840, 'body': imp_review()},
+        {'id': 'study-full', 'title': 'Study page · statistics on top, full study below', 'url': SUCCESS_URL, 'body': study_full_desktop()},
+        {'id': 'news-page', 'title': 'News page · same mechanism, no passport', 'url': 'rapid-medical.com/news/drivewire-24-1000-cases', 'body': news_desktop()},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
