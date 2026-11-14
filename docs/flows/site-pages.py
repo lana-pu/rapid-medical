@@ -644,13 +644,13 @@ def event_past_new():
 # ---------- Choose location ----------
 REGION_REFS = [
     {'title': 'Какой регион мой: страны под регионом',
-     'ask': 'Врач из ОАЭ, Бразилии или Австралии не знает, что нажать. Показать страны под каждым регионом? Поиск по стране?',
+     'ask': 'Решено 2026-11-14: страны под каждым регионом (из той же таблицы, что IP) и поиск по стране.',
      'refs': [('aws', 'AWS', 'регионы группами, под каждым — конкретные места', 'screens/4060282b-6ba4-4637-a9ad-cd62b591f25b'),
               ('hm', 'H&M', 'часть света раскрывается в список стран', 'screens/7765267e-dbed-488f-bc9b-84f76f26a446'),
               ('lululemon', 'lululemon', 'боковая панель: текущий выбор сверху, регионы раскрываются', 'screens/12f18935-81ee-4da0-ba09-4e9a356b70fe'),
               ('klook', 'Klook', 'поиск по стране и «Current selection» сверху', 'screens/2e39ace1-9e86-44f1-934e-a69ac802418d')]},
     {'title': 'Подсказка и простой выбор',
-     'ask': 'Сайт обычно знает страну по IP. Показывать «ваш регион» первым и одним кликом?',
+     'ask': 'Решено: текущий регион — только в панели из шапки (на странице выбора регион неизвестен по определению).',
      'refs': [('kiwi', 'Kiwi.com', '«Suggested region» сверху, ниже — все', 'screens/a1262f9f-69c0-4a8f-a3af-88b0376b93b8'),
               ('gemini', 'Gemini', 'одно поле «Country» и «Apply» — без списка регионов', 'screens/ba2a28e5-3c06-47c0-a6c2-6450617af3af')]},
 ]
@@ -672,6 +672,51 @@ def switcher_asis():
 def banner_asis():
     return [{'c': 'rm-regionBanner', 'suggested': 'us', 'annotation': 'Плашка, когда регион страницы и регион по IP разные (врач из США открыл ссылку коллеги из Европы): «It looks like you are in Americas…». Не перекидывает сама, скрывается на 30 дней.'},
             dict(HEADER, region='ous'), page('OUS · Large vessel stroke', [0]), FOOTER]
+
+
+# ---------- Choose location — decided ----------
+REGIONS = [
+    ('Americas', 'United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia, Peru and the rest of Latin America & the Caribbean', '28 countries'),
+    ('Asia & Pacific', 'China, Japan, South Korea, India, Singapore, Malaysia, Thailand, Indonesia, Israel, Saudi Arabia, UAE, Qatar, Türkiye, Egypt…', '47 countries'),
+    ('Europe & Middle East', 'Europe, Australia, New Zealand, Africa and all other countries', 'all others'),
+]
+
+
+def region_col(name, countries, count, hit=False):
+    return {'c': 'box', 'border': True, 'pad': 'm', 'gap': 's', 'items': [
+        {'c': 'row', 'justify': 'between', 'items': [H(name, 4), T(count, 'caption')]},
+        T(countries, 'small'),
+        {'c': 'button', 'v': 'primary' if hit else 'secondary', 'text': f'Go to {name} →', 'full': True}] + ([{'c': 'badge', 'text': 'United Arab Emirates is here', 'tone': 'info'}] if hit else [])}
+
+
+def region_search(value=None):
+    return I('Find your country', v='search', value=value, placeholder='Start typing, e.g. Brazil')
+
+
+def region_new(state='empty', phone=False):
+    hit = state == 'search'
+    cols = [region_col(n, c, k, hit and n == 'Asia & Pacific') for n, c, k in REGIONS]
+    if not phone:
+        cols[0]['annotation'] = None if hit else 'Под регионом — страны, которые в него входят. Список берётся из той же таблицы, по которой сайт определяет регион по IP (regionForCountry): что бы ни решила Emily (вопрос №9), страница показывает, как сайт работает на самом деле. Последний регион честно — «все остальные страны».'
+    srch = region_search('United Arab' if hit else None)
+    if not phone:
+        srch['annotation'] = ('Поиск по стране: ввёл — подсветился нужный регион и кнопка стала основной. Пример неочевидного: ОАЭ — в Asia & Pacific, не в «Europe & Middle East». Израиль (головной офис) по текущей таблице тоже в Asia & Pacific — проверить у Emily.'
+                              if hit else 'Поиск по стране (Klook, H&M): быстрее, чем читать списки.')
+    head = [H('Choose your location', 1), T('Product availability and regulatory information differ by region. Pick the region you practice in.', 'lead'), {'c': 'divider'}]
+    if phone:
+        return [HEADER_NONE, {'c': 'section', 'pad': 'm', 'items': [S(head + [srch] + cols, 'm')]}, FOOTER]
+    body = S(head + [{'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'items': [srch, {'c': 'spacer', 'size': 1}, T('', 'small')]},
+                     {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cols}], 'l')
+    return [HEADER_NONE, {'c': 'section', 'pad': 'l', 'items': [body]}, FOOTER]
+
+
+def switcher_new():
+    items = [S([T('Current region', 'caption'), {'c': 'row', 'justify': 'between', 'items': [T('Americas', 'strong'), {'c': 'badge', 'text': 'From your location', 'tone': 'neutral'}]}], 'xs'),
+             {'c': 'divider'}, region_search()]
+    for n, c, k in REGIONS:
+        items += [S([{'c': 'row', 'justify': 'between', 'items': [T(n + (' ✓' if n == 'Americas' else ''), 'strong'), T(k, 'caption')]}, T(c, 'small')], 'xs'), {'c': 'divider'}]
+    return {'c': 'drawer', 'title': 'Region', 'items': items,
+            'annotation': 'Переключатель в шапке открывает ту же панель, что и страница выбора: текущий регион сверху (и откуда он — по IP или выбран), поиск, регионы со странами (lululemon). Выбор возвращает на ту же страницу в новом регионе, как сейчас (/api/region).'}
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -696,6 +741,7 @@ flow = {
         {'title': '3 · News & Events — решение (закрыта 2026-11-14)', 'screens': ['news-new', 'news-new-upcoming', 'news-new-phone', 'news-page', 'event-past-new']},
         {'title': '4 · Выбор региона — как есть', 'screens': ['region-asis', 'region-asis-phone', 'region-switcher-asis', 'region-banner-asis']},
         {'title': '4 · Выбор региона — примеры из Mobbin', 'screens': ['region-mobbin']},
+        {'title': '4 · Выбор региона — решение (закрыта 2026-11-14)', 'screens': ['region-new', 'region-new-search', 'region-new-phone', 'region-switcher-new']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -727,6 +773,10 @@ flow = {
               {'from': 'region-asis', 'to': 'region-switcher-asis', 'label': 'переключатель в шапке'},
               {'from': 'region-switcher-asis', 'to': 'region-banner-asis', 'label': 'чужой регион по ссылке'},
               {'from': 'region-banner-asis', 'to': 'region-mobbin', 'label': 'как у других'},
+              {'from': 'region-mobbin', 'to': 'region-new', 'label': 'решение'},
+              {'from': 'region-new', 'to': 'region-new-search', 'label': 'поиск страны'},
+              {'from': 'region-new', 'to': 'region-new-phone', 'label': 'на телефоне'},
+              {'from': 'region-new', 'to': 'region-switcher-new', 'label': 'то же в шапке'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -779,6 +829,11 @@ flow = {
         {'id': 'region-switcher-asis', 'title': 'Region switcher in the header · as is', 'url': 'rapid-medical.com/us', 'height': 620, 'body': switcher_asis()},
         {'id': 'region-banner-asis', 'title': 'Other region by a link · as is', 'url': 'rapid-medical.com/ous/therapies/lvo', 'height': 620, 'body': banner_asis()},
         ref_screen('region-mobbin', 'Choose location · examples from Mobbin', 'region', REGION_REFS),
+        {'id': 'region-new', 'title': 'Choose location · decided', 'url': 'rapid-medical.com/choose-your-location', 'height': 760, 'body': region_new()},
+        {'id': 'region-new-search', 'title': 'Choose location · decided, country search', 'url': 'rapid-medical.com/choose-your-location', 'height': 760, 'body': region_new('search')},
+        {'id': 'region-new-phone', 'title': 'Choose location · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/choose-your-location', 'body': region_new('empty', True),
+         'notes': ['Телефон: поиск сверху, регионы карточками друг под другом.']},
+        {'id': 'region-switcher-new', 'title': 'Region panel from the header · decided', 'url': 'rapid-medical.com/us', 'height': 760, 'body': [dict(HEADER, region='us'), page('Home', [0]), FOOTER], 'overlay': switcher_new()},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

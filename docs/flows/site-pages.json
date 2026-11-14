@@ -110,6 +110,15 @@
    ]
   },
   {
+   "title": "4 · Выбор региона — решение (закрыта 2026-11-14)",
+   "screens": [
+    "region-new",
+    "region-new-search",
+    "region-new-phone",
+    "region-switcher-new"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -252,6 +261,26 @@
    "from": "region-banner-asis",
    "to": "region-mobbin",
    "label": "как у других"
+  },
+  {
+   "from": "region-mobbin",
+   "to": "region-new",
+   "label": "решение"
+  },
+  {
+   "from": "region-new",
+   "to": "region-new-search",
+   "label": "поиск страны"
+  },
+  {
+   "from": "region-new",
+   "to": "region-new-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "region-new",
+   "to": "region-switcher-new",
+   "label": "то же в шапке"
   },
   {
    "from": "text-new-phone",
@@ -9231,7 +9260,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Врач из ОАЭ, Бразилии или Австралии не знает, что нажать. Показать страны под каждым регионом? Поиск по стране?"
+         "text": "Решено 2026-11-14: страны под каждым регионом (из той же таблицы, что IP) и поиск по стране."
         },
         {
          "c": "grid",
@@ -9288,7 +9317,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сайт обычно знает страну по IP. Показывать «ваш регион» первым и одним кликом?"
+         "text": "Решено: текущий регион — только в панели из шапки (на странице выбора регион неизвестен по определению)."
         },
         {
          "c": "grid",
@@ -9316,6 +9345,686 @@
      ]
     }
    ]
+  },
+  {
+   "id": "region-new",
+   "title": "Choose location · decided",
+   "url": "rapid-medical.com/choose-your-location",
+   "height": 760,
+   "body": [
+    {
+     "c": "rm-header"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Choose your location"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Product availability and regulatory information differ by region. Pick the region you practice in."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "items": [
+          {
+           "c": "input",
+           "label": "Find your country",
+           "v": "search",
+           "placeholder": "Start typing, e.g. Brazil",
+           "annotation": "Поиск по стране (Klook, H&M): быстрее, чем читать списки."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": ""
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": 3,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Americas"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "28 countries"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia, Peru and the rest of Latin America & the Caribbean"
+            },
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Go to Americas →",
+             "full": true
+            }
+           ],
+           "annotation": "Под регионом — страны, которые в него входят. Список берётся из той же таблицы, по которой сайт определяет регион по IP (regionForCountry): что бы ни решила Emily (вопрос №9), страница показывает, как сайт работает на самом деле. Последний регион честно — «все остальные страны»."
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Asia & Pacific"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "47 countries"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "China, Japan, South Korea, India, Singapore, Malaysia, Thailand, Indonesia, Israel, Saudi Arabia, UAE, Qatar, Türkiye, Egypt…"
+            },
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Go to Asia & Pacific →",
+             "full": true
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Europe & Middle East"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "all others"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Europe, Australia, New Zealand, Africa and all other countries"
+            },
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Go to Europe & Middle East →",
+             "full": true
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-new-search",
+   "title": "Choose location · decided, country search",
+   "url": "rapid-medical.com/choose-your-location",
+   "height": 760,
+   "body": [
+    {
+     "c": "rm-header"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Choose your location"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Product availability and regulatory information differ by region. Pick the region you practice in."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "items": [
+          {
+           "c": "input",
+           "label": "Find your country",
+           "v": "search",
+           "value": "United Arab",
+           "placeholder": "Start typing, e.g. Brazil",
+           "annotation": "Поиск по стране: ввёл — подсветился нужный регион и кнопка стала основной. Пример неочевидного: ОАЭ — в Asia & Pacific, не в «Europe & Middle East». Израиль (головной офис) по текущей таблице тоже в Asia & Pacific — проверить у Emily."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": ""
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": 3,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Americas"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "28 countries"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia, Peru and the rest of Latin America & the Caribbean"
+            },
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Go to Americas →",
+             "full": true
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Asia & Pacific"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "47 countries"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "China, Japan, South Korea, India, Singapore, Malaysia, Thailand, Indonesia, Israel, Saudi Arabia, UAE, Qatar, Türkiye, Egypt…"
+            },
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Go to Asia & Pacific →",
+             "full": true
+            },
+            {
+             "c": "badge",
+             "text": "United Arab Emirates is here",
+             "tone": "info"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Europe & Middle East"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "all others"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Europe, Australia, New Zealand, Africa and all other countries"
+            },
+            {
+             "c": "button",
+             "v": "secondary",
+             "text": "Go to Europe & Middle East →",
+             "full": true
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "region-new-phone",
+   "title": "Choose location · decided, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/choose-your-location",
+   "body": [
+    {
+     "c": "rm-header"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Choose your location"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "Product availability and regulatory information differ by region. Pick the region you practice in."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "input",
+         "label": "Find your country",
+         "v": "search",
+         "placeholder": "Start typing, e.g. Brazil"
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Americas"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "28 countries"
+            }
+           ]
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia, Peru and the rest of Latin America & the Caribbean"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Go to Americas →",
+           "full": true
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Asia & Pacific"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "47 countries"
+            }
+           ]
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "China, Japan, South Korea, India, Singapore, Malaysia, Thailand, Indonesia, Israel, Saudi Arabia, UAE, Qatar, Türkiye, Egypt…"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Go to Asia & Pacific →",
+           "full": true
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Europe & Middle East"
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "all others"
+            }
+           ]
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Europe, Australia, New Zealand, Africa and all other countries"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Go to Europe & Middle East →",
+           "full": true
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Телефон: поиск сверху, регионы карточками друг под другом."
+   ]
+  },
+  {
+   "id": "region-switcher-new",
+   "title": "Region panel from the header · decided",
+   "url": "rapid-medical.com/us",
+   "height": 760,
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "banner",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "cta": {
+        "label": "Explore Therapies",
+        "href": "/us/therapies"
+       },
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "overlay": {
+    "c": "drawer",
+    "title": "Region",
+    "items": [
+     {
+      "c": "stack",
+      "gap": "xs",
+      "items": [
+       {
+        "c": "text",
+        "v": "caption",
+        "text": "Current region"
+       },
+       {
+        "c": "row",
+        "justify": "between",
+        "items": [
+         {
+          "c": "text",
+          "v": "strong",
+          "text": "Americas"
+         },
+         {
+          "c": "badge",
+          "text": "From your location",
+          "tone": "neutral"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "c": "divider"
+     },
+     {
+      "c": "input",
+      "label": "Find your country",
+      "v": "search",
+      "placeholder": "Start typing, e.g. Brazil"
+     },
+     {
+      "c": "stack",
+      "gap": "xs",
+      "items": [
+       {
+        "c": "row",
+        "justify": "between",
+        "items": [
+         {
+          "c": "text",
+          "v": "strong",
+          "text": "Americas ✓"
+         },
+         {
+          "c": "text",
+          "v": "caption",
+          "text": "28 countries"
+         }
+        ]
+       },
+       {
+        "c": "text",
+        "v": "small",
+        "text": "United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia, Peru and the rest of Latin America & the Caribbean"
+       }
+      ]
+     },
+     {
+      "c": "divider"
+     },
+     {
+      "c": "stack",
+      "gap": "xs",
+      "items": [
+       {
+        "c": "row",
+        "justify": "between",
+        "items": [
+         {
+          "c": "text",
+          "v": "strong",
+          "text": "Asia & Pacific"
+         },
+         {
+          "c": "text",
+          "v": "caption",
+          "text": "47 countries"
+         }
+        ]
+       },
+       {
+        "c": "text",
+        "v": "small",
+        "text": "China, Japan, South Korea, India, Singapore, Malaysia, Thailand, Indonesia, Israel, Saudi Arabia, UAE, Qatar, Türkiye, Egypt…"
+       }
+      ]
+     },
+     {
+      "c": "divider"
+     },
+     {
+      "c": "stack",
+      "gap": "xs",
+      "items": [
+       {
+        "c": "row",
+        "justify": "between",
+        "items": [
+         {
+          "c": "text",
+          "v": "strong",
+          "text": "Europe & Middle East"
+         },
+         {
+          "c": "text",
+          "v": "caption",
+          "text": "all others"
+         }
+        ]
+       },
+       {
+        "c": "text",
+        "v": "small",
+        "text": "Europe, Australia, New Zealand, Africa and all other countries"
+       }
+      ]
+     },
+     {
+      "c": "divider"
+     }
+    ],
+    "annotation": "Переключатель в шапке открывает ту же панель, что и страница выбора: текущий регион сверху (и откуда он — по IP или выбран), поиск, регионы со странами (lululemon). Выбор возвращает на ту же страницу в новом регионе, как сейчас (/api/region)."
+   }
   },
   {
    "id": "nf-asis",
