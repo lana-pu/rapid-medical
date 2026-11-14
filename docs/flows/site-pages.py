@@ -356,6 +356,79 @@ def distals_desktop():
             FOOTER]
 
 
+# ---------- Study page from a poster with AI (idea) ----------
+ADMIN_URL = 'rapid-medical.com/admin/editor'
+APPBAR = {'c': 'appbar', 'logo': 'Rapid Medical', 'nav': ['Website', 'Training tool'], 'active': 0, 'actions': [{'c': 'avatar', 'name': 'Emily R'}]}
+
+
+def pages_list():
+    return [APPBAR, {'c': 'box', 'pad': 'l', 'gap': 'm', 'items': [
+        {'c': 'row', 'justify': 'between', 'items': [H('Pages', 2), {'c': 'button', 'v': 'primary', 'text': '+ New page'}]},
+        {'c': 'list', 'items': [{'title': 'SUCCESS Study – Final Results', 'meta': 'Americas · Europe · Asia & Pacific', 'badge': 'Live', 'tone': 'success'},
+                                {'title': 'DISTALS Trial Results', 'meta': 'All regions', 'badge': 'Live', 'tone': 'success'},
+                                {'title': 'Privacy Statement', 'meta': 'All regions', 'badge': 'Live', 'tone': 'success'}]}]}]
+
+
+def ai_modal(step):
+    if step == 'new':
+        items = [T('Upload the approved poster or paper. The page is built from it — you check the numbers before anything goes live.', 'muted'),
+                 dict({'c': 'upload', 'label': 'SUCCESS-poster-final.pdf · 1 page', 'hint': 'PDF or image of the approved poster, paper or slides'},
+                      annotation='Один файл — одобренный постер или статья, как есть. Ничего не перепечатывать. ИИ (Claude) читает PDF и картинки целиком: текст, таблицы, графики.'),
+                 G([I('Region', v='select', value='Americas'), I('Product', v='select', value='COMANECI™')]),
+                 I('ClinicalTrials.gov number', placeholder='NCT…', hint='Optional — fills the study passport from the registry')]
+        actions = [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Build the page', 'to': 'ai-building', 'label': 'Build the page'}]
+        return {'c': 'modal', 'title': 'New study page from a poster', 'items': items, 'actions': actions}
+    items = [{'c': 'progress', 'value': 75, 'label': 'Building the page… about 30 seconds'},
+             {'c': 'bullets', 'items': ['✓ Read the poster: 1 page, 2 tables, 2 charts', '✓ Found 41 numbers and their sources',
+                                        '✓ Picked 6 infographics from the site set', '… Laying out the page'],
+              'annotation': 'ИИ не придумывает дизайн: раскладывает данные по фиксированному набору инфографик (паспорт, ключевые цифры, сравнение, распределение по времени, матрица точек, таблица). Тексты — дословно с постера, без новых формулировок (MLR).'}]
+    return {'c': 'modal', 'title': 'New study page from a poster', 'items': items, 'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'primary', 'text': 'Open the draft', 'to': 'ai-review', 'label': 'черновик готов'}]}
+
+
+def review_toolbar(done):
+    right = [{'c': 'badge', 'text': 'Draft', 'tone': 'neutral', 'dot': True},
+             T('6 of 6 blocks checked' if done else '4 of 6 blocks checked', 'small'),
+             {'c': 'button', 'v': 'primary', 'text': 'Publish', 'to': None} if done else {'c': 'button', 'v': 'secondary', 'text': 'Publish — check 2 blocks first'}]
+    return {'c': 'toolbar', 'left': [{'c': 'button', 'v': 'ghost', 'text': '← Pages'}, S([T('SUCCESS Study – Final Results', 'strong'), T('Built from SUCCESS-poster-final.pdf', 'caption')], 'xs')],
+            'center': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Showing: Americas ▾'}], 'right': right}
+
+
+def review_preview(done):
+    stats = {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('95%', 'successful occlusion at ≤6 months'), dict(stat('82%', 'good clinical outcome (mRS 0–2) at 6 months'), selected=not done),
+                                                          stat('0', 'symptomatic thromboembolic events'), stat('0.3%', 'coil entanglement · 1 of 356 coils')]}
+    if not done:
+        stats['annotation'] = 'Клик по любой цифре на странице — справа подсвечивается место на постере, откуда она взята. Сверка — глазами, а не перепечаткой.'
+    chart = {'c': 'bars', 'legend': ['RR I', 'RR II', 'RR III'], 'rows': RR_ROWS, 'caption': 'P = 0.05'}
+    return S([{'c': 'eyebrow', 'text': 'Clinical study · COMANECI™ · Americas'}, H('SUCCESS', 1),
+              T('Data demonstrates a high rate of successful aneurysm occlusion when using Comaneci as an assist device in wide neck aneurysms.', 'lead'),
+              {'c': 'divider'}, stats, {'c': 'divider'}, H('Occlusion holds over time', 3), dict(chart, hover=not done)], 'm')
+
+
+def review_panel(done):
+    def item(title, meta, ok, warn=False):
+        if ok: return {'title': title, 'meta': meta, 'badge': 'Checked', 'tone': 'success'}
+        if warn: return {'title': title, 'meta': meta, 'badge': 'Check', 'tone': 'warning', 'actions': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Fix'}]}
+        return {'title': title, 'meta': meta, 'actions': [{'c': 'button', 'v': 'secondary', 'size': 's', 'text': 'Looks right'}]}
+    rows = [item('Study passport', '6 values · all on the poster', True),
+            item('Key numbers', '4 values · all on the poster', done or False) if done else dict(item('Key numbers', '4 values · all on the poster', False), on=True),
+            item('Occlusion over time', '5 values · not sure which chart “P = 0.05” belongs to', done, warn=not done),
+            item('Good outcome over time', '21 values · all on the poster', True),
+            item('Who was treated', '5 values · all on the poster', True),
+            item('Safety table', '12 values · all on the poster', True)]
+    items = [{'c': 'media', 'kind': 'image', 'label': 'SUCCESS-poster-final.pdf · highlighted: “82% at 6 month follow up” (Results)', 'ratio': '16/9'},
+             dict({'c': 'list', 'items': rows},
+                  annotation=None if done else 'Проверка по блокам, а не по цифрам: «Looks right» — один клик на блок. Блоки, где ИИ не уверен (цифра не найдена дословно, расходится с таблицей), помечены «Check» и не дают опубликовать. Честный disabled у Publish, пока всё не проверено.')]
+    return {'c': 'panel', 'title': 'Check against the poster', 'items': items}
+
+
+def ai_review(done=False):
+    body = [review_toolbar(done), {'c': 'split', 'cols': 'minmax(0,1fr) 380px', 'height': 760, 'items': [
+        {'c': 'box', 'pad': 'l', 'items': [review_preview(done)]}, review_panel(done)]}]
+    if done:
+        body[0]['annotation'] = 'Все блоки проверены — Publish активен. В истории записано: кто проверил и с каким файлом сверял. Инфографику можно поменять обычным выбором варианта блока в редакторе. Одобрение MLR — как сейчас, вне сайта.'
+    return body
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -372,6 +445,7 @@ flow = {
         {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-phone']},
         {'title': '2a · Страница исследования — примеры из Mobbin', 'screens': ['study-mobbin']},
         {'title': '2a · Страница исследования — идея к обсуждению', 'screens': ['study-success', 'study-success-phone', 'study-distals']},
+        {'title': '2a · Страница исследования — собрать из постера с ИИ (идея)', 'screens': ['ai-new', 'ai-building', 'ai-review', 'ai-ready']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -388,6 +462,8 @@ flow = {
               {'from': 'study-mobbin', 'to': 'study-success', 'label': 'идея'},
               {'from': 'study-success', 'to': 'study-success-phone', 'label': 'на телефоне'},
               {'from': 'study-success', 'to': 'study-distals', 'label': 'тот же шаблон'},
+              {'from': 'study-distals', 'to': 'ai-new', 'label': 'как это собирается'},
+              {'from': 'ai-review', 'to': 'ai-ready', 'label': 'Looks right × 2'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -419,6 +495,12 @@ flow = {
         {'id': 'study-success-phone', 'title': 'Study page · SUCCESS, phone', 'device': 'mobile', 'url': SUCCESS_URL, 'body': success_phone(),
          'notes': ['Телефон: название и вывод, 4 итога, паспорт, график с переключателем по времени, матрица пациентов, постер. Графики из чисел перестраиваются под ширину — скриншот постера на телефоне не читается.']},
         {'id': 'study-distals', 'title': 'Study page · DISTALS, same template', 'url': 'rapid-medical.com/distals-results', 'body': distals_desktop()},
+        {'id': 'ai-new', 'title': 'Admin · new study page from a poster', 'url': ADMIN_URL, 'height': 720, 'body': pages_list(), 'overlay': ai_modal('new'),
+         'notes': ['Вход: Pages → New page → «Study from a poster». Клик 1 — выбрать файл, клик 2 — Build the page.']},
+        {'id': 'ai-building', 'title': 'Admin · AI builds the draft', 'url': ADMIN_URL, 'height': 720, 'body': pages_list(), 'overlay': ai_modal('building')},
+        {'id': 'ai-review', 'title': 'Editor · check the numbers against the poster', 'url': ADMIN_URL + '/success-study-final-results', 'height': 820, 'body': ai_review(False)},
+        {'id': 'ai-ready', 'title': 'Editor · all checked, ready to publish', 'url': ADMIN_URL + '/success-study-final-results', 'height': 820, 'body': ai_review(True),
+         'notes': ['Итого от постера до публикации: файл → Build → «Looks right» по блокам, где ИИ уверен (часть уже проверена автоматически, если цифра найдена дословно), → Publish. Порядка 5–8 кликов и несколько минут на сверку.']},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
