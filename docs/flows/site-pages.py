@@ -1053,6 +1053,29 @@ def ev_filters_delete():
     return m
 
 
+# ---------- Therapies overview ----------
+THER_REFS = [
+    {'title': 'Конкуренты: обзор продуктов',
+     'ask': 'У всех — фото устройства как предмет на светлом фоне, название и тип; группы по состоянию (AIS / HEM) или по категории.',
+     'refs': [('stryker-neuro', 'Stryker Neurovascular', 'сначала выбор состояния (AIS / Hemorrhagic), ниже сетка устройств: фото и название', 'https://www.stryker.com/us/en/portfolios/neurotechnology-spine/neurovascular.html', 'png'),
+              ('penumbra-neuro', 'Penumbra', '«Find a product»: 4 категории карточками с фото, «View product», ниже Request a demo', 'https://www.penumbrainc.com/products/neuro/', 'png'),
+              ('terumo-products', 'Terumo Neuro', 'сетка: фото устройства, название, тип одной строкой', 'https://www.terumoneuro.com/products', 'png')]},
+    {'title': 'Мало продуктов — как не выглядеть пусто',
+     'ask': 'В Americas 3 терапии, по одной в группе. Три секции с одной карточкой выглядят пусто.',
+     'refs': [('sigma', 'SIGMA', '«Three product lines»: три предмета в ряд, у каждого — подпись-категория и строка текста', 'sites/sections/c18bb82d-1622-4e93-8bbb-2986150a1fec'),
+              ('dropbox', 'Dropbox', 'продукты сеткой: знак, название, одна строка — без группировки', 'sites/sections/e7946b37-48f3-4d03-bbc5-b7b6a5e60314'),
+              ('zendesk', 'Zendesk', '«Browse by solution»: название и тип строкой, плотно', 'sites/sections/5c17f721-703d-4bf6-b800-271555c9d5cd')]},
+]
+
+
+def therapies_asis(phone=False):
+    ex = None if phone else {
+        0: {'annotation': 'Шапка с видео и общим абзацем. Страница необязательная (решение 2026-11-10): обзор для тех, кто не знает линейку; врач, который знает, идёт через меню.'},
+        1: {'annotation': 'По секции на направление. В Americas 3 терапии — в каждой секции по одной карточке: продукт, название, подзаголовок героя терапии. Строки-доказательства нет (поле proofPoint пустое до MLR). Картинок нет — убраны 10.11: из видео в шапках карточки выходили разной высоты.'},
+        4: {'annotation': '«Questions?» — Contact Us с регионом.'}}
+    return [HEADER, page('US · Therapies', None, ex), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -1087,6 +1110,8 @@ flow = {
         {'title': '8 · Evidence — как есть', 'screens': ['ev-asis', 'ev-asis-phone']},
         {'title': '8 · Evidence — конкуренты, смежные области, Mobbin', 'screens': ['ev-refs']},
         {'title': '8 · Evidence — черновик концепции (к обсуждению)', 'screens': ['ev-concept', 'ev-filters', 'ev-filters-delete']},
+        {'title': '9 · Обзор терапий — как есть', 'screens': ['ther-asis', 'ther-asis-phone']},
+        {'title': '9 · Обзор терапий — конкуренты и Mobbin', 'screens': ['ther-refs']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1143,6 +1168,9 @@ flow = {
               {'from': 'ev-refs', 'to': 'ev-concept', 'label': 'черновик'},
               {'from': 'ev-concept', 'to': 'ev-filters', 'label': 'фильтры правятся в админке'},
               {'from': 'ev-filters', 'to': 'ev-filters-delete', 'label': 'Delete'},
+              {'from': 'ev-filters-delete', 'to': 'ther-asis', 'label': 'следующая страница'},
+              {'from': 'ther-asis', 'to': 'ther-asis-phone', 'label': 'на телефоне'},
+              {'from': 'ther-asis-phone', 'to': 'ther-refs', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1222,6 +1250,9 @@ flow = {
         {'id': 'ev-filters', 'title': 'Admin · Evidence filters, editable', 'url': 'rapid-medical.com/admin/site/evidence/filters', 'height': 640, 'body': ev_filters_admin()},
         {'id': 'ev-filters-delete', 'title': 'Admin · delete a filter, publications are kept', 'url': 'rapid-medical.com/admin/site/evidence/filters', 'height': 640, 'body': ev_filters_admin(), 'overlay': ev_filters_delete()},
         {'id': 'ev-asis-phone', 'title': 'Evidence · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_asis(True)},
+        {'id': 'ther-asis', 'title': 'Therapies overview · as is (Americas)', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis()},
+        {'id': 'ther-asis-phone', 'title': 'Therapies overview · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis(True)},
+        ref_screen('ther-refs', 'Therapies overview · competitors and Mobbin', 'therapies', THER_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

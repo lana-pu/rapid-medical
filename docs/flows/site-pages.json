@@ -195,6 +195,19 @@
    ]
   },
   {
+   "title": "9 · Обзор терапий — как есть",
+   "screens": [
+    "ther-asis",
+    "ther-asis-phone"
+   ]
+  },
+  {
+   "title": "9 · Обзор терапий — конкуренты и Mobbin",
+   "screens": [
+    "ther-refs"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -462,6 +475,21 @@
    "from": "ev-filters",
    "to": "ev-filters-delete",
    "label": "Delete"
+  },
+  {
+   "from": "ev-filters-delete",
+   "to": "ther-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "ther-asis",
+   "to": "ther-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "ther-asis-phone",
+   "to": "ther-refs",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -16848,6 +16876,276 @@
     ],
     "annotation": "Удаление не теряет публикации: предложить перенести в другую группу или оставить без неё (они остаются в архиве и в поиске). Кнопка называет последствие («Delete and move 5»). Слияние двух групп — то же действие."
    }
+  },
+  {
+   "id": "ther-asis",
+   "title": "Therapies overview · as is (Americas)",
+   "url": "rapid-medical.com/us/therapies",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Therapies",
+       "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
+       "note": "",
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+       "annotation": "Шапка с видео и общим абзацем. Страница необязательная (решение 2026-11-10): обзор для тех, кто не знает линейку; врач, который знает, идёт через меню."
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Ischemic stroke",
+       "items": [
+        {
+         "eyebrow": "TIGERTRIEVER™",
+         "title": "Large vessel stroke",
+         "body": "A patient-centric approach to AIS",
+         "href": "/us/therapies/lvo"
+        }
+       ],
+       "annotation": "По секции на направление. В Americas 3 терапии — в каждой секции по одной карточке: продукт, название, подзаголовок героя терапии. Строки-доказательства нет (поле proofPoint пустое до MLR). Картинок нет — убраны 10.11: из видео в шапках карточки выходили разной высоты."
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Hemorrhagic stroke",
+       "items": [
+        {
+         "eyebrow": "COMANECI™",
+         "title": "Aneurysm",
+         "body": "Bridging the gap in assist devices",
+         "href": "/us/therapies/aneurysm"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Access",
+       "items": [
+        {
+         "eyebrow": "DRIVEWIRE™",
+         "title": "Access",
+         "body": "Active access",
+         "href": "/us/therapies/drivewire"
+        }
+       ]
+      },
+      {
+       "c": "rm-cta",
+       "v": "light",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "label": "Contact us",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "annotation": "«Questions?» — Contact Us с регионом."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "ther-asis-phone",
+   "title": "Therapies overview · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/therapies",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Therapies",
+       "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
+       "note": "",
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4"
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Ischemic stroke",
+       "items": [
+        {
+         "eyebrow": "TIGERTRIEVER™",
+         "title": "Large vessel stroke",
+         "body": "A patient-centric approach to AIS",
+         "href": "/us/therapies/lvo"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Hemorrhagic stroke",
+       "items": [
+        {
+         "eyebrow": "COMANECI™",
+         "title": "Aneurysm",
+         "body": "Bridging the gap in assist devices",
+         "href": "/us/therapies/aneurysm"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "cards",
+       "title": "Access",
+       "items": [
+        {
+         "eyebrow": "DRIVEWIRE™",
+         "title": "Access",
+         "body": "Active access",
+         "href": "/us/therapies/drivewire"
+        }
+       ]
+      },
+      {
+       "c": "rm-cta",
+       "v": "light",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "label": "Contact us",
+         "href": "/contact-us?region=us"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "ther-refs",
+   "title": "Therapies overview · competitors and Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Конкуренты: обзор продуктов"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "У всех — фото устройства как предмет на светлом фоне, название и тип; группы по состоянию (AIS / HEM) или по категории."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/therapies/stryker-neuro.png",
+           "source": "Stryker Neurovascular",
+           "caption": "сначала выбор состояния (AIS / Hemorrhagic), ниже сетка устройств: фото и название",
+           "url": "https://www.stryker.com/us/en/portfolios/neurotechnology-spine/neurovascular.html"
+          },
+          {
+           "c": "ref",
+           "src": "refs/therapies/penumbra-neuro.png",
+           "source": "Penumbra",
+           "caption": "«Find a product»: 4 категории карточками с фото, «View product», ниже Request a demo",
+           "url": "https://www.penumbrainc.com/products/neuro/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/therapies/terumo-products.png",
+           "source": "Terumo Neuro",
+           "caption": "сетка: фото устройства, название, тип одной строкой",
+           "url": "https://www.terumoneuro.com/products"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Мало продуктов — как не выглядеть пусто"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "В Americas 3 терапии, по одной в группе. Три секции с одной карточкой выглядят пусто."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/therapies/sigma.webp",
+           "source": "SIGMA",
+           "caption": "«Three product lines»: три предмета в ряд, у каждого — подпись-категория и строка текста",
+           "url": "https://mobbin.com/sites/sections/c18bb82d-1622-4e93-8bbb-2986150a1fec"
+          },
+          {
+           "c": "ref",
+           "src": "refs/therapies/dropbox.webp",
+           "source": "Dropbox",
+           "caption": "продукты сеткой: знак, название, одна строка — без группировки",
+           "url": "https://mobbin.com/sites/sections/e7946b37-48f3-4d03-bbc5-b7b6a5e60314"
+          },
+          {
+           "c": "ref",
+           "src": "refs/therapies/zendesk.webp",
+           "source": "Zendesk",
+           "caption": "«Browse by solution»: название и тип строкой, плотно",
+           "url": "https://mobbin.com/sites/sections/5c17f721-703d-4bf6-b800-271555c9d5cd"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "nf-asis",
