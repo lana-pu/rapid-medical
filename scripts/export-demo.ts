@@ -130,6 +130,9 @@ async function main() {
     if (ids[r][0]) adminPaths.push(`/admin/${r}/${ids[r][0]}/history`);
   }
   for (const id of submissionIds) adminPaths.push(`/admin/submissions/${id}`);
+  // page screens of the site tree (docs/screens/admin-sections.md): their links are in every admin page's left column
+  const home = await get("/admin", cookie);
+  for (const m of home.html.matchAll(/href="(\/admin\/page[^"#?]*)"/g)) if (!adminPaths.includes(m[1])) adminPaths.push(m[1]);
   let a = 0;
   for (const p of adminPaths) {
     const r = await get(p, p === "/admin/login" ? "" : cookie); // login page redirects when signed in

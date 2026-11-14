@@ -119,30 +119,44 @@ test("requests: who answers, status and a note for the team; filters", async ({ 
   }
 });
 
-test("the admin by the site's sections: menu, therapies in each region, lists, breadcrumbs", async ({ page }) => {
+test("the admin: functions on a rail, the site as a tree with collections; page screens; section screens", async ({ page }) => {
   await login(page);
   await page.goto("/admin");
-  const menu = page.getByRole("navigation", { name: "Admin" });
-  for (const s of ["Home", "Therapies", "Evidence", "Webinars", "News & Events", "About Us", "Careers", "Contact Us", "Other pages", "Menu and footer"]) await expect(menu.getByRole("link", { name: s, exact: true })).toBeVisible();
+  // functions apart from navigation (docs/screens/admin-sections.md → «Меню слева»)
+  const rail = page.getByRole("navigation", { name: "Admin functions" });
+  for (const s of ["Find a page", "Requests", "Media library", "Activity"]) await expect(rail.getByRole("link", { name: s })).toBeVisible();
+  await rail.getByRole("button", { name: "Settings" }).click();
+  await expect(page.getByRole("menu", { name: "Settings" }).getByRole("menuitem", { name: "Site settings" })).toBeVisible();
+  await page.keyboard.press("Escape");
 
-  await menu.getByRole("link", { name: "Therapies", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Therapies", level: 1 })).toBeVisible();
+  // the site tree: every page once, collections under their page, marked
+  const tree = page.getByRole("navigation", { name: "Site" });
+  for (const s of ["Home", "Therapies", "Evidence", "Webinars", "News & Events", "Careers", "Contact Us", "Menu and footer"]) await expect(tree.getByRole("link", { name: s, exact: true })).toBeVisible();
+  await expect(tree.getByRole("link", { name: "Large vessel stroke", exact: true })).toHaveCount(1);
+  await expect(tree.getByRole("link", { name: /^▤?\s*Publications/ })).toContainText("▤");
+
+  // a page screen: its regions
+  await tree.getByRole("link", { name: "Medium vessel stroke", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/therapies\/mvo$/);
+  await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
+  const regions = page.getByRole("region", { name: "Regions" });
+  await expect(regions).toContainText("No version in this region"); // MVO is not in the Americas
+  await expect(regions.getByRole("link", { name: "Edit on page ✎" })).toHaveCount(2);
+  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Therapies" }).click();
+  await expect(page.getByRole("region", { name: "Pages under it" })).toContainText("Large vessel stroke");
+
+  // a collection opens its records
+  await tree.getByRole("link", { name: /Publications/ }).click();
+  await expect(page).toHaveURL(/\/admin\/publications$/);
+  await page.goto("/admin/page/news-events");
+  await expect(page.getByRole("region", { name: "Collections on this page" })).toContainText("News");
+
+  // section screens stay reachable by address
+  await page.goto("/admin/site/therapies");
   await expect(page.locator('[data-cell="lvo:us"]')).toContainText("Edit on page");
-  await expect(page.locator('[data-cell="mvo:us"]')).toHaveText("No version"); // MVO is not in the Americas
-  await expect(page.locator('[data-cell="mvo:ous"]')).toContainText("Live");
-
-  await menu.getByRole("link", { name: "Evidence", exact: true }).click();
-  await expect(page.getByText(/Evidence — (Americas|Asia & Pacific|Europe & Middle East)/)).toHaveCount(3);
-  await page.getByRole("link", { name: "Publications" }).first().click();
-  await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText("Website›Evidence");
-  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Evidence" }).click();
-  await expect(page).toHaveURL(/\/admin\/site\/evidence$/);
-
-  await menu.getByRole("link", { name: "Other pages", exact: true }).click();
+  await expect(page.locator('[data-cell="mvo:us"]')).toHaveText("No version");
+  await page.goto("/admin/site/other");
   await expect(page.getByRole("heading", { name: "Legal — linked from the footer" })).toBeVisible();
-  await expect(page.getByText("Privacy Statement")).toBeVisible();
-  await menu.getByRole("link", { name: "Careers", exact: true }).click();
-  await expect(page.getByText("No open positions — the list is hidden on Careers.")).toBeVisible();
 });
 
 const addUser = (email: string, role: string) =>
