@@ -14,7 +14,9 @@ import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
 import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
-import { BAR_H, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SidePanel, TabsPanel, TopBar, statusText } from "./editor-ui";
+import { BAR_H, RAIL_W, TOOL_W, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SectionsList, SidePanel, TabsPanel, ToolPanel, ToolRail, TopBar, statusText, type PickPage, type ToolKey } from "./editor-ui";
+import { RegionsTable } from "./RegionsTable";
+import { PagesPanel, RecordPanel, type OpenRecord } from "./PagesPanel";
 
 /**
  * The page editor (docs/screens/on-page-editor.md, ADR-006/007), loaded only in editor mode.
@@ -34,10 +36,17 @@ type Panel =
   | { k: "rich"; tag: Tag; value: string; label: string }
   | { k: "link"; tag: Tag; label: string; href: string }
   | { k: "media"; tag: Tag; image: string; video: string }
-  | { k: "add"; at: number; list: string }
-  | { k: "history"; items: HistoryItem[] | null }
   | { k: "tabs"; id: string }
+  | { k: "record"; rec: OpenRecord }
+  | null;
+/** The rail tool open on the left (on-page-editor.md → «Устройство экрана»); field panels stay on the right. */
+type Tool =
+  | { k: "add"; at: number; list: string }
+  | { k: "sections" }
+  | { k: "pages" }
+  | { k: "history"; items: HistoryItem[] | null }
   | { k: "comments"; focus?: string | null; compose: string | null }
+  | { k: "regions" }
   | null;
 type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
 type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
@@ -47,7 +56,7 @@ type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
  * Editor). Layout mode (Tools → Arrange sections): every editable field is outlined. Preview: nothing at all, and the
  * strips of hidden sections are gone too.
  */
-const STYLE = (top: number, preview: boolean, layout: boolean) =>
+const STYLE = (top: number, preview: boolean, layout: boolean, left: number) =>
   preview
     ? `body{padding-top:${top - BAR_H}px}[data-rm-hidden]{display:none}`
     : `
@@ -57,7 +66,7 @@ ${layout ? `[data-e]{outline:1px dashed rgba(37,99,235,.55);outline-offset:3px}`
 [data-e][contenteditable]{outline:2px solid #f59e0b;background:#fff;color:#111;cursor:text;min-width:2ch;white-space:pre-wrap}
 .rm-e-media{position:relative;display:block;cursor:pointer}
 .rm-e-media:hover::after{content:"Replace";position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font:600 11px/1 system-ui;padding:6px 8px;border-radius:4px;pointer-events:none}
-body{padding-top:${top}px}
+body{padding-top:${top}px;padding-left:${left}px}
 `;
 
 function parse(el: Element): Tag | null {
@@ -128,12 +137,14 @@ export default function EditorOverlay() {
   const [modal, setModal] = useState<Modal>(null);
   const [compare, setCompare] = useState<{ label: string; sections: RegionDiff[] } | null>(null);
   const [preview, setPreview] = useState(false);
-  /** Tools → Arrange sections: section frames, toolbar, «+ Add section»; off on every page open (on-page-editor.md) */
-  const [layout, setLayout] = useState(false);
+  const [tool, setTool] = useState<Tool>(null);
+  /** section layout (frames, toolbar, «+ Add section») while Add or Sections is open; the plain page otherwise */
+  const layout = tool?.k === "add" || tool?.k === "sections" || panel?.k === "tabs";
   const layoutRef = useRef(false);
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
+  const [pages, setPages] = useState<PickPage[] | null>(null);
   const [scroll, setScroll] = useState(0);
   const [undoCount, setUndoCount] = useState(0);
   const [redoCount, setRedoCount] = useState(0);
@@ -158,6 +169,15 @@ export default function EditorOverlay() {
     setMsg(m);
     if (!sticky) setTimeout(() => setMsg((t) => (t === m ? null : t)), 4000);
   }, []);
+
+  const loadRegionTexts = useCallback(async () => (page ? pageApi.regionTexts(page) : { error: "This page is the same in every region" }), [page]);
+
+  const loadPages = useCallback(async () => {
+    if (pages) return;
+    const r = await pageApi.editorPageList();
+    if ("error" in r) say(r.error, true);
+    else setPages(r.pages as PickPage[]);
+  }, [pages, say]);
 
   const targetsOnPage = useCallback(() => {
     const out: Ref[] = [];
@@ -214,7 +234,8 @@ export default function EditorOverlay() {
       setRedoCount(0);
       setSelected(null);
       setCompare(null);
-      setLayout(false);
+      setTool((t) => (t?.k === "pages" ? t : null)); // a new page opens plain
+      setPanel(null);
       void loadInfo();
       void loadLegacy();
       void loadComments();
@@ -492,7 +513,7 @@ export default function EditorOverlay() {
           e.preventDefault();
           e.stopPropagation();
           setPicking(false);
-          if (hit) setPanel({ k: "comments", focus: hit.id, compose: hit.id });
+          if (hit) setTool({ k: "comments", focus: hit.id, compose: hit.id });
           return;
         }
         if (hit && layoutRef.current) setSelected(hit.id);
@@ -566,10 +587,10 @@ export default function EditorOverlay() {
 
   const openHistory = async () => {
     if (!page) return;
-    setPanel({ k: "history", items: null });
+    setTool({ k: "history", items: null });
     const res = await pageApi.pageHistory(page);
     if ("error" in res) return say(res.error, true);
-    setPanel({ k: "history", items: res.items });
+    setTool({ k: "history", items: res.items });
   };
 
   const restore = async (id: number) => {
@@ -585,7 +606,7 @@ export default function EditorOverlay() {
       version.current = res.version;
       pushUndo({ kind: "blocks", prev: res.undo, label: "Restored a version" });
       say(res.same ? "Version restored — it is what is live, nothing to publish" : "Version restored. Not live yet — check it, then Publish");
-      setPanel(null);
+      setTool(null);
       await afterChange();
     } finally {
       setBusy(false);
@@ -625,6 +646,8 @@ export default function EditorOverlay() {
   const hideBox = !layout && hovered ? boxes.find((b) => b.id === hovered) : null;
   const hideInfo = hideBox ? sectionById.get(hideBox.id) : undefined;
   const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
+  /** right edge of the rail and its open panel: section controls go to the right of it */
+  const toolEdge = RAIL_W + (tool && tool.k !== "regions" ? TOOL_W : 0);
   const plusAt = new Map<string, { list: string; at: number; y: number; x: number }>(); // list + insert index → place
   for (const b of plusFor) {
     // position in the stored list (a section with nothing to list is stored but not shown)
@@ -639,7 +662,8 @@ export default function EditorOverlay() {
 
   return (
     <div id="rm-editor-ui">
-      <style>{STYLE(top, preview, layout)}</style>
+      {/* the page moves aside for the open tool panel (like Webflow's canvas), so nothing on it is covered */}
+      <style>{STYLE(top, preview, layout, RAIL_W + (tool && tool.k !== "regions" ? TOOL_W : 0))}</style>
       {DEMO && (
         <div className="fixed inset-x-0 top-0 z-[1001] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
           Demo — edits are saved only in your browser (localStorage). No server, no database.
@@ -658,21 +682,54 @@ export default function EditorOverlay() {
           canRedo={redoCount > 0}
           onRedo={doRedo}
           hasChanges={hasChanges}
-          compareLabel={compare?.label ?? null}
-          pagesHref={withBase("/admin/editor")}
+          backHref={withBase(DEMO ? "/admin/editor" : "/admin")}
           exitHref={DEMO ? null : `/api/editor?off=1&redirect=${encodeURIComponent(pathname)}`}
           demo={DEMO}
           onUndo={doUndo}
-          onHistory={openHistory}
-          comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
-          onComments={() => setPanel({ k: "comments", compose: null })}
-          onPreview={() => { setPreview(true); setSelected(null); setPanel(null); }}
-          layout={layout}
-          onLayout={(on) => { setLayout(on); setSelected(null); if (!on && (panel?.k === "add" || panel?.k === "tabs")) setPanel(null); requestAnimationFrame(() => remeasure()); }}
           onPublish={openReview}
-          onCompare={onCompare}
           onRegion={(p) => router.push(p)}
           onExit={() => { setDemoEditorOff(true); setOff(true); }}
+          loadPages={() => void (DEMO ? undefined : loadPages())}
+          picker={(close) => (
+            <PagesPanel
+              pages={DEMO ? [] : pages}
+              current={page ? `${page.r}:${page.id}` : null}
+              demo={DEMO}
+              maxHeight="60vh"
+              onPage={(p) => { close(); router.push(p); }}
+              onRecord={(rec) => { close(); setPanel({ k: "record", rec }); }}
+            />
+          )}
+        />
+      )}
+      {!preview && (
+        <ToolRail
+          top={top}
+          active={tool?.k ?? null}
+          hasPage={!!info}
+          demo={DEMO}
+          comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
+          settingsHref={info && !DEMO ? info.adminHref : null}
+          onPreview={() => { setPreview(true); setSelected(null); setPanel(null); setTool(null); }}
+          onTool={(k: ToolKey) => {
+            setPicking(false);
+            if (tool?.k === k) {
+              setTool(null);
+              setSelected(null);
+            } else if (k === "history") void openHistory();
+            else if (k === "comments") setTool({ k: "comments", compose: null });
+            else if (k === "add") {
+              // after the selected section, else at the end (before the pinned ones)
+              const s = selected ? sectionById.get(selected) : undefined;
+              const top = (info?.sections ?? []).filter((x) => x.list === "");
+              const end = top.findIndex((x) => x.pinned);
+              setTool(s ? { k: "add", at: s.at + 1, list: s.list } : { k: "add", at: end < 0 ? top.length : end, list: "" });
+            } else {
+              if (k === "pages") void loadPages();
+              setTool({ k } as Tool);
+            }
+            requestAnimationFrame(() => remeasure());
+          }}
         />
       )}
 
@@ -704,7 +761,7 @@ export default function EditorOverlay() {
               title="Hide this section on the site (after Publish). Show brings it back."
               onClick={() => runOp({ op: "hide", id: hideInfo.id, hidden: true }, `Hid ${hideInfo.name}`)}
               className="fixed z-[1001] rounded-full border border-neutral-300 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-800 shadow hover:bg-neutral-100"
-              style={{ top: Math.max(hideBox.top - scroll + 8, top + 8), left: Math.max(hideBox.left + 8, 8) }}
+              style={{ top: Math.max(hideBox.top - scroll + 8, top + 8), left: Math.max(hideBox.left + 8, toolEdge + 8) }}
             >
               Hide section
             </button>
@@ -714,7 +771,7 @@ export default function EditorOverlay() {
             const n = comments.filter((c) => !c.parentId && !c.resolvedAt && c.anchor === b.id).length;
             if (!n) return null;
             return (
-              <button key={`cm-${b.id}`} type="button" aria-label={`${n} comment${n > 1 ? "s" : ""} on ${sectionById.get(b.id)?.name ?? "this section"}`} onClick={() => setPanel({ k: "comments", focus: b.id, compose: null })} className="fixed z-[1001] flex h-7 min-w-7 -translate-x-1/2 items-center justify-center rounded-full bg-amber-400 px-2 text-xs font-bold text-black shadow" style={{ top: b.top - scroll + 6, left: Math.min(b.left + b.width - 18, vw - 24) }}>
+              <button key={`cm-${b.id}`} type="button" aria-label={`${n} comment${n > 1 ? "s" : ""} on ${sectionById.get(b.id)?.name ?? "this section"}`} onClick={() => setTool({ k: "comments", focus: b.id, compose: null })} className="fixed z-[1001] flex h-7 min-w-7 -translate-x-1/2 items-center justify-center rounded-full bg-amber-400 px-2 text-xs font-bold text-black shadow" style={{ top: b.top - scroll + 6, left: Math.min(b.left + b.width - 18, vw - 24) }}>
                 {n}
               </button>
             );
@@ -725,7 +782,7 @@ export default function EditorOverlay() {
               first={selInfo.at === 0}
               last={selInfo.at === selList.length - 1 || !!selList[selInfo.at + 1]?.pinned}
               busy={busy}
-              style={{ top: Math.min(Math.max(sel.top - scroll - 34, top + 6), sel.top - scroll + sel.height - 34), left: Math.min(Math.max(sel.left + 8, 8), vw - 380) }}
+              style={{ top: Math.min(Math.max(sel.top - scroll - 34, top + 6), sel.top - scroll + sel.height - 34), left: Math.min(Math.max(sel.left + 8, toolEdge + 8), vw - 380) }}
               onVariant={(v) => runOp({ op: "variant", id: selInfo.id, variant: v }, `Changed layout of ${selInfo.name}`)}
               onMove={(d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`)}
               onCopy={() => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`)}
@@ -746,7 +803,7 @@ export default function EditorOverlay() {
               type="button"
               data-rm-plus
               disabled={busy}
-              onClick={() => setPanel({ k: "add", at: p.at, list: p.list })}
+              onClick={() => setTool({ k: "add", at: p.at, list: p.list })}
               className="fixed z-[1001] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow-lg hover:bg-blue-700"
               style={{ top: p.y - scroll, left: p.x }}
             >
@@ -754,7 +811,7 @@ export default function EditorOverlay() {
             </button>
           ))}
           {layout && boxes.length === 0 && (
-            <button type="button" onClick={() => setPanel({ k: "add", at: 0, list: "" })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
+            <button type="button" onClick={() => setTool({ k: "add", at: 0, list: "" })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
               + Add section
             </button>
           )}
@@ -804,16 +861,79 @@ export default function EditorOverlay() {
           />
         </SidePanel>
       )}
-      {panel?.k === "add" && (
-        <SidePanel title={panel.list ? "Add section to this tab" : "Add section"} top={top} onClose={() => setPanel(null)}>
-          <PresetList
-            presets={(info?.presets ?? []).filter((p) => !panel.list || p.nestable)}
+      {tool?.k === "add" && (
+        <ToolPanel title={tool.list ? "Add section to this tab" : "Add section"} top={top} onClose={() => setTool(null)}>
+          <div className="p-4">
+            <PresetList
+              presets={(info?.presets ?? []).filter((p) => !tool.list || p.nestable)}
+              busy={busy}
+              onPick={async (p) => {
+                setTool({ k: "sections" });
+                await runOp({ op: "add", at: tool.at, type: p.type, variant: p.variant, ...(tool.list ? { in: tool.list } : {}) }, `Added ${p.name}`);
+              }}
+            />
+          </div>
+        </ToolPanel>
+      )}
+      {tool?.k === "sections" && info && (
+        <ToolPanel title="Sections" top={top} onClose={() => { setTool(null); setSelected(null); }}>
+          <SectionsList
+            sections={info.sections}
+            selected={selected}
             busy={busy}
-            onPick={async (p) => {
-              setPanel(null);
-              await runOp({ op: "add", at: panel.at, type: p.type, variant: p.variant, ...(panel.list ? { in: panel.list } : {}) }, `Added ${p.name}`);
+            canDesign={info.canDesign}
+            onSelect={(id) => {
+              setSelected(id);
+              const b = boxesRef.current.find((x) => x.id === id);
+              if (b) window.scrollTo({ top: Math.max(0, b.top - top - 80), behavior: "smooth" });
             }}
+            onMove={(x, d) => runOp({ op: "move", id: x.id, dir: d }, `Moved ${x.name}`)}
+            onHide={(x) => runOp({ op: "hide", id: x.id, hidden: !x.hidden }, `${x.hidden ? "Showed" : "Hid"} ${x.name}`)}
+            onCopy={(x) => runOp({ op: "duplicate", id: x.id }, `Copied ${x.name}`)}
+            onRemove={(x) => runOp({ op: "remove", id: x.id }, `Deleted ${x.name}`)}
+            onVariant={(x, v) => runOp({ op: "variant", id: x.id, variant: v }, `Changed layout of ${x.name}`)}
+            onTabs={(x) => setPanel({ k: "tabs", id: x.id })}
           />
+        </ToolPanel>
+      )}
+      {tool?.k === "pages" && (
+        <ToolPanel title="Pages" top={top} onClose={() => setTool(null)}>
+          {DEMO ? (
+            <p className="p-4 text-sm"><a className="underline" href={withBase("/admin/editor")}>All pages</a></p>
+          ) : (
+            <PagesPanel pages={pages} current={page ? `${page.r}:${page.id}` : null} demo={DEMO} onPage={(p) => router.push(p)} onRecord={(rec) => setPanel({ k: "record", rec })} />
+          )}
+        </ToolPanel>
+      )}
+      {tool?.k === "regions" && page && (
+        <ToolPanel title="Texts in all regions" top={top} wide onClose={() => { setTool(null); setCompare(null); }}>
+          <RegionsTable
+            load={loadRegionTexts}
+            save={async (col, f, value) => {
+              try {
+                const res = await api.saveField({ r: col.r, id: col.id, f }, "text", value, col.current ? version.current : undefined);
+                if ("conflict" in res && res.conflict) {
+                  say(res.conflict, true);
+                  return false;
+                }
+                if (col.current && "version" in res && res.version) version.current = res.version;
+                say(`Saved in ${col.label}. Not live yet`);
+                if (col.current) await afterChange();
+                return true;
+              } catch (e) {
+                say(`Not saved: ${(e as Error).message}`, true);
+                return false;
+              }
+            }}
+            compare={(info?.regions.length ?? 0) > 1}
+            compareLabel={compare?.label ?? null}
+            onCompare={onCompare}
+          />
+        </ToolPanel>
+      )}
+      {panel?.k === "record" && (
+        <SidePanel title={panel.rec.item.title} top={top} onClose={() => setPanel(null)}>
+          <RecordPanel key={`${panel.rec.item.r}:${panel.rec.item.id}`} rec={panel.rec} onSaved={(m) => say(m)} onError={(m) => say(m, true)} />
         </SidePanel>
       )}
       {panel?.k === "tabs" && (
@@ -829,21 +949,22 @@ export default function EditorOverlay() {
           />
         </SidePanel>
       )}
-      {panel?.k === "comments" && page && (
-        <SidePanel title="Comments" top={top} onClose={() => { setPanel(null); setPicking(false); }}>
+      {tool?.k === "comments" && page && (
+        <ToolPanel title="Comments" top={top} onClose={() => { setTool(null); setPicking(false); }}>
+          <div className="p-4">
           <CommentsPanel
             items={comments}
             sectionName={(a) => sectionById.get(a)?.name}
-            focus={panel.focus}
-            composeFor={panel.compose}
+            focus={tool.focus}
+            composeFor={tool.compose}
             picking={picking}
             busy={busy}
             onPick={() => setPicking((p) => !p)}
-            onCompose={(a) => setPanel({ ...panel, compose: a ?? "" })}
+            onCompose={(a) => setTool({ ...tool, compose: a ?? "" })}
             onAdd={async (anchor, text, parentId) => {
               const r = await commentsLive.addComment(page, anchor, text, parentId);
               if ("error" in r) { say(r.error, true); return false; }
-              if (!parentId) setPanel({ ...panel, compose: null, focus: anchor });
+              if (!parentId) setTool({ ...tool, compose: null, focus: anchor });
               await loadComments();
               return true;
             }}
@@ -858,12 +979,15 @@ export default function EditorOverlay() {
               await loadComments();
             }}
           />
-        </SidePanel>
+          </div>
+        </ToolPanel>
       )}
-      {panel?.k === "history" && (
-        <SidePanel title="History" top={top} onClose={() => setPanel(null)}>
-          <HistoryList items={panel.items} busy={busy} onRestore={restore} />
-        </SidePanel>
+      {tool?.k === "history" && (
+        <ToolPanel title="History" top={top} onClose={() => setTool(null)}>
+          <div className="p-4">
+            <HistoryList items={tool.items} busy={busy} onRestore={restore} />
+          </div>
+        </ToolPanel>
       )}
       {picker && (
         <MediaPicker

@@ -367,6 +367,8 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
   pageHistory: async () => ({ error: "History needs the server; not in the demo" }),
   restorePage: async () => ({ error: "History needs the server; not in the demo" }),
   compareWith: async () => ({ error: "Comparing regions needs the server; not in the demo" }),
+  regionTexts: async () => ({ error: "Texts in all regions need the server; not in the demo" }),
+  editorPageList: async () => ({ error: "The list of pages needs the server; open Pages in the demo menu" }),
   currentPageVersion: async () => ({ version: "demo" }),
   createPage: async () => ({ error: "New pages need the server; the demo has none" }),
 };

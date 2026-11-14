@@ -9,7 +9,7 @@ const PAGE = "/apac/therapies/mvo";
 const pageMarks = `Array.from(document.querySelectorAll("[data-rm-b]")).filter((e) => !JSON.parse(e.getAttribute("data-rm-b") || "{}").l)`;
 const ids = (page: Page) => page.evaluate((q) => (eval(q) as Element[]).map((e) => JSON.parse(e.getAttribute("data-rm-b") || "{}").id as string), pageMarks);
 
-/** Opens the page in the editor; `layout` turns on Tools → Arrange sections (the editor opens on the plain page). */
+/** Opens the page in the editor; `layout` opens the Sections tool (section frames; the editor opens on the plain page). */
 async function open(page: Page, path = PAGE, { layout = true } = {}) {
   await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(path)}`);
   await page.waitForURL((u) => u.pathname === path);
@@ -18,9 +18,12 @@ async function open(page: Page, path = PAGE, { layout = true } = {}) {
 }
 
 async function arrange(page: Page) {
-  await page.getByRole("button", { name: "Tools ▾" }).click();
-  await page.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
+  await page.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Sections" }).click();
+  await expect(page.getByRole("complementary", { name: "Sections" })).toBeVisible();
 }
+
+/** A point at the right edge of the page (the left side has the tool rail and its panel). */
+const rightEdge = (page: Page) => (page.viewportSize()?.width ?? 1280) - 12;
 
 /** Click an empty spot of the n-th section (left gutter): selects it. */
 async function selectSection(page: Page, n: number) {
@@ -33,7 +36,7 @@ async function selectSection(page: Page, n: number) {
     const b = r.getBoundingClientRect();
     return b.top + Math.min(b.height / 2, 120);
   }, [n, pageMarks] as const);
-  await page.mouse.click(8, y);
+  await page.mouse.click(rightEdge(page), y);
   await expect(page.locator("#rm-section-toolbar")).toBeVisible();
 }
 
@@ -251,17 +254,17 @@ test("comments: on a section, a pin on the page, reply, resolve; listed on the a
   sql("delete from comments");
   await login(page);
   await open(page);
-  await page.getByRole("button", { name: /^Comment/ }).click();
+  await page.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Comments" }).click();
   const panel = page.getByRole("complementary", { name: "Comments" });
   await expect(panel).toContainText("No open comments on this page.");
   await panel.getByRole("button", { name: "Comment on a section" }).click();
-  await page.mouse.click(8, 300); // the first section
+  await page.mouse.click(rightEdge(page), 300); // the first section
   await expect(panel).toContainText(/Comment on Hero/);
   await panel.getByRole("textbox", { name: "Comment" }).fill("Check the claim with regulatory");
   await panel.getByRole("button", { name: "Comment", exact: true }).click();
   await expect(panel.locator("[data-comment]")).toContainText("Check the claim with regulatory");
   await expect(page.getByRole("button", { name: /^1 comment on Hero/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Comment (1)" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Comments" })).toContainText("1");
   // nothing on the page changed: no unpublished changes
   await expect(page.getByRole("status")).toHaveText("Live");
 
@@ -296,7 +299,7 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
   await publishFromEditor(page);
 
-  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("button", { name: "History", exact: true }).click();
   const panel = page.getByRole("complementary", { name: "History" });
   await expect(panel).toContainText("Changed title in Hero");
   // the version before the change = the second "Published" entry
@@ -311,7 +314,7 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   await page.keyboard.type("Restore same test");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
-  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("button", { name: "History", exact: true }).click();
   await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).first().getByRole("button", { name: "Restore this version" }).click();
   await expect(page.getByRole("status")).toHaveText(/nothing to publish/);
   await expect(page.locator('#rm-editor-ui button:has-text("Publish")')).toBeDisabled();
@@ -321,7 +324,7 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
   sql(`update solutions set status='draft' where id=${id}`);
   await open(page);
   await expect(page.getByRole("status")).toHaveText("Draft — not live yet");
-  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("button", { name: "History", exact: true }).click();
   await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
   await expect(page.getByRole("status")).toHaveText(/Version restored/);
   expect(sql(`select status from solutions where id=${id}`)).toBe("draft");
@@ -331,10 +334,10 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
 test("compare with another region and switch region", async ({ page }) => {
   await login(page);
   await open(page);
-  await page.getByRole("button", { name: "Tools ▾" }).click();
+  await page.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Regions" }).click();
   await page.selectOption('select[aria-label="Compare with"]', "ous");
   await expect(page.getByRole("status")).toHaveText(/differ from Europe & Middle East|Same as Europe & Middle East/);
-  await page.selectOption('select[aria-label="Region"]', "ous");
+  await page.getByRole("group", { name: "Region" }).getByRole("button", { name: /Europe & Middle East/ }).click();
   await page.waitForURL(/\/ous\/therapies\/mvo/);
   await expect(page.getByRole("status")).toHaveText(/Live/);
 });
@@ -451,4 +454,67 @@ test("content mode (default): the page as visitors see it; hide a section, show 
   await publishFromEditor(page);
   await anon.goto(PAGE);
   await expect(anon.locator("h1")).toContainText(title);
+});
+
+test("page picker in the top bar; one text edited in another region from the regions table", async ({ page }) => {
+  await login(page);
+  await open(page, PAGE, { layout: false });
+  // choose a page
+  await page.getByRole("button", { name: "Choose a page" }).click();
+  await page.getByRole("textbox", { name: "Search pages" }).fill("Aneurysm");
+  await page.getByRole("button", { name: /Aneurysm.*Asia & Pacific/ }).first().click();
+  await page.waitForURL(/\/apac\/therapies\/aneurysm/);
+  await expect(page.getByRole("button", { name: "Choose a page" })).toContainText("Aneurysm");
+
+  // texts of this page in every region; a cell saves into that region's draft
+  await page.goto(PAGE);
+  await expect(page.getByRole("status")).toHaveText(/Live|Draft/);
+  await page.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Regions" }).click();
+  const table = page.getByRole("complementary", { name: "Texts in all regions" });
+  await expect(table.locator("thead")).toContainText("Europe & Middle East");
+  const row = table.locator("tbody tr").filter({ has: page.locator("td", { hasText: /^Title$/ }) }).first();
+  await row.locator("td").nth(2).getByRole("button").click();
+  const cell = row.locator("td").nth(2).locator("textarea");
+  await cell.fill("Region table test title");
+  await cell.press("Enter");
+  await expect(page.getByRole("status")).toHaveText("Saved in Europe & Middle East. Not live yet");
+  const ous = sql("select id from solutions where region='ous' and slug='mvo'");
+  expect(sql(`select count(*) from drafts where resource='solutions' and record_id=${ous} and data::text like '%Region table test title%'`)).toBe("1");
+  await expect(table.locator("thead")).toContainText("unpublished changes");
+  // this page is not touched
+  await expect(page.getByRole("status")).not.toHaveText(/Asia/);
+  sql(`delete from drafts where resource='solutions' and record_id=${ous}`);
+});
+
+test("Pages and Collections: a record with its own page opens in the editor, one without opens its fields", async ({ page }) => {
+  await login(page);
+  await open(page, PAGE, { layout: false });
+  const rail = page.getByRole("navigation", { name: "Editor tools" });
+  await rail.getByRole("button", { name: "Pages" }).click();
+  const panel = page.getByRole("complementary", { name: "Pages" });
+  await panel.getByRole("tab", { name: "Collections" }).click();
+  await expect(panel).toContainText("On News & Events; each event has its own page");
+  // an event has a page: it opens in the editor
+  await panel.getByRole("button", { name: /^Events/ }).click();
+  await panel.getByRole("button", { name: /Busan/ }).first().click();
+  await page.waitForURL(/\/events\//);
+  await expect(page.getByRole("status")).toHaveText(/Live|Draft|No unpublished/);
+
+  // the Pages tool stays open on the new page, where it was; a webinar has no page: its fields open on the right
+  await panel.getByRole("button", { name: "← Collections" }).click();
+  await panel.getByRole("button", { name: /^Webinars/ }).click();
+  await expect(panel.getByRole("textbox", { name: "Search webinars" })).toBeVisible();
+  const first = panel.locator("ul li button").first();
+  const title = (await first.locator("span span").first().innerText()).trim();
+  await first.click();
+  const rec = page.getByRole("complementary", { name: title });
+  const field = rec.getByLabel(/^Title/);
+  await expect(field).toHaveValue(title);
+  await field.fill(`${title} (E2E)`);
+  await field.blur();
+  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+  await expect(rec).toContainText("unpublished changes");
+  await expect(rec.getByRole("button", { name: "Publish" })).toBeVisible();
+  const id = sql(`select id from webinars where title = '${title.replace(/'/g, "''")}'`);
+  sql(`delete from drafts where resource='webinars' and record_id=${id}`);
 });

@@ -14,7 +14,8 @@ import { and, eq, getTableColumns, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { isRegion } from "@/lib/regions";
 import { getEditable, getRevision, listRevisions, restoreRevision, saveWithWorkflow } from "./workflow";
-import { SITE_PAGE_TYPE } from "./pages-index";
+import { SITE_PAGE_TYPE, listEditorPages } from "./pages-index";
+import { regionTextRows, type RegionRow } from "@/blocks/region-table";
 import { checkBase, ConflictError, knownBlocks, pageResource, pageVersion, regionalSiblings, requireEditor, type PageRef } from "./page-core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -213,6 +214,46 @@ export async function restorePage(ref: PageRef, revisionId: number, base?: strin
     const after = await getEditable(res, ref.id);
     const same = after?.live.status === "published" && !after.draft?.data;
     return { version: await pageVersion(res, ref.id), undo: (before?.row.blocks as StoredBlock[] | null) ?? [], same };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+/** Page picker and the Pages tool of the editor: every page it can open (docs/screens/on-page-editor.md). */
+export type PickPage = { r: string; id: number; title: string; type: string; region: Region | null; path: string; status: "live" | "changed" | "draft"; siteKey?: string };
+export async function editorPageList(): Promise<{ pages: PickPage[] } | Fail> {
+  try {
+    await requireEditor();
+    const cards = await listEditorPages();
+    return { pages: cards.map(({ r, id, title, type, region, path, status, siteKey }) => ({ r, id, title, type, region, path, status, ...(siteKey ? { siteKey } : {}) })) };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+/** «Texts in all regions»: this page's texts in every region that has it, current region first (on-page-editor.md). */
+export type RegionColumn = { region: Region; label: string; r: string; id: number; path: string | null; current: boolean; pending: boolean };
+export async function regionTexts(ref: PageRef): Promise<{ regions: RegionColumn[]; rows: RegionRow[] } | Fail> {
+  try {
+    await requireEditor();
+    const res = pageResource(ref.r);
+    const e = await getEditable(res, ref.id);
+    if (!e) return { error: "Page not found" };
+    const region = (e.row.region ?? null) as Region | null;
+    if (!region) return { error: "This page is the same in every region" };
+    const siblings = await regionalSiblings(res, e.live);
+    const copies = [{ region, id: ref.id, path: res.previewUrl?.(e.live) ?? null, e }];
+    for (const s of siblings) {
+      const se = await getEditable(res, s.id);
+      if (se) copies.push({ region: s.region, id: s.id, path: s.path, e: se });
+    }
+    const order = (x: Region) => REGION_CHOICES.findIndex((c) => c.region === x);
+    const [first, ...rest] = copies;
+    const cols = [first, ...rest.sort((a, b) => order(a.region) - order(b.region))];
+    return {
+      regions: cols.map((c, k) => ({ region: c.region, label: label(c.region), r: ref.r, id: c.id, path: c.path, current: k === 0, pending: !!c.e.draft?.data })),
+      rows: regionTextRows(cols.map((c) => (c.e.row.blocks as StoredBlock[] | null) ?? [])),
+    };
   } catch (err) {
     return fail(err);
   }

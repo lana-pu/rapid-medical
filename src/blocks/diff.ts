@@ -134,14 +134,21 @@ export type RegionDiff = "same" | "different" | "onlyHere";
  * subsequence); a matched section is «different» when its layout or content differs.
  */
 export function compareBlocks(mine: StoredBlock[], theirs: StoredBlock[]): RegionDiff[] {
+  const out: RegionDiff[] = new Array<RegionDiff>(mine.length).fill("onlyHere");
+  for (const [i, j] of matchSections(mine, theirs)) out[i] = mine[i].variant === theirs[j].variant && same(mine[i].data, theirs[j].data) ? "same" : "different";
+  return out;
+}
+
+/** Pairs [i in mine, j in theirs] of the same section in two regions' copies: by type, in order (LCS). */
+export function matchSections(mine: { type: string }[], theirs: { type: string }[]): [number, number][] {
   const n = mine.length;
   const m = theirs.length;
   const dp: number[][] = Array.from({ length: n + 1 }, () => new Array<number>(m + 1).fill(0));
   for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = mine[i].type === theirs[j].type ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
-  const out: RegionDiff[] = new Array<RegionDiff>(n).fill("onlyHere");
+  const out: [number, number][] = [];
   for (let i = 0, j = 0; i < n && j < m; ) {
     if (mine[i].type === theirs[j].type) {
-      out[i] = mine[i].variant === theirs[j].variant && same(mine[i].data, theirs[j].data) ? "same" : "different";
+      out.push([i, j]);
       i++;
       j++;
     } else if (dp[i + 1][j] >= dp[i][j + 1]) i++;

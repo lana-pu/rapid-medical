@@ -174,10 +174,9 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     // on the page: no layout choice for a section
     await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(ed.getByRole("status")).toHaveText(/Live|Draft/);
-    await ed.getByRole("button", { name: "Tools ▾" }).click();
-    await ed.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
+    await ed.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Sections" }).click();
     await ed.evaluate(() => window.scrollTo(0, 0));
-    await ed.mouse.click(8, 300);
+    await ed.mouse.click((ed.viewportSize()?.width ?? 1280) - 12, 300);
     await expect(ed.locator("#rm-section-toolbar")).toBeVisible();
     await expect(ed.locator('#rm-section-toolbar select[aria-label="Layout"]')).toHaveCount(0);
     // …but the menu's labels are everyone's, on the page
@@ -197,10 +196,9 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await expect(de.locator("main").getByRole("link", { name: "Menu and footer" })).toBeVisible();
     await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
-    await de.getByRole("button", { name: "Tools ▾" }).click();
-    await de.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
+    await de.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Sections" }).click();
     await de.evaluate(() => window.scrollTo(0, 0));
-    await de.mouse.click(8, 300);
+    await de.mouse.click((de.viewportSize()?.width ?? 1280) - 12, 300);
     await expect(de.locator('#rm-section-toolbar select[aria-label="Layout"]')).toBeVisible();
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);

@@ -5,6 +5,8 @@ import { RichText } from "@/components/admin/RichText";
 import type { PageInfo, SectionInfo, HistoryItem } from "@/admin/page-editor";
 import type { Preset } from "@/blocks/templates";
 import { withBase } from "@/lib/demo";
+import { SECTIONS, sectionForResource } from "@/admin/site-sections";
+import { REGION_CHOICES } from "@/lib/regions";
 
 /**
  * Presentational parts of the page editor (docs/screens/on-page-editor.md): top bar, section toolbar,
@@ -15,7 +17,6 @@ import { withBase } from "@/lib/demo";
 export const BAR_H = 48;
 
 const btn = "rounded px-2.5 py-1.5 text-sm hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40";
-const select = "rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm text-white";
 
 export function statusText(info: PageInfo | null, legacyPending: number): string {
   if (!info) return legacyPending ? `${legacyPending} unpublished change${legacyPending > 1 ? "s" : ""} on this page` : "No unpublished changes";
@@ -23,6 +24,9 @@ export function statusText(info: PageInfo | null, legacyPending: number): string
   if (info.status === "changed") return "Live, with unpublished changes";
   return legacyPending ? "Live, with unpublished changes" : "Live";
 }
+
+/** Pages the editor can open (page picker and the Pages tool). */
+export type PickPage = { r: string; id: number; title: string; type: string; region: string | null; path: string; status: "live" | "changed" | "draft"; siteKey?: string };
 
 export function TopBar(props: {
   info: PageInfo | null;
@@ -33,91 +37,72 @@ export function TopBar(props: {
   canRedo?: boolean;
   onRedo?: () => void;
   hasChanges: boolean;
-  compareLabel: string | null;
-  pagesHref: string;
+  backHref: string;
   exitHref: string | null;
   demo: boolean;
   onUndo: () => void;
-  onHistory: () => void;
-  /** open comment threads on this page (null: comments are not available here) */
-  comments?: number | null;
-  onComments?: () => void;
-  onPreview: () => void;
   onPublish: () => void;
-  onCompare: (region: string) => void;
   onRegion: (path: string) => void;
   onExit?: () => void;
-  /** Tools → Arrange sections (layout mode) */
-  layout?: boolean;
-  onLayout?: (on: boolean) => void;
+  /** the page picker's content (Pages / Collections); `close` hides the picker */
+  picker: (close: () => void) => ReactNode;
+  loadPages: () => void;
 }) {
   const { info } = props;
   const [menu, setMenu] = useState(false);
-  const [tools, setTools] = useState(false);
-  const toolsRef = useRef<HTMLDivElement>(null);
-  // the Tools menu closes on Escape and on a click anywhere else
+  const [pick, setPick] = useState(false);
+  const pickRef = useRef<HTMLDivElement>(null);
+  // the page picker closes on Escape and on a click anywhere else
   useEffect(() => {
-    if (!tools) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setTools(false);
-    const onDown = (e: MouseEvent) => !toolsRef.current?.contains(e.target as Node) && setTools(false);
+    if (!pick) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setPick(false);
+    const onDown = (e: MouseEvent) => !pickRef.current?.contains(e.target as Node) && setPick(false);
     window.addEventListener("keydown", onKey);
     document.addEventListener("mousedown", onDown);
     return () => {
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onDown);
     };
-  }, [tools]);
-  const others = info?.regions.filter((r) => !r.current && r.path) ?? [];
+  }, [pick]);
   return (
     <div className="fixed inset-x-0 z-[1000] border-b border-neutral-800 bg-neutral-950 text-white shadow-lg" style={{ top: props.demo ? 24 : 0 }}>
-      <div className="flex flex-wrap items-center gap-2 px-3 text-sm md:h-12 md:flex-nowrap" style={{ minHeight: BAR_H }}>
-        <a href={props.pagesHref} className={btn}>← Pages</a>
-        <div className="order-last w-full truncate pb-1 md:order-none md:w-auto md:max-w-[28ch] md:pb-0">
-          <span className="font-semibold">{props.title}</span>
-          {info && <span className="text-neutral-400"> · {info.type}</span>}
+      <div className="flex flex-wrap items-center gap-2 px-2 text-sm md:h-12 md:flex-nowrap" style={{ minHeight: BAR_H }}>
+        <a href={props.backHref} className={btn} aria-label="Back to the admin" title="Back to the admin">←</a>
+        {/* page picker (on-page-editor.md → «Устройство экрана») */}
+        <div className="relative min-w-0" ref={pickRef}>
+          <button type="button" aria-label="Choose a page" aria-expanded={pick} onClick={() => { setPick((x) => !x); props.loadPages(); }} className={`${btn} flex max-w-[34ch] items-center gap-1.5`}>
+            <span aria-hidden>📄</span>
+            <span className="truncate font-semibold">{props.title}</span>
+            {info && <span className="hidden truncate text-neutral-400 lg:inline">· {info.type}</span>}
+            <span aria-hidden className="text-neutral-400">▾</span>
+          </button>
+          {pick && (
+            <div className="absolute left-0 top-full mt-1 w-[26rem] max-w-[calc(100vw-1rem)] rounded border border-neutral-700 bg-white text-neutral-900 shadow-2xl">
+              {props.picker(() => setPick(false))}
+            </div>
+          )}
         </div>
         {info && info.regions.length > 0 && (
-          <select aria-label="Region" className={select} value={info.regions.find((r) => r.current)?.region} onChange={(e) => { const r = info.regions.find((x) => x.region === e.target.value); if (r?.path) props.onRegion(r.path); }}>
+          <div role="group" aria-label="Region" className="flex overflow-hidden rounded border border-neutral-700">
             {info.regions.map((r) => (
-              <option key={r.region} value={r.region} disabled={!r.path}>{r.label}{r.path ? "" : " — no version"}</option>
+              <button
+                key={r.region}
+                type="button"
+                aria-pressed={r.current}
+                disabled={!r.path && !r.current}
+                title={r.path || r.current ? `${r.label} version of this page` : `No ${r.label} version of this page`}
+                onClick={() => !r.current && r.path && props.onRegion(r.path)}
+                className={`px-2.5 py-1 text-xs ${r.current ? "bg-white font-semibold text-black" : "hover:bg-neutral-800 disabled:cursor-not-allowed disabled:text-neutral-500"}`}
+              >
+                {r.label}
+                {!r.path && !r.current && <span className="ml-1 text-[10px]">· no version</span>}
+              </button>
             ))}
-          </select>
+          </div>
         )}
         <span className="min-w-0 flex-1 truncate text-xs text-neutral-300" role="status" aria-live="polite">{props.status}</span>
         <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change (Ctrl/⌘+Z)">↶ Undo</button>
         <button type="button" className={btn} disabled={!props.canRedo || props.busy} onClick={props.onRedo} title="Redo (Ctrl/⌘+Shift+Z)">↷ Redo</button>
-        {info && props.comments != null && <button type="button" className={btn} onClick={props.onComments}>Comment{props.comments ? ` (${props.comments})` : ""}</button>}
-        {info && !props.demo && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
-        {/* everything beyond texts and pictures (on-page-editor.md → «Два режима») */}
-        <div className="relative" ref={toolsRef}>
-          <button type="button" className={`${btn} ${props.layout || props.compareLabel ? "bg-neutral-800" : ""}`} aria-expanded={tools} onClick={() => setTools((t) => !t)}>
-            Tools ▾
-          </button>
-          {tools && (
-            <div role="menu" aria-label="Tools" className="absolute right-0 top-full mt-1 w-72 space-y-1 rounded border border-neutral-700 bg-neutral-900 p-2 text-sm shadow-xl">
-              {info && props.onLayout && (
-                <button type="button" role="menuitemcheckbox" aria-checked={!!props.layout} onClick={() => { props.onLayout!(!props.layout); setTools(false); }} className="flex w-full items-start gap-2 rounded px-2 py-1.5 text-left hover:bg-neutral-800">
-                  <span className="w-4">{props.layout ? "✓" : ""}</span>
-                  <span>Arrange sections<span className="block text-xs text-neutral-400">Add, move, copy, delete sections and tabs</span></span>
-                </button>
-              )}
-              {others.length > 0 && (
-                <label className="flex items-center gap-2 px-2 py-1.5">
-                  <span className="w-4" />
-                  <select aria-label="Compare with" className={select} value="" onChange={(e) => { props.onCompare(e.target.value); setTools(false); }}>
-                    <option value="">{props.compareLabel ? `Comparing with ${props.compareLabel}` : "Compare with…"}</option>
-                    {others.map((r) => <option key={r.region} value={r.region}>{r.label}</option>)}
-                    {props.compareLabel && <option value="off">Stop comparing</option>}
-                  </select>
-                </label>
-              )}
-              <button type="button" role="menuitem" onClick={() => { props.onPreview(); setTools(false); }} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-neutral-800">
-                <span className="w-4" />
-                Preview
-              </button>
-            </div>
-          )}
-        </div>
         <button type="button" disabled={!props.hasChanges || props.busy} onClick={props.onPublish} className="rounded bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 disabled:bg-neutral-700 disabled:text-neutral-400">
           Publish
         </button>
@@ -125,7 +110,6 @@ export function TopBar(props: {
           <button type="button" className={btn} aria-label="More" onClick={() => setMenu((m) => !m)}>⋯</button>
           {menu && (
             <div className="absolute right-0 top-full mt-1 w-48 overflow-hidden rounded border border-neutral-700 bg-neutral-900 text-sm shadow-xl" onMouseLeave={() => setMenu(false)}>
-              {info && <a href={info.adminHref} className="block px-3 py-2 hover:bg-neutral-800">Page settings (SEO, address)</a>}
               {props.exitHref ? <a href={props.exitHref} className="block px-3 py-2 hover:bg-neutral-800">Exit editor</a> : <button type="button" onClick={props.onExit} className="block w-full px-3 py-2 text-left hover:bg-neutral-800">View as visitor</button>}
             </div>
           )}
@@ -133,6 +117,168 @@ export function TopBar(props: {
       </div>
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tool rail (left) and its panels — like Webflow's left bar          */
+/* ------------------------------------------------------------------ */
+
+export const RAIL_W = 48;
+/** width of a rail tool's panel (w-80) */
+export const TOOL_W = 320;
+export type ToolKey = "add" | "sections" | "pages" | "history" | "comments" | "regions";
+
+export function ToolRail(props: {
+  top: number;
+  active: ToolKey | null;
+  /** tools that need a page stored as sections (not catalogue pages) */
+  hasPage: boolean;
+  demo: boolean;
+  comments: number | null;
+  settingsHref: string | null;
+  onTool: (t: ToolKey) => void;
+  onPreview: () => void;
+}) {
+  const item = (key: ToolKey, icon: string, label: string, enabled = true, badge?: number | null) => (
+    <button
+      key={key}
+      type="button"
+      aria-label={label}
+      aria-pressed={props.active === key}
+      title={enabled ? label : `${label} — not for this page`}
+      disabled={!enabled}
+      onClick={() => props.onTool(key)}
+      className={`relative flex h-10 w-10 items-center justify-center rounded text-lg ${props.active === key ? "bg-white text-black" : "text-neutral-200 hover:bg-neutral-800"} disabled:cursor-not-allowed disabled:opacity-30`}
+    >
+      <span aria-hidden>{icon}</span>
+      {!!badge && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-amber-400 px-1 text-[10px] font-bold leading-4 text-black">{badge}</span>}
+    </button>
+  );
+  return (
+    <nav aria-label="Editor tools" className="fixed bottom-0 left-0 z-[1000] flex flex-col items-center gap-1 border-r border-neutral-800 bg-neutral-950 py-2" style={{ top: props.top, width: RAIL_W }}>
+      {item("add", "＋", "Add section", props.hasPage)}
+      {item("sections", "☰", "Sections", props.hasPage)}
+      {item("pages", "📄", "Pages")}
+      {item("history", "🕘", "History", props.hasPage && !props.demo)}
+      {item("comments", "💬", "Comments", props.hasPage && !props.demo, props.comments)}
+      {item("regions", "⇄", "Regions", props.hasPage && !props.demo)}
+      <span className="flex-1" />
+      <button type="button" aria-label="Preview" title="Preview — as visitors will see it" onClick={props.onPreview} className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>👁</span></button>
+      {props.settingsHref && <a href={props.settingsHref} aria-label="Page settings" title="Page settings (SEO, address)" className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>⚙</span></a>}
+    </nav>
+  );
+}
+
+/** The panel of a rail tool, next to the rail. */
+export function ToolPanel({ title, children, onClose, top, wide = false }: { title: string; children: ReactNode; onClose: () => void; top: number; wide?: boolean }) {
+  return (
+    <aside className={`fixed bottom-0 z-[1003] flex flex-col border-r border-neutral-200 bg-white text-neutral-900 shadow-2xl ${wide ? "right-0" : "w-80"}`} style={{ top, left: RAIL_W }} aria-label={title}>
+      <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+        <h2 className="text-base font-semibold">{title}</h2>
+        <button type="button" onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Close">✕</button>
+      </div>
+      <div className="flex-1 overflow-auto">{children}</div>
+    </aside>
+  );
+}
+
+/** Pages to open, by site section, with search (page picker and the Pages tool). */
+export function PagesList({ pages, current, onPick, maxHeight }: { pages: PickPage[] | null; current: string | null; onPick: (path: string) => void; maxHeight?: string }) {
+  const [q, setQ] = useState("");
+  if (!pages) return <p className="p-4 text-sm text-neutral-500">Loading…</p>;
+  const needle = q.trim().toLowerCase();
+  const shown = pages.filter((p) => !needle || `${p.title} ${p.type} ${p.path}`.toLowerCase().includes(needle));
+  const groups = SECTIONS.map((sec) => ({ sec, items: shown.filter((p) => sectionForResource(p.r, p.siteKey)?.key === sec.key) })).filter((g) => g.items.length);
+  const rest = shown.filter((p) => !sectionForResource(p.r, p.siteKey));
+  return (
+    <div>
+      <div className="border-b border-neutral-200 p-2">
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pages" aria-label="Search pages" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
+      </div>
+      <div className="overflow-auto p-1" style={maxHeight ? { maxHeight } : undefined}>
+        {[...groups.map((g) => ({ label: g.sec.title, items: g.items })), ...(rest.length ? [{ label: "Other", items: rest }] : [])].map((g) => (
+          <div key={g.label} className="py-1">
+            <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{g.label}</div>
+            {g.items.map((p) => (
+              <button key={`${p.r}:${p.id}`} type="button" onClick={() => onPick(p.path)} aria-current={current === `${p.r}:${p.id}` ? "page" : undefined} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-neutral-100 ${current === `${p.r}:${p.id}` ? "bg-neutral-100 font-semibold" : ""}`}>
+                <span className="min-w-0 flex-1 truncate">{p.title}</span>
+                {p.region && <span className="shrink-0 text-xs text-neutral-500">{REGION_LABEL[p.region] ?? p.region}</span>}
+                {p.status !== "live" && <span className="shrink-0 rounded bg-amber-100 px-1 text-[10px] text-amber-900">{p.status === "draft" ? "draft" : "changes"}</span>}
+              </button>
+            ))}
+          </div>
+        ))}
+        {!shown.length && <p className="p-3 text-sm text-neutral-500">No pages match.</p>}
+      </div>
+    </div>
+  );
+}
+const REGION_LABEL: Record<string, string> = Object.fromEntries(REGION_CHOICES.map((c) => [c.region, c.label]));
+
+/** Sections of the page, like Webflow's Navigator: select, move, hide, copy, delete (on-page-editor.md). */
+export function SectionsList(props: {
+  sections: SectionInfo[];
+  selected: string | null;
+  busy: boolean;
+  canDesign: boolean;
+  onSelect: (id: string) => void;
+  onMove: (s: SectionInfo, d: -1 | 1) => void;
+  onHide: (s: SectionInfo) => void;
+  onCopy: (s: SectionInfo) => void;
+  onRemove: (s: SectionInfo) => void;
+  onVariant: (s: SectionInfo, v: string) => void;
+  onTabs: (s: SectionInfo) => void;
+}) {
+  const t = "rounded px-1.5 py-0.5 text-xs text-neutral-600 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-30";
+  const listOf = (l: string) => props.sections.filter((s) => s.list === l);
+  const row = (s: SectionInfo, depth: number) => {
+    const list = listOf(s.list);
+    const last = s.at === list.length - 1 || !!list[s.at + 1]?.pinned;
+    // sections inside this block's tabs: lists «{id}/{tab}» and groups «{id}/{tab}/{j}»
+    const children = [...new Set(props.sections.filter((x) => x.list.split("/")[0] === s.id).map((x) => x.list))];
+    return (
+      <li key={s.id}>
+        <div className={`group flex items-center gap-1 rounded px-2 py-1 ${props.selected === s.id ? "bg-blue-50 ring-1 ring-blue-500" : "hover:bg-neutral-50"}`} style={{ paddingLeft: 8 + depth * 14 }}>
+          <button type="button" onClick={() => props.onSelect(s.id)} className={`min-w-0 flex-1 truncate text-left text-sm ${s.hidden ? "text-neutral-400 line-through" : ""}`} title={s.name}>
+            {s.name}
+          </button>
+          {s.hidden && <span className="text-[10px] text-neutral-500">hidden</span>}
+          <span className="flex shrink-0 items-center opacity-60 group-hover:opacity-100">
+            <button type="button" className={t} disabled={props.busy || s.pinned || s.at === 0} onClick={() => props.onMove(s, -1)} aria-label={`Move ${s.name} up`}>↑</button>
+            <button type="button" className={t} disabled={props.busy || s.pinned || last} onClick={() => props.onMove(s, 1)} aria-label={`Move ${s.name} down`}>↓</button>
+            <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onHide(s)} aria-label={`${s.hidden ? "Show" : "Hide"} ${s.name}`} title={s.hidden ? "Show on the site" : "Hide on the site"}>{s.hidden ? "Show" : "Hide"}</button>
+            <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onCopy(s)} aria-label={`Copy ${s.name}`}>Copy</button>
+            <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onRemove(s)} aria-label={`Delete ${s.name}`}>✕</button>
+          </span>
+        </div>
+        {props.selected === s.id && (props.canDesign && s.variants.length > 1 || s.tabs) && (
+          <div className="flex items-center gap-2 px-2 pb-1 text-xs" style={{ paddingLeft: 8 + depth * 14 }}>
+            {props.canDesign && s.variants.length > 1 && (
+              <select aria-label="Layout" className="rounded border border-neutral-300 px-1 py-0.5" value={s.variant} disabled={props.busy} onChange={(e) => props.onVariant(s, e.target.value)}>
+                {s.variants.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+              </select>
+            )}
+            {s.tabs && <button type="button" className="underline" onClick={() => props.onTabs(s)}>Tabs…</button>}
+          </div>
+        )}
+        {children.length > 0 && (
+          <ul>
+            {children.map((l) => {
+              const [, tab, group] = l.split("/");
+              const head = group === undefined ? `Tab “${s.tabs?.[Number(tab)]?.label ?? Number(tab) + 1}”` : null;
+              return [
+                head && <li key={`h-${l}`} className="px-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400" style={{ paddingLeft: 8 + (depth + 1) * 14 }}>{head}</li>,
+                ...listOf(l).map((c) => row(c, depth + (group === undefined ? 1 : 2))),
+              ];
+            })}
+          </ul>
+        )}
+      </li>
+    );
+  };
+  const top = listOf("");
+  if (!top.length) return <p className="p-4 text-sm text-neutral-500">This page has no sections yet. Use ＋ Add.</p>;
+  return <ul className="p-2">{top.map((s) => row(s, 0))}</ul>;
 }
 
 export function PreviewBar({ demo, onBack }: { demo: boolean; onBack: () => void }) {
