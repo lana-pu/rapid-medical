@@ -120,8 +120,8 @@ def clean(o):
 MOB = 'https://mobbin.com/'
 
 
-def ref(page, name, source, caption, path):
-    return {'c': 'ref', 'src': f'refs/{page}/{name}.webp', 'source': source, 'caption': caption, 'url': MOB + path}
+def ref(page, name, source, caption, path, ext='webp'):
+    return {'c': 'ref', 'src': f'refs/{page}/{name}.{ext}', 'source': source, 'caption': caption, 'url': path if path.startswith('http') else MOB + path}
 
 
 def ref_screen(sid, title, page_slug, themes):
@@ -919,6 +919,95 @@ def webinars_asis(phone=False):
     return [HEADER, page('US · Webinars', None, ex), FOOTER]
 
 
+# ---------- Evidence ----------
+def evidence_asis(phone=False):
+    ex = None if phone else {
+        0: {'annotation': 'Шапка с видео и абзацем «Clinical & scientific research play a pivotal role…» — первый экран без единого факта.'},
+        1: {'annotation': 'Счётчик «85+ clinical publications» (в базе 102) и карусель featured — до 6.'},
+        2: {'annotation': '«Featured publications» на деле — 3 последние с картинкой; показывает те же статьи, что карусель выше (находка 16).'},
+        3: {'annotation': 'Browse by product — вкладки по продуктам, внутри — строки: месяц, заголовок, ДЛИННЫЙ список авторов · журнал (часто пустой), «Read» / «Download PDF». 57 статей у COMANECI, 28 у TIGERTRIEVER — без поиска, фильтров, типа исследования и вывода. Чтобы понять, о чём статья, нужно уйти в журнал. Клиент на звонке: «в таком виде Evidence никто читать не будет».'}}
+    return [HEADER, page('US · Evidence', None, ex), FOOTER]
+
+
+EV_REFS = [
+    {'title': 'Конкуренты в нейроваскулярке',
+     'ask': 'Лучший — Terumo: у каждого исследования своя страница с цифрами, регион и IFU. Stryker и Medtronic — главные цифры прямо на странице продукта. Penumbra — фильтры, но без цифр.',
+     'refs': [('terumo-study', 'Terumo Neuro · WISE', 'страница исследования: вывод, пациенты / центры / страны, цифры по подгруппам, PDF, IFU по региону', 'https://www.terumoneuro.com/clinical-studies/web-wise-ruptured', 'png'),
+              ('terumo', 'Terumo Neuro · Clinical studies', 'по терапевтическим областям, переключатель региона, счётчики с расшифровкой', 'https://www.terumoneuro.com/clinical-studies', 'png'),
+              ('stryker', 'Stryker · Trevo NXT', '«7,000+ patients…», ключевые исследования с главной цифрой (DAWN 49% vs 13%)', 'https://www.stryker.com/us/en/neurovascular/products/trevo-nxt.html', 'png'),
+              ('medtronic', 'Medtronic · Solitaire', 'три крупные цифры и сноски с определениями (минус: без N)', 'https://www.medtronic.com/us-en/healthcare-professionals/products/neurological/revascularization-stroke/solitaire/clinical-evidence.html', 'png'),
+              ('penumbra', 'Penumbra', 'фильтры по области и показанию; в карточке дизайн, но нет цифр', 'https://www.penumbrainc.com/clinical-evidence/', 'png')]},
+    {'title': 'Смежные области: лучшие образцы',
+     'ask': 'Shockwave — фильтры по нескольким осям и страница исследования. iRhythm — группировка по клиническим вопросам и «вывод сначала».',
+     'refs': [('shockwave', 'Shockwave Medical', 'поиск и фильтры слева (показание, продукт, специальность), «1–9 of 14», сортировка', 'https://shockwavemedical.com/clinical-evidence/', 'png'),
+              ('shockwave-study', 'Shockwave · DISRUPT CAD III', 'дизайн, N / центры, конечные точки, панель цифр, слайды, видео с PI', 'https://shockwavemedical.com/clinical-evidence/disrupt-cad-iii/', 'png'),
+              ('irhythm', 'iRhythm · Clinical library', 'по клиническим вопросам; запись — вывод, главный результат, дизайн, DOI; архив отдельно', 'https://www.irhythmtech.com/providers/evidence', 'png')]},
+    {'title': 'Как выглядят библиотеки публикаций (Mobbin)',
+     'ask': 'Строки, а не карточки; поиск и метки темы; рядом — вывод одной фразой.',
+     'refs': [('anthropic', 'Anthropic', 'поиск, темы чипами, строка: название · тема · дата', 'sites/sections/d5bb06da-6fc9-42c0-a989-28c0b7321375'),
+              ('openai', 'OpenAI Research', 'главное крупно, ниже «Browse» со счётчиком, фильтром и сортировкой', 'sites/sections/fec07fec-5de6-4678-bbb9-07b4f959a610'),
+              ('elicit', 'Elicit', 'рядом со статьёй — краткое резюме, год, цитирования, DOI', 'screens/1be3720e-ed88-4617-8a2d-c967ba92ade9'),
+              ('duolingo', 'Duolingo Research', 'миниатюра ключевого рисунка рядом со статьёй', 'sites/sections/1b97ab59-a471-4768-b849-dc51a162b6b6')]},
+]
+
+
+def badge_row(items):
+    return {'c': 'row', 'gap': 's', 'wrap': True, 'items': [{'c': 'badge', 'text': t, 'tone': tone} for t, tone in items]}
+
+
+def key_study(name, design, n, result, sub, prod):
+    return {'c': 'box', 'border': True, 'pad': 'm', 'gap': 's', 'items': [
+        {'c': 'row', 'justify': 'between', 'items': [T(prod, 'caption'), {'c': 'badge', 'text': design, 'tone': 'info'}]},
+        H(name, 4), T(n, 'small'), {'c': 'stat', 'value': result, 'label': sub}, {'c': 'link', 'text': 'Study page →'}]}
+
+
+def pub_row(year, title, tldr, badges):
+    return {'c': 'grid', 'cols': '80px minmax(0,1fr) 120px', 'gap': 'm', 'items': [
+        T(year, 'small'), S([T(title, 'strong'), T(tldr, 'small'), badge_row(badges)], 'xs'), S([{'c': 'link', 'text': 'PDF'}, {'c': 'link', 'text': 'Journal ↗'}], 'xs')]}
+
+
+def evidence_concept():
+    facts = S([line('Publications', T('102', 'strong')), {'c': 'divider'}, line('Randomized trials', T('1 (DISTALS)', 'small')), {'c': 'divider'},
+               line('Prospective multicenter', T('[N — по разметке]', 'small')), {'c': 'divider'}, line('Patients in our studies', T('[N — сумма по исследованиям]', 'small'))], 's',
+              annotation='Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа считаются из разметки публикаций — не вручную.')
+    head = S([{'c': 'eyebrow', 'text': 'Americas · change'}, H('Evidence', 1), {'c': 'divider'},
+              {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [facts, {'c': 'spacer', 'size': 1},
+               T('Clinical data behind TIGERTRIEVER™, COMANECI™ and DRIVEWIRE™ — key studies first, every publication below.', 'lead')]}], 'l')
+    keys = {'c': 'grid', 'cols': 4, 'gap': 'm', 'align': 'start', 'items': [
+        key_study('DISTALS', 'RCT', '98 randomized · FDA IDE', '86.3% vs 27.7%', 'reperfusion at 24 h without sICH', 'TIGERTRIEVER™ 13 · MeVO'),
+        key_study('SUCCESS', 'Prospective, multicenter', '90 patients · 17 US centers', '95%', 'occlusion at 6 months', 'COMANECI™ · wide-neck aneurysms'),
+        key_study('TIGER', 'Prospective, multicenter', '[N · центры — из публикации]', '[главная цифра]', '[конечная точка]', 'TIGERTRIEVER™ · LVO'),
+        key_study('Meta-analysis', 'Meta-analysis', '[N исследований / пациентов]', '[главная цифра]', 'reperfusion vs self-expanding stent retrievers', 'TIGERTRIEVER™ · LVO')],
+        'annotation': 'Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Цифры — из одобренных материалов (MLR).'}
+    questions = {'c': 'grid', 'cols': 4, 'gap': 'm', 'align': 'start', 'items': [
+        {'c': 'card', 'eyebrow': '32 publications', 'title': 'Large vessel occlusion', 'text': 'TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers'},
+        {'c': 'card', 'eyebrow': '8 publications', 'title': 'Medium & distal vessels', 'text': 'TIGERTRIEVER™ 13 · DISTALS and MeVO experience'},
+        {'c': 'card', 'eyebrow': '57 publications', 'title': 'Aneurysms & vasospasm', 'text': 'COMANECI™ · wide-neck coiling, vasospasm angioplasty'},
+        {'c': 'card', 'eyebrow': '5 publications', 'title': 'Access & navigation', 'text': 'DRIVEWIRE™ · guidewire experience'}],
+        'annotation': 'Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы.'}
+    lib_filters = {'c': 'row', 'gap': 's', 'wrap': True, 'align': 'center', 'items': [
+        I('', v='search', placeholder='Search title, author, journal'), {'c': 'input', 'v': 'select', 'value': 'All products'},
+        {'c': 'input', 'v': 'select', 'value': 'All indications'}, {'c': 'input', 'v': 'select', 'value': 'All study types'}, {'c': 'input', 'v': 'select', 'value': 'Newest first'}]}
+    rows = [pub_row('2026', 'Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers…',
+                    '[Вывод одной фразой — ИИ-черновик, утверждает MLR]', [('Meta-analysis', 'info'), ('LVO', 'neutral'), ('TIGERTRIEVER™', 'neutral')]),
+            {'c': 'divider'},
+            pub_row('2025', 'Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study',
+                    'High rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months.', [('Prospective, multicenter', 'info'), ('N = 90', 'neutral'), ('COMANECI™', 'neutral')]),
+            {'c': 'divider'},
+            pub_row('2025', 'Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion',
+                    '[Вывод одной фразой]', [('Review', 'info'), ('MeVO', 'neutral'), ('TIGERTRIEVER™ 13', 'neutral')]),
+            {'c': 'divider'}]
+    lib = S([{'c': 'row', 'justify': 'between', 'items': [H('All publications', 2), T('Showing 1–20 of 102', 'caption')]}, lib_filters] + rows + [{'c': 'button', 'v': 'secondary', 'text': 'Show more', 'full': True}], 'm',
+            annotation='Уровень 2 — архив: поиск и фильтры по продукту, показанию, типу исследования, сортировка, счётчик (Shockwave). Строка: год · заголовок · вывод одной фразой (Semantic Scholar TLDR) · бейджи: дизайн, N, показание, продукт · PDF / журнал. Авторы — на странице статьи, не в списке. Пресс-релизы из списка уходят в новости (ADR-009: вид материала).')
+    ongoing = S([H('Ongoing studies', 3), T('[Идущие исследования — например, исследование когнитивных исходов тромбэктомии (новость, янв. 2025); список — от клиента]', 'small')], 's',
+                annotation='Текущие исследования — сигнал для инвесторов (WATCHMAN «Active trials»). Только если клиент готов показывать.')
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [head]},
+            {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([H('Key studies', 2), keys], 'm')]},
+            {'c': 'section', 'pad': 'l', 'items': [S([H('Explore by clinical question', 2), questions], 'm')]},
+            {'c': 'section', 'pad': 'l', 'rule': True, 'items': [lib]},
+            {'c': 'section', 'pad': 'm', 'tone': 'surface', 'items': [ongoing]}, FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -950,6 +1039,9 @@ flow = {
         {'title': '6 · About — решение (закрыта 2026-11-14)', 'screens': ['about-new', 'about-new-phone']},
         {'title': '7 · Webinars — как есть', 'screens': ['web-asis', 'web-asis-phone']},
         {'title': '7 · Webinars — примеры из Mobbin', 'screens': ['web-mobbin']},
+        {'title': '8 · Evidence — как есть', 'screens': ['ev-asis', 'ev-asis-phone']},
+        {'title': '8 · Evidence — конкуренты, смежные области, Mobbin', 'screens': ['ev-refs']},
+        {'title': '8 · Evidence — черновик концепции (к обсуждению)', 'screens': ['ev-concept']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1000,6 +1092,10 @@ flow = {
               {'from': 'about-new-phone', 'to': 'web-asis', 'label': 'следующая страница'},
               {'from': 'web-asis', 'to': 'web-asis-phone', 'label': 'на телефоне'},
               {'from': 'web-asis-phone', 'to': 'web-mobbin', 'label': 'как у других'},
+              {'from': 'web-mobbin', 'to': 'ev-asis', 'label': 'следующая страница'},
+              {'from': 'ev-asis', 'to': 'ev-asis-phone', 'label': 'на телефоне'},
+              {'from': 'ev-asis-phone', 'to': 'ev-refs', 'label': 'как у других'},
+              {'from': 'ev-refs', 'to': 'ev-concept', 'label': 'черновик'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1073,6 +1169,10 @@ flow = {
         {'id': 'web-asis', 'title': 'Webinars · as is', 'url': 'rapid-medical.com/us/webinars', 'body': webinars_asis()},
         {'id': 'web-asis-phone', 'title': 'Webinars · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/webinars', 'body': webinars_asis(True)},
         ref_screen('web-mobbin', 'Webinars · examples from Mobbin', 'webinars', WEB_REFS),
+        {'id': 'ev-asis', 'title': 'Evidence · as is', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_asis()},
+        ref_screen('ev-refs', 'Evidence · competitors, adjacent fields, Mobbin', 'evidence', EV_REFS),
+        {'id': 'ev-concept', 'title': 'Evidence · concept draft', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_concept()},
+        {'id': 'ev-asis-phone', 'title': 'Evidence · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_asis(True)},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

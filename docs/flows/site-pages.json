@@ -174,6 +174,25 @@
    ]
   },
   {
+   "title": "8 · Evidence — как есть",
+   "screens": [
+    "ev-asis",
+    "ev-asis-phone"
+   ]
+  },
+  {
+   "title": "8 · Evidence — конкуренты, смежные области, Mobbin",
+   "screens": [
+    "ev-refs"
+   ]
+  },
+  {
+   "title": "8 · Evidence — черновик концепции (к обсуждению)",
+   "screens": [
+    "ev-concept"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -411,6 +430,26 @@
    "from": "web-asis-phone",
    "to": "web-mobbin",
    "label": "как у других"
+  },
+  {
+   "from": "web-mobbin",
+   "to": "ev-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "ev-asis",
+   "to": "ev-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "ev-asis-phone",
+   "to": "ev-refs",
+   "label": "как у других"
+  },
+  {
+   "from": "ev-refs",
+   "to": "ev-concept",
+   "label": "черновик"
   },
   {
    "from": "text-new-phone",
@@ -13890,6 +13929,2200 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "ev-asis",
+   "title": "Evidence · as is",
+   "url": "rapid-medical.com/us/evidence",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Evidence",
+       "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
+       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4",
+       "annotation": "Шапка с видео и абзацем «Clinical & scientific research play a pivotal role…» — первый экран без единого факта."
+      },
+      {
+       "c": "rm-publications",
+       "v": "spotlight",
+       "stat": {
+        "value": "85+",
+        "label": "clinical publications",
+        "iconUrl": "/icons/stat-publications.svg"
+       },
+       "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
+       "items": [
+        {
+         "id": 1,
+         "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+         "journal": "",
+         "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+         "publishedOn": "2026-09-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+         "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+         "edit": {
+          "r": "publications",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+         "journal": "",
+         "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "edit": {
+          "r": "publications",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+         "url": "https://doi.org/10.1007/s00062-026-01659-z",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": "10.1007/s00062-026-01659-z",
+         "edit": {
+          "r": "publications",
+          "id": 3,
+          "prefix": ""
+         }
+        }
+       ],
+       "annotation": "Счётчик «85+ clinical publications» (в базе 102) и карусель featured — до 6."
+      },
+      {
+       "c": "rm-publications",
+       "v": "cards",
+       "title": "Featured publications",
+       "items": [
+        {
+         "id": 1,
+         "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+         "journal": "",
+         "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+         "publishedOn": "2026-09-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+         "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+         "edit": {
+          "r": "publications",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+         "journal": "",
+         "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "edit": {
+          "r": "publications",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+         "url": "https://doi.org/10.1007/s00062-026-01659-z",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": "10.1007/s00062-026-01659-z",
+         "edit": {
+          "r": "publications",
+          "id": 3,
+          "prefix": ""
+         }
+        }
+       ],
+       "annotation": "«Featured publications» на деле — 3 последние с картинкой; показывает те же статьи, что карусель выше (находка 16)."
+      },
+      {
+       "c": "rm-publications",
+       "v": "byProduct",
+       "anchor": "browse-by-product",
+       "title": "Browse by product",
+       "groups": [
+        {
+         "id": "tigertriever",
+         "label": "TIGERTRIEVER™",
+         "sublabel": "Revascularization Device",
+         "fullName": "TIGERTRIEVER™ Revascularization Device",
+         "items": [
+          {
+           "id": 2,
+           "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+           "journal": "",
+           "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+           "publishedOn": "2026-07-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 2,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 3,
+           "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-04-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+           "url": "https://doi.org/10.1007/s00062-026-01659-z",
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "doi": "10.1007/s00062-026-01659-z",
+           "edit": {
+            "r": "publications",
+            "id": 3,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 4,
+           "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+           "edit": {
+            "r": "publications",
+            "id": 4,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 10,
+           "title": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke: A single-center Experience",
+           "journal": "Neurologia medico-chirurgica Advance Publication,",
+           "authors": "Koichiro SHINDO, Kazutaka UCHIDA, Manabu SHIRAKAWA, Shoichiro TSUJI, Shuntaro KUWAHARA, Yoji KURAMOTO and Shinichi YOSHIMURA",
+           "publishedOn": "2025-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.2176/jns-nmc.2024-0297",
+           "pdfUrl": "/uploads/duda/3-25-advpub_2024-0297-2224b4.pdf",
+           "doi": "10.2176/jns-nmc.2024-0297",
+           "edit": {
+            "r": "publications",
+            "id": 10,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 16,
+           "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
+           "journal": "",
+           "authors": "Brian Jankowit et al.",
+           "publishedOn": "2024-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/15910199241272743",
+           "doi": "10.1177/15910199241272743",
+           "edit": {
+            "r": "publications",
+            "id": 16,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 17,
+           "title": "The Effect of Actuation Frequency on Clot Integration with the Tigertriever Device: A Preliminary in Vitro Study",
+           "journal": "",
+           "authors": "Chander Sadasivan et al.",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "url": "https://pubmed.ncbi.nlm.nih.gov/38629263/",
+           "doi": "10.1177/159101992412478",
+           "edit": {
+            "r": "publications",
+            "id": 17,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 20,
+           "title": "Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute Ischemic Stroke: Improved First-pass Effect with Rapid-inflation Deflation Technique",
+           "journal": "",
+           "authors": "Sanjeev Sreenivasan et al.",
+           "publishedOn": "2024-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/15910199231222667",
+           "doi": "10.1177/15910199231222667",
+           "edit": {
+            "r": "publications",
+            "id": 20,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 21,
+           "title": "Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease",
+           "journal": "",
+           "authors": "Diego J Ojeda et al.",
+           "publishedOn": "2023-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/jnis-2023-020796",
+           "pdfUrl": "/uploads/duda/9-23-jnis-2023-020796.full-2--7d9d29.pdf",
+           "doi": "10.1136/jnis-2023-020796",
+           "edit": {
+            "r": "publications",
+            "id": 21,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 23,
+           "title": "E-272 Novel Use of a Triple Stent Retriever ‘bouquet’ Deployment with Zoom 88 Large-bore Aspiration and Walrus Balloon-guide Catheter Flow Arrest for Definitive Thrombectomy of a Carotid Free Floating Thrombus",
+           "journal": "Journal of NeuroInterventional Surgery 2023;15:A240-A241.",
+           "authors": "B Meyer et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "url": "https://jnis.bmj.com/content/15/Suppl_1/A240.2",
+           "edit": {
+            "r": "publications",
+            "id": 23,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 27,
+           "title": "Bailout Endovascular Techniques Applied in a Complicated Basilar Thrombectomy Case",
+           "journal": "",
+           "authors": "Aryan Ali et al.",
+           "publishedOn": "2023-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/jnis-2022-019687",
+           "doi": "10.1136/jnis-2022-019687",
+           "edit": {
+            "r": "publications",
+            "id": 27,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 28,
+           "title": "Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2023-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3389/fneur.2022.1032307",
+           "pdfUrl": "/uploads/duda/1-23-fneur-13-1032307-2634fe.pdf",
+           "doi": "10.3389/fneur.2022.1032307",
+           "edit": {
+            "r": "publications",
+            "id": 28,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 53,
+           "title": "Inadvertent Detachment of Stent Retrievers during Mechanical Thrombectomy—A Clinical and Biomechanical Perspective",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3390/life11070658",
+           "doi": "10.3390/life11070658",
+           "edit": {
+            "r": "publications",
+            "id": 53,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 52,
+           "title": "Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "RishiGupta, Jeffrey L.Saver",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2021.05.039",
+           "doi": "10.1016/j.wneu.2021.05.039",
+           "edit": {
+            "r": "publications",
+            "id": 52,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 59,
+           "title": "A New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "Rishi Gupta et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1161/STROKEAHA.121.034436",
+           "doi": "10.1161/STROKEAHA.121.034436",
+           "edit": {
+            "r": "publications",
+            "id": 59,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 65,
+           "title": "Safety and Efficacy of Mechanical Thrombectomy using Tigertriever as a Rescue Device After Failed Aspiration– Single Center Experience.",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2020-12-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3389/fneur.2020.603679",
+           "doi": "10.3389/fneur.2020.603679",
+           "edit": {
+            "r": "publications",
+            "id": 65,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 71,
+           "title": "Mechanical Thrombectomy Using the New Tigertriever in Acute Ischemic Stroke Patients – A Swiss Prospective Multicenter Study",
+           "journal": "",
+           "authors": "Philipp Gruber et al.",
+           "publishedOn": "2020-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/1591019920946499",
+           "doi": "10.1177/1591019920946499",
+           "edit": {
+            "r": "publications",
+            "id": 71,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 78,
+           "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
+           "journal": "",
+           "authors": "L. Will et al.",
+           "publishedOn": "2020-06-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-020-00919-w",
+           "doi": "10.1007/s00062-020-00919-w",
+           "edit": {
+            "r": "publications",
+            "id": 78,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 91,
+           "title": "Single-center Experience with the Tigertriever Device for the Recanalization of Large Vessel Occlusions in Acute Ischemic Stroke",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2018-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2018-014196",
+           "doi": "10.1136/neurintsurg-2018-014196",
+           "edit": {
+            "r": "publications",
+            "id": 91,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 100,
+           "title": "Revascularization of Acute Basilar Artery Occlusion Using the Tigertriever Adjustable Clot Retriever",
+           "journal": "",
+           "authors": "Kara B et al.",
+           "publishedOn": "2016-08-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-016-0532-1",
+           "doi": "10.1007/s00062-016-0532-1",
+           "edit": {
+            "r": "publications",
+            "id": 100,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "comaneci",
+         "label": "COMANECI™",
+         "sublabel": "Embolization Assist Device",
+         "fullName": "COMANECI™ Embolization Assist Device",
+         "items": [
+          {
+           "id": 5,
+           "title": "Long-term outcomes of temporary stent-assisted coil embolization for the treatment of intracranial aneurysms using Comaneci remodeling device",
+           "journal": "",
+           "authors": "Jakub Onikijuk, MD et al.",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+           "edit": {
+            "r": "publications",
+            "id": 5,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 6,
+           "title": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study",
+           "journal": "",
+           "authors": "Jason M Davies et al.",
+           "publishedOn": "2025-11-01T00:00:00.000Z",
+           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+           "pdfUrl": "https://jnis.bmj.com/content/neurintsurg/early/2025/11/19/jnis-2025-024136.full.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 6,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 11,
+           "title": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent",
+           "journal": "",
+           "authors": "Sergey M Karasev, Ilya A Zuev, Rakhmonzhon R Rustamov",
+           "publishedOn": "2024-10-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.radcr.2024.06.056",
+           "doi": "10.1016/j.radcr.2024.06.056",
+           "edit": {
+            "r": "publications",
+            "id": 11,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 18,
+           "title": "Y-Stent Technique Using Dual Comaneci Embolization Assist Devices for Coil Embolization of a Ruptured Wide-Necked Anterior Communicating Artery Aneurysm: A Technical Case Report",
+           "journal": "",
+           "authors": "Kristine Ravina, Ira J Finch, Biraj Patel, Benjamin Yim",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1227/ons.0000000000001143",
+           "doi": "10.1227/ons.0000000000001143",
+           "edit": {
+            "r": "publications",
+            "id": 18,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 24,
+           "title": "Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2023.05.008",
+           "doi": "10.1016/j.wneu.2023.05.008",
+           "edit": {
+            "r": "publications",
+            "id": 24,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 32,
+           "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
+           "journal": "",
+           "authors": "Gabriele Vinacci et al.",
+           "publishedOn": "2022-11-01T00:00:00.000Z",
+           "pdfUrl": "/uploads/duda/jcm-1899801-cb8809.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 32,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 42,
+           "title": "Comaneci Plus Balloon-assisted Embolization of Ruptured Wide-necked Cerebral Aneurysms",
+           "journal": "",
+           "authors": "A. Sirakov et al.",
+           "publishedOn": "2022-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-021-01115-0",
+           "doi": "10.1007/s00062-021-01115-0",
+           "edit": {
+            "r": "publications",
+            "id": 42,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 56,
+           "title": "Early Experience with Comaneci, a Newly FDA-Approved Controllable Assist Device for Wide-Necked Intracranial Aneurysm Coiling",
+           "journal": "",
+           "authors": "Taqi M.A. et al.",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1159/000514371",
+           "doi": "10.1159/000514371",
+           "edit": {
+            "r": "publications",
+            "id": 56,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 60,
+           "title": "Combination of Temporary Bridging Device (Comaneci) and Permanent Stenting in the Treatment of Unruptured Wide Neck Bifurcation Aneurysms",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00234-021-02677-z",
+           "doi": "10.1007/s00234-021-02677-z",
+           "edit": {
+            "r": "publications",
+            "id": 60,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 62,
+           "title": "Comaneci Device for Temporary Coiling Assistance for Treatment of Wide-Necked Aneurysms: Initial Case Series and Systematic Literature Review",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2021-02-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2021.02.080",
+           "doi": "10.1016/j.wneu.2021.02.080",
+           "edit": {
+            "r": "publications",
+            "id": 62,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 67,
+           "title": "Comaneci Device-assisted Embolization of Wide-necked Carotid Aneurysms with an Unfavorable Ratio",
+           "journal": "",
+           "authors": "Juan David Molina-Nuevo et al.",
+           "publishedOn": "2020-10-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1186/s12883-020-01963-2",
+           "doi": "10.1186/s12883-020-01963-2",
+           "edit": {
+            "r": "publications",
+            "id": 67,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 69,
+           "title": "E-182 The Primary Experience of Using a Comaneci Embolization Assist Device During Embolization of Intracranial Aneurysms with Detachable Microcoils",
+           "journal": "",
+           "authors": "K Orlov et al.",
+           "publishedOn": "2020-08-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2020-SNIS.213",
+           "doi": "10.1136/neurintsurg-2020-SNIS.213",
+           "edit": {
+            "r": "publications",
+            "id": 69,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "drivewire",
+         "label": "DRIVEWIRE™",
+         "sublabel": "Steerable Guidewire",
+         "fullName": "DRIVEWIRE™ Steerable Guidewire",
+         "items": [
+          {
+           "id": 1,
+           "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+           "journal": "",
+           "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+           "publishedOn": "2026-09-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+           "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+           "edit": {
+            "r": "publications",
+            "id": 1,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 8,
+           "title": "Early Experience with the Drivewire 24: A Newly FDA-approved Steerable Microwire",
+           "journal": "",
+           "authors": "Eric Alexander Grin, Vera Sharashidze,2 Charlotte Chung, Jacob F. Baranoski, Caleb Rutledge, Howard A. Riina, Maksim Shapiro, Eytan Raz, Erez Nossek. J NeuroIntervent Surg: first published as 10.1136/jnis-2025-023730 on 20 June 2025. Downloaded from http://jnis.bmj.com/ on June 24, 2025, at New York University, Serials",
+           "publishedOn": "2025-06-01T00:00:00.000Z",
+           "url": "https://jnis.bmj.com/content/18/4/1133",
+           "pdfUrl": "/uploads/duda/NYU--JNIS-DW24-f4e61a.pdf",
+           "doi": "10.1136/jnis-2025-023730",
+           "edit": {
+            "r": "publications",
+            "id": 8,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 44,
+           "title": "Applications of the Columbus Steerable Guidewire",
+           "journal": "Journal of NeuroInterventional Surgery Published Online First: 24 November 2021.",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Lutz Lehmann, Justus Erasmus Roos, Grzegorz Karwacki",
+           "publishedOn": "2021-11-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2021-018120",
+           "doi": "10.1136/neurintsurg-2021-018120",
+           "edit": {
+            "r": "publications",
+            "id": 44,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 57,
+           "title": "The Columbus Steerable Guidewire in Neurointerventions: Early Clinical Experience and Applications",
+           "journal": "",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Grzegorz Karwacki, Justus E. Roos",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2021-017296",
+           "doi": "10.1136/neurintsurg-2021-017296",
+           "edit": {
+            "r": "publications",
+            "id": 57,
+            "prefix": ""
+           }
+          }
+         ]
+        }
+       ],
+       "anchors": [
+        "tigertriever",
+        "comaneci",
+        "drivewire"
+       ],
+       "annotation": "Browse by product — вкладки по продуктам, внутри — строки: месяц, заголовок, ДЛИННЫЙ список авторов · журнал (часто пустой), «Read» / «Download PDF». 57 статей у COMANECI, 28 у TIGERTRIEVER — без поиска, фильтров, типа исследования и вывода. Чтобы понять, о чём статья, нужно уйти в журнал. Клиент на звонке: «в таком виде Evidence никто читать не будет»."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "ev-asis-phone",
+   "title": "Evidence · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/evidence",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Evidence",
+       "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
+       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4"
+      },
+      {
+       "c": "rm-publications",
+       "v": "spotlight",
+       "stat": {
+        "value": "85+",
+        "label": "clinical publications",
+        "iconUrl": "/icons/stat-publications.svg"
+       },
+       "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
+       "items": [
+        {
+         "id": 1,
+         "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+         "journal": "",
+         "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+         "publishedOn": "2026-09-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+         "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+         "edit": {
+          "r": "publications",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+         "journal": "",
+         "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "edit": {
+          "r": "publications",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+         "url": "https://doi.org/10.1007/s00062-026-01659-z",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": "10.1007/s00062-026-01659-z",
+         "edit": {
+          "r": "publications",
+          "id": 3,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "c": "rm-publications",
+       "v": "cards",
+       "title": "Featured publications",
+       "items": [
+        {
+         "id": 1,
+         "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+         "journal": "",
+         "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+         "publishedOn": "2026-09-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+         "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+         "edit": {
+          "r": "publications",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+         "journal": "",
+         "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "edit": {
+          "r": "publications",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+         "url": "https://doi.org/10.1007/s00062-026-01659-z",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": "10.1007/s00062-026-01659-z",
+         "edit": {
+          "r": "publications",
+          "id": 3,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "c": "rm-publications",
+       "v": "byProduct",
+       "anchor": "browse-by-product",
+       "title": "Browse by product",
+       "groups": [
+        {
+         "id": "tigertriever",
+         "label": "TIGERTRIEVER™",
+         "sublabel": "Revascularization Device",
+         "fullName": "TIGERTRIEVER™ Revascularization Device",
+         "items": [
+          {
+           "id": 2,
+           "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+           "journal": "",
+           "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+           "publishedOn": "2026-07-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 2,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 3,
+           "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-04-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+           "url": "https://doi.org/10.1007/s00062-026-01659-z",
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "doi": "10.1007/s00062-026-01659-z",
+           "edit": {
+            "r": "publications",
+            "id": 3,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 4,
+           "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+           "edit": {
+            "r": "publications",
+            "id": 4,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 10,
+           "title": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke: A single-center Experience",
+           "journal": "Neurologia medico-chirurgica Advance Publication,",
+           "authors": "Koichiro SHINDO, Kazutaka UCHIDA, Manabu SHIRAKAWA, Shoichiro TSUJI, Shuntaro KUWAHARA, Yoji KURAMOTO and Shinichi YOSHIMURA",
+           "publishedOn": "2025-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.2176/jns-nmc.2024-0297",
+           "pdfUrl": "/uploads/duda/3-25-advpub_2024-0297-2224b4.pdf",
+           "doi": "10.2176/jns-nmc.2024-0297",
+           "edit": {
+            "r": "publications",
+            "id": 10,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 16,
+           "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
+           "journal": "",
+           "authors": "Brian Jankowit et al.",
+           "publishedOn": "2024-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/15910199241272743",
+           "doi": "10.1177/15910199241272743",
+           "edit": {
+            "r": "publications",
+            "id": 16,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 17,
+           "title": "The Effect of Actuation Frequency on Clot Integration with the Tigertriever Device: A Preliminary in Vitro Study",
+           "journal": "",
+           "authors": "Chander Sadasivan et al.",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "url": "https://pubmed.ncbi.nlm.nih.gov/38629263/",
+           "doi": "10.1177/159101992412478",
+           "edit": {
+            "r": "publications",
+            "id": 17,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 20,
+           "title": "Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute Ischemic Stroke: Improved First-pass Effect with Rapid-inflation Deflation Technique",
+           "journal": "",
+           "authors": "Sanjeev Sreenivasan et al.",
+           "publishedOn": "2024-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/15910199231222667",
+           "doi": "10.1177/15910199231222667",
+           "edit": {
+            "r": "publications",
+            "id": 20,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 21,
+           "title": "Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease",
+           "journal": "",
+           "authors": "Diego J Ojeda et al.",
+           "publishedOn": "2023-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/jnis-2023-020796",
+           "pdfUrl": "/uploads/duda/9-23-jnis-2023-020796.full-2--7d9d29.pdf",
+           "doi": "10.1136/jnis-2023-020796",
+           "edit": {
+            "r": "publications",
+            "id": 21,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 23,
+           "title": "E-272 Novel Use of a Triple Stent Retriever ‘bouquet’ Deployment with Zoom 88 Large-bore Aspiration and Walrus Balloon-guide Catheter Flow Arrest for Definitive Thrombectomy of a Carotid Free Floating Thrombus",
+           "journal": "Journal of NeuroInterventional Surgery 2023;15:A240-A241.",
+           "authors": "B Meyer et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "url": "https://jnis.bmj.com/content/15/Suppl_1/A240.2",
+           "edit": {
+            "r": "publications",
+            "id": 23,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 27,
+           "title": "Bailout Endovascular Techniques Applied in a Complicated Basilar Thrombectomy Case",
+           "journal": "",
+           "authors": "Aryan Ali et al.",
+           "publishedOn": "2023-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/jnis-2022-019687",
+           "doi": "10.1136/jnis-2022-019687",
+           "edit": {
+            "r": "publications",
+            "id": 27,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 28,
+           "title": "Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2023-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3389/fneur.2022.1032307",
+           "pdfUrl": "/uploads/duda/1-23-fneur-13-1032307-2634fe.pdf",
+           "doi": "10.3389/fneur.2022.1032307",
+           "edit": {
+            "r": "publications",
+            "id": 28,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 53,
+           "title": "Inadvertent Detachment of Stent Retrievers during Mechanical Thrombectomy—A Clinical and Biomechanical Perspective",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3390/life11070658",
+           "doi": "10.3390/life11070658",
+           "edit": {
+            "r": "publications",
+            "id": 53,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 52,
+           "title": "Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "RishiGupta, Jeffrey L.Saver",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2021.05.039",
+           "doi": "10.1016/j.wneu.2021.05.039",
+           "edit": {
+            "r": "publications",
+            "id": 52,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 59,
+           "title": "A New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "Rishi Gupta et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1161/STROKEAHA.121.034436",
+           "doi": "10.1161/STROKEAHA.121.034436",
+           "edit": {
+            "r": "publications",
+            "id": 59,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 65,
+           "title": "Safety and Efficacy of Mechanical Thrombectomy using Tigertriever as a Rescue Device After Failed Aspiration– Single Center Experience.",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2020-12-01T00:00:00.000Z",
+           "url": "https://doi.org/10.3389/fneur.2020.603679",
+           "doi": "10.3389/fneur.2020.603679",
+           "edit": {
+            "r": "publications",
+            "id": 65,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 71,
+           "title": "Mechanical Thrombectomy Using the New Tigertriever in Acute Ischemic Stroke Patients – A Swiss Prospective Multicenter Study",
+           "journal": "",
+           "authors": "Philipp Gruber et al.",
+           "publishedOn": "2020-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1177/1591019920946499",
+           "doi": "10.1177/1591019920946499",
+           "edit": {
+            "r": "publications",
+            "id": 71,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 78,
+           "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
+           "journal": "",
+           "authors": "L. Will et al.",
+           "publishedOn": "2020-06-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-020-00919-w",
+           "doi": "10.1007/s00062-020-00919-w",
+           "edit": {
+            "r": "publications",
+            "id": 78,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 91,
+           "title": "Single-center Experience with the Tigertriever Device for the Recanalization of Large Vessel Occlusions in Acute Ischemic Stroke",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2018-09-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2018-014196",
+           "doi": "10.1136/neurintsurg-2018-014196",
+           "edit": {
+            "r": "publications",
+            "id": 91,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 100,
+           "title": "Revascularization of Acute Basilar Artery Occlusion Using the Tigertriever Adjustable Clot Retriever",
+           "journal": "",
+           "authors": "Kara B et al.",
+           "publishedOn": "2016-08-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-016-0532-1",
+           "doi": "10.1007/s00062-016-0532-1",
+           "edit": {
+            "r": "publications",
+            "id": 100,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "comaneci",
+         "label": "COMANECI™",
+         "sublabel": "Embolization Assist Device",
+         "fullName": "COMANECI™ Embolization Assist Device",
+         "items": [
+          {
+           "id": 5,
+           "title": "Long-term outcomes of temporary stent-assisted coil embolization for the treatment of intracranial aneurysms using Comaneci remodeling device",
+           "journal": "",
+           "authors": "Jakub Onikijuk, MD et al.",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+           "edit": {
+            "r": "publications",
+            "id": 5,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 6,
+           "title": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study",
+           "journal": "",
+           "authors": "Jason M Davies et al.",
+           "publishedOn": "2025-11-01T00:00:00.000Z",
+           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+           "pdfUrl": "https://jnis.bmj.com/content/neurintsurg/early/2025/11/19/jnis-2025-024136.full.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 6,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 11,
+           "title": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent",
+           "journal": "",
+           "authors": "Sergey M Karasev, Ilya A Zuev, Rakhmonzhon R Rustamov",
+           "publishedOn": "2024-10-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.radcr.2024.06.056",
+           "doi": "10.1016/j.radcr.2024.06.056",
+           "edit": {
+            "r": "publications",
+            "id": 11,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 18,
+           "title": "Y-Stent Technique Using Dual Comaneci Embolization Assist Devices for Coil Embolization of a Ruptured Wide-Necked Anterior Communicating Artery Aneurysm: A Technical Case Report",
+           "journal": "",
+           "authors": "Kristine Ravina, Ira J Finch, Biraj Patel, Benjamin Yim",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1227/ons.0000000000001143",
+           "doi": "10.1227/ons.0000000000001143",
+           "edit": {
+            "r": "publications",
+            "id": 18,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 24,
+           "title": "Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2023.05.008",
+           "doi": "10.1016/j.wneu.2023.05.008",
+           "edit": {
+            "r": "publications",
+            "id": 24,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 32,
+           "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
+           "journal": "",
+           "authors": "Gabriele Vinacci et al.",
+           "publishedOn": "2022-11-01T00:00:00.000Z",
+           "pdfUrl": "/uploads/duda/jcm-1899801-cb8809.pdf",
+           "edit": {
+            "r": "publications",
+            "id": 32,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 42,
+           "title": "Comaneci Plus Balloon-assisted Embolization of Ruptured Wide-necked Cerebral Aneurysms",
+           "journal": "",
+           "authors": "A. Sirakov et al.",
+           "publishedOn": "2022-01-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00062-021-01115-0",
+           "doi": "10.1007/s00062-021-01115-0",
+           "edit": {
+            "r": "publications",
+            "id": 42,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 56,
+           "title": "Early Experience with Comaneci, a Newly FDA-Approved Controllable Assist Device for Wide-Necked Intracranial Aneurysm Coiling",
+           "journal": "",
+           "authors": "Taqi M.A. et al.",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1159/000514371",
+           "doi": "10.1159/000514371",
+           "edit": {
+            "r": "publications",
+            "id": 56,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 60,
+           "title": "Combination of Temporary Bridging Device (Comaneci) and Permanent Stenting in the Treatment of Unruptured Wide Neck Bifurcation Aneurysms",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1007/s00234-021-02677-z",
+           "doi": "10.1007/s00234-021-02677-z",
+           "edit": {
+            "r": "publications",
+            "id": 60,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 62,
+           "title": "Comaneci Device for Temporary Coiling Assistance for Treatment of Wide-Necked Aneurysms: Initial Case Series and Systematic Literature Review",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2021-02-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1016/j.wneu.2021.02.080",
+           "doi": "10.1016/j.wneu.2021.02.080",
+           "edit": {
+            "r": "publications",
+            "id": 62,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 67,
+           "title": "Comaneci Device-assisted Embolization of Wide-necked Carotid Aneurysms with an Unfavorable Ratio",
+           "journal": "",
+           "authors": "Juan David Molina-Nuevo et al.",
+           "publishedOn": "2020-10-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1186/s12883-020-01963-2",
+           "doi": "10.1186/s12883-020-01963-2",
+           "edit": {
+            "r": "publications",
+            "id": 67,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 69,
+           "title": "E-182 The Primary Experience of Using a Comaneci Embolization Assist Device During Embolization of Intracranial Aneurysms with Detachable Microcoils",
+           "journal": "",
+           "authors": "K Orlov et al.",
+           "publishedOn": "2020-08-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2020-SNIS.213",
+           "doi": "10.1136/neurintsurg-2020-SNIS.213",
+           "edit": {
+            "r": "publications",
+            "id": 69,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "drivewire",
+         "label": "DRIVEWIRE™",
+         "sublabel": "Steerable Guidewire",
+         "fullName": "DRIVEWIRE™ Steerable Guidewire",
+         "items": [
+          {
+           "id": 1,
+           "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+           "journal": "",
+           "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+           "publishedOn": "2026-09-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+           "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+           "edit": {
+            "r": "publications",
+            "id": 1,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 8,
+           "title": "Early Experience with the Drivewire 24: A Newly FDA-approved Steerable Microwire",
+           "journal": "",
+           "authors": "Eric Alexander Grin, Vera Sharashidze,2 Charlotte Chung, Jacob F. Baranoski, Caleb Rutledge, Howard A. Riina, Maksim Shapiro, Eytan Raz, Erez Nossek. J NeuroIntervent Surg: first published as 10.1136/jnis-2025-023730 on 20 June 2025. Downloaded from http://jnis.bmj.com/ on June 24, 2025, at New York University, Serials",
+           "publishedOn": "2025-06-01T00:00:00.000Z",
+           "url": "https://jnis.bmj.com/content/18/4/1133",
+           "pdfUrl": "/uploads/duda/NYU--JNIS-DW24-f4e61a.pdf",
+           "doi": "10.1136/jnis-2025-023730",
+           "edit": {
+            "r": "publications",
+            "id": 8,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 44,
+           "title": "Applications of the Columbus Steerable Guidewire",
+           "journal": "Journal of NeuroInterventional Surgery Published Online First: 24 November 2021.",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Lutz Lehmann, Justus Erasmus Roos, Grzegorz Karwacki",
+           "publishedOn": "2021-11-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2021-018120",
+           "doi": "10.1136/neurintsurg-2021-018120",
+           "edit": {
+            "r": "publications",
+            "id": 44,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 57,
+           "title": "The Columbus Steerable Guidewire in Neurointerventions: Early Clinical Experience and Applications",
+           "journal": "",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Grzegorz Karwacki, Justus E. Roos",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "url": "https://doi.org/10.1136/neurintsurg-2021-017296",
+           "doi": "10.1136/neurintsurg-2021-017296",
+           "edit": {
+            "r": "publications",
+            "id": 57,
+            "prefix": ""
+           }
+          }
+         ]
+        }
+       ],
+       "anchors": [
+        "tigertriever",
+        "comaneci",
+        "drivewire"
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "ev-refs",
+   "title": "Evidence · competitors, adjacent fields, Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Конкуренты в нейроваскулярке"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Лучший — Terumo: у каждого исследования своя страница с цифрами, регион и IFU. Stryker и Medtronic — главные цифры прямо на странице продукта. Penumbra — фильтры, но без цифр."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/evidence/terumo-study.png",
+           "source": "Terumo Neuro · WISE",
+           "caption": "страница исследования: вывод, пациенты / центры / страны, цифры по подгруппам, PDF, IFU по региону",
+           "url": "https://www.terumoneuro.com/clinical-studies/web-wise-ruptured"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/terumo.png",
+           "source": "Terumo Neuro · Clinical studies",
+           "caption": "по терапевтическим областям, переключатель региона, счётчики с расшифровкой",
+           "url": "https://www.terumoneuro.com/clinical-studies"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/stryker.png",
+           "source": "Stryker · Trevo NXT",
+           "caption": "«7,000+ patients…», ключевые исследования с главной цифрой (DAWN 49% vs 13%)",
+           "url": "https://www.stryker.com/us/en/neurovascular/products/trevo-nxt.html"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/medtronic.png",
+           "source": "Medtronic · Solitaire",
+           "caption": "три крупные цифры и сноски с определениями (минус: без N)",
+           "url": "https://www.medtronic.com/us-en/healthcare-professionals/products/neurological/revascularization-stroke/solitaire/clinical-evidence.html"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/penumbra.png",
+           "source": "Penumbra",
+           "caption": "фильтры по области и показанию; в карточке дизайн, но нет цифр",
+           "url": "https://www.penumbrainc.com/clinical-evidence/"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Смежные области: лучшие образцы"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Shockwave — фильтры по нескольким осям и страница исследования. iRhythm — группировка по клиническим вопросам и «вывод сначала»."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/evidence/shockwave.png",
+           "source": "Shockwave Medical",
+           "caption": "поиск и фильтры слева (показание, продукт, специальность), «1–9 of 14», сортировка",
+           "url": "https://shockwavemedical.com/clinical-evidence/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/shockwave-study.png",
+           "source": "Shockwave · DISRUPT CAD III",
+           "caption": "дизайн, N / центры, конечные точки, панель цифр, слайды, видео с PI",
+           "url": "https://shockwavemedical.com/clinical-evidence/disrupt-cad-iii/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/irhythm.png",
+           "source": "iRhythm · Clinical library",
+           "caption": "по клиническим вопросам; запись — вывод, главный результат, дизайн, DOI; архив отдельно",
+           "url": "https://www.irhythmtech.com/providers/evidence"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Как выглядят библиотеки публикаций (Mobbin)"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Строки, а не карточки; поиск и метки темы; рядом — вывод одной фразой."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/evidence/anthropic.webp",
+           "source": "Anthropic",
+           "caption": "поиск, темы чипами, строка: название · тема · дата",
+           "url": "https://mobbin.com/sites/sections/d5bb06da-6fc9-42c0-a989-28c0b7321375"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/openai.webp",
+           "source": "OpenAI Research",
+           "caption": "главное крупно, ниже «Browse» со счётчиком, фильтром и сортировкой",
+           "url": "https://mobbin.com/sites/sections/fec07fec-5de6-4678-bbb9-07b4f959a610"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/elicit.webp",
+           "source": "Elicit",
+           "caption": "рядом со статьёй — краткое резюме, год, цитирования, DOI",
+           "url": "https://mobbin.com/screens/1be3720e-ed88-4617-8a2d-c967ba92ade9"
+          },
+          {
+           "c": "ref",
+           "src": "refs/evidence/duolingo.webp",
+           "source": "Duolingo Research",
+           "caption": "миниатюра ключевого рисунка рядом со статьёй",
+           "url": "https://mobbin.com/sites/sections/1b97ab59-a471-4768-b849-dc51a162b6b6"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ev-concept",
+   "title": "Evidence · concept draft",
+   "url": "rapid-medical.com/us/evidence",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Americas · change"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "Evidence"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Publications"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "102"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Randomized trials"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "1 (DISTALS)"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Prospective multicenter"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[N — по разметке]"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Patients in our studies"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[N — сумма по исследованиям]"
+              }
+             ]
+            }
+           ],
+           "annotation": "Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа считаются из разметки публикаций — не вручную."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "Clinical data behind TIGERTRIEVER™, COMANECI™ and DRIVEWIRE™ — key studies first, every publication below."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Key studies"
+        },
+        {
+         "c": "grid",
+         "cols": 4,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™ 13 · MeVO"
+              },
+              {
+               "c": "badge",
+               "text": "RCT",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "DISTALS"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "98 randomized · FDA IDE"
+            },
+            {
+             "c": "stat",
+             "value": "86.3% vs 27.7%",
+             "label": "reperfusion at 24 h without sICH"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "COMANECI™ · wide-neck aneurysms"
+              },
+              {
+               "c": "badge",
+               "text": "Prospective, multicenter",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "SUCCESS"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "90 patients · 17 US centers"
+            },
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "occlusion at 6 months"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™ · LVO"
+              },
+              {
+               "c": "badge",
+               "text": "Prospective, multicenter",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "TIGER"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "[N · центры — из публикации]"
+            },
+            {
+             "c": "stat",
+             "value": "[главная цифра]",
+             "label": "[конечная точка]"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™ · LVO"
+              },
+              {
+               "c": "badge",
+               "text": "Meta-analysis",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "Meta-analysis"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "[N исследований / пациентов]"
+            },
+            {
+             "c": "stat",
+             "value": "[главная цифра]",
+             "label": "reperfusion vs self-expanding stent retrievers"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ]
+          }
+         ],
+         "annotation": "Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Цифры — из одобренных материалов (MLR)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Explore by clinical question"
+        },
+        {
+         "c": "grid",
+         "cols": 4,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "card",
+           "eyebrow": "32 publications",
+           "title": "Large vessel occlusion",
+           "text": "TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers"
+          },
+          {
+           "c": "card",
+           "eyebrow": "8 publications",
+           "title": "Medium & distal vessels",
+           "text": "TIGERTRIEVER™ 13 · DISTALS and MeVO experience"
+          },
+          {
+           "c": "card",
+           "eyebrow": "57 publications",
+           "title": "Aneurysms & vasospasm",
+           "text": "COMANECI™ · wide-neck coiling, vasospasm angioplasty"
+          },
+          {
+           "c": "card",
+           "eyebrow": "5 publications",
+           "title": "Access & navigation",
+           "text": "DRIVEWIRE™ · guidewire experience"
+          }
+         ],
+         "annotation": "Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "row",
+         "justify": "between",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "All publications"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Showing 1–20 of 102"
+          }
+         ]
+        },
+        {
+         "c": "row",
+         "gap": "s",
+         "wrap": true,
+         "align": "center",
+         "items": [
+          {
+           "c": "input",
+           "label": "",
+           "v": "search",
+           "placeholder": "Search title, author, journal"
+          },
+          {
+           "c": "input",
+           "v": "select",
+           "value": "All products"
+          },
+          {
+           "c": "input",
+           "v": "select",
+           "value": "All indications"
+          },
+          {
+           "c": "input",
+           "v": "select",
+           "value": "All study types"
+          },
+          {
+           "c": "input",
+           "v": "select",
+           "value": "Newest first"
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": "80px minmax(0,1fr) 120px",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "2026"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers…"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "[Вывод одной фразой — ИИ-черновик, утверждает MLR]"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "wrap": true,
+             "items": [
+              {
+               "c": "badge",
+               "text": "Meta-analysis",
+               "tone": "info"
+              },
+              {
+               "c": "badge",
+               "text": "LVO",
+               "tone": "neutral"
+              },
+              {
+               "c": "badge",
+               "text": "TIGERTRIEVER™",
+               "tone": "neutral"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "link",
+             "text": "PDF"
+            },
+            {
+             "c": "link",
+             "text": "Journal ↗"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "80px minmax(0,1fr) 120px",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "2025"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "High rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months."
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "wrap": true,
+             "items": [
+              {
+               "c": "badge",
+               "text": "Prospective, multicenter",
+               "tone": "info"
+              },
+              {
+               "c": "badge",
+               "text": "N = 90",
+               "tone": "neutral"
+              },
+              {
+               "c": "badge",
+               "text": "COMANECI™",
+               "tone": "neutral"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "link",
+             "text": "PDF"
+            },
+            {
+             "c": "link",
+             "text": "Journal ↗"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "80px minmax(0,1fr) 120px",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "small",
+           "text": "2025"
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "[Вывод одной фразой]"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "wrap": true,
+             "items": [
+              {
+               "c": "badge",
+               "text": "Review",
+               "tone": "info"
+              },
+              {
+               "c": "badge",
+               "text": "MeVO",
+               "tone": "neutral"
+              },
+              {
+               "c": "badge",
+               "text": "TIGERTRIEVER™ 13",
+               "tone": "neutral"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "link",
+             "text": "PDF"
+            },
+            {
+             "c": "link",
+             "text": "Journal ↗"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "button",
+         "v": "secondary",
+         "text": "Show more",
+         "full": true
+        }
+       ],
+       "annotation": "Уровень 2 — архив: поиск и фильтры по продукту, показанию, типу исследования, сортировка, счётчик (Shockwave). Строка: год · заголовок · вывод одной фразой (Semantic Scholar TLDR) · бейджи: дизайн, N, показание, продукт · PDF / журнал. Авторы — на странице статьи, не в списке. Пресс-релизы из списка уходят в новости (ADR-009: вид материала)."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "s",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Ongoing studies"
+        },
+        {
+         "c": "text",
+         "v": "small",
+         "text": "[Идущие исследования — например, исследование когнитивных исходов тромбэктомии (новость, янв. 2025); список — от клиента]"
+        }
+       ],
+       "annotation": "Текущие исследования — сигнал для инвесторов (WATCHMAN «Active trials»). Только если клиент готов показывать."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },
