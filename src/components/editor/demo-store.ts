@@ -338,6 +338,19 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
       setTimeout(() => location.reload(), 300);
       return { version: "demo", sections: before, undo: [] };
     }
+    if (op.op === "moveTo") {
+      // drag and drop: one step at a time, as the demo replays moves
+      const t = before.find((x) => x.id === op.id);
+      if (!t || t.pinned) return { error: "This section stays where it is" };
+      const dir = op.to > t.at ? 1 : -1;
+      for (let k = t.at; k !== op.to; k += dir) {
+        const step: Op = { op: "move", id: op.id, dir };
+        await apply(step);
+        st.ops.push(step);
+      }
+      saveSections(st);
+      return { version: "demo", sections: sectionsNow(), undo: [] };
+    }
     if (op.op === "variant") return { error: "Changing the layout needs the server; not in the demo" };
     if (op.op === "tab") return { error: "Changing tabs needs the server; not in the demo" };
     const target = "id" in op ? before.find((x) => x.id === op.id) : null;
@@ -368,7 +381,7 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
   restorePage: async () => ({ error: "History needs the server; not in the demo" }),
   compareWith: async () => ({ error: "Comparing regions needs the server; not in the demo" }),
   regionTexts: async () => ({ error: "Texts in all regions need the server; not in the demo" }),
-  editorPageList: async () => ({ error: "The list of pages needs the server; open Pages in the demo menu" }),
+  editorPageTree: async () => ({ error: "The list of pages needs the server; open Pages in the demo menu" }),
   currentPageVersion: async () => ({ version: "demo" }),
   createPage: async () => ({ error: "New pages need the server; the demo has none" }),
 };

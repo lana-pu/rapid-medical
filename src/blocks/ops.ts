@@ -14,6 +14,8 @@ export type BlockOp =
   /** `in`: a list inside Product details — `{block}/{tab}` or a group in it `{block}/{tab}/{j}` */
   | { op: "add"; at: number; type: string; variant: string; in?: string }
   | { op: "move"; id: string; dir: -1 | 1 }
+  /** drag and drop: put the section at position `to` of its own list (pinned blocks stay last) */
+  | { op: "moveTo"; id: string; to: number }
   | { op: "duplicate"; id: string }
   | { op: "remove"; id: string }
   | { op: "variant"; id: string; variant: string }
@@ -128,6 +130,12 @@ function nestedOp(list: StoredBlock[], op: Exclude<BlockOp, { op: "set" | "tab" 
       if (l.tabCount() <= 1) fail("A tab keeps at least one section");
       l.items.splice(at, 1);
       return l.done();
+    case "moveTo": {
+      if (!Number.isInteger(op.to) || op.to < 0 || op.to >= l.items.length) fail("Bad position");
+      l.items.splice(at, 1);
+      l.items.splice(op.to, 0, x);
+      return l.done();
+    }
     case "hide": {
       const { hidden: _h, ...rest } = x as Nested;
       void _h;
@@ -221,9 +229,9 @@ function tabOp(list: StoredBlock[], op: Extract<BlockOp, { op: "tab" }>): Stored
 /** The section to select after an operation (a new one, or a moved section inside a tab, whose address changes). */
 export function selectAfterOp(op: BlockOp, before: StoredBlock[], after: StoredBlock[]): string | undefined {
   if (op.op === "add" && op.in) return `${op.in}/${op.at}`;
-  if ((op.op === "move" || op.op === "duplicate") && isNestedId(op.id)) {
+  if ((op.op === "move" || op.op === "duplicate" || op.op === "moveTo") && isNestedId(op.id)) {
     const { list, at } = nestedParent(op.id);
-    return `${list}/${op.op === "move" ? at + op.dir : at + 1}`;
+    return `${list}/${op.op === "move" ? at + op.dir : op.op === "moveTo" ? op.to : at + 1}`;
   }
   if (op.op === "add" || op.op === "duplicate") return after.find((b) => !before.some((c) => c.id === b.id))?.id;
   return undefined;
@@ -251,6 +259,15 @@ export function applyOp(current: StoredBlock[], op: BlockOp, known: StoredBlock[
       if (op.dir !== -1 && op.dir !== 1) fail("Bad move");
       if (j < 0 || j >= list.length || isPinned(list[j])) fail(op.dir < 0 ? "Already the first section" : "Already the last section");
       [list[i], list[j]] = [list[j], list[i]];
+      return list;
+    }
+    case "moveTo": {
+      const i = find(op.id);
+      if (isPinned(list[i])) fail("This section stays at the end of the page");
+      if (!Number.isInteger(op.to) || op.to < 0 || op.to >= list.length) fail("Bad position");
+      const [b] = list.splice(i, 1);
+      const firstPinned = list.findIndex(isPinned);
+      list.splice(firstPinned < 0 ? op.to : Math.min(op.to, firstPinned), 0, b);
       return list;
     }
     case "duplicate": {

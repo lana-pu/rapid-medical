@@ -462,7 +462,7 @@ test("page picker in the top bar; one text edited in another region from the reg
   // choose a page
   await page.getByRole("button", { name: "Choose a page" }).click();
   await page.getByRole("textbox", { name: "Search pages" }).fill("Aneurysm");
-  await page.getByRole("button", { name: /Aneurysm.*Asia & Pacific/ }).first().click();
+  await page.getByRole("list", { name: "Pages of the site" }).getByRole("button", { name: /^Aneurysm/ }).click(); // the region being edited
   await page.waitForURL(/\/apac\/therapies\/aneurysm/);
   await expect(page.getByRole("button", { name: "Choose a page" })).toContainText("Aneurysm");
 
@@ -517,4 +517,43 @@ test("Pages and Collections: a record with its own page opens in the editor, one
   await expect(rec.getByRole("button", { name: "Publish" })).toBeVisible();
   const id = sql(`select id from webinars where title = '${title.replace(/'/g, "''")}'`);
   sql(`delete from drafts where resource='webinars' and record_id=${id}`);
+});
+
+test("every page once in the tree; drag a section from the catalogue onto the page and reorder in Sections", async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await open(page, PAGE, { layout: false });
+  const rail = page.getByRole("navigation", { name: "Editor tools" });
+  await rail.getByRole("button", { name: "Pages" }).click();
+  const tree = page.getByRole("list", { name: "Pages of the site" });
+  await expect(tree.getByRole("button", { name: /^Large vessel stroke/ })).toHaveCount(1); // not once per region
+  await expect(tree.getByRole("button", { name: /^Therapies/ }).first()).toBeVisible();
+
+  // the catalogue: kinds of sections, then drag one onto the page
+  await rail.getByRole("button", { name: "Add section" }).click();
+  const add = page.getByRole("complementary", { name: "Add section" });
+  await add.getByRole("tab", { name: "Proof" }).click();
+  await expect(add.getByRole("heading", { name: "Hero" })).toHaveCount(0);
+  const card = add.getByRole("button", { name: /Circles/ }).first();
+  const before = (await ids(page)).length;
+  await card.dragTo(page.locator("h1").first(), { targetPosition: { x: 10, y: 40 } });
+  await expect(page.getByRole("status")).toHaveText("Added Key numbers. Not live yet");
+  await expect.poll(async () => (await ids(page)).length).toBe(before + 1);
+
+  // Sections: it landed first (dropped above the hero); drag it below the next section
+  await rail.getByRole("button", { name: "Sections" }).click();
+  const list = page.getByRole("complementary", { name: "Sections" });
+  const rows = list.locator(":scope ul.p-2 > li > [data-section-row]");
+  await expect(rows.first()).toContainText("Key numbers");
+  const second = rows.nth(1);
+  const h = (await second.boundingBox())!.height;
+  await rows.first().dragTo(second, { targetPosition: { x: 40, y: h - 3 } });
+  await expect(page.getByRole("status")).toHaveText(/^Moved Key numbers/);
+  await expect(rows.nth(1)).toContainText("Key numbers");
+
+  // leave the page as it was
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await page.click('[role=dialog] button:has-text("Discard all changes")');
+  await page.click('[role=dialog] button:has-text("Click again to discard all")');
+  await expect(page.getByRole("status")).toHaveText("Changes discarded");
 });

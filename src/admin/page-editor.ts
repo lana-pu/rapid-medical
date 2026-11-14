@@ -16,6 +16,7 @@ import { isRegion } from "@/lib/regions";
 import { getEditable, getRevision, listRevisions, restoreRevision, saveWithWorkflow } from "./workflow";
 import { SITE_PAGE_TYPE, listEditorPages } from "./pages-index";
 import { regionTextRows, type RegionRow } from "@/blocks/region-table";
+import { buildPageTree, type PageNode } from "./page-tree";
 import { checkBase, ConflictError, knownBlocks, pageResource, pageVersion, regionalSiblings, requireEditor, type PageRef } from "./page-core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -219,13 +220,11 @@ export async function restorePage(ref: PageRef, revisionId: number, base?: strin
   }
 }
 
-/** Page picker and the Pages tool of the editor: every page it can open (docs/screens/on-page-editor.md). */
-export type PickPage = { r: string; id: number; title: string; type: string; region: Region | null; path: string; status: "live" | "changed" | "draft"; siteKey?: string };
-export async function editorPageList(): Promise<{ pages: PickPage[] } | Fail> {
+/** The site as a tree, every page once (its regions as versions): the page picker and the Pages tool. */
+export async function editorPageTree(): Promise<{ tree: PageNode[] } | Fail> {
   try {
     await requireEditor();
-    const cards = await listEditorPages();
-    return { pages: cards.map(({ r, id, title, type, region, path, status, siteKey }) => ({ r, id, title, type, region, path, status, ...(siteKey ? { siteKey } : {}) })) };
+    return { tree: buildPageTree(await listEditorPages()) };
   } catch (err) {
     return fail(err);
   }

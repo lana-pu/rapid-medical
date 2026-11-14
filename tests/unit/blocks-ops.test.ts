@@ -223,3 +223,18 @@ describe("hide a section (editor's content mode, on-page-editor.md → «Скр�
     expect(describeBlockChanges(pd, hid)).toEqual(["Hid Text in tab “Overview”"]);
   });
 });
+
+describe("drag and drop: put a section at a position", () => {
+  it("moves within the page; pinned blocks stay last", () => {
+    expect(ids(applyOp(page, { op: "moveTo", id: "c", to: 0 }))).toBe("c,h,t,i");
+    expect(ids(applyOp(page, { op: "moveTo", id: "h", to: 3 }))).toBe("t,c,h,i"); // not after the pinned one
+    expect(() => applyOp(page, { op: "moveTo", id: "i", to: 0 })).toThrow(/end of the page/);
+    expect(() => applyOp(page, { op: "moveTo", id: "h", to: 9 })).toThrow(/position/);
+  });
+  it("moves inside a tab and selects the new address", () => {
+    const pd: StoredBlock[] = [{ id: "p", type: "productDetails", variant: "pills", data: { tabs: [{ id: "o", label: "O", blocks: ["a", "b", "c"].map((body) => ({ type: "text", variant: "default", data: { body } })) }] } }];
+    const next = applyOp(pd, { op: "moveTo", id: "p/0/2", to: 0 });
+    expect((next[0].data as any).tabs[0].blocks.map((b: any) => b.data.body).join("")).toBe("cab");
+    expect(selectAfterOp({ op: "moveTo", id: "p/0/2", to: 0 }, pd, next)).toBe("p/0/0");
+  });
+});

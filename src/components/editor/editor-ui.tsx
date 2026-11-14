@@ -5,8 +5,6 @@ import { RichText } from "@/components/admin/RichText";
 import type { PageInfo, SectionInfo, HistoryItem } from "@/admin/page-editor";
 import type { Preset } from "@/blocks/templates";
 import { withBase } from "@/lib/demo";
-import { SECTIONS, sectionForResource } from "@/admin/site-sections";
-import { REGION_CHOICES } from "@/lib/regions";
 
 /**
  * Presentational parts of the page editor (docs/screens/on-page-editor.md): top bar, section toolbar,
@@ -24,9 +22,6 @@ export function statusText(info: PageInfo | null, legacyPending: number): string
   if (info.status === "changed") return "Live, with unpublished changes";
   return legacyPending ? "Live, with unpublished changes" : "Live";
 }
-
-/** Pages the editor can open (page picker and the Pages tool). */
-export type PickPage = { r: string; id: number; title: string; type: string; region: string | null; path: string; status: "live" | "changed" | "draft"; siteKey?: string };
 
 export function TopBar(props: {
   info: PageInfo | null;
@@ -170,9 +165,9 @@ export function ToolRail(props: {
 }
 
 /** The panel of a rail tool, next to the rail. */
-export function ToolPanel({ title, children, onClose, top, wide = false }: { title: string; children: ReactNode; onClose: () => void; top: number; wide?: boolean }) {
+export function ToolPanel({ title, children, onClose, top, wide = false, width = TOOL_W }: { title: string; children: ReactNode; onClose: () => void; top: number; wide?: boolean; width?: number }) {
   return (
-    <aside className={`fixed bottom-0 z-[1003] flex flex-col border-r border-neutral-200 bg-white text-neutral-900 shadow-2xl ${wide ? "right-0" : "w-80"}`} style={{ top, left: RAIL_W }} aria-label={title}>
+    <aside className={`fixed bottom-0 z-[1003] flex flex-col border-r border-neutral-200 bg-white text-neutral-900 shadow-2xl ${wide ? "right-0" : ""}`} style={{ top, left: RAIL_W, ...(wide ? {} : { width }) }} aria-label={title}>
       <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
         <h2 className="text-base font-semibold">{title}</h2>
         <button type="button" onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Close">✕</button>
@@ -182,39 +177,6 @@ export function ToolPanel({ title, children, onClose, top, wide = false }: { tit
   );
 }
 
-/** Pages to open, by site section, with search (page picker and the Pages tool). */
-export function PagesList({ pages, current, onPick, maxHeight }: { pages: PickPage[] | null; current: string | null; onPick: (path: string) => void; maxHeight?: string }) {
-  const [q, setQ] = useState("");
-  if (!pages) return <p className="p-4 text-sm text-neutral-500">Loading…</p>;
-  const needle = q.trim().toLowerCase();
-  const shown = pages.filter((p) => !needle || `${p.title} ${p.type} ${p.path}`.toLowerCase().includes(needle));
-  const groups = SECTIONS.map((sec) => ({ sec, items: shown.filter((p) => sectionForResource(p.r, p.siteKey)?.key === sec.key) })).filter((g) => g.items.length);
-  const rest = shown.filter((p) => !sectionForResource(p.r, p.siteKey));
-  return (
-    <div>
-      <div className="border-b border-neutral-200 p-2">
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pages" aria-label="Search pages" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
-      </div>
-      <div className="overflow-auto p-1" style={maxHeight ? { maxHeight } : undefined}>
-        {[...groups.map((g) => ({ label: g.sec.title, items: g.items })), ...(rest.length ? [{ label: "Other", items: rest }] : [])].map((g) => (
-          <div key={g.label} className="py-1">
-            <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{g.label}</div>
-            {g.items.map((p) => (
-              <button key={`${p.r}:${p.id}`} type="button" onClick={() => onPick(p.path)} aria-current={current === `${p.r}:${p.id}` ? "page" : undefined} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-neutral-100 ${current === `${p.r}:${p.id}` ? "bg-neutral-100 font-semibold" : ""}`}>
-                <span className="min-w-0 flex-1 truncate">{p.title}</span>
-                {p.region && <span className="shrink-0 text-xs text-neutral-500">{REGION_LABEL[p.region] ?? p.region}</span>}
-                {p.status !== "live" && <span className="shrink-0 rounded bg-amber-100 px-1 text-[10px] text-amber-900">{p.status === "draft" ? "draft" : "changes"}</span>}
-              </button>
-            ))}
-          </div>
-        ))}
-        {!shown.length && <p className="p-3 text-sm text-neutral-500">No pages match.</p>}
-      </div>
-    </div>
-  );
-}
-const REGION_LABEL: Record<string, string> = Object.fromEntries(REGION_CHOICES.map((c) => [c.region, c.label]));
-
 /** Sections of the page, like Webflow's Navigator: select, move, hide, copy, delete (on-page-editor.md). */
 export function SectionsList(props: {
   sections: SectionInfo[];
@@ -223,6 +185,8 @@ export function SectionsList(props: {
   canDesign: boolean;
   onSelect: (id: string) => void;
   onMove: (s: SectionInfo, d: -1 | 1) => void;
+  /** drag and drop inside a list */
+  onMoveTo: (s: SectionInfo, to: number) => void;
   onHide: (s: SectionInfo) => void;
   onCopy: (s: SectionInfo) => void;
   onRemove: (s: SectionInfo) => void;
@@ -231,6 +195,14 @@ export function SectionsList(props: {
 }) {
   const t = "rounded px-1.5 py-0.5 text-xs text-neutral-600 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-30";
   const listOf = (l: string) => props.sections.filter((s) => s.list === l);
+  const [drag, setDrag] = useState<SectionInfo | null>(null);
+  const [over, setOver] = useState<{ id: string; below: boolean } | null>(null);
+  /** where the dragged section lands when dropped on `s` (above or below it), in its list */
+  const target = (s: SectionInfo, below: boolean) => {
+    if (!drag || drag.list !== s.list || drag.id === s.id || s.pinned) return null;
+    const to = below ? (drag.at < s.at ? s.at : s.at + 1) : drag.at < s.at ? s.at - 1 : s.at;
+    return to === drag.at ? null : to;
+  };
   const row = (s: SectionInfo, depth: number) => {
     const list = listOf(s.list);
     const last = s.at === list.length - 1 || !!list[s.at + 1]?.pinned;
@@ -238,7 +210,37 @@ export function SectionsList(props: {
     const children = [...new Set(props.sections.filter((x) => x.list.split("/")[0] === s.id).map((x) => x.list))];
     return (
       <li key={s.id}>
-        <div className={`group flex items-center gap-1 rounded px-2 py-1 ${props.selected === s.id ? "bg-blue-50 ring-1 ring-blue-500" : "hover:bg-neutral-50"}`} style={{ paddingLeft: 8 + depth * 14 }}>
+        <div
+          data-section-row={s.id}
+          draggable={!s.pinned && !props.busy}
+          onDragStart={(e) => {
+            setDrag(s);
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", s.name);
+          }}
+          onDragEnd={() => {
+            setDrag(null);
+            setOver(null);
+          }}
+          onDragOver={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            const below = e.clientY > r.top + r.height / 2;
+            if (target(s, below) === null) return;
+            e.preventDefault();
+            setOver({ id: s.id, below });
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            const to = over && over.id === s.id ? target(s, over.below) : null;
+            if (drag && to !== null) props.onMoveTo(drag, to);
+            setDrag(null);
+            setOver(null);
+          }}
+          className={`group relative flex items-center gap-1 rounded px-2 py-1 ${props.selected === s.id ? "bg-blue-50 ring-1 ring-blue-500" : "hover:bg-neutral-50"} ${drag?.id === s.id ? "opacity-40" : ""}`}
+          style={{ paddingLeft: 8 + depth * 14 }}
+        >
+          {over?.id === s.id && <span aria-hidden className={`absolute inset-x-1 h-0.5 rounded bg-blue-600 ${over.below ? "-bottom-px" : "-top-px"}`} />}
+          <span aria-hidden title={s.pinned ? "Stays at the end of the page" : "Drag to move"} className={`select-none text-neutral-300 ${s.pinned ? "" : "cursor-grab group-hover:text-neutral-500"}`}>⠿</span>
           <button type="button" onClick={() => props.onSelect(s.id)} className={`min-w-0 flex-1 truncate text-left text-sm ${s.hidden ? "text-neutral-400 line-through" : ""}`} title={s.name}>
             {s.name}
           </button>
@@ -454,32 +456,70 @@ function PresetThumb({ type, variant }: { type: string; variant: string }) {
   );
 }
 
-export function PresetList({ presets, onPick, busy }: { presets: Preset[]; onPick: (p: Preset) => void; busy: boolean }) {
+/** The Add section catalogue: groups of blocks (docs/screens/on-page-editor.md → «＋ Add»). */
+const CATEGORIES: { label: string; names: string[] }[] = [
+  { label: "Headers", names: ["Hero"] },
+  { label: "Text", names: ["Text", "Rich text", "Text and media", "Columns"] },
+  { label: "Media", names: ["Media", "Video", "Gallery", "Device diagram"] },
+  { label: "Proof", names: ["Key numbers", "Spec table", "Product details", "People"] },
+  { label: "Actions", names: ["Call to action", "Form"] },
+];
+const categoryOf = (name: string) => CATEGORIES.find((c) => c.names.includes(name))?.label ?? "More";
+
+/** A preset being dragged from the catalogue onto the page (the page editor reads it while the pointer moves). */
+export const DRAG_PRESET = "application/x-rm-preset";
+
+export function PresetList({ presets, onPick, busy, onDragPreset }: { presets: Preset[]; onPick: (p: Preset) => void; busy: boolean; onDragPreset?: (p: Preset | null) => void }) {
   const [q, setQ] = useState("");
-  const shown = presets.filter((p) => `${p.name} ${p.label} ${p.description}`.toLowerCase().includes(q.toLowerCase()));
+  const [cat, setCat] = useState<string>("All");
+  const cats = ["All", ...CATEGORIES.map((c) => c.label).filter((l) => presets.some((p) => categoryOf(p.name) === l)), ...(presets.some((p) => categoryOf(p.name) === "More") ? ["More"] : [])];
+  const needle = q.trim().toLowerCase();
+  const shown = presets.filter((p) => (cat === "All" || categoryOf(p.name) === cat) && (!needle || `${p.name} ${p.label} ${p.description}`.toLowerCase().includes(needle)));
   const groups = [...new Set(shown.map((p) => p.name))];
   return (
-    <div className="space-y-4">
-      <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search sections" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
-      {groups.map((g) => (
-        <section key={g}>
-          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">{g}</h3>
-          <ul className="divide-y divide-neutral-100 rounded border border-neutral-200">
-            {shown.filter((p) => p.name === g).map((p) => (
-              <li key={`${p.type}:${p.variant}`}>
-                <button type="button" disabled={busy} onClick={() => onPick(p)} className="flex w-full gap-3 px-3 py-2 text-left hover:bg-neutral-50 disabled:opacity-50">
-                  <PresetThumb type={p.type} variant={p.variant} />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium">{p.label}</span>
-                    <span className="block text-xs text-neutral-500">{p.description}</span>
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-      {!shown.length && <p className="text-sm text-neutral-500">Nothing matches “{q}”.</p>}
+    <div className="flex h-full flex-col">
+      <div className="space-y-2 border-b border-neutral-200 p-3">
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search sections" aria-label="Search sections" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
+        <div role="tablist" aria-label="Kinds of sections" className="flex flex-wrap gap-1">
+          {cats.map((c) => (
+            <button key={c} type="button" role="tab" aria-selected={cat === c} onClick={() => setCat(c)} className={`rounded-full px-2.5 py-0.5 text-xs ${cat === c ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"}`}>
+              {c}
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-neutral-500">Click to add after the selected section, or drag onto the page.</p>
+      </div>
+      <div className="flex-1 space-y-4 overflow-auto p-3">
+        {groups.map((g) => (
+          <section key={g}>
+            <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-500">{g}</h3>
+            <ul className="grid grid-cols-2 gap-2">
+              {shown.filter((p) => p.name === g).map((p) => (
+                <li key={`${p.type}:${p.variant}`}>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    draggable={!busy}
+                    title={p.description}
+                    onClick={() => onPick(p)}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = "copy";
+                      e.dataTransfer.setData(DRAG_PRESET, `${p.type}:${p.variant}`);
+                      onDragPreset?.(p);
+                    }}
+                    onDragEnd={() => onDragPreset?.(null)}
+                    className="flex w-full cursor-grab flex-col items-center gap-1 rounded border border-neutral-200 p-1.5 text-left hover:border-blue-500 hover:bg-blue-50 disabled:opacity-50"
+                  >
+                    <PresetThumb type={p.type} variant={p.variant} />
+                    <span className="w-full truncate text-xs font-medium">{p.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+        {!shown.length && <p className="text-sm text-neutral-500">Nothing matches.</p>}
+      </div>
     </div>
   );
 }

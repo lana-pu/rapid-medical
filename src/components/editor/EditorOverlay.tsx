@@ -14,9 +14,11 @@ import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
 import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
-import { BAR_H, RAIL_W, TOOL_W, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SectionsList, SidePanel, TabsPanel, ToolPanel, ToolRail, TopBar, statusText, type PickPage, type ToolKey } from "./editor-ui";
+import { BAR_H, DRAG_PRESET, RAIL_W, TOOL_W, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SectionsList, SidePanel, TabsPanel, ToolPanel, ToolRail, TopBar, statusText, type ToolKey } from "./editor-ui";
 import { RegionsTable } from "./RegionsTable";
 import { PagesPanel, RecordPanel, type OpenRecord } from "./PagesPanel";
+import { pageKey, type PageNode } from "@/admin/page-tree";
+import type { Preset } from "@/blocks/templates";
 
 /**
  * The page editor (docs/screens/on-page-editor.md, ADR-006/007), loaded only in editor mode.
@@ -144,7 +146,10 @@ export default function EditorOverlay() {
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
-  const [pages, setPages] = useState<PickPage[] | null>(null);
+  const [tree, setTree] = useState<PageNode[] | null>(null);
+  /** a section being dragged from the catalogue, and where it would land */
+  const dragPreset = useRef<Preset | null>(null);
+  const [dropAt, setDropAt] = useState<{ list: string; at: number; y: number; left: number; width: number } | null>(null);
   const [scroll, setScroll] = useState(0);
   const [undoCount, setUndoCount] = useState(0);
   const [redoCount, setRedoCount] = useState(0);
@@ -173,11 +178,11 @@ export default function EditorOverlay() {
   const loadRegionTexts = useCallback(async () => (page ? pageApi.regionTexts(page) : { error: "This page is the same in every region" }), [page]);
 
   const loadPages = useCallback(async () => {
-    if (pages) return;
-    const r = await pageApi.editorPageList();
+    if (tree) return;
+    const r = await pageApi.editorPageTree();
     if ("error" in r) say(r.error, true);
-    else setPages(r.pages as PickPage[]);
-  }, [pages, say]);
+    else setTree(r.tree);
+  }, [tree, say]);
 
   const targetsOnPage = useCallback(() => {
     const out: Ref[] = [];
@@ -534,6 +539,54 @@ export default function EditorOverlay() {
     };
   }, [startText, preview, off, remeasure]);
 
+  /* ---- dragging a section from the catalogue onto the page: a line shows where it lands ---- */
+  useEffect(() => {
+    if (tool?.k !== "add" || !info) return;
+    const place = (e: DragEvent) => {
+      const p = dragPreset.current;
+      if (!p) return null;
+      const all = boxesRef.current;
+      let box = hitTest(all, e.pageX, e.pageY);
+      // inside a tab only the blocks that can stand there; otherwise the tab's own section
+      if (box?.l && !p.nestable) box = all.find((b) => !b.l && b.id === box!.l.split("/")[0]);
+      if (!box) {
+        const tops = all.filter((b) => !b.l);
+        box = tops.find((b) => e.pageY < b.top + b.height) ?? tops[tops.length - 1];
+      }
+      const s = box && info.sections.find((x) => x.id === box!.id);
+      if (!box || !s) return null;
+      const below = e.pageY > box.top + box.height / 2;
+      let at = s.at + (below ? 1 : 0);
+      if (!s.list) {
+        const firstPinned = info.sections.filter((x) => x.list === "").findIndex((x) => x.pinned);
+        if (firstPinned >= 0 && at > firstPinned) at = firstPinned; // pinned blocks stay last
+      }
+      return { list: s.list, at, y: below ? box.top + box.height : box.top, left: box.left, width: box.width };
+    };
+    const ours = (e: DragEvent) => !!e.dataTransfer?.types.includes(DRAG_PRESET) && !(e.target as HTMLElement).closest?.("#rm-editor-ui");
+    const over = (e: DragEvent) => {
+      if (!ours(e)) return;
+      e.preventDefault();
+      e.dataTransfer!.dropEffect = "copy";
+      setDropAt(place(e));
+    };
+    const drop = (e: DragEvent) => {
+      if (!ours(e)) return;
+      e.preventDefault();
+      const t = place(e);
+      const p = dragPreset.current;
+      dragPreset.current = null;
+      setDropAt(null);
+      if (t && p) void runOp({ op: "add", at: t.at, type: p.type, variant: p.variant, ...(t.list ? { in: t.list } : {}) }, `Added ${p.name}`);
+    };
+    window.addEventListener("dragover", over);
+    window.addEventListener("drop", drop);
+    return () => {
+      window.removeEventListener("dragover", over);
+      window.removeEventListener("drop", drop);
+    };
+  }, [tool, info, runOp]);
+
   /* ---- top bar actions ---- */
   const legacyItems = (legacy?.items ?? []).filter((it) => !(page && it.r === page.r && it.id === page.id));
   const hasChanges = (info ? info.status !== "live" : false) || legacyItems.length > 0;
@@ -646,8 +699,10 @@ export default function EditorOverlay() {
   const hideBox = !layout && hovered ? boxes.find((b) => b.id === hovered) : null;
   const hideInfo = hideBox ? sectionById.get(hideBox.id) : undefined;
   const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
+  /** the Pages tool is wider (collections with pictures) */
+  const toolWidth = tool?.k === "pages" ? 400 : TOOL_W;
   /** right edge of the rail and its open panel: section controls go to the right of it */
-  const toolEdge = RAIL_W + (tool && tool.k !== "regions" ? TOOL_W : 0);
+  const toolEdge = RAIL_W + (tool && tool.k !== "regions" ? toolWidth : 0);
   const plusAt = new Map<string, { list: string; at: number; y: number; x: number }>(); // list + insert index → place
   for (const b of plusFor) {
     // position in the stored list (a section with nothing to list is stored but not shown)
@@ -659,11 +714,24 @@ export default function EditorOverlay() {
     plusAt.set(`${list}|${at + 1}`, { list, at: at + 1, y: b.top + b.height, x });
   }
   const title = info?.title ?? (typeof document === "undefined" ? "" : document.title.split(/\s[|–-]\s/)[0]);
+  /** the region being edited: the page's own, else the one the visitor side remembers (global pages) */
+  const editRegion = info?.region ?? (typeof document === "undefined" ? null : (/(?:^|;\s*)rm_region=(us|ous|apac)/.exec(document.cookie)?.[1] ?? null));
+  const pagesPanel = (onDone?: () => void, maxHeight?: string) => (
+    <PagesPanel
+      tree={DEMO ? [] : tree}
+      region={editRegion}
+      currentKey={pageKey(pathname)}
+      demo={DEMO}
+      maxHeight={maxHeight}
+      onPage={(p) => { onDone?.(); router.push(p); }}
+      onRecord={(rec) => { onDone?.(); setPanel({ k: "record", rec }); }}
+    />
+  );
 
   return (
     <div id="rm-editor-ui">
       {/* the page moves aside for the open tool panel (like Webflow's canvas), so nothing on it is covered */}
-      <style>{STYLE(top, preview, layout, RAIL_W + (tool && tool.k !== "regions" ? TOOL_W : 0))}</style>
+      <style>{STYLE(top, preview, layout, RAIL_W + (tool && tool.k !== "regions" ? toolWidth : 0))}</style>
       {DEMO && (
         <div className="fixed inset-x-0 top-0 z-[1001] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
           Demo — edits are saved only in your browser (localStorage). No server, no database.
@@ -690,16 +758,7 @@ export default function EditorOverlay() {
           onRegion={(p) => router.push(p)}
           onExit={() => { setDemoEditorOff(true); setOff(true); }}
           loadPages={() => void (DEMO ? undefined : loadPages())}
-          picker={(close) => (
-            <PagesPanel
-              pages={DEMO ? [] : pages}
-              current={page ? `${page.r}:${page.id}` : null}
-              demo={DEMO}
-              maxHeight="60vh"
-              onPage={(p) => { close(); router.push(p); }}
-              onRecord={(rec) => { close(); setPanel({ k: "record", rec }); }}
-            />
-          )}
+          picker={(close) => pagesPanel(close, "60vh")}
         />
       )}
       {!preview && (
@@ -754,6 +813,7 @@ export default function EditorOverlay() {
             </div>
           )}
           {sel && <div className="pointer-events-none fixed z-[999] border-2 border-blue-600" style={vis(sel)} />}
+          {dropAt && <div aria-hidden data-rm-drop className="pointer-events-none fixed z-[1002] h-1 rounded bg-blue-600 shadow" style={{ top: dropAt.y - scroll - 2, left: dropAt.left, width: dropAt.width }} />}
           {hideBox && hideInfo && !hideInfo.pinned && !hideInfo.hidden && (
             <button
               type="button"
@@ -863,10 +923,14 @@ export default function EditorOverlay() {
       )}
       {tool?.k === "add" && (
         <ToolPanel title={tool.list ? "Add section to this tab" : "Add section"} top={top} onClose={() => setTool(null)}>
-          <div className="p-4">
+          <div className="h-full">
             <PresetList
               presets={(info?.presets ?? []).filter((p) => !tool.list || p.nestable)}
               busy={busy}
+              onDragPreset={(p) => {
+                dragPreset.current = p;
+                if (!p) setDropAt(null);
+              }}
               onPick={async (p) => {
                 setTool({ k: "sections" });
                 await runOp({ op: "add", at: tool.at, type: p.type, variant: p.variant, ...(tool.list ? { in: tool.list } : {}) }, `Added ${p.name}`);
@@ -888,6 +952,7 @@ export default function EditorOverlay() {
               if (b) window.scrollTo({ top: Math.max(0, b.top - top - 80), behavior: "smooth" });
             }}
             onMove={(x, d) => runOp({ op: "move", id: x.id, dir: d }, `Moved ${x.name}`)}
+            onMoveTo={(x, to) => runOp({ op: "moveTo", id: x.id, to }, `Moved ${x.name}`)}
             onHide={(x) => runOp({ op: "hide", id: x.id, hidden: !x.hidden }, `${x.hidden ? "Showed" : "Hid"} ${x.name}`)}
             onCopy={(x) => runOp({ op: "duplicate", id: x.id }, `Copied ${x.name}`)}
             onRemove={(x) => runOp({ op: "remove", id: x.id }, `Deleted ${x.name}`)}
@@ -897,11 +962,11 @@ export default function EditorOverlay() {
         </ToolPanel>
       )}
       {tool?.k === "pages" && (
-        <ToolPanel title="Pages" top={top} onClose={() => setTool(null)}>
+        <ToolPanel title="Pages" top={top} width={toolWidth} onClose={() => setTool(null)}>
           {DEMO ? (
             <p className="p-4 text-sm"><a className="underline" href={withBase("/admin/editor")}>All pages</a></p>
           ) : (
-            <PagesPanel pages={pages} current={page ? `${page.r}:${page.id}` : null} demo={DEMO} onPage={(p) => router.push(p)} onRecord={(rec) => setPanel({ k: "record", rec })} />
+            pagesPanel()
           )}
         </ToolPanel>
       )}

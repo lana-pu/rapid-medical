@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import * as collections from "@/admin/collections";
 import type { CollectionField, CollectionItem, CollectionSummary } from "@/admin/collections";
 import * as live from "@/admin/inline";
-import { PagesList, type PickPage } from "./editor-ui";
+import type { PageNode, PageVersion } from "@/admin/page-tree";
+import { REGION_CHOICES } from "@/lib/regions";
 
 /**
  * 📄 Pages and the page picker: «Pages» (built from sections) and «Collections» (records of one kind), like Webflow's
@@ -13,9 +14,72 @@ import { PagesList, type PickPage } from "./editor-ui";
  */
 export type OpenRecord = { item: CollectionItem; fields: CollectionField[]; collection: string };
 
+const REGION_LABEL: Record<string, string> = Object.fromEntries(REGION_CHOICES.map((c) => [c.region, c.label]));
+
+/** The version of a page for the region being edited (a page for every region: its only version). */
+const versionFor = (n: PageNode, region: string | null): PageVersion | undefined => n.versions.find((v) => v.region === region) ?? n.versions.find((v) => v.region === null);
+
+/** The site as a tree, every page once; the region comes from the top bar (on-page-editor.md → «Страницы и коллекции»). */
+export function PagesTree({ tree, region, currentKey, onOpen, maxHeight }: { tree: PageNode[] | null; region: string | null; currentKey: string; onOpen: (path: string) => void; maxHeight?: string }) {
+  const [q, setQ] = useState("");
+  const [closed, setClosed] = useState<Set<string>>(new Set());
+  if (!tree) return <p className="p-4 text-sm text-neutral-500">Loading…</p>;
+  const needle = q.trim().toLowerCase();
+  const matches = (n: PageNode): boolean => !needle || `${n.title} ${n.type} ${n.key}`.toLowerCase().includes(needle) || n.children.some(matches);
+  const row = (n: PageNode, depth: number) => {
+    if (!matches(n)) return null;
+    const v = versionFor(n, region);
+    const open = needle || !closed.has(n.key);
+    const group = !n.versions.length; // «Other pages»: a heading, not a page
+    const here = n.key === currentKey;
+    return (
+      <li key={n.key}>
+        <div className={`flex items-center gap-1 rounded pr-2 ${here ? "bg-blue-50 ring-1 ring-blue-500" : "hover:bg-neutral-100"}`} style={{ paddingLeft: 4 + depth * 16 }}>
+          {n.children.length ? (
+            <button type="button" aria-label={open ? `Collapse ${n.title}` : `Expand ${n.title}`} aria-expanded={!!open} onClick={() => setClosed((c) => { const x = new Set(c); if (x.has(n.key)) x.delete(n.key); else x.add(n.key); return x; })} className="w-5 shrink-0 text-xs text-neutral-500">
+              {open ? "▾" : "▸"}
+            </button>
+          ) : (
+            <span className="w-5 shrink-0" />
+          )}
+          {group ? (
+            <span className="flex-1 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-500">{n.title}</span>
+          ) : (
+            <button
+              type="button"
+              aria-current={here ? "page" : undefined}
+              onClick={() => onOpen((v ?? n.versions[0]).path)}
+              title={v ? n.title : `${n.title} — not in ${REGION_LABEL[region ?? ""] ?? "this region"}; opens ${REGION_LABEL[n.versions[0].region ?? ""] ?? ""}`}
+              className={`flex min-w-0 flex-1 items-center gap-2 py-1.5 text-left text-sm ${v ? "" : "text-neutral-400"}`}
+            >
+              <span className="min-w-0 flex-1 truncate">{n.title}</span>
+              {!v && <span className="shrink-0 text-[10px]">not in {REGION_LABEL[region ?? ""] ?? "this region"}</span>}
+              {n.fieldsOnly && <span className="shrink-0 text-[10px] text-neutral-400" title="A list page: its texts are edited in place, its items in Collections">list</span>}
+              {v && v.status !== "live" && <span className="shrink-0 rounded bg-amber-100 px-1 text-[10px] text-amber-900">{v.status === "draft" ? "draft" : "changes"}</span>}
+            </button>
+          )}
+        </div>
+        {open && n.children.length > 0 && <ul>{n.children.map((c) => row(c, depth + 1))}</ul>}
+      </li>
+    );
+  };
+  return (
+    <div>
+      <div className="border-b border-neutral-200 p-2">
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pages" aria-label="Search pages" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
+        {region && <p className="mt-1 px-1 text-[11px] text-neutral-500">Opens the {REGION_LABEL[region]} version — switch the region in the top bar.</p>}
+      </div>
+      <ul className="overflow-auto p-1" style={maxHeight ? { maxHeight } : undefined} aria-label="Pages of the site">
+        {tree.map((n) => row(n, 0))}
+      </ul>
+    </div>
+  );
+}
+
 export function PagesPanel(props: {
-  pages: PickPage[] | null;
-  current: string | null;
+  tree: PageNode[] | null;
+  region: string | null;
+  currentKey: string;
   demo: boolean;
   onPage: (path: string) => void;
   onRecord: (r: OpenRecord) => void;
@@ -23,7 +87,8 @@ export function PagesPanel(props: {
 }) {
   const [tab, setTab] = useState<"pages" | "collections">("pages");
   const [list, setList] = useState<CollectionSummary[] | null>(null);
-  const [open, setOpen] = useState<{ key: string; title: string; newLabel: string; newHref: string; fields: CollectionField[]; items: CollectionItem[] } | null>(null);
+  const [open, setOpen] = useState<{ key: string; title: string; where: string; newLabel: string; newHref: string; fields: CollectionField[]; items: CollectionItem[] } | null>(null);
+  const [filter, setFilter] = useState<"all" | "live" | "draft" | "changed">("all");
   const [q, setQ] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +109,7 @@ export function PagesPanel(props: {
     const r = await collections.collectionItems(key);
     if ("error" in r) return setError(r.error);
     setQ("");
+    setFilter("all");
     setOpen({ key, ...r });
   };
 
@@ -62,41 +128,11 @@ export function PagesPanel(props: {
         </div>
       )}
       {tab === "pages" ? (
-        <PagesList pages={props.pages} current={props.current} onPick={props.onPage} maxHeight={props.maxHeight} />
+        <PagesTree tree={props.tree} region={props.region} currentKey={props.currentKey} onOpen={props.onPage} maxHeight={props.maxHeight} />
       ) : error ? (
         <p className="p-4 text-sm text-red-700">{error}</p>
       ) : open ? (
-        <div>
-          <div className="flex items-center gap-2 border-b border-neutral-200 p-2">
-            <button type="button" onClick={() => setOpen(null)} className="rounded px-2 py-1 text-sm hover:bg-neutral-100">← Collections</button>
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold">{open.title}</span>
-            <a href={open.newHref} target="_blank" rel="noreferrer" className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50">+ New {open.newLabel} ↗</a>
-          </div>
-          <div className="border-b border-neutral-200 p-2">
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${open.title.toLowerCase()}`} aria-label={`Search ${open.title.toLowerCase()}`} className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
-          </div>
-          <ul className="overflow-auto p-1" style={props.maxHeight ? { maxHeight: props.maxHeight } : undefined}>
-            {open.items
-              .filter((it) => !q.trim() || `${it.title} ${it.sub}`.toLowerCase().includes(q.trim().toLowerCase()))
-              .map((it) => (
-                <li key={it.id}>
-                  <button
-                    type="button"
-                    onClick={() => (it.path ? props.onPage(it.path) : props.onRecord({ item: it, fields: open.fields, collection: open.title }))}
-                    className="flex w-full items-start gap-2 rounded px-2 py-1.5 text-left hover:bg-neutral-100"
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm">{it.title}</span>
-                      {it.sub && <span className="block truncate text-xs text-neutral-500">{it.sub}</span>}
-                    </span>
-                    {it.status && it.status !== "live" && <span className="shrink-0 rounded bg-amber-100 px-1 text-[10px] text-amber-900">{it.status === "draft" ? "draft" : "changes"}</span>}
-                    <span className="shrink-0 text-xs text-neutral-400" aria-hidden>{it.path ? "page ›" : "edit ›"}</span>
-                  </button>
-                </li>
-              ))}
-            {!open.items.length && <li className="p-3 text-sm text-neutral-500">Nothing here yet.</li>}
-          </ul>
-        </div>
+        <CollectionView open={open} q={q} setQ={setQ} filter={filter} setFilter={setFilter} maxHeight={props.maxHeight} onBack={() => setOpen(null)} onItem={(it) => (it.path ? props.onPage(it.path) : props.onRecord({ item: it, fields: open.fields, collection: open.title }))} />
       ) : !list ? (
         <p className="p-4 text-sm text-neutral-500">Loading…</p>
       ) : (
@@ -115,6 +151,71 @@ export function PagesPanel(props: {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+type Open = { key: string; title: string; where: string; newLabel: string; newHref: string; fields: CollectionField[]; items: CollectionItem[] };
+type Filter = "all" | "live" | "draft" | "changed";
+const STATUS: Record<Filter, string> = { all: "All", live: "Live", draft: "Draft", changed: "Changes" };
+
+/** One collection's records: grouped, with pictures, a status filter and search that stay on top. */
+function CollectionView({ open, q, setQ, filter, setFilter, maxHeight, onBack, onItem }: { open: Open; q: string; setQ: (v: string) => void; filter: Filter; setFilter: (f: Filter) => void; maxHeight?: string; onBack: () => void; onItem: (it: CollectionItem) => void }) {
+  const needle = q.trim().toLowerCase();
+  const count = (f: Filter) => open.items.filter((it) => f === "all" || it.status === f).length;
+  const shown = open.items.filter((it) => (filter === "all" || it.status === filter) && (!needle || `${it.title} ${it.sub} ${it.group ?? ""}`.toLowerCase().includes(needle)));
+  const groups = [...new Set(shown.map((it) => it.group ?? ""))];
+  const hasStatus = open.items.some((it) => it.status);
+  return (
+    <div className="flex h-full flex-col">
+      <div className="sticky top-0 z-10 space-y-2 border-b border-neutral-200 bg-white p-2">
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={onBack} className="rounded px-2 py-1 text-sm hover:bg-neutral-100">← Collections</button>
+          <a href={open.newHref} target="_blank" rel="noreferrer" className="ml-auto rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50">+ New {open.newLabel} ↗</a>
+        </div>
+        <div className="px-1">
+          <h3 className="text-base font-semibold">{open.title}</h3>
+          <p className="text-xs text-neutral-500">{open.where}</p>
+        </div>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${open.title.toLowerCase()}`} aria-label={`Search ${open.title.toLowerCase()}`} className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
+        {hasStatus && (
+          <div role="tablist" aria-label="Status" className="flex flex-wrap gap-1">
+            {(Object.keys(STATUS) as Filter[]).map((f) => (
+              <button key={f} type="button" role="tab" aria-selected={filter === f} onClick={() => setFilter(f)} className={`rounded-full px-2.5 py-0.5 text-xs ${filter === f ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"}`}>
+                {STATUS[f]} {count(f)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex-1 overflow-auto p-1" style={maxHeight ? { maxHeight } : undefined}>
+        {groups.map((g) => (
+          <section key={g || "-"} aria-label={g || open.title}>
+            {g && <h4 className="sticky top-0 bg-white/95 px-2 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{g}</h4>}
+            <ul>
+              {shown.filter((it) => (it.group ?? "") === g).map((it) => (
+                <li key={it.id}>
+                  <button type="button" onClick={() => onItem(it)} className="flex w-full items-center gap-3 rounded px-2 py-2 text-left hover:bg-neutral-100">
+                    {it.thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={it.thumb} alt="" loading="lazy" className="h-10 w-10 shrink-0 rounded border border-neutral-200 object-cover" />
+                    ) : (
+                      <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-neutral-100 text-xs font-semibold text-neutral-400">{it.title.slice(0, 1)}</span>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 text-sm leading-snug">{it.title}</span>
+                      {it.sub && <span className="block truncate text-xs text-neutral-500">{it.sub}</span>}
+                    </span>
+                    {it.status && it.status !== "live" && <span className="shrink-0 rounded bg-amber-100 px-1 text-[10px] text-amber-900">{it.status === "draft" ? "draft" : "changes"}</span>}
+                    <span className="shrink-0 text-[11px] text-neutral-400" title={it.path ? "Opens its page in the editor" : "Opens its texts on the right"}>{it.path ? "page ›" : "edit ›"}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+        {!shown.length && <p className="p-3 text-sm text-neutral-500">{open.items.length ? "Nothing matches." : "Nothing here yet."}</p>}
+      </div>
     </div>
   );
 }
