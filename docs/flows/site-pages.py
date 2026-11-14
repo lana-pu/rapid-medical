@@ -722,17 +722,17 @@ def region_bg(region=None):
 # ---------- Careers ----------
 CAREERS_REFS = [
     {'title': 'Страница карьеры: культура и вакансии на одной странице',
-     'ask': 'Сейчас Careers и Open positions — две страницы, а вакансий 0. Держать вакансии прямо на Careers?',
+     'ask': 'Решено 2026-11-14: вакансии на Careers, /open-positions → редирект.',
      'refs': [('linear', 'Linear', '«Join us» и сразу список ролей по отделам, регион у каждой', 'sites/sections/b94b791e-21d7-46d0-95e8-cd3ec25fc5ee'),
               ('mixpanel', 'Mixpanel', 'заголовок, строка и «See open roles», ниже фото команды', 'sites/sections/c6860f1b-d4fa-4ba3-b498-443cf317abff'),
               ('braintrust', 'Braintrust', 'ценности и условия сеткой, внизу «Explore open roles»', 'sites/sections/bd36a1b9-baf7-4794-ae3b-28929b65d147')]},
     {'title': 'Список вакансий',
-     'ask': 'Как показывать вакансии, когда они есть: по отделам, с городом?',
+     'ask': 'Решено: из Spark Hire, по отделам, роль · город · Apply ↗.',
      'refs': [('upwork', 'Upwork', 'отдел крупно слева, вакансии и город справа — «общая линия»', 'sites/sections/cf9adcf9-daec-42d3-b942-1fd3152db0a4'),
               ('dropbox', 'Dropbox', 'отдел слева с описанием и числом вакансий', 'sites/sections/feb8fff1-fb42-4d02-ba14-ac0a25053b0b'),
               ('tines', 'Tines', 'группы по отделам, строка: роль, место, стрелка', 'sites/sections/930c8997-584e-424d-9ee6-645f7232ebe3')]},
     {'title': 'Когда вакансий нет',
-     'ask': 'Сейчас кнопка «View open positions» ведёт на пустую страницу (находка 5). Что показывать вместо?',
+     'ask': 'Решено: честная строка + общая заявка; кнопка в шапке меняется по числу вакансий.',
      'refs': [('lyssna', 'Lyssna', '«We currently have no open positions» + «Send us your details anyway»', 'sites/sections/bc7affd2-b934-4719-8d32-39e0ec690399'),
               ('jeton', 'Jeton', 'нет ролей — сразу «Spontaneous application»', 'sites/sections/658f06c7-2c20-4c09-a057-ff7bce698fe2'),
               ('intercom', 'Intercom', '«Don’t see the role?» — подписка на Talent Community', 'sites/sections/9075aadc-5725-4a46-945d-a4a303726f85')]},
@@ -749,6 +749,60 @@ def careers_asis(phone=False):
 
 def openpos_asis():
     return [HEADER, page('Open positions', None, {1: {'annotation': 'Как есть: «Join us» и строка «There are no open positions right now» со ссылкой на общую заявку. Вакансии на новом сайте — своя таблица в админке (0 записей), а HR ведёт их в Spark Hire: на Duda здесь стоял его виджет (Comeet). Две системы — двойной ввод.'}}), FOOTER]
+
+
+# ---------- Careers — decided ----------
+ROLES = [('Clinical', [('Clinical Specialist', 'Texas, US'), ('Clinical Specialist', 'Germany')]),
+         ('Operations', [('Customer Service Representative', 'Yokneam, Israel')])]
+EEO = RM['Careers'][3]['data'].get('note', '')
+
+
+def role_row(title, place):
+    return {'c': 'grid', 'cols': 'minmax(0,1fr) 180px 90px', 'gap': 'm', 'items': [T(title, 'strong'), T(place, 'small'), {'c': 'link', 'text': 'Apply ↗'}]}
+
+
+def roles_block(state, phone=False):
+    if state == 'empty':
+        right = S([T('No open positions right now.', 'strong'),
+                   T('We still read every application — send us your details below and we’ll be in touch when a role fits.', 'body'),
+                   {'c': 'link', 'text': 'Send us your details ↓'}], 's',
+                  annotation=None if phone else 'Вакансий нет — честная строка и сразу путь к общей заявке (Lyssna, Jeton). Секция не пропадает: кандидат видит, что смотрел туда, куда нужно.')
+    else:
+        rows = []
+        for dept, items in ROLES:
+            rows += [T(dept, 'caption')] + sum([[role_row(t, p), {'c': 'divider'}] for t, p in items], [])
+        right = S(rows + [T('Applications go through Spark Hire.', 'caption')], 's',
+                  annotation=None if phone else 'Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Показываем в стиле сайта: по отделам, роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Как подключиться (API или виджет) — проверить; запасной вариант — ссылка «See open roles on Spark Hire». Роли на экране — пример.')
+    left = S([H('Open positions', 2), T('3 roles' if state != 'empty' else '0 roles', 'caption')], 'xs')
+    if phone:
+        return S([left, right], 'm')
+    return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, right]}
+
+
+def candidate_form(phone=False):
+    fields = [{'c': 'chips', 'label': 'Area of interest', 'items': ['General interest', 'Internship', 'Other'], 'active': 0}]
+    pair = lambda a, b: [a, b] if phone else [G([a, b])]
+    fields += pair(I('First name', required=True), I('Last name', required=True))
+    fields += pair(I('Email', required=True), I('LinkedIn or CV link', placeholder='https://'))
+    fields += [I('Country', v='select', value='United States'), {'c': 'textarea', 'label': 'Message', 'placeholder': 'What would you like to work on?'},
+               S([{'c': 'button', 'v': 'primary', 'text': 'Send', 'full': True}, T('By sending, you agree to our Privacy Statement.', 'caption')], 's')]
+    form = S(fields, 'm', annotation=None if phone else 'Форма для кандидатов, а не для клиентов (находка 20): без Organization и темы-заказа; вместо резюме-файла — ссылка на LinkedIn или CV. Правила полей — DESIGN.md → Формы. Куда уходит: в почту HR или в Spark Hire — уточнить вместе с подключением.')
+    left = S([H('Submit general interest', 2), T('Rapid Medical is an equal opportunity employer.', 'small'), {'c': 'link', 'text': 'Read our EEO statement'}], 's',
+             annotation=None if phone else 'Длинный текст EEO — свернут под ссылку: он обязателен, но не должен стоять стеной перед формой.')
+    if phone:
+        return S([left, form], 'm')
+    return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, form]}
+
+
+def careers_new(state='roles', phone=False):
+    cta = {'label': 'See open positions ↓', 'href': '#open-positions'} if state != 'empty' else {'label': 'Send us your details ↓', 'href': '#general-interest'}
+    hero = dict(rm('Careers', 0, cta=cta), **({} if phone else {'annotation': 'Кнопка в шапке зависит от вакансий: есть — «See open positions ↓», нет — «Send us your details ↓». Тупика нет (находка 5).'}))
+    quotes = rm('Careers', 1)
+    principles = dict(rm('Careers', 2, imageUrl=None), **({} if phone else {'annotation': 'Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана.'}))
+    pad = 'm' if phone else 'l'
+    return [HEADER, {'c': 'rm-page', 'items': [hero, quotes, principles]},
+            {'c': 'section', 'pad': pad, 'rule': True, 'items': [dict(roles_block(state, phone), **({} if phone else {}))]},
+            {'c': 'section', 'pad': pad, 'items': [candidate_form(phone)]}, FOOTER]
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -776,6 +830,7 @@ flow = {
         {'title': '4 · Выбор региона — решение (закрыта 2026-11-14)', 'screens': ['region-new', 'region-new-search', 'region-new-phone', 'region-switcher-new']},
         {'title': '5 · Careers и вакансии — как есть', 'screens': ['careers-asis', 'careers-asis-phone', 'openpos-asis']},
         {'title': '5 · Careers и вакансии — примеры из Mobbin', 'screens': ['careers-mobbin']},
+        {'title': '5 · Careers — решение (закрыта 2026-11-14)', 'screens': ['careers-new', 'careers-new-empty', 'careers-new-phone']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -815,6 +870,9 @@ flow = {
               {'from': 'careers-asis', 'to': 'careers-asis-phone', 'label': 'на телефоне'},
               {'from': 'careers-asis', 'to': 'openpos-asis', 'label': 'View open positions'},
               {'from': 'openpos-asis', 'to': 'careers-mobbin', 'label': 'как у других'},
+              {'from': 'careers-mobbin', 'to': 'careers-new', 'label': 'решение'},
+              {'from': 'careers-new', 'to': 'careers-new-empty', 'label': 'вакансий нет'},
+              {'from': 'careers-new', 'to': 'careers-new-phone', 'label': 'на телефоне'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -876,6 +934,10 @@ flow = {
         {'id': 'careers-asis-phone', 'title': 'Careers · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/careers', 'body': careers_asis(True)},
         {'id': 'openpos-asis', 'title': 'Open positions · as is (0 jobs)', 'url': 'rapid-medical.com/open-positions', 'height': 600, 'body': openpos_asis()},
         ref_screen('careers-mobbin', 'Careers · examples from Mobbin', 'careers', CAREERS_REFS),
+        {'id': 'careers-new', 'title': 'Careers · decided, with open roles', 'url': 'rapid-medical.com/careers', 'body': careers_new('roles'),
+         'notes': ['/open-positions → 301 на /careers#open-positions: вакансии живут на одной странице с культурой (Linear, Mixpanel). Страница одной вакансии на сайте не нужна — «Apply» ведёт в Spark Hire.']},
+        {'id': 'careers-new-empty', 'title': 'Careers · decided, no open roles', 'url': 'rapid-medical.com/careers', 'body': careers_new('empty')},
+        {'id': 'careers-new-phone', 'title': 'Careers · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/careers', 'body': careers_new('roles', True)},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

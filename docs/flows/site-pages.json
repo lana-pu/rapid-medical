@@ -133,6 +133,14 @@
    ]
   },
   {
+   "title": "5 · Careers — решение (закрыта 2026-11-14)",
+   "screens": [
+    "careers-new",
+    "careers-new-empty",
+    "careers-new-phone"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -315,6 +323,21 @@
    "from": "openpos-asis",
    "to": "careers-mobbin",
    "label": "как у других"
+  },
+  {
+   "from": "careers-mobbin",
+   "to": "careers-new",
+   "label": "решение"
+  },
+  {
+   "from": "careers-new",
+   "to": "careers-new-empty",
+   "label": "вакансий нет"
+  },
+  {
+   "from": "careers-new",
+   "to": "careers-new-phone",
+   "label": "на телефоне"
   },
   {
    "from": "text-new-phone",
@@ -10314,7 +10337,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас Careers и Open positions — две страницы, а вакансий 0. Держать вакансии прямо на Careers?"
+         "text": "Решено 2026-11-14: вакансии на Careers, /open-positions → редирект."
         },
         {
          "c": "grid",
@@ -10364,7 +10387,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Как показывать вакансии, когда они есть: по отделам, с городом?"
+         "text": "Решено: из Spark Hire, по отделам, роль · город · Apply ↗."
         },
         {
          "c": "grid",
@@ -10414,7 +10437,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас кнопка «View open positions» ведёт на пустую страницу (находка 5). Что показывать вместо?"
+         "text": "Решено: честная строка + общая заявка; кнопка в шапке меняется по числу вакансий."
         },
         {
          "c": "grid",
@@ -10447,6 +10470,884 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "careers-new",
+   "title": "Careers · decided, with open roles",
+   "url": "rapid-medical.com/careers",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "title": "Unlock your potential",
+       "subtitle": "Our greatest strength is our team.",
+       "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
+       "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+       "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+       "cta": {
+        "label": "See open positions ↓",
+        "href": "#open-positions"
+       },
+       "annotation": "Кнопка в шапке зависит от вакансий: есть — «See open positions ↓», нет — «Send us your details ↓». Тупика нет (находка 5)."
+      },
+      {
+       "c": "rm-gallery",
+       "v": "quotes",
+       "items": [
+        {
+         "quote": "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career.",
+         "author": "Isaac, Clinical Specialist",
+         "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg"
+        },
+        {
+         "quote": "The most rewarding aspect is knowing that with each shipment a potential life is saved.",
+         "author": "Morgan, Customer Service",
+         "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "principles",
+       "title": "Our guiding principles",
+       "intro": "What we at Rapid Medical believe in above all else.",
+       "items": [
+        {
+         "body": "We champion team collaboration to cultivate continuous learning.",
+         "title": "Relationship-centric"
+        },
+        {
+         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
+         "title": "Authentic"
+        },
+        {
+         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
+         "title": "Physician-focused"
+        },
+        {
+         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
+         "title": "Inventive"
+        },
+        {
+         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
+         "title": "Daring"
+        }
+       ],
+       "annotation": "Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Open positions"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "3 roles"
+          }
+         ]
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Clinical"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Specialist"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Texas, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Specialist"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Germany"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Operations"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Customer Service Representative"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Yokneam, Israel"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Applications go through Spark Hire."
+          }
+         ],
+         "annotation": "Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Показываем в стиле сайта: по отделам, роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Как подключиться (API или виджет) — проверить; запасной вариант — ссылка «See open roles on Spark Hire». Роли на экране — пример."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Submit general interest"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Rapid Medical is an equal opportunity employer."
+          },
+          {
+           "c": "link",
+           "text": "Read our EEO statement"
+          }
+         ],
+         "annotation": "Длинный текст EEO — свернут под ссылку: он обязателен, но не должен стоять стеной перед формой."
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "chips",
+           "label": "Area of interest",
+           "items": [
+            "General interest",
+            "Internship",
+            "Other"
+           ],
+           "active": 0
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "First name",
+             "required": true
+            },
+            {
+             "c": "input",
+             "label": "Last name",
+             "required": true
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Email",
+             "required": true
+            },
+            {
+             "c": "input",
+             "label": "LinkedIn or CV link",
+             "placeholder": "https://"
+            }
+           ]
+          },
+          {
+           "c": "input",
+           "label": "Country",
+           "v": "select",
+           "value": "United States"
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "placeholder": "What would you like to work on?"
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send",
+             "full": true
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "By sending, you agree to our Privacy Statement."
+            }
+           ]
+          }
+         ],
+         "annotation": "Форма для кандидатов, а не для клиентов (находка 20): без Organization и темы-заказа; вместо резюме-файла — ссылка на LinkedIn или CV. Правила полей — DESIGN.md → Формы. Куда уходит: в почту HR или в Spark Hire — уточнить вместе с подключением."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "/open-positions → 301 на /careers#open-positions: вакансии живут на одной странице с культурой (Linear, Mixpanel). Страница одной вакансии на сайте не нужна — «Apply» ведёт в Spark Hire."
+   ]
+  },
+  {
+   "id": "careers-new-empty",
+   "title": "Careers · decided, no open roles",
+   "url": "rapid-medical.com/careers",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "title": "Unlock your potential",
+       "subtitle": "Our greatest strength is our team.",
+       "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
+       "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+       "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+       "cta": {
+        "label": "Send us your details ↓",
+        "href": "#general-interest"
+       },
+       "annotation": "Кнопка в шапке зависит от вакансий: есть — «See open positions ↓», нет — «Send us your details ↓». Тупика нет (находка 5)."
+      },
+      {
+       "c": "rm-gallery",
+       "v": "quotes",
+       "items": [
+        {
+         "quote": "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career.",
+         "author": "Isaac, Clinical Specialist",
+         "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg"
+        },
+        {
+         "quote": "The most rewarding aspect is knowing that with each shipment a potential life is saved.",
+         "author": "Morgan, Customer Service",
+         "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "principles",
+       "title": "Our guiding principles",
+       "intro": "What we at Rapid Medical believe in above all else.",
+       "items": [
+        {
+         "body": "We champion team collaboration to cultivate continuous learning.",
+         "title": "Relationship-centric"
+        },
+        {
+         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
+         "title": "Authentic"
+        },
+        {
+         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
+         "title": "Physician-focused"
+        },
+        {
+         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
+         "title": "Inventive"
+        },
+        {
+         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
+         "title": "Daring"
+        }
+       ],
+       "annotation": "Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Open positions"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "0 roles"
+          }
+         ]
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "strong",
+           "text": "No open positions right now."
+          },
+          {
+           "c": "text",
+           "v": "body",
+           "text": "We still read every application — send us your details below and we’ll be in touch when a role fits."
+          },
+          {
+           "c": "link",
+           "text": "Send us your details ↓"
+          }
+         ],
+         "annotation": "Вакансий нет — честная строка и сразу путь к общей заявке (Lyssna, Jeton). Секция не пропадает: кандидат видит, что смотрел туда, куда нужно."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": "4fr 1fr 7fr",
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Submit general interest"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Rapid Medical is an equal opportunity employer."
+          },
+          {
+           "c": "link",
+           "text": "Read our EEO statement"
+          }
+         ],
+         "annotation": "Длинный текст EEO — свернут под ссылку: он обязателен, но не должен стоять стеной перед формой."
+        },
+        {
+         "c": "spacer",
+         "size": 1
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "chips",
+           "label": "Area of interest",
+           "items": [
+            "General interest",
+            "Internship",
+            "Other"
+           ],
+           "active": 0
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "First name",
+             "required": true
+            },
+            {
+             "c": "input",
+             "label": "Last name",
+             "required": true
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "s",
+           "items": [
+            {
+             "c": "input",
+             "label": "Email",
+             "required": true
+            },
+            {
+             "c": "input",
+             "label": "LinkedIn or CV link",
+             "placeholder": "https://"
+            }
+           ]
+          },
+          {
+           "c": "input",
+           "label": "Country",
+           "v": "select",
+           "value": "United States"
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "placeholder": "What would you like to work on?"
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send",
+             "full": true
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "By sending, you agree to our Privacy Statement."
+            }
+           ]
+          }
+         ],
+         "annotation": "Форма для кандидатов, а не для клиентов (находка 20): без Organization и темы-заказа; вместо резюме-файла — ссылка на LinkedIn или CV. Правила полей — DESIGN.md → Формы. Куда уходит: в почту HR или в Spark Hire — уточнить вместе с подключением."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "careers-new-phone",
+   "title": "Careers · decided, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/careers",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "title": "Unlock your potential",
+       "subtitle": "Our greatest strength is our team.",
+       "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
+       "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+       "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+       "cta": {
+        "label": "See open positions ↓",
+        "href": "#open-positions"
+       }
+      },
+      {
+       "c": "rm-gallery",
+       "v": "quotes",
+       "items": [
+        {
+         "quote": "Working at Rapid Medical grants me the ability to pursue my passion for helping patients while feeling supported to grow my career.",
+         "author": "Isaac, Clinical Specialist",
+         "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg"
+        },
+        {
+         "quote": "The most rewarding aspect is knowing that with each shipment a potential life is saved.",
+         "author": "Morgan, Customer Service",
+         "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
+        }
+       ]
+      },
+      {
+       "c": "rm-columns",
+       "v": "principles",
+       "title": "Our guiding principles",
+       "intro": "What we at Rapid Medical believe in above all else.",
+       "items": [
+        {
+         "body": "We champion team collaboration to cultivate continuous learning.",
+         "title": "Relationship-centric"
+        },
+        {
+         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
+         "title": "Authentic"
+        },
+        {
+         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
+         "title": "Physician-focused"
+        },
+        {
+         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
+         "title": "Inventive"
+        },
+        {
+         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
+         "title": "Daring"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "xs",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Open positions"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "3 roles"
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Clinical"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Specialist"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Texas, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Specialist"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Germany"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Operations"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Customer Service Representative"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Yokneam, Israel"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Applications go through Spark Hire."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Submit general interest"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Rapid Medical is an equal opportunity employer."
+          },
+          {
+           "c": "link",
+           "text": "Read our EEO statement"
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "chips",
+           "label": "Area of interest",
+           "items": [
+            "General interest",
+            "Internship",
+            "Other"
+           ],
+           "active": 0
+          },
+          {
+           "c": "input",
+           "label": "First name",
+           "required": true
+          },
+          {
+           "c": "input",
+           "label": "Last name",
+           "required": true
+          },
+          {
+           "c": "input",
+           "label": "Email",
+           "required": true
+          },
+          {
+           "c": "input",
+           "label": "LinkedIn or CV link",
+           "placeholder": "https://"
+          },
+          {
+           "c": "input",
+           "label": "Country",
+           "v": "select",
+           "value": "United States"
+          },
+          {
+           "c": "textarea",
+           "label": "Message",
+           "placeholder": "What would you like to work on?"
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "button",
+             "v": "primary",
+             "text": "Send",
+             "full": true
+            },
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "By sending, you agree to our Privacy Statement."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },
