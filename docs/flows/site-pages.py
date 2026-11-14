@@ -441,7 +441,10 @@ def study_full_desktop():
             band('Occlusion holds over time', T('Successful occlusion (Raymond Roy I + II): 86% at the end of the procedure, 95% at follow-up.', 'body'),
                  {'c': 'bars', 'legend': ['Raymond Roy I', 'Raymond Roy II', 'Raymond Roy III'], 'rows': RR_ROWS}, 'surface'),
             full_text_band('copy'),
-            {'c': 'section', 'pad': 'm', 'items': [T('Refer to the Instructions for Use for indications, contraindications, warnings and precautions.', 'caption')]},
+            {'c': 'section', 'pad': 'm', 'items': [S([{'c': 'divider'}, {'c': 'row', 'gap': 'm', 'wrap': True, 'items': [
+                {'c': 'button', 'v': 'primary', 'text': 'Discuss SUCCESS with our team'}, {'c': 'link', 'text': 'COMANECI™ for aneurysms →'}, {'c': 'link', 'text': 'Other COMANECI™ studies →'}],
+                'annotation': 'Следующий шаг обязателен: на эту страницу ведут посты LinkedIn (бриф linkedin-leads.md, звено 3). Заявка уходит в Contact Us с темой demo и UTM поста.'},
+                T('Refer to the Instructions for Use for indications, contraindications, warnings and precautions.', 'caption')], 'm')]},
             FOOTER]
 
 

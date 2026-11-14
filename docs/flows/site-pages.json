@@ -4316,9 +4316,39 @@
      "pad": "m",
      "items": [
       {
-       "c": "text",
-       "v": "caption",
-       "text": "Refer to the Instructions for Use for indications, contraindications, warnings and precautions."
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "wrap": true,
+         "items": [
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "Discuss SUCCESS with our team"
+          },
+          {
+           "c": "link",
+           "text": "COMANECI™ for aneurysms →"
+          },
+          {
+           "c": "link",
+           "text": "Other COMANECI™ studies →"
+          }
+         ],
+         "annotation": "Следующий шаг обязателен: на эту страницу ведут посты LinkedIn (бриф linkedin-leads.md, звено 3). Заявка уходит в Contact Us с темой demo и UTM поста."
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Refer to the Instructions for Use for indications, contraindications, warnings and precautions."
+        }
+       ]
       }
      ]
     },
