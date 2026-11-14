@@ -189,7 +189,9 @@
   {
    "title": "8 · Evidence — черновик концепции (к обсуждению)",
    "screens": [
-    "ev-concept"
+    "ev-concept",
+    "ev-filters",
+    "ev-filters-delete"
    ]
   },
   {
@@ -450,6 +452,16 @@
    "from": "ev-refs",
    "to": "ev-concept",
    "label": "черновик"
+  },
+  {
+   "from": "ev-concept",
+   "to": "ev-filters",
+   "label": "фильтры правятся в админке"
+  },
+  {
+   "from": "ev-filters",
+   "to": "ev-filters-delete",
+   "label": "Delete"
   },
   {
    "from": "text-new-phone",
@@ -15819,7 +15831,7 @@
            "text": "DRIVEWIRE™ · guidewire experience"
           }
          ],
-         "annotation": "Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы."
+         "annotation": "Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы. Список групп, их названия и порядок правятся в админке (экран Filters)."
         }
        ]
       }
@@ -16195,6 +16207,647 @@
      "region": "us"
     }
    ]
+  },
+  {
+   "id": "ev-filters",
+   "title": "Admin · Evidence filters, editable",
+   "url": "rapid-medical.com/admin/site/evidence/filters",
+   "height": 640,
+   "body": [
+    {
+     "c": "appbar",
+     "logo": "Rapid Medical",
+     "nav": [
+      "Website",
+      "Training tool"
+     ],
+     "active": 0,
+     "actions": [
+      {
+       "c": "avatar",
+       "name": "Emily R"
+      }
+     ]
+    },
+    {
+     "c": "box",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "row",
+         "justify": "between",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Website · Evidence"
+            },
+            {
+             "c": "heading",
+             "level": 2,
+             "text": "Filters"
+            }
+           ]
+          },
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "+ Add clinical question"
+          }
+         ]
+        },
+        {
+         "c": "segmented",
+         "items": [
+          "Clinical questions",
+          "Study types",
+          "Indications",
+          "Products"
+         ],
+         "active": 0,
+         "annotation": "Все оси фильтров Evidence — списки в админке, а не в коде: клинические вопросы, типы исследований, показания. Продукты — из записей Products (как сейчас). Добавить, убрать, переименовать, поменять порядок — без разработчика. Права: designer и admin (как меню и футер), editor — только размечает публикации."
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Large vessel occlusion"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 32 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ],
+           "annotation": "Каждый фильтр — строка: перетащить (порядок на сайте), переименовать, описание, «Used in N». Переименование меняется везде сразу — публикации ссылаются на запись, а не на текст."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Medium & distal vessels"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "TIGERTRIEVER™ 13 · DISTALS and MeVO experience"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 8 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Aneurysms & vasospasm"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "COMANECI™ · wide-neck coiling, vasospasm angioplasty"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 57 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Access & navigation"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "DRIVEWIRE™ · guidewire experience"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 5 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          }
+         ]
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Shown on Evidence as “Explore by clinical question”, in this order. Empty ones are hidden on the site."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ev-filters-delete",
+   "title": "Admin · delete a filter, publications are kept",
+   "url": "rapid-medical.com/admin/site/evidence/filters",
+   "height": 640,
+   "body": [
+    {
+     "c": "appbar",
+     "logo": "Rapid Medical",
+     "nav": [
+      "Website",
+      "Training tool"
+     ],
+     "active": 0,
+     "actions": [
+      {
+       "c": "avatar",
+       "name": "Emily R"
+      }
+     ]
+    },
+    {
+     "c": "box",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "row",
+         "justify": "between",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "Website · Evidence"
+            },
+            {
+             "c": "heading",
+             "level": 2,
+             "text": "Filters"
+            }
+           ]
+          },
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "+ Add clinical question"
+          }
+         ]
+        },
+        {
+         "c": "segmented",
+         "items": [
+          "Clinical questions",
+          "Study types",
+          "Indications",
+          "Products"
+         ],
+         "active": 0,
+         "annotation": "Все оси фильтров Evidence — списки в админке, а не в коде: клинические вопросы, типы исследований, показания. Продукты — из записей Products (как сейчас). Добавить, убрать, переименовать, поменять порядок — без разработчика. Права: designer и admin (как меню и футер), editor — только размечает публикации."
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Large vessel occlusion"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 32 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ],
+           "annotation": "Каждый фильтр — строка: перетащить (порядок на сайте), переименовать, описание, «Used in N». Переименование меняется везде сразу — публикации ссылаются на запись, а не на текст."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Medium & distal vessels"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "TIGERTRIEVER™ 13 · DISTALS and MeVO experience"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 8 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Aneurysms & vasospasm"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "COMANECI™ · wide-neck coiling, vasospasm angioplasty"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 57 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "24px minmax(0,1fr) 150px 160px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "caption",
+             "text": "⋮⋮"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Access & navigation"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "DRIVEWIRE™ · guidewire experience"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Used in 5 publications"
+            },
+            {
+             "c": "row",
+             "gap": "s",
+             "items": [
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Rename"
+              },
+              {
+               "c": "button",
+               "v": "ghost",
+               "size": "s",
+               "text": "Delete"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          }
+         ]
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Shown on Evidence as “Explore by clinical question”, in this order. Empty ones are hidden on the site."
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "overlay": {
+    "c": "modal",
+    "title": "Delete “Access & navigation”?",
+    "items": [
+     {
+      "c": "text",
+      "v": "body",
+      "text": "5 publications use it. What should happen to them?"
+     },
+     {
+      "c": "radio",
+      "label": "Move them to another clinical question",
+      "on": true
+     },
+     {
+      "c": "input",
+      "label": "",
+      "v": "select",
+      "value": "Large vessel occlusion"
+     },
+     {
+      "c": "radio",
+      "label": "Leave them without a clinical question (they stay in the library)"
+     }
+    ],
+    "actions": [
+     {
+      "c": "button",
+      "v": "ghost",
+      "text": "Cancel"
+     },
+     {
+      "c": "button",
+      "v": "danger",
+      "text": "Delete and move 5"
+     }
+    ],
+    "annotation": "Удаление не теряет публикации: предложить перенести в другую группу или оставить без неё (они остаются в архиве и в поиске). Кнопка называет последствие («Delete and move 5»). Слияние двух групп — то же действие."
+   }
   },
   {
    "id": "nf-asis",

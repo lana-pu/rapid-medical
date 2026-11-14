@@ -984,7 +984,7 @@ def evidence_concept():
         {'c': 'card', 'eyebrow': '8 publications', 'title': 'Medium & distal vessels', 'text': 'TIGERTRIEVER™ 13 · DISTALS and MeVO experience'},
         {'c': 'card', 'eyebrow': '57 publications', 'title': 'Aneurysms & vasospasm', 'text': 'COMANECI™ · wide-neck coiling, vasospasm angioplasty'},
         {'c': 'card', 'eyebrow': '5 publications', 'title': 'Access & navigation', 'text': 'DRIVEWIRE™ · guidewire experience'}],
-        'annotation': 'Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы.'}
+        'annotation': 'Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы. Список групп, их названия и порядок правятся в админке (экран Filters).'}
     lib_filters = {'c': 'row', 'gap': 's', 'wrap': True, 'align': 'center', 'items': [
         I('', v='search', placeholder='Search title, author, journal'), {'c': 'input', 'v': 'select', 'value': 'All products'},
         {'c': 'input', 'v': 'select', 'value': 'All indications'}, {'c': 'input', 'v': 'select', 'value': 'All study types'}, {'c': 'input', 'v': 'select', 'value': 'Newest first'}]}
@@ -1013,6 +1013,44 @@ def evidence_concept():
             {'c': 'section', 'pad': 'l', 'items': [S([H('Explore by clinical question', 2), questions], 'm')]},
             {'c': 'section', 'pad': 'l', 'rule': True, 'items': [lib]},
             {'c': 'section', 'pad': 'm', 'tone': 'surface', 'items': [ongoing]}, FOOTER]
+
+
+# ---------- Evidence: editable filters (admin) ----------
+TAX_Q = [('Large vessel occlusion', 'TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers', 32),
+         ('Medium & distal vessels', 'TIGERTRIEVER™ 13 · DISTALS and MeVO experience', 8),
+         ('Aneurysms & vasospasm', 'COMANECI™ · wide-neck coiling, vasospasm angioplasty', 57),
+         ('Access & navigation', 'DRIVEWIRE™ · guidewire experience', 5)]
+
+
+def tax_row(name, desc, n):
+    return {'c': 'grid', 'cols': '24px minmax(0,1fr) 150px 160px', 'gap': 'm', 'items': [
+        T('⋮⋮', 'caption'), S([T(name, 'strong'), T(desc, 'small')], 'xs'), T(f'Used in {n} publications', 'small'),
+        {'c': 'row', 'gap': 's', 'items': [{'c': 'button', 'v': 'ghost', 'size': 's', 'text': 'Rename'}, {'c': 'button', 'v': 'ghost', 'size': 's', 'text': 'Delete'}]}]}
+
+
+def ev_filters_admin():
+    rows = []
+    for n, d, c in TAX_Q:
+        rows += [tax_row(n, d, c), {'c': 'divider'}]
+    rows[0]['annotation'] = 'Каждый фильтр — строка: перетащить (порядок на сайте), переименовать, описание, «Used in N». Переименование меняется везде сразу — публикации ссылаются на запись, а не на текст.'
+    body = S([
+        {'c': 'row', 'justify': 'between', 'items': [S([T('Website · Evidence', 'caption'), H('Filters', 2)], 'xs'), {'c': 'button', 'v': 'primary', 'text': '+ Add clinical question'}]},
+        dict({'c': 'segmented', 'items': ['Clinical questions', 'Study types', 'Indications', 'Products'], 'active': 0},
+             annotation='Все оси фильтров Evidence — списки в админке, а не в коде: клинические вопросы, типы исследований, показания. Продукты — из записей Products (как сейчас). Добавить, убрать, переименовать, поменять порядок — без разработчика. Права: designer и admin (как меню и футер), editor — только размечает публикации.'),
+        S(rows, 's'),
+        T('Shown on Evidence as “Explore by clinical question”, in this order. Empty ones are hidden on the site.', 'caption')], 'm')
+    return [APPBAR, {'c': 'box', 'pad': 'l', 'items': [body]}]
+
+
+def ev_filters_delete():
+    m = {'c': 'modal', 'title': 'Delete “Access & navigation”?', 'items': [
+        T('5 publications use it. What should happen to them?', 'body'),
+        {'c': 'radio', 'label': 'Move them to another clinical question', 'on': True},
+        I('', v='select', value='Large vessel occlusion'),
+        {'c': 'radio', 'label': 'Leave them without a clinical question (they stay in the library)'}],
+        'actions': [{'c': 'button', 'v': 'ghost', 'text': 'Cancel'}, {'c': 'button', 'v': 'danger', 'text': 'Delete and move 5'}],
+        'annotation': 'Удаление не теряет публикации: предложить перенести в другую группу или оставить без неё (они остаются в архиве и в поиске). Кнопка называет последствие («Delete and move 5»). Слияние двух групп — то же действие.'}
+    return m
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -1048,7 +1086,7 @@ flow = {
         {'title': '7 · Webinars — примеры из Mobbin', 'screens': ['web-mobbin']},
         {'title': '8 · Evidence — как есть', 'screens': ['ev-asis', 'ev-asis-phone']},
         {'title': '8 · Evidence — конкуренты, смежные области, Mobbin', 'screens': ['ev-refs']},
-        {'title': '8 · Evidence — черновик концепции (к обсуждению)', 'screens': ['ev-concept']},
+        {'title': '8 · Evidence — черновик концепции (к обсуждению)', 'screens': ['ev-concept', 'ev-filters', 'ev-filters-delete']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1103,6 +1141,8 @@ flow = {
               {'from': 'ev-asis', 'to': 'ev-asis-phone', 'label': 'на телефоне'},
               {'from': 'ev-asis-phone', 'to': 'ev-refs', 'label': 'как у других'},
               {'from': 'ev-refs', 'to': 'ev-concept', 'label': 'черновик'},
+              {'from': 'ev-concept', 'to': 'ev-filters', 'label': 'фильтры правятся в админке'},
+              {'from': 'ev-filters', 'to': 'ev-filters-delete', 'label': 'Delete'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1179,6 +1219,8 @@ flow = {
         {'id': 'ev-asis', 'title': 'Evidence · as is', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_asis()},
         ref_screen('ev-refs', 'Evidence · competitors, adjacent fields, Mobbin', 'evidence', EV_REFS),
         {'id': 'ev-concept', 'title': 'Evidence · concept draft', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_concept()},
+        {'id': 'ev-filters', 'title': 'Admin · Evidence filters, editable', 'url': 'rapid-medical.com/admin/site/evidence/filters', 'height': 640, 'body': ev_filters_admin()},
+        {'id': 'ev-filters-delete', 'title': 'Admin · delete a filter, publications are kept', 'url': 'rapid-medical.com/admin/site/evidence/filters', 'height': 640, 'body': ev_filters_admin(), 'overlay': ev_filters_delete()},
         {'id': 'ev-asis-phone', 'title': 'Evidence · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/evidence', 'body': evidence_asis(True)},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),

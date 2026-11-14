@@ -129,6 +129,14 @@ Hire) — через Emily.
 «in classified». Админка: очередь «Classify publications» (как «Describe pictures» в медиатеке), ИИ маркетинга предлагает,
 человек подтверждает.
 
+**Решено: фильтры редактируемые.** Клинические вопросы, типы исследований, показания — списки в админке (Website →
+Evidence → Filters): добавить, удалить, переименовать (меняется везде — публикации ссылаются на запись), порядок
+перетаскиванием, «Used in N». Удаление предлагает перенести публикации в другую группу или оставить без неё — публикации
+не теряются. Пустые группы на сайте скрыты. Права — designer и admin; editor размечает публикации. Продукты — из Products.
+
+**Открыто:** какие 5–10 Key studies (маркетинг); четыре клинических вопроса — стартовый набор, поправит клиент; «Ongoing
+studies» — вопрос к Emily; Evidence и knowledge base — что чьё (решить позже, владелица).
+
 Референсы Mobbin: [Dovetail](https://mobbin.com/sites/sections/9f8b5502-cee7-4eb1-8aff-9dcd26e9e308),
 [Slack](https://mobbin.com/sites/sections/18717c77-0049-4c84-b21d-797bee5f295b),
 [Harvest](https://mobbin.com/sites/sections/3a55ba42-2d51-4f8a-9bc1-439dd3d2ad0b),
