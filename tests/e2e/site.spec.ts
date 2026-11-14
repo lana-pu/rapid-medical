@@ -143,6 +143,8 @@ test.describe("usability pass 2026-11-13, part 2", () => {
     expect(r.headers()["location"]).toContain("/us/therapies?missing=mvo");
     await page.goto("/us/therapies?missing=mvo");
     await expect(page.getByRole("status")).toContainText("Medium vessel stroke is not available in Americas");
+    await page.goto("/us/therapies?missing=lvo"); // LVO is in the Americas: no false notice
+    await expect(page.getByText(/is not available in Americas/)).toHaveCount(0);
     const keep = await request.get("/api/region?to=ous&back=%2Fus%2Fevidence%23comaneci", { maxRedirects: 0 });
     expect(keep.headers()["location"]).toMatch(/\/ous\/evidence#comaneci$/);
   });

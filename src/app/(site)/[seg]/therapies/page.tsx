@@ -1,5 +1,5 @@
 import { regionOr404 } from "@/lib/region-param";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { db, solutions } from "@/db";
 import { Section } from "@/components/site/primitives";
 import { REGION_CHOICES } from "@/lib/regions";
@@ -25,12 +25,12 @@ export async function generateMetadata({ params }: { params: Promise<{ seg: stri
 export default async function TherapiesIndex({ params, searchParams }: { params: Promise<{ seg: string }>; searchParams: Promise<{ missing?: string }> }) {
   const region = regionOr404((await params).seg);
   const { missing } = await searchParams;
-  const [page, landing, items, gone] = await Promise.all([
-    getSitePage("therapies", region),
-    getSetting<Landing>(`therapies:${region}`),
-    getSolutionsNav(region),
-    typeof missing === "string" && /^[a-z0-9-]{1,60}$/.test(missing) ? db.query.solutions.findFirst({ columns: { navLabel: true }, where: and(eq(solutions.slug, missing), eq(solutions.status, "published")) }) : null,
-  ]);
+  const [page, landing, items] = await Promise.all([getSitePage("therapies", region), getSetting<Landing>(`therapies:${region}`), getSolutionsNav(region)]);
+  // only true when it is so: not in this region, published in another (a link cannot claim otherwise)
+  const gone =
+    typeof missing === "string" && /^[a-z0-9-]{1,60}$/.test(missing) && !items.some((i) => i.slug === missing)
+      ? await db.query.solutions.findFirst({ columns: { navLabel: true }, where: and(eq(solutions.slug, missing), eq(solutions.status, "published"), ne(solutions.region, region)) })
+      : null;
   // came here from the region switcher on a therapy this region does not have
   const notice = gone ? (
     <Section className="pb-0 md:pb-0" aria-live="polite">
