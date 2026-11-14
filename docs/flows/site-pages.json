@@ -141,6 +141,19 @@
    ]
   },
   {
+   "title": "6 · About — как есть",
+   "screens": [
+    "about-asis",
+    "about-asis-phone"
+   ]
+  },
+  {
+   "title": "6 · About — примеры из Mobbin",
+   "screens": [
+    "about-mobbin"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -338,6 +351,21 @@
    "from": "careers-new",
    "to": "careers-new-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "careers-new-phone",
+   "to": "about-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "about-asis",
+   "to": "about-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "about-asis-phone",
+   "to": "about-mobbin",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -11562,6 +11590,604 @@
     {
      "c": "rm-footer",
      "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "about-asis",
+   "title": "About · as is",
+   "url": "rapid-medical.com/about-us",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "About Us"
+      },
+      {
+       "c": "rm-text",
+       "v": "large",
+       "body": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy.",
+       "imageUrl": "",
+       "annotation": "Вводный текст и «What we do» — два коротких абзаца друг под другом; фактов о компании (страны, публикации, офисы) рядом нет. На странице две аудитории — врачи и инвесторы (письмо Emily 30.10)."
+      },
+      {
+       "c": "rm-text",
+       "v": "surface",
+       "title": "What we do",
+       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+      },
+      {
+       "c": "rm-people",
+       "v": "team",
+       "anchor": "leadership",
+       "title": "Leadership Team",
+       "intro": "Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes.",
+       "members": [
+        {
+         "name": "RONEN ECKHOUSE",
+         "title": "CO-FOUNDER & CEO",
+         "longTitle": "CO-FOUNDER AND CHAIRMAN OF THE BOARD",
+         "photoUrl": "/uploads/duda/Ronan-03804f.jpg",
+         "slug": "ronen",
+         "bioHtml": "<p>Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent to the U.S. Navy Seals. Ronen holds a BSc in Electrical Engineering from the Technion Institute of Technology, and an MBA from the Haas School of Business at UC Berkeley.</p>\n",
+         "href": "/about-us#ronen",
+         "edit": {
+          "r": "team",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "MICHAL SHRIKI",
+         "title": "CHIEF FINANCIAL OFFICER",
+         "longTitle": "CHIEF FINANCIAL OFFICER",
+         "photoUrl": "/uploads/duda/Michal-d31872.jpg",
+         "slug": "michal",
+         "bioHtml": "<p>Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) and Starling Advanced Communications Ltd (acquired by Panasonic). Michal is a Certified Accountant with a BA in Economics and an MBA from the University of Haifa, Israel.</p>\n",
+         "href": "/about-us#michal",
+         "edit": {
+          "r": "team",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "DR. WALID HADDAD",
+         "title": "CHIEF CLINICAL OFFICER",
+         "longTitle": "CHIEF CLINICAL OFFICER",
+         "photoUrl": "/uploads/duda/Walid-c87839.jpg",
+         "slug": "walid",
+         "bioHtml": "<p>Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer. He brings over 15 years of experience in clinical research, strategy, medical affairs, and operations as a C-suite executive in the biomedical industry. Additionally, Dr. Haddad carries extensive experience in executing FDA regulated studies. Most recently, he served as Chief Operations Officer for a cardiology startup, CardioGard. Dr. Haddad holds a Ph.D. in Physiology from the Faculty of Medicine from the Hebrew University of Jerusalem.</p>\n",
+         "href": "/about-us#walid",
+         "edit": {
+          "r": "team",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "EITAN HAVIS",
+         "title": "PRESIDENT, INTERNATIONAL",
+         "longTitle": "PRESIDENT, INTERNATIONAL",
+         "photoUrl": "/uploads/duda/Eitan-fb68fb.jpg",
+         "slug": "eitan",
+         "bioHtml": "<p>Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East. He has over 20 years of commercial leadership experience and helped to grow Rapid Medical from an early-stage start-up to a well-funded commercial operation. Eitan holds a BA in Business Administration and Economics from Haifa University in Israel.</p>\n",
+         "href": "/about-us#eitan",
+         "edit": {
+          "r": "team",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "JAMES ROMERO",
+         "title": "PRESIDENT, AMERICAS",
+         "longTitle": "PRESIDENT, AMERICAS",
+         "photoUrl": "/uploads/duda/James-c7cef0.jpg",
+         "slug": "james",
+         "bioHtml": "<p>James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sales Operations and Global Sales Training for the neurovascular division at Medtronic. James brings over 20 years of leadership experience in growth-stage and large-scale MedTech companies and holds a BS in Psychology from Santa Clara University.</p>\n",
+         "href": "/about-us#james",
+         "edit": {
+          "r": "team",
+          "id": 5,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "GIORA KORNBLAU",
+         "title": "CHIEF TECHNOLOGY OFFICER",
+         "longTitle": "CHIEF TECHNOLOGY OFFICER",
+         "photoUrl": "/uploads/duda/Giora-467902.jpg",
+         "slug": "giora",
+         "bioHtml": "<p>Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Rapid Medical, he was a partner at Terra VP leading Israeli VC and managed a technology incubator, where he helped develop deep technology products in the fields of clean energy and health. Mr. Kornblau graduated from the prestigious Talpiot program, served as an F-16 pilot in the Israeli Air Force, and holds a Bachelor’s degree with Honors in Physics and Mathematics from the Hebrew University of Jerusalem.</p>\n",
+         "href": "/about-us#giora",
+         "edit": {
+          "r": "team",
+          "id": 6,
+          "prefix": ""
+         }
+        }
+       ],
+       "annotation": "Руководство: 6 карточек, имена и должности КАПСОМ (так в данных с Duda), биография — по «Read bio» на месте; у карточки якорь #{slug}."
+      },
+      {
+       "c": "rm-officesMap",
+       "v": "offices",
+       "anchor": "offices",
+       "title": "Global Offices",
+       "offices": [
+        {
+         "fax": "+972-72-250-3332",
+         "lat": 32.659,
+         "lon": 35.104,
+         "name": "Rapid Medical Ltd.",
+         "label": "Headquarters",
+         "phone": "+972-72-250-3331",
+         "address": "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL",
+         "ordersEmail": "customerservice.ltd@rapid-medical.com"
+        },
+        {
+         "fax": "+1-469-914-9300",
+         "lat": 32.9378,
+         "lon": -97.1246,
+         "name": "Rapid Medical Inc.",
+         "label": "USA",
+         "phone": "+1-469-991-7712",
+         "address": "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA",
+         "ordersEmail": "orders.inc@rapid-medical.com"
+        },
+        {
+         "fax": "+49 (0) 69 795 888 711",
+         "lat": 50.1146,
+         "lon": 8.6631,
+         "name": "Rapid Medical GmbH",
+         "label": "Germany",
+         "phone": "+49 69 795 888 718",
+         "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
+         "ordersEmail": "ordersgmbh@rapid-medical.com"
+        }
+       ],
+       "annotation": "Офисы показаны дважды: этим списком и пинами на карте ниже."
+      },
+      {
+       "c": "rm-officesMap",
+       "v": "map",
+       "anchor": "map",
+       "title": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting.",
+       "subtitle": "Select a region to get in touch with a local representative.",
+       "offices": [
+        {
+         "fax": "+972-72-250-3332",
+         "lat": 32.659,
+         "lon": 35.104,
+         "name": "Rapid Medical Ltd.",
+         "label": "Headquarters",
+         "phone": "+972-72-250-3331",
+         "address": "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL",
+         "ordersEmail": "customerservice.ltd@rapid-medical.com"
+        },
+        {
+         "fax": "+1-469-914-9300",
+         "lat": 32.9378,
+         "lon": -97.1246,
+         "name": "Rapid Medical Inc.",
+         "label": "USA",
+         "phone": "+1-469-991-7712",
+         "address": "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA",
+         "ordersEmail": "orders.inc@rapid-medical.com"
+        },
+        {
+         "fax": "+49 (0) 69 795 888 711",
+         "lat": 50.1146,
+         "lon": 8.6631,
+         "name": "Rapid Medical GmbH",
+         "label": "Germany",
+         "phone": "+49 69 795 888 718",
+         "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
+         "ordersEmail": "ordersgmbh@rapid-medical.com"
+        }
+       ],
+       "regionLinks": {
+        "usa": "/contact-us?region=us",
+        "canada": "/contact-us?region=us",
+        "latam": "/contact-us?region=ous",
+        "europe": "/contact-us?region=ous",
+        "australia": "/contact-us?region=ous",
+        "middleeast": "/contact-us?region=apac",
+        "asia": "/contact-us?region=apac"
+       },
+       "fallbackImageUrl": "/uploads/duda/Map-Directory-d214ab.png",
+       "closingLine": "Have a question? We’d love to hear from you.",
+       "button": {
+        "label": "Contact us",
+        "href": "/contact-us"
+       },
+       "annotation": "Карта: клик по региону → Contact Us со своей картой регионов: Латинская Америка → Europe, Ближний Восток → Asia & Pacific; а определение по IP шлёт Латинскую Америку в Americas. Третья карта регионов на сайте (вопрос №9)."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "about-asis-phone",
+   "title": "About · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/about-us",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "About Us"
+      },
+      {
+       "c": "rm-text",
+       "v": "large",
+       "body": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy.",
+       "imageUrl": ""
+      },
+      {
+       "c": "rm-text",
+       "v": "surface",
+       "title": "What we do",
+       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+      },
+      {
+       "c": "rm-people",
+       "v": "team",
+       "anchor": "leadership",
+       "title": "Leadership Team",
+       "intro": "Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes.",
+       "members": [
+        {
+         "name": "RONEN ECKHOUSE",
+         "title": "CO-FOUNDER & CEO",
+         "longTitle": "CO-FOUNDER AND CHAIRMAN OF THE BOARD",
+         "photoUrl": "/uploads/duda/Ronan-03804f.jpg",
+         "slug": "ronen",
+         "bioHtml": "<p>Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent to the U.S. Navy Seals. Ronen holds a BSc in Electrical Engineering from the Technion Institute of Technology, and an MBA from the Haas School of Business at UC Berkeley.</p>\n",
+         "href": "/about-us#ronen",
+         "edit": {
+          "r": "team",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "MICHAL SHRIKI",
+         "title": "CHIEF FINANCIAL OFFICER",
+         "longTitle": "CHIEF FINANCIAL OFFICER",
+         "photoUrl": "/uploads/duda/Michal-d31872.jpg",
+         "slug": "michal",
+         "bioHtml": "<p>Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) and Starling Advanced Communications Ltd (acquired by Panasonic). Michal is a Certified Accountant with a BA in Economics and an MBA from the University of Haifa, Israel.</p>\n",
+         "href": "/about-us#michal",
+         "edit": {
+          "r": "team",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "DR. WALID HADDAD",
+         "title": "CHIEF CLINICAL OFFICER",
+         "longTitle": "CHIEF CLINICAL OFFICER",
+         "photoUrl": "/uploads/duda/Walid-c87839.jpg",
+         "slug": "walid",
+         "bioHtml": "<p>Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer. He brings over 15 years of experience in clinical research, strategy, medical affairs, and operations as a C-suite executive in the biomedical industry. Additionally, Dr. Haddad carries extensive experience in executing FDA regulated studies. Most recently, he served as Chief Operations Officer for a cardiology startup, CardioGard. Dr. Haddad holds a Ph.D. in Physiology from the Faculty of Medicine from the Hebrew University of Jerusalem.</p>\n",
+         "href": "/about-us#walid",
+         "edit": {
+          "r": "team",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "EITAN HAVIS",
+         "title": "PRESIDENT, INTERNATIONAL",
+         "longTitle": "PRESIDENT, INTERNATIONAL",
+         "photoUrl": "/uploads/duda/Eitan-fb68fb.jpg",
+         "slug": "eitan",
+         "bioHtml": "<p>Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East. He has over 20 years of commercial leadership experience and helped to grow Rapid Medical from an early-stage start-up to a well-funded commercial operation. Eitan holds a BA in Business Administration and Economics from Haifa University in Israel.</p>\n",
+         "href": "/about-us#eitan",
+         "edit": {
+          "r": "team",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "JAMES ROMERO",
+         "title": "PRESIDENT, AMERICAS",
+         "longTitle": "PRESIDENT, AMERICAS",
+         "photoUrl": "/uploads/duda/James-c7cef0.jpg",
+         "slug": "james",
+         "bioHtml": "<p>James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sales Operations and Global Sales Training for the neurovascular division at Medtronic. James brings over 20 years of leadership experience in growth-stage and large-scale MedTech companies and holds a BS in Psychology from Santa Clara University.</p>\n",
+         "href": "/about-us#james",
+         "edit": {
+          "r": "team",
+          "id": 5,
+          "prefix": ""
+         }
+        },
+        {
+         "name": "GIORA KORNBLAU",
+         "title": "CHIEF TECHNOLOGY OFFICER",
+         "longTitle": "CHIEF TECHNOLOGY OFFICER",
+         "photoUrl": "/uploads/duda/Giora-467902.jpg",
+         "slug": "giora",
+         "bioHtml": "<p>Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Rapid Medical, he was a partner at Terra VP leading Israeli VC and managed a technology incubator, where he helped develop deep technology products in the fields of clean energy and health. Mr. Kornblau graduated from the prestigious Talpiot program, served as an F-16 pilot in the Israeli Air Force, and holds a Bachelor’s degree with Honors in Physics and Mathematics from the Hebrew University of Jerusalem.</p>\n",
+         "href": "/about-us#giora",
+         "edit": {
+          "r": "team",
+          "id": 6,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "c": "rm-officesMap",
+       "v": "offices",
+       "anchor": "offices",
+       "title": "Global Offices",
+       "offices": [
+        {
+         "fax": "+972-72-250-3332",
+         "lat": 32.659,
+         "lon": 35.104,
+         "name": "Rapid Medical Ltd.",
+         "label": "Headquarters",
+         "phone": "+972-72-250-3331",
+         "address": "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL",
+         "ordersEmail": "customerservice.ltd@rapid-medical.com"
+        },
+        {
+         "fax": "+1-469-914-9300",
+         "lat": 32.9378,
+         "lon": -97.1246,
+         "name": "Rapid Medical Inc.",
+         "label": "USA",
+         "phone": "+1-469-991-7712",
+         "address": "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA",
+         "ordersEmail": "orders.inc@rapid-medical.com"
+        },
+        {
+         "fax": "+49 (0) 69 795 888 711",
+         "lat": 50.1146,
+         "lon": 8.6631,
+         "name": "Rapid Medical GmbH",
+         "label": "Germany",
+         "phone": "+49 69 795 888 718",
+         "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
+         "ordersEmail": "ordersgmbh@rapid-medical.com"
+        }
+       ]
+      },
+      {
+       "c": "rm-officesMap",
+       "v": "map",
+       "anchor": "map",
+       "title": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting.",
+       "subtitle": "Select a region to get in touch with a local representative.",
+       "offices": [
+        {
+         "fax": "+972-72-250-3332",
+         "lat": 32.659,
+         "lon": 35.104,
+         "name": "Rapid Medical Ltd.",
+         "label": "Headquarters",
+         "phone": "+972-72-250-3331",
+         "address": "P.O.B. 337\nCarmel building, Yokneam 2069205\nISRAEL",
+         "ordersEmail": "customerservice.ltd@rapid-medical.com"
+        },
+        {
+         "fax": "+1-469-914-9300",
+         "lat": 32.9378,
+         "lon": -97.1246,
+         "name": "Rapid Medical Inc.",
+         "label": "USA",
+         "phone": "+1-469-991-7712",
+         "address": "445 S. Kimball Ave. Ste. 140\nSouthlake, Texas 76092\nUSA",
+         "ordersEmail": "orders.inc@rapid-medical.com"
+        },
+        {
+         "fax": "+49 (0) 69 795 888 711",
+         "lat": 50.1146,
+         "lon": 8.6631,
+         "name": "Rapid Medical GmbH",
+         "label": "Germany",
+         "phone": "+49 69 795 888 718",
+         "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
+         "ordersEmail": "ordersgmbh@rapid-medical.com"
+        }
+       ],
+       "regionLinks": {
+        "usa": "/contact-us?region=us",
+        "canada": "/contact-us?region=us",
+        "latam": "/contact-us?region=ous",
+        "europe": "/contact-us?region=ous",
+        "australia": "/contact-us?region=ous",
+        "middleeast": "/contact-us?region=apac",
+        "asia": "/contact-us?region=apac"
+       },
+       "fallbackImageUrl": "/uploads/duda/Map-Directory-d214ab.png",
+       "closingLine": "Have a question? We’d love to hear from you.",
+       "button": {
+        "label": "Contact us",
+        "href": "/contact-us"
+       }
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "about-mobbin",
+   "title": "About · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Кто мы: текст и факты рядом"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас — два коротких абзаца друг под другом. Дать рядом факты о компании (страны, публикации, офисы)?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/about/customerio.webp",
+           "source": "Customer.io",
+           "caption": "слева колонка цифр, справа «Who we are / How we got started» — «общая линия»",
+           "url": "https://mobbin.com/sites/sections/24205429-b78e-4d31-9572-0f87504ad25e"
+          },
+          {
+           "c": "ref",
+           "src": "refs/about/faire.webp",
+           "source": "Faire",
+           "caption": "миссия одной крупной фразой на цветной полосе",
+           "url": "https://mobbin.com/sites/sections/1af96634-4256-4df0-ab2c-c84f33987abe"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Руководство"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас: фото, ИМЯ КАПСОМ, должность, «Read bio» раскрывает на месте. Показывать 1–2 строки биографии сразу? Совет директоров — отдельно?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/about/intercom.webp",
+           "source": "Intercom",
+           "caption": "фото, имя и должность, 2–3 строки био и «Read full bio»",
+           "url": "https://mobbin.com/sites/sections/fc292fd5-ab37-469b-b09b-dc378471521c"
+          },
+          {
+           "c": "ref",
+           "src": "refs/about/airtable.webp",
+           "source": "Airtable",
+           "caption": "фото слева, имя, должность и биография рядом — читается без кликов",
+           "url": "https://mobbin.com/sites/sections/f347c49c-ac6c-4d2f-82ad-71da28f862ff"
+          },
+          {
+           "c": "ref",
+           "src": "refs/about/handshake.webp",
+           "source": "Handshake",
+           "caption": "«Leadership team» и «Board of Directors» — двумя группами",
+           "url": "https://mobbin.com/sites/sections/9af80987-35e3-46e8-b87d-7a6b0fbd3848"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Офисы"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас офисы показаны дважды: списком и пинами на карте; клик по региону карты ведёт в Contact Us по своей карте регионов. Объединить?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/about/sprout.webp",
+           "source": "Sprout Social",
+           "caption": "карточка офиса: фото, адрес, «Get directions»",
+           "url": "https://mobbin.com/sites/sections/f66a1541-7699-42a2-9780-671650c24115"
+          },
+          {
+           "c": "ref",
+           "src": "refs/about/slack.webp",
+           "source": "Slack",
+           "caption": "карточки офисов с адресом и «Get directions»",
+           "url": "https://mobbin.com/sites/sections/8fa14376-c626-4c19-941c-3bf77f0d64db"
+          },
+          {
+           "c": "ref",
+           "src": "refs/about/upwork.webp",
+           "source": "Upwork",
+           "caption": "кусочек карты у каждого офиса вместо общей карты",
+           "url": "https://mobbin.com/sites/sections/6579e166-e646-46d2-8745-554a7096c506"
+          }
+         ]
+        }
+       ]
+      }
+     ]
     }
    ]
   },

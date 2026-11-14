@@ -816,6 +816,34 @@ def careers_new(state='roles', phone=False):
             {'c': 'section', 'pad': pad, 'items': [candidate_form(phone)]}, FOOTER]
 
 
+# ---------- About ----------
+ABOUT_REFS = [
+    {'title': 'Кто мы: текст и факты рядом',
+     'ask': 'Сейчас — два коротких абзаца друг под другом. Дать рядом факты о компании (страны, публикации, офисы)?',
+     'refs': [('customerio', 'Customer.io', 'слева колонка цифр, справа «Who we are / How we got started» — «общая линия»', 'sites/sections/24205429-b78e-4d31-9572-0f87504ad25e'),
+              ('faire', 'Faire', 'миссия одной крупной фразой на цветной полосе', 'sites/sections/1af96634-4256-4df0-ab2c-c84f33987abe')]},
+    {'title': 'Руководство',
+     'ask': 'Сейчас: фото, ИМЯ КАПСОМ, должность, «Read bio» раскрывает на месте. Показывать 1–2 строки биографии сразу? Совет директоров — отдельно?',
+     'refs': [('intercom', 'Intercom', 'фото, имя и должность, 2–3 строки био и «Read full bio»', 'sites/sections/fc292fd5-ab37-469b-b09b-dc378471521c'),
+              ('airtable', 'Airtable', 'фото слева, имя, должность и биография рядом — читается без кликов', 'sites/sections/f347c49c-ac6c-4d2f-82ad-71da28f862ff'),
+              ('handshake', 'Handshake', '«Leadership team» и «Board of Directors» — двумя группами', 'sites/sections/9af80987-35e3-46e8-b87d-7a6b0fbd3848')]},
+    {'title': 'Офисы',
+     'ask': 'Сейчас офисы показаны дважды: списком и пинами на карте; клик по региону карты ведёт в Contact Us по своей карте регионов. Объединить?',
+     'refs': [('sprout', 'Sprout Social', 'карточка офиса: фото, адрес, «Get directions»', 'sites/sections/f66a1541-7699-42a2-9780-671650c24115'),
+              ('slack', 'Slack', 'карточки офисов с адресом и «Get directions»', 'sites/sections/8fa14376-c626-4c19-941c-3bf77f0d64db'),
+              ('upwork', 'Upwork', 'кусочек карты у каждого офиса вместо общей карты', 'sites/sections/6579e166-e646-46d2-8745-554a7096c506')]},
+]
+
+
+def about_asis(phone=False):
+    ex = None if phone else {
+        1: {'annotation': 'Вводный текст и «What we do» — два коротких абзаца друг под другом; фактов о компании (страны, публикации, офисы) рядом нет. На странице две аудитории — врачи и инвесторы (письмо Emily 30.10).'},
+        3: {'annotation': 'Руководство: 6 карточек, имена и должности КАПСОМ (так в данных с Duda), биография — по «Read bio» на месте; у карточки якорь #{slug}.'},
+        4: {'annotation': 'Офисы показаны дважды: этим списком и пинами на карте ниже.'},
+        5: {'annotation': 'Карта: клик по региону → Contact Us со своей картой регионов: Латинская Америка → Europe, Ближний Восток → Asia & Pacific; а определение по IP шлёт Латинскую Америку в Americas. Третья карта регионов на сайте (вопрос №9).'}}
+    return [HEADER, page('About', None, ex), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -842,6 +870,8 @@ flow = {
         {'title': '5 · Careers и вакансии — как есть', 'screens': ['careers-asis', 'careers-asis-phone', 'openpos-asis']},
         {'title': '5 · Careers и вакансии — примеры из Mobbin', 'screens': ['careers-mobbin']},
         {'title': '5 · Careers — решение (закрыта 2026-11-14)', 'screens': ['careers-new', 'careers-new-empty', 'careers-new-phone']},
+        {'title': '6 · About — как есть', 'screens': ['about-asis', 'about-asis-phone']},
+        {'title': '6 · About — примеры из Mobbin', 'screens': ['about-mobbin']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -884,6 +914,9 @@ flow = {
               {'from': 'careers-mobbin', 'to': 'careers-new', 'label': 'решение'},
               {'from': 'careers-new', 'to': 'careers-new-empty', 'label': 'вакансий нет'},
               {'from': 'careers-new', 'to': 'careers-new-phone', 'label': 'на телефоне'},
+              {'from': 'careers-new-phone', 'to': 'about-asis', 'label': 'следующая страница'},
+              {'from': 'about-asis', 'to': 'about-asis-phone', 'label': 'на телефоне'},
+              {'from': 'about-asis-phone', 'to': 'about-mobbin', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -949,6 +982,9 @@ flow = {
          'notes': ['/open-positions → 301 на /careers#open-positions: вакансии живут на одной странице с культурой (Linear, Mixpanel). Страница одной вакансии на сайте не нужна — «Apply» ведёт в Spark Hire.']},
         {'id': 'careers-new-empty', 'title': 'Careers · decided, no open roles', 'url': 'rapid-medical.com/careers', 'body': careers_new('empty')},
         {'id': 'careers-new-phone', 'title': 'Careers · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/careers', 'body': careers_new('roles', True)},
+        {'id': 'about-asis', 'title': 'About · as is', 'url': 'rapid-medical.com/about-us', 'body': about_asis()},
+        {'id': 'about-asis-phone', 'title': 'About · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/about-us', 'body': about_asis(True)},
+        ref_screen('about-mobbin', 'About · examples from Mobbin', 'about', ABOUT_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
