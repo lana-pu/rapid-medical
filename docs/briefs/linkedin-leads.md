@@ -1,6 +1,6 @@
 # Направление: лиды из LinkedIn через исследования
 
-Статус: **обсуждение**, начато 2026-11-14. Кода нет, спека не менялась.
+Статус: **в работе параллельно с переносом сайта** (решение владелицы 2026-11-14). Кода нет, спека не менялась.
 
 ## Зачем
 Клиент хочет больше лидов. Лидов сейчас нет: CRM нет, на выставках не собирают, через форму на Duda — ни одной заявки
@@ -59,10 +59,35 @@
 5. Связано ли это с инициативой Nir (поиск клиентов в LinkedIn) — созвон из BACKLOG.
 
 **Владелице:**
-1. Берём в объём сейчас или после переноса сайта?
+1. ~~Берём в объём сейчас или после переноса сайта?~~ — **параллельно с переносом** (2026-11-14).
 2. Начинаем со страницы исследования (звенья 2–3) — она нужна сайту в любом случае?
-3. Исследование — отдельный тип записи или расширение `publications`?
+3. Исследование — отдельный тип записи или расширение `publications`? Решать после вайрфрейма страницы.
+
+## Письмо клиенту — черновик (не отправлено)
+Кому: Emily Richardson, Nir Palmor. Отправляет владелица.
+
+> **Subject:** LinkedIn → leads: a few questions before we start
+>
+> Hi Emily, hi Nir,
+>
+> You mentioned LinkedIn is your main channel and that you want more leads. We'd like to use your clinical studies for
+> this: each study gets its own page on the new site with a clear next step ("Request a demo"), and a LinkedIn post
+> links to that page. The site already records where each request came from, so after a month we'll see how many
+> requests LinkedIn brought.
+>
+> A few questions so we build the right thing:
+>
+> 1. Who runs the Rapid Medical LinkedIn page today, and how often do you post? Can you share the page analytics
+>    (followers, clicks) for the last few months?
+> 2. Who reviews clinical claims (MLR), and how long does a review usually take?
+> 3. Which studies and products can be mentioned in a post seen in all regions? Is anything US-only or OUS-only?
+> 4. What counts as a lead for you: a demo request, a product question, any message?
+> 5. Nir, is this connected to your idea of finding customers on LinkedIn? Happy to set up the short call you suggested.
+>
+> Thanks!
 
 ## Дальше
-Ответы владелицы → вопросы клиенту письмом → страница исследования в цикле вайрфреймов (`docs/flows/site-pages.md`) →
-спека → код.
+1. Письмо клиенту — владелица правит и отправляет.
+2. **Страница исследования — отдельной дорожкой** рядом с циклом вайрфреймов (`docs/flows/site-pages.md`): как есть
+   (SUCCESS, DISTALS, Long-term outcomes) + примеры из Mobbin → обсуждение → решение → DESIGN.md.
+3. Решение о типе записи → спека → код.
