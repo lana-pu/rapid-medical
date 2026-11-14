@@ -1076,6 +1076,48 @@ def therapies_asis(phone=False):
     return [HEADER, page('US · Therapies', None, ex), FOOTER]
 
 
+# ---------- Therapies overview — proposal that keeps everything ----------
+THER_US = [('Ischemic stroke', 'TIGERTRIEVER™', 'Large vessel stroke', 'A patient-centric approach to AIS', '32 publications'),
+           ('Hemorrhagic stroke', 'COMANECI™', 'Aneurysm', 'Bridging the gap in assist devices', '57 publications'),
+           ('Access', 'DRIVEWIRE™', 'Access', 'Active access', '5 publications')]
+THER_OUS = [('Ischemic stroke', [('TIGERTRIEVER™', 'Large vessel stroke', 'A patient-centric approach to AIS', '32 publications'),
+                                 ('TIGERTRIEVER™ 13', 'Medium vessel stroke', '[подзаголовок терапии — как сейчас]', '8 publications')]),
+            ('Hemorrhagic stroke', [('COMANECI™', 'Aneurysm', '[подзаголовок терапии — как сейчас]', '57 publications'),
+                                    ('COMANECI™', 'Vasospasm', '[подзаголовок терапии — как сейчас]', '[N] publications')]),
+            ('Access', [('DRIVEWIRE™', 'Access', 'Active access', '5 publications')])]
+
+
+def ther_card(eyebrow, title, body, pubs, note=None):
+    return {'c': 'box', 'border': True, 'pad': 'm', 'gap': 's', 'items': [
+        {'c': 'media', 'kind': 'photo', 'label': 'device render · одинаковый формат', 'ratio': '4/3'},
+        T(eyebrow, 'caption'), H(title, 4), T(body, 'small'),
+        T('[Proof point — после MLR; пока пусто, строки нет]', 'caption'),
+        {'c': 'row', 'justify': 'between', 'items': [{'c': 'link', 'text': 'Explore →'}, {'c': 'link', 'text': pubs + ' →'}]}],
+        'annotation': note}
+
+
+def therapies_new(region='us'):
+    hero = dict(rm('US · Therapies', 0), annotation='Шапка — без изменений: регион, «Therapies», вводный текст, примечание (если заполнено), фоновое видео. Всё правится, как сейчас.')
+    if region == 'us':
+        cards = [ther_card(f'{g} · {p}', t, b, n) for g, p, t, b, n in THER_US]
+        cards[0]['annotation'] = ('Всё, что было на карточке, осталось: направление (теперь надписью над названием, раз в группе одна терапия), продукт, название, подзаголовок, ссылка. '
+                                  'Добавлено: фото устройства в одном формате (рендер от клиента — высота карточек одинаковая), строка-доказательство (когда пройдёт MLR), число публикаций → Evidence с фильтром.')
+        body = {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}
+        mid = {'c': 'section', 'pad': 'l', 'items': [body]}
+    else:
+        secs = []
+        for g, items in THER_OUS:
+            cards = [ther_card(p, t, b, n) for p, t, b, n in items]
+            secs.append(S([H(g, 3), {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}], 'm'))
+        mid = {'c': 'section', 'pad': 'l', 'items': [S(secs, 'xl')],
+               'annotation': 'Где в направлении 2+ терапии (Europe, Asia & Pacific) — заголовки групп остаются, как сейчас. Правило одно: заголовок группы показывается, когда в ней больше одной терапии.'}
+    missing = {'c': 'alert', 'tone': 'info', 'title': 'Vasospasm is not available in Americas.', 'text': 'These are the therapies here.',
+               'annotation': 'Сохранено: плашка при переходе с терапии, которой нет в регионе (?missing=).'} if region == 'us' else None
+    cta = dict(rm('US · Therapies', 4), annotation='«Questions?» и «Contact us» — без изменений.')
+    items = [HEADER] + ([{'c': 'section', 'pad': 's', 'items': [missing]}] if missing else []) + [{'c': 'rm-page', 'items': [hero]}, mid, {'c': 'rm-page', 'items': [cta]}, FOOTER]
+    return items
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -1112,6 +1154,7 @@ flow = {
         {'title': '8 · Evidence — черновик концепции (к обсуждению)', 'screens': ['ev-concept', 'ev-filters', 'ev-filters-delete']},
         {'title': '9 · Обзор терапий — как есть', 'screens': ['ther-asis', 'ther-asis-phone']},
         {'title': '9 · Обзор терапий — конкуренты и Mobbin', 'screens': ['ther-refs']},
+        {'title': '9 · Обзор терапий — предложение (всё сохранено, к обсуждению)', 'screens': ['ther-new', 'ther-new-ous']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1171,6 +1214,8 @@ flow = {
               {'from': 'ev-filters-delete', 'to': 'ther-asis', 'label': 'следующая страница'},
               {'from': 'ther-asis', 'to': 'ther-asis-phone', 'label': 'на телефоне'},
               {'from': 'ther-asis-phone', 'to': 'ther-refs', 'label': 'как у других'},
+              {'from': 'ther-refs', 'to': 'ther-new', 'label': 'предложение'},
+              {'from': 'ther-new', 'to': 'ther-new-ous', 'label': 'регион с 5 терапиями'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1253,6 +1298,9 @@ flow = {
         {'id': 'ther-asis', 'title': 'Therapies overview · as is (Americas)', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis()},
         {'id': 'ther-asis-phone', 'title': 'Therapies overview · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis(True)},
         ref_screen('ther-refs', 'Therapies overview · competitors and Mobbin', 'therapies', THER_REFS),
+        {'id': 'ther-new', 'title': 'Therapies overview · proposal, Americas', 'url': 'rapid-medical.com/us/therapies?missing=vasospasm', 'body': therapies_new('us'),
+         'notes': ['Сверка «было → стало»: регион, заголовок, вводный текст, примечание, видео — шапка без изменений; направление, продукт, название, подзаголовок, ссылка — на карточке; «Questions?» + «Contact us» — внизу; плашка ?missing= — сверху. Ничего не убрано. Добавлено: фото устройства, строка-доказательство (после MLR), число публикаций.']},
+        {'id': 'ther-new-ous', 'title': 'Therapies overview · proposal, Europe & Middle East (5 therapies)', 'url': 'rapid-medical.com/ous/therapies', 'body': therapies_new('ous')},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

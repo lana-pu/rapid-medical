@@ -208,6 +208,13 @@
    ]
   },
   {
+   "title": "9 · Обзор терапий — предложение (всё сохранено, к обсуждению)",
+   "screens": [
+    "ther-new",
+    "ther-new-ous"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -490,6 +497,16 @@
    "from": "ther-asis-phone",
    "to": "ther-refs",
    "label": "как у других"
+  },
+  {
+   "from": "ther-refs",
+   "to": "ther-new",
+   "label": "предложение"
+  },
+  {
+   "from": "ther-new",
+   "to": "ther-new-ous",
+   "label": "регион с 5 терапиями"
   },
   {
    "from": "text-new-phone",
@@ -17144,6 +17161,587 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "ther-new",
+   "title": "Therapies overview · proposal, Americas",
+   "url": "rapid-medical.com/us/therapies?missing=vasospasm",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "alert",
+       "tone": "info",
+       "title": "Vasospasm is not available in Americas.",
+       "text": "These are the therapies here.",
+       "annotation": "Сохранено: плашка при переходе с терапии, которой нет в регионе (?missing=)."
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Therapies",
+       "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
+       "note": "",
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+       "annotation": "Шапка — без изменений: регион, «Therapies», вводный текст, примечание (если заполнено), фоновое видео. Всё правится, как сейчас."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": 3,
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Ischemic stroke · TIGERTRIEVER™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Large vessel stroke"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "A patient-centric approach to AIS"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "[Proof point — после MLR; пока пусто, строки нет]"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "32 publications →"
+            }
+           ]
+          }
+         ],
+         "annotation": "Всё, что было на карточке, осталось: направление (теперь надписью над названием, раз в группе одна терапия), продукт, название, подзаголовок, ссылка. Добавлено: фото устройства в одном формате (рендер от клиента — высота карточек одинаковая), строка-доказательство (когда пройдёт MLR), число публикаций → Evidence с фильтром."
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Hemorrhagic stroke · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Aneurysm"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Bridging the gap in assist devices"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "[Proof point — после MLR; пока пусто, строки нет]"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "57 publications →"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Access · DRIVEWIRE™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Access"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Active access"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "[Proof point — после MLR; пока пусто, строки нет]"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "5 publications →"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-cta",
+       "v": "light",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "label": "Contact us",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "annotation": "«Questions?» и «Contact us» — без изменений."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Сверка «было → стало»: регион, заголовок, вводный текст, примечание, видео — шапка без изменений; направление, продукт, название, подзаголовок, ссылка — на карточке; «Questions?» + «Contact us» — внизу; плашка ?missing= — сверху. Ничего не убрано. Добавлено: фото устройства, строка-доказательство (после MLR), число публикаций."
+   ]
+  },
+  {
+   "id": "ther-new-ous",
+   "title": "Therapies overview · proposal, Europe & Middle East (5 therapies)",
+   "url": "rapid-medical.com/ous/therapies",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "bannerCompact",
+       "eyebrow": "Americas",
+       "title": "Therapies",
+       "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
+       "note": "",
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+       "annotation": "Шапка — без изменений: регион, «Therapies», вводный текст, примечание (если заполнено), фоновое видео. Всё правится, как сейчас."
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "xl",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "heading",
+           "level": 3,
+           "text": "Ischemic stroke"
+          },
+          {
+           "c": "grid",
+           "cols": 3,
+           "gap": "m",
+           "align": "start",
+           "items": [
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "media",
+               "kind": "photo",
+               "label": "device render · одинаковый формат",
+               "ratio": "4/3"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™"
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Large vessel stroke"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "A patient-centric approach to AIS"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "[Proof point — после MLR; пока пусто, строки нет]"
+              },
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "link",
+                 "text": "Explore →"
+                },
+                {
+                 "c": "link",
+                 "text": "32 publications →"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "media",
+               "kind": "photo",
+               "label": "device render · одинаковый формат",
+               "ratio": "4/3"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™ 13"
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Medium vessel stroke"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[подзаголовок терапии — как сейчас]"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "[Proof point — после MLR; пока пусто, строки нет]"
+              },
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "link",
+                 "text": "Explore →"
+                },
+                {
+                 "c": "link",
+                 "text": "8 publications →"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "heading",
+           "level": 3,
+           "text": "Hemorrhagic stroke"
+          },
+          {
+           "c": "grid",
+           "cols": 3,
+           "gap": "m",
+           "align": "start",
+           "items": [
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "media",
+               "kind": "photo",
+               "label": "device render · одинаковый формат",
+               "ratio": "4/3"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "COMANECI™"
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Aneurysm"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[подзаголовок терапии — как сейчас]"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "[Proof point — после MLR; пока пусто, строки нет]"
+              },
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "link",
+                 "text": "Explore →"
+                },
+                {
+                 "c": "link",
+                 "text": "57 publications →"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "media",
+               "kind": "photo",
+               "label": "device render · одинаковый формат",
+               "ratio": "4/3"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "COMANECI™"
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Vasospasm"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[подзаголовок терапии — как сейчас]"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "[Proof point — после MLR; пока пусто, строки нет]"
+              },
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "link",
+                 "text": "Explore →"
+                },
+                {
+                 "c": "link",
+                 "text": "[N] publications →"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "heading",
+           "level": 3,
+           "text": "Access"
+          },
+          {
+           "c": "grid",
+           "cols": 3,
+           "gap": "m",
+           "align": "start",
+           "items": [
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "media",
+               "kind": "photo",
+               "label": "device render · одинаковый формат",
+               "ratio": "4/3"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "DRIVEWIRE™"
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Access"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Active access"
+              },
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "[Proof point — после MLR; пока пусто, строки нет]"
+              },
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "link",
+                 "text": "Explore →"
+                },
+                {
+                 "c": "link",
+                 "text": "5 publications →"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "annotation": "Где в направлении 2+ терапии (Europe, Asia & Pacific) — заголовки групп остаются, как сейчас. Правило одно: заголовок группы показывается, когда в ней больше одной терапии."
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-cta",
+       "v": "light",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "label": "Contact us",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "annotation": "«Questions?» и «Contact us» — без изменений."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },
