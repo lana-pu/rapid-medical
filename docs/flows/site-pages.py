@@ -752,8 +752,11 @@ def openpos_asis():
 
 
 # ---------- Careers — decided ----------
-ROLES = [('Clinical', [('Clinical Specialist', 'Texas, US'), ('Clinical Specialist', 'Germany')]),
-         ('Operations', [('Customer Service Representative', 'Yokneam, Israel')])]
+ROLES = [('Clinical', [('Clinical Specialist', 'Texas, US'), ('Clinical Specialist', 'Germany'), ('Clinical Education Manager', 'Remote, US')]),
+         ('Sales', [('Territory Manager', 'California, US'), ('Territory Manager', 'Florida, US')]),
+         ('Operations', [('Customer Service Representative', 'Yokneam, Israel'), ('Quality Engineer', 'Yokneam, Israel')]),
+         ('R&D', [('R&D Engineer', 'Yokneam, Israel'), ('Regulatory Affairs Specialist', 'Yokneam, Israel')])]
+ROLES_LIMIT = 6
 EEO = RM['Careers'][3]['data'].get('note', '')
 
 
@@ -768,12 +771,20 @@ def roles_block(state, phone=False):
                    {'c': 'link', 'text': 'Send us your details ↓'}], 's',
                   annotation=None if phone else 'Вакансий нет — честная строка и сразу путь к общей заявке (Lyssna, Jeton). Секция не пропадает: кандидат видит, что смотрел туда, куда нужно.')
     else:
-        rows = []
+        total = sum(len(i) for _, i in ROLES)
+        filters = {'c': 'row', 'gap': 'm', 'wrap': True, 'align': 'center', 'items': [
+            {'c': 'chips', 'items': ['All'] + [d for d, _ in ROLES], 'active': 0},
+            {'c': 'input', 'v': 'select', 'value': 'All locations'}]}
+        rows, shown = [], 0
         for dept, items in ROLES:
-            rows += [T(dept, 'caption')] + sum([[role_row(t, p), {'c': 'divider'}] for t, p in items], [])
-        right = S(rows + [T('Applications go through Spark Hire.', 'caption')], 's',
-                  annotation=None if phone else 'Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Показываем в стиле сайта: по отделам, роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Как подключиться (API или виджет) — проверить; запасной вариант — ссылка «See open roles on Spark Hire». Роли на экране — пример.')
-    left = S([H('Open positions', 2), T('3 roles' if state != 'empty' else '0 roles', 'caption')], 'xs')
+            take = items[:max(0, ROLES_LIMIT - shown)]
+            if not take: break
+            rows += [T(dept, 'caption')] + sum([[role_row(t, pl), {'c': 'divider'}] for t, pl in take], [])
+            shown += len(take)
+        more = {'c': 'button', 'v': 'secondary', 'text': f'Show all {total} roles', 'full': True}
+        right = S([filters] + rows + [more, T('Applications go through Spark Hire.', 'caption')], 's',
+                  annotation=None if phone else f'Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Фильтры — отдел (чипы) и город. Показываем первые {ROLES_LIMIT}, остальные — по кнопке «Show all {total} roles». Строка: роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Подключение (API / виджет / ссылка) — вопрос к Emily (BACKLOG №22). Роли на экране — пример.')
+    left = S([H('Open positions', 2), T(f"{sum(len(i) for _, i in ROLES)} roles" if state != 'empty' else '0 roles', 'caption')], 'xs')
     if phone:
         return S([left, right], 'm')
     return {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, right]}

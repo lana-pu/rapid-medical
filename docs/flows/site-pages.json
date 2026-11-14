@@ -10569,7 +10569,7 @@
           {
            "c": "text",
            "v": "caption",
-           "text": "3 roles"
+           "text": "9 roles"
           }
          ]
         },
@@ -10581,6 +10581,30 @@
          "c": "stack",
          "gap": "s",
          "items": [
+          {
+           "c": "row",
+           "gap": "m",
+           "wrap": true,
+           "align": "center",
+           "items": [
+            {
+             "c": "chips",
+             "items": [
+              "All",
+              "Clinical",
+              "Sales",
+              "Operations",
+              "R&D"
+             ],
+             "active": 0
+            },
+            {
+             "c": "input",
+             "v": "select",
+             "value": "All locations"
+            }
+           ]
+          },
           {
            "c": "text",
            "v": "caption",
@@ -10635,6 +10659,83 @@
            "c": "divider"
           },
           {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Education Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Remote, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Sales"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Territory Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "California, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Territory Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Florida, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
            "c": "text",
            "v": "caption",
            "text": "Operations"
@@ -10664,12 +10765,18 @@
            "c": "divider"
           },
           {
+           "c": "button",
+           "v": "secondary",
+           "text": "Show all 9 roles",
+           "full": true
+          },
+          {
            "c": "text",
            "v": "caption",
            "text": "Applications go through Spark Hire."
           }
          ],
-         "annotation": "Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Показываем в стиле сайта: по отделам, роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Как подключиться (API или виджет) — проверить; запасной вариант — ссылка «See open roles on Spark Hire». Роли на экране — пример."
+         "annotation": "Вакансии — из Spark Hire (там их ведёт HR), без второй таблицы в админке. Фильтры — отдел (чипы) и город. Показываем первые 6, остальные — по кнопке «Show all 9 roles». Строка: роль · город · «Apply ↗» (Upwork, Tines); заявка — в Spark Hire. Подключение (API / виджет / ссылка) — вопрос к Emily (BACKLOG №22). Роли на экране — пример."
         }
        ]
       }
@@ -11148,7 +11255,7 @@
           {
            "c": "text",
            "v": "caption",
-           "text": "3 roles"
+           "text": "9 roles"
           }
          ]
         },
@@ -11156,6 +11263,30 @@
          "c": "stack",
          "gap": "s",
          "items": [
+          {
+           "c": "row",
+           "gap": "m",
+           "wrap": true,
+           "align": "center",
+           "items": [
+            {
+             "c": "chips",
+             "items": [
+              "All",
+              "Clinical",
+              "Sales",
+              "Operations",
+              "R&D"
+             ],
+             "active": 0
+            },
+            {
+             "c": "input",
+             "v": "select",
+             "value": "All locations"
+            }
+           ]
+          },
           {
            "c": "text",
            "v": "caption",
@@ -11210,6 +11341,83 @@
            "c": "divider"
           },
           {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Clinical Education Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Remote, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Sales"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Territory Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "California, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": "minmax(0,1fr) 180px 90px",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Territory Manager"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Florida, US"
+            },
+            {
+             "c": "link",
+             "text": "Apply ↗"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
            "c": "text",
            "v": "caption",
            "text": "Operations"
@@ -11237,6 +11445,12 @@
           },
           {
            "c": "divider"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Show all 9 roles",
+           "full": true
           },
           {
            "c": "text",
