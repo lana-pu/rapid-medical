@@ -169,6 +169,34 @@ CONTACT_REFS = [
 ]
 
 
+# ---------- Text page + 404 ----------
+TEXT_REFS = [
+    {'title': 'Юридические страницы: как читать длинный текст',
+     'ask': 'Вопрос: добавить оглавление по разделам и строку «Last revised»? Где оглавление — слева, справа или списком сверху?',
+     'refs': [('miro', 'Miro', 'оглавление слева, даты публикации и вступления в силу под заголовком', 'sites/sections/47c3e6ab-e2e1-401e-baa3-79e8954e5919'),
+              ('dub', 'Dub', '«On this page» справа, разделы пронумерованы', 'sites/sections/825205b6-8aa3-4195-893d-0c348638a02e'),
+              ('webflow', 'Webflow', 'полоса «Legal» со ссылками на все документы, ниже оглавление списком', 'sites/sections/2ec91fae-596b-46bc-99eb-34d3ddf3a461'),
+              ('clickup', 'ClickUp', 'слева список всех политик, текущая выделена', 'sites/sections/c855064d-d56d-4e1b-ac14-08c72838c9af'),
+              ('zendesk', 'Zendesk', 'документы раздела слева, крупный заголовок справа — та же «общая линия»', 'sites/sections/0f40c501-8122-49db-8dd0-0342fbdfd4c8'),
+              ('vimeo', 'Vimeo', 'важное уведомление плашкой до оглавления', 'sites/sections/cd6d49ec-3655-468e-92e3-1934a2053c34')]},
+    {'title': 'Страницы исследований: не картинка, а текст и цифры',
+     'ask': 'Вопрос: SUCCESS Study сейчас — одна картинка-скриншот. Делать такие страницы текстом: дата и источник, ключевые цифры, PDF? (Содержание — за клиентом и MLR.)',
+     'refs': [('elicit', 'Elicit', 'дата, заголовок, вывод крупно, разделы с подписями капсом', 'screens/5b5f1c66-1ce8-4620-a0b6-79e407ebcbe3'),
+              ('copilot', 'Microsoft Copilot', 'разделы через тонкие линии, узкая колонка текста', 'screens/d77fe48b-77a6-4da7-a14a-54d00682b7dc'),
+              ('hims', 'Hims', 'одна цифра крупно и сноска с условиями исследования', 'screens/5e50843e-b295-4b23-9bff-bd1ba2526f3f')]},
+    {'title': '404: куда идти дальше',
+     'ask': 'Вопрос: сейчас только «Back to home». Добавить выходы — терапии своего региона, Contact Us — или оставить одну ссылку?',
+     'refs': [('littleamps', 'Little Amps Coffee', 'заголовок слева, «404» справа на той же линии, одна кнопка', 'sites/sections/a04a13b7-ed87-42e6-b3a1-ed653c00ea4d'),
+              ('klarna', 'Klarna', 'крупный заголовок и два выхода', 'sites/sections/573d3727-5257-4575-9dbb-26cd9623424f'),
+              ('apple', 'Apple', 'вместо кнопки — поиск и карта сайта', 'sites/sections/30ac6f25-887c-4761-bf4f-d2c08e7ca01f'),
+              ('becane', 'Becane', 'надпись «404 error» над заголовком, всё по левому краю', 'sites/sections/8177c87f-f68e-498f-8fa0-670a2d5ca8c1')]},
+]
+
+
+def nf_page(title, lines):
+    return [HEADER, {'c': 'section', 'pad': 'l', 'items': [S([H(title, 1)] + lines, 'm')]}, FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -180,11 +208,19 @@ flow = {
         {'title': '1 · Contact Us — как есть', 'screens': ['contact-asis', 'contact-asis-phone']},
         {'title': '1 · Contact Us — примеры из Mobbin', 'screens': ['contact-mobbin']},
         {'title': '1 · Contact Us — решение (закрыта 2026-11-14)', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
+        {'title': '2 · Текстовая страница и 404 — как есть', 'screens': ['text-asis', 'text-asis-study', 'text-asis-phone', 'nf-asis', 'nf-region']},
+        {'title': '2 · Текстовая страница и 404 — примеры из Mobbin', 'screens': ['text-mobbin']},
     ],
     'links': [
               {'from': 'contact-asis', 'to': 'contact-asis-phone', 'label': 'на телефоне'},
               {'from': 'contact-asis-phone', 'to': 'contact-mobbin', 'label': 'как у других'},
               {'from': 'contact-mobbin', 'to': 'contact-new', 'label': 'черновик'},
+              {'from': 'contact-new-phone', 'to': 'text-asis', 'label': 'следующая страница'},
+              {'from': 'text-asis', 'to': 'text-asis-study', 'label': 'страница исследования'},
+              {'from': 'text-asis', 'to': 'text-asis-phone', 'label': 'на телефоне'},
+              {'from': 'text-asis-study', 'to': 'nf-asis', 'label': 'битая ссылка'},
+              {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
+              {'from': 'nf-region', 'to': 'text-mobbin', 'label': 'как у других'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
               {'from': 'contact-new', 'to': 'contact-new-phone', 'label': 'на телефоне'}],
     'screens': [
@@ -193,6 +229,21 @@ flow = {
         {'id': 'contact-asis-phone', 'title': 'Contact Us · as is, phone', 'device': 'mobile', 'url': CONTACT_URL,
          'body': [HEADER, page('Contact'), FOOTER],
          'notes': ['На телефоне форма начинается после заголовка; тема — выпадающий список, ошибки — мелкий текст справа от подписи (находка 1).']},
+        {'id': 'text-asis', 'title': 'Terms of Use · as is', 'url': 'rapid-medical.com/terms-of-use', 'height': 900,
+         'body': [HEADER, page('Terms', None, {1: {'annotation': 'Как есть: заголовок и сплошной текст в одну колонку. Дата редакции — подзаголовком внутри текста; оглавления нет, а Terms и Privacy — длинные (десятки разделов). Между 4 юридическими страницами переход только через футер.'}}), FOOTER]},
+        {'id': 'text-asis-study', 'title': 'SUCCESS Study · as is', 'url': 'rapid-medical.com/us/success-study-final-results',
+         'body': [HEADER, page('US · SUCCESS study', None, {1: {'annotation': 'Как есть: страница исследования — одна картинка-скриншот (Screenshot-2025-07-21…png). Цифры и выводы не читаются поиском и экранными читалками, на телефоне мелко. Так же устроены DISTALS и Comaneci spinal case.'}}), FOOTER]},
+        {'id': 'text-asis-phone', 'title': 'Terms of Use · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/terms-of-use',
+         'body': [HEADER, page('Terms'), FOOTER], 'notes': ['На телефоне — тот же сплошной текст; чтобы найти раздел, листать до конца.']},
+        {'id': 'nf-asis', 'title': '404 · as is', 'url': 'rapid-medical.com/us/old-page',
+         'body': nf_page('Page not found', [T('The page you’re looking for doesn’t exist or has moved.', 'muted'), {'c': 'link', 'text': 'Back to home'}]),
+         'notes': ['Как есть: заголовок, строка и одна ссылка на главную. Старые адреса Duda уходят редиректами (47), сюда попадают остальные.']},
+        {'id': 'nf-region', 'title': '404 · therapy not in this region', 'url': 'rapid-medical.com/us/therapies/vasospasm',
+         'body': nf_page('Vasospasm is not available in Americas', [T('Product availability differs by region. This therapy is available in:', 'muted'),
+                                                                    {'c': 'bullets', 'items': ['Vasospasm — Europe & Middle East', 'Vasospasm — Asia & Pacific']},
+                                                                    {'c': 'link', 'text': 'All therapies in Americas'}]),
+         'notes': ['Новое состояние из параллельной сессии (2026-11-13, в коде, не закоммичено): терапия есть в других регионах — страница говорит об этом и ведёт туда. Пример — /us/therapies/vasospasm (вопрос 1 из site-ia.md).']},
+        ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
         {'id': 'contact-new', 'title': 'Contact Us · decided', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},
         {'id': 'contact-error', 'title': 'Contact Us · proposal, field errors', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('error')},
@@ -203,5 +254,7 @@ flow = {
     ],
 }
 
+ORDER = [sid for g in flow['groups'] for sid in g['screens']]
+flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))
 OUT.write_text(json.dumps(clean(flow), ensure_ascii=False, indent=1), encoding='utf8')
 print('ok:', OUT.name, len(flow['screens']), 'screens')
