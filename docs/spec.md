@@ -79,7 +79,9 @@ on-page editor (`data-e`), поэтому правка на странице п�
 
 - **Регион в пути**, не в cookie: `/{us|ous|apac}/…` (см. ADR-002). Неверный сегмент → 404.
 - Cookie `rm_region` (1 год) — последний посещённый регион, только чтобы выбрать меню «Therapies»
-  и CTA на главной. Cookie `rm_geo` (30 дней) — предложенный по стране регион (заголовки
+  и CTA на главной. Пишется только при настоящем открытии региональной страницы: фоновая подгрузка ссылок
+  (prefetch роутера, `Sec-Purpose: prefetch`) регион не меняет — иначе ссылка «Asia & Pacific version» на странице
+  терапии переключала регион, просто оказавшись на экране (UX-прогон 2026-11-14). Cookie `rm_geo` (30 дней) — предложенный по стране регион (заголовки
   `x-vercel-ip-country` / `cf-ipcountry` / `x-country-code`); жёсткого гео-редиректа нет. Если
   предложенный регион не совпадает с текущим — баннер над шапкой «It looks like you are in … · Go to the
   … site / Stay here» (`RegionBanner`), отказ запоминается cookie `rm_geo_dismissed` (30 дней).
@@ -136,6 +138,10 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `site_pages` (ADR-007, 2026-11-12) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`; строки настроек оставлены для отката). Правятся только в редакторе страницы; создать, снять с публикации или удалить нельзя (`alwaysLive`). Списки (новости, команда, офисы, публикации, карточки терапий, число вакансий) подставляются при показе |
 | `products` | `products` | `slug`, `name`, `fullName`, `family`, `regions[]` (вкладка Evidence), `aliases` (напр. APAC → COLUMBUS™) | — | **Без workflow**: сохранение сразу live |
 | `redirects` | `redirects` | `from` (host+path или path), `to`, `permanent`, `hits` | — | **Без workflow** |
+
+**Решение 2026-11-14 (ADR-009), в коде нет:** `publications` и `news_items` (и страницы исследований из `pages`) → одна
+сущность с видом (исследование / публикация / новость), своя страница по желанию, шаблон «Страница из документа»
+(DESIGN.md). Детали — после вайрфреймов News & Events и пробы на PDF.
 
 JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (bar/stackedBar), `Feature`,
 `AnnotatedImage`, `Benefit`, `Step`, `InPracticeItem` — типы в начале `schema.ts`.
@@ -261,7 +267,9 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 
 **Г — источник в самой заявке.** При первой странице визита в `sessionStorage` (`rm_attr`) пишутся `landing_page`,
 `referrer` (внешний или `(direct)`) и `utm_source/medium/campaign`; при отправке любой формы они вместе с `form_page`
-попадают в `contact_submissions.meta` (видно в админке и в письме). Не зависит от GA, блокировщиков и согласия на
+и `previous_page` (страница сайта перед формой — например, терапия, с которой нажали «Request a demo»; `rm_pages` в
+`sessionStorage`, UX-прогон 2026-11-14) попадают в `contact_submissions.meta` (видно в админке и в письме — с подписями
+«Form sent from», «Page before the form», «First page of the visit», «Came from», «Campaign…»; ключи в базе и CSV прежние). Не зависит от GA, блокировщиков и согласия на
 cookie; заблокированное хранилище → заявка просто без источника. Значения обрезаются до 300 символов, сервер
 принимает ключи ≤ 40 и значения ≤ 500 символов.
 
