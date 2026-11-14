@@ -819,16 +819,16 @@ def careers_new(state='roles', phone=False):
 # ---------- About ----------
 ABOUT_REFS = [
     {'title': 'Кто мы: текст и факты рядом',
-     'ask': 'Сейчас — два коротких абзаца друг под другом. Дать рядом факты о компании (страны, публикации, офисы)?',
+     'ask': 'Решено 2026-11-14: факты слева, текст справа — «общая линия».',
      'refs': [('customerio', 'Customer.io', 'слева колонка цифр, справа «Who we are / How we got started» — «общая линия»', 'sites/sections/24205429-b78e-4d31-9572-0f87504ad25e'),
               ('faire', 'Faire', 'миссия одной крупной фразой на цветной полосе', 'sites/sections/1af96634-4256-4df0-ab2c-c84f33987abe')]},
     {'title': 'Руководство',
-     'ask': 'Сейчас: фото, ИМЯ КАПСОМ, должность, «Read bio» раскрывает на месте. Показывать 1–2 строки биографии сразу? Совет директоров — отдельно?',
+     'ask': 'Решено: обычный регистр, 2 строки био и «Read full bio»; совет директоров — по желанию клиента.',
      'refs': [('intercom', 'Intercom', 'фото, имя и должность, 2–3 строки био и «Read full bio»', 'sites/sections/fc292fd5-ab37-469b-b09b-dc378471521c'),
               ('airtable', 'Airtable', 'фото слева, имя, должность и биография рядом — читается без кликов', 'sites/sections/f347c49c-ac6c-4d2f-82ad-71da28f862ff'),
               ('handshake', 'Handshake', '«Leadership team» и «Board of Directors» — двумя группами', 'sites/sections/9af80987-35e3-46e8-b87d-7a6b0fbd3848')]},
     {'title': 'Офисы',
-     'ask': 'Сейчас офисы показаны дважды: списком и пинами на карте; клик по региону карты ведёт в Contact Us по своей карте регионов. Объединить?',
+     'ask': 'Решено: офисы один раз карточками; карта — без кликов по регионам, кнопка в Contact Us.',
      'refs': [('sprout', 'Sprout Social', 'карточка офиса: фото, адрес, «Get directions»', 'sites/sections/f66a1541-7699-42a2-9780-671650c24115'),
               ('slack', 'Slack', 'карточки офисов с адресом и «Get directions»', 'sites/sections/8fa14376-c626-4c19-941c-3bf77f0d64db'),
               ('upwork', 'Upwork', 'кусочек карты у каждого офиса вместо общей карты', 'sites/sections/6579e166-e646-46d2-8745-554a7096c506')]},
@@ -842,6 +842,59 @@ def about_asis(phone=False):
         4: {'annotation': 'Офисы показаны дважды: этим списком и пинами на карте ниже.'},
         5: {'annotation': 'Карта: клик по региону → Contact Us со своей картой регионов: Латинская Америка → Europe, Ближний Восток → Asia & Pacific; а определение по IP шлёт Латинскую Америку в Americas. Третья карта регионов на сайте (вопрос №9).'}}
     return [HEADER, page('About', None, ex), FOOTER]
+
+
+# ---------- About — decided ----------
+import html as _html
+MEMBERS = RM['About'][3]['data']['members']
+
+
+def tcase(s):
+    keep = {'CEO', 'CFO', 'CTO', '&'}
+    return ' '.join(w if w in keep else w.capitalize() for w in s.split())
+
+
+def bio2(m):
+    t = _html.unescape(re.sub(r'<[^>]+>', ' ', m.get('bioHtml') or '')).split('. ')
+    return '. '.join(t[:2]).strip()[:210] + '…'
+
+
+def person(m, phone=False):
+    return S([{'c': 'media', 'kind': 'photo', 'label': tcase(m['name']), 'ratio': '1/1'},
+              S([T(tcase(m['name']).replace('Dr. ', 'Dr. '), 'strong'), T(tcase(m['title']), 'small')], 'xs'),
+              T(bio2(m), 'small'), {'c': 'link', 'text': 'Read full bio'}], 's')
+
+
+def about_new(phone=False):
+    facts = S([line('Countries', T('30+', 'strong')), {'c': 'divider'}, line('Clinical publications', T('102+', 'strong')), {'c': 'divider'},
+               line('Offices', T('Israel · USA · Germany', 'small')), {'c': 'divider'}, line('Headquarters', T('Yokneam, Israel', 'small'))], 's',
+              annotation=None if phone else 'Факты о компании — таблицей «ключ — значение» слева (Customer.io). Только то, что уже есть на сайте: «30+ countries» (подпись карты), «102+ clinical publications» (Evidence), офисы (Contact details). Для инвесторов и врачей — одним взглядом.')
+    text = S([T(RM['About'][1]['data']['body'], 'lead'), H('What we do', 4), T(RM['About'][2]['data']['body'], 'body')], 'm')
+    intro = S([H('About Us', 1), {'c': 'divider'}, text, facts] if phone else
+              [H('About Us', 1), {'c': 'divider', 'annotation': '«Общая линия», как на остальных страницах: заголовок, линия, факты слева (4/12), текст справа (7/12).'},
+               {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [facts, {'c': 'spacer', 'size': 1}, text]}], 'l')
+    people = [person(m, phone) for m in MEMBERS]
+    lead = S([H('Leadership Team', 2), T(RM['About'][3]['data']['intro'], 'muted')], 's')
+    team_grid = S(people, 'l') if phone else {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': people,
+                                              'annotation': 'Обычный регистр вместо КАПСА (данные с Duda). 2 строки биографии сразу, «Read full bio» раскрывает на месте (Intercom), якорь #{slug} — как сейчас. Совет директоров отдельной группой — только если клиент захочет (вопрос к Emily).'}
+    offices = []
+    for o in OFFICES:
+        offices.append({'c': 'box', 'border': True, 'pad': 'm', 'gap': 's', 'items': [
+            S([T(o['label'] if o['label'] != 'Headquarters' else 'Headquarters · Israel', 'caption'), T(o['name'], 'strong')], 'xs'),
+            T(o['address'].replace('\n', ', '), 'small'),
+            line('Phone', {'c': 'link', 'text': o['phone']}), line('Orders', T(o['ordersEmail'], 'small')),
+            {'c': 'link', 'text': 'Get directions ↗'}]})
+    off = S([H('Offices', 2), S(offices, 'm') if phone else dict({'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': offices},
+                                                                annotation='Офисы — один раз, карточками: адрес, телефон, почта заказов, «Get directions» (Slack, Sprout). Те же данные, что на Contact Us (Settings → Contact details).')], 'm')
+    footprint = S([H(RM['About'][5]['data']['title'], 3),
+                   {'c': 'media', 'kind': 'map', 'label': 'World map · 30+ countries · 3 offices (без кликов по регионам)', 'ratio': '21/9'},
+                   {'c': 'row', 'gap': 'm', 'align': 'center', 'items': [T('Have a question?', 'body'), {'c': 'button', 'v': 'primary', 'text': 'Contact a local representative'}]}], 'm',
+                  annotation=None if phone else 'Карта — картинка присутствия, без кликов по регионам: у неё была своя, третья разбивка стран по регионам. Кнопка ведёт в Contact Us, где регион выводится из страны — одна таблица на весь сайт.')
+    pad = 'm' if phone else 'l'
+    return [HEADER, {'c': 'section', 'pad': pad, 'items': [intro]},
+            {'c': 'section', 'pad': pad, 'rule': True, 'items': [S([lead, team_grid], 'l')]},
+            {'c': 'section', 'pad': pad, 'tone': 'surface', 'items': [off]},
+            {'c': 'section', 'pad': pad, 'items': [footprint]}, FOOTER]
 
 
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
@@ -872,6 +925,7 @@ flow = {
         {'title': '5 · Careers — решение (закрыта 2026-11-14)', 'screens': ['careers-new', 'careers-new-empty', 'careers-new-phone']},
         {'title': '6 · About — как есть', 'screens': ['about-asis', 'about-asis-phone']},
         {'title': '6 · About — примеры из Mobbin', 'screens': ['about-mobbin']},
+        {'title': '6 · About — решение (закрыта 2026-11-14)', 'screens': ['about-new', 'about-new-phone']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -917,6 +971,8 @@ flow = {
               {'from': 'careers-new-phone', 'to': 'about-asis', 'label': 'следующая страница'},
               {'from': 'about-asis', 'to': 'about-asis-phone', 'label': 'на телефоне'},
               {'from': 'about-asis-phone', 'to': 'about-mobbin', 'label': 'как у других'},
+              {'from': 'about-mobbin', 'to': 'about-new', 'label': 'решение'},
+              {'from': 'about-new', 'to': 'about-new-phone', 'label': 'на телефоне'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -985,6 +1041,8 @@ flow = {
         {'id': 'about-asis', 'title': 'About · as is', 'url': 'rapid-medical.com/about-us', 'body': about_asis()},
         {'id': 'about-asis-phone', 'title': 'About · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/about-us', 'body': about_asis(True)},
         ref_screen('about-mobbin', 'About · examples from Mobbin', 'about', ABOUT_REFS),
+        {'id': 'about-new', 'title': 'About · decided', 'url': 'rapid-medical.com/about-us', 'body': about_new()},
+        {'id': 'about-new-phone', 'title': 'About · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/about-us', 'body': about_new(True)},
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),

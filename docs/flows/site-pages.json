@@ -154,6 +154,13 @@
    ]
   },
   {
+   "title": "6 · About — решение (закрыта 2026-11-14)",
+   "screens": [
+    "about-new",
+    "about-new-phone"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -366,6 +373,16 @@
    "from": "about-asis-phone",
    "to": "about-mobbin",
    "label": "как у других"
+  },
+  {
+   "from": "about-mobbin",
+   "to": "about-new",
+   "label": "решение"
+  },
+  {
+   "from": "about-new",
+   "to": "about-new-phone",
+   "label": "на телефоне"
   },
   {
    "from": "text-new-phone",
@@ -12062,7 +12079,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас — два коротких абзаца друг под другом. Дать рядом факты о компании (страны, публикации, офисы)?"
+         "text": "Решено 2026-11-14: факты слева, текст справа — «общая линия»."
         },
         {
          "c": "grid",
@@ -12105,7 +12122,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас: фото, ИМЯ КАПСОМ, должность, «Read bio» раскрывает на месте. Показывать 1–2 строки биографии сразу? Совет директоров — отдельно?"
+         "text": "Решено: обычный регистр, 2 строки био и «Read full bio»; совет директоров — по желанию клиента."
         },
         {
          "c": "grid",
@@ -12155,7 +12172,7 @@
         {
          "c": "text",
          "v": "muted",
-         "text": "Сейчас офисы показаны дважды: списком и пинами на карте; клик по региону карты ведёт в Contact Us по своей карте регионов. Объединить?"
+         "text": "Решено: офисы один раз карточками; карта — без кликов по регионам, кнопка в Contact Us."
         },
         {
          "c": "grid",
@@ -12188,6 +12205,1344 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "about-new",
+   "title": "About · decided",
+   "url": "rapid-medical.com/about-us",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "About Us"
+        },
+        {
+         "c": "divider",
+         "annotation": "«Общая линия», как на остальных страницах: заголовок, линия, факты слева (4/12), текст справа (7/12)."
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Countries"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "30+"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Clinical publications"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "102+"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Offices"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Israel · USA · Germany"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Headquarters"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Yokneam, Israel"
+              }
+             ]
+            }
+           ],
+           "annotation": "Факты о компании — таблицей «ключ — значение» слева (Customer.io). Только то, что уже есть на сайте: «30+ countries» (подпись карты), «102+ clinical publications» (Evidence), офисы (Contact details). Для инвесторов и врачей — одним взглядом."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "lead",
+             "text": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy."
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "What we do"
+            },
+            {
+             "c": "text",
+             "v": "body",
+             "text": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Leadership Team"
+          },
+          {
+           "c": "text",
+           "v": "muted",
+           "text": "Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes."
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": 3,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Ronen Eckhouse",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Ronen Eckhouse"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Co-founder & CEO"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent …"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Michal Shriki",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Michal Shriki"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Financial Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) a…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Dr. Walid Haddad",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Dr. Walid Haddad"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Clinical Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Eitan Havis",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Eitan Havis"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "President, International"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "James Romero",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "James Romero"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "President, Americas"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sale…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Giora Kornblau",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Giora Kornblau"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Technology Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Ra…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          }
+         ],
+         "annotation": "Обычный регистр вместо КАПСА (данные с Duda). 2 строки биографии сразу, «Read full bio» раскрывает на месте (Intercom), якорь #{slug} — как сейчас. Совет директоров отдельной группой — только если клиент захочет (вопрос к Emily)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Offices"
+        },
+        {
+         "c": "grid",
+         "cols": 3,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Headquarters · Israel"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Ltd."
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "P.O.B. 337, Carmel building, Yokneam 2069205, ISRAEL"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+972-72-250-3331"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "customerservice.ltd@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "USA"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Inc."
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "445 S. Kimball Ave. Ste. 140, Southlake, Texas 76092, USA"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+1-469-991-7712"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "orders.inc@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Germany"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical GmbH"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Westendstrasse 21, 60325 Frankfurt, GERMANY"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+49 69 795 888 718"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "ordersgmbh@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          }
+         ],
+         "annotation": "Офисы — один раз, карточками: адрес, телефон, почта заказов, «Get directions» (Slack, Sprout). Те же данные, что на Contact Us (Settings → Contact details)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting."
+        },
+        {
+         "c": "media",
+         "kind": "map",
+         "label": "World map · 30+ countries · 3 offices (без кликов по регионам)",
+         "ratio": "21/9"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "center",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Have a question?"
+          },
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "Contact a local representative"
+          }
+         ]
+        }
+       ],
+       "annotation": "Карта — картинка присутствия, без кликов по регионам: у неё была своя, третья разбивка стран по регионам. Кнопка ведёт в Contact Us, где регион выводится из страны — одна таблица на весь сайт."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "about-new-phone",
+   "title": "About · decided, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/about-us",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "About Us"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy."
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "What we do"
+          },
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "row",
+           "justify": "between",
+           "align": "center",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Countries"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "30+"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "align": "center",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Clinical publications"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "102+"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "align": "center",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Offices"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Israel · USA · Germany"
+            }
+           ]
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "align": "center",
+           "items": [
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Headquarters"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Yokneam, Israel"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "rule": true,
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "s",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Leadership Team"
+          },
+          {
+           "c": "text",
+           "v": "muted",
+           "text": "Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes."
+          }
+         ]
+        },
+        {
+         "c": "stack",
+         "gap": "l",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Ronen Eckhouse",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Ronen Eckhouse"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Co-founder & CEO"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Ronen Eckhouse is the co-founder and CEO of Rapid Medical. He brings more than 20 years of experience in leadership, management and operations, including serving as a Major in the elite Shayetet 13, equivalent …"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Michal Shriki",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Michal Shriki"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Financial Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Michal Shriki joined Rapid Medical in 2018 and brings over a decade of professional experience serving as CFO and COO for several international high-tech companies, such as Galil Medical Ltd (acquired by BTG) a…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Dr. Walid Haddad",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Dr. Walid Haddad"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Clinical Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Dr. Walid Haddad joined Rapid Medical in 2017 as the Chief Clinical Officer…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Eitan Havis",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Eitan Havis"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "President, International"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Eitan Havis joined Rapid Medical in 2013 as the 7th employee. Now serving as the President, International, Eitan spearheads sales and marketing activities in Europe, Asia and the Middle East…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "James Romero",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "James Romero"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "President, Americas"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "James Romero joined Rapid Medical in 2021 as an accomplished medical device executive responsible for the US, Canadian and Latin American businesses. He previously served as Vice President of Sales and led Sale…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "media",
+             "kind": "photo",
+             "label": "Giora Kornblau",
+             "ratio": "1/1"
+            },
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Giora Kornblau"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Chief Technology Officer"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Giora Kornblau carries more than 20 years of leadership experience, including 12 years as an entrepreneur and founder of market-leading MedTech start-ups, such as Navotek and Calore Medical. Prior to joining Ra…"
+            },
+            {
+             "c": "link",
+             "text": "Read full bio"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Offices"
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Headquarters · Israel"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Ltd."
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "P.O.B. 337, Carmel building, Yokneam 2069205, ISRAEL"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+972-72-250-3331"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "customerservice.ltd@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "USA"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical Inc."
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "445 S. Kimball Ave. Ste. 140, Southlake, Texas 76092, USA"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+1-469-991-7712"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "orders.inc@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "xs",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "Germany"
+              },
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Rapid Medical GmbH"
+              }
+             ]
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "Westendstrasse 21, 60325 Frankfurt, GERMANY"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Phone"
+              },
+              {
+               "c": "link",
+               "text": "+49 69 795 888 718"
+              }
+             ]
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Orders"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "ordersgmbh@rapid-medical.com"
+              }
+             ]
+            },
+            {
+             "c": "link",
+             "text": "Get directions ↗"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting."
+        },
+        {
+         "c": "media",
+         "kind": "map",
+         "label": "World map · 30+ countries · 3 offices (без кликов по регионам)",
+         "ratio": "21/9"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "align": "center",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Have a question?"
+          },
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "Contact a local representative"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },
