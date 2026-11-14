@@ -232,6 +232,130 @@ def study_desktop():
               'annotation': 'Тот же шаблон для страниц исследований: слева регион, дата, PDF; справа содержание. Содержание пока прежнее (скриншот); перевод в текст и цифры — за клиентом и MLR (BACKLOG).'}]}], 'l')]}, FOOTER]
 
 
+# ---------- Study pages (idea) ----------
+STUDY_REFS = [
+    {'title': 'Цифры-итоги: крупно и с подписью',
+     'ask': 'Как подать главные результаты исследования одним взглядом.',
+     'refs': [('zipline', 'Zipline', '«The highlights»: две цифры огромным шрифтом и что они значат', 'sites/sections/baf31b25-1858-463c-bf15-611d9c669092'),
+              ('wise', 'Wise', 'цифры в ряд через тонкие линии, подпись с периодом', 'sites/sections/7dfcd207-47ec-4cf2-9988-85371589abc4'),
+              ('headspace', 'Headspace', 'крупная бледная цифра + логотипы научных центров', 'sites/sections/23eef34d-4eb2-49aa-8335-e1ac748100d1'),
+              ('aave', 'Aave', 'цифра в карточке с маленькой визуализацией рядом', 'sites/sections/02770c29-a1ea-4602-894f-9a59a779f0ea')]},
+    {'title': 'Данные как график, а не картинка',
+     'ask': 'Как показать распределение, сравнение и развитие во времени.',
+     'refs': [('giga', 'Giga', 'точечная матрица «каждая точка = 1%», моно-подписи — близко к мудборду «чертёж и данные»', 'sites/sections/4b7ca144-327d-4a66-b75a-647cdd01171d'),
+              ('retool', 'Retool', 'сравнение двух групп полосами с подписями значений', 'sites/sections/cdbbf80f-e1c0-47c9-9829-5af516346e60'),
+              ('lightdash', 'Lightdash', 'развитие по шагам: день 1 → день 5', 'sites/sections/9c6b6e83-8629-44d1-a000-f786c7e26ba5'),
+              ('greptile', 'Greptile', 'обложка исследования, собранная из самих данных', 'sites/sections/cc6a01db-55b7-4b6f-8cd8-b8f4b2d19bc2')]},
+]
+
+SUCCESS_URL = 'rapid-medical.com/us/success-study-final-results'
+
+
+def stat(v, l): return {'c': 'stat', 'value': v, 'label': l}
+
+
+def band(title, left, right, tone=None, note=None):
+    return {'c': 'section', 'pad': 'l', 'tone': tone, 'items': [S([H(title, 2), {'c': 'divider'},
+            {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [left, {'c': 'spacer', 'size': 1}, right], 'annotation': note}], 'm')]}
+
+
+MRS = ['mRS 0', 'mRS 1', 'mRS 2', 'mRS 3–6']
+MRS_ROWS = [{'label': 'Baseline (n=89)', 'segments': [{'value': 50.5}, {'value': 13.4}, {'value': 8.9}, {'value': 26.8}], 'note': '73%'},
+            {'label': '30 days (n=90)', 'segments': [{'value': 45.5}, {'value': 23.3}, {'value': 11.1}, {'value': 19.8}], 'note': '80%'},
+            {'label': '≤180 days (n=90)', 'segments': [{'value': 55.5}, {'value': 18.8}, {'value': 7.7}, {'value': 17.6}], 'note': '82%'}]
+RR_ROWS = [{'label': 'End of procedure (n=90)', 'segments': [{'value': 78.8}, {'value': 6.6}, {'value': 14.4}], 'note': '86%'},
+           {'label': '≤180 days (n=75)', 'segments': [{'value': 89.3}, {'value': 5.3}, {'value': 5.3}], 'note': '95%'}]
+SAFETY = {'c': 'table', 'columns': ['', 'All (n=90)', 'Ruptured (n=32)', 'Unruptured (n=58)'], 'rows': [
+    ['Thromboembolic events', '5 (5.5%)', '3 (9.4%)', '2 (3.4%)'],
+    ['Symptomatic thromboembolic events', '0', '0', '0'],
+    ['Mortality', '4 (4.4%)', '4 (12.5%)', '0'],
+    ['Coil entanglement / total coils', '1/356 (0.3%)', '0/134', '1/222 (0.5%)']]}
+
+
+def success_hero(phone=False):
+    passport = S([line('Design', T('Multicenter, single-arm, prospective', 'small')), {'c': 'divider'},
+                  line('Regulation', T('FDA-regulated post-market', 'small')), {'c': 'divider'},
+                  line('Patients', T('90 · wide-neck aneurysms', 'small')), {'c': 'divider'},
+                  line('Centers', T('17 in the US', 'small')), {'c': 'divider'},
+                  line('Enrollment', T('Nov 2020 – Oct 2023', 'small')), {'c': 'divider'},
+                  line('Imaging', T('Independent core lab (UCLA)', 'small'))], 's',
+                 annotation=None if phone else '«Паспорт исследования» — первое, что проверяет врач: дизайн, сколько пациентов, кто оценивал снимки. Таблица «ключ — значение» из Contact Us. Всё — с постера.')
+    stats = {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('95%', 'successful occlusion at ≤6 months'), stat('82%', 'good clinical outcome (mRS 0–2) at 6 months'),
+                                                          stat('0', 'symptomatic thromboembolic events'), stat('0.3%', 'coil entanglement · 1 of 356 coils')],
+             'annotation': None if phone else 'Итоги — 4 цифры крупно, как «The highlights» у Zipline и Wise. Только цифры и формулировки из одобренного постера (MLR).'}
+    head = [{'c': 'eyebrow', 'text': 'Clinical study · COMANECI™ · Americas'}, H('SUCCESS', 1),
+            T('SUccess in Comaneci-assist Coils Embolization Surveillance Study', 'muted'),
+            T('A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile.', 'lead',
+              annotation=None if phone else 'Вывод исследования — одной фразой под названием. Расшифровка акронима — как на постере (буквы SUCCESS). Текст — из «Conclusions» постера, формулировку утверждает клиент.')]
+    if phone:
+        return S(head + [{'c': 'divider'}, stats, passport], 'l')
+    return S(head + [{'c': 'divider'}, {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [passport, {'c': 'spacer', 'size': 1}, stats]}], 'l')
+
+
+def success_desktop():
+    return [HEADER,
+            {'c': 'section', 'pad': 'l', 'items': [success_hero()]},
+            band('Occlusion holds over time',
+                 S([T('Successful occlusion (Raymond Roy I + II) rose from 86% at the end of the procedure to 95% at follow-up.', 'body'),
+                    {'c': 'segmented', 'items': ['Both', 'End of procedure', '≤180 days'], 'active': 0}], 'm'),
+                 {'c': 'bars', 'legend': ['Raymond Roy I', 'Raymond Roy II', 'Raymond Roy III'], 'rows': RR_ROWS, 'caption': 'P = 0.05'},
+                 'surface', 'Графики — из чисел, а не картинкой: читаются на телефоне, находятся поиском и AI-ассистентами, одинаковы по стилю на всех исследованиях. Данные вносятся таблицей в админке (блок BarChart в коде уже есть). Переключатель по времени — как шаги у Lightdash.'),
+            band('More patients with a good outcome over time',
+                 T('Good clinical outcome (mRS 0–2): 73% at baseline, 80% at 30 days, 82% at 6 months (P < 0.05).', 'body'),
+                 {'c': 'bars', 'legend': MRS, 'rows': MRS_ROWS}),
+            band('Who was treated',
+                 S([line('Mean age', T('62 (29–82)', 'small')), {'c': 'divider'}, line('Female', T('63%', 'small')), {'c': 'divider'},
+                    line('Mean neck size', T('3.46 mm (1.5–8.2)', 'small'))], 's'),
+                 {'c': 'dots', 'total': 90, 'cols': 18, 'groups': [{'n': 32, 'label': 'Ruptured · 32 (36%)'}, {'n': 58, 'label': 'Unruptured · 58 (64%)'}], 'caption': 'Each dot is one patient'},
+                 'surface', 'Матрица «одна точка — один пациент» (Giga): 90 человек видно сразу, без процентов в уме. Тот же приём — для DISTALS «4 из 10».'),
+            band('Safety', T('No symptomatic thromboembolic events. All deaths were in ruptured cases; hemorrhages and perforations were unrelated to Comaneci.', 'body'),
+                 SAFETY, None, 'Полная таблица безопасности текстом, как на постере: честно и проверяемо. На телефоне — прокрутка вбок.'),
+            band('Where the study was done',
+                 T('17 US centers, from SUNY Buffalo to UCLA. Data adjudicated by an independent imaging core lab.', 'body'),
+                 {'c': 'media', 'kind': 'map', 'label': 'US map · 17 centers (из аффилиаций авторов постера)', 'ratio': '21/9'},
+                 'surface', 'Карта центров — компонент WorldMap уже есть (About). Список центров и авторов — раскрывается под картой. Приём — Headspace (научные центры).'),
+            {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'divider'}, {'c': 'row', 'gap': 'm', 'wrap': True, 'items': [
+                {'c': 'button', 'v': 'primary', 'text': 'Download the poster (PDF)'}, {'c': 'button', 'v': 'secondary', 'text': 'Discuss SUCCESS with our team'},
+                {'c': 'link', 'text': 'COMANECI™ for aneurysms →'}, {'c': 'link', 'text': 'All COMANECI™ publications →'}],
+                'annotation': 'Что дальше: постер целиком (для тех, кому нужен оригинал), разговор с командой (Contact Us, тема demo), терапия и все публикации по продукту (Evidence, вкладка COMANECI).'},
+                T('Refer to the Instructions for Use for indications, contraindications, warnings and precautions.', 'caption')], 'm')]},
+            FOOTER]
+
+
+def success_phone():
+    return [HEADER, {'c': 'section', 'pad': 'm', 'items': [S([success_hero(True), {'c': 'divider'},
+            H('Occlusion holds over time', 3), {'c': 'segmented', 'items': ['End of procedure', '≤180 days'], 'active': 1},
+            {'c': 'bars', 'legend': ['RR I', 'RR II', 'RR III'], 'rows': RR_ROWS[1:]}, {'c': 'divider'},
+            H('Who was treated', 3), {'c': 'dots', 'total': 90, 'cols': 15, 'groups': [{'n': 32, 'label': 'Ruptured · 32'}, {'n': 58, 'label': 'Unruptured · 58'}]},
+            {'c': 'divider'}, {'c': 'button', 'v': 'primary', 'text': 'Download the poster (PDF)', 'full': True}], 'l')]}, FOOTER]
+
+
+def distals_desktop():
+    passport = S([line('Design', T('Randomized: TIGERTRIEVER™ 13 vs best medical care', 'small')), {'c': 'divider'},
+                  line('Regulation', T('FDA-approved IDE study', 'small')), {'c': 'divider'},
+                  line('Randomized', T('98 · 51 treatment, 47 control', 'small')), {'c': 'divider'},
+                  line('Registry', {'c': 'link', 'text': 'NCT05152524'}), {'c': 'divider'},
+                  line('Presented', T('ESOC, May 2026', 'small'))], 's')
+    stats = {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [stat('3×', 'successful reperfusion at 24 h without sICH'), stat('Zero', 'symptomatic ICH in the T13 arm'),
+                                                          stat('41%', 'vs 33% recovered with little to no disability'), stat('2×', 'more patients reported perfect health (EQ-5D)')]}
+    compare = {'c': 'bars', 'rows': [{'label': 'TIGERTRIEVER™ 13 (n=51)', 'segments': [{'value': 86.3, 'label': '86.3%'}]},
+                                     {'label': 'Control (n=47)', 'segments': [{'value': 27.7, 'label': '27.7%'}]}], 'caption': 'Primary endpoint · efficacy and safety composite · P < .00001'}
+    people = {'c': 'grid', 'cols': 2, 'gap': 'm', 'items': [
+        S([T('Treatment (n=29)', 'strong'), {'c': 'dots', 'total': 10, 'cols': 10, 'groups': [{'n': 4, 'label': '4 out of 10 patients'}]}], 's'),
+        S([T('Control (n=36)', 'strong'), {'c': 'dots', 'total': 10, 'cols': 10, 'groups': [{'n': 3, 'label': '3 out of 10 patients'}]}], 's')]}
+    return [HEADER,
+            {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'eyebrow', 'text': 'Clinical study · TIGERTRIEVER™ 13 · Global'}, H('DISTALS', 1),
+                T('The first randomized trial of a device designed for distal stroke: more blood flow restored, with no increase in sICH.', 'lead'),
+                {'c': 'divider'}, {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [passport, {'c': 'spacer', 'size': 1}, stats]}], 'l')],
+             'annotation': 'Тот же шаблон на втором исследовании: паспорт, 4 итога. Сейчас на Duda DISTALS — лендинг с графиками-картинками; данные те же, меняется подача.'},
+            band('Primary endpoint', T('Successful reperfusion at 24 hours without symptomatic intracranial hemorrhage.', 'body'), compare, 'surface',
+                 'Сравнение двух групп — полосами (Retool). Было: картинка столбцов с кругами «3x».'),
+            band('90-day outcomes', T('Patients admitted with moderate to severe disability (mRS 2–5) who achieved excellent outcomes (mRS 0–1).', 'body'), people, None,
+                 '«4 из 10» против «3 из 10» — две матрицы по 10 точек вместо человечков-картинки.'),
+            {'c': 'section', 'pad': 'm', 'items': [T('TIGERTRIEVER™ 13 is not indicated for DMVO in all markets. Refer to the appropriate IFU for indications and contraindications.', 'caption')]},
+            FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -245,7 +369,9 @@ flow = {
         {'title': '1 · Contact Us — решение (закрыта 2026-11-14)', 'screens': ['contact-new', 'contact-error', 'contact-sent', 'contact-new-phone']},
         {'title': '2 · Текстовая страница — как есть', 'screens': ['text-asis', 'text-asis-study', 'text-asis-phone']},
         {'title': '2 · Текстовая страница — примеры из Mobbin', 'screens': ['text-mobbin']},
-        {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-study', 'text-new-phone']},
+        {'title': '2 · Текстовая страница — решение (закрыта 2026-11-14)', 'screens': ['text-new', 'text-new-phone']},
+        {'title': '2a · Страница исследования — примеры из Mobbin', 'screens': ['study-mobbin']},
+        {'title': '2a · Страница исследования — идея к обсуждению', 'screens': ['study-success', 'study-success-phone', 'study-distals']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -257,8 +383,11 @@ flow = {
               {'from': 'text-asis', 'to': 'text-asis-phone', 'label': 'на телефоне'},
               {'from': 'text-asis-phone', 'to': 'text-mobbin', 'label': 'как у других'},
               {'from': 'text-mobbin', 'to': 'text-new', 'label': 'решение'},
-              {'from': 'text-new', 'to': 'text-new-study', 'label': 'страница исследования'},
               {'from': 'text-new', 'to': 'text-new-phone', 'label': 'на телефоне'},
+              {'from': 'text-asis-study', 'to': 'study-mobbin', 'label': 'как у других'},
+              {'from': 'study-mobbin', 'to': 'study-success', 'label': 'идея'},
+              {'from': 'study-success', 'to': 'study-success-phone', 'label': 'на телефоне'},
+              {'from': 'study-success', 'to': 'study-distals', 'label': 'тот же шаблон'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -284,9 +413,13 @@ flow = {
                                                                     {'c': 'link', 'text': 'All therapies in Americas'}]),
          'notes': ['Состояние из параллельной сессии: терапия есть в других регионах — страница говорит об этом. Внутренних ссылок сюда быть не должно: переключатель региона ведёт на обзор терапий (?missing=), ссылки «версия в другом регионе» — только на существующие. Единственный внутренний источник — редирект с Duda /us/vasospasm → /us/therapies/vasospasm (site-ia, вопрос 1). Остальное — внешнее: старые закладки, поиск, ручная правка адреса. Это страховка, не основной путь.']},
         {'id': 'text-new', 'title': 'Terms of Use · decided', 'url': 'rapid-medical.com/terms-of-use', 'height': 900, 'body': text_desktop()},
-        {'id': 'text-new-study', 'title': 'Study page · same template', 'url': 'rapid-medical.com/us/success-study-final-results', 'body': study_desktop()},
         {'id': 'text-new-phone', 'title': 'Terms of Use · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/terms-of-use', 'body': text_phone(),
          'notes': ['Телефон: заголовок, линия, дата редакции, оглавление — выпадающим списком «On this page» (переход к разделу), затем текст.']},
+        {'id': 'study-success', 'title': 'Study page · SUCCESS', 'url': SUCCESS_URL, 'body': success_desktop()},
+        {'id': 'study-success-phone', 'title': 'Study page · SUCCESS, phone', 'device': 'mobile', 'url': SUCCESS_URL, 'body': success_phone(),
+         'notes': ['Телефон: название и вывод, 4 итога, паспорт, график с переключателем по времени, матрица пациентов, постер. Графики из чисел перестраиваются под ширину — скриншот постера на телефоне не читается.']},
+        {'id': 'study-distals', 'title': 'Study page · DISTALS, same template', 'url': 'rapid-medical.com/distals-results', 'body': distals_desktop()},
+        ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
         {'id': 'contact-new', 'title': 'Contact Us · decided', 'url': CONTACT_URL, 'height': 900, 'body': contact_desktop('empty')},

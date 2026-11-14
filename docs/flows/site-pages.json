@@ -44,8 +44,21 @@
    "title": "2 · Текстовая страница — решение (закрыта 2026-11-14)",
    "screens": [
     "text-new",
-    "text-new-study",
     "text-new-phone"
+   ]
+  },
+  {
+   "title": "2a · Страница исследования — примеры из Mobbin",
+   "screens": [
+    "study-mobbin"
+   ]
+  },
+  {
+   "title": "2a · Страница исследования — идея к обсуждению",
+   "screens": [
+    "study-success",
+    "study-success-phone",
+    "study-distals"
    ]
   },
   {
@@ -99,13 +112,28 @@
   },
   {
    "from": "text-new",
-   "to": "text-new-study",
-   "label": "страница исследования"
-  },
-  {
-   "from": "text-new",
    "to": "text-new-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "text-asis-study",
+   "to": "study-mobbin",
+   "label": "как у других"
+  },
+  {
+   "from": "study-mobbin",
+   "to": "study-success",
+   "label": "идея"
+  },
+  {
+   "from": "study-success",
+   "to": "study-success-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "study-success",
+   "to": "study-distals",
+   "label": "тот же шаблон"
   },
   {
    "from": "text-new-phone",
@@ -1806,110 +1834,6 @@
    ]
   },
   {
-   "id": "text-new-study",
-   "title": "Study page · same template",
-   "url": "rapid-medical.com/us/success-study-final-results",
-   "body": [
-    {
-     "c": "rm-header",
-     "region": "us"
-    },
-    {
-     "c": "section",
-     "pad": "l",
-     "items": [
-      {
-       "c": "stack",
-       "gap": "l",
-       "items": [
-        {
-         "c": "heading",
-         "level": 1,
-         "text": "SUCCESS Study – Final Results"
-        },
-        {
-         "c": "divider"
-        },
-        {
-         "c": "grid",
-         "cols": "4fr 1fr 7fr",
-         "gap": "m",
-         "align": "start",
-         "items": [
-          {
-           "c": "stack",
-           "gap": "s",
-           "items": [
-            {
-             "c": "row",
-             "justify": "between",
-             "align": "center",
-             "items": [
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Region"
-              },
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Americas"
-              }
-             ]
-            },
-            {
-             "c": "divider"
-            },
-            {
-             "c": "row",
-             "justify": "between",
-             "align": "center",
-             "items": [
-              {
-               "c": "text",
-               "v": "small",
-               "text": "Published"
-              },
-              {
-               "c": "text",
-               "v": "small",
-               "text": "[дата — от клиента]"
-              }
-             ]
-            },
-            {
-             "c": "divider"
-            },
-            {
-             "c": "link",
-             "text": "Download full results (PDF)"
-            }
-           ]
-          },
-          {
-           "c": "spacer",
-           "size": 1
-          },
-          {
-           "c": "media",
-           "kind": "image",
-           "label": "Screenshot-2025-07-21 (как сейчас)",
-           "ratio": "4/3",
-           "annotation": "Тот же шаблон для страниц исследований: слева регион, дата, PDF; справа содержание. Содержание пока прежнее (скриншот); перевод в текст и цифры — за клиентом и MLR (BACKLOG)."
-          }
-         ]
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "rm-footer",
-     "region": "us"
-    }
-   ]
-  },
-  {
    "id": "text-new-phone",
    "title": "Terms of Use · decided, phone",
    "device": "mobile",
@@ -1974,6 +1898,1445 @@
    ],
    "notes": [
     "Телефон: заголовок, линия, дата редакции, оглавление — выпадающим списком «On this page» (переход к разделу), затем текст."
+   ]
+  },
+  {
+   "id": "study-mobbin",
+   "title": "Study page · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Цифры-итоги: крупно и с подписью"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Как подать главные результаты исследования одним взглядом."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/study/zipline.webp",
+           "source": "Zipline",
+           "caption": "«The highlights»: две цифры огромным шрифтом и что они значат",
+           "url": "https://mobbin.com/sites/sections/baf31b25-1858-463c-bf15-611d9c669092"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/wise.webp",
+           "source": "Wise",
+           "caption": "цифры в ряд через тонкие линии, подпись с периодом",
+           "url": "https://mobbin.com/sites/sections/7dfcd207-47ec-4cf2-9988-85371589abc4"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/headspace.webp",
+           "source": "Headspace",
+           "caption": "крупная бледная цифра + логотипы научных центров",
+           "url": "https://mobbin.com/sites/sections/23eef34d-4eb2-49aa-8335-e1ac748100d1"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/aave.webp",
+           "source": "Aave",
+           "caption": "цифра в карточке с маленькой визуализацией рядом",
+           "url": "https://mobbin.com/sites/sections/02770c29-a1ea-4602-894f-9a59a779f0ea"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Данные как график, а не картинка"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Как показать распределение, сравнение и развитие во времени."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/study/giga.webp",
+           "source": "Giga",
+           "caption": "точечная матрица «каждая точка = 1%», моно-подписи — близко к мудборду «чертёж и данные»",
+           "url": "https://mobbin.com/sites/sections/4b7ca144-327d-4a66-b75a-647cdd01171d"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/retool.webp",
+           "source": "Retool",
+           "caption": "сравнение двух групп полосами с подписями значений",
+           "url": "https://mobbin.com/sites/sections/cdbbf80f-e1c0-47c9-9829-5af516346e60"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/lightdash.webp",
+           "source": "Lightdash",
+           "caption": "развитие по шагам: день 1 → день 5",
+           "url": "https://mobbin.com/sites/sections/9c6b6e83-8629-44d1-a000-f786c7e26ba5"
+          },
+          {
+           "c": "ref",
+           "src": "refs/study/greptile.webp",
+           "source": "Greptile",
+           "caption": "обложка исследования, собранная из самих данных",
+           "url": "https://mobbin.com/sites/sections/cc6a01db-55b7-4b6f-8cd8-b8f4b2d19bc2"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "study-success",
+   "title": "Study page · SUCCESS",
+   "url": "rapid-medical.com/us/success-study-final-results",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Clinical study · COMANECI™ · Americas"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "SUCCESS"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "SUccess in Comaneci-assist Coils Embolization Surveillance Study"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile.",
+         "annotation": "Вывод исследования — одной фразой под названием. Расшифровка акронима — как на постере (буквы SUCCESS). Текст — из «Conclusions» постера, формулировку утверждает клиент."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Design"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Multicenter, single-arm, prospective"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Regulation"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "FDA-regulated post-market"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Patients"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "90 · wide-neck aneurysms"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Centers"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "17 in the US"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Enrollment"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Nov 2020 – Oct 2023"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Imaging"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Independent core lab (UCLA)"
+              }
+             ]
+            }
+           ],
+           "annotation": "«Паспорт исследования» — первое, что проверяет врач: дизайн, сколько пациентов, кто оценивал снимки. Таблица «ключ — значение» из Contact Us. Всё — с постера."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome (mRS 0–2) at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ],
+           "annotation": "Итоги — 4 цифры крупно, как «The highlights» у Zipline и Wise. Только цифры и формулировки из одобренного постера (MLR)."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Occlusion holds over time"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "text",
+             "v": "body",
+             "text": "Successful occlusion (Raymond Roy I + II) rose from 86% at the end of the procedure to 95% at follow-up."
+            },
+            {
+             "c": "segmented",
+             "items": [
+              "Both",
+              "End of procedure",
+              "≤180 days"
+             ],
+             "active": 0
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "bars",
+           "legend": [
+            "Raymond Roy I",
+            "Raymond Roy II",
+            "Raymond Roy III"
+           ],
+           "rows": [
+            {
+             "label": "End of procedure (n=90)",
+             "segments": [
+              {
+               "value": 78.8
+              },
+              {
+               "value": 6.6
+              },
+              {
+               "value": 14.4
+              }
+             ],
+             "note": "86%"
+            },
+            {
+             "label": "≤180 days (n=75)",
+             "segments": [
+              {
+               "value": 89.3
+              },
+              {
+               "value": 5.3
+              },
+              {
+               "value": 5.3
+              }
+             ],
+             "note": "95%"
+            }
+           ],
+           "caption": "P = 0.05"
+          }
+         ],
+         "annotation": "Графики — из чисел, а не картинкой: читаются на телефоне, находятся поиском и AI-ассистентами, одинаковы по стилю на всех исследованиях. Данные вносятся таблицей в админке (блок BarChart в коде уже есть). Переключатель по времени — как шаги у Lightdash."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "More patients with a good outcome over time"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Good clinical outcome (mRS 0–2): 73% at baseline, 80% at 30 days, 82% at 6 months (P < 0.05)."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "bars",
+           "legend": [
+            "mRS 0",
+            "mRS 1",
+            "mRS 2",
+            "mRS 3–6"
+           ],
+           "rows": [
+            {
+             "label": "Baseline (n=89)",
+             "segments": [
+              {
+               "value": 50.5
+              },
+              {
+               "value": 13.4
+              },
+              {
+               "value": 8.9
+              },
+              {
+               "value": 26.8
+              }
+             ],
+             "note": "73%"
+            },
+            {
+             "label": "30 days (n=90)",
+             "segments": [
+              {
+               "value": 45.5
+              },
+              {
+               "value": 23.3
+              },
+              {
+               "value": 11.1
+              },
+              {
+               "value": 19.8
+              }
+             ],
+             "note": "80%"
+            },
+            {
+             "label": "≤180 days (n=90)",
+             "segments": [
+              {
+               "value": 55.5
+              },
+              {
+               "value": 18.8
+              },
+              {
+               "value": 7.7
+              },
+              {
+               "value": 17.6
+              }
+             ],
+             "note": "82%"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Who was treated"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Mean age"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "62 (29–82)"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Female"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "63%"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Mean neck size"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "3.46 mm (1.5–8.2)"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "dots",
+           "total": 90,
+           "cols": 18,
+           "groups": [
+            {
+             "n": 32,
+             "label": "Ruptured · 32 (36%)"
+            },
+            {
+             "n": 58,
+             "label": "Unruptured · 58 (64%)"
+            }
+           ],
+           "caption": "Each dot is one patient"
+          }
+         ],
+         "annotation": "Матрица «одна точка — один пациент» (Giga): 90 человек видно сразу, без процентов в уме. Тот же приём — для DISTALS «4 из 10»."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Safety"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "No symptomatic thromboembolic events. All deaths were in ruptured cases; hemorrhages and perforations were unrelated to Comaneci."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "table",
+           "columns": [
+            "",
+            "All (n=90)",
+            "Ruptured (n=32)",
+            "Unruptured (n=58)"
+           ],
+           "rows": [
+            [
+             "Thromboembolic events",
+             "5 (5.5%)",
+             "3 (9.4%)",
+             "2 (3.4%)"
+            ],
+            [
+             "Symptomatic thromboembolic events",
+             "0",
+             "0",
+             "0"
+            ],
+            [
+             "Mortality",
+             "4 (4.4%)",
+             "4 (12.5%)",
+             "0"
+            ],
+            [
+             "Coil entanglement / total coils",
+             "1/356 (0.3%)",
+             "0/134",
+             "1/222 (0.5%)"
+            ]
+           ]
+          }
+         ],
+         "annotation": "Полная таблица безопасности текстом, как на постере: честно и проверяемо. На телефоне — прокрутка вбок."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Where the study was done"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "17 US centers, from SUNY Buffalo to UCLA. Data adjudicated by an independent imaging core lab."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "media",
+           "kind": "map",
+           "label": "US map · 17 centers (из аффилиаций авторов постера)",
+           "ratio": "21/9"
+          }
+         ],
+         "annotation": "Карта центров — компонент WorldMap уже есть (About). Список центров и авторов — раскрывается под картой. Приём — Headspace (научные центры)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "divider"
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "wrap": true,
+         "items": [
+          {
+           "c": "button",
+           "v": "primary",
+           "text": "Download the poster (PDF)"
+          },
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Discuss SUCCESS with our team"
+          },
+          {
+           "c": "link",
+           "text": "COMANECI™ for aneurysms →"
+          },
+          {
+           "c": "link",
+           "text": "All COMANECI™ publications →"
+          }
+         ],
+         "annotation": "Что дальше: постер целиком (для тех, кому нужен оригинал), разговор с командой (Contact Us, тема demo), терапия и все публикации по продукту (Evidence, вкладка COMANECI)."
+        },
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Refer to the Instructions for Use for indications, contraindications, warnings and precautions."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "study-success-phone",
+   "title": "Study page · SUCCESS, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/success-study-final-results",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "stack",
+         "gap": "l",
+         "items": [
+          {
+           "c": "eyebrow",
+           "text": "Clinical study · COMANECI™ · Americas"
+          },
+          {
+           "c": "heading",
+           "level": 1,
+           "text": "SUCCESS"
+          },
+          {
+           "c": "text",
+           "v": "muted",
+           "text": "SUccess in Comaneci-assist Coils Embolization Surveillance Study"
+          },
+          {
+           "c": "text",
+           "v": "lead",
+           "text": "A high rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months, with a favorable safety profile."
+          },
+          {
+           "c": "divider"
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "successful occlusion at ≤6 months"
+            },
+            {
+             "c": "stat",
+             "value": "82%",
+             "label": "good clinical outcome (mRS 0–2) at 6 months"
+            },
+            {
+             "c": "stat",
+             "value": "0",
+             "label": "symptomatic thromboembolic events"
+            },
+            {
+             "c": "stat",
+             "value": "0.3%",
+             "label": "coil entanglement · 1 of 356 coils"
+            }
+           ]
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Design"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Multicenter, single-arm, prospective"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Regulation"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "FDA-regulated post-market"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Patients"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "90 · wide-neck aneurysms"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Centers"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "17 in the US"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Enrollment"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Nov 2020 – Oct 2023"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Imaging"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Independent core lab (UCLA)"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Occlusion holds over time"
+        },
+        {
+         "c": "segmented",
+         "items": [
+          "End of procedure",
+          "≤180 days"
+         ],
+         "active": 1
+        },
+        {
+         "c": "bars",
+         "legend": [
+          "RR I",
+          "RR II",
+          "RR III"
+         ],
+         "rows": [
+          {
+           "label": "≤180 days (n=75)",
+           "segments": [
+            {
+             "value": 89.3
+            },
+            {
+             "value": 5.3
+            },
+            {
+             "value": 5.3
+            }
+           ],
+           "note": "95%"
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Who was treated"
+        },
+        {
+         "c": "dots",
+         "total": 90,
+         "cols": 15,
+         "groups": [
+          {
+           "n": 32,
+           "label": "Ruptured · 32"
+          },
+          {
+           "n": 58,
+           "label": "Unruptured · 58"
+          }
+         ]
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "button",
+         "v": "primary",
+         "text": "Download the poster (PDF)",
+         "full": true
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Телефон: название и вывод, 4 итога, паспорт, график с переключателем по времени, матрица пациентов, постер. Графики из чисел перестраиваются под ширину — скриншот постера на телефоне не читается."
+   ]
+  },
+  {
+   "id": "study-distals",
+   "title": "Study page · DISTALS, same template",
+   "url": "rapid-medical.com/distals-results",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "l",
+       "items": [
+        {
+         "c": "eyebrow",
+         "text": "Clinical study · TIGERTRIEVER™ 13 · Global"
+        },
+        {
+         "c": "heading",
+         "level": 1,
+         "text": "DISTALS"
+        },
+        {
+         "c": "text",
+         "v": "lead",
+         "text": "The first randomized trial of a device designed for distal stroke: more blood flow restored, with no increase in sICH."
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Design"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Randomized: TIGERTRIEVER™ 13 vs best medical care"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Regulation"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "FDA-approved IDE study"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Randomized"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "98 · 51 treatment, 47 control"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Registry"
+              },
+              {
+               "c": "link",
+               "text": "NCT05152524"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Presented"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "ESOC, May 2026"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stat",
+             "value": "3×",
+             "label": "successful reperfusion at 24 h without sICH"
+            },
+            {
+             "c": "stat",
+             "value": "Zero",
+             "label": "symptomatic ICH in the T13 arm"
+            },
+            {
+             "c": "stat",
+             "value": "41%",
+             "label": "vs 33% recovered with little to no disability"
+            },
+            {
+             "c": "stat",
+             "value": "2×",
+             "label": "more patients reported perfect health (EQ-5D)"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "annotation": "Тот же шаблон на втором исследовании: паспорт, 4 итога. Сейчас на Duda DISTALS — лендинг с графиками-картинками; данные те же, меняется подача."
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Primary endpoint"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Successful reperfusion at 24 hours without symptomatic intracranial hemorrhage."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "bars",
+           "rows": [
+            {
+             "label": "TIGERTRIEVER™ 13 (n=51)",
+             "segments": [
+              {
+               "value": 86.3,
+               "label": "86.3%"
+              }
+             ]
+            },
+            {
+             "label": "Control (n=47)",
+             "segments": [
+              {
+               "value": 27.7,
+               "label": "27.7%"
+              }
+             ]
+            }
+           ],
+           "caption": "Primary endpoint · efficacy and safety composite · P < .00001"
+          }
+         ],
+         "annotation": "Сравнение двух групп — полосами (Retool). Было: картинка столбцов с кругами «3x»."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "90-day outcomes"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "text",
+           "v": "body",
+           "text": "Patients admitted with moderate to severe disability (mRS 2–5) who achieved excellent outcomes (mRS 0–1)."
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "items": [
+            {
+             "c": "stack",
+             "gap": "s",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Treatment (n=29)"
+              },
+              {
+               "c": "dots",
+               "total": 10,
+               "cols": 10,
+               "groups": [
+                {
+                 "n": 4,
+                 "label": "4 out of 10 patients"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "stack",
+             "gap": "s",
+             "items": [
+              {
+               "c": "text",
+               "v": "strong",
+               "text": "Control (n=36)"
+              },
+              {
+               "c": "dots",
+               "total": 10,
+               "cols": 10,
+               "groups": [
+                {
+                 "n": 3,
+                 "label": "3 out of 10 patients"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "annotation": "«4 из 10» против «3 из 10» — две матрицы по 10 точек вместо человечков-картинки."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "m",
+     "items": [
+      {
+       "c": "text",
+       "v": "caption",
+       "text": "TIGERTRIEVER™ 13 is not indicated for DMVO in all markets. Refer to the appropriate IFU for indications and contraindications."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
    ]
   },
   {
