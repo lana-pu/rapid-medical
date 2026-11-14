@@ -40,6 +40,8 @@ export type SectionInfo = {
   list: string;
   /** position in that list */
   at: number;
+  /** hidden on the site (the editor's «Hide») */
+  hidden?: boolean;
   /** Product details: its tabs, for the Tabs panel */
   tabs?: { label: string; href?: string }[];
 };
@@ -67,7 +69,7 @@ const def = (t: string) => (Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] a
 
 const variantsOf = (b: { type: string; variant: string }) => (variantsFor(b.type).some((v) => v.id === b.variant) ? variantsFor(b.type) : []);
 
-type Nested = { type: string; variant: string; data: Record<string, unknown> };
+type Nested = { type: string; variant: string; data: Record<string, unknown>; hidden?: boolean };
 
 /** The page's sections, then the sections inside Product details tabs (addressed by position, see blocks/ops.ts). */
 function sections(list: StoredBlock[]): SectionInfo[] {
@@ -81,9 +83,10 @@ function sections(list: StoredBlock[]): SectionInfo[] {
     fromRecords: !!b.source || def(b.type)?.category === "list",
     list: "",
     at: i,
+    ...(b.hidden ? { hidden: true } : {}),
     ...(b.type === "productDetails" && !b.source ? { tabs: ((b.data as { tabs?: { label?: string; href?: string }[] }).tabs ?? []).map((t) => ({ label: String(t.label ?? ""), ...(t.href ? { href: t.href } : {}) })) } : {}),
   }));
-  const nested = (n: Nested, id: string, l: string, at: number): SectionInfo => ({ id, type: n.type, name: blockName({ id, ...n }), variant: n.variant, variants: variantsOf(n), pinned: false, fromRecords: false, list: l, at });
+  const nested = (n: Nested, id: string, l: string, at: number): SectionInfo => ({ id, type: n.type, name: blockName({ id, ...n }), variant: n.variant, variants: variantsOf(n), pinned: false, fromRecords: false, list: l, at, ...(n.hidden ? { hidden: true } : {}) });
   for (const b of list) {
     if (b.type !== "productDetails" || b.source) continue;
     const tabs = (b.data as { tabs?: { href?: string; blocks?: (Nested | { group: string; blocks: Nested[] })[] }[] }).tabs ?? [];

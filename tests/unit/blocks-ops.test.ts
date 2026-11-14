@@ -199,3 +199,27 @@ describe("the tabs of Product details", () => {
     expect(describeBlockChanges(b, applyOp(b, { op: "tab", id: "pd", act: "move", tab: 1, dir: -1 }))).toEqual(["Moved tabs"]);
   });
 });
+
+describe("hide a section (editor's content mode, on-page-editor.md → «Скрытые секции»)", () => {
+  it("hides and shows a section; the regulatory block stays", () => {
+    const hid = applyOp(page, { op: "hide", id: "t", hidden: true });
+    expect(hid[1]).toEqual({ ...page[1], hidden: true });
+    expect(ids(hid)).toBe(ids(page));
+    const shown = applyOp(hid, { op: "hide", id: "t", hidden: false });
+    expect(shown[1]).toEqual(page[1]); // no leftover flag
+    expect(() => applyOp(page, { op: "hide", id: "i", hidden: true })).toThrow(/required/);
+    // only `true` hides: anything else from a client shows
+    expect(applyOp(page, { op: "hide", id: "t", hidden: "yes" as any })[1].hidden).toBeUndefined();
+  });
+  it("in words for Review and History", () => {
+    const hid = applyOp(page, { op: "hide", id: "c", hidden: true });
+    expect(describeBlockChanges(page, hid)).toEqual(["Hid section Call to action “Questions?”"]);
+    expect(describeBlockChanges(hid, page)).toEqual(["Showed section Call to action “Questions?”"]);
+  });
+  it("a section inside a Product details tab", () => {
+    const pd: StoredBlock[] = [{ id: "p", type: "productDetails", variant: "pills", data: { tabs: [{ id: "o", label: "Overview", blocks: [{ type: "text", variant: "default", data: { body: "a" } }, { type: "text", variant: "default", data: { body: "b" } }] }] } }];
+    const hid = applyOp(pd, { op: "hide", id: "p/0/1", hidden: true });
+    expect((hid[0].data as any).tabs[0].blocks[1].hidden).toBe(true);
+    expect(describeBlockChanges(pd, hid)).toEqual(["Hid Text in tab “Overview”"]);
+  });
+});

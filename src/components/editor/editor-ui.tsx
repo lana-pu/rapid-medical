@@ -47,9 +47,26 @@ export function TopBar(props: {
   onCompare: (region: string) => void;
   onRegion: (path: string) => void;
   onExit?: () => void;
+  /** Tools → Arrange sections (layout mode) */
+  layout?: boolean;
+  onLayout?: (on: boolean) => void;
 }) {
   const { info } = props;
   const [menu, setMenu] = useState(false);
+  const [tools, setTools] = useState(false);
+  const toolsRef = useRef<HTMLDivElement>(null);
+  // the Tools menu closes on Escape and on a click anywhere else
+  useEffect(() => {
+    if (!tools) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setTools(false);
+    const onDown = (e: MouseEvent) => !toolsRef.current?.contains(e.target as Node) && setTools(false);
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [tools]);
   const others = info?.regions.filter((r) => !r.current && r.path) ?? [];
   return (
     <div className="fixed inset-x-0 z-[1000] border-b border-neutral-800 bg-neutral-950 text-white shadow-lg" style={{ top: props.demo ? 24 : 0 }}>
@@ -66,19 +83,41 @@ export function TopBar(props: {
             ))}
           </select>
         )}
-        {others.length > 0 && (
-          <select aria-label="Compare with" className={select} value="" onChange={(e) => props.onCompare(e.target.value)}>
-            <option value="">{props.compareLabel ? `Comparing with ${props.compareLabel}` : "Compare with…"}</option>
-            {others.map((r) => <option key={r.region} value={r.region}>{r.label}</option>)}
-            {props.compareLabel && <option value="off">Stop comparing</option>}
-          </select>
-        )}
         <span className="min-w-0 flex-1 truncate text-xs text-neutral-300" role="status" aria-live="polite">{props.status}</span>
         <button type="button" className={btn} disabled={!props.canUndo || props.busy} onClick={props.onUndo} title="Undo the last change (Ctrl/⌘+Z)">↶ Undo</button>
         <button type="button" className={btn} disabled={!props.canRedo || props.busy} onClick={props.onRedo} title="Redo (Ctrl/⌘+Shift+Z)">↷ Redo</button>
         {info && props.comments != null && <button type="button" className={btn} onClick={props.onComments}>Comment{props.comments ? ` (${props.comments})` : ""}</button>}
         {info && !props.demo && <button type="button" className={btn} onClick={props.onHistory}>History</button>}
-        <button type="button" className={btn} onClick={props.onPreview}>Preview</button>
+        {/* everything beyond texts and pictures (on-page-editor.md → «Два режима») */}
+        <div className="relative" ref={toolsRef}>
+          <button type="button" className={`${btn} ${props.layout || props.compareLabel ? "bg-neutral-800" : ""}`} aria-expanded={tools} onClick={() => setTools((t) => !t)}>
+            Tools ▾
+          </button>
+          {tools && (
+            <div role="menu" aria-label="Tools" className="absolute right-0 top-full mt-1 w-72 space-y-1 rounded border border-neutral-700 bg-neutral-900 p-2 text-sm shadow-xl">
+              {info && props.onLayout && (
+                <button type="button" role="menuitemcheckbox" aria-checked={!!props.layout} onClick={() => { props.onLayout!(!props.layout); setTools(false); }} className="flex w-full items-start gap-2 rounded px-2 py-1.5 text-left hover:bg-neutral-800">
+                  <span className="w-4">{props.layout ? "✓" : ""}</span>
+                  <span>Arrange sections<span className="block text-xs text-neutral-400">Add, move, copy, delete sections and tabs</span></span>
+                </button>
+              )}
+              {others.length > 0 && (
+                <label className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="w-4" />
+                  <select aria-label="Compare with" className={select} value="" onChange={(e) => { props.onCompare(e.target.value); setTools(false); }}>
+                    <option value="">{props.compareLabel ? `Comparing with ${props.compareLabel}` : "Compare with…"}</option>
+                    {others.map((r) => <option key={r.region} value={r.region}>{r.label}</option>)}
+                    {props.compareLabel && <option value="off">Stop comparing</option>}
+                  </select>
+                </label>
+              )}
+              <button type="button" role="menuitem" onClick={() => { props.onPreview(); setTools(false); }} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-neutral-800">
+                <span className="w-4" />
+                Preview
+              </button>
+            </div>
+          )}
+        </div>
         <button type="button" disabled={!props.hasChanges || props.busy} onClick={props.onPublish} className="rounded bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 disabled:bg-neutral-700 disabled:text-neutral-400">
           Publish
         </button>
@@ -109,7 +148,7 @@ export function PreviewBar({ demo, onBack }: { demo: boolean; onBack: () => void
 /*  Section toolbar                                                    */
 /* ------------------------------------------------------------------ */
 
-export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove, onTabs }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove: (d: -1 | 1) => void; onCopy: () => void; onRemove: () => void; onTabs?: () => void }) {
+export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove, onTabs, onHide }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove: (d: -1 | 1) => void; onCopy: () => void; onRemove: () => void; onTabs?: () => void; onHide?: () => void }) {
   const t = "rounded px-2 py-1 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40";
   const pinnedNote = "This section stays at the end of the page and cannot be removed";
   return (
@@ -123,6 +162,7 @@ export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove,
       <button type="button" className={t} disabled={busy || s.pinned || first} onClick={() => onMove(-1)} title={s.pinned ? pinnedNote : "Move up"} aria-label="Move up">↑</button>
       <button type="button" className={t} disabled={busy || s.pinned || last} onClick={() => onMove(1)} title={s.pinned ? pinnedNote : "Move down"} aria-label="Move down">↓</button>
       <button type="button" className={t} disabled={busy || s.pinned} onClick={onCopy} title={s.pinned ? pinnedNote : "Copy"}>Copy</button>
+      {onHide && <button type="button" className={t} disabled={busy || s.pinned} onClick={onHide} title={s.pinned ? pinnedNote : s.hidden ? "Show on the site again" : "Hide on the site, keep on the page"}>{s.hidden ? "Show" : "Hide"}</button>}
       <button type="button" className={t} disabled={busy || s.pinned} onClick={onRemove} title={s.pinned ? pinnedNote : "Delete"}>Delete</button>
       {onTabs && <button type="button" className={t} disabled={busy} onClick={onTabs}>Tabs</button>}
     </div>

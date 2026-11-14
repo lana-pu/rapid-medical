@@ -17,6 +17,8 @@ export type BlockOp =
   | { op: "duplicate"; id: string }
   | { op: "remove"; id: string }
   | { op: "variant"; id: string; variant: string }
+  /** Hide on the site (kept on the page) or show again; a section inside a tab too. Not the pinned blocks. */
+  | { op: "hide"; id: string; hidden: boolean }
   /** Undo: put back an earlier list. Every block must be one the page had (now or in a recent version). */
   | { op: "set"; blocks: StoredBlock[] }
   /** The tabs of a Product details block (`id`): add (content or link), move, remove, rename, change a link's address */
@@ -54,7 +56,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
  * group (a small heading such as «Specifications») `{block}/{tab}/{j}/{k}`. The page version check (page-core) keeps
  * positions from going stale between two editors.
  */
-type Nested = { type: string; variant: string; data: Record<string, unknown> };
+type Nested = { type: string; variant: string; data: Record<string, unknown>; hidden?: boolean };
 type Group = { group: string; blocks: Nested[] };
 type TabItem = Nested | Group;
 const isGroup = (x: TabItem): x is Group => "group" in x;
@@ -126,6 +128,12 @@ function nestedOp(list: StoredBlock[], op: Exclude<BlockOp, { op: "set" | "tab" 
       if (l.tabCount() <= 1) fail("A tab keeps at least one section");
       l.items.splice(at, 1);
       return l.done();
+    case "hide": {
+      const { hidden: _h, ...rest } = x as Nested;
+      void _h;
+      l.items[at] = op.hidden === true ? { ...rest, hidden: true } : rest;
+      return l.done();
+    }
     case "variant": {
       const n = x as Nested;
       if (!variantsFor(n.type).some((v) => v.id === op.variant) || !variantsFor(n.type).some((v) => v.id === n.variant)) fail("This layout is not available for this section");
@@ -255,6 +263,14 @@ export function applyOp(current: StoredBlock[], op: BlockOp, known: StoredBlock[
       const i = find(op.id);
       if (isPinned(list[i])) fail("This section is required on the page");
       list.splice(i, 1);
+      return list;
+    }
+    case "hide": {
+      const i = find(op.id);
+      if (isPinned(list[i])) fail("This section is required on the page");
+      const { hidden: _h, ...rest } = list[i];
+      void _h;
+      list[i] = op.hidden === true ? { ...rest, hidden: true } : rest;
       return list;
     }
     case "variant": {

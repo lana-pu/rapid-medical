@@ -161,7 +161,7 @@ export const demoApi = {
  */
 
 type PageApi = typeof import("@/admin/page-editor");
-type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string; in?: string };
+type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "hide"; id: string; hidden: boolean } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string; in?: string };
 type SectionsState = { ops: Op[]; published: number };
 
 const secKey = () => `rm-demo:sections:${location.pathname}`;
@@ -181,7 +181,7 @@ function saveSections(st: SectionsState) {
 }
 
 /** `l`: the list the section is in — "" the page, or a list inside a Product details tab (see blocks/mark.tsx). */
-type MarkInfo = { id: string; l?: string; t?: string; v?: string; n?: string; p?: boolean };
+type MarkInfo = { id: string; l?: string; t?: string; v?: string; n?: string; p?: boolean; h?: boolean };
 const info = (m: Element) => JSON.parse(m.getAttribute("data-rm-b") || "{}") as MarkInfo;
 const allMarks = () => Array.from(document.querySelectorAll<HTMLElement>("[data-rm-b]"));
 const marks = (l = "") => allMarks().filter((m) => info(m).id !== "end" && (info(m).l ?? "") === l);
@@ -239,6 +239,28 @@ async function apply(op: Op): Promise<void> {
   if (!m) return;
   const unit = unitOf(m);
   if (op.op === "remove") unit.forEach((n) => n.parentNode?.removeChild(n));
+  else if (op.op === "hide") {
+    // the same as the server's HiddenStrip: the section's elements hidden, a strip with «Show» after them
+    document.querySelector(`[data-rm-hidden="${CSS.escape(op.id)}"]`)?.remove();
+    for (const n of unit) if (n instanceof HTMLElement && n !== m && !n.hasAttribute("data-rm-hidden")) n.hidden = op.hidden;
+    const x = info(m);
+    m.setAttribute("data-rm-b", JSON.stringify({ ...x, h: op.hidden || undefined }));
+    if (op.hidden) {
+      const strip = document.createElement("div");
+      strip.setAttribute("data-rm-hidden", op.id);
+      strip.className = "mx-auto my-2 flex max-w-6xl items-center gap-3 rounded border border-dashed border-neutral-300 bg-neutral-50 px-4 py-2 text-xs text-neutral-500";
+      const label = document.createElement("span");
+      label.className = "min-w-0 flex-1 truncate";
+      label.textContent = `Hidden on the site · ${x.n ?? "Section"}`;
+      const show = document.createElement("button");
+      show.type = "button";
+      show.setAttribute("data-rm-show", op.id);
+      show.className = "rounded border border-neutral-300 bg-white px-2 py-0.5 font-medium text-neutral-800 hover:bg-neutral-100";
+      show.textContent = "Show";
+      strip.append(label, show);
+      insertAfter([strip], unit[unit.length - 1]);
+    }
+  }
   else if (op.op === "duplicate") {
     const copy = unit.map((n) => n.cloneNode(true));
     const first = copy[0] as HTMLElement;
@@ -270,13 +292,14 @@ const sectionsNow = () => {
   return lists.flatMap((l) =>
     marks(l).map((m, at) => {
       const x = info(m);
-      return { id: x.id, type: x.t ?? "", name: x.n ?? "Section", variant: x.v ?? "", variants: [], pinned: !!x.p, fromRecords: false, list: l, at };
+      return { id: x.id, type: x.t ?? "", name: x.n ?? "Section", variant: x.v ?? "", variants: [], pinned: !!x.p, fromRecords: false, list: l, at, ...(x.h ? { hidden: true } : {}) };
     }),
   );
 };
 
 const describe = (op: Op): string => {
   const name = op.op === "add" ? op.name : (info(markOf(op.id) ?? document.createElement("i")).n ?? "a section");
+  if (op.op === "hide") return `${op.hidden ? "Hid" : "Showed"} section ${name}`;
   return op.op === "add" ? `Added section ${op.name}` : op.op === "remove" ? "Removed a section" : op.op === "duplicate" ? `Copied ${name}` : `Moved ${name}`;
 };
 

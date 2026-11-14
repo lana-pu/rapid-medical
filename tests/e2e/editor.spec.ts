@@ -9,10 +9,17 @@ const PAGE = "/apac/therapies/mvo";
 const pageMarks = `Array.from(document.querySelectorAll("[data-rm-b]")).filter((e) => !JSON.parse(e.getAttribute("data-rm-b") || "{}").l)`;
 const ids = (page: Page) => page.evaluate((q) => (eval(q) as Element[]).map((e) => JSON.parse(e.getAttribute("data-rm-b") || "{}").id as string), pageMarks);
 
-async function open(page: Page, path = PAGE) {
+/** Opens the page in the editor; `layout` turns on Tools → Arrange sections (the editor opens on the plain page). */
+async function open(page: Page, path = PAGE, { layout = true } = {}) {
   await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(path)}`);
   await page.waitForURL((u) => u.pathname === path);
   await expect(page.getByRole("status")).toHaveText(/Live|Draft/);
+  if (layout) await arrange(page);
+}
+
+async function arrange(page: Page) {
+  await page.getByRole("button", { name: "Tools ▾" }).click();
+  await page.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
 }
 
 /** Click an empty spot of the n-th section (left gutter): selects it. */
@@ -324,6 +331,7 @@ test("history: restore an earlier version as a draft", async ({ page }) => {
 test("compare with another region and switch region", async ({ page }) => {
   await login(page);
   await open(page);
+  await page.getByRole("button", { name: "Tools ▾" }).click();
   await page.selectOption('select[aria-label="Compare with"]', "ous");
   await expect(page.getByRole("status")).toHaveText(/differ from Europe & Middle East|Same as Europe & Middle East/);
   await page.selectOption('select[aria-label="Region"]', "ous");
@@ -407,4 +415,40 @@ test("user walk 2026-11-14: the Statement media takes a picture or a video; the 
   const top = await page.evaluate(([x, y]) => (document.elementFromPoint(x, y)?.closest('[aria-label="Media library"]') ? "library" : "other"), [box.x + box.width - 20, box.y + 20]);
   expect(top).toBe("library");
   await page.keyboard.press("Escape");
+});
+
+test("content mode (default): the page as visitors see it; hide a section, show it again", async ({ page, browser }) => {
+  await login(page);
+  await open(page, PAGE, { layout: false });
+  const h1 = page.locator("h1 [data-e]");
+  const title = (await h1.innerText()).trim();
+  // no outlines and no section buttons until the pointer is on something
+  expect(await h1.evaluate((e) => getComputedStyle(e).outlineStyle)).toBe("none");
+  await expect(page.locator("button[data-rm-plus]")).toHaveCount(0);
+  await expect(page.locator("#rm-section-toolbar")).toHaveCount(0);
+
+  // the section under the pointer can be hidden on the site
+  await h1.hover();
+  await page.getByRole("button", { name: "Hide section" }).click();
+  await expect(page.getByRole("status")).toHaveText(/^Hid .*Not live yet$/);
+  await expect(page.locator("[data-rm-hidden]").first()).toContainText("Hidden on the site");
+  const anon = await (await browser.newContext()).newPage();
+  await anon.goto(PAGE);
+  await expect(anon.locator("h1")).toContainText(title); // visitors: unchanged until Publish
+  await page.click('#rm-editor-ui button:has-text("Publish")');
+  await expect(page.getByRole("dialog", { name: "Review changes" })).toContainText("Hid section Hero");
+  await page.click('[role=dialog] button:has-text("Publish now")');
+  await page.locator('[role=dialog][aria-label="Live now"]').waitFor();
+  await page.click('[role=dialog] button:has-text("Keep editing")');
+  await anon.goto(PAGE);
+  await expect(anon.getByText(title)).toHaveCount(0);
+  await expect(anon.locator("[data-rm-hidden]")).toHaveCount(0); // no strip for visitors either
+
+  // Show brings it back
+  await page.locator("[data-rm-show]").first().click();
+  await expect(page.getByRole("status")).toHaveText(/^Showed /);
+  await expect(page.locator("h1")).toContainText(title);
+  await publishFromEditor(page);
+  await anon.goto(PAGE);
+  await expect(anon.locator("h1")).toContainText(title);
 });

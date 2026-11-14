@@ -240,13 +240,14 @@ export function resolveBlocks(stored: StoredBlock[], ctx: RenderCtx, page: PageR
       : page
         ? { r: page.r, id: page.id, prefix, ...(source ? { map: Object.fromEntries(source.keys.map((k) => [k, null])) } : {}) }
         : undefined;
-    return { type: s.type, variant: s.variant, data, edit, uid: s.id } as unknown as Block;
+    return { type: s.type, variant: s.variant, data, edit, uid: s.id, ...(s.hidden ? { hidden: true } : {}) } as unknown as Block;
   });
   return out.filter((b): b is Block => b !== null);
 }
 
 /** Title, text and image for SEO and cards: the first hero block, else the first block with a title. */
 export function pageSummary(stored: StoredBlock[] | null | undefined): { title?: string; body?: string; imageUrl?: string } {
+  stored = stored?.filter((b) => !b.hidden);
   if (!stored?.length) return {};
   const hero = stored.find((b) => b.type === "hero") ?? stored[0];
   const d = hero.data as { title?: unknown; body?: unknown; imageUrl?: unknown };

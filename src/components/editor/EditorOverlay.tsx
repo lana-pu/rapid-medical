@@ -42,15 +42,21 @@ type Panel =
 type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
 type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
 
-const STYLE = (top: number, preview: boolean) =>
+/**
+ * Content mode (default): the page as visitors see it — only the element under the pointer is tinted (like Webflow's
+ * Editor). Layout mode (Tools → Arrange sections): every editable field is outlined. Preview: nothing at all, and the
+ * strips of hidden sections are gone too.
+ */
+const STYLE = (top: number, preview: boolean, layout: boolean) =>
   preview
-    ? `body{padding-top:${top - BAR_H}px}`
+    ? `body{padding-top:${top - BAR_H}px}[data-rm-hidden]{display:none}`
     : `
-[data-e]{outline:1px dashed rgba(37,99,235,.55);outline-offset:3px;cursor:pointer;border-radius:2px;transition:outline-color .12s}
-[data-e]:hover{outline:2px solid #2563eb;background:rgba(37,99,235,.06)}
+[data-e]{cursor:text;border-radius:2px;transition:outline-color .12s,background-color .12s}
+${layout ? `[data-e]{outline:1px dashed rgba(37,99,235,.55);outline-offset:3px}` : ""}
+[data-e]:hover{outline:${layout ? "2px solid #2563eb" : "1px solid rgba(37,99,235,.45)"};outline-offset:3px;background:rgba(37,99,235,.08)}
 [data-e][contenteditable]{outline:2px solid #f59e0b;background:#fff;color:#111;cursor:text;min-width:2ch;white-space:pre-wrap}
-.rm-e-media{position:relative;display:block}
-.rm-e-media:hover::after{content:"Change media";position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font:600 11px/1 system-ui;padding:6px 8px;border-radius:4px;pointer-events:none}
+.rm-e-media{position:relative;display:block;cursor:pointer}
+.rm-e-media:hover::after{content:"Replace";position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font:600 11px/1 system-ui;padding:6px 8px;border-radius:4px;pointer-events:none}
 body{padding-top:${top}px}
 `;
 
@@ -122,6 +128,12 @@ export default function EditorOverlay() {
   const [modal, setModal] = useState<Modal>(null);
   const [compare, setCompare] = useState<{ label: string; sections: RegionDiff[] } | null>(null);
   const [preview, setPreview] = useState(false);
+  /** Tools → Arrange sections: section frames, toolbar, «+ Add section»; off on every page open (on-page-editor.md) */
+  const [layout, setLayout] = useState(false);
+  const layoutRef = useRef(false);
+  useEffect(() => {
+    layoutRef.current = layout;
+  }, [layout]);
   const [scroll, setScroll] = useState(0);
   const [undoCount, setUndoCount] = useState(0);
   const [redoCount, setRedoCount] = useState(0);
@@ -202,6 +214,7 @@ export default function EditorOverlay() {
       setRedoCount(0);
       setSelected(null);
       setCompare(null);
+      setLayout(false);
       void loadInfo();
       void loadLegacy();
       void loadComments();
@@ -335,6 +348,15 @@ export default function EditorOverlay() {
     [afterChange, say, selected],
   );
 
+  const runOpRef = useRef(runOp);
+  useEffect(() => {
+    runOpRef.current = runOp;
+  }, [runOp]);
+  const sectionNameRef = useRef((id: string) => id);
+  useEffect(() => {
+    sectionNameRef.current = (id: string) => info?.sections.find((x) => x.id === id)?.name ?? "a section";
+  }, [info]);
+
   /** Put a step back; returns the step that reverses it (for the other stack), or null if it did not apply. */
   const applyStep = useCallback(
     async (u: Undo, word: "Undone" | "Redone"): Promise<Undo | null> => {
@@ -431,6 +453,15 @@ export default function EditorOverlay() {
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest("#rm-editor-ui")) return;
+      const show = target.closest<HTMLElement>("[data-rm-show]");
+      if (show) {
+        // «Show» on the strip of a hidden section
+        e.preventDefault();
+        e.stopPropagation();
+        const id = show.getAttribute("data-rm-show")!;
+        void runOpRef.current?.({ op: "hide", id, hidden: false }, `Showed ${sectionNameRef.current(id)}`);
+        return;
+      }
       const el = target.closest<HTMLElement>("[data-e]");
       const tag = el ? parse(el) : null;
       if (el && tag) {
@@ -464,7 +495,7 @@ export default function EditorOverlay() {
           if (hit) setPanel({ k: "comments", focus: hit.id, compose: hit.id });
           return;
         }
-        if (hit) setSelected(hit.id);
+        if (hit && layoutRef.current) setSelected(hit.id);
         // links on the page do not navigate while editing (Preview for that); buttons such as tabs still work
         if (target.closest("a[href]")) e.preventDefault();
         // a tab may have opened: its sections get their frames
@@ -588,8 +619,11 @@ export default function EditorOverlay() {
   const sel = selected ? boxes.find((b) => b.id === selected) : null;
   const selInfo = selected ? sectionById.get(selected) : undefined;
   const selList = selInfo ? listOf(selInfo.list) : [];
-  const hov = hovered && hovered !== selected ? boxes.find((b) => b.id === hovered) : null;
-  const plusFor = [sel, hovered ? boxes.find((b) => b.id === hovered) : null].filter((b): b is Box => !!b);
+  const hov = layout && hovered && hovered !== selected ? boxes.find((b) => b.id === hovered) : null;
+  const plusFor = layout ? [sel, hovered ? boxes.find((b) => b.id === hovered) : null].filter((b): b is Box => !!b) : [];
+  // content mode: «Hide» at the left edge of the section under the pointer (not the pinned ones, not already hidden)
+  const hideBox = !layout && hovered ? boxes.find((b) => b.id === hovered) : null;
+  const hideInfo = hideBox ? sectionById.get(hideBox.id) : undefined;
   const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
   const plusAt = new Map<string, { list: string; at: number; y: number; x: number }>(); // list + insert index → place
   for (const b of plusFor) {
@@ -605,7 +639,7 @@ export default function EditorOverlay() {
 
   return (
     <div id="rm-editor-ui">
-      <style>{STYLE(top, preview)}</style>
+      <style>{STYLE(top, preview, layout)}</style>
       {DEMO && (
         <div className="fixed inset-x-0 top-0 z-[1001] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
           Demo — edits are saved only in your browser (localStorage). No server, no database.
@@ -633,6 +667,8 @@ export default function EditorOverlay() {
           comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
           onComments={() => setPanel({ k: "comments", compose: null })}
           onPreview={() => { setPreview(true); setSelected(null); setPanel(null); }}
+          layout={layout}
+          onLayout={(on) => { setLayout(on); setSelected(null); if (!on && (panel?.k === "add" || panel?.k === "tabs")) setPanel(null); requestAnimationFrame(() => remeasure()); }}
           onPublish={openReview}
           onCompare={onCompare}
           onRegion={(p) => router.push(p)}
@@ -661,6 +697,18 @@ export default function EditorOverlay() {
             </div>
           )}
           {sel && <div className="pointer-events-none fixed z-[999] border-2 border-blue-600" style={vis(sel)} />}
+          {hideBox && hideInfo && !hideInfo.pinned && !hideInfo.hidden && (
+            <button
+              type="button"
+              disabled={busy}
+              title="Hide this section on the site (after Publish). Show brings it back."
+              onClick={() => runOp({ op: "hide", id: hideInfo.id, hidden: true }, `Hid ${hideInfo.name}`)}
+              className="fixed z-[1001] rounded-full border border-neutral-300 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-800 shadow hover:bg-neutral-100"
+              style={{ top: Math.max(hideBox.top - scroll + 8, top + 8), left: Math.max(hideBox.left + 8, 8) }}
+            >
+              Hide section
+            </button>
+          )}
           {/* open comment threads on a section */}
           {boxes.map((b) => {
             const n = comments.filter((c) => !c.parentId && !c.resolvedAt && c.anchor === b.id).length;
@@ -682,10 +730,11 @@ export default function EditorOverlay() {
               onMove={(d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`)}
               onCopy={() => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`)}
               onRemove={() => runOp({ op: "remove", id: selInfo.id }, `Deleted ${selInfo.name}`)}
+              onHide={() => runOp({ op: "hide", id: selInfo.id, hidden: !selInfo.hidden }, `${selInfo.hidden ? "Showed" : "Hid"} ${selInfo.name}`)}
               onTabs={selInfo.tabs ? () => setPanel({ k: "tabs", id: selInfo.id }) : undefined}
             />
           )}
-          {sel && selInfo?.fromRecords && (
+          {layout && sel && selInfo?.fromRecords && (
             <div className="fixed z-[1002] rounded bg-neutral-900 px-2 py-1 text-xs text-white" style={{ top: Math.max(sel.top - scroll + 6, top + 44), left: Math.max(sel.left + sel.width - 260, 8) }}>
               List items come from their own records in the admin
             </div>
@@ -704,7 +753,7 @@ export default function EditorOverlay() {
               {p.list ? "+ Add section to this tab" : "+ Add section"}
             </button>
           ))}
-          {boxes.length === 0 && (
+          {layout && boxes.length === 0 && (
             <button type="button" onClick={() => setPanel({ k: "add", at: 0, list: "" })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
               + Add section
             </button>

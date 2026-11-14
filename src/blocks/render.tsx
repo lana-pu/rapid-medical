@@ -4,14 +4,22 @@ import { Mark, listOf } from "./mark";
 import { BLOCKS } from "./registry";
 import { blockName } from "./diff";
 import type { Block, BlockDef, BlockType, RenderBlock } from "./types";
+import { isEditing } from "@/lib/editing";
+import { HiddenStrip } from "@/components/editor/HiddenStrip";
 
 const def = (b: Block) => BLOCKS[b.type] as unknown as BlockDef<BlockType>;
 
-const info = (b: Block, uid: string) => ({ t: b.type, v: b.variant as string, n: blockName({ id: uid, type: b.type, variant: b.variant as string, data: b.data as Record<string, unknown> }), p: !!def(b).pinned });
+const nameOf = (b: Block, uid: string) => blockName({ id: uid, type: b.type, variant: b.variant as string, data: b.data as Record<string, unknown> });
+const info = (b: Block, uid: string) => ({ t: b.type, v: b.variant as string, n: nameOf(b, uid), p: !!def(b).pinned, ...(b.hidden ? { h: true } : {}) });
 
 export const renderBlock: RenderBlock = (b, nested = false, key) => {
   const { Component } = def(b);
-  const node = <Component key={b.uid?.includes("/") ? undefined : key} variant={b.variant} data={b.data} edit={b.edit} nested={nested} render={renderBlock} />;
+  // hidden on the site: in the editor a strip with «Show», for visitors nothing (HiddenStrip checks)
+  const node = b.hidden ? (
+    <HiddenStrip key={b.uid?.includes("/") ? undefined : key} uid={b.uid} name={nameOf(b, b.uid ?? "")} />
+  ) : (
+    <Component key={b.uid?.includes("/") ? undefined : key} variant={b.variant} data={b.data} edit={b.edit} nested={nested} render={renderBlock} />
+  );
   // a section inside a Product details tab: its own mark (the page's sections get theirs from BlockList)
   if (!b.uid?.includes("/")) return node;
   return (
@@ -28,7 +36,9 @@ const isFlow = (b: Block) => def(b).flow?.(b.variant as never) ?? false;
  * A page: blocks in order. Consecutive blocks of a type with `stack` share one band;
  * consecutive flow blocks (page title, text, form…) share one plain section.
  */
-export function BlockList({ blocks }: { blocks: Block[] }) {
+export async function BlockList({ blocks: all }: { blocks: Block[] }) {
+  // visitors do not get hidden sections at all; the editor shows them folded (HiddenStrip)
+  const blocks = (await isEditing()) ? all : all.filter((b) => !b.hidden);
   const out: ReactNode[] = [];
   // In the page editor each stored section is preceded by an invisible mark; the editor finds a section's extent
   // between its mark and the next one (no wrappers, so the layout is the same as visitors see).

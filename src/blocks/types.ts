@@ -66,6 +66,8 @@ export type BlockOf<T extends BlockType> = {
   edit?: EditBinding;
   /** Id of the stored section (pages stored as block lists, ADR-007): lets the editor select, move and remove it. */
   uid?: string;
+  /** Hidden by an editor: visitors do not get it; the editor shows a «Hidden on the site» strip (on-page-editor.md). */
+  hidden?: boolean;
 };
 
 export type Block = { [T in BlockType]: BlockOf<T> }[BlockType];

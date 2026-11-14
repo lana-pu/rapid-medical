@@ -174,6 +174,8 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     // on the page: no layout choice for a section
     await ed.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(ed.getByRole("status")).toHaveText(/Live|Draft/);
+    await ed.getByRole("button", { name: "Tools ▾" }).click();
+    await ed.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
     await ed.evaluate(() => window.scrollTo(0, 0));
     await ed.mouse.click(8, 300);
     await expect(ed.locator("#rm-section-toolbar")).toBeVisible();
@@ -195,6 +197,8 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await expect(de.locator("main").getByRole("link", { name: "Menu and footer" })).toBeVisible();
     await de.goto(`/api/editor?on=1&redirect=${encodeURIComponent("/apac/therapies/mvo")}`);
     await expect(de.getByRole("status")).toHaveText(/Live|Draft/);
+    await de.getByRole("button", { name: "Tools ▾" }).click();
+    await de.getByRole("menuitemcheckbox", { name: /Arrange sections/ }).click();
     await de.evaluate(() => window.scrollTo(0, 0));
     await de.mouse.click(8, 300);
     await expect(de.locator('#rm-section-toolbar select[aria-label="Layout"]')).toBeVisible();

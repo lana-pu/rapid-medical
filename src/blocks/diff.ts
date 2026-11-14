@@ -44,7 +44,7 @@ function keptInOrder(a: string[], b: string[]): Set<string> {
   return keep;
 }
 
-type Nested = { type: string; variant: string; data: Record<string, unknown> };
+type Nested = { type: string; variant: string; data: Record<string, unknown>; hidden?: boolean };
 type Tab = { id?: string; label?: string; href?: string; blocks?: (Nested | { group: string; blocks: Nested[] })[] };
 const flat = (t: Tab | undefined): Nested[] => (t?.blocks ?? []).flatMap((x) => ("group" in x ? (x.blocks ?? []) : [x]));
 const nestedName = (n: Nested) => blockName({ id: "", ...n });
@@ -83,7 +83,9 @@ function describeTabs(before: Tab[], after: Tab[]): string[] {
     for (const n of [...added]) {
       const i = removed.findIndex((x) => x.type === n.type);
       if (i < 0) continue;
-      out.push(n.variant !== removed[i].variant ? `Changed layout of ${nestedName(n)} ${where}` : `Changed ${nestedName(n)} ${where}`);
+      const o = removed[i];
+      const onlyHidden = !!o.hidden !== !!n.hidden && n.variant === o.variant && same(n.data, o.data);
+      out.push(onlyHidden ? `${n.hidden ? "Hid" : "Showed"} ${nestedName(n)} ${where}` : n.variant !== o.variant ? `Changed layout of ${nestedName(n)} ${where}` : `Changed ${nestedName(n)} ${where}`);
       removed.splice(i, 1);
       added.splice(added.indexOf(n), 1);
     }
@@ -109,6 +111,7 @@ export function describeBlockChanges(before: StoredBlock[] | null | undefined, a
       continue;
     }
     if (!kept.has(x.id)) out.push(`Moved section ${blockName(x)}`);
+    if (!!old.hidden !== !!x.hidden) out.push(`${x.hidden ? "Hid" : "Showed"} section ${blockName(x)}`);
     if (old.variant !== x.variant) {
       const label = def(x.type)?.variants.find((v) => v.id === x.variant)?.label ?? x.variant;
       out.push(`Changed layout of ${blockName(x)} to “${label}”`);

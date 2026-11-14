@@ -208,7 +208,8 @@ export const products = pgTable("products", {
  * (src/blocks/registry.ts); `data` follows that block type's data shape; `source` names a list that is
  * filled in at render time from other records (src/blocks/stored.ts → SOURCES).
  */
-export type StoredBlock = { id: string; type: string; variant: string; data: Record<string, unknown>; source?: string };
+/** `hidden`: kept on the page, not shown to visitors (the editor's «Hide», docs/screens/on-page-editor.md → «Скрытые секции»). */
+export type StoredBlock = { id: string; type: string; variant: string; data: Record<string, unknown>; source?: string; hidden?: boolean };
 
 /* ------------------------------------------------------------------ */
 /*  Solutions = therapy pages (LVO, MVO, Aneurysm, Vasospasm, Access)   */
