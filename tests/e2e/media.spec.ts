@@ -39,8 +39,10 @@ test("replace a picture everywhere: unpublished changes on each page, visitors s
   // the old file is still in use (in the drafts too): it cannot be deleted
   expect((await page.request.delete(`/api/admin/media?id=${id}`)).status()).toBe(409);
 
-  // clean up
+  // clean up: the drafts, then the uploaded file itself (no longer used anywhere)
   sql(`delete from drafts where data::text like '%${newUrl}%'`);
+  const newId = sql(`select id from media where url = '${newUrl}'`);
+  expect((await page.request.delete(`/api/admin/media?id=${newId}`)).status()).toBe(200);
 });
 
 test("describe pictures: filter, queue, Enter saves and moves on", async ({ page }) => {
