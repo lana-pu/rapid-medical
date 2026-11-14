@@ -41,9 +41,25 @@
 Как это соотносится с тем, что есть: таблица `publications` (Evidence) уже хранит часть полей; текстовые страницы
 (`pages`) — тело страниц исследований. Объединять или связывать — решение архитектуры, после ответов ниже.
 
+## Что известно о процессе (владелица, 2026-11-14)
+- Направление **связано с идеей Nir** (поиск клиентов в LinkedIn).
+- Вести LinkedIn будут **Alyssa Elkins или Emily Richardson**. **Они сами выбирают**, какие посты годятся.
+- Аккаунт LinkedIn, судя по всему, **один на все регионы** (понимание владелицы, подтвердить у клиента).
+
+Что из этого следует для устройства:
+- Генератор никогда не публикует и не решает, что постить: он даёт черновик по запросу из записи исследования, а
+  выбирают и публикуют Alyssa или Emily. Это и есть propose → confirm.
+- Раз аккаунт один, а утверждения региональные, черновик честно показывает **регионы продукта**: данные уже есть
+  (`products.regions`, `publications.regions`). Например, «TIGERTRIEVER™ 13: OUS, APAC — not cleared in US?» Решает человек,
+  а не мы; помощь — не дать забыть.
+- Ссылка в посте ведёт туда, где исследование есть. Если оно есть во всех регионах — на адрес без региона, дальше
+  выбор региона (как сейчас у Therapies и Evidence). Правило — решить на вайрфрейме страницы.
+
 ## Ограничения
 - **MLR.** Пост с клиническими цифрами — промо-материал. Безопасный порядок: утверждённый текст → страница → пост.
-- **Регионы.** Продукт или показание, не одобренное в US, в глобальном посте — риск. Что можно постить глобально — MLR.
+  Кто проверяет и проверяют ли посты вообще — вопрос клиенту.
+- **Регионы.** Аккаунт один, а продукт или показание, не одобренное в US, в посте — риск. Выбор постов — за
+  Alyssa / Emily; от нас — пометка регионов в черновике.
 - **Объём.** Новое сверх миграции сайта (как веб-DAM). Решение и оценка — за владелицей.
 
 ## Как поймём, что работает
@@ -51,12 +67,13 @@
 заявки с `utm_source=linkedin` (в админке «Requests»). Порог «работает» — согласовать с клиентом до старта.
 
 ## Вопросы
-**Клиенту (Emily / Nir):**
-1. Кто ведёт страницу компании в LinkedIn и как часто постят сейчас? Есть ли статистика страницы (клики, подписчики)?
-2. Кто утверждает клинические формулировки (MLR) и сколько это занимает?
-3. Какие исследования и продукты можно упоминать в глобальном посте?
+**Клиенту (Emily / Alyssa / Nir):**
+1. ~~Кто ведёт страницу компании в LinkedIn?~~ — Alyssa или Emily, они же выбирают посты. Открыто: как часто постят
+   сейчас, есть ли статистика страницы (клики, подписчики)?
+2. Кто утверждает клинические формулировки (MLR), проходят ли через него посты, сколько это занимает?
+3. Аккаунт один на все регионы — подтвердить.
 4. Что считается лидом: заявка на демо, вопрос о продукте, любое сообщение?
-5. Связано ли это с инициативой Nir (поиск клиентов в LinkedIn) — созвон из BACKLOG.
+5. ~~Связано ли с инициативой Nir?~~ — да. Созвон с Nir остаётся (BACKLOG → Идеи).
 
 **Владелице:**
 1. ~~Берём в объём сейчас или после переноса сайта?~~ — **параллельно с переносом** (2026-11-14).
@@ -64,25 +81,26 @@
 3. Исследование — отдельный тип записи или расширение `publications`? Решать после вайрфрейма страницы.
 
 ## Письмо клиенту — черновик (не отправлено)
-Кому: Emily Richardson, Nir Palmor. Отправляет владелица.
+Кому: Emily Richardson, Alyssa Elkins, Nir Palmor. Отправляет владелица.
 
 > **Subject:** LinkedIn → leads: a few questions before we start
 >
-> Hi Emily, hi Nir,
+> Hi Emily, Alyssa and Nir,
 >
 > You mentioned LinkedIn is your main channel and that you want more leads. We'd like to use your clinical studies for
-> this: each study gets its own page on the new site with a clear next step ("Request a demo"), and a LinkedIn post
-> links to that page. The site already records where each request came from, so after a month we'll see how many
-> requests LinkedIn brought.
+> this: each study gets its own page on the new site with a clear next step ("Request a demo"). From a study, the admin
+> prepares a draft LinkedIn post that links to that page. Emily or Alyssa decide which drafts are worth posting and
+> post them. The site already records where each request came from, so after a month we'll see how many requests
+> LinkedIn brought.
 >
 > A few questions so we build the right thing:
 >
-> 1. Who runs the Rapid Medical LinkedIn page today, and how often do you post? Can you share the page analytics
->    (followers, clicks) for the last few months?
-> 2. Who reviews clinical claims (MLR), and how long does a review usually take?
-> 3. Which studies and products can be mentioned in a post seen in all regions? Is anything US-only or OUS-only?
+> 1. How often do you post on LinkedIn today? Could you share the page analytics (followers, clicks) for the last few
+>    months?
+> 2. Do LinkedIn posts with clinical results go through MLR review? If so, who reviews them and how long does it take?
+> 3. Is there one Rapid Medical LinkedIn page for all regions?
 > 4. What counts as a lead for you: a demo request, a product question, any message?
-> 5. Nir, is this connected to your idea of finding customers on LinkedIn? Happy to set up the short call you suggested.
+> 5. Nir, happy to set up the short call you suggested about finding customers on LinkedIn.
 >
 > Thanks!
 
