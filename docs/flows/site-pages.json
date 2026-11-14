@@ -161,6 +161,19 @@
    ]
   },
   {
+   "title": "7 · Webinars — как есть",
+   "screens": [
+    "web-asis",
+    "web-asis-phone"
+   ]
+  },
+  {
+   "title": "7 · Webinars — примеры из Mobbin",
+   "screens": [
+    "web-mobbin"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -383,6 +396,21 @@
    "from": "about-new",
    "to": "about-new-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "about-new-phone",
+   "to": "web-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "web-asis",
+   "to": "web-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "web-asis-phone",
+   "to": "web-mobbin",
+   "label": "как у других"
   },
   {
    "from": "text-new-phone",
@@ -13543,6 +13571,325 @@
     {
      "c": "rm-footer",
      "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "web-asis",
+   "title": "Webinars · as is",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below."
+      },
+      {
+       "c": "rm-webinars",
+       "v": "cards",
+       "items": [
+        {
+         "id": 1,
+         "title": "COMANECI Experience: Increasing packing density",
+         "speaker": "Dr. Mani Puthuran",
+         "event": "",
+         "productName": "COMANECI™",
+         "edit": {
+          "r": "webinars",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "TIGERTRIEVER: Tips to improve patient outcomes",
+         "speaker": "Dr. Eitan Abergel",
+         "event": "",
+         "productName": "TIGERTRIEVER™",
+         "edit": {
+          "r": "webinars",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Tiger Trial results with ESMINT",
+         "speaker": "Drs. Ashutosh Jadhav & Brian Jankowitz",
+         "event": "ESMINT",
+         "productName": "TIGERTRIEVER™",
+         "edit": {
+          "r": "webinars",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "COMANECI: Tips & Tricks from Buffalo",
+         "speaker": "Drs. Adnan Siddiqui & Jason Davies",
+         "event": "",
+         "productName": "COMANECI™",
+         "edit": {
+          "r": "webinars",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 5,
+         "title": "COLUMBUS 14 Guidewire: Mastering steerability",
+         "speaker": "Dr. Alexander von Hessling",
+         "event": "",
+         "productName": "DRIVEWIRE™",
+         "edit": {
+          "r": "webinars",
+          "id": 5,
+          "prefix": ""
+         }
+        }
+       ],
+       "annotation": "Карточки: продукт, название, спикер, событие. В коде уже есть «Request this recording» на карточке — выбирает вебинар в форме и прокручивает к ней (параллельная сессия, 2026-11-13); снимок — до этого."
+      },
+      {
+       "c": "rm-form",
+       "v": "compact",
+       "form": "webinar",
+       "topics": [
+        "COMANECI Experience: Increasing packing density",
+        "TIGERTRIEVER: Tips to improve patient outcomes",
+        "Tiger Trial results with ESMINT",
+        "COMANECI: Tips & Tricks from Buffalo",
+        "COLUMBUS 14 Guidewire: Mastering steerability"
+       ],
+       "defaultRegion": "Americas",
+       "annotation": "Форма внизу страницы, выбор вебинара — список «Which webinar?». Запись присылают вручную после заявки. Вебинаров нет в меню — попасть можно только со страниц терапий (site-ia, вопрос 4); в APAC вебинаров на Duda не было (№14)."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "web-asis-phone",
+   "title": "Webinars · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below."
+      },
+      {
+       "c": "rm-webinars",
+       "v": "cards",
+       "items": [
+        {
+         "id": 1,
+         "title": "COMANECI Experience: Increasing packing density",
+         "speaker": "Dr. Mani Puthuran",
+         "event": "",
+         "productName": "COMANECI™",
+         "edit": {
+          "r": "webinars",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "TIGERTRIEVER: Tips to improve patient outcomes",
+         "speaker": "Dr. Eitan Abergel",
+         "event": "",
+         "productName": "TIGERTRIEVER™",
+         "edit": {
+          "r": "webinars",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Tiger Trial results with ESMINT",
+         "speaker": "Drs. Ashutosh Jadhav & Brian Jankowitz",
+         "event": "ESMINT",
+         "productName": "TIGERTRIEVER™",
+         "edit": {
+          "r": "webinars",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "COMANECI: Tips & Tricks from Buffalo",
+         "speaker": "Drs. Adnan Siddiqui & Jason Davies",
+         "event": "",
+         "productName": "COMANECI™",
+         "edit": {
+          "r": "webinars",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 5,
+         "title": "COLUMBUS 14 Guidewire: Mastering steerability",
+         "speaker": "Dr. Alexander von Hessling",
+         "event": "",
+         "productName": "DRIVEWIRE™",
+         "edit": {
+          "r": "webinars",
+          "id": 5,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "c": "rm-form",
+       "v": "compact",
+       "form": "webinar",
+       "topics": [
+        "COMANECI Experience: Increasing packing density",
+        "TIGERTRIEVER: Tips to improve patient outcomes",
+        "Tiger Trial results with ESMINT",
+        "COMANECI: Tips & Tricks from Buffalo",
+        "COLUMBUS 14 Guidewire: Mastering steerability"
+       ],
+       "defaultRegion": "Americas"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "web-mobbin",
+   "title": "Webinars · examples from Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Библиотека: фильтр слева, карточки справа"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас 5 вебинаров карточками и форма внизу. Нужен фильтр по продукту? Что на карточке?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/webinars/userinterviews.webp",
+           "source": "User Interviews",
+           "caption": "поиск и темы слева, карточки справа — «общая линия»",
+           "url": "https://mobbin.com/sites/sections/ca4e36d8-5a71-41fc-a17e-b2d106d34126"
+          },
+          {
+           "c": "ref",
+           "src": "refs/webinars/oyster.webp",
+           "source": "Oyster",
+           "caption": "фильтр по теме слева, у карточки — описание и «Watch now»",
+           "url": "https://mobbin.com/sites/sections/4a9f0301-d603-4fab-bebb-008fb213c31f"
+          },
+          {
+           "c": "ref",
+           "src": "refs/webinars/kajabi.webp",
+           "source": "Kajabi",
+           "caption": "на карточке тема, длительность, спикер и одна кнопка",
+           "url": "https://mobbin.com/sites/sections/cc30df19-bc09-4491-a139-42ae6524375f"
+          },
+          {
+           "c": "ref",
+           "src": "refs/webinars/clickup.webp",
+           "source": "ClickUp",
+           "caption": "метка «On-Demand» и «Presented by»",
+           "url": "https://mobbin.com/sites/sections/c3b04978-d152-4295-86a3-36cfaef01f5e"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Доступ к записи"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Сейчас: форма внизу страницы, запись присылают вручную. Форма рядом с выбранным вебинаром (окном) — или запись сразу после формы?"
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/webinars/kajabi-gate.webp",
+           "source": "Kajabi",
+           "caption": "видео и короткая форма на одном экране",
+           "url": "https://mobbin.com/screens/49984db1-8dab-4c27-b4bf-55d2d678850d"
+          },
+          {
+           "c": "ref",
+           "src": "refs/webinars/vimeo.webp",
+           "source": "Vimeo",
+           "caption": "форма перед видео: email → смотреть сразу",
+           "url": "https://mobbin.com/screens/b5411913-35bb-4c59-b13c-7a978b2c5f1d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
     }
    ]
   },

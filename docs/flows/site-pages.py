@@ -897,6 +897,28 @@ def about_new(phone=False):
             {'c': 'section', 'pad': pad, 'items': [footprint]}, FOOTER]
 
 
+# ---------- Webinars ----------
+WEB_REFS = [
+    {'title': 'Библиотека: фильтр слева, карточки справа',
+     'ask': 'Сейчас 5 вебинаров карточками и форма внизу. Нужен фильтр по продукту? Что на карточке?',
+     'refs': [('userinterviews', 'User Interviews', 'поиск и темы слева, карточки справа — «общая линия»', 'sites/sections/ca4e36d8-5a71-41fc-a17e-b2d106d34126'),
+              ('oyster', 'Oyster', 'фильтр по теме слева, у карточки — описание и «Watch now»', 'sites/sections/4a9f0301-d603-4fab-bebb-008fb213c31f'),
+              ('kajabi', 'Kajabi', 'на карточке тема, длительность, спикер и одна кнопка', 'sites/sections/cc30df19-bc09-4491-a139-42ae6524375f'),
+              ('clickup', 'ClickUp', 'метка «On-Demand» и «Presented by»', 'sites/sections/c3b04978-d152-4295-86a3-36cfaef01f5e')]},
+    {'title': 'Доступ к записи',
+     'ask': 'Сейчас: форма внизу страницы, запись присылают вручную. Форма рядом с выбранным вебинаром (окном) — или запись сразу после формы?',
+     'refs': [('kajabi-gate', 'Kajabi', 'видео и короткая форма на одном экране', 'screens/49984db1-8dab-4c27-b4bf-55d2d678850d'),
+              ('vimeo', 'Vimeo', 'форма перед видео: email → смотреть сразу', 'screens/b5411913-35bb-4c59-b13c-7a978b2c5f1d')]},
+]
+
+
+def webinars_asis(phone=False):
+    ex = None if phone else {
+        1: {'annotation': 'Карточки: продукт, название, спикер, событие. В коде уже есть «Request this recording» на карточке — выбирает вебинар в форме и прокручивает к ней (параллельная сессия, 2026-11-13); снимок — до этого.'},
+        2: {'annotation': 'Форма внизу страницы, выбор вебинара — список «Which webinar?». Запись присылают вручную после заявки. Вебинаров нет в меню — попасть можно только со страниц терапий (site-ia, вопрос 4); в APAC вебинаров на Duda не было (№14).'}}
+    return [HEADER, page('US · Webinars', None, ex), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -926,6 +948,8 @@ flow = {
         {'title': '6 · About — как есть', 'screens': ['about-asis', 'about-asis-phone']},
         {'title': '6 · About — примеры из Mobbin', 'screens': ['about-mobbin']},
         {'title': '6 · About — решение (закрыта 2026-11-14)', 'screens': ['about-new', 'about-new-phone']},
+        {'title': '7 · Webinars — как есть', 'screens': ['web-asis', 'web-asis-phone']},
+        {'title': '7 · Webinars — примеры из Mobbin', 'screens': ['web-mobbin']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -973,6 +997,9 @@ flow = {
               {'from': 'about-asis-phone', 'to': 'about-mobbin', 'label': 'как у других'},
               {'from': 'about-mobbin', 'to': 'about-new', 'label': 'решение'},
               {'from': 'about-new', 'to': 'about-new-phone', 'label': 'на телефоне'},
+              {'from': 'about-new-phone', 'to': 'web-asis', 'label': 'следующая страница'},
+              {'from': 'web-asis', 'to': 'web-asis-phone', 'label': 'на телефоне'},
+              {'from': 'web-asis-phone', 'to': 'web-mobbin', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1043,6 +1070,9 @@ flow = {
         ref_screen('about-mobbin', 'About · examples from Mobbin', 'about', ABOUT_REFS),
         {'id': 'about-new', 'title': 'About · decided', 'url': 'rapid-medical.com/about-us', 'body': about_new()},
         {'id': 'about-new-phone', 'title': 'About · decided, phone', 'device': 'mobile', 'url': 'rapid-medical.com/about-us', 'body': about_new(True)},
+        {'id': 'web-asis', 'title': 'Webinars · as is', 'url': 'rapid-medical.com/us/webinars', 'body': webinars_asis()},
+        {'id': 'web-asis-phone', 'title': 'Webinars · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/webinars', 'body': webinars_asis(True)},
+        ref_screen('web-mobbin', 'Webinars · examples from Mobbin', 'webinars', WEB_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
