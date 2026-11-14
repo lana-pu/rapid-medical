@@ -316,3 +316,6 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 обсуждении (Evidence: ресёрч, концепция, разметка по желанию, редактируемые фильтры). ADR-009: публикации, новости,
 исследования, кейсы, документы — одна сущность «материал»; фича «Create from a document» — BACKLOG п. 8; вопросы к Emily —
 №22. Дальше — обзор терапий, терапия, Home. Сессия: `sessions/2026-11-14-site-pages-wireframes.md`.
+- Админка — четыре пространства (решение владелицы 2026-11-14, `docs/admin-ia.md`): Content (дерево сайта, экран
+  страницы с вкладками Overview · Google & address · History), Inbox вместо главной (что ждёт, по видам), Media,
+  Settings (Site, Team, You; Activity и Redirects здесь). Вход ведёт в Inbox; `/admin/start` — туда же.
