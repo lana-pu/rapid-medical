@@ -91,7 +91,7 @@ async function ctx(fd: FormData) {
 /** Back to the page's screen after an action started there (docs/screens/admin-sections.md → «Экран страницы»). */
 const pageScreenBack = (fd: FormData) => {
   const b = String(fd.get("__back") ?? "");
-  return /^\/admin\/page(\/[a-z0-9\-/]*)?$/.test(b) && !b.includes("//") ? b : null;
+  return /^\/admin\/page(\/[a-z0-9\-/]*)?(\?view=regions)?$/.test(b) && !b.includes("//") ? b : null;
 };
 
 export async function publishResource(fd: FormData) {
@@ -101,8 +101,9 @@ export async function publishResource(fd: FormData) {
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
   // back to the page's screen — at its new address, if publishing moved the page
   const moved = row ? res.previewUrl?.(row) : null;
-  const back = pageScreenBack(fd) ? (moved ? adminPageHref(pageKey(moved)) : pageScreenBack(fd)) : null;
-  redirect(back ? `${back}?published=${encodeURIComponent(String(row?.region ?? "all"))}` : `/admin/${res.slug}/${id}?published=1`);
+  const asked = pageScreenBack(fd);
+  const back = asked ? (moved ? adminPageHref(pageKey(moved)) + (asked.includes("?view=regions") ? "?view=regions" : "") : asked) : null;
+  redirect(back ? `${back}${back.includes("?") ? "&" : "?"}published=${encodeURIComponent(String(row?.region ?? "all"))}` : `/admin/${res.slug}/${id}?published=1`);
 }
 
 export async function unpublishResource(fd: FormData) {

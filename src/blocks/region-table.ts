@@ -11,7 +11,9 @@ import type { BlockDef, BlockType } from "./types";
  * any field on the page. Pure: lists in (the current region first), rows out.
  */
 
-export type RegionCell = { f: string; value: string; rich: boolean } | null;
+/** media: the value is a file of the media library (shown as a preview, replaced from the library) */
+export type MediaKind = "image" | "video" | "pdf";
+export type RegionCell = { f: string; value: string; rich: boolean; media?: MediaKind } | null;
 export type RegionRow = {
   key: string;
   section: string;
@@ -30,15 +32,25 @@ const def = (t: unknown) => (typeof t === "string" && Object.hasOwn(BLOCKS, t) ?
 const ADDRESS = /^(https?:|\/|#|mailto:|tel:)/i;
 const SKIP = new Set(["id", "type", "variant", "source", "anchor", "edit"]);
 
-/** Writable text leaves of one section: relative path (after `data.`) → value. */
-function texts(blocks: StoredBlock[], n: number): Map<string, { value: string; rich: boolean }> {
-  const out = new Map<string, { value: string; rich: boolean }>();
+/** A file address by its extension: picture, video or PDF; anything else (a page link) is not media. */
+export function mediaKindOf(url: string): MediaKind | null {
+  const p = url.split(/[?#]/)[0].toLowerCase();
+  if (/\.(png|jpe?g|webp|gif|svg|avif)$/.test(p)) return "image";
+  if (/\.(mp4|webm|mov)$/.test(p)) return "video";
+  if (/\.pdf$/.test(p)) return "pdf";
+  return null;
+}
+
+/** Writable leaves of one section: relative path (after `data.`) → value. Texts; with `media`, also its files. */
+function texts(blocks: StoredBlock[], n: number, media = false): Map<string, { value: string; rich: boolean; media?: MediaKind }> {
+  const out = new Map<string, { value: string; rich: boolean; media?: MediaKind }>();
   const walk = (v: unknown, path: string[]) => {
     if (typeof v === "string") {
-      if (!v.trim() || ADDRESS.test(v.trim())) return;
+      const kind = media ? mediaKindOf(v.trim()) : null;
+      if (!v.trim() || (ADDRESS.test(v.trim()) && !kind)) return;
       const check = checkBlockPath(blocks, [String(n), "data", ...path]);
-      if (!check.ok || check.url) return;
-      out.set(path.join("."), { value: v, rich: check.kind === "rich" });
+      if (!check.ok || (check.url && !kind)) return;
+      out.set(path.join("."), kind ? { value: v, rich: false, media: kind } : { value: v, rich: check.kind === "rich" });
       return;
     }
     if (Array.isArray(v)) v.forEach((x, i) => walk(x, [...path, String(i)]));
@@ -75,7 +87,7 @@ export function fieldLabel(block: StoredBlock, rel: string): string {
   return parts.filter(Boolean).join(" › ");
 }
 
-export function regionTextRows(lists: StoredBlock[][]): RegionRow[] {
+export function regionTextRows(lists: StoredBlock[][], opts: { media?: boolean } = {}): RegionRow[] {
   const [mine, ...others] = lists;
   if (!mine) return [];
   const pairs = others.map((o) => new Map(matchSections(mine, o)));
@@ -85,13 +97,13 @@ export function regionTextRows(lists: StoredBlock[][]): RegionRow[] {
     return { key: `${rows.length}`, section, field: fieldLabel(block, rel), cells, differs: present.length !== cells.length || present.some((c) => c.value !== present[0].value), ...extra };
   };
   mine.forEach((b, i) => {
-    const sets = [texts(mine, i), ...others.map((o, k) => (pairs[k].has(i) ? texts(o, pairs[k].get(i)!) : new Map()))];
+    const sets = [texts(mine, i, opts.media), ...others.map((o, k) => (pairs[k].has(i) ? texts(o, pairs[k].get(i)!, opts.media) : new Map<string, { value: string; rich: boolean; media?: MediaKind }>()))];
     const keys = [...new Set(sets.flatMap((s) => [...s.keys()]))];
     for (const rel of keys) {
       const cells = sets.map((s, k) => {
         const t = s.get(rel);
         const n = k === 0 ? i : pairs[k - 1].get(i);
-        return t && n !== undefined ? { f: `blocks.${n}.data.${rel}`, value: t.value, rich: t.rich } : null;
+        return t && n !== undefined ? { f: `blocks.${n}.data.${rel}`, value: t.value, rich: t.rich, ...(t.media ? { media: t.media } : {}) } : null;
       });
       rows.push(row(blockName(b), b, rel, cells, b.hidden ? { hidden: true } : {}));
     }
@@ -101,8 +113,8 @@ export function regionTextRows(lists: StoredBlock[][]): RegionRow[] {
     const matched = new Set(pairs[k].values());
     o.forEach((b, j) => {
       if (matched.has(j)) return;
-      for (const [rel, t] of texts(o, j)) {
-        const cells: RegionCell[] = lists.map((_, x) => (x === k + 1 ? { f: `blocks.${j}.data.${rel}`, value: t.value, rich: t.rich } : null));
+      for (const [rel, t] of texts(o, j, opts.media)) {
+        const cells: RegionCell[] = lists.map((_, x) => (x === k + 1 ? { f: `blocks.${j}.data.${rel}`, value: t.value, rich: t.rich, ...(t.media ? { media: t.media } : {}) } : null));
         rows.push(row(blockName(b), b, rel, cells, { onlyIn: k + 1 }));
       }
     });

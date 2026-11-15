@@ -23,7 +23,19 @@ const ago = (d: Date) => {
 const recordKey = (r: string, id: number) => `${r}:${id}`;
 
 export type Google = { key: string; region: PageCard["region"]; path: string; title: string; titleSet: boolean; description: string; settingsHref: string };
-export type PageFile = { id: number; filename: string; url: string; kind: "PDF" | "Picture" | "Video" | "File"; opens: number };
+export type PageFile = { id: number; filename: string; url: string; kind: "PDF" | "Picture" | "Video" | "File"; opens: number; thumb: string | null };
+
+type MediaRow = { url: string; mime: string; variants: { w: number; url: string }[]; posterUrl: string | null };
+/** A small picture of a file: the smallest web copy at least 240 px wide, a video's poster; none for a PDF. */
+const thumbOf = (m: MediaRow): string | null =>
+  m.mime.startsWith("image/") ? ([...m.variants].sort((a, b) => a.w - b.w).find((v) => v.w >= 240)?.url ?? m.url) : m.mime.startsWith("video/") ? m.posterUrl : null;
+
+/** Previews for these addresses (the media library's files only). */
+export async function thumbsFor(urls: string[]): Promise<Record<string, string>> {
+  if (!urls.length) return {};
+  const rows = await db.select({ url: media.url, mime: media.mime, variants: media.variants, posterUrl: media.posterUrl }).from(media).where(inArray(media.url, [...new Set(urls)]));
+  return Object.fromEntries(rows.flatMap((m) => (thumbOf(m) ? [[m.url, thumbOf(m)!]] : [])));
+}
 
 export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
   const since = new Date(Date.now() - DAYS * 86_400_000);
@@ -45,7 +57,7 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
     cards.some((c) => c.r === "pages") ? db.select({ id: pages.id, metaTitle: pages.metaTitle, metaDescription: pages.metaDescription, title: pages.title }).from(pages).where(inArray(pages.id, cards.filter((c) => c.r === "pages").map((c) => c.id))) : [],
     recs.length ? db.select({ n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt), or(...recs.map((x) => and(eq(comments.resource, x.r), eq(comments.recordId, x.id)))))) : [{ n: 0 }],
     countingSince().catch(() => null),
-    db.select({ id: media.id, filename: media.filename, url: media.url, mime: media.mime }).from(media),
+    db.select({ id: media.id, filename: media.filename, url: media.url, mime: media.mime, variants: media.variants, posterUrl: media.posterUrl }).from(media),
     mediaIndex(),
   ]);
 
@@ -93,6 +105,7 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
       url: m.url,
       kind: m.mime === "application/pdf" ? ("PDF" as const) : m.mime.startsWith("image/") ? ("Picture" as const) : m.mime.startsWith("video/") ? ("Video" as const) : ("File" as const),
       opens: downloads.filter((v) => v.file === m.url).length,
+      thumb: thumbOf(m),
     }))
     .sort((a, b) => (a.kind === "PDF" ? 0 : 1) - (b.kind === "PDF" ? 0 : 1) || a.filename.localeCompare(b.filename));
 

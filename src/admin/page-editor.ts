@@ -232,7 +232,8 @@ export async function editorPageTree(): Promise<{ tree: PageNode[] } | Fail> {
 
 /** «Texts in all regions»: this page's texts in every region that has it, current region first (on-page-editor.md). */
 export type RegionColumn = { region: Region; label: string; r: string; id: number; path: string | null; current: boolean; pending: boolean };
-export async function regionTexts(ref: PageRef): Promise<{ regions: RegionColumn[]; rows: RegionRow[] } | Fail> {
+/** `media`: files too (the admin's «Differences between regions»); the editor's ⇄ Regions shows texts only. */
+export async function regionTexts(ref: PageRef, media = false): Promise<{ regions: RegionColumn[]; rows: RegionRow[] } | Fail> {
   try {
     await requireEditor();
     const res = pageResource(ref.r);
@@ -251,7 +252,7 @@ export async function regionTexts(ref: PageRef): Promise<{ regions: RegionColumn
     const cols = [first, ...rest.sort((a, b) => order(a.region) - order(b.region))];
     return {
       regions: cols.map((c, k) => ({ region: c.region, label: label(c.region), r: ref.r, id: c.id, path: c.path, current: k === 0, pending: !!c.e.draft?.data })),
-      rows: regionTextRows(cols.map((c) => (c.e.row.blocks as StoredBlock[] | null) ?? [])),
+      rows: regionTextRows(cols.map((c) => (c.e.row.blocks as StoredBlock[] | null) ?? []), { media }),
     };
   } catch (err) {
     return fail(err);

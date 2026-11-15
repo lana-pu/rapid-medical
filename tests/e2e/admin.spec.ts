@@ -760,3 +760,40 @@ test("page screen: Publish from the page; a new address keeps the old one workin
   await expect(page.getByRole("region", { name: "Regions" }).getByRole("listitem", { name: "Americas" })).toContainText("Not on the site yet");
   sql(`delete from solutions where region='us' and slug='mvo'`);
 });
+
+test("page screen: files with previews; differences between regions with previews, edited in place", async ({ page }) => {
+  test.setTimeout(120_000);
+  const apac = sql(`select id from solutions where region='apac' and slug='lvo'`);
+  sql(`delete from drafts where resource='solutions' and record_id=${apac}`);
+  try {
+    await login(page);
+    await page.goto("/admin/page/therapies/lvo");
+    // files: PDFs with Preview, pictures as thumbnails; a click shows the file large
+    const files = page.getByRole("region", { name: "Files on this page" });
+    await expect(files.getByRole("list", { name: "Pictures and videos" }).locator("img").first()).toBeVisible();
+    await files.getByRole("button", { name: "Preview" }).first().click();
+    await expect(page.getByRole("dialog", { name: /^Preview: .+\.pdf$/ }).locator("iframe")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog", { name: /^Preview:/ })).toHaveCount(0);
+
+    // the second view: what differs between the regions, only the differences by default
+    await page.getByRole("navigation", { name: "Page views" }).getByRole("link", { name: "Differences between regions" }).click();
+    await expect(page).toHaveURL(/\?view=regions$/);
+    await expect(page.getByRole("button", { name: /^Only differences/ })).toHaveAttribute("aria-pressed", "true");
+    const table = page.locator("table");
+    for (const r of ["Americas", "Europe & Middle East", "Asia & Pacific"]) await expect(table.locator("thead")).toContainText(r);
+    // a text of Asia & Pacific edited in place: saved as that region's unpublished change
+    const heads = await table.locator("thead th").allInnerTexts();
+    const col = heads.findIndex((h) => h.startsWith("Asia & Pacific")) + 1; // columns follow the region menu
+    const cell = table.locator(`tbody tr[aria-label] td:nth-child(${col}) button[title='Click to edit']`).first();
+    await cell.click();
+    const box = table.getByRole("textbox").first();
+    await box.fill("E2E text for Asia & Pacific");
+    await box.press("Enter");
+    await expect.poll(() => sql(`select (data::text like '%E2E text for Asia & Pacific%')::text from drafts where resource='solutions' and record_id=${apac}`)).toBe("true");
+    await expect(table.locator("thead")).toContainText("unpublished changes");
+    await expect(table).toContainText("E2E text for Asia & Pacific");
+  } finally {
+    sql(`delete from drafts where resource='solutions' and record_id=${apac}`);
+  }
+});

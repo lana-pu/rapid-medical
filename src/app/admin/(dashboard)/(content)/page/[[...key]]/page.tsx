@@ -4,10 +4,13 @@ import { requireUser } from "@/lib/auth";
 import { REGION_CHOICES, REGIONS } from "@/lib/regions";
 import { DEMO, editorHref, withBase } from "@/lib/demo";
 import { adminPageHref, pageScreen } from "@/admin/site-tree";
-import { pageDetails } from "@/admin/page-screen";
+import { pageDetails, thumbsFor } from "@/admin/page-screen";
+import { regionTexts } from "@/admin/page-editor";
 import { duplicateResource, publishResource } from "@/admin/actions";
 import { Crumbs, Notice } from "@/components/admin/ui";
 import { CopyPostLink } from "@/components/admin/CopyPostLink";
+import { FilesOnPage } from "@/components/admin/FilePreview";
+import { RegionDiff } from "@/components/admin/RegionDiff";
 
 /**
  * One page of the site on one screen (docs/screens/admin-sections.md → «Экран страницы», docs/admin-page-screen.md):
@@ -26,7 +29,7 @@ const h2 = "mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500"
 const card = "rounded-lg border border-neutral-200 bg-white";
 const btn = "rounded border border-neutral-300 bg-white px-2.5 py-1 text-xs font-medium hover:bg-neutral-50";
 
-export default async function SitePage({ params, searchParams }: { params: Promise<{ key?: string[] }>; searchParams: Promise<{ published?: string; created?: string }> }) {
+export default async function SitePage({ params, searchParams }: { params: Promise<{ key?: string[] }>; searchParams: Promise<{ published?: string; created?: string; view?: string }> }) {
   await requireUser();
   const { key: parts } = await params;
   const sp = await searchParams;
@@ -34,8 +37,12 @@ export default async function SitePage({ params, searchParams }: { params: Promi
   const data = await pageScreen(key);
   if (!data) notFound();
   const { node, trail, cards, collections } = data;
-  const d = await pageDetails(cards, node.versions);
   const back = adminPageHref(key);
+  // «Differences between regions»: for a page with copies in several regions (docs/screens/admin-sections.md)
+  const order = (r: string | null) => REGIONS.indexOf(r as (typeof REGIONS)[number]);
+  const copies = cards.filter((c) => c.region).sort((a, b) => order(a.region) - order(b.region));
+  const comparable = copies.length > 1 && !DEMO;
+  const view = comparable && sp.view === "regions" ? "regions" : "overview";
   const regional = node.versions.some((v) => v.region);
   const rows = regional ? REGIONS.map((r) => ({ region: r as string | null, v: node.versions.find((x) => x.region === r) })) : [{ region: null, v: node.versions[0] }];
   const source = cards.find((c) => c.status !== "draft") ?? cards[0]; // what a new region version is copied from
@@ -57,6 +64,29 @@ export default async function SitePage({ params, searchParams }: { params: Promi
       {sp.published && <div className="mb-4"><Notice kind="success">{regionName(sp.published === "all" ? null : sp.published)} is published.</Notice></div>}
       {sp.created && <div className="mb-4"><Notice kind="success">{regionName(sp.created)} version created as a draft — edit it on the page, then publish.</Notice></div>}
 
+      {comparable && (
+        <nav aria-label="Page views" className="mb-6 flex gap-1 border-b border-neutral-200">
+          {([["overview", "Overview", back], ["regions", "Differences between regions", `${back}?view=regions`]] as const).map(([k, label, href]) => (
+            <Link key={k} href={href} aria-current={view === k ? "page" : undefined} className={`-mb-px border-b-2 px-3 py-2 text-sm ${view === k ? "border-neutral-900 font-medium" : "border-transparent text-neutral-500 hover:text-neutral-800"}`}>{label}</Link>
+          ))}
+        </nav>
+      )}
+
+      {view === "regions" ? await regionsView() : await overview()}
+    </>
+  );
+
+  async function regionsView() {
+    const ref0 = { r: copies[0].r, id: copies[0].id };
+    const data = await regionTexts(ref0, true);
+    if ("error" in data) return <Notice kind="error">{data.error}</Notice>;
+    const urls = data.rows.flatMap((r) => r.cells.flatMap((c) => (c?.media ? [c.value] : [])));
+    return <RegionDiff initial={data} ref0={ref0} thumbs={await thumbsFor(urls)} editHref={Object.fromEntries(data.regions.map((c, i) => [i, c.path ? editorHref(c.path) : "#"]))} back={`${back}?view=regions`} />;
+  }
+
+  async function overview() {
+    const d = await pageDetails(cards, node.versions);
+    return (
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-8">
           <section aria-label="Regions">
@@ -158,31 +188,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
 
           <section aria-label="Files on this page">
             <h2 className={h2}>Files on this page</h2>
-            {(() => {
-              // documents in view (they change: a new IFU, a new study); pictures and videos folded — there are many
-              const docs = d.files.filter((f) => f.kind === "PDF" || f.kind === "File");
-              const media = d.files.filter((f) => f.kind === "Picture" || f.kind === "Video");
-              const row = (f: (typeof d.files)[number]) => (
-                <li key={f.id} className="flex items-center gap-3 px-4 py-2 text-sm">
-                  <span className="w-14 shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-center text-[11px] text-neutral-600">{f.kind}</span>
-                  <span className="min-w-0 flex-1 truncate">{f.filename}</span>
-                  {f.kind === "PDF" && <span className="shrink-0 text-xs text-neutral-500">opened {f.opens}× in 30 days</span>}
-                  <Link href={`/admin/media?id=${f.id}`} className="shrink-0 text-xs underline">Open · Replace</Link>
-                </li>
-              );
-              if (!d.files.length) return <p className="text-sm text-neutral-500">No files from the media library on this page.</p>;
-              return (
-                <div className={`${card} divide-y divide-neutral-100`}>
-                  {docs.length > 0 ? <ul className="divide-y divide-neutral-100">{docs.map(row)}</ul> : <p className="px-4 py-2 text-sm text-neutral-500">No PDFs on this page.</p>}
-                  {media.length > 0 && (
-                    <details>
-                      <summary className="cursor-pointer px-4 py-2 text-sm text-neutral-700">Pictures and videos ({media.length})</summary>
-                      <ul className="divide-y divide-neutral-100 border-t border-neutral-100">{media.map(row)}</ul>
-                    </details>
-                  )}
-                </div>
-              );
-            })()}
+            <FilesOnPage files={d.files} />
           </section>
 
           {collections.length > 0 && (
@@ -242,6 +248,6 @@ export default async function SitePage({ params, searchParams }: { params: Promi
           </section>
         </aside>
       </div>
-    </>
-  );
+    );
+  }
 }
