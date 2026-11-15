@@ -19,15 +19,47 @@
 | **Детали справа**: тип, статус, создано / изменено кем и когда, «Show version history» | [Intercom article](https://mobbin.com/screens/5a63a4de-edec-4607-b0b4-aa570e20c014); WordPress / Sanity / Contentful (по памяти) | Колонка **Details**: шаблон, адрес, последние изменения, ссылка на всю историю |
 | История — **лентой**, у версии «Посмотреть» и «Вернуть»; сравнение — «с текущей», без выбора двух версий | Google Docs, Notion, WordPress Revisions (по памяти); наш редактор | История — лента как в редакторе |
 
+## Кто и что делает со страницей (2026-11-15)
+**Люди.** В админку заходят четверо (письмо Emily 10.11, `findings/client-email-2026-11-10.md`):
+- **Emily Richardson, Alyssa Elkins** — маркетинг, правят сайт; главные пользователи экрана.
+- **Ronen Eckhouse** — CEO; утверждает часть текстов (Fix List: «нужна виза MLR/CEO»).
+- **Nir Palmor** — IT; доступы, домен, редиректы.
+- Ещё владелица — дизайнер и admin.
+- **Согласующий MLR** (medical / legal / regulatory) — **аккаунта в админке нет**, но тексты проходят через него
+  (Fix List B.5, B.6, B.7 «на утверждение MLR»).
+
+Частота — гипотеза по Fix List и письмам: никого не наблюдали, проверить с Emily.
+
+| # | Действие | Кто | Как часто (гипотеза) | Сейчас | На экране страницы |
+|---|---|---|---|---|---|
+| 1 | Поменять текст, картинку, файл на странице | Emily, Alyssa | еженедельно | Edit on page — есть | главная кнопка **Edit on page** по региону |
+| 2 | Понять, что сейчас на сайте и что ждёт публикации; опубликовать или запланировать | Emily | при каждой правке | статус на карточке; публикация — в редакторе или в форме | **Regions**: статус словами, «publishes Tue 09:00», кнопка Publish у региона с правками |
+| 3 | **Отдать правки на согласование MLR / CEO** — до публикации, человеку без аккаунта | Emily → MLR, Ronen | при каждом тексте, где есть утверждения | preview-ссылка есть в коде (`/api/preview?token=…`, 7 дней), но спрятана в форме как «Preview» | **Share preview** у региона: ссылка на версию с неопубликованными правками, «действует до {дата}»; ответ — заметкой |
+| 4 | Сделать одинаковую правку во всех регионах или проверить, чем регионы отличаются (COMANECI US ≠ OUS только колонкой каталожного номера) | Emily | ежемесячно | таблица регионов в редакторе (⇄ Regions) | **Compare regions** → редактор с таблицей регионов |
+| 5 | Завести страницу в новом регионе (HYPERDRIVE для US, A.3) или снять страницу в регионе | Emily, владелица | редко | Copy to region — на вкладке Google, подписи OUS / APAC | у отсутствующего региона — **Create from {регион}**; в «⋯» — **Take off the site** |
+| 6 | Поправить заголовок и описание для Google, картинку для LinkedIn (B.7–B.9) | Emily | при запуске и раз в квартал | форма записи; часть страниц — в Settings → Google defaults | **Google preview** + **Page settings** |
+| 7 | **Подготовить ссылку для поста в LinkedIn** с меткой кампании, чтобы потом увидеть, сколько людей и заявок привела публикация | Emily, Nir | каждый пост | нигде — UTM вручную | **Copy link for a post**: название кампании → ссылка с `utm_source=linkedin…`; кампания потом видна в Analytics |
+| 8 | Посмотреть, работает ли страница: визиты, откуда, заявки, открытые PDF | Emily, Ronen | раз в неделю или месяц | только общий экран Analytics | **Performance** за 30 дней |
+| 9 | **Узнать, что было на странице в такую-то дату** и кто менял (вопрос регулятора, спор о формулировке); вернуть старую версию | Emily, Ronen | редко, но важно для медицинского производителя | История есть, сравнение техничное; «View» без отката есть | **History** лентой: дата, кто, что; **View** версии как на сайте; **Restore** |
+| 10 | Заменить PDF (IFU, исследование) или картинку, которые стоят на странице | Emily | при новой версии IFU | замена файла везде — в медиатеке | **Files on this page**: список PDF и картинок страницы, **Replace** |
+| 11 | Ответить на заметку коллеги на странице | все | при работе вдвоём | Inbox → редактор | **Open notes**: число и ссылка в редактор |
+| 12 | Переименовать страницу или сменить адрес | Emily, Nir | редко | поле Slug; **редирект со старого адреса не создаётся** — старые ссылки (в т. ч. посты LinkedIn) станут 404 | **Page settings**: адрес + автоматический редирект со старого |
+| 13 | Удалить черновик или страницу | Emily, владелица | редко | кнопка на странице черновика | «⋯» → **Delete**, с предупреждением, если страница в меню или на неё ведут ссылки |
+
+**Что из этого следует для экрана.** Чаще всего — 1, 2 и 3. Значит, наверху должны быть регионы со статусом и тремя
+действиями: Edit, Publish, Share preview. Performance, Google и History — ниже. Новые возможности, которых нет
+ни в старом, ни в новом макете: **Share preview** (3), **Copy link for a post** (7), **Files on this page** (10),
+**редирект при смене адреса** (12).
+
 ## Предложение: один экран вместо трёх вкладок
 ```
-Large vessel stroke                        [Edit on page]  [View ↗]  [⋯]
-Therapy page · /us/therapies/lvo …                                    (⋯: Page settings, Copy to region, Unpublish, Delete)
+Large vessel stroke                 [Copy link for a post]  [View ↗]  [⋯]
+Therapy page                          (⋯: Page settings, Take off the site, Delete)
 
 REGIONS                                                   │ DETAILS
- Americas        ● On the site · edited by Emily, 2 h ago  │  Template   Therapy page
- Europe & ME     ● Changes not published · Daniel, today   │  Address    /{region}/therapies/lvo
- Asia & Pacific  ○ No version — [Create from Americas]     │  In menu    “Large vessel stroke” under Therapies
+ Americas     ● On the site · Emily, 2 h ago   [Edit] [Share preview]   │  Template   Therapy page
+ Europe & ME  ● Changes waiting · Daniel, today [Edit] [Publish] [Share] │  Address    /{region}/therapies/lvo
+ Asia & Pac.  ○ No version — [Create from Americas]   [Compare regions] │  In menu    “Large vessel stroke” under Therapies
                                                            │  Google     ✓ title and description  ·  Page settings
 PERFORMANCE · last 30 days                                 │
  312 visits · 4 requests started here · top: LinkedIn      │ RECENT CHANGES
@@ -37,6 +69,9 @@ GOOGLE PREVIEW (Americas ▾)                                │  All versions �
  Large vessel stroke | Rapid Medical                       │
  rapid-medical.com › us › therapies › lvo                  │ OPEN NOTES ON THE PAGE
  TIGERTRIEVER … (description, 148/155)        [Edit]       │  2 notes · open in the editor
+                                                           │
+FILES ON THIS PAGE                                         │
+ IFU TIGERTRIEVER.pdf · opened 12× · [Replace]             │
                                                            │
 COLLECTIONS SHOWN ON THIS PAGE (Evidence)                  │
  Publications · 102 · Open · + New                         │
@@ -67,5 +102,5 @@ COLLECTIONS SHOWN ON THIS PAGE (Evidence)                  │
 ### Вопросы владелице
 1. Один экран + панель Page settings + лента истории (рекомендую) или оставить вкладки, но наполнить их иначе?
 2. Performance — сразу (данные есть) или после запуска сайта?
-3. Картинка для соцсетей (Open Graph) — добавлять поле сейчас? Сейчас у всех страниц общая картинка сайта
-   (`/og-image.jpg`), у терапий — главная картинка страницы; выбрать свою для поста в LinkedIn нельзя.
+3. Картинка для соцсетей (Open Graph): у терапий она уже есть (`shareImageUrl`, Fix List B.9, иначе — главная
+   картинка), у остальных страниц — общая картинка сайта (`/og-image.jpg`). Добавить поле всем страницам?
