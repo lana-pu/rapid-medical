@@ -47,3 +47,14 @@ describe("study pages", () => {
     expect(studyPageBlocks("toString", imported())).toBeNull();
   });
 });
+
+import { sameArticle } from "../../src/lib/material";
+
+describe("an abstract belongs to this article", () => {
+  it("shortened titles, prefixes and hyphens still match; another article does not (a wrong DOI in a record)", () => {
+    expect(sameArticle("Treatment of Cerebral Vasospasm … Comaneci", "Treatment of Cerebral Vasospasm after Aneurysmal Subarachnoid Hemorrhage Using the Comaneci Device")).toBe(true);
+    expect(sameArticle("Technical video: Applications of the Columbus Steerable Guidewire*", "Applications of the Columbus steerable guidewire.")).toBe(true);
+    expect(sameArticle("Comaneci-Assisted Coiling Embolization of a Post-Traumatic Carotid-Cavernous Fistula", "Comaneci-Assisted Coiling Embolization of a Posttraumatic Carotid-Cavernous Fistula")).toBe(true);
+    expect(sameArticle("Thrombectomy for distal medium vessel occlusion with a new generation of stentriever", "Mechanical thrombectomy in pediatric stroke: systematic review, individual patient data meta-analysis")).toBe(false);
+  });
+});

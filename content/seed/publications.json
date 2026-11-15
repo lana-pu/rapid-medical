@@ -132,7 +132,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The Drivewire 24 (DW24) is a newly FDA-cleared 0.024 inch steerable guidewire. Its proximally controlled deflectable tip allows for intravascular steering to facilitate selective navigation of diagnostic or therapeutic catheters. We present the first clinical experience with the DW24.\n\nMethods: All neurointerventional procedures using the DW24 from October 2024 to April 2025 were retrospectively reviewed. Indications, procedural details, DW24 performance, wire-related complications, and operator feedback were assessed.\n\nResults: 27 procedures were performed utilizing the DW24. Indications included aneurysm (n=16), stroke (n=5), arteriovenous fistula or malformation (n=4), and diagnostic venography (n=2). Technical success was achieved in 92.6% of cases. Target vessels included the MCA, anterior cerebral artery, posterior cerebral artery, internal carotid artery segments, transverse sinus, and torcula. The device's radiopaque, hydrophilic distal tip aided fluoroscopic visibility, and the variable support enabled articulation across a range of aspiration and delivery catheters without requiring additional support devices. The DW24's steerability enabled access to challenging cerebrovascular anatomy, including one stroke case where conventional guidewires failed to reach a distal M2 occlusion. The DW24's intravascular steering also allowed for the delivery of catheters for Pipeline Embolization Device (PED) deployment and facilitated PED post-processing to improve wall apposition without requiring wire removal, reshaping, or balloon angioplasty. Operators observed a short learning curve. There were no device-related complications, though the wire's response to rotational force was a limitation.\n\nConclusion: The DW24 demonstrated a high technical success rate with no device-related complications. Its versatility across catheter sizes and precise controllability facilitate navigating complex cerebrovasculature. Further studies should assess efficacy in larger cohorts across additional clinical scenarios.",
+    "abstractSource": "PubMed 40541400"
   },
   {
     "title": "Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion",
@@ -149,7 +151,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purposeTo assess the safety and efficacy of Tigertriever 13 (T13) (one center experience) for mechanical thrombectomy (MT) in acute ischemic stroke (AIS) in patients with primary or secondary distal, medium-size vessel occlusions (DMVOs).MethodsWe performed a retrospective analysis of all consecutive AIS patients who underwent thrombectomy with T13 for DMVO (from 2018 until the present). Patient's characteristics were analyzed as well as procedural complications, angiographic (modified thrombolysis in cerebral infarction [mTICI]) score, and clinical outcomes (modified Rankin Scale [mRS]).ResultsOur cohort included 43 patients. Male predominance was noticed (60.5%), the median age was 71 years (interquartile range [IQR], 65-83), and 37.2% of patients received IV lytics prior to MT. Our cohort was divided into three sub-groups: (1) primary DMVO (17 patients, 39.5%), (2) secondary DMVO following large vessel occlusion (19 patients, 44.18%), and (3) DMVO related to the non-stroke endovascular procedure, such as aneurysm repair and carotid artery stenting (seven patients, 16.2%). Successful recanalization (mTICI 2b-3) was achieved in most of the patients (37/43, 86.04%). None of the patients have experienced symptomatic intracranial hemorrhage (ICH), and seven patients (16.3%) had asymptomatic ICH. Median mRS score was 3 at day 90 (IQR, 2-5), with 17 patients (39.5%) gained favorable outcome (mRS ≤ 2). Mortality was documented among 11.8% in primary DMVO and 10.52% in secondary DMVO.ConclusionsT13 for MT seems to be safe and effective for DMVO. Clinical outcomes and complications were in line with those described among patients with proximal occlusions. Although considered a remote target, it seems to be technically achievable with a reasonable outcome.",
+    "abstractSource": "PubMed 40468761"
   },
   {
     "title": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke: A single-center Experience",
@@ -163,7 +167,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Stent retrievers, including the novel Tigertriever, are important in mechanical thrombectomy for acute ischemic stroke due to a proximal large-vessel occlusion within the anterior circulation. We aimed to assess the efficacy and safety of the Tigertriever compared to self-expanding stent retrievers like EmboTrap, Solitaire, Trevo, or Tron. Patients treated at a stroke center for intracranial vessel occlusion in the anterior circulation between August 2022 and August 2024 were evaluated. The primary outcome was a modified first-pass effect, defined as a modified thrombolysis in cerebral infarction grade of 2b-3 after the first pass. Secondary outcomes included the first-pass effect, device-related serious adverse events, embolization in new territory, and hemorrhagic complications within 24 hours post-procedure. Data from 104 hemispheres in 103 patients were analyzed (24 in the Tigertriever group and 80 in the stent-retriever group). The Tigertriever group demonstrated a higher modified first-pass effect (70.8% vs. 52.5%; adjusted odds ratio 3.17; 95% confidence interval 1.06-9.47; p = 0.02). Although not statistically significant, vessel dissection (0% vs. 3.8%), subarachnoid hemorrhage (20.8% vs. 32.5%), and symptomatic intracranial hemorrhage (4.2% vs. 12.5%) within 24 hours post-procedure were lower in the Tigertriever group. No significant differences were observed in the first-pass effect or embolization in the new territory between the 2 groups. The Tigertriever might be effective for anterior circulation intracranial vessel occlusion, achieving a higher rate of modified first-pass effect. It might also be associated with minimal serious procedural complications, indicating its safety profile.",
+    "abstractSource": "PubMed 40129002"
   },
   {
     "title": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent",
@@ -177,7 +183,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "The article describes a case of successful treatment of cerebral aneurysm with a flow-diverting stent using the temporary assist device Comaneci (Rapid Medical, Yokneam, Israel). Clinical symptoms and methods of instrumental diagnostic for cerebral aneurysm are presented. Endovascular management technique is described in detail. Flow diversion has become a widely accepted treatment option for intracranial aneurysms, especially those with a wide neck. However, a complication of this procedure is incomplete stent expansion. This clinical case describes resolving the incomplete flow divertor expansion using the controllable temporary assistance device Comaneci.",
+    "abstractSource": "PubMed 39185435"
   },
   {
     "title": "Sustained efficacy of angioplasty for cerebral vasospasm … device comparison",
@@ -193,7 +201,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Cerebral vasospasm is a leading source of delayed morbidity and mortality after aneurysmal subarachnoid hemorrhage (aSAH). Angioplasty may improve vasospasm, while optimal target and device selection remains controversial. This study aimed to identify features and devices associated with sustained efficacy.\n\nMethods: We identified consecutive patients who underwent angioplasty for aSAH vasospasm. The primary outcome was a composite of adequate angioplasty (residual narrowing < 50 %) without complications. Secondary outcomes included rates of refractory/recurrent vasospasm and sustained improvement at follow-up. Associated features were identified through multivariable analysis. Outcomes were compared between balloon and Comaneci/stentriever in a propensity-score-matched cohort.\n\nResults: A total of 149 vasospastic segments underwent angioplasty: 61.7 % in the proximal anterior circulation (ICA, M1, A1), 20.1 % in distal segments (A2 and M2) and 18.1 % in the posterior circulation. Adequate angioplasty was achieved without complication in 83.2 % of vessels, with a sustainable effect in 84.3 % at follow-up. Refractory/recurrent vasospasm was observed in 17.4 %, yielding a 10.1 % retreatment rate. Notably, only 35.3 % of vessels undergoing inadequate angioplasty demonstrated improvement at follow-up. Angioplasty targeting distal MCA (adjusted OR, 0.10) or BA-V4 (aOR, 0.10), and inadequate angioplasty (aOR, 0.03) were unfavorable predictors for sustained improvement. Efficacy outcomes were similar between balloon and Comaneci/stentriever in a matched subgroup analysis.\n\nConclusion: Angioplasty, when achieving residual narrowing < 50 %, demonstrated sustained improvement for vasospasm. Novel devices may exhibit comparable efficacy to balloon angioplasty for selected segments.",
+    "abstractSource": "PubMed 39142039"
   },
   {
     "title": "Treatment of Cerebral Vasospasm … Comaneci",
@@ -209,7 +219,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purpose: Cerebral vasospasm (CV) following aneurysmal subarachnoid hemorrhage (aSAH) may lead to morbidity and mortality. Endovascular mechanical angioplasty may be performed if symptomatic CV is refractory to noninvasive medical management. Compliant and noncompliant balloons and manually adjustable mesh may be used in this indication. We describe our initial experience with the Comaneci (Rapid Medical, Yokneam, Israel) in cerebral vasospasm treatment following aSAH. Methods: All patients included in the prospective observational SAVEBRAIN PWI (NCT05276934 on clinicaltrial.gov) study who underwent cerebral angioplasty using the Comaneci device for the treatment of medically refractory and symptomatic CV after aSAH were identified. Patient demographic information, procedural details, and outcomes were obtained from electronic medical records. Results: Between February 2022 and June 2023, seven consecutive patients underwent CV treatment with the Comaneci. Angioplasty of 37 arterial segments (supraclinoid internal carotid artery, A1, A2, and A3 segments of the anterior cerebral artery and M1 and M2 segments of the middle cerebral artery) was attempted, and 35/37 (95%) were performed. The vessel diameter improved significantly following angioplasty (+64%), while brain hypoperfusion decreased (-45% of the mean T Max). There was no long-term clinical complication, and 6% per-procedural complications occurred. Conclusions: The Comaneci is effective in the treatment of cerebral vasospasm following aSAH, bringing a new device in the armamentarium of the neurointerventionalist to perform intracranial angioplasty.",
+    "abstractSource": "PubMed 39431058"
   },
   {
     "title": "Sustained efficacy of angioplasty for cerebral vasospasm after aneurysmal subarachnoid hemorrhage: Risk features and device comparison",
@@ -225,7 +237,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Cerebral vasospasm is a leading source of delayed morbidity and mortality after aneurysmal subarachnoid hemorrhage (aSAH). Angioplasty may improve vasospasm, while optimal target and device selection remains controversial. This study aimed to identify features and devices associated with sustained efficacy.\n\nMethods: We identified consecutive patients who underwent angioplasty for aSAH vasospasm. The primary outcome was a composite of adequate angioplasty (residual narrowing < 50 %) without complications. Secondary outcomes included rates of refractory/recurrent vasospasm and sustained improvement at follow-up. Associated features were identified through multivariable analysis. Outcomes were compared between balloon and Comaneci/stentriever in a propensity-score-matched cohort.\n\nResults: A total of 149 vasospastic segments underwent angioplasty: 61.7 % in the proximal anterior circulation (ICA, M1, A1), 20.1 % in distal segments (A2 and M2) and 18.1 % in the posterior circulation. Adequate angioplasty was achieved without complication in 83.2 % of vessels, with a sustainable effect in 84.3 % at follow-up. Refractory/recurrent vasospasm was observed in 17.4 %, yielding a 10.1 % retreatment rate. Notably, only 35.3 % of vessels undergoing inadequate angioplasty demonstrated improvement at follow-up. Angioplasty targeting distal MCA (adjusted OR, 0.10) or BA-V4 (aOR, 0.10), and inadequate angioplasty (aOR, 0.03) were unfavorable predictors for sustained improvement. Efficacy outcomes were similar between balloon and Comaneci/stentriever in a matched subgroup analysis.\n\nConclusion: Angioplasty, when achieving residual narrowing < 50 %, demonstrated sustained improvement for vasospasm. Novel devices may exhibit comparable efficacy to balloon angioplasty for selected segments.",
+    "abstractSource": "PubMed 39142039"
   },
   {
     "title": "Treatment of Cerebral Vasospasm after Aneurysmal Subarachnoid Hemorrhage Using the Compliant Manually Adjustable Mesh Comaneci",
@@ -241,7 +255,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purpose: Cerebral vasospasm (CV) following aneurysmal subarachnoid hemorrhage (aSAH) may lead to morbidity and mortality. Endovascular mechanical angioplasty may be performed if symptomatic CV is refractory to noninvasive medical management. Compliant and noncompliant balloons and manually adjustable mesh may be used in this indication. We describe our initial experience with the Comaneci (Rapid Medical, Yokneam, Israel) in cerebral vasospasm treatment following aSAH. Methods: All patients included in the prospective observational SAVEBRAIN PWI (NCT05276934 on clinicaltrial.gov) study who underwent cerebral angioplasty using the Comaneci device for the treatment of medically refractory and symptomatic CV after aSAH were identified. Patient demographic information, procedural details, and outcomes were obtained from electronic medical records. Results: Between February 2022 and June 2023, seven consecutive patients underwent CV treatment with the Comaneci. Angioplasty of 37 arterial segments (supraclinoid internal carotid artery, A1, A2, and A3 segments of the anterior cerebral artery and M1 and M2 segments of the middle cerebral artery) was attempted, and 35/37 (95%) were performed. The vessel diameter improved significantly following angioplasty (+64%), while brain hypoperfusion decreased (-45% of the mean T Max). There was no long-term clinical complication, and 6% per-procedural complications occurred. Conclusions: The Comaneci is effective in the treatment of cerebral vasospasm following aSAH, bringing a new device in the armamentarium of the neurointerventionalist to perform intracranial angioplasty.",
+    "abstractSource": "PubMed 39431058"
   },
   {
     "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
@@ -255,7 +271,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "The Tigertriever is a novel, radially adjustable stentriever that addresses limitations in traditional mechanical thrombectomy devices by providing enhanced user control over clot integration. This provides the ability to adapt to patient-specific factors such as varying vessel sizes and clot compositions and may be particularly crucial for ensuring efficacy and safety in distal locations. This consensus paper synthesizes the clinical techniques from a consortium of experienced international operators. It outlines the current data on the Tigertriever, discusses the new operator-controlled capabilities, and provides a recommended approach for both proximal and distal mechanical thrombectomy, emphasizing the \"FLEX\" approach (Fast Controlled Expansion with Relaxation) for optimal integration and reduced clot disruption.",
+    "abstractSource": "PubMed 39219537"
   },
   {
     "title": "The Effect of Actuation Frequency on Clot Integration with the Tigertriever Device: A Preliminary in Vitro Study",
@@ -269,7 +287,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "BackgroundThe Tigertriever stent retriever (Rapid Medical) can be actively expanded and contracted by the operator, which allows for several actuation-related parameters to be optimized to potentially improve device efficacy. These parameters have not yet been evaluated. We conducted a benchtop study to evaluate the effect of actuation frequency on clot integration within the stent.MethodsA Tigertriever 17 device was deployed within a biological clot analog placed in a straight tube. The device was actuated between the maximally contracted and maximally expanded states with three different frequencies: passive (one-time opening, n = 6), slow (20 s/cycle, n = 6), and fast (5 s/cycle, n = 7). A flat-detector CT scan was acquired, the clot and stent wires were segmented, and the boundaries of the clot and stent wires were calculated on each axial slice. The intersection between the stent and clot boundaries throughout the volume was defined as the volume of clot integrated within the stent. The clot integration factor (ratio of integrated clot volume to total clot volume) was then statistically compared between the three frequencies as an estimate of clot capture efficiency.ResultsThe clot integration factor was significantly higher (23% increase, p = 0.01) with the fast actuation as compared to the passive and slow actuations, with a post hoc test showing no difference (p > 0.05) between the passive and slow groups.ConclusionsFaster actuation frequencies may result in improved clot integration with the Tigertriever device. This effect needs to be validated by clinical data.",
+    "abstractSource": "PubMed 38629263"
   },
   {
     "title": "Y-Stent Technique Using Dual Comaneci Embolization Assist Devices for Coil Embolization of a Ruptured Wide-Necked Anterior Communicating Artery Aneurysm: A Technical Case Report",
@@ -286,7 +306,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and importance: Despite technological advances, ruptured wide-necked aneurysms continue to pose a challenge for endovascular management. Comaneci (Rapid Medical) is a relatively new temporary aneurysm neck bridging device to assist in coiling of wide-necked aneurysms without the need for dual antiplatelet therapy or parent vessel flow interruption. Y configuration is often necessary to prevent coil migration in cases of wide-necked aneurysms. Thus far, there have been no reports of using Comaneci device in Y configuration to aid anterior circulation aneurysm treatment.\n\nClinical presentation: A 60-year-old man presented with a Hunt-Hess grade 5, modified Fisher grade 4 subarachnoid hemorrhage from a ruptured wide-necked anterior communicating artery aneurysm with a dome-to-neck ratio of 1:2. Two Comaneci devices were used in a Y configuration to prevent coil prolapse into the contralateral A2 branch. After successful coiling of the aneurysm, both Comaneci devices were collapsed and removed without incident; the coil catheter was also removed without incident. Follow-up angiogram demonstrated successful occlusion of the wide-necked anterior communicating artery aneurysm without the use of a permanent stent or balloon assistance.\n\nConclusion: This case represents a first-time report of successfully using 2 Comaneci devices in a Y configuration for the treatment of a ruptured wide-necked anterior circulation aneurysm. This knowledge can potentially further expand the use of double Comaneci devices in Y configuration for the treatment of both anterior and posterior circulation aneurysms.",
+    "abstractSource": "PubMed 38578712"
   },
   {
     "title": "Y-Stent Technique Using Dual Comaneci … ACoA Aneurysm",
@@ -302,7 +324,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and importance: Despite technological advances, ruptured wide-necked aneurysms continue to pose a challenge for endovascular management. Comaneci (Rapid Medical) is a relatively new temporary aneurysm neck bridging device to assist in coiling of wide-necked aneurysms without the need for dual antiplatelet therapy or parent vessel flow interruption. Y configuration is often necessary to prevent coil migration in cases of wide-necked aneurysms. Thus far, there have been no reports of using Comaneci device in Y configuration to aid anterior circulation aneurysm treatment.\n\nClinical presentation: A 60-year-old man presented with a Hunt-Hess grade 5, modified Fisher grade 4 subarachnoid hemorrhage from a ruptured wide-necked anterior communicating artery aneurysm with a dome-to-neck ratio of 1:2. Two Comaneci devices were used in a Y configuration to prevent coil prolapse into the contralateral A2 branch. After successful coiling of the aneurysm, both Comaneci devices were collapsed and removed without incident; the coil catheter was also removed without incident. Follow-up angiogram demonstrated successful occlusion of the wide-necked anterior communicating artery aneurysm without the use of a permanent stent or balloon assistance.\n\nConclusion: This case represents a first-time report of successfully using 2 Comaneci devices in a Y configuration for the treatment of a ruptured wide-necked anterior circulation aneurysm. This knowledge can potentially further expand the use of double Comaneci devices in Y configuration for the treatment of both anterior and posterior circulation aneurysms.",
+    "abstractSource": "PubMed 38578712"
   },
   {
     "title": "Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute Ischemic Stroke: Improved First-pass Effect with Rapid-inflation Deflation Technique",
@@ -316,7 +340,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "IntroductionEvidence for improved first-pass effect with the novel radially adjustable radio-opaque stent retriever Tigertriever is lacking.ObjectiveTo compare improvement in first pass success with Tigertriever using two different techniques-rapid inflation deflation (RID) and suction thrombectomy (ST).MethodsRetrospective analysis of patients with acute ischemic stroke who underwent mechanical thrombectomy with Tigertriever at a single comprehensive stroke center.ResultsThirty patients were included. Mean age was 72.8 years. Twelve patients (48%) experienced successful first passes with Tigertriever. Successful revascularization (modified thrombolysis in cerebral infarction (mTICI) 2b/3) was achieved in all (100%) patients who received RID or ST technique for thrombectomy. Good clinical outcome (modified Rankin score = 0-2) was noted in 40% (n = 10). Total mortality in the cohort was 8% (n = 2). RID and ST groups comprised of 10 and 15 patients, respectively. Five patients underwent MT with Tigertriever as a rescue device.RID vs STNo difference was noted in mean age (p = 0.27), gender (p = 0.29), location of occlusion (p = 0.46), and device used for first pass (p = 0.57). A 70% first-pass success rate in RID group and 37.5% in ST group was noticed (p = 0.06). Mean time from groin puncture to reperfusion (TICI 2b//3) was statistically similar (p = 0.29, RID: 19.9 min vs ST: 25 min). Both groups noted a 100% complete recanalization rate. The rate of mortality between the two groups were not statistically different (p = 0.46).ConclusionThe preliminary first-pass success rates of RID technique with Tigertriever compared to ST technique, are encouraging. Longitudinal studies with longer follow up are needed to elucidate the smaller learning curve with this device.",
+    "abstractSource": "PubMed 38192104"
   },
   {
     "title": "Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease",
@@ -330,7 +356,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The Tigertriever device offers a unique feature that enables gradual control of the radial expansion. We sought to evaluate the safety and efficacy of the Tigertriever device in patients with large vessel occlusion (LVO) and underlying intracranial atherosclerotic disease (ICAD). The patients were part of the TIGER trial.\n\nMethods: The presence of underlying ICAD was determined by a core imaging laboratory using CT angiography and digital subtraction angiography. The primary outcomes included successful reperfusion, puncture to reperfusion time, and complications associated with the use of the Tigertriever device. Patients underwent mechanical thrombectomy with the Tigertriever device for up to three passes, and alternative devices were employed for subsequent passes.\n\nResults: A total of 160 patients were enrolled in the TIGER trial, and 32 patients had ICAD. Among the patients with ICAD, 78% achieved successful reperfusion within three passes of the Tigertriever device, without requiring rescue therapy. Additionally, a first pass effect was observed in 46.8%. The median time from puncture to reperfusion was 22 minutes. There were no device-related complications. The National Institutes of Health Stroke Scale (NIHSS) score at 24 hours was significantly reduced, from an average of 17 at baseline to 8. At the 3 month follow-up, 50% of patients achieved a modified Rankin Scale score of ≤2.\n\nConclusion: Endovascular therapy (EVT) with the Tigertriever device for LVO in patients with underlying ICAD is effective and safe. When compared with historical data from other devices employed in similar cases, we observed a high rate of successful reperfusion, along with a shorter puncture to reperfusion time.",
+    "abstractSource": "PubMed 37777257"
   },
   {
     "title": "P067/132 Cerebral vasospasm treatment using comaneci device – registry study",
@@ -381,7 +409,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Wide-necked aneurysms represent a challenge for treatment in the setting of acute subarachnoid hemorrhage. Stent-assisted coiling (SAC) and balloon-assisted coiling (BAC) are well-known techniques for treating wide-necked aneurysms. Comaneci-assisted coiling (CAC) is a newer technique involving temporary stent deployment to assist aneurysm coiling. We aim to present the first meta-analysis comparing these treatments of ruptured aneurysms.\n\nMethods: Following PRISMA guidelines, PubMed and Embase databases were queried from earliest records to July 2022 for literature reporting SAC, BAC, or CAC of ruptured intracranial aneurysms. A meta-analysis of identified articles was performed.\n\nResults: Of the 571 articles queried, 64 articles were included. One study reported BAC and SAC, 8 reported BAC, 52 reported SAC, and 3 reported CAC. These studies comprised 3153 patients with 3207 ruptured aneurysms treated with CAC (161 patients and aneurysms), BAC (330 patients and aneurysms), and SAC (2662 patients, 2716 aneurysms). Rates of periprocedural thromboembolic or hemorrhagic complications, overall or procedure-related mortality, immediate complete occlusion, retreatment, and length of angiographic follow-up did not differ significantly between SAC and BAC. Periprocedural thromboembolic (P = 0.03) and hemorrhagic (P = 0.01) complication rates were higher with BAC than CAC. Periprocedural thromboembolic (P = 0.03) and hemorrhagic (P < 0.0001) complication rates were higher with SAC than CAC. Complete aneurysm occlusion rates (P = 0.033) were higher with CAC than BAC. No significant differences were present in CAC versus BAC or SAC retreatment rates.\n\nConclusions: CAC was associated with lower hemorrhagic and thromboembolic complication rates and demonstrated similar complete occlusion and residual retreatment rates to those for BAC and SAC.",
+    "abstractSource": "PubMed 37169072"
   },
   {
     "title": "E-272 Novel use of a triple stent retriever ‘bouquet’ …",
@@ -427,7 +457,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Patients with stroke symptoms due to acute basilar artery occlusion can benefit from endovascular thrombectomy.1 2 Several papers have reported unwanted events during thrombectomy procedures such as breakage, fragmentation, or even intravascular migration of the devices or catheter pieces. These papers also presented methods or techniques to retrieve defective devices such as a snare, retrievable stents, or balloons.3-6 Video 1 presents a case of basilar thrombectomy that was complicated with fragmentation and then distal migration of a Marksman microcatheter tip into the left posterior cerebral artery. The video shows the bailout technique that was used to retrieve the migrated catheter tip using a gentle/simple and posterior circulation-friendly technique-a technique based on fundamental neurointerventional concepts. neurintsurg;16/2/217/V1F1V1Video 1 This video demonstrates the use of a bailout technique to retrieve a migrated microcatehter tip after basilar artery thrombectomy.",
+    "abstractSource": "PubMed 37221037"
   },
   {
     "title": "Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis",
@@ -444,7 +476,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Stent-retrievers used for mechanical thrombectomy are self-expanding tubular stent-like devices with modified mesh structures for clot removal. Tigertriever is designed to provide manual control of its diameter and curvature.\n\nMethods: A retrospective single-center study was performed to compare Tigertriever with SolitaireX and pRESET (stent-like stent-retrievers group) using propensity score analysis. Patients treated in a comprehensive stroke center due to large vessel occlusion between January 2016 and August 2021 were evaluated. Baseline characteristics and treatment results were compared between these groups before and after pair matching.\n\nResults: There were 140 patients (60 in Tigertriever and 80 in the stent-like stent-retriever group). In propensity score analysis, 52 matched pairs were selected in Tigertriever and stent-like stent-retriever groups. The Tigertriever group had a better successful first pass revascularization rate [46 vs. 23%, OR (95% CI): 1.7 (1.1-2.9), p = 0.013] and 14-min shorter groin-to-revascularization time (51 vs. 65 min. p = 0.017). There were no significant differences between Tigertriever and stent-like stent-retriever groups in the following: favorable mRS 3 months, favorable recanalization rate, and symptomatic intracerebral hemorrhages. There were no observed periprocedural adverse events related to Tigertriever, SolitaireX, or pRESET.\n\nConclusion: Tigertriever had a significantly better successful first pass revascularization rate and shorter groin-to-revascularization time in the analysis done before and after propensity score matching with stent-like stent-retrievers. Tigertriever is comparable to stent-like stent-retrievers regarding mortality at 3 months, favorable mRS at 3 months, favorable recanalization rate, or symptomatic cerebral hemorrhagic events.",
+    "abstractSource": "PubMed 36742041"
   },
   {
     "title": "Mechanical thrombectomy … Propensity score analysis",
@@ -476,7 +510,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Flow diverter stents are increasingly used as the sole endovascular treatment method for complex or wide-necked intracranial aneurysms.1 Technical complications related to stent deployment are infrequently reported in the literature. During treatment, implant misbehaviors may occur, including incomplete tubular expansion with insufficient aneurysmal coverage and wall apposition, proximal or distal narrowing, and twisting along the axis.2- 4 Little is known about this phenomenon, especially if it relates to the operator experience, deployment techniques, different devices, and implant properties. The management of these complications requires technical precision and is often remediated by \"massaging\" the stent with the delivery system, balloon angioplasty, or placement of additional self-expandable stents. Lastly, if critically damaged, the stent could be taken out of the vessel with a combination of maneuvers called \"stentectomy.\"5 These techniques often necessitate multiple navigations and the utilization of a larger microcatheter. We aim to highlight the feasibility of Comaneci 17 stent-angioplasty as an effective bailout strategy for inadequately deployed flow diverter stents. The suggested approach's technical aspects, including pros and cons, have been discussed.",
+    "abstractSource": "PubMed 36583607"
   },
   {
     "title": "Mechanical Comaneci 17-stent angioplasty for a sub-optimally deployed flow-diverter stent",
@@ -492,7 +528,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Flow diverter stents are increasingly used as the sole endovascular treatment method for complex or wide-necked intracranial aneurysms.1 Technical complications related to stent deployment are infrequently reported in the literature. During treatment, implant misbehaviors may occur, including incomplete tubular expansion with insufficient aneurysmal coverage and wall apposition, proximal or distal narrowing, and twisting along the axis.2- 4 Little is known about this phenomenon, especially if it relates to the operator experience, deployment techniques, different devices, and implant properties. The management of these complications requires technical precision and is often remediated by \"massaging\" the stent with the delivery system, balloon angioplasty, or placement of additional self-expandable stents. Lastly, if critically damaged, the stent could be taken out of the vessel with a combination of maneuvers called \"stentectomy.\"5 These techniques often necessitate multiple navigations and the utilization of a larger microcatheter. We aim to highlight the feasibility of Comaneci 17 stent-angioplasty as an effective bailout strategy for inadequately deployed flow diverter stents. The suggested approach's technical aspects, including pros and cons, have been discussed.",
+    "abstractSource": "PubMed 36583607"
   },
   {
     "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
@@ -580,7 +618,9 @@
     "journal": "Frontiers.",
     "doi": "10.3389/fneur.2022.934690",
     "url": "https://www.frontiersin.org/articles/10.3389/fneur.2022.934690/abstract?s=01",
-    "pdfUrl": "/uploads/oa/fneur-2022-934690.pdf", "pdfLicense": "CC BY 4.0", "pdfSource": "https://doi.org/10.3389/fneur.2022.934690",
+    "pdfUrl": "/uploads/oa/fneur-2022-934690.pdf",
+    "pdfLicense": "CC BY 4.0",
+    "pdfSource": "https://doi.org/10.3389/fneur.2022.934690",
     "publishedOn": "2022-06-01",
     "product": "tigertriever-13",
     "variant": null,
@@ -589,7 +629,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purpose: Stent and balloon anchor techniques have been described to obtain distal support and straighten catheter loops, stabilize microcatheters in giant aneurysms, or access distal tortuous anatomy during thrombectomy. These techniques require catheterization of distal arteries with a microcatheter but tortuosity and length issues may render it challenging, precluding the distal unsheathing of a classical auto-expandable stentretriever with the anchor technique.\n\nMethods: Therefore, we developed the so-called Anch'Or Harpoon Technique using a manually expandable stent retriever, the Tigertriever 13 (Rapid Medical, Yoqneam, Israel). Here, the stent retriever is not unsheathed but pushed out of a microcatheter, and then advanced as far as possible before manual opening.\n\nResults and conclusion: This technique may be used in 2 different situations. First, in the case of vessel tortuosity if the microcatheter can't be advanced as far as the physician wants: the Tigertriever 13 could be delivered through the microcatheter without having to unsheathe it, and be advanced and opened distally to its microcatheter to establish a stable anchor prior to advancing the guiding, intermediate, and micro-catheters (Anchor technique). The second situation is when distal occlusions lead to length issues; the microcatheter may be too short to cross a distal clot: the Tigertriever 13 could then be pushed out of the microcatheter, and be used to cross a sub-occlusive clot as it has a soft shaped distal tip and the physician has a visual on the artery beyond the sub-occlusion. Then, the Tigertriever would be manually expanded through the clot and retrieved (Harpoon technique) to obtain a recanalization.",
+    "abstractSource": "PubMed 35959403"
   },
   {
     "title": "Distal cerebral vasospasm treatment … Comaneci",
@@ -621,7 +663,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Balloon-assisted mechanical angioplasty for cerebral vasospasm following aneurysmal subarachnoid hemorrhage (aSAH) has a number of limitations, including transient occlusion of the spastic blood vessel. Comaneci is an FDA-approved device for temporary coil embolization assistance which has recently also been approved for the treatment of distal symptomatic refractory vasospasm. We aimed to report the feasibility, efficacy and safety of our experience with Comaneci angioplasty for refractory distal vasospasm (up to the second segment of the cerebral arteries) following aSAH.\n\nMethods: This is a retrospective analysis of a prospective series of 18 patients included between April 2019 and June 2021 with aSAH and symptomatic vasospasm refractory to medical therapy, who were treated using Comaneci-17-asssisted mechanical distal angioplasty. Immediate angiographic results, procedure-related complications, and clinical outcomes were assessed. Inter-rater reliability of the scores was determined using the intraclass correlation coefficient.\n\nResults: Comaneci-assisted distal angioplasty was performed in 18 patients, corresponding to 31 target arteries. All distal anterior segments were easily accessible with the Comaneci-17 device. Vasospasm improvement after Comaneci mechanical angioplasty was seen in 22 distal arteries (71%) (weighted Cohen's kappa (κw) 0.73, 95% CI 0.69 to 0.93). Vasospasm recurrence occurred in three patients (16.67%) and delayed cerebral infarction in three patients (16.67%), with a mean±SD delay between onset of symptoms and imaging follow-up (MRI/CT) of 32.61±8.93 days (κw 0.98, 95% CI 0.88 to 1).\n\nConclusion: This initial experience suggests that distal mechanical angioplasty performed with the Comaneci-17 device for refractory vasospasm following aSAH seems to be safe, with good feasibility and efficacy.",
+    "abstractSource": "PubMed 35584908"
   },
   {
     "title": "Efficacy and safety of stent-retrievers for cerebral vasospasms",
@@ -670,7 +714,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purpose: Recently, avant-garde combinations of ancillary devices as an adjunct to coil embolization for acutely ruptured and wide-necked cerebral aneurysms have emerged. This study sought to investigate the feasibility, safety and durability of the simultaneous combination of temporary neck-bridging devices plus balloon-assisted coiling (BAC) to treat acutely ruptured and wide-necked cerebral aneurysms.\n\nMethods: A retrospective review was performed of patients with ruptured and wide-necked intracranial bifurcation aneurysms treated with temporary stent plus balloon-assisted coiling. Anatomical features, technical details, intraprocedural complications, clinical and angiographic results were reviewed. Preprocedural and follow-up clinical statuses were evaluated using the modified Rankin scale (mRS).\n\nResults: A total of 21 patients (mean age 54.5 years, range 37-72 years) were identified. The immediate postprocedural angiography revealed complete aneurysm occlusion in 85.7% (18/21) of the cases. A periprocedural complication developed in 9.5% of the cases. There was no mortality in this study. The permanent morbidity rate was 4.7%. Long-term follow-up angiography was performed in 18 of 21 patients (85.7%) (the mean follow-up period was 21 months). The rate of complete aneurysm occlusion at final follow-up was 89.4%.\n\nConclusion: The results of this study confirmed that temporary stent plus balloon-assisted coiling is a durable and relatively safe endovascular technique for the treatment of ruptured wide-necked bifurcation aneurysms located in both the posterior and anterior cerebral circulation.",
+    "abstractSource": "PubMed 35041011"
   },
   {
     "title": "Comaneci plus Balloon-assisted Embolization …",
@@ -686,7 +732,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background and purpose: Recently, avant-garde combinations of ancillary devices as an adjunct to coil embolization for acutely ruptured and wide-necked cerebral aneurysms have emerged. This study sought to investigate the feasibility, safety and durability of the simultaneous combination of temporary neck-bridging devices plus balloon-assisted coiling (BAC) to treat acutely ruptured and wide-necked cerebral aneurysms.\n\nMethods: A retrospective review was performed of patients with ruptured and wide-necked intracranial bifurcation aneurysms treated with temporary stent plus balloon-assisted coiling. Anatomical features, technical details, intraprocedural complications, clinical and angiographic results were reviewed. Preprocedural and follow-up clinical statuses were evaluated using the modified Rankin scale (mRS).\n\nResults: A total of 21 patients (mean age 54.5 years, range 37-72 years) were identified. The immediate postprocedural angiography revealed complete aneurysm occlusion in 85.7% (18/21) of the cases. A periprocedural complication developed in 9.5% of the cases. There was no mortality in this study. The permanent morbidity rate was 4.7%. Long-term follow-up angiography was performed in 18 of 21 patients (85.7%) (the mean follow-up period was 21 months). The rate of complete aneurysm occlusion at final follow-up was 89.4%.\n\nConclusion: The results of this study confirmed that temporary stent plus balloon-assisted coiling is a durable and relatively safe endovascular technique for the treatment of ruptured wide-necked bifurcation aneurysms located in both the posterior and anterior cerebral circulation.",
+    "abstractSource": "PubMed 35041011"
   },
   {
     "title": "Applications of the Columbus Steerable Guidewire",
@@ -703,7 +751,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "The Columbus steerable guidewire (Rapid Medical, Israel) is a 0.014 inch guidewire with a remotely controlled deflectable tip intended for neuronavigational purposes. 1 The tip can be shaped by pulling or pushing the handle. Pulling the handle decreases the radius (from 4 mm to 2 mm) and curves the tip, while pushing the handle increases the curvature radius and straightens the tip until it bends in the opposite direction. The amount of deflection is at the discretion of the operator. Video 1 The response of the Columbus guidewire to rotational movements is inferior to that of standard wires, and the tip is very soft and malleable but brings great support when bent. We present two cases where the Columbus guidewire was used. In the first case, the Columbus enabled us to probe a posterior cerebral artery arising from a giant basilar tip aneurysm without wall contact. In the second case, the Columbus was used as a secondary wire to help cannulate the pericallosal artery in a patient with a recurrent anterior complex aneurysm; this subsequently permitted successful stent-assisted coiling of the aneurysm. neurintsurg;14/10/1045/V1F1V1Video 1.",
+    "abstractSource": "PubMed 34819344"
   },
   {
     "title": "Technical video: Applications of the Columbus Steerable Guidewire*",
@@ -719,7 +769,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "The Columbus steerable guidewire (Rapid Medical, Israel) is a 0.014 inch guidewire with a remotely controlled deflectable tip intended for neuronavigational purposes. 1 The tip can be shaped by pulling or pushing the handle. Pulling the handle decreases the radius (from 4 mm to 2 mm) and curves the tip, while pushing the handle increases the curvature radius and straightens the tip until it bends in the opposite direction. The amount of deflection is at the discretion of the operator. Video 1 The response of the Columbus guidewire to rotational movements is inferior to that of standard wires, and the tip is very soft and malleable but brings great support when bent. We present two cases where the Columbus guidewire was used. In the first case, the Columbus enabled us to probe a posterior cerebral artery arising from a giant basilar tip aneurysm without wall contact. In the second case, the Columbus was used as a secondary wire to help cannulate the pericallosal artery in a patient with a recurrent anterior complex aneurysm; this subsequently permitted successful stent-assisted coiling of the aneurysm. neurintsurg;14/10/1045/V1F1V1Video 1.",
+    "abstractSource": "PubMed 34819344"
   },
   {
     "title": "The Tigertriever 13 for mechanical thrombectomy in distal and medium intracranial vessel occlusions",
@@ -736,7 +788,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Purpose: To report our two-center initial experience using the Tigertriever 13 in the treatment of acute stroke of distal, medium vessel occlusions (DMVO).\n\nMethods: We performed a retrospective analysis of all patients treated by mechanical thrombectomy using the Tigertriever 13 device (a manually expandable low profile stent retriever) due to an acute DMVO. Locations included the anterior, middle, and posterior cerebral artery in the A2 and A3, the M3 and M4, and the P2 or P3 segment and the superior cerebellar artery.\n\nResults: Forty-three patients with 45 DMVOs underwent MTE using the Tigertriever 13 with the intention-to-treat approach between May 2019 and December 2020. After a median of two thrombectomy maneuvers, the successful recanalization rate (mTICI 2b-3) was 84.4% (38/45) with a first pass effect of 26.7% (12/45). The rate of symptomatic intracranial hemorrhages (sICH) and subarachnoid hemorrhages (SAH) was 7.0% (3/43) and 14.0% (6/43), respectively. At discharge, 53.5% (23/43) of the patients had a favorable clinical outcome (mRS 0-2).\n\nConclusion: Mechanical thrombectomy in DMVOs using the Tigertriever 13 leads to high recanalization rates. The incidence of mostly asymptomatic hemorrhagic events appears higher compared to MTE procedures in LVOs. Further studies will help to identify anatomic and clinical criteria to define a guideline for MTE in DMVOs.",
+    "abstractSource": "PubMed 34623479"
   },
   {
     "title": "Novel Large-Diameter Manually Expandable Stentriever … ICA Proximal Occlusion Stroke",
@@ -793,7 +847,9 @@
     "journal": "",
     "doi": "10.3390/jcm10173853",
     "url": "https://doi.org/10.3390/jcm10173853",
-    "pdfUrl": "/uploads/oa/jcm-10-3853.pdf", "pdfLicense": "CC BY 4.0", "pdfSource": "https://doi.org/10.3390/jcm10173853",
+    "pdfUrl": "/uploads/oa/jcm-10-3853.pdf",
+    "pdfLicense": "CC BY 4.0",
+    "pdfSource": "https://doi.org/10.3390/jcm10173853",
     "publishedOn": "2021-08-01",
     "product": "tigertriever-xl",
     "variant": null,
@@ -801,7 +857,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The recently introduced Tigertriever XL Device for treatment of cerebral vessel occlusions combines manual adjustability and maximum length in one device. In this study, we report our initial experience with the Tigertriever XL in terminal ICA occlusions.\n\nMethods: Retrospective multicenter analysis of acute terminal ICA occlusions treated by mechanical thrombectomy using the Tigertriever XL Device.\n\nResults: 23 patients were treated using the Tigetriever XL due to an acute occlusion of the terminal ICA. The overall successful reperfusion rate after a median of two maneuvers using the Tigertriever XL Device was 78.3% (mTICI 2b-3). In 43.5% (10/23) additional smaller devices were applied to treat remaining occlusions in downstream territories, which resulted in a final successful reperfusion rate of 95.7%. Device related complications did not occur. Two symptomatic intracerebral hemorrhages (sICH) were observed.\n\nConclusions: The Tigertriever XL Device might be a helpful tool in the treatment of ICA terminus occlusions with large clot burden resulting in high reperfusion rates. This is mainly related to the manual adjustability of the device combined with the maximum length.",
+    "abstractSource": "PubMed 34501298"
   },
   {
     "title": "Mechanical Thrombectomy in Acute Terminal Internal Carotid Artery Occlusions Using a Large Manually Expandable Stentretriever (Tiger XL Device): Multicenter Initial Experience",
@@ -809,7 +867,9 @@
     "journal": "Academic Editors: Hugues Chabriat, Hans Henkes, Hansjörg Bäzner and Lindsay A. Farrer Clin. Med. 2021, 10, 3853.",
     "doi": "10.3390/jcm10173853",
     "url": "https://doi.org/10.3390/jcm10173853",
-    "pdfUrl": "/uploads/oa/jcm-10-3853.pdf", "pdfLicense": "CC BY 4.0", "pdfSource": "https://doi.org/10.3390/jcm10173853",
+    "pdfUrl": "/uploads/oa/jcm-10-3853.pdf",
+    "pdfLicense": "CC BY 4.0",
+    "pdfSource": "https://doi.org/10.3390/jcm10173853",
     "publishedOn": "2021-08-01",
     "product": "tigertriever-xl",
     "variant": null,
@@ -817,7 +877,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The recently introduced Tigertriever XL Device for treatment of cerebral vessel occlusions combines manual adjustability and maximum length in one device. In this study, we report our initial experience with the Tigertriever XL in terminal ICA occlusions.\n\nMethods: Retrospective multicenter analysis of acute terminal ICA occlusions treated by mechanical thrombectomy using the Tigertriever XL Device.\n\nResults: 23 patients were treated using the Tigetriever XL due to an acute occlusion of the terminal ICA. The overall successful reperfusion rate after a median of two maneuvers using the Tigertriever XL Device was 78.3% (mTICI 2b-3). In 43.5% (10/23) additional smaller devices were applied to treat remaining occlusions in downstream territories, which resulted in a final successful reperfusion rate of 95.7%. Device related complications did not occur. Two symptomatic intracerebral hemorrhages (sICH) were observed.\n\nConclusions: The Tigertriever XL Device might be a helpful tool in the treatment of ICA terminus occlusions with large clot burden resulting in high reperfusion rates. This is mainly related to the manual adjustability of the device combined with the maximum length.",
+    "abstractSource": "PubMed 34501298"
   },
   {
     "title": "Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial",
@@ -851,7 +913,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The inadvertent detachment of stent retrievers during mechanical thrombectomy is an extremely rare but feared complication associated with poor clinical outcomes. We discuss management considerations after an unexpected disconnection of the pRESET stent retriever during mechanical thrombectomy, based on clinical experience and mechanical and phantom studies.\n\nMethods: We present a clinical course of rare accidents of stent-retriever separation inside an intracranial vessel that occurred in patients in a comprehensive stroke centre between 2018 and 2020. We designed a phantom study to assess the Tigertriever's ability to remove a detached stent retriever from intercranial vessels. In the mechanical study, several types of stent retrievers were evaluated in order to find the weakest point at which detachment occurred.\n\nResults: Two patients (~0.7%) with inadvertent stent-retriever detachment were found in our database. Failed attempts of endovascular removal with no recanalization at the end of procedure were reported in both cases. mRS after 3 months was three and four respectively. In the mechanical study, the Tigertriever was the most resistant to detachment and was followed by Embotrap > pRESET > 3D Separator. In the phantom study, the pRESET device detached in a configuration resembling the M1 segment was successfully removed with the Tigertriever.\n\nConclusions: Conservative management of the inadvertent detachment of stent retrievers during mechanical thrombectomy in large vessel occlusion may be acceptable in order to avoid further periprocedural complications after unsuccessful device removal attempts. Based on the phantom and mechanical studies, the Tigertriever may be a useful tool for the removal of detached pRESET devices.",
+    "abstractSource": "PubMed 34357030"
   },
   {
     "title": "Perspective on New Class of Radially Adjustable Stentrievers …",
@@ -900,7 +964,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Comaneci (Rapid Medical) is a compliant, adjustable mesh that provides temporary scaffolding during coiling of wide-necked intracranial aneurysms (WNAs) that preserves antegrade flow. We report our early multi-institutional experience with the Comaneci device in the USA.\n\nMethod: We reviewed all patients with WNAs that were treated using the Comaneci device for coil remodeling of ruptured and unruptured aneurysms at 4 institutions between July 2019 and May 2020. Clinical characteristics, angiographic variables, and endovascular results were assessed.\n\nResults: A total of 26 patients were included (18 women). The mean age was 62.7 years (range 44-81). Fifteen patients presented with ruptured aneurysms and 11 with unruptured aneurysms. The mean aneurysm neck width was 3.91 mm (range 1.9-6.5) with a mean dome-to-neck ratio of 1.57 (range 0.59-3.39). The mean maximum width was 5.80 mm (range 3.0-9.9) and the mean maximum height was 5.61 mm (range 2.0-11.8). Successful aneurysm occlusion was achieved in 25 of 26 patients. Complete occlusion was achieved in 16 patients, near-complete occlusion was observed in 9 patients, and 1 patient demonstrated residual filling. The mean time of device exposure was 24 min (range 8-76). No vasospasm was observed at the device location. Clot formation on the device was noted in 2 separate cases, but there were no clinical sequelae. There was 1 intraprocedural complication in a case that involved the simultaneous use of 2 Comaneci devices.\n\nConclusions: Our initial experience shows that the Comaneci device is a promising and reliable tool that can safely support coil remodeling of WNAs.",
+    "abstractSource": "PubMed 33971661"
   },
   {
     "title": "The Columbus Steerable Guidewire in Neurointerventions: Early Clinical Experience and Applications",
@@ -914,7 +980,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Objective: To report our early experience in using the steerable 'Columbus' guidewire, also known as 'Drivewire' in the USA, and its potential applications in neurovascular interventions.\n\nMethods: Neurointerventions in 36 patients (20 female, 16 male) using the steerable Columbus guidewire were recorded from August 2019 to December 2020 and included a variety of neurovascular procedures: Treatment of aneurysms (n=17), thrombectomy in acute ischemic stroke (n=12), and others (n=7), such as treatment of stenosis and embolization procedures. Immediate follow-up with digital subtraction angiography and tracking of each patient's clinical outcome was performed.\n\nResults: In 35 out of 36 cases, the target vessel was reached with Columbus, including advancement of the appropriate microcatheter. In 14 cases, additional wires were used, mainly because of the nature of the procedures (eg, use of multiple wires/buddy wires or exchange maneuvers). In five cases, the Columbus wire was damaged by the operator and had to be replaced. Peri-interventional complications occurred in two patients, neither attributed to the Columbus guidewire.\n\nConclusions: The new Columbus neurovascular guidewire has the unique ability to be shaped within the patient. Currently available versions lack torquability compared with other available guidewires but offer tremendous support at the tip, allowing maneuvers which are impossible with other wires on the market.",
+    "abstractSource": "PubMed 33947767"
   },
   {
     "title": "Early Experience with Comaneci … FDA-Approved",
@@ -947,7 +1015,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "BACKGROUND AND PURPOSE: The Tigertriever is a novel, radially adjustable, fully visible, stentriever that permits the operator to align radial expansion with target vessel diameters. This multicenter trial compared the Tigertriever’s effectiveness and safety compared with established stent retrievers. METHODS: Single arm, prospective, multicenter trial comparing the Tigertriever to efficacy and safety performance goals derived from outcomes in 6 recent pivotal studies evaluating the Solitaire and Trevo stent-retriever devices with a lead-in and a main-study phase. Patients were enrolled if they had acute ischemic stroke with National Institutes of Health Stroke Scale score ≥8 due to large vessel occlusion within 8 hours of onset. The primary efficacy end point was successful reperfusion, defined as core laboratory-adjudicated modified Thrombolysis in Cerebral Ischemia score 2b-3 within 3 passes of the Tigertriever. The primary safety end point was a composite of 90-day all-cause mortality and symptomatic intracranial hemorrhage. Secondary efficacy end points included 3-month good clinical outcome (modified Rankin Scale score 0–2) and first-pass successful reperfusion. RESULTS: Between May 2018 and March 2020, 160 patients (43 lead-in, 117 main phase) at 17 centers were enrolled and treated with the Tigertriever. The primary efficacy end point was achieved in 84.6% in the main-study phase group compared with the 63.4% performance goal and the 73.4% historical rate (noninferiority P<0.0001; superiority P<0.01). The first pass successful reperfusion rate was 57.8%. After all interventions, successful reperfusion (modified Thrombolysis in Cerebral Ischemia score ≥2b) was achieved in 95.7% and excellent reperfusion (modified Thrombolysis in Cerebral Ischemia score 2c-3) in 71.8%. The primary safety composite end point rate of mortality and symptomatic intracranial hemorrhage was 18.1% compared with the 30.4% performance goal and the 20.4% historical rate (noninferiority P=0.004; superiority P=0.57). Good clinical outcome was achieved in 58% at 90 days. CONCLUSIONS: The Tigertriever device was shown to be highly effective and safe compared with Trevo and Solitaire devices to remove thrombus in patients with large-vessel occlusive stroke eligible for mechanical thrombectomy.",
+    "abstractSource": "PubMed 33739136"
   },
   {
     "title": "Combination of Temporary Bridging Device (Comaneci) and Permanent Stenting in the Treatment of Unruptured Wide Neck Bifurcation Aneurysms",
@@ -961,7 +1031,9 @@
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "The double stent-assisted techniques for the treatment of wide neck bifurcation aneurysms (WNBAs) may be more complicating than single stent-assisted or balloon-assisted coiling. The Comaneci device (Rapid Medical, Yokneam, Israel) is a new temporary bridging device developed for covering the aneurysm neck during coiling. This new design enabled us to treat unruptured WNBAs with the use of single stent-assisted coiling instead of double stent in eight patients. At the 1-year angiographic follow-up, there was no filling in any aneurysm. There was no mortality or morbidity cases related to the procedure. In this study, we are reporting our experience of using single stent-assisted coiling combined with a Comaneci device in the treatment of unruptured WNBAs.",
+    "abstractSource": "PubMed 33677621"
   },
   {
     "title": "A New Class of Radially Adjustable Stentrievers … Multicenter Tiger Trial",
@@ -977,7 +1049,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "BACKGROUND AND PURPOSE: The Tigertriever is a novel, radially adjustable, fully visible, stentriever that permits the operator to align radial expansion with target vessel diameters. This multicenter trial compared the Tigertriever’s effectiveness and safety compared with established stent retrievers. METHODS: Single arm, prospective, multicenter trial comparing the Tigertriever to efficacy and safety performance goals derived from outcomes in 6 recent pivotal studies evaluating the Solitaire and Trevo stent-retriever devices with a lead-in and a main-study phase. Patients were enrolled if they had acute ischemic stroke with National Institutes of Health Stroke Scale score ≥8 due to large vessel occlusion within 8 hours of onset. The primary efficacy end point was successful reperfusion, defined as core laboratory-adjudicated modified Thrombolysis in Cerebral Ischemia score 2b-3 within 3 passes of the Tigertriever. The primary safety end point was a composite of 90-day all-cause mortality and symptomatic intracranial hemorrhage. Secondary efficacy end points included 3-month good clinical outcome (modified Rankin Scale score 0–2) and first-pass successful reperfusion. RESULTS: Between May 2018 and March 2020, 160 patients (43 lead-in, 117 main phase) at 17 centers were enrolled and treated with the Tigertriever. The primary efficacy end point was achieved in 84.6% in the main-study phase group compared with the 63.4% performance goal and the 73.4% historical rate (noninferiority P<0.0001; superiority P<0.01). The first pass successful reperfusion rate was 57.8%. After all interventions, successful reperfusion (modified Thrombolysis in Cerebral Ischemia score ≥2b) was achieved in 95.7% and excellent reperfusion (modified Thrombolysis in Cerebral Ischemia score 2c-3) in 71.8%. The primary safety composite end point rate of mortality and symptomatic intracranial hemorrhage was 18.1% compared with the 30.4% performance goal and the 20.4% historical rate (noninferiority P=0.004; superiority P=0.57). Good clinical outcome was achieved in 58% at 90 days. CONCLUSIONS: The Tigertriever device was shown to be highly effective and safe compared with Trevo and Solitaire devices to remove thrombus in patients with large-vessel occlusive stroke eligible for mechanical thrombectomy.",
+    "abstractSource": "PubMed 33739136"
   },
   {
     "title": "Comaneci Device for Temporary Coiling Assistance for Treatment of Wide-Necked Aneurysms: Initial Case Series and Systematic Literature Review",
@@ -994,7 +1068,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Coiling of wide-necked aneurysms requires high-density packing of coils within the aneurysm, which necessitates adequate microcatheter access and navigability. The Comaneci device, introduced in the United States in 2019, is a retrievable stent that can be used as an adjunct to coiling of a wide-necked aneurysm without limiting flow. We present a case series and systematic review of use of this device.\n\nMethods: All cases involving use of the device at our institute between May 1, 2019, and April 30, 2020, were reviewed. A comprehensive systematic review of the literature was conducted using PubMed and EMBASE and a review of eligible article bibliographies.\n\nResults: Five patients underwent Comaneci-assisted wide-necked aneurysm coiling during the study period; 4 were treated via a radial artery approach, and 1 was treated via a femoral artery approach. Two patients presented with subarachnoid hemorrhage: 1 had a ruptured posterior inferior cerebellar artery aneurysm (Hunt-Hess 5, Fisher 4), and 1 had a ruptured middle cerebral artery aneurysm (Hunt-Hess 2, Fisher 1). Mean aneurysmal neck size was 4.4 ± 0.8mm; mean aspect ratio was 1.2 ± 0.3. Raymond-Roy 1 occlusion was achieved in all aneurysms except the posterior inferior cerebellar artery aneurysm. Systematic literature review identified 4 articles that found use of the Comaneci device to treat wide-necked aneurysms to be effective.\n\nConclusions: This device can be used with transfemoral and transradial approaches, allowing for continued flow through the parent vessel during the coiling procedure while providing a scaffold for dense coiling of the aneurysm and its neck.",
+    "abstractSource": "PubMed 33640525"
   },
   {
     "title": "Comaneci Device for Temporary Coiling Assistance …",
@@ -1027,7 +1103,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Recent progress with smaller retrievers has expanded the ability to reach distal brain arteries. We herein report recanalization, bleeding complications and short-term clinical outcomes with the smallest currently known low profile thrombectomy device in patients with primary or secondary distal medium vessel occlusion (DMVO).\n\nMethods: We performed a retrospective analysis of 115 patients receiving mechanical thrombectomy (MT) in DMVO using the extended Thrombolysis in Cerebral Infarction (eTICI), European Cooperative Acute Stroke Study (ECASS) II classification, The National Institutes of Health Stroke Scale (NIHSS) and modified Rankin Scale (mRS) scores at admission and discharge to evaluate outcomes. Patients were stratified into three groups: (1) primary isolated distal occlusion (n=34), (2) secondary distal occlusion after MT of a proximal vessel occlusion (n=71), or (3) during endovascular treatment of aneurysms or arteriovenous malformations (AVMs) (n=10).\n\nResults: Successful distal recanalization, defined as an eTICI score of 2b67, 2c and 3, was achieved in 74.7% (86/115) of patients. More specifically, it was 70.5% (24/34), 73.2% (52/71), and 100% (10/10) of primary DMVO, secondary DMVO after proximal MT, and rescue MT during aneurysm or AVM embolization, respectively. Symptomatic intraparenchymal bleeding occurred in 6.9% (eight patients). In-hospital mortality occurred in 18.1% (19/105) of patients with stroke. The most common cause of death was large infarct, old age, and therapy limitation.\n\nConclusion: Direct or rescue MT of DMVO using a very low profile thrombectomy device is associated with a high rate of successful recanalization and a reasonable rate of symptomatic hemorrhagic complication, despite a risk of 18.1% hospital mortality in elderly patients. Further trials are needed to confirm our results and assess long-term clinical outcomes.",
+    "abstractSource": "PubMed 33468609"
   },
   {
     "title": "Safety and Efficacy of Mechanical Thrombectomy using Tigertriever as a Rescue Device After Failed Aspiration– Single Center Experience.",
@@ -1035,13 +1113,17 @@
     "journal": "",
     "doi": "10.3389/fneur.2020.603679",
     "url": "https://doi.org/10.3389/fneur.2020.603679",
-    "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf", "pdfLicense": "CC BY 4.0", "pdfSource": "https://doi.org/10.3389/fneur.2020.603679",
+    "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf",
+    "pdfLicense": "CC BY 4.0",
+    "pdfSource": "https://doi.org/10.3389/fneur.2020.603679",
     "publishedOn": "2020-12-01",
     "product": "tigertriever",
     "variant": null,
     "regions": [],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Introduction: We evaluated the safety and efficacy of a new stent retriever-Tigertriever-after failed aspiration. Materials and Methods: Patients with acute ischemic stroke treated with Tigertriever between January 2018 and March 2020 were included in the study. Treatment results of Tigertriever in rescue therapy (after failed aspiration) were evaluated. Periprocedural data were retrospectively analyzed. Results: Thirty patients were treated with Tigertriever (14M/16F). There were 20 rescue thrombectomies after failed aspiration. Tigertriver successful recanalization rate (mTICI ≥ 2B) was 70%: 65% in rescue therapy and 80% in first-line therapy. The type of first line treatment had no impact on mRS after 1 month and 3 months (ns). There was significant improvement in NIHSS in all patients (mean NIHSS: 17 vs. 10, p = 0.028), in rescue treatment (mean NIHSS: 17 vs. 11, p = 0.048) and in first line treatment (mean NIHSS: 16 vs. 8, p = 0.0005). Better results in NIHSS at discharge were linked with first pass success (p = 0.002), better mTICI at the end of the procedure (p = 0.0006), and administration of rtPA (p = 0.013). Conclusions: The new stent retriever Tigertriever is an efficient and safe tool to be used as a rescue device after an unsuccessful first line aspiration technique.",
+    "abstractSource": "PubMed 33551964"
   },
   {
     "title": "Distal mechanical thrombectomy for very eloquent M3 branches",
@@ -1058,7 +1140,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Distal thrombectomy may be considered in selected patients harboring acute occlusion of distal arterial branches, supplying very eloquent brain areas. In these cases navigation and deployment in tortuous, fragile and very small-caliber arteries is usually involved, potentially increasing the risk of per-procedural vessel wall perforation. We report a case of distal recanalization in a right-handed, fourty-year-old woman with left M3 occlusion, with the use of a novel device with manually adapted, gradual expansion, navigated through a 0.013-inch microcatheter, called the Tigertriever-13 [RapidMedical, Yokneam, Israel]. The device was deployed and retrieved with minimal alteration-straightening of the M3 vessels and complete recanalization was achieved. The patient achieved NIHSS 0 in less than 24 h.",
+    "abstractSource": "PubMed 33340639"
   },
   {
     "title": "Comaneci Device-assisted Embolization of Wide-necked Carotid Aneurysms with an Unfavorable Ratio",
@@ -1075,7 +1159,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Endovascular treatment is the technique of choice for most intracranial aneurysms. However, the treatment of morphologically complex wide-necked aneurysms with an unfavorable anatomy is still a therapeutic challenge. The purpose of the study is to describe the initial experience with the Comaneci embolization assist device for the treatment of wide-necked aneurysms with an unfavorable ratio for direct embolization.\n\nMethods: We report a retrospective single-center analysis taken from a prospective database of consecutive aneurysms of the anterior circulation treated using the Comaneci device in the period from March 2017 to March 2019.\n\nResults: Eighteen aneurysms were collected from 16 patients (9 women and 7 men) treated using the Comaneci device. The mean age was 48.4 years (range 36-81). Twelve patients had SAH, three were incidental aneurysms and one had compressive symptoms. A complete asymptomatic occlusion rate of 88.8% was obtained. The major complication rate was 5.55%.\n\nConclusion: The Comaneci embolization assist device is a safe, effective option for endovascular treatment of complex aneurysms with an unfavorable ratio.",
+    "abstractSource": "PubMed 33092561"
   },
   {
     "title": "Comaneci device-assisted embolization … unfavorable ratio",
@@ -1091,7 +1177,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Endovascular treatment is the technique of choice for most intracranial aneurysms. However, the treatment of morphologically complex wide-necked aneurysms with an unfavorable anatomy is still a therapeutic challenge. The purpose of the study is to describe the initial experience with the Comaneci embolization assist device for the treatment of wide-necked aneurysms with an unfavorable ratio for direct embolization.\n\nMethods: We report a retrospective single-center analysis taken from a prospective database of consecutive aneurysms of the anterior circulation treated using the Comaneci device in the period from March 2017 to March 2019.\n\nResults: Eighteen aneurysms were collected from 16 patients (9 women and 7 men) treated using the Comaneci device. The mean age was 48.4 years (range 36-81). Twelve patients had SAH, three were incidental aneurysms and one had compressive symptoms. A complete asymptomatic occlusion rate of 88.8% was obtained. The major complication rate was 5.55%.\n\nConclusion: The Comaneci embolization assist device is a safe, effective option for endovascular treatment of complex aneurysms with an unfavorable ratio.",
+    "abstractSource": "PubMed 33092561"
   },
   {
     "title": "E-182 The Primary Experience of Using a Comaneci Embolization Assist Device During Embolization of Intracranial Aneurysms with Detachable Microcoils",
@@ -1141,7 +1229,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Purpose: Tigertriever is a novel operator-adjustable clot retriever designed to enhance the operator's options to control the interaction of retriever and clot. The aim of this study was to assess the feasibility, safety and efficacy of the Tigertriever device system.\n\nMethods: Prospective multi-center registry study at three comprehensive stroke centers in Switzerland from 2017 to 2019 of patients with acute ischemic stroke (AIS) and large vessel occlusion (LVO) using Tigertriever as a first-line device.\n\nResults: 30 AIS patients (median age 72.5 years (IQR 64-79), 50% women) with a median NIHSS on admission of 11 (IQR 6-13) and a median ASPECT score of 9 (IQR 7-10) were treated with the new Tigertriever and included in this study. The first-pass effect was 24% (n = 7). A good recanalization (eTICI 2 b/2c/3) was achieved in 94% of the cases. Median mRS at 90 days was 1 (IQR 1-2).\n\nConclusion: This study demonstrated feasibility, safety and effectiveness of the Tigertriever in AIS patients with LVO with a high reperfusion rate.",
+    "abstractSource": "PubMed 32720822"
   },
   {
     "title": "Thrombectomy for Distal, Medium Vessel Occlusions",
@@ -1174,7 +1264,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Purpose: Tigertriever is a novel operator-adjustable clot retriever designed to enhance the operator's options to control the interaction of retriever and clot. The aim of this study was to assess the feasibility, safety and efficacy of the Tigertriever device system.\n\nMethods: Prospective multi-center registry study at three comprehensive stroke centers in Switzerland from 2017 to 2019 of patients with acute ischemic stroke (AIS) and large vessel occlusion (LVO) using Tigertriever as a first-line device.\n\nResults: 30 AIS patients (median age 72.5 years (IQR 64-79), 50% women) with a median NIHSS on admission of 11 (IQR 6-13) and a median ASPECT score of 9 (IQR 7-10) were treated with the new Tigertriever and included in this study. The first-pass effect was 24% (n = 7). A good recanalization (eTICI 2 b/2c/3) was achieved in 94% of the cases. Median mRS at 90 days was 1 (IQR 1-2).\n\nConclusion: This study demonstrated feasibility, safety and effectiveness of the Tigertriever in AIS patients with LVO with a high reperfusion rate.",
+    "abstractSource": "PubMed 32720822"
   },
   {
     "title": "Treatment of cerebral vasospasm … subarachnoid hemorrhage …",
@@ -1190,7 +1282,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Delayed cerebral ischemia due to vasospasm following subarachnoid hemorrhage continues to have high morbidity and mortality despite current treatments. This report highlights the use of the Comaneci (Rapid Medical, Yokneam, Israel), a device FDA approved for temporary coil embolization assistance, for the treatment of symptomatic vasospasm. Ten days post subarachnoid hemorrhage, a patient developed acute left-sided hemiparesis with angiographic vasospasm. Through a Headway 17 microcatheter, a Comaneci 17 was deployed in the right ICA terminus, M1, M2, A1, and, A2 segments resulting in improvement of angiographic vasospasm and the patient's left-sided hemiparesis. On the following day, a repeat angiogram demonstrated no recurrence of vasospasm. The patient had complete return on neurologic function by post bleed day 18 continuing to her four-week follow-up appointment. This case demonstrates the feasibility of the Comaneci device as an effective tool in the treatment of vasospasm following subarachnoid hemorrhage.",
+    "abstractSource": "PubMed 32722988"
   },
   {
     "title": "The Comaneci Device for Entering an Acute-Angled Small Feeder …",
@@ -1206,7 +1300,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "In this report, we describe the use of the Comaneci device to support microcatheterization in a small branch arising from a parent artery during embolization. In 2 cases, arteriovenous malformations presented with intracranial hemorrhage. A microcatheter was navigated into a small feeder while the Comaneci device was deployed just distal to the feeder with an acute angle from the parent artery. Our technical note represents an alternative option of catheterization in cases with difficult access to small feeders originating from higher flow arteries at a sharp angle while maintaining continuous flow in the parent artery.",
+    "abstractSource": "PubMed 32570303"
   },
   {
     "title": "Treatment of cerebral vasospasm secondary to subarachnoid hemorrhage utilizing the Comaneci device",
@@ -1222,7 +1318,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Delayed cerebral ischemia due to vasospasm following subarachnoid hemorrhage continues to have high morbidity and mortality despite current treatments. This report highlights the use of the Comaneci (Rapid Medical, Yokneam, Israel), a device FDA approved for temporary coil embolization assistance, for the treatment of symptomatic vasospasm. Ten days post subarachnoid hemorrhage, a patient developed acute left-sided hemiparesis with angiographic vasospasm. Through a Headway 17 microcatheter, a Comaneci 17 was deployed in the right ICA terminus, M1, M2, A1, and, A2 segments resulting in improvement of angiographic vasospasm and the patient's left-sided hemiparesis. On the following day, a repeat angiogram demonstrated no recurrence of vasospasm. The patient had complete return on neurologic function by post bleed day 18 continuing to her four-week follow-up appointment. This case demonstrates the feasibility of the Comaneci device as an effective tool in the treatment of vasospasm following subarachnoid hemorrhage.",
+    "abstractSource": "PubMed 32722988"
   },
   {
     "title": "The Comaneci Device for Entering an Acute-Angled Small Feeder during Cerebral AVM Embolization: A Novel Technique to Support Microcatheterization",
@@ -1238,7 +1336,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "In this report, we describe the use of the Comaneci device to support microcatheterization in a small branch arising from a parent artery during embolization. In 2 cases, arteriovenous malformations presented with intracranial hemorrhage. A microcatheter was navigated into a small feeder while the Comaneci device was deployed just distal to the feeder with an acute angle from the parent artery. Our technical note represents an alternative option of catheterization in cases with difficult access to small feeders originating from higher flow arteries at a sharp angle while maintaining continuous flow in the parent artery.",
+    "abstractSource": "PubMed 32570303"
   },
   {
     "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
@@ -1255,7 +1355,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Objective: The aim of this study was to evaluate the safety and efficacy of a manually expandable stent retriever (Tigertriever, Rapid Medical, Yoqneam, Israel) in the treatment of acute ischemic stroke caused by intracranial large vessel occlusions (LVO).\n\nMethods: We performed a single center retrospective analysis of all patients treated by mechanical thrombectomy due to LVO using the Tigertriever. The angiographic and clinical success was evaluated by the modified thrombolysis in cerebral infarction score (mTICI) and the modified Rankin score (mRS).\n\nResults: A total of 68 acute intracranial arterial occlusions in 61 patients (42 female, median age 77 years, range 43-92 years) were treated by mechanical thrombectomy using the Tigertriever. The overall successful reperfusion rate (mTICI 2b-3) was 85.3% (58/68 occlusions) with a first pass effect (mTICI 3) of 23.5% (16/68 occlusions). In 57 of the 68 occlusions the Tigertriever was used on an intention to treat approach with a success rate of 86.0% and in the 11 remaining occlusions where the Tigertriever was used as a bail-out device the success rate was 81.9%. In seven patients a mild subarachnoid hemorrhage occurred (11.5%) and one symptomatic intracerebral hemorrhage was observed (1.6%). At discharge 39.3% of the patients (24/61) had a favorable outcome (mRS 0-2).\n\nConclusion: The Tigertriever offers a safe and effective treatment option in ischemic stroke due to LVOs with reperfusion rates and a safety profile similar to alternative devices. The Tigertriever is a promising bail-out tool in complex cases. Its role as a first line device has to be evaluated in further prospective studies.",
+    "abstractSource": "PubMed 32529306"
   },
   {
     "title": "Mechanical Thrombectomy … Manually Expandable Stent Retriever (Tigertriever)",
@@ -1271,7 +1373,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Objective: The aim of this study was to evaluate the safety and efficacy of a manually expandable stent retriever (Tigertriever, Rapid Medical, Yoqneam, Israel) in the treatment of acute ischemic stroke caused by intracranial large vessel occlusions (LVO).\n\nMethods: We performed a single center retrospective analysis of all patients treated by mechanical thrombectomy due to LVO using the Tigertriever. The angiographic and clinical success was evaluated by the modified thrombolysis in cerebral infarction score (mTICI) and the modified Rankin score (mRS).\n\nResults: A total of 68 acute intracranial arterial occlusions in 61 patients (42 female, median age 77 years, range 43-92 years) were treated by mechanical thrombectomy using the Tigertriever. The overall successful reperfusion rate (mTICI 2b-3) was 85.3% (58/68 occlusions) with a first pass effect (mTICI 3) of 23.5% (16/68 occlusions). In 57 of the 68 occlusions the Tigertriever was used on an intention to treat approach with a success rate of 86.0% and in the 11 remaining occlusions where the Tigertriever was used as a bail-out device the success rate was 81.9%. In seven patients a mild subarachnoid hemorrhage occurred (11.5%) and one symptomatic intracerebral hemorrhage was observed (1.6%). At discharge 39.3% of the patients (24/61) had a favorable outcome (mRS 0-2).\n\nConclusion: The Tigertriever offers a safe and effective treatment option in ischemic stroke due to LVOs with reperfusion rates and a safety profile similar to alternative devices. The Tigertriever is a promising bail-out tool in complex cases. Its role as a first line device has to be evaluated in further prospective studies.",
+    "abstractSource": "PubMed 32529306"
   },
   {
     "title": "Large aneurysm of basilar artery tip mimicking midbrain tumor …",
@@ -1335,7 +1439,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Cerebral ventricular system is a sporadic location of intracranial aneurysms including those of basilar artery tip. Treatment of such aneurysms remains challenging regardless of endovascular or microsurgical techniques applied. Basilar tip aneurysm presenting as third ventricular mass is rarely associated with obstructive hydrocephalus, mimicking midbrain expansive process and urging precise diagnostics and prompt treatment. Hence, the management of such patients may be delicate, having an uncertain outcome. We report on a case of a patient with unilateral hydrocephalus caused by large basilar tip aneurysm mimicking a midbrain tumor. We also discuss different operative strategies influencing the outcome, including our own endovascular treatment technical modification. A 62-year-old female patient presented with slightly decreased cognition, minor gait disturbances and urinary incontinence. Computed brain tomography revealed a third ventricle mass with unilateral ventricular dilatation, indicating hypertensive obstructive hydrocephalus. Magnetic resonance and digital subtraction angiography identified the third ventricular mass as a large saccular basilar tip aneurysm. The patient was selected for endovascular treatment followed by cerebrospinal fluid derivation. After aneurysm endovascular occlusion and temporary external ventricular drainage, the symptoms diminished and ventricular dilatation decreased. On post-procedure day 10, the hydrocephalus was relieved and external drainage removed. The patient recovered fully and was discharged without neurological deficit. In conclusion, large basilar tip aneurysms associated with obstructive hydrocephalus are rare and best treated by a combination of endovascular obliteration and cerebrospinal fluid ventricular diversion. The possibility of such an aneurysm should always be considered on the differential diagnosis of cerebral ventricular growths.",
+    "abstractSource": "PubMed 32724289"
   },
   {
     "title": "Comaneci-Assisted Coiling as a Treatment Option for Acutely Ruptured Wide Neck Cerebral Aneurysm: Case Series of 118 Patients",
@@ -1351,7 +1457,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Wide-necked cerebral aneurysms in the setting of acute subarachnoid hemorrhage (SAH) remain difficult to treat with endovascular methods despite recent progress in the neuroendovascular field.\n\nObjective: To evaluate the effectiveness and safety of the Comaneci device (Rapid Medical, Israel) in endovascular coil embolization of acutely ruptured, wide-necked sidewall, or bifurcation cerebral aneurysms.\n\nMethods: We retrospectively reviewed 45 anterior communicating artery, 24 internal carotid artery, 21 middle cerebral artery bifurcation, 15 anterior cerebral artery, and 13 posterior circulation aneurysms, which were treated using Comaneci-assisted coil embolization from August 2017 to January 2019. We evaluated procedural complications, clinical outcomes, and mid-term angiographic follow-up. Immediate and 90 d-clinical outcome and radiological follow-up were obtained in all patients.\n\nResults: Comaneci-assisted coil embolization was performed in 118 acutely ruptured aneurysms. The technique was carried out successfully in all cases. Simultaneous application of 2 separated Comaneci devices was performed in 8/118 cases (6.77%). Periprocedural thromboembolic complications related to the device were seen in 7/118 cases (5.93%) and severe vasospasm of the parent artery after manipulation of the Comaneci device occurred in 5/118 cases (4.2%). The procedural-related morbidity rate was 2.54%, and there was no procedural related mortality. Among the available survivors, angiographic follow-ups were obtained at 3 and 6 mo, and complete aneurysmal obliteration was confirmed in 81/112 (72.3%) and 75/112 (66.9%) cases, respectively. Mid-term follow-up reviewed total recanalization rate of 14.28%.\n\nConclusion: Comaneci-assisted embolization of wide-necked intracranial aneurysms in patients presenting with acute SAH is associated with high procedural safety and adequate occlusion rates. Furthermore, dual antiplatelet therapy can be safely avoided in this patient group.",
+    "abstractSource": "PubMed 32453823"
   },
   {
     "title": "Comaneci-Assisted Coiling Embolization of a Post-Traumatic Carotid-Cavernous Fistula: Case Report",
@@ -1367,7 +1475,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: A direct carotid-cavernous fistula (CCF) is a rare complication that typically occurs in closed head injuries. The balloon-assisted occlusion is the most used treatment. However, this technique requires multiple inflation/deflations, which could be problematic in a vessel with acute vessel injury.\n\nCase description: In this study we reported a case of 72-year-old male patient with posttraumatic CCF, treated endovascularly with a transarterial Comaneci-assisted coiling embolization, highlighting the advantages and pitfalls of this innovative endovascular treatment.\n\nConclusions: The Comaneci-assisted coiling technique has proven to be advantageous both in the microcatheterization of the CCF and during coiling with remodeling technique. In addition, this device does not interrupt the vascular flow compared to balloon-assisted coiling and does not require long-term antiaggregation therapy with respect to the stent placement.",
+    "abstractSource": "PubMed 32474096"
   },
   {
     "title": "Removal of distal fragments of liquid embolic agents during AVM embolization",
@@ -1384,7 +1494,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Arteriovenous malformations (AVMs) are vascular lesions that may be treated by an endovascular approach using liquid embolic agents but the control of the liquid embolic agent remains poor and a potential complication may be distal migration of embolic material. The TIGERTRIEVER 13 is a new stent retriever designed for stroke thrombectomy and has a version ideal for distal occlusions. We report our experience in the removal of embolic agent which had migrated into the distal vessels using the TIGERTRIEVER during PHIL/Onyx embolization of AVMs.\n\nClinical presentations: Three patients with brain and spinal AVMs underwent endovascular embolization. During trans-arterial embolization of the AVM with PHIL/Onyx, retrograde filling of distal arterial feeders was followed by migration into the normal arterial branches (cortical middle cerebral artery, distal posterior cerebral artery, and anterior spinal artery). This resulted in occlusion or sluggish distal flow in these branches with potential significant neurological deficits. In all three cases, a Headway Duo microcatheter was navigated distally in the occluded vessel beyond the embolic material using a Traxcess microwire. The TIGERTRIEVER 13 was deployed with recanalization of the vessel after a single attempt. In all three patients there were no complications related to the retrieval of embolic agent.\n\nConclusion: Distal migrated embolic agents such as PHIL or Onyx can be removed from various arterial vascular territories using stent retrievers dedicated to small vessels.",
+    "abstractSource": "PubMed 32024783"
   },
   {
     "title": "Neck-bridging device for endovascular coiling of wide-necked MCA aneurysm",
@@ -1400,7 +1512,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Endovascular treatment of wide-necked bifurcation intracranial aneurysms is technically challenging, often requiring adjunctive devices such as stents or balloons to maintain coil mass within the aneurysm sac. Comaneci is a radiopaque embolization-assist device that can be temporarily deployed in the parent artery across the aneurysm neck without arresting blood flow for remodeling of coil mass. It is removed once coiling without luminal coil protrusion is achieved. In this video, we demonstrate use of the device for coiling of a wide-necked right middle cerebral artery (MCA) aneurysm in a 54-year-old woman. This patient presented with an unruptured MCA bifurcation aneurysm that showed growth on serial imaging. She wanted to avoid dual antiplatelet therapy, precluding the use of stent-assisted coiling. After detailed discussion with the patient, we proceeded with Comaneci-assisted coiling. Satisfactory aneurysm coiling was achieved without periprocedural complication. In the video, we further discuss potential indications and advantages of the device.",
+    "abstractSource": "PubMed 32051321"
   },
   {
     "title": "Use of a neck-bridging device for endovascular coiling of a wide-necked middle cerebral artery aneurysm",
@@ -1432,7 +1546,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Direct carotid-cavernous fistula is a communication between the internal carotid artery and the cavernous sinus, most of the times established following trauma or rupture of a cavernous aneurysm. The most commonly used treatments (coils, detachable latex balloons, stents, or liquid agents) carry ischemic or hemorrhagic risks, related to hemodynamic diversion of cerebral blood flow or permanent dual antiplatelet therapy. We report a case of coiling of a carotid-cavernous fistula assisted by the Comaneci, a temporary adjustable bridging mesh (Rapid Medical, Israel), to avoid transarterial or -venous migration. In our experience, Comaneci-assisted coiling represents a feasible solution to maintain patency of the distal vessels during coiling and avoid dual antiplatelet medications, even using a transradial approach.",
+    "abstractSource": "PubMed 31737134"
   },
   {
     "title": "Transradial Comaneci-assisted coiling of a direct carotid-cavernous fistula",
@@ -1465,7 +1581,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Tigertriever (Rapid Medical, Yoqneam, Israel) is a new design of stent retriever.\n\nPurpose: To evaluate the feasibility, safety, and efficacy of the Tigertriever in patients with acute ischemic stroke who have undergone mechanical thrombectomy.\n\nMaterials and methods: Two different techniques-namely, standard unsheathing (SUT) and repetitive inflation-deflation (RID) techniques, were used. Modified Thrombolysis in Cerebral Infarction (mTICI) scores of 2b and 3 were considered as successful recanalization.\n\nResults: A total of 61 thrombectomy procedures with Tigertriever were retrospectively evaluated. The mean age of patients was 60.7 years and their National Institutes of Health Stroke Scale score was 14.7. Overall, the percentage of patients with a mTICI score of 0, 2b, and 3 was 24.6, 26.2, and 49.2, respectively. Successful recanalization and first-pass success rates were 75.4% and 37.7%, respectively. There were no statistical differences between the results of the SUT and RID techniques. No vessel rupture, dissection, or device detachment was observed. The number of patients with a good clinical outcome (modified Rankin Scale score 0-2) was 17 (27.9%).\n\nConclusion: Our results showed that the Tigertriever device is safe and efficient for mechanical thrombectomy.",
+    "abstractSource": "PubMed 30262656"
   },
   {
     "title": "Single-center experience with the Tigertriever device …",
@@ -1481,7 +1599,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Tigertriever (Rapid Medical, Yoqneam, Israel) is a new design of stent retriever.\n\nPurpose: To evaluate the feasibility, safety, and efficacy of the Tigertriever in patients with acute ischemic stroke who have undergone mechanical thrombectomy.\n\nMaterials and methods: Two different techniques-namely, standard unsheathing (SUT) and repetitive inflation-deflation (RID) techniques, were used. Modified Thrombolysis in Cerebral Infarction (mTICI) scores of 2b and 3 were considered as successful recanalization.\n\nResults: A total of 61 thrombectomy procedures with Tigertriever were retrospectively evaluated. The mean age of patients was 60.7 years and their National Institutes of Health Stroke Scale score was 14.7. Overall, the percentage of patients with a mTICI score of 0, 2b, and 3 was 24.6, 26.2, and 49.2, respectively. Successful recanalization and first-pass success rates were 75.4% and 37.7%, respectively. There were no statistical differences between the results of the SUT and RID techniques. No vessel rupture, dissection, or device detachment was observed. The number of patients with a good clinical outcome (modified Rankin Scale score 0-2) was 17 (27.9%).\n\nConclusion: Our results showed that the Tigertriever device is safe and efficient for mechanical thrombectomy.",
+    "abstractSource": "PubMed 30262656"
   },
   {
     "title": "Fenestration of the basilar artery … Comaneci",
@@ -1497,7 +1617,9 @@
       "ous"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Fenestration of the basilar artery is a segmental duplication of the vessel due to nonfusion of the embryonal arteries and is the second most common vascular disjunction. Here, we present a single case example demonstrating the utility of the temporary bridging device Comaneci as a new option in the endovascular treatment of ruptured basilar artery aneurysms associated with fenestrations.\n\nCase description: A 57-year-old female patient presented to our hospital with a 3-month history of frequent multiple sentinel severe headaches. At the time of hospitalization, the patient was neurologically intact with a Glasgow Coma Scale score of 15. There was no evidence of focal neurologic deficits or cranial nerve lesions, but there was discrete neck stiffness and a diagnosed saccular aneurysm associated with a fenestration of the basilar artery. After multidisciplinary discussion involving neurosurgeons and interventional neuroradiologists and taking into consideration the patient's clinical presentation and previous history of subarachnoid hemorrhage, as well as the morphology of the posterior circulation aneurysm, endovascular treatment of the basilar fenestration aneurysm was deemed appropriate or simply use was chosen.\n\nConclusions: Our case results are similar to previously published good results of endovascular coiling and add information regarding the relatively new Comaneci device, which helped to achieve considerable packing density of the aneurysmal sac. Using this device lowers the risk of peri- and postoperative complications. We believe that this technique is safer and better than the balloon-assisted and stent-assisted coiling in ruptured case scenarios of wide-neck aneurysms in the posterior circulation.",
+    "abstractSource": "PubMed 30130570"
   },
   {
     "title": "Fenestration of the Basilar Artery associated with Aneurysm treated by support of temporary bridging device - Comaneci",
@@ -1513,7 +1635,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Fenestration of the basilar artery is a segmental duplication of the vessel due to nonfusion of the embryonal arteries and is the second most common vascular disjunction. Here, we present a single case example demonstrating the utility of the temporary bridging device Comaneci as a new option in the endovascular treatment of ruptured basilar artery aneurysms associated with fenestrations.\n\nCase description: A 57-year-old female patient presented to our hospital with a 3-month history of frequent multiple sentinel severe headaches. At the time of hospitalization, the patient was neurologically intact with a Glasgow Coma Scale score of 15. There was no evidence of focal neurologic deficits or cranial nerve lesions, but there was discrete neck stiffness and a diagnosed saccular aneurysm associated with a fenestration of the basilar artery. After multidisciplinary discussion involving neurosurgeons and interventional neuroradiologists and taking into consideration the patient's clinical presentation and previous history of subarachnoid hemorrhage, as well as the morphology of the posterior circulation aneurysm, endovascular treatment of the basilar fenestration aneurysm was deemed appropriate or simply use was chosen.\n\nConclusions: Our case results are similar to previously published good results of endovascular coiling and add information regarding the relatively new Comaneci device, which helped to achieve considerable packing density of the aneurysmal sac. Using this device lowers the risk of peri- and postoperative complications. We believe that this technique is safer and better than the balloon-assisted and stent-assisted coiling in ruptured case scenarios of wide-neck aneurysms in the posterior circulation.",
+    "abstractSource": "PubMed 30130570"
   },
   {
     "title": "Clinical case report – Comaneci17",
@@ -1547,7 +1671,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "In this report, we present a novel technique of successful coil embolisation using temporary deployment of two Comaneci devices placed in Y configuration across a wide-neck ruptured basilar tip aneurysm. The placement of two devices across the wide aneurysm neck allowed optimal coverage for safe coil delivery, while maintaining parent vessel patency. This case highlights the unique and safe applicability of two crossed Comaneci devices in a ruptured aneurysm with unfavourable anatomy, ultimately resulting in complete aneurysm obliteration. To our knowledge, this is the first reported case of double Comaneci usage in a wide-neck ruptured aneurysm. This technique can be potentially applied in challenging wide-neck bifurcation aneurysms, particularly when double antiplatelet therapy is of concern.",
+    "abstractSource": "PubMed 29776934"
   },
   {
     "title": "MCA Aneurysm Embolization",
@@ -1579,7 +1705,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: The difficulties in obtaining complete and stable endovascular occlusion are most evident for ruptured aneurysms exhibiting a wide neck and unfavorable geometric features. The aim of our study was to present our experience with the Comaneci temporary bridging device in ruptured wide neck aneurysms.\n\nMethods: From May to July 2017, 29 ruptured aneurysms underwent endovascular embolization with the Comaneci device. Angiographic and clinical results were retrospectively analyzed.\n\nResults: 29 ruptured intracranial aneurysms from different locations were included. Successful embolization was achieved in all lesions; complete post-procedure occlusion was seen in 25 (86%) cases. Insufficient embolization or neck remnant was observed in four cases (13.7%). Complications probably related, directly related, or indirectly related to the device occurred in 3.44% of patients (1/29 patients). At least one angiographic follow-up was performed in each of the 29 cases. The 12 month follow-up examination has yet to be done.\n\nConclusion: The Comaneci device offers a new promising and reliable technique that can safely support aneurysm coiling occlusion even in a rupture environment. However, long term monitoring of patients treated by this device is mandatory.",
+    "abstractSource": "PubMed 29438035"
   },
   {
     "title": "Coiling of wide-necked carotid artery aneurysms assisted by a temporary bridging device (Comaneci): preliminary experience",
@@ -1595,7 +1723,9 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "Background: Endovascular treatment of wide-necked aneurysms remains challenging without the use of adjunctive devices to preserve the parent artery.\n\nObjective: To present our initial experience with a temporary bridging device, the Comaneci (Rapid Medical, Israel). The compliant remodeling mesh protects the parent artery during coil occlusion without flow arrest in the distal vasculature. Permanent dual antiplatelet therapy is not required since the device is fully removed at the end of the procedure.\n\nMethods: All intracranial aneurysms treated by coil occlusion with the Comaneci device between December 2014 and November 2015 were included. Angiographic and clinical results were retrospectively analysed, including follow-up examinations. All aneurysms were unruptured.\n\nResults: 18 aneurysms of the internal carotid artery were included. Successful coil occlusion assisted by the Comaneci device as intended was possible in 14 cases (77.8%). Insufficient coverage of the aneurysmal neck was observed in four cases (22.2%), with modification of the treatment to stent-assisted coiling or remodeling. One clinically relevant complication occurred (5.6%).\n\nConclusions: Our initial experience shows that use of the Comaneci device is straightforward for the treatment of selected wide-necked aneurysms. Further studies with long-term follow-up data are needed to identify the significance of the presented technique in the neurointerventional armamentarium.",
+    "abstractSource": "PubMed 27742747"
   },
   {
     "title": "Revascularization of Acute Basilar Artery Occlusion Using the Tigertriever Adjustable Clot Retriever",
@@ -1644,6 +1774,8 @@
       "apac"
     ],
     "featured": false,
-    "imageUrl": null
+    "imageUrl": null,
+    "abstract": "We present our initial patient experience with an innovative temporary bridging device, the Comaneci (Rapid Medical, Israel), to assist in the coiling of cerebral aneurysms. The Comaneci device confers the same benefits as balloon remodeling but without the risks of parent artery occlusion. This alleviates time pressure on the clinician, and could reduce the risk of parent artery thrombosis. Three patients were treated with the Comaneci device. Two patients had acute ruptured posterior communicating aneurysms and one patient was treated electively for a carotico-ophthalmic aneurysm. Excellent occlusion of all three aneurysms was obtained. One patient developed a distal middle cerebral artery clot, that was treated with intravenous aspirin, with minor neurological consequences. These early results show that the Comaneci device can be used to achieve good cerebral aneurysm occlusion. Vessel patency is maintained throughout the procedure with potential advantages over conventional balloon assisted coiling.",
+    "abstractSource": "PubMed 26123460"
   }
 ]

@@ -63,12 +63,12 @@ async function main() {
   }
 
   /* publications */
-  type PubSeed = { title: string; authors: string; journal: string; doi: string | null; url: string | null; pdfUrl: string | null; pdfLicense?: string; pdfSource?: string; publishedOn: string; product: string; variant: string | null; regions: schema.Region[]; featured: boolean; imageUrl: string | null };
+  type PubSeed = { title: string; authors: string; journal: string; doi: string | null; url: string | null; pdfUrl: string | null; pdfLicense?: string; pdfSource?: string; abstract?: string; abstractSource?: string; publishedOn: string; product: string; variant: string | null; regions: schema.Region[]; featured: boolean; imageUrl: string | null };
   const pubs = await json<PubSeed[]>("publications");
   if (!RESET) await db.delete(publications);
   await db.insert(publications).values(
     pubs.map((p) => ({
-      title: p.title, authors: p.authors, journal: p.journal, doi: p.doi, url: p.url, pdfUrl: p.pdfUrl, pdfLicense: p.pdfLicense ?? "", pdfSource: p.pdfSource ?? "",
+      title: p.title, authors: p.authors, journal: p.journal, doi: p.doi, url: p.url, pdfUrl: p.pdfUrl, pdfLicense: p.pdfLicense ?? "", pdfSource: p.pdfSource || null, abstract: p.abstract ?? "", abstractSource: p.abstractSource ?? "",
       publishedOn: new Date(p.publishedOn), productId: prodId(p.product), regions: p.regions, featured: p.featured, imageUrl: p.imageUrl, status: "published" as const,
     })),
   );

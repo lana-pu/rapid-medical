@@ -336,6 +336,11 @@ export const publications = pgTable(
     /** A PDF copied from an open-access source: its licence (e.g. «CC BY 4.0») and where it came from — shown under it */
     pdfLicense: text("pdf_license").notNull().default(""),
     pdfSource: text("pdf_source"), // a url field: empty is null, like pdf_url
+    /** The article's abstract, quoted with its source, shown on the publication's page when the full text cannot be
+     * (decision 2026-11-15). Paragraphs separated by a blank line; a section starts «Label: …». */
+    abstract: text("abstract").notNull().default(""),
+    /** Where the abstract was taken from, e.g. «PubMed 33284987» */
+    abstractSource: text("abstract_source").notNull().default(""),
     doi: text("doi"),
     productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
     /** Regions where it is shown; empty = all */

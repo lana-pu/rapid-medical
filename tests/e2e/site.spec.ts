@@ -292,6 +292,10 @@ test("publications, news and studies have their own pages (docs/screens/material
   const id = page.url().match(/evidence\/(\d+)/)![1];
   expect((await request.get(`/us/evidence/${id}-wrong`, { maxRedirects: 0 })).status()).toBe(308);
   expect((await request.get("/us/evidence/999999-nothing")).status()).toBe(404);
+  // no right to the full text: the abstract as published, with its source
+  await page.goto("/ous/evidence/13");
+  await expect(page.getByRole("heading", { name: "Abstract" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^PubMed \d+$/ })).toBeVisible();
   // News & Events row → the news page: source, the original, more news
   await page.goto("/news-events");
   await page.locator("#all-news li a").first().click();

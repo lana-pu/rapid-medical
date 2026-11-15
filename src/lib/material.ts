@@ -23,3 +23,17 @@ export function idFromParam(param: string): number | null {
   const m = /^(\d{1,9})(?:-[a-z0-9-]*)?$/.exec(param);
   return m ? Number(m[1]) : null;
 }
+
+const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, " ").trim();
+
+/**
+ * Our title (maybe shortened, maybe with a «Technical video:» prefix) and PubMed's: at least 60% of our words longer than
+ * 3 letters are in PubMed's title; hyphens do not matter («Post-Traumatic» = «Posttraumatic»).
+ */
+export function sameArticle(ours: string, theirs: string): boolean {
+  const flat = (s: string) => s.replace(/(\w)-(\w)/g, "$1$2");
+  const words = norm(flat(ours)).split(" ").filter((w) => w.length > 3);
+  const pool = new Set(norm(flat(theirs)).split(" "));
+  if (!words.length) return false;
+  return words.filter((w) => pool.has(w)).length / words.length >= 0.6;
+}

@@ -232,6 +232,8 @@ export const RESOURCES: Resource[] = [
       { name: "pdfUrl", label: "PDF", type: "url", half: true },
       { name: "pdfLicense", label: "PDF licence", type: "text", half: true, help: "For a PDF copied from an open-access source, e.g. CC BY 4.0. Shown under the PDF." },
       { name: "pdfSource", label: "PDF source", type: "url", half: true, help: "Where the open-access PDF was taken from." },
+      { name: "abstract", label: "Abstract", type: "textarea", rows: 8, help: "Quoted as published. Shown when the full text is not on the page. Sections as «Background: …», a blank line between." },
+      { name: "abstractSource", label: "Abstract source", type: "text", half: true, help: "e.g. PubMed 33284987" },
       { name: "doi", label: "DOI", type: "text", half: true },
       { name: "regions", label: "Show in regions", type: "regions", half: true, help: "Leave empty for all." },
       { name: "featured", label: "Featured on Evidence page", type: "boolean", half: true },

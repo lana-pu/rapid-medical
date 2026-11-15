@@ -13,6 +13,24 @@ import { PdfViewer, isLocalPdf } from "@/components/site/PdfViewer";
 
 type Params = Promise<{ seg: string; pub: string }>;
 
+/** «Background: …» paragraphs of an abstract → label and text. */
+function abstractParts(abstract: string): { label: string | null; text: string }[] {
+  return abstract
+    .split(/\n\s*\n/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((t) => {
+      const m = /^([A-Z][A-Za-z ,&/-]{1,40}):\s+([\s\S]+)$/.exec(t);
+      return m ? { label: m[1], text: m[2] } : { label: null, text: t };
+    });
+}
+
+/** «PubMed 33284987» → its PubMed page. */
+function pubmedHref(source: string): string | null {
+  const m = /^PubMed (\d{1,9})$/.exec(source.trim());
+  return m ? `https://pubmed.ncbi.nlm.nih.gov/${m[1]}/` : null;
+}
+
 /** Under a PDF copied from an open-access source: its licence and where it came from (the licence asks for it). */
 function pdfCaption(p: { pdfLicense?: string | null; pdfSource?: string | null; authors?: string | null; journal?: string | null }) {
   if (!p.pdfLicense) return null;
@@ -89,6 +107,23 @@ export default async function PublicationPage({ params }: { params: Params }) {
             {pdf && isLocalPdf(pdf) ? (
               // «embed the PDF» mode of the template: pages here, download beside
               <PdfViewer href={pdf} title={p.title} caption={pdfCaption(p)} />
+            ) : p.abstract ? (
+              // no right to the full text here: the abstract as published, with its source (decision 2026-11-15)
+              <section aria-labelledby="abstract">
+                <h2 id="abstract" className="text-lg font-semibold">Abstract</h2>
+                <div className="mt-4 space-y-4 leading-relaxed">
+                  {abstractParts(p.abstract).map((a, i) => (
+                    <p key={i}>{a.label && <strong className="font-semibold">{a.label}. </strong>}{a.text}</p>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs text-muted">
+                  Abstract as published{p.journal ? ` in ${p.journal}` : ""}
+                  {p.abstractSource && <> · source: {pubmedHref(p.abstractSource) ? <a href={pubmedHref(p.abstractSource)!} target="_blank" rel="noopener noreferrer" className="underline">{p.abstractSource}</a> : p.abstractSource}</>}
+                </p>
+                {((original && original !== "#") || (pdf && pdf !== "#")) && (
+                  <div className="mt-6"><Btn href={(original && original !== "#" ? original : pdf)!} external>Read the full article ↗</Btn></div>
+                )}
+              </section>
             ) : (
               <div className="rounded border border-border bg-surface p-6">
                 <p>The full article is published {p.journal ? <>in <em>{p.journal}</em></> : "by its journal"}.</p>
