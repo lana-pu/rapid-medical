@@ -1,4 +1,4 @@
-import { regionForCountry, REGION_FORM_VALUE } from "@/lib/regions";
+import { regionForCountry, REGION_COUNTRY_CODES, REGION_FORM_VALUE } from "@/lib/regions";
 
 /**
  * ISO-3166-1 alpha-2 country codes for the contact form's Country list (docs/screens/contact-us.md).
@@ -281,4 +281,22 @@ export function countryOptions(): { code: string; name: string }[] {
 export function formRegionForCountry(code: string): string {
   const r = regionForCountry(code);
   return r ? REGION_FORM_VALUE[r] : "";
+}
+
+const fold = (n: string) => n.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+/** Countries of a region for the region chooser, in the table's order (main markets first); Europe & Middle East is «all other countries». */
+export function regionCountryNames(region: "us" | "ous" | "apac"): string[] | null {
+  if (region === "ous") return null;
+  return REGION_COUNTRY_CODES[region].map(countryName);
+}
+
+/** «Find your country»: names starting with what was typed first, then names containing it. */
+export function findCountries(query: string, limit = 6): { code: string; name: string }[] {
+  const q = fold(query.trim());
+  if (q.length < 2) return [];
+  const all = countryOptions();
+  const starts = all.filter((o) => fold(o.name).startsWith(q));
+  const contains = all.filter((o) => !fold(o.name).startsWith(q) && fold(o.name).includes(q));
+  return [...starts, ...contains].slice(0, limit);
 }

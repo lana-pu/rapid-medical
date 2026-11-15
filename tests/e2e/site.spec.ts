@@ -224,3 +224,28 @@ test.describe("user walk 2026-11-14", () => {
     await expect.poll(region).toBe("apac");
   });
 });
+
+test("choose your location is a window: opens when a regional page is asked for, not on arrival; the header opens it too", async ({ page, request }) => {
+  // without JavaScript: the page with the same content
+  expect(await (await request.get("/choose-your-location?back=%2Fabout-us")).text()).toContain("Find your country");
+  // DESIGN.md → Выбор региона: no IP country here, so the region is unknown
+  await page.goto("/about-us");
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Evidence", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Choose your location" });
+  await expect(dialog).toBeVisible();
+  await expect(page).toHaveURL(/\/about-us$/); // the visitor stays where they were
+  // the country search marks its region
+  await dialog.getByLabel("Find your country").fill("United Arab");
+  await expect(dialog.getByText("United Arab Emirates is here")).toBeVisible();
+  await dialog.getByRole("link", { name: /Go to Europe & Middle East/ }).click();
+  await page.waitForURL(/\/ous\/evidence$/);
+  // the header: the same window with the current region; the choice returns to the same page
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("link", { name: /^Region: Europe & Middle East/ }).click();
+  await expect(dialog.getByText("Current region")).toBeVisible();
+  await expect(dialog.getByText("Your choice")).toBeVisible();
+  await dialog.getByRole("link", { name: /Go to Americas/ }).click();
+  await page.waitForURL(/\/us\/evidence$/);
+});

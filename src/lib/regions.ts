@@ -44,6 +44,15 @@ export const LEGACY_HOSTS: Record<string, Region> = {
 };
 
 /**
+ * Countries of the Americas and Asia & Pacific; every other country is Europe & Middle East (`ous`). One table for
+ * the IP region, the contact form and the region chooser (DESIGN.md → Выбор региона).
+ */
+export const REGION_COUNTRY_CODES: { us: string[]; apac: string[] } = {
+  us: ["US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "BO", "PY", "UY", "GT", "HN", "SV", "NI", "CR", "PA", "DO", "CU", "JM", "TT", "PR", "GY", "SR", "BZ", "HT"],
+  apac: ["CN", "JP", "KR", "IN", "SG", "MY", "TH", "VN", "ID", "PH", "TW", "HK", "MO", "PK", "BD", "LK", "NP", "KH", "LA", "MM", "MN", "KZ", "UZ", "KG", "TJ", "TM", "AF", "BT", "MV", "BN", "TL", "IL", "SA", "AE", "QA", "BH", "KW", "OM", "IQ", "IR", "JO", "LB", "SY", "TR", "PS", "EG", "YE"],
+};
+
+/**
  * ISO-3166 alpha-2 → suggested region. Mirrors the Duda geo-redirect and the
  * About-page map: Americas → us; Asia + Middle East → apac; everything else → ous.
  */
@@ -52,7 +61,7 @@ export function regionForCountry(cc: string | null | undefined): Region | null {
   const c = cc.toUpperCase();
   // Not a real country: unknown (XX), Tor (T1), anonymous proxy / satellite (A1, A2), region-level codes (EU, AP)
   if (!/^[A-Z]{2}$/.test(c) || ["XX", "T1", "A1", "A2", "O1", "EU", "AP", "ZZ"].includes(c)) return null;
-  if (["US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "BO", "PY", "UY", "GT", "HN", "SV", "NI", "CR", "PA", "DO", "CU", "JM", "TT", "PR", "GY", "SR", "BZ", "HT"].includes(c)) return "us";
-  if (["CN", "JP", "KR", "IN", "SG", "MY", "TH", "VN", "ID", "PH", "TW", "HK", "MO", "PK", "BD", "LK", "NP", "KH", "LA", "MM", "MN", "KZ", "UZ", "KG", "TJ", "TM", "AF", "BT", "MV", "BN", "TL", "IL", "SA", "AE", "QA", "BH", "KW", "OM", "IQ", "IR", "JO", "LB", "SY", "TR", "PS", "EG", "YE"].includes(c)) return "apac";
+  if (REGION_COUNTRY_CODES.us.includes(c)) return "us";
+  if (REGION_COUNTRY_CODES.apac.includes(c)) return "apac";
   return "ous";
 }

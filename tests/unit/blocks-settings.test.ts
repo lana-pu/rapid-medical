@@ -130,11 +130,12 @@ describe("webinarsToBlocks", () => {
 describe("chooserToBlocks", () => {
   const opts = (next?: string) => (chooserToBlocks({ regional: {}, suggested: "us", next })[1] as BlockOf<"regionChooser">).data.options;
   it("keeps a safe next and marks the suggested region", () => {
-    expect(opts("evidence").find((o) => o.suggested)?.href).toBe("/us/evidence");
+    // through /api/region, which remembers the choice (DESIGN.md → Выбор региона)
+    expect(opts("evidence").find((o) => o.suggested)?.href).toBe("/api/region?to=us&back=%2Fus%2Fevidence");
     expect(opts().filter((o) => o.suggested)).toHaveLength(1);
   });
   it("ignores an unsafe next", () => {
-    expect(opts("//evil.example")[0].href).toMatch(/\/therapies$/);
+    expect(opts("//evil.example")[0].href).toMatch(/%2Ftherapies$/);
   });
 });
 

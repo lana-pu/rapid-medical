@@ -3,7 +3,8 @@ import { Footer } from "@/components/site/Footer";
 import { Integrations } from "@/components/site/Integrations";
 import { Tracking } from "@/components/site/Tracking";
 import { MediaLightbox } from "@/components/site/MediaLightbox";
-import { getRememberedRegion, getSuggestedRegion } from "@/lib/region-cookie";
+import { getRememberedRegion, getSuggestedRegion, regionSource } from "@/lib/region-cookie";
+import { RegionModal } from "@/components/site/RegionModal";
 import { RegionBanner } from "@/components/site/RegionBanner";
 import { RegionMemory } from "@/components/site/RegionMemory";
 import { VersionBanner } from "@/components/site/VersionBanner";
@@ -40,6 +41,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <div className="flex-1">{children}</div>
       <Footer contact={contact} social={social} region={region} regionalNotice={notice} nav={navigation} />
       <RegionMemory />
+      <RegionModal region={region} source={region ? regionSource(region, suggested, jar.get("rm_region_chosen")?.value) : null} />
       {editing ? <EditorLoader /> : (<><Integrations gaMeasurementId={integrations.gaMeasurementId} userwayAccount={integrations.userwayAccount} /><Tracking /><MediaLightbox /></>)}
     </>
   );

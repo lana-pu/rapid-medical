@@ -278,7 +278,7 @@ export function webinarsToBlocks({ region, list, product }: { region: Region; li
   ];
 }
 
-export function chooserToBlocks({ regional, suggested, next }: { regional: { chooserTitle?: string; chooserNote?: string }; suggested: Region | null; next?: string }): Block[] {
+export function chooserToBlocks({ regional, suggested, next, back, current }: { regional: { chooserTitle?: string; chooserNote?: string }; suggested: Region | null; next?: string; back?: string | null; current?: { label: string; source: "location" | "chosen" | null } | null }): Block[] {
   const target = next && /^[a-z-]+$/.test(next) ? next : "therapies";
   return [
     {
@@ -287,7 +287,15 @@ export function chooserToBlocks({ regional, suggested, next }: { regional: { cho
       data: { title: regional.chooserTitle ?? "Choose your location.", body: regional.chooserNote ?? "Product availability and regulatory information differ by region." },
       edit: { r: "settings:regional", map: { title: "chooserTitle", body: "chooserNote" } },
     },
-    { type: "regionChooser", variant: "default", data: { options: REGION_CHOICES.map((o) => ({ label: o.label, href: `/${o.region}/${target}`, suggested: suggested === o.region })) } },
+    {
+      type: "regionChooser",
+      variant: "default",
+      data: {
+        // through /api/region: it remembers the choice; `back` returns to the page the visitor came from
+        options: REGION_CHOICES.map((o) => ({ region: o.region, label: o.label, href: `/api/region?to=${o.region}&back=${encodeURIComponent(back ?? `/${o.region}/${target}`)}`, suggested: suggested === o.region })),
+        current: current ?? null,
+      },
+    },
   ];
 }
 

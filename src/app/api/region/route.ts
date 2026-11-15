@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
   res.cookies.set("rm_region", to, { path: "/", maxAge: YEAR, sameSite: "lax" });
   // A manual choice wins over the IP: don't offer "go to your region" afterwards.
   res.cookies.set("rm_geo_dismissed", "1", { path: "/", maxAge: 60 * 60 * 24 * 30, sameSite: "lax" });
+  // «Current region · Your choice» in the chooser (not «From your location»)
+  res.cookies.set("rm_region_chosen", "1", { path: "/", maxAge: YEAR, sameSite: "lax" });
   return res;
 }
 
