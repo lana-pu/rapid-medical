@@ -158,20 +158,31 @@ export default async function SitePage({ params, searchParams }: { params: Promi
 
           <section aria-label="Files on this page">
             <h2 className={h2}>Files on this page</h2>
-            {d.files.length ? (
-              <ul className={`${card} divide-y divide-neutral-100`}>
-                {d.files.map((f) => (
-                  <li key={f.id} className="flex items-center gap-3 px-4 py-2 text-sm">
-                    <span className="w-14 shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-center text-[11px] text-neutral-600">{f.kind}</span>
-                    <span className="min-w-0 flex-1 truncate">{f.filename}</span>
-                    {f.kind === "PDF" && <span className="shrink-0 text-xs text-neutral-500">opened {f.opens}× in 30 days</span>}
-                    <Link href={`/admin/media?id=${f.id}`} className="shrink-0 text-xs underline">Open · Replace</Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-neutral-500">No files from the media library on this page.</p>
-            )}
+            {(() => {
+              // documents in view (they change: a new IFU, a new study); pictures and videos folded — there are many
+              const docs = d.files.filter((f) => f.kind === "PDF" || f.kind === "File");
+              const media = d.files.filter((f) => f.kind === "Picture" || f.kind === "Video");
+              const row = (f: (typeof d.files)[number]) => (
+                <li key={f.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+                  <span className="w-14 shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-center text-[11px] text-neutral-600">{f.kind}</span>
+                  <span className="min-w-0 flex-1 truncate">{f.filename}</span>
+                  {f.kind === "PDF" && <span className="shrink-0 text-xs text-neutral-500">opened {f.opens}× in 30 days</span>}
+                  <Link href={`/admin/media?id=${f.id}`} className="shrink-0 text-xs underline">Open · Replace</Link>
+                </li>
+              );
+              if (!d.files.length) return <p className="text-sm text-neutral-500">No files from the media library on this page.</p>;
+              return (
+                <div className={`${card} divide-y divide-neutral-100`}>
+                  {docs.length > 0 ? <ul className="divide-y divide-neutral-100">{docs.map(row)}</ul> : <p className="px-4 py-2 text-sm text-neutral-500">No PDFs on this page.</p>}
+                  {media.length > 0 && (
+                    <details>
+                      <summary className="cursor-pointer px-4 py-2 text-sm text-neutral-700">Pictures and videos ({media.length})</summary>
+                      <ul className="divide-y divide-neutral-100 border-t border-neutral-100">{media.map(row)}</ul>
+                    </details>
+                  )}
+                </div>
+              );
+            })()}
           </section>
 
           {collections.length > 0 && (
