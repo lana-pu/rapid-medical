@@ -25,7 +25,7 @@
 | Текст на акценте | `--accent-foreground` | `text-accent-foreground` | `#ffffff` | |
 | Поверхность | `--surface` | `bg-surface` | `#f5f5f5` | |
 | Граница | `--border` | `border-border` | `#e5e5e5` | |
-| Ошибка | `--danger` | `text-danger`, `border-danger` | `#b42318` | решено 2026-11-14 (Contact Us), в коде пока нет: сейчас хардкод `red-*`. Рамка и текст ошибки поля |
+| Ошибка | `--danger` | `text-danger`, `border-danger` | `#b42318` | решено 2026-11-14 (Contact Us), в коде с 2026-11-15 (`globals.css`, формы). Рамка и текст ошибки поля |
 | Шрифт | `--font-sans` | `font-sans` | `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | системный стек, веб-шрифтов нет |
 
 Типографика и отступы — дефолтная шкала Tailwind (собственных токенов нет). Контейнер `max-w-6xl px-4`,
@@ -134,7 +134,7 @@
 | Rich text (`richText`) | `default` | текстовые страницы из `pages`. Заголовок страницы — отдельный блок Hero · `page` |
 | Media (`media`) | `image` · `video` · `document` (кнопка на PDF) | витрина; постеры и видео в `pages` пока хранятся внутри текста |
 | Form (`form`) | `default` · `compact` · `section` (своя секция с заголовком и примечанием); тип формы — поле блока | Contact, Webinars, Careers |
-| Form (`form`) — **решено, в коде нет** | `split` — композиция «общая линия» (см. ниже) | Contact Us |
+| Form (`form`) | `split` — композиция «общая линия»: линия, слева «ключ — значение» с контактами, справа форма (в коде с 2026-11-15) | Contact Us |
 | Gallery (`gallery`) | `quotes` | Careers |
 | News (`news`) | `cards` · `carousel` · `timeline` | главная, News & Events |
 | Events (`events`) | `upcoming` (карточки: дата, город, название, ссылка) · `archive` (список по годам, новые сверху) | News & Events |
@@ -152,7 +152,8 @@
 
 ## Решения по страницам (вайрфреймы, `docs/flows/site-pages.md`)
 
-Записываются после закрытия страницы. В коде пока нет — порядок прежний: спека экрана → примитивы/блоки → страница.
+Записываются после закрытия страницы. Реализация — ветка `site-redesign` (с 2026-11-15): Contact Us — в коде; остальные
+по очереди. Порядок прежний: спека экрана → примитивы/блоки → страница.
 
 ### Композиция «общая линия» (Contact Us, 2026-11-14)
 Для страниц, где главное — одно действие (форма) и короткий контекст рядом.
@@ -324,7 +325,7 @@ solution line и Request a demo; тёмная полоса «Engineered…»; н
 ## Отступления от токенов (хардкод, по коду)
 - Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — блоки Video,
   Call to action (`src/blocks/`), `Banner`, `VideoHero`.
-- Ошибки формы: `bg-red-50`, `text-red-600/700` → токен `--danger` (решено 2026-11-14).
+- Ошибки формы: переведены на токен `--danger` (2026-11-15).
 - `WorldMap.tsx`: инлайн-хексы `#0b1420`, `#121b29`, `#26354d`, `#289988`, `#2fd17b`, `#fff`.
 - Редактор/админка: `amber`, `emerald`, `blue`, `green` из палитры Tailwind; `#a3a3a3`, `#2563eb`,
   `#e0ecff` в стилях Tiptap (`globals.css`).

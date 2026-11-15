@@ -23,10 +23,30 @@ const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac
 /** URL parameters are arbitrary: only the map's own keys count ("constructor" is not a topic). */
 const pick = (map: Record<string, string>, key?: string) => (key && Object.hasOwn(map, key) ? map[key] : undefined);
 
-export function contactToBlocks({ region, topic }: { region?: string; topic?: string }): Block[] {
+/**
+ * Contact Us: title, then the form beside the region's contacts (docs/screens/contact-us.md). Americas → the US office,
+ * every other region → headquarters, as orders are routed (`recipientFor`).
+ */
+export function contactToBlocks({ region, topic, country, offices = [] }: { region?: string; topic?: string; country?: string; offices?: Office[] }): Block[] {
+  const office = offices.find((o) => (region === "us" ? o.label === "USA" : o.label === "Headquarters"));
+  const where = region === "us" ? "Americas" : "headquarters";
+  const contacts: { label: string; value: string; href?: string }[] = [];
+  if (office?.phone) contacts.push({ label: `Call ${where}`, value: office.phone, href: `tel:${office.phone.replace(/[^+\d]/g, "")}` });
+  if (office?.ordersEmail) contacts.push({ label: "Orders", value: office.ordersEmail, href: `mailto:${office.ordersEmail}` });
   return [
     { type: "hero", variant: "page", data: { title: "Let’s connect", body: "Please provide a few contact details below." } },
-    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: pick(TOPIC_KEYS, topic), defaultRegion: pick(REGION_MAP, region) } },
+    {
+      type: "form",
+      variant: "split",
+      data: {
+        topics: TOPICS,
+        defaultTopic: pick(TOPIC_KEYS, topic),
+        defaultRegion: pick(REGION_MAP, region),
+        defaultCountry: country,
+        contacts,
+        contactsLink: offices.length ? { label: "All offices and addresses →", href: "/about-us#offices" } : null,
+      },
+    },
   ];
 }
 

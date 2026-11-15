@@ -67,12 +67,20 @@ test("about page renders the interactive map", async ({ page }) => {
 
 test("contact form stores a submission", async ({ page }) => {
   await page.goto("/contact-us?region=us&topic=demo");
-  await expect(page.locator("select[name=topic]")).toHaveValue("Request a demo");
+  // topic first, as chips (docs/screens/contact-us.md); the one from the address is chosen
+  await expect(page.locator("input[name=topic]")).toHaveValue("Request a demo");
+  await expect(page.getByRole("radio", { name: "Request a demo" })).toBeChecked();
+  // contacts of the region beside the form
+  await expect(page.getByText("Call Americas")).toBeVisible();
   await page.fill("input[name=firstName]", "E2E");
   await page.fill("input[name=lastName]", "Tester");
   await page.fill("input[name=email]", "e2e@example.com");
+  await expect(page.locator("input[name=state]")).toHaveCount(0);
+  await page.selectOption("select[name=countryCode]", "US"); // State appears only for the US and Canada
+  await expect(page.locator("input[name=state]")).toHaveCount(1);
   await page.click('button:has-text("Submit")');
   await expect(page.getByText("Thank you for contacting us.")).toBeVisible();
+  await expect(page.getByText("We’ll reply to e2e@example.com.", { exact: false })).toBeVisible();
 });
 
 test("unknown path returns 404", async ({ request }) => {
@@ -101,8 +109,10 @@ test.describe("usability pass 2026-11-13", () => {
     await page.fill("input[name=lastName]", "Mendes");
     await page.fill("input[name=email]", "laura@clinic"); // the browser lets it through, the server does not
     await page.fill("textarea[name=message]", "Please call me about a demo.");
+    await page.selectOption("select[name=countryCode]", "PT");
     await page.click('button:has-text("Submit")');
-    await expect(page.getByText("Please check the highlighted fields.")).toBeVisible();
+    // the error is at the field, not in a banner (DESIGN.md → Формы)
+    await expect(page.getByText("Enter a valid email")).toBeVisible();
     await expect(page.locator("input[name=firstName]")).toHaveValue("Laura");
     await expect(page.locator("textarea[name=message]")).toHaveValue("Please call me about a demo.");
     await expect(page.locator("input[name=email]")).toHaveAttribute("aria-invalid", "true");

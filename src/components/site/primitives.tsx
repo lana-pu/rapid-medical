@@ -86,6 +86,21 @@ export async function Img({ src, alt = "", className = "", sizes = "(max-width: 
   );
 }
 
+/** Key — value rows with hairlines (DESIGN.md → «Таблица ключ — значение»): contacts, dates, short facts. */
+export function KeyValue({ rows, footer }: { rows: { label: string; value: ReactNode }[]; footer?: ReactNode }) {
+  return (
+    <dl className="divide-y divide-border text-sm">
+      {rows.map((r) => (
+        <div key={r.label} className="flex items-baseline justify-between gap-4 py-2.5">
+          <dt className="text-muted">{r.label}</dt>
+          <dd className="text-right">{r.value}</dd>
+        </div>
+      ))}
+      {footer && <div className="pt-3">{footer}</div>}
+    </dl>
+  );
+}
+
 export function Prose({ html, className = "" }: { html: string; className?: string }) {
   return <div className={`prose-rm ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }

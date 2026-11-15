@@ -7,6 +7,7 @@ import { sendMail } from "@/lib/mail";
 import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 import { sourceLabel } from "./tracking";
+import { countryName, formRegionForCountry, isCountryCode } from "./countries";
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
@@ -47,6 +48,9 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
   let meta: Record<string, string> = {};
   try { meta = JSON.parse(String(fd.get("meta") ?? "{}")); } catch { meta = {}; }
 
+  // Contact form: a country from the list (ISO code) → its name, and the mail region follows from it (no Region field).
+  const code = fd.get("countryCode");
+  const fromList = isCountryCode(code);
   const parsed = schema.safeParse({
     form: fd.get("form"),
     topic: fd.get("topic") ?? "",
@@ -55,8 +59,8 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
     organization: fd.get("organization") ?? "",
     email: fd.get("email"),
     phone: fd.get("phone") ?? "",
-    region: fd.get("region") ?? "",
-    country: fd.get("country") ?? "",
+    region: fromList ? formRegionForCountry(code) : (fd.get("region") ?? ""),
+    country: fromList ? countryName(code) : (fd.get("country") ?? ""),
     state: fd.get("state") ?? "",
     message: fd.get("message") ?? "",
     optIn: fd.get("optIn") === "on",
