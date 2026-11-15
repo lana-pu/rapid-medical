@@ -92,6 +92,7 @@ async function ctx(fd: FormData) {
 /** Back to the page's screen after an action started there (docs/screens/admin-sections.md → «Экран страницы»). */
 const pageScreenBack = (fd: FormData) => {
   const b = String(fd.get("__back") ?? "");
+  if (/^\/admin\/seo(\?page=[a-zA-Z0-9\-/%]*)?$/.test(b) && !b.includes("//")) return b; // Search & sharing
   return /^\/admin\/page(\/[a-z0-9\-/]*)?(\?view=regions)?$/.test(b) && !b.includes("//") ? b : null;
 };
 
@@ -103,7 +104,7 @@ export async function publishResource(fd: FormData) {
   // back to the page's screen — at its new address, if publishing moved the page
   const moved = row ? res.previewUrl?.(row) : null;
   const asked = pageScreenBack(fd);
-  const back = asked ? (moved ? adminPageHref(pageKey(moved)) + (asked.includes("?view=regions") ? "?view=regions" : "") : asked) : null;
+  const back = asked ? (moved && asked.startsWith("/admin/page") ? adminPageHref(pageKey(moved)) + (asked.includes("?view=regions") ? "?view=regions" : "") : asked) : null;
   redirect(back ? `${back}${back.includes("?") ? "&" : "?"}published=${encodeURIComponent(String(row?.region ?? "all"))}` : `/admin/${res.slug}/${id}?published=1`);
 }
 

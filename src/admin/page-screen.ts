@@ -1,16 +1,15 @@
 import "server-only";
 import { and, count, desc, eq, gte, inArray, isNull, or, sql } from "drizzle-orm";
-import { auditLog, comments, contactSubmissions, db, drafts, media, pageViews, pages, solutions } from "@/db";
+import { auditLog, comments, contactSubmissions, db, drafts, media, pageViews } from "@/db";
 import type { PageCard } from "./pages-index";
 import type { PageVersion } from "./page-tree";
 import { getResource } from "./resources";
 import { mediaIndex, urlPattern } from "@/lib/media-usage";
 import { countingSince } from "./analytics";
-import { getLiveSetting } from "@/lib/settings";
 
 /**
  * One page of the site on one screen (docs/screens/admin-sections.md → «Экран страницы»): what each region waits for,
- * how the page did in 30 days, how Google shows it, the files on it, recent changes and open notes.
+ * how the page did in 30 days, the files on it, recent changes and open notes (Google texts: src/admin/seo.ts).
  */
 
 const DAYS = 30;
@@ -23,14 +22,6 @@ const ago = (d: Date) => {
 };
 const recordKey = (r: string, id: number) => `${r}:${id}`;
 
-export type Google = { key: string; region: PageCard["region"]; path: string; title: string; titleSet: boolean; description: string; settingsHref: string; inSettings?: boolean };
-
-/** Pages whose Google texts live in Settings → Google titles & descriptions (one text for every region). */
-const SEO_SETTINGS: Record<string, { title: string; description: string }> = {
-  "/evidence": { title: "evidenceTitle", description: "evidenceDescription" },
-  "/webinars": { title: "webinarsTitle", description: "webinarsDescription" },
-  "/contact-us": { title: "contactTitle", description: "contactDescription" },
-};
 export type PageFile = { id: number; filename: string; url: string; kind: "PDF" | "Picture" | "Video" | "File"; opens: number; thumb: string | null };
 
 type MediaRow = { url: string; mime: string; variants: { w: number; url: string }[]; posterUrl: string | null };
@@ -45,7 +36,7 @@ export async function thumbsFor(urls: string[]): Promise<Record<string, string>>
   return Object.fromEntries(rows.flatMap((m) => (thumbOf(m) ? [[m.url, thumbOf(m)!]] : [])));
 }
 
-export async function pageDetails(cards: PageCard[], versions: PageVersion[], page: { key: string; title: string }) {
+export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
   const since = new Date(Date.now() - DAYS * 86_400_000);
   const paths = [...new Set(versions.map((v) => v.path))];
   const recs = cards.map((c) => ({ r: c.r, id: c.id }));
@@ -53,7 +44,7 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[], pa
     ? or(...recs.map((x) => and(eq(auditLog.resource, x.r), eq(auditLog.recordId, String(x.id)))))
     : sql`false`;
 
-  const [schedules, lastSaves, recent, views, leads, sols, pgs, notes, counting, seo, allMedia, index] = await Promise.all([
+  const [schedules, lastSaves, recent, views, leads, notes, counting, allMedia, index] = await Promise.all([
     recs.length ? db.select().from(drafts).where(or(...recs.map((x) => and(eq(drafts.resource, x.r), eq(drafts.recordId, x.id))))) : [],
     db.select().from(auditLog).where(and(forRecords, inArray(auditLog.action, ["save", "publish", "restore"]))).orderBy(desc(auditLog.createdAt)).limit(100),
     db.select().from(auditLog).where(forRecords).orderBy(desc(auditLog.createdAt)).limit(5),
@@ -61,12 +52,8 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[], pa
     paths.length
       ? db.select({ id: contactSubmissions.id }).from(contactSubmissions).where(and(gte(contactSubmissions.createdAt, since), sql`${contactSubmissions.status} <> 'spam'`, or(inArray(sql`${contactSubmissions.meta}->>'previous_page'`, paths), inArray(sql`${contactSubmissions.meta}->>'form_page'`, paths))))
       : [],
-    cards.some((c) => c.r === "solutions") ? db.select({ id: solutions.id, metaTitle: solutions.metaTitle, metaDescription: solutions.metaDescription, navLabel: solutions.navLabel }).from(solutions).where(inArray(solutions.id, cards.filter((c) => c.r === "solutions").map((c) => c.id))) : [],
-    cards.some((c) => c.r === "pages") ? db.select({ id: pages.id, metaTitle: pages.metaTitle, metaDescription: pages.metaDescription, title: pages.title }).from(pages).where(inArray(pages.id, cards.filter((c) => c.r === "pages").map((c) => c.id))) : [],
     recs.length ? db.select({ n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt), or(...recs.map((x) => and(eq(comments.resource, x.r), eq(comments.recordId, x.id)))))) : [{ n: 0 }],
     countingSince().catch(() => null),
-    // the Google texts of pages that keep them in Settings
-    SEO_SETTINGS[page.key] ? getLiveSetting<Record<string, string>>("seo") : Promise.resolve({} as Record<string, string>),
     db.select({ id: media.id, filename: media.filename, url: media.url, mime: media.mime, variants: media.variants, posterUrl: media.posterUrl }).from(media),
     mediaIndex(),
   ]);
@@ -95,22 +82,6 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[], pa
     since: counting && counting > since ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: TZ }).format(counting) : null,
   };
 
-  // how Google shows each region (pages with their own fields; the others use Settings → Google defaults)
-  const google: Google[] = cards.flatMap((c) => {
-    const row = c.r === "solutions" ? sols.find((x) => x.id === c.id) : c.r === "pages" ? pgs.find((x) => x.id === c.id) : null;
-    if (!row) return [];
-    const d = schedules.find((x) => x.resource === c.r && x.recordId === c.id)?.data as Record<string, unknown> | null | undefined;
-    const metaTitle = String(d?.metaTitle ?? row.metaTitle ?? "");
-    const fallback = "navLabel" in row ? `${row.navLabel}` : row.title;
-    return [{ key: recordKey(c.r, c.id), region: c.region, path: c.path, title: metaTitle || `${fallback} | Rapid Medical™`, titleSet: !!metaTitle, description: String(d?.metaDescription ?? row.metaDescription ?? ""), settingsHref: c.adminHref }];
-  });
-
-  // …and the pages that keep them in Settings: one entry for every region of the page
-  const fields = SEO_SETTINGS[page.key];
-  if (fields)
-    for (const v of versions)
-      google.push({ key: `seo:${v.path}`, region: v.region, path: v.path, title: seo[fields.title] || `${page.title} | Rapid Medical™`, titleSet: !!seo[fields.title], description: seo[fields.description] ?? "", settingsHref: "/admin/settings?group=seo", inSettings: true });
-
   // the files on the page: the media library's files its records (live or pending) point at
   const texts = index.filter((x) => recs.some((r) => r.r === x.r && r.id === x.id)).map((x) => x.text);
   const files: PageFile[] = allMedia
@@ -128,7 +99,6 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[], pa
   return {
     region: (c: PageCard) => ({ edited: lastEdit.get(recordKey(c.r, c.id)) ?? null, publishes: scheduled.has(recordKey(c.r, c.id)) ? when(scheduled.get(recordKey(c.r, c.id))!) : null }),
     performance,
-    google,
     files,
     recent: recent.map((e) => {
       const res = e.resource ? getResource(e.resource) : null;

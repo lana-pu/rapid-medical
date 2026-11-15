@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { db, notFoundLog, redirects } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
-import { PageHeader, formatDate, inputCls, Button } from "@/components/admin/ui";
+import { OldLinksTabs } from "@/components/admin/OldLinksTabs";
+import { formatDate, inputCls, Button } from "@/components/admin/ui";
 
 export default async function NotFoundLogPage() {
   await requireUser(); // the layout checks too; a page never relies on it alone
@@ -34,7 +35,8 @@ export default async function NotFoundLogPage() {
 
   return (
     <>
-      <PageHeader title="Broken links" subtitle="Addresses visitors opened that lead nowhere. Send each to a page that exists, or dismiss it." />
+      <OldLinksTabs active="broken" broken={rows.length} />
+      <p className="mb-4 text-sm text-neutral-600">Addresses visitors opened that lead nowhere. Send each to a page that exists, or dismiss it.</p>
       {/* an empty list is good news: say so instead of an empty table (docs/audits/admin-ux-review-2026-11-15.md 7.6) */}
       {rows.length === 0 ? (
         <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-600">✓ No broken links: every address visitors opened led somewhere.</p>

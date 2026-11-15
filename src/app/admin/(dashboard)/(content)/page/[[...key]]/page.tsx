@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { REGION_CHOICES, REGIONS } from "@/lib/regions";
+import { PAUSED_REGIONS, REGION_CHOICES, REGIONS } from "@/lib/regions";
 import { DEMO, editorHref, withBase } from "@/lib/demo";
 import { adminPageHref, pageScreen } from "@/admin/site-tree";
 import { pageDetails, thumbsFor } from "@/admin/page-screen";
+import { seoPages } from "@/admin/seo";
 import { regionTexts } from "@/admin/page-editor";
 import { duplicateResource, publishResource } from "@/admin/actions";
 import { Crumbs, Notice } from "@/components/admin/ui";
@@ -91,7 +92,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
   }
 
   async function overview() {
-    const d = await pageDetails(cards, node.versions, { key, title: node.title });
+    const [d, seo] = await Promise.all([pageDetails(cards, node.versions), seoPages().then((all) => all.find((p) => p.key === key))]);
     return (
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-8">
@@ -166,35 +167,31 @@ export default async function SitePage({ params, searchParams }: { params: Promi
             )}
           </section>
 
+          {/* the same texts as in Search & sharing — one system (docs/screens/admin-seo.md) */}
           <section aria-label="Google">
-            <h2 className={h2}>How Google shows it</h2>
-            {d.google.length ? (
+            <div className="mb-3 flex items-baseline justify-between gap-3">
+              <h2 className={h2.replace("mb-3 ", "")}>How Google shows it</h2>
+              {seo && !DEMO && <Link href={`/admin/seo?page=${encodeURIComponent(key)}`} className="text-xs underline">Edit in Search &amp; sharing</Link>}
+            </div>
+            {seo ? (
               <ul className="space-y-3">
-                {d.google.map((g) => {
-                  const tl = g.title.length;
-                  const dl = g.description.length;
+                {seo.versions.filter((v) => !v.region || !PAUSED_REGIONS.includes(v.region)).map((g) => {
+                  const shown = g.title || g.fallbackTitle;
                   return (
                     <li key={g.key} className={`${card} p-4`}>
                       <div className="mb-2 flex items-center justify-between gap-2">
-                        <span className="text-xs font-medium text-neutral-500">{regionName(g.region)}</span>
-                        {!DEMO && <Link href={g.settingsHref} className="text-xs underline">{g.inSettings ? "Edit in Settings → Google titles" : "Edit"}</Link>}
+                        <span className="text-xs font-medium text-neutral-500">{g.label}</span>
+                        {g.problems.length > 0 && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] text-amber-900">{g.problems.join(" · ")}</span>}
                       </div>
-                      <div className="text-xs text-neutral-600">{SITE_HOST} › {g.path.split("/").filter(Boolean).join(" › ")}</div>
-                      <div className="truncate text-lg leading-snug text-blue-800">{g.title}</div>
+                      <div className="text-xs text-neutral-600">{SITE_HOST} › {g.path.split("?")[0].split("/").filter(Boolean).join(" › ")}</div>
+                      <div className="truncate text-lg leading-snug text-blue-800">{shown}</div>
                       <p className="line-clamp-2 text-sm text-neutral-700">{g.description || <span className="text-neutral-400">No description — Google will pick text from the page.</span>}</p>
-                      <p className="mt-2 text-xs">
-                        <span className={tl > 60 ? "text-amber-700" : "text-neutral-500"}>Title {tl}/60{g.titleSet ? "" : " (the page name)"}</span>
-                        <span className="text-neutral-300"> · </span>
-                        <span className={dl > 155 || dl === 0 ? "text-amber-700" : "text-neutral-500"}>Description {dl}/155</span>
-                      </p>
                     </li>
                   );
                 })}
               </ul>
             ) : (
-              <p className={`${card} p-4 text-sm text-neutral-600`}>
-                This page has no Google texts of its own: Google shows its name — “{node.title} | Rapid Medical™” — and picks a description from the page.
-              </p>
+              <p className={`${card} p-4 text-sm text-neutral-600`}>Google shows this page&apos;s name and picks a description from the page.</p>
             )}
           </section>
 

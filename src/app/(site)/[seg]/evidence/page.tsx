@@ -10,10 +10,11 @@ import { evidenceToBlocks, type EvidenceSettings } from "@/blocks/from-settings"
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string }> }) {
   const region = regionOr404((await params).seg);
-  const seo = await getSetting<Record<string, string>>("seo");
+  // the page's own fields (docs/screens/admin-seo.md); the former Settings texts as the fallback
+  const [page, seo] = await Promise.all([getSitePage("evidence", region), getSetting<Record<string, string>>("seo")]);
   return {
-    title: absoluteTitle(seo.evidenceTitle, "Evidence"),
-    description: seo.evidenceDescription || "Clinical research on neurovascular devices like Tigertriever, Comaneci & Drivewire.",
+    title: absoluteTitle(page?.metaTitle || seo.evidenceTitle, "Evidence"),
+    description: page?.metaDescription || seo.evidenceDescription || "Clinical research on neurovascular devices like Tigertriever, Comaneci & Drivewire.",
     alternates: regionalAlternates((r) => `/${r}/evidence`, [...REGIONS], region),
   };
 }

@@ -8,14 +8,17 @@ import { UNDER_HEADER } from "./chrome";
  * The second column of the Inbox and Settings spaces (docs/admin-ia.md): a short list of what is in the space.
  * Admin chrome: its own neutral palette.
  */
-export type NavItem = { href: string; label: string; count?: number; heading?: string };
+export type NavItem = { href: string; label: string; count?: number; heading?: string; /** other addresses that belong to this item (Old links: broken links and redirects) */ also?: string[] };
 
 export function SpaceNav({ title, items }: { title: string; items: NavItem[] }) {
   const path = usePathname();
   const sp = useSearchParams();
   const here = `${path}${sp.toString() ? `?${sp.toString()}` : ""}`;
   // the most specific item that matches: exact address with its query first, then the path
-  const active = items.find((i) => i.href === here) ?? items.find((i) => !i.href.includes("?") && (path === i.href || (i.href !== "/admin" && path.startsWith(`${i.href}/`))));
+  const active =
+    items.find((i) => i.href === here) ??
+    items.find((i) => !i.href.includes("?") && i.href !== "/admin/settings" && (path === i.href || path.startsWith(`${i.href}/`))) ??
+    items.find((i) => i.also?.some((a) => path === a || path.startsWith(`${a}/`)));
   return (
     <nav aria-label={title} className={`${UNDER_HEADER} flex w-60 flex-none flex-col border-r border-neutral-200 bg-white`}>
       <div className="px-4 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{title}</div>

@@ -18,7 +18,7 @@ export function spaceOf(path: string): Space {
   if (/^\/admin\/(inbox|submissions)(\/|$)/.test(path)) return "inbox";
   if (/^\/admin\/media(\/|$)/.test(path)) return "media";
   if (/^\/admin\/analytics(\/|$)/.test(path)) return "analytics";
-  if (/^\/admin\/(settings|users|activity|account|redirects|not-found-log)(\/|$)/.test(path)) return "settings";
+  if (/^\/admin\/(settings|users|activity|account|redirects|not-found-log|seo)(\/|$)/.test(path)) return "settings";
   return "content";
 }
 

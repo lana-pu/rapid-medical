@@ -464,6 +464,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | [admin-history](screens/admin-history.md) |
 | `/admin/settings?group=` | Site settings по группам (Menu and footer и Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | [admin-settings](screens/admin-settings.md) |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
+| `/admin/seo` | Search & sharing: тексты для Google всех страниц в одном месте — список с проблемами и редактор с превью; одно поле на страницу (запись или Settings) | [admin-seo](screens/admin-seo.md) |
 | `/admin/inbox` | Inbox: всё, что отправлено с сайта, и заметки; папки всегда видны, Subscribed + CSV для Mailchimp, что ушло мимо сайта (внешняя регистрация, Apply) | [admin-inbox](screens/admin-inbox.md) |
 | `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
 | `/admin/not-found-log` | Broken links: битые ссылки → редирект в один клик или dismiss | [admin-not-found-log](screens/admin-not-found-log.md) |

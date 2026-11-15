@@ -459,7 +459,14 @@ export const RESOURCES: Resource[] = [
       { name: "region", label: "Region", kind: "region" },
       { name: "status", label: "Status", kind: "status" },
     ],
-    fields: [{ name: "title", label: "Page name (in the admin)", type: "text", required: true }, blocksField, statusField],
+    fields: [
+      { name: "title", label: "Page name (in the admin)", type: "text", required: true },
+      blocksField,
+      // the same fields as in Search & sharing (docs/screens/admin-seo.md)
+      { name: "metaTitle", label: "Title in Google", type: "text", section: "Google and sharing", half: true, help: "Up to 60 characters. Empty — the page name." },
+      { name: "metaDescription", label: "Description in Google", type: "textarea", section: "Google and sharing", rows: 2, help: "Up to 155 characters. Empty — Google picks text from the page." },
+      statusField,
+    ],
   },
 
   /* ------------------------------------------------------------- */

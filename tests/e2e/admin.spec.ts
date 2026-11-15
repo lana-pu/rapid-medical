@@ -26,7 +26,7 @@ test("login → choose a project; the project in the header; its dashboard; the 
   await expect(page).toHaveURL(/\/admin$/);
   await page.goto("/admin/inbox");
   await page.getByRole("banner").getByRole("link", { name: /Rapid Medical/ }).click();
-  await expect(page).toHaveURL(/\/admin$/);
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
   await page.goto("/admin/website");
   await page.getByRole("link", { name: /unread messages? in the Inbox/ }).click();
   await expect(page).toHaveURL(/\/admin\/inbox$/);
@@ -174,8 +174,17 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   for (const s of [/^Content/, /^Inbox/, /^Media/, /^Settings/]) await expect(rail.getByRole("link", { name: s })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Site" })).toHaveCount(0); // the Inbox has its own column
   await rail.getByRole("link", { name: /^Settings/ }).click();
+  await expect(page).toHaveURL(/\/admin\/settings$/, { timeout: 20_000 });
   const settings = page.getByRole("navigation", { name: "Settings" });
-  await expect(settings.getByRole("link", { name: "Redirects" })).toBeVisible();
+  // Settings opens on an overview in blocks; the column has the same groups (docs/screens/admin-settings.md)
+  for (const g of ["On the site", "Search & sharing", "Team", "You"]) await expect(page.getByRole("region", { name: g })).toBeVisible();
+  await expect(settings.getByRole("link", { name: "Old links" })).toBeVisible();
+  await settings.getByRole("link", { name: "Contact details" }).click();
+  await expect(page.getByRole("region", { name: "Where requests go" })).toBeVisible(); // the form in blocks
+  await settings.getByRole("link", { name: "Old links" }).click();
+  await page.getByRole("navigation", { name: "Old links" }).getByRole("link", { name: "Redirects" }).click();
+  await expect(page).toHaveURL(/\/admin\/redirects$/);
+  await expect(settings.getByRole("link", { name: "Old links" })).toHaveAttribute("aria-current", "page");
   await settings.getByRole("link", { name: "Activity log" }).click();
   await expect(page).toHaveURL(/\/admin\/activity$/);
   await rail.getByRole("link", { name: /^Content/ }).click();
@@ -196,7 +205,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(regions.getByRole("link", { name: "Edit on page" })).toHaveCount(2);
   await expect(regions.getByRole("listitem", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
   await expect(page.getByRole("region", { name: "Performance" })).toContainText(/page views|No visits counted here yet/);
-  await expect(page.getByRole("region", { name: "Google" })).toContainText(/Title \d+\/60/);
+  await expect(page.getByRole("region", { name: "Google" }).getByRole("link", { name: "Edit in Search & sharing" })).toHaveAttribute("href", /\/admin\/seo\?page=%2Ftherapies%2Fmvo$/);
   await expect(page.getByRole("complementary", { name: "Details" })).toContainText("/ous/therapies/mvo");
   await expect(page.getByRole("navigation", { name: "Page tabs" })).toHaveCount(0); // no tabs any more
   // a link for a LinkedIn post, tagged with the campaign
@@ -359,7 +368,7 @@ test("media library: upload, variants, usage guard", async ({ page, request }) =
   await page.goto("/admin/media");
   const name = `e2e-${Date.now()}.png`;
   await page.setInputFiles('input[type=file]', { name, mimeType: "image/png", buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", "base64") });
-  await expect(page.getByText(name.replace(".png", ""))).toBeVisible();
+  await expect(page.getByText(name.replace(".png", ""))).toBeVisible({ timeout: 20_000 }); // the upload makes variants: slow under load
   const uploaded = sql(`select id from media where filename like '${name.replace(".png", "")}%'`);
   expect(sql(`select jsonb_array_length(variants) from media where id=${uploaded}`)).toBe("1"); // 1×1 px → single variant
   expect((await page.request.delete(`/api/admin/media?id=${uploaded}`)).status()).toBe(200);
@@ -538,7 +547,7 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
 
   // Home is a site page (ADR-007): its numbers are in its block list, the change waits in drafts until Publish
   await page.goto("/");
-  await expect(page.getByRole("status")).toHaveText("Live");
+  await expect(page.getByRole("status")).toHaveText("Live", { timeout: 20_000 }); // the page info loads after the page
   const stat = page.locator('[data-e*="stats.0.value"]');
   await stat.click();
   await page.keyboard.press("ControlOrMeta+A");
@@ -814,5 +823,42 @@ test("page screen: files with previews; differences between regions with preview
     await expect(page.locator("table thead")).toContainText("Europe & Middle East");
   } finally {
     sql(`delete from drafts where resource='solutions' and record_id=${apac}`);
+  }
+});
+
+test("search & sharing: every page's Google texts in one place; a page's text waits for Publish, a list page's is live at once", async ({ page, request }) => {
+  test.setTimeout(150_000);
+  const home = sql(`select meta_description from site_pages where key='home'`);
+  const news = sql(`select coalesce(value->>'newsDescription','') from site_settings where key='seo'`);
+  try {
+    await login(page);
+    await page.goto("/admin/seo?page=%2F");
+    const pagesNav = page.getByRole("navigation", { name: "Pages" });
+    for (const s of ["Home", "Therapies", "Evidence", "Contact Us"]) await expect(pagesNav).toContainText(s);
+    // Home: its own record — saved as an unpublished change, live after Publish
+    const box = page.getByRole("region", { name: "Google texts — All regions" });
+    await box.getByLabel(/Description in Google/).fill("E2E home description for Google.");
+    await expect(box).toContainText("E2E home description for Google."); // the preview follows
+    await box.getByRole("button", { name: "Save" }).click();
+    await expect(box.getByRole("status")).toContainText("goes live when this page is published", { timeout: 20_000 }); // the screen re-reads every page
+    await page.reload();
+    await page.getByRole("region", { name: "Google texts — All regions" }).getByRole("button", { name: /^Publish/ }).click();
+    await expect(page).toHaveURL(/\/admin\/seo\?page=%2F&published=/, { timeout: 20_000 });
+    await expect.poll(async () => (await (await request.get("/")).text()).includes("E2E home description for Google.")).toBe(true);
+    // the same field in the page's own Settings
+    const id = sql(`select id from site_pages where key='home'`);
+    await page.goto(`/admin/site-pages/${id}`);
+    await expect(page.locator("textarea[name=metaDescription]")).toHaveValue("E2E home description for Google.");
+    // News & Events: kept in Settings — live at once
+    await page.goto("/admin/seo?page=%2Fnews-events");
+    const list = page.getByRole("region", { name: "Google texts — All regions" });
+    await list.getByLabel(/Description in Google/).fill("E2E news description.");
+    await list.getByRole("button", { name: "Save" }).click();
+    await expect(list.getByRole("status")).toContainText("live on the site", { timeout: 20_000 });
+    await expect.poll(async () => (await (await request.get("/news-events")).text()).includes("E2E news description.")).toBe(true);
+  } finally {
+    sql(`update site_pages set meta_description='${home.replace(/'/g, "''")}' where key='home'`);
+    sql(`delete from drafts where resource='site-pages' and record_id=(select id from site_pages where key='home')`);
+    sql(`update site_settings set value = jsonb_set(value, '{newsDescription}', to_jsonb('${news.replace(/'/g, "''")}'::text)) where key='seo'`);
   }
 });

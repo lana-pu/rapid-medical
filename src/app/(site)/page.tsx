@@ -5,10 +5,17 @@ import { BlockList } from "@/blocks/render";
 import { homeToBlocks, type HomeSettings } from "@/blocks/from-settings";
 import { resolveBlocks } from "@/blocks/stored";
 import { PageMark } from "@/components/editor/PageMark";
+import type { Metadata } from "next";
 import { JsonLd, absUrl, siteUrl } from "@/components/site/JsonLd";
 
 type Contact = { phoneHq?: string; email?: string; offices?: { name?: string; label?: string; address?: string }[] };
 type Social = Record<string, string | undefined>;
+
+/** How Google shows the home page: its own fields (docs/screens/admin-seo.md); empty — the site's default. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getSitePage("home", null);
+  return { ...(page?.metaTitle ? { title: { absolute: page.metaTitle } } : {}), ...(page?.metaDescription ? { description: page.metaDescription } : {}) };
+}
 
 export default async function HomePage() {
   const [page, home, news, region, contact, social, branding] = await Promise.all([

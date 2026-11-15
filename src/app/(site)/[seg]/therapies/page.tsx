@@ -14,10 +14,11 @@ import { therapiesToBlocks, type TherapiesLanding as Landing } from "@/blocks/fr
 
 export async function generateMetadata({ params }: { params: Promise<{ seg: string }> }) {
   const region = regionOr404((await params).seg);
-  const landing = await getSetting<Landing>(`therapies:${region}`);
+  // the page's own fields (docs/screens/admin-seo.md); the former Settings texts as the fallback
+  const [page, landing] = await Promise.all([getSitePage("therapies", region), getSetting<Landing>(`therapies:${region}`)]);
   return {
-    title: absoluteTitle(landing.metaTitle, `Therapies – ${REGION_LABELS[region]}`),
-    description: landing.metaDescription || "Adjustable endovascular devices that adapt to each patient's anatomy.",
+    title: absoluteTitle(page?.metaTitle || landing.metaTitle, `Therapies – ${REGION_LABELS[region]}`),
+    description: page?.metaDescription || landing.metaDescription || "Adjustable endovascular devices that adapt to each patient's anatomy.",
     alternates: regionalAlternates((r) => `/${r}/therapies`, [...REGIONS], region),
   };
 }

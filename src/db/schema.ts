@@ -506,6 +506,9 @@ export const sitePages = pgTable(
     region: regionEnum("region"),
     title: text("title").notNull(),
     blocks: jsonb("blocks").$type<StoredBlock[]>().notNull().default([]),
+    /** How Google shows the page (docs/screens/admin-seo.md); empty title = the page name */
+    metaTitle: text("meta_title").notNull().default(""),
+    metaDescription: text("meta_description").notNull().default(""),
     status: statusEnum("status").notNull().default("published"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

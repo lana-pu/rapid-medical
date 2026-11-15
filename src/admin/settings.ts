@@ -39,6 +39,8 @@ export type SettingsGroup = {
   pageLabels?: boolean;
   /** what the site shows while the group has never been saved (the form and on-page edits start from it) */
   defaults?: Record<string, unknown>;
+  /** the form's blocks: a field's `section` → one line on what the block is for (docs/screens/admin-settings.md) */
+  sections?: Record<string, string>;
 };
 
 /** Live value of a group as the form and the page editor see it: defaults, then live, then the pending draft. */
@@ -48,18 +50,25 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
     key: "contact",
     title: "Contact details",
+    description: "Phones, emails and offices shown on the site, and where the contact form sends requests.",
     revalidate: ["/"],
+    sections: {
+      "Phones and email on the site": "In the footer of every page and on Contact Us.",
+      "Where requests go": "The contact form sends orders by region and IFU requests to these addresses; everything else goes to the main team address.",
+      Offices: "Shown on Contact Us with a map pin, and the first one in the footer.",
+    },
     fields: [
-      { name: "phoneHq", label: "HQ phone", type: "text", half: true },
-      { name: "phoneUs", label: "US phone", type: "text", half: true },
-      { name: "email", label: "General email", type: "text", half: true },
-      { name: "ordersEmailLtd", label: "Orders email (Ltd / OUS)", type: "text", half: true },
-      { name: "ordersEmailInc", label: "Orders email (Inc / US)", type: "text", half: true },
-      { name: "ordersEmailCanada", label: "Orders email (Canada)", type: "text", half: true },
-      { name: "ifuEmail", label: "IFU requests email", type: "text", half: true, help: "Contact form, topic “Instructions for Use (IFU)”. Orders go to the orders emails above by region; everything else to MAIL_TO." },
+      { name: "phoneHq", label: "Head office phone", type: "text", half: true, section: "Phones and email on the site" },
+      { name: "phoneUs", label: "US phone", type: "text", half: true, section: "Phones and email on the site" },
+      { name: "email", label: "General email", type: "text", half: true, section: "Phones and email on the site" },
+      { name: "ordersEmailInc", label: "Orders — Americas (Inc)", type: "text", half: true, section: "Where requests go" },
+      { name: "ordersEmailCanada", label: "Orders — Canada", type: "text", half: true, section: "Where requests go" },
+      { name: "ordersEmailLtd", label: "Orders — everywhere else (Ltd)", type: "text", half: true, section: "Where requests go" },
+      { name: "ifuEmail", label: "Instructions for Use (IFU) requests", type: "text", half: true, section: "Where requests go" },
       {
         name: "offices",
         label: "Offices",
+        section: "Offices",
         type: "repeater",
         fields: [
           { name: "name", label: "Entity", type: "text", required: true, half: true },
@@ -110,22 +119,26 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   })),
   {
     key: "seo",
-    title: "Google titles & descriptions",
-    description: "Titles are used as-is (include “| Rapid Medical”); keep titles ≤60 and descriptions ≤155 characters. Product pages have their own SEO fields.",
-    revalidate: ["/us/evidence", "/ous/evidence", "/apac/evidence", "/us/webinars", "/ous/webinars", "/apac/webinars", "/contact-us"],
+    title: "Google texts of list pages",
+    // the pages built from lists keep their Google texts here; every other page keeps them on itself — all of them
+    // are edited in Search & sharing (docs/screens/admin-seo.md)
+    description: "How Google shows the pages built from lists. All pages are in Search & sharing.",
+    revalidate: ["/us/webinars", "/ous/webinars", "/apac/webinars", "/contact-us", "/news-events", "/open-positions"],
     fields: [
-      { name: "evidenceTitle", label: "Evidence – title", type: "text", half: true },
-      { name: "evidenceDescription", label: "Evidence – description", type: "text", half: true },
       { name: "webinarsTitle", label: "Webinars – title", type: "text", half: true },
       { name: "webinarsDescription", label: "Webinars – description", type: "text", half: true },
-      { name: "contactTitleUs", label: "Contact (US) – title", type: "text", half: true },
-      { name: "contactDescriptionUs", label: "Contact (US) – description", type: "text", half: true },
-      { name: "contactTitleOus", label: "Contact (OUS) – title", type: "text", half: true },
-      { name: "contactDescriptionOus", label: "Contact (OUS) – description", type: "text", half: true },
-      { name: "contactTitleApac", label: "Contact (APAC) – title", type: "text", half: true },
-      { name: "contactDescriptionApac", label: "Contact (APAC) – description", type: "text", half: true },
-      { name: "contactTitle", label: "Contact (global) – title", type: "text", half: true },
-      { name: "contactDescription", label: "Contact (global) – description", type: "text", half: true },
+      { name: "newsTitle", label: "News & Events – title", type: "text", half: true },
+      { name: "newsDescription", label: "News & Events – description", type: "text", half: true },
+      { name: "jobsTitle", label: "Open positions – title", type: "text", half: true },
+      { name: "jobsDescription", label: "Open positions – description", type: "text", half: true },
+      { name: "contactTitle", label: "Contact Us – title", type: "text", half: true },
+      { name: "contactDescription", label: "Contact Us – description", type: "text", half: true },
+      { name: "contactTitleUs", label: "Contact Us (Americas) – title", type: "text", half: true },
+      { name: "contactDescriptionUs", label: "Contact Us (Americas) – description", type: "text", half: true },
+      { name: "contactTitleOus", label: "Contact Us (Europe & Middle East) – title", type: "text", half: true },
+      { name: "contactDescriptionOus", label: "Contact Us (Europe & Middle East) – description", type: "text", half: true },
+      { name: "contactTitleApac", label: "Contact Us (Asia & Pacific) – title", type: "text", half: true },
+      { name: "contactDescriptionApac", label: "Contact Us (Asia & Pacific) – description", type: "text", half: true },
     ],
   },
   {
