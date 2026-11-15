@@ -47,7 +47,7 @@ export function careersToStored(c: CareersSettings): StoredBlock[] {
 export function aboutToStored(about: AboutSettings): StoredBlock[] {
   // a placeholder office keeps the offices section in the list; its content comes from Contact details
   const blocks = aboutToBlocks({ about, offices: [{ name: "" }] as never, team: [] });
-  return toStored(blocks, { region: null }, { [find(blocks, "people")]: "team", [find(blocks, "officesMap", "offices")]: "offices", [find(blocks, "officesMap", "map")]: "officePins" });
+  return toStored(blocks, { region: null }, { [find(blocks, "text", "facts")]: "companyFacts", [find(blocks, "people")]: "team", [find(blocks, "officesMap", "offices")]: "offices", [find(blocks, "officesMap", "map")]: "officePins" });
 }
 
 export function evidenceToStored(cfg: EvidenceSettings, region: Region): StoredBlock[] {

@@ -55,13 +55,25 @@ export const teamCard = (m: TeamMember) => ({ name: m.name, title: m.title, long
 
 export type AboutSettings = { intro?: string; whatWeDoTitle?: string; whatWeDoBody?: string; leadershipIntro?: string; heroImageUrl?: string; mapTitle?: string; mapSub?: string; mapFallbackImageUrl?: string; closingLine?: string };
 
-export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; offices: Office[]; team: TeamMember[] }): Block[] {
+/** About facts counted from the records: publications (all regions) and the countries of the offices. */
+export function companyFacts(publications: number, offices: Office[]): { label: string; value: string }[] {
+  const tc = (s: string) => (s.length <= 3 ? s : s.charAt(0) + s.slice(1).toLowerCase());
+  const countries = [...new Set(offices.map((o) => (o.address ?? "").trim().split("\n").pop()?.trim() ?? "").filter(Boolean).map(tc))];
+  return [
+    ...(publications ? [{ label: "Clinical publications", value: String(publications) }] : []),
+    ...(countries.length ? [{ label: "Offices", value: countries.join(" · ") }] : []),
+  ];
+}
+
+export function aboutToBlocks({ about, offices, team, facts = [] }: { about: AboutSettings; offices: Office[]; team: TeamMember[]; facts?: { label: string; value: string }[] }): Block[] {
   const r = "settings:about";
   const blocks: Block[] = [{ type: "hero", variant: "page", data: { title: "About Us" } }];
-  if (about.intro || about.heroImageUrl) {
-    blocks.push({ type: "text", variant: "large", data: { body: about.intro, imageUrl: about.heroImageUrl }, edit: { r, map: { body: "intro", imageUrl: "heroImageUrl" } } });
-  }
-  blocks.push({ type: "text", variant: "surface", data: { title: about.whatWeDoTitle ?? "What we do", body: about.whatWeDoBody }, edit: { r, map: { title: "whatWeDoTitle", body: "whatWeDoBody" } } });
+  blocks.push({
+    type: "text",
+    variant: "facts",
+    data: { body: about.intro, imageUrl: about.heroImageUrl, title2: about.whatWeDoTitle ?? "What we do", body2: about.whatWeDoBody, countries: "30+", headquarters: "Yokneam, Israel", facts },
+    edit: { r, map: { body: "intro", imageUrl: "heroImageUrl", title2: "whatWeDoTitle", body2: "whatWeDoBody" } },
+  });
   blocks.push({
     type: "people",
     variant: "team",

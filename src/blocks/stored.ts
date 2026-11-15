@@ -50,6 +50,8 @@ export type SourceLists = {
   jobCount?: number;
   evidence?: EvidenceLists;
   therapies?: OverviewTherapy[];
+  /** About: figures counted from the records (publications, offices) */
+  facts?: { label: string; value: string }[];
 };
 
 const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -82,6 +84,8 @@ export const SOURCES: Record<string, Source> = {
     binding: { r: "settings:contact", map: { offices: "offices" } },
     fill: (_d, ctx) => (ctx.lists?.offices?.length ? { offices: ctx.lists.offices } : null),
   },
+  /** About: facts counted from the records (publications, office countries) — the page's own facts stay editable */
+  companyFacts: { keys: ["facts"], fill: (_d, ctx) => ({ facts: ctx.lists?.facts ?? [] }) },
   /** About: the map's pins — the same offices; the map's own texts stay editable on the page */
   officePins: { keys: ["offices"], fill: (_d, ctx) => ({ offices: ctx.lists?.offices ?? [] }) },
   /** Evidence: featured studies under the counter; the counter shows the number of studies unless typed in */

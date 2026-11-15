@@ -109,6 +109,12 @@ function regionFilter(table: { regions: PgColumn }, region: Region) {
   return or(sql`jsonb_array_length(${table.regions}) = 0`, sql`${table.regions} @> ${JSON.stringify([region])}::jsonb`);
 }
 
+/** All published publications, every region — the company-wide figure (About, Home). */
+export async function getPublicationCount() {
+  const rows = await db.query.publications.findMany({ columns: { id: true }, where: await visible(publications.status) });
+  return rows.length;
+}
+
 export async function getPublications(region: Region) {
   const rows = await db.query.publications.findMany({
     where: and(await visible(publications.status), regionFilter(publications, region)),

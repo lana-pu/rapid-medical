@@ -35,7 +35,8 @@ const therapies: OverviewTherapy[] = [
   { slug: "aneurysm", navLabel: "Aneurysm", heroTitle: "B", therapyGroup: "hemorrhagic" },
   { slug: "other", navLabel: "Other", heroTitle: "C", therapyGroup: "" },
 ];
-const lists: SourceLists = { news, team, offices, jobCount: 4, evidence, therapies };
+const facts = [{ label: "Clinical publications", value: "102" }];
+const lists: SourceLists = { news, team, offices, jobCount: 4, evidence, therapies, facts };
 
 describe("singleton pages render like before", () => {
   it("Home, with and without a known region", () => {
@@ -50,9 +51,9 @@ describe("singleton pages render like before", () => {
   });
   it("About (team and offices from their records)", () => {
     const stored = db(aboutToStored(S.about));
-    expect(plain(db(resolveBlocks(stored, { region: null, lists })))).toEqual(plain(db(aboutToBlocks({ about: S.about, offices, team }))));
+    expect(plain(db(resolveBlocks(stored, { region: null, lists })))).toEqual(plain(db(aboutToBlocks({ about: S.about, offices, team, facts }))));
     // no offices → no offices section, as before
-    expect(plain(db(resolveBlocks(stored, { region: null, lists: { ...lists, offices: [] } })))).toEqual(plain(db(aboutToBlocks({ about: S.about, offices: [], team }))));
+    expect(plain(db(resolveBlocks(stored, { region: null, lists: { ...lists, offices: [] } })))).toEqual(plain(db(aboutToBlocks({ about: S.about, offices: [], team, facts }))));
   });
   it.each(["us", "ous", "apac"] as const)("Evidence %s", (region) => {
     const stored = db(evidenceToStored(S.evidence, region));

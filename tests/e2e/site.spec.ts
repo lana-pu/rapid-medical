@@ -12,11 +12,13 @@ for (const path of PUBLIC) {
 test("seeded pages and bios keep their text", async ({ page }) => {
   await page.goto("/terms");
   await expect(page.getByRole("heading", { name: "1. Acceptance of the Terms" })).toBeVisible();
-  // Bios open on About (decision 2026-11-10): /team/{slug} lands on the card, "Read bio" opens it in place.
+  // Bios open on About (decision 2026-11-10): /team/{slug} lands on the card, two lines of the bio show at once,
+  // "Read full bio" opens the whole of it in place (DESIGN.md → About).
   await page.goto("/team/ronen");
   await expect(page).toHaveURL(/\/about-us#ronen$/);
-  await page.locator("#ronen").getByText("Read bio").click();
-  await expect(page.getByText("Ronen Eckhouse is the co-founder")).toBeVisible();
+  await expect(page.locator("#ronen")).toContainText("Co-Founder & CEO"); // the usual case, not CAPITALS
+  await page.locator("#ronen").getByText("Read full bio").click();
+  await expect(page.locator("#ronen details").getByText("Haas School of Business", { exact: false })).toBeVisible();
 });
 
 test("legacy URLs redirect", async ({ request }) => {
@@ -63,6 +65,10 @@ test("about page renders the interactive map", async ({ page }) => {
   await page.goto("/about-us");
   await expect(page.locator("svg path").first()).toBeVisible({ timeout: 15000 });
   await expect(page.getByText("UNITED STATES AND CANADA")).toBeVisible();
+  // the intro's facts: publications counted, offices from Contact details; each office card has directions
+  await expect(page.locator("dl").first()).toContainText("Clinical publications");
+  await expect(page.locator("dl").first()).toContainText("Israel · USA · Germany");
+  await expect(page.locator("#offices").getByText("Get directions ↗")).toHaveCount(3);
 });
 
 test("contact form stores a submission", async ({ page }) => {

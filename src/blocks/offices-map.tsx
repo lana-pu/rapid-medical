@@ -1,5 +1,5 @@
 import type { ActionLink } from "@/db/schema";
-import { Section, H2, Btn } from "@/components/site/primitives";
+import { Section, H2, Btn, KeyValue } from "@/components/site/primitives";
 import { WorldMap, type MapRegionKey } from "@/components/site/WorldMap";
 import { F } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
@@ -21,20 +21,46 @@ export type OfficesMapData = {
   button?: ActionLink | null;
 };
 
+/** «Headquarters · Israel»: the headquarters card also names the country (last line of the address). */
+export function officeCaption(o: Office): string {
+  const label = o.label ?? "";
+  if (label.toLowerCase() !== "headquarters") return label;
+  const country = (o.address ?? "").trim().split("\n").pop()?.trim() ?? "";
+  if (!country) return label;
+  return `${label} · ${country.length <= 3 ? country : country.charAt(0) + country.slice(1).toLowerCase()}`;
+}
+
+/** Google Maps directions to the office: by its map pin, otherwise by the address. */
+export function directionsUrl(o: Office): string | null {
+  if (o.lat != null && o.lon != null && Number.isFinite(o.lat) && Number.isFinite(o.lon)) return `https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lon}`;
+  const a = (o.address ?? "").replace(/\s+/g, " ").trim();
+  return a ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}` : null;
+}
+
 function OfficesMap({ variant, data: d, edit: e }: BlockProps<"officesMap">) {
   if (variant === "offices") {
     return (
       <Section className="bg-surface" id={d.anchor}>
         {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
-        <ul className="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-8 grid gap-6 md:grid-cols-3">
           {d.offices.map((o, i) => (
-            <li key={i} className="text-sm">
-              <div className="font-semibold"><F e={e} k={`offices.${i}.name`}>{o.name}</F></div>
-              {o.label && <div className="text-muted"><F e={e} k={`offices.${i}.label`}>{o.label}</F></div>}
-              {o.address && <p className="mt-2 whitespace-pre-line"><F e={e} k={`offices.${i}.address`}>{o.address}</F></p>}
-              {o.phone && <div className="mt-2">Tel: <a href={`tel:${o.phone}`}><F e={e} k={`offices.${i}.phone`}>{o.phone}</F></a></div>}
-              {o.fax && <div>Fax: <F e={e} k={`offices.${i}.fax`}>{o.fax}</F></div>}
-              {o.ordersEmail && <div className="mt-2">Orders: <a className="underline" href={`mailto:${o.ordersEmail}`}>{o.ordersEmail}</a></div>}
+            // one card per office (DESIGN.md → About): caption, legal name, address, contacts, directions
+            <li key={i} className="flex flex-col rounded border border-border bg-background p-6 text-sm">
+              {o.label && <div className="text-xs uppercase tracking-wide text-muted"><F e={e} k={`offices.${i}.label`}>{officeCaption(o)}</F></div>}
+              <div className="mt-1 text-base font-semibold"><F e={e} k={`offices.${i}.name`}>{o.name}</F></div>
+              {o.address && <p className="mt-3 whitespace-pre-line text-muted"><F e={e} k={`offices.${i}.address`}>{o.address}</F></p>}
+              <div className="mt-4">
+                <KeyValue
+                  rows={[
+                    ...(o.phone ? [{ label: "Phone", value: <a href={`tel:${o.phone}`} className="underline"><F e={e} k={`offices.${i}.phone`}>{o.phone}</F></a> }] : []),
+                    ...(o.fax ? [{ label: "Fax", value: <F e={e} k={`offices.${i}.fax`}>{o.fax}</F> }] : []),
+                    ...(o.ordersEmail ? [{ label: "Orders", value: <a href={`mailto:${o.ordersEmail}`} className="underline">{o.ordersEmail.split("@")[0]}<wbr />@{o.ordersEmail.split("@").slice(1).join("@")}</a> }] : []),
+                  ]}
+                />
+              </div>
+              {directionsUrl(o) && (
+                <a href={directionsUrl(o)!} target="_blank" rel="noopener noreferrer" className="mt-auto pt-4 underline">Get directions ↗</a>
+              )}
             </li>
           ))}
         </ul>
@@ -70,7 +96,7 @@ export const officesMap: BlockDef<"officesMap"> = {
   description: "Company offices from the contact settings: a list, or a world map with a contact line.",
   category: "system",
   variants: [
-    { id: "offices", label: "Office list", description: "Grey band, address and phones of each office" },
+    { id: "offices", label: "Office cards", description: "Grey band, a card per office: address, phones, orders email, directions" },
     { id: "map", label: "World map", description: "Click on a region opens its contact page" },
   ],
   fields: [
