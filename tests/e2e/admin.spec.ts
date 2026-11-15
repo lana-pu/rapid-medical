@@ -793,6 +793,13 @@ test("page screen: files with previews; differences between regions with preview
     await expect.poll(() => sql(`select (data::text like '%E2E text for Asia & Pacific%')::text from drafts where resource='solutions' and record_id=${apac}`)).toBe("true");
     await expect(table.locator("thead")).toContainText("unpublished changes");
     await expect(table).toContainText("E2E text for Asia & Pacific");
+    // the eye: a region leaves the table and stays hidden after a reload; a click brings it back
+    await table.getByRole("button", { name: "Hide Europe & Middle East" }).click();
+    await expect(table.locator("thead")).not.toContainText("Europe & Middle East");
+    await page.reload();
+    await expect(page.locator("table thead")).not.toContainText("Europe & Middle East");
+    await page.getByRole("group", { name: "Regions in the table" }).getByRole("button", { name: /Europe & Middle East/ }).click();
+    await expect(page.locator("table thead")).toContainText("Europe & Middle East");
   } finally {
     sql(`delete from drafts where resource='solutions' and record_id=${apac}`);
   }
