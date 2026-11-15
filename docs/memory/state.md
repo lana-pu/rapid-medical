@@ -383,3 +383,7 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   статус/регион словами; «Showing 1–50 of 53»), Home: одинаковые действия подряд склеены, настоящие названия с
   регионом, без противоречия «Nothing waiting»; одно название правки (Edit the site / Edit on page); время в Inbox —
   израильское, как в заявке.
+- Settings словами: People (роль читается и меняется сразу, редкое — в More, «Two-step: On»), Activity (предложения,
+  склейка повторов, Sign-ins отдельно, без JSON), Redirects (From · To · Used, «Temporary» меткой), Broken links (слова,
+  пустое — «✓ No broken links»). Google-превью у всех страниц (Evidence/Webinars/Contact — из Settings с подписью,
+  Home/About — «своих текстов нет»), пустой Performance — одной строкой, линейные иконки на полоске.
