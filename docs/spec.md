@@ -172,7 +172,8 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |
 | `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda) |
-| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `note` (заметка для команды), `ip`, `userAgent` |
+| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `readAt` (открыли), `note` (прежняя заметка), `ip`, `userAgent` |
+| `request_notes` | Лента заметок команды к заявке: `submissionId`, `userId`, `userName`, `body`, `createdAt` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
 | `not_found_log` | Публичные 404 (дедуп по пути) для создания редиректов |
 

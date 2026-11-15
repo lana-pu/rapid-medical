@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, gte, isNull, like, or } from "drizzle-orm";
+import { and, count, desc, eq, gte, isNull, like, ne, or } from "drizzle-orm";
 import { comments, contactSubmissions, db, events, jobs, pageViews } from "@/db";
 import { isPast } from "@/lib/events";
 import { whereTo } from "@/lib/subscribers";
@@ -51,7 +51,7 @@ export async function inboxMessages(): Promise<Message[]> {
     subject: r.topic ? `${formLabel(r.form)} · ${r.topic}` : formLabel(r.form),
     snippet: (r.message ?? "").replace(/\s+/g, " ").slice(0, 160),
     at: r.createdAt.toISOString(),
-    unread: r.status === "new",
+    unread: !r.readAt && r.status !== "spam", // open = read, like mail (docs/screens/admin-requests.md)
     folder: r.form,
     status: r.status,
     optIn: r.optIn,
@@ -78,10 +78,10 @@ export async function inboxMessages(): Promise<Message[]> {
   return out.sort((a, b) => b.at.localeCompare(a.at));
 }
 
-/** For the rail: requests nobody has opened yet, and open notes. */
+/** For the rail: requests nobody has opened yet (not spam), and open notes. */
 export async function unreadCount(): Promise<number> {
   const [[a], [b]] = await Promise.all([
-    db.select({ n: count() }).from(contactSubmissions).where(eq(contactSubmissions.status, "new")),
+    db.select({ n: count() }).from(contactSubmissions).where(and(isNull(contactSubmissions.readAt), ne(contactSubmissions.status, "spam"))),
     db.select({ n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt))),
   ]);
   return Number(a?.n ?? 0) + Number(b?.n ?? 0);

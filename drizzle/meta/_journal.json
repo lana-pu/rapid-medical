@@ -148,6 +148,13 @@
       "when": 1794704368756,
       "tag": "0020_page_views",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1794713434408,
+      "tag": "0021_request_read_notes",
+      "breakpoints": true
     }
   ]
 }

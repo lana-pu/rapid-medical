@@ -37,8 +37,10 @@ test("login → choose a project; the project in the header; its dashboard; the 
   await msg.click();
   await expect(page).toHaveURL(/\/admin\/submissions\/\d+$/);
   await expect(page.locator("main")).toContainText("home@example.com");
+  // opened = read, like mail
+  await expect.poll(() => sql(`select read_at is not null from contact_submissions where email='home@example.com'`)).toBe("t");
   await inbox.getByRole("tab", { name: /^Unread/ }).click();
-  await expect(inbox.getByRole("link", { name: /E2E Home/ })).toHaveCount(1);
+  await expect(inbox.getByRole("link", { name: /E2E Home/ })).toHaveCount(0);
   await expect(inbox.getByText(/pictures? without a description/)).toHaveCount(0);
   // Content: the tree and + New page
   await page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Content/ }).click();
@@ -115,31 +117,48 @@ test("new publication: mistakes listed on top with links, month and year, Israel
   await expect(page.locator("input[name=publishedOn]")).toHaveValue(/^\d{4}-\d{2}$/);
 });
 
-test("requests: who answers, status and a note for the team; filters", async ({ page }) => {
+test("requests: opened = read; Reply opens the ready email and marks who answers; Done, notes as a thread; filters", async ({ page }) => {
   sql(`delete from contact_submissions where email='req@example.com'`);
-  sql(`insert into contact_submissions(form,topic,first_name,last_name,organization,email,region,status) values ('contact','Request a demo','Laura','Mendes','Hospital São José','req@example.com','Americas','new')`);
+  sql(`insert into contact_submissions(form,topic,first_name,last_name,organization,email,region,status,message) values ('contact','Request a demo','Laura','Mendes','Hospital São José','req@example.com','Americas','new','Please call me back')`);
   const id = sql("select id from contact_submissions where email='req@example.com'");
   try {
     await login(page);
     await page.goto("/admin/submissions");
     await expect(page.getByRole("tab", { name: /New/, selected: true })).toBeVisible();
-    await expect(page.getByText("Laura Mendes, Hospital São José")).toBeVisible();
     await page.getByText("Laura Mendes, Hospital São José").click();
     await expect(page.getByRole("heading", { name: "Request a demo" })).toBeVisible();
-    await page.getByRole("button", { name: "I'll answer" }).click();
-    await page.waitForURL(/saved=1/);
-    expect(sql(`select status || '|' || (assigned_to_id is not null) from contact_submissions where id=${id}`)).toBe("in_progress|true");
-    await expect(page.getByText(/took it/)).toBeVisible(); // the page shows the new state (the form is rebuilt with it)
-    await expect(page.getByLabel("Who answers")).not.toHaveValue("");
-    await page.getByLabel("Note for the team").fill("Called back, demo on Friday");
-    await page.getByRole("button", { name: "Save" }).click();
-    await expect.poll(() => sql(`select note from contact_submissions where id=${id}`)).toBe("Called back, demo on Friday");
-    await expect(page.getByText(/took it/)).toBeVisible();
+    await expect.poll(() => sql(`select read_at is not null from contact_submissions where id=${id}`)).toBe("t");
+    await expect(page.getByLabel("Request state")).toContainText("New · nobody answers");
+    // the ready email: to, subject, greeting, the quoted message
+    const reply = page.getByRole("link", { name: /Reply/ });
+    const href = decodeURIComponent((await reply.getAttribute("href")) ?? "");
+    expect(href).toMatch(/^mailto:req@example\.com\?/);
+    expect(href).toContain("subject=Re: Request a demo — Rapid Medical");
+    expect(href).toContain("Dear Laura Mendes,");
+    expect(href).toContain("> Please call me back");
+    // Reply marks me as the one who answers, In progress (the mail program itself is not opened in the test)
+    await reply.evaluate((a) => a.addEventListener("click", (e) => e.preventDefault(), { once: true }));
+    await reply.click();
+    await expect.poll(() => sql(`select status || '|' || (assigned_to_id is not null) from contact_submissions where id=${id}`)).toBe("in_progress|true");
+    await expect(page.getByLabel("Request state")).toContainText("In progress · you answer");
+    // a note for the team: one more entry of the thread
+    await page.getByLabel("New note").fill("Called back, demo on Friday");
+    await page.getByRole("button", { name: "Add note" }).click();
+    await expect(page.getByRole("region", { name: "Notes for the team" })).toContainText("Called back, demo on Friday");
+    expect(sql(`select count(*) from request_notes where submission_id=${id}`)).toBe("1");
     // mine, in progress
     await page.goto("/admin/submissions?status=in_progress&mine=1&form=contact");
     await expect(page.getByText("Laura Mendes, Hospital São José")).toBeVisible();
     await page.goto("/admin/submissions?status=in_progress&form=webinar");
     await expect(page.getByText("Laura Mendes, Hospital São José")).toHaveCount(0);
+    // Done at once, without Save; then Reopen
+    await page.goto(`/admin/submissions/${id}`);
+    await page.getByRole("button", { name: "✓ Done" }).click();
+    await expect(page.getByRole("button", { name: "Reopen" })).toBeVisible();
+    expect(sql(`select status from contact_submissions where id=${id}`)).toBe("done");
+    // who answers: saved as soon as it is chosen
+    await page.getByLabel("Who answers").selectOption("");
+    await expect.poll(() => sql(`select assigned_to_id is null from contact_submissions where id=${id}`)).toBe("t");
   } finally {
     sql(`delete from contact_submissions where id=${id}`);
   }
