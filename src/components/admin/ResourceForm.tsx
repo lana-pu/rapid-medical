@@ -318,7 +318,6 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
         return (
           <div className={wrap}>
             <Label f={f} error={error} />
-            <input type="hidden" name={name} value={str} />
             <p className="py-2 text-sm text-neutral-800">{regionLabel(str)}</p>
             <p className="text-xs text-neutral-500">For another region, create its version on the page&apos;s screen.</p>
           </div>

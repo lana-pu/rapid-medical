@@ -40,7 +40,8 @@ async function persist(fd: FormData): Promise<Persisted | { state: NonNullable<S
   let data = parsed.data;
   if (id) {
     const current = await getEditable(res, id);
-    if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
+    // …and fields fixed when the record was created (a page's region): the server keeps them, whatever the form sends
+    if (current) for (const f of res.fields) if (f.onPage || f.fixedAfterCreate) data[f.name] = current.row[f.name];
   } else if (res.onCreate) data = res.onCreate(data);
 
   try {

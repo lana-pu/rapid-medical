@@ -168,6 +168,7 @@ export function parseForm(res: Resource, fd: FormData): { data: Row; errors: Fie
   const errors: FieldErrors = {};
   for (const f of res.fields) {
     if (f.onPage) continue; // edited on the page (ADR-007); the caller keeps the current value
+    if (f.fixedAfterCreate && fd.get("__id")) continue; // set when created (a page's region); the caller keeps it
     data[f.name] = parseField(f, fd.get(f.name), errors, f.name);
   }
   return { data, errors };
