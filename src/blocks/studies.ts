@@ -16,6 +16,8 @@ type Study = {
   source: { label: string; href?: string };
   meta: { label: string; value: string }[];
   links: { label: string; href: string }[];
+  /** the full document shown on the page under the text (decision 2026-11-15: the study itself, not a link) */
+  pdf: { href: string; title: string; caption?: string };
 };
 
 export const STUDIES: Record<string, Study> = {
@@ -90,7 +92,8 @@ export const STUDIES: Record<string, Study> = {
         "label": "Full article — JNIS (PDF)",
         "href": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf"
       }
-    ]
+    ],
+    "pdf": {"href": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf", "title": "SUCCESS — full article", "caption": "Full article as published in the Journal of NeuroInterventional Surgery (JNIS)."}
   },
   "distals-results": {
     "hero": {
@@ -155,7 +158,8 @@ export const STUDIES: Record<string, Study> = {
         "label": "Results presentation — ESOC 2026 (PDF)",
         "href": "/uploads/duda/DISTALS-ESOC-May-2026-for-web-a86bcf.pdf"
       }
-    ]
+    ],
+    "pdf": {"href": "/uploads/duda/DISTALS-ESOC-May-2026-for-web-a86bcf.pdf", "title": "DISTALS — final results, ESOC 2026", "caption": "Final Results of the DISTALS Randomized Trial — presentation, ESOC, May 2026."}
   },
   "LongTerm_Outcomes": {
     "hero": {
@@ -228,7 +232,8 @@ export const STUDIES: Record<string, Study> = {
         "label": "Open the original ↗",
         "href": "https://doi.org/10.1227/ons.0000000000001932"
       }
-    ]
+    ],
+    "pdf": {"href": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf", "title": "Long-term outcomes — full article", "caption": "Onikijuk J et al., Operative Neurosurgery 2026."}
   }
 };
 
@@ -246,6 +251,6 @@ export function studyPageBlocks(slug: string, blocks: StoredBlock[] | null | und
     hero,
     { id: newBlockId(), type: "keyNumbers", variant: "figures", data: { items: s.figures } },
     { id: newBlockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: s.passport, source: s.source } },
-    { ...blocks[1], variant: "document", data: { ...blocks[1].data, meta: s.meta, links: s.links } },
+    { ...blocks[1], variant: "document", data: { ...blocks[1].data, meta: s.meta, links: s.links, pdf: s.pdf } },
   ];
 }

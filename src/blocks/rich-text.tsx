@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { safeHref } from "@/lib/safe-path";
+import { PdfViewer, isLocalPdf } from "@/components/site/PdfViewer";
 import { Section, Prose, KeyValue } from "@/components/site/primitives";
 import { safeHtml } from "@/lib/html";
 import { F } from "./edit";
@@ -14,6 +15,8 @@ export type RichTextData = {
   /** `document` on a study or material page: source rows (journal, date…) and links (Download PDF, the original) */
   meta?: { label: string; value: string }[];
   links?: { label: string; href: string }[];
+  /** `document`: the full document shown on the page under the text (our own PDF only) */
+  pdf?: { href: string; title?: string; caption?: string } | null;
 };
 
 const plain = (h: string) => h.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "’").replace(/\s+/g, " ").trim();
@@ -60,7 +63,8 @@ function RichText({ variant, data: d, edit: e, nested }: BlockProps<"richText">)
     const related = d.related ?? [];
     const meta = (d.meta ?? []).filter((m) => m.label && m.value);
     const links = (d.links ?? []).filter((l) => l.label && l.href);
-    if (lastRevised || toc.length > 2 || related.length || meta.length || links.length) {
+    const pdf = d.pdf && isLocalPdf(d.pdf.href) ? d.pdf : null;
+    if (lastRevised || toc.length > 2 || related.length || meta.length || links.length || pdf) {
       const inner = (
         <div className="mt-8 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
           <aside className="md:col-span-4">
@@ -88,7 +92,11 @@ function RichText({ variant, data: d, edit: e, nested }: BlockProps<"richText">)
               )}
             </div>
           </aside>
-          <div className="min-w-0 md:col-span-7 md:col-start-6"><F e={e} k="html" kind="rich"><Prose html={body} /></F></div>
+          <div className="min-w-0 md:col-span-7 md:col-start-6">
+            {/* a page whose whole text is one «Open PDF» link shows the PDF instead of the link */}
+            {!(pdf && plain(body) === "Open PDF") && <F e={e} k="html" kind="rich"><Prose html={body} /></F>}
+            {pdf && <div className={plain(body) === "Open PDF" ? "" : "mt-10"}><PdfViewer href={pdf.href} title={pdf.title ?? "Document"} caption={pdf.caption} /></div>}
+          </div>
         </div>
       );
       return nested ? inner : <Section>{inner}</Section>;

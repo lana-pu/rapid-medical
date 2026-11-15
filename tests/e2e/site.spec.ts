@@ -304,4 +304,9 @@ test("publications, news and studies have their own pages (docs/screens/material
   await expect(page.getByRole("heading", { name: "Study at a glance" })).toBeVisible();
   await expect(page.getByText("90 consecutive subjects")).toBeVisible();
   await expect(page.getByText("95%", { exact: true })).toBeVisible();
+  // the study itself is shown on the page, not linked (decision 2026-11-15)
+  await expect(page.locator("object[type='application/pdf']")).toHaveCount(1);
+  await page.goto("/LongTerm_Outcomes");
+  await expect(page.locator("object[type='application/pdf']")).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Open PDF" })).toHaveCount(0);
 });

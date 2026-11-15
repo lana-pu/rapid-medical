@@ -9,8 +9,16 @@ import { safeHref } from "@/lib/safe-path";
 import { REGION_LABELS } from "@/lib/regions";
 import { Section, H1, Eyebrow, KeyValue, Btn, formatMonth } from "@/components/site/primitives";
 import { ShareLinks } from "@/components/site/ShareLinks";
+import { PdfViewer, isLocalPdf } from "@/components/site/PdfViewer";
 
 type Params = Promise<{ seg: string; pub: string }>;
+
+/** Under a PDF copied from an open-access source: its licence and where it came from (the licence asks for it). */
+function pdfCaption(p: { pdfLicense?: string | null; pdfSource?: string | null; authors?: string | null; journal?: string | null }) {
+  if (!p.pdfLicense) return null;
+  const by = p.authors ? `© the authors` : "";
+  return [by, `open access, ${p.pdfLicense}`, p.journal, p.pdfSource ? `source: ${p.pdfSource}` : ""].filter(Boolean).join(" · ");
+}
 
 async function load(params: Params) {
   const { seg, pub } = await params;
@@ -26,8 +34,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return { title: `${p.title} – Evidence`, description: [p.journal, formatMonth(p.publishedOn), REGION_LABELS[region]].filter(Boolean).join(" · ") };
 }
 
-/** A local PDF can be shown on the page (same origin); one on another site is a link. */
-const localPdf = (u: string | null | undefined) => !!u && /^\/uploads\/[^?#]+\.pdf(?:[?#].*)?$/i.test(u);
 
 /**
  * A publication's own page (docs/screens/material.md, ADR-009; every record has one — decision 2026-11-15): the
@@ -80,11 +86,9 @@ export default async function PublicationPage({ params }: { params: Params }) {
             <ShareLinks title={p.title} />
           </aside>
           <div className="min-w-0 md:col-span-7 md:col-start-6">
-            {pdf && localPdf(pdf) ? (
+            {pdf && isLocalPdf(pdf) ? (
               // «embed the PDF» mode of the template: pages here, download beside
-              <object data={pdf} type="application/pdf" aria-label={`${p.title} (PDF)`} className="h-[80vh] w-full rounded border border-border">
-                <p className="p-6 text-sm">This browser cannot show the PDF here. <a href={pdf} className="underline">Download PDF</a></p>
-              </object>
+              <PdfViewer href={pdf} title={p.title} caption={pdfCaption(p)} />
             ) : (
               <div className="rounded border border-border bg-surface p-6">
                 <p>The full article is published {p.journal ? <>in <em>{p.journal}</em></> : "by its journal"}.</p>

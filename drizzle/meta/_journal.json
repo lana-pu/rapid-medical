@@ -176,6 +176,13 @@
       "when": 1794724241406,
       "tag": "0024_evidence_overview_library",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794755268320,
+      "tag": "0025_publication_pdf_licence",
+      "breakpoints": true
     }
   ]
 }

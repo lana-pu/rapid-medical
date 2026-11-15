@@ -230,6 +230,8 @@ export const RESOURCES: Resource[] = [
       { name: "productId", label: "Product", type: "product", half: true },
       { name: "url", label: "Link (DOI / journal)", type: "url", half: true },
       { name: "pdfUrl", label: "PDF", type: "url", half: true },
+      { name: "pdfLicense", label: "PDF licence", type: "text", half: true, help: "For a PDF copied from an open-access source, e.g. CC BY 4.0. Shown under the PDF." },
+      { name: "pdfSource", label: "PDF source", type: "url", half: true, help: "Where the open-access PDF was taken from." },
       { name: "doi", label: "DOI", type: "text", half: true },
       { name: "regions", label: "Show in regions", type: "regions", half: true, help: "Leave empty for all." },
       { name: "featured", label: "Featured on Evidence page", type: "boolean", half: true },
