@@ -387,3 +387,10 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   склейка повторов, Sign-ins отдельно, без JSON), Redirects (From · To · Used, «Temporary» меткой), Broken links (слова,
   пустое — «✓ No broken links»). Google-превью у всех страниц (Evidence/Webinars/Contact — из Settings с подписью,
   Home/About — «своих текстов нет»), пустой Performance — одной строкой, линейные иконки на полоске.
+
+## 2026-11-15 — Settings блоками, Google-тексты в одном месте, медиатека в порядке
+- Settings открывается обзором блоками; Search & sharing (`/admin/seo`) — Google-тексты всех страниц, свои поля у
+  Home/About/Careers/Evidence/Therapies (миграция 0022). Old links = Broken links + Redirects.
+- Медиатека: группы слева по месту использования (страницы по разделам, Other pages, списки, Site settings), Not used,
+  No description, типы; страница — файлы по секциям; удаление неиспользуемых пачкой после списка
+  (`src/admin/media-library.ts`). Сессия: `sessions/2026-11-15-admin-ux.md`.
