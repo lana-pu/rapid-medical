@@ -23,6 +23,8 @@
 -o "-p 55432 -c unix_socket_directories=''" -l …/pg.log start` (без сокета: путь длиннее 103 байт). Заполняется
 прогоном e2e (global-setup: migrate + seed --reset). **Не держать базу во временной папке сессии**: в полночь система
 её чистит — так 2026-11-15 пропал прежний кластер (`/private/tmp/…/scratchpad/pgapp`), тестовые данные пересозданы.
+Ветка `site-redesign` (worktree `projects/rapid-medical-redesign`) работает со своей базой `rapid_medical_redesign` в
+том же кластере (копия через `pg_dump`, `.env` worktree); её e2e и миграции не трогают базу `main`. Dev ветки — порт 3300.
 
 Домен: `www.rapid-medical.com` фигурирует как дефолт `NEXT_PUBLIC_SITE_URL` в коде; DNS на приложение
 **не переключён** (не подтверждено). Legacy-поддомены `us./ous./apac.` и `*-rapid-medical.juuced.co`

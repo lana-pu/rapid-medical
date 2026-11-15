@@ -35,6 +35,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-15 | Закрытые страницы сайта в коде (ветка `site-redesign`): Contact, Legal, About, Careers, обзор терапий, окно региона | [2026-11-15-site-redesign-code.md](sessions/2026-11-15-site-redesign-code.md) |
 | 2026-11-14 | Страницы сайта на вайрфреймах по одной: 7 закрыто, страница из документа, ADR-009, Evidence-ресёрч | [2026-11-14-site-pages-wireframes.md](sessions/2026-11-14-site-pages-wireframes.md) |
 | 2026-11-12 | Рабочий редактор страниц: список блоков в базе, секции, проверка, история, Pages, демо | [2026-11-12-page-editor.md](sessions/2026-11-12-page-editor.md) |
 | 2026-11-11 | Аудит Emily по GA4: регионы, кнопки продукта, аналитика, события, медиа-окно, JSON-LD | [2026-11-11-emily-audit-site.md](sessions/2026-11-11-emily-audit-site.md) |

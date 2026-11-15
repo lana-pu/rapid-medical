@@ -353,3 +353,10 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   телефоном офиса по региону; `src/lib/reply-mail.ts`) · Done/Reopen · Spam/Not spam · Who answers — сразу, без Save;
   заметки команды — лентой (`request_notes`). Тексты шаблонов — черновики, формулировки за Emily.
 - «This week» на дашборде — цифры с первого дня, «Visits counted since …» пока счётчику меньше недели.
+
+## 2026-11-15 — закрытые страницы сайта в коде (ветка `site-redesign`)
+- Worktree `projects/rapid-medical-redesign`, ветка `site-redesign` (в origin, в `main` не влита), dev — порт 3300,
+  своя база `rapid_medical_redesign`. В коде: Contact Us, юридические, About, Careers, обзор терапий, окно выбора
+  региона (миграции 0021–0023). Перед слиянием — полный e2e на продакшн-сборке. Сессия:
+  `sessions/2026-11-15-site-redesign-code.md`.
+
