@@ -17,6 +17,13 @@
 | Статическое демо, GitHub Pages | `npm run demo:export` → `out/` → ветка `gh-pages` → https://lana-pu.github.io/rapid-medical/ | только на этапе сборки (нужен `DATABASE_URL`) | копия в `out/` | **единственная живая среда**; цель — сбор информации с Duda, структура не проработана |
 | Любой Node-хост (Railway, Fly, VPS, Docker) | `npx tsx scripts/bootstrap.ts && next start` | любой Postgres | для >1 инстанса — S3 + Redis для лимитера | описано в README, не используется |
 
+**Локальная база этой машины (сессии Claude, 2026-11-15):** Postgres.app 18, отдельный кластер на порту 55432
+(`DATABASE_URL` в `.env`), данные — `~/Library/Application Support/rapid-medical/pg-data`, лог рядом (`pg.log`). Запуск:
+`/Applications/Postgres.app/Contents/Versions/18/bin/pg_ctl -D "~/Library/Application Support/rapid-medical/pg-data"
+-o "-p 55432 -c unix_socket_directories=''" -l …/pg.log start` (без сокета: путь длиннее 103 байт). Заполняется
+прогоном e2e (global-setup: migrate + seed --reset). **Не держать базу во временной папке сессии**: в полночь система
+её чистит — так 2026-11-15 пропал прежний кластер (`/private/tmp/…/scratchpad/pgapp`), тестовые данные пересозданы.
+
 Домен: `www.rapid-medical.com` фигурирует как дефолт `NEXT_PUBLIC_SITE_URL` в коде; DNS на приложение
 **не переключён** (не подтверждено). Legacy-поддомены `us./ous./apac.` и `*-rapid-medical.juuced.co`
 обрабатываются proxy, если DNS будет направлен на приложение.
@@ -74,6 +81,8 @@ Vercel подставляет `Authorization: Bearer $CRON_SECRET` сам. Вн�
 `.github/workflows/ci.yml`: на push в `main` и на любой PR. Ubuntu, Node 22, сервис `postgres:16-alpine`,
 ffmpeg. Шаги: `npm ci` → `.env` из примера → `lint` → `typecheck` → `npm test` (Vitest) →
 Playwright chromium → `npm run test:e2e`; при падении — артефакт `test-results`. CI не деплоит.
+**Урок 2026-11-15:** сборка идёт на пустой базе (миграции — в global-setup e2e, после сборки), поэтому страницы не
+должны читать базу при сборке (`generateStaticParams` с запросом к БД уронил CI на 703b156…590d0cd).
 
 ## Мониторинг и логи
 `GET /api/health` (select 1, 200/503). Внешнего аптайм-мониторинга, error-трекинга, бэкапов БД в репозитории

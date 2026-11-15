@@ -4,20 +4,10 @@ import { requireUser } from "@/lib/auth";
 import { REGION_CHOICES, REGIONS } from "@/lib/regions";
 import { DEMO, editorHref, withBase } from "@/lib/demo";
 import { adminPageHref, pageScreen } from "@/admin/site-tree";
-import { listEditorPages } from "@/admin/pages-index";
-import { buildPageTree, type PageNode } from "@/admin/page-tree";
 import { LinkButton, formatDate } from "@/components/admin/ui";
 import { PageTabs } from "@/components/admin/PageTabs";
 
 /** One page of the site: its regions, the collections it shows, the pages under it (docs/screens/admin-sections.md). */
-
-export async function generateStaticParams() {
-  // the demo export needs every page of the tree
-  const keys: string[] = [];
-  const walk = (ns: PageNode[]) => ns.forEach((n) => { if (n.versions.length) keys.push(n.key); walk(n.children); });
-  walk(buildPageTree(await listEditorPages()));
-  return keys.map((k) => ({ key: k === "/" ? [] : k.slice(1).split("/") }));
-}
 
 const STATUS = {
   live: { text: "Live", cls: "bg-emerald-100 text-emerald-800" },
