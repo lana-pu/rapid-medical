@@ -3,7 +3,7 @@ import { Section, H2, Img, Btn, SharedLine, formatMonth } from "@/components/sit
 import { Carousel } from "@/components/site/blocks/Carousel";
 import { NewsTimeline } from "@/components/site/blocks/NewsTimeline";
 import { NewsFeed } from "@/components/site/blocks/NewsFeed";
-import { isExternalHref, safeHref } from "@/lib/safe-path";
+import { isExternalHref, safeHref, siteHref } from "@/lib/safe-path";
 import { F, FM, type EditBinding } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
@@ -37,7 +37,7 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
   if (variant === "highlights") {
     // DESIGN.md → News & Events: instead of a carousel, the first one large and the next three beside it
     // own page when there is one (every news item has, decision 2026-11-15), else the original
-    const [big, ...side] = d.items.map((n) => ({ ...n, url: safeHref(n.href ?? n.url) }));
+    const [big, ...side] = d.items.map((n) => ({ ...n, url: siteHref(n.href ?? n.url) }));
     if (!big) return null;
     const inner = (
       <div id={d.anchor} className="mt-8 grid gap-8 border-t border-border pt-8 md:grid-cols-12 md:gap-10">
@@ -70,7 +70,7 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
   }
   if (variant === "feed") {
     const rows = d.items.map((n) => {
-      const href = safeHref(n.href ?? n.url);
+      const href = siteHref(n.href ?? n.url);
       return { id: n.id, date: formatMonth(n.publishedOn), title: <F e={n.edit} k="title">{n.title}</F>, meta: newsOrigin(n), href, external: isExternal(href) };
     });
     const inner = (
@@ -118,7 +118,7 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
           <li key={n.id} className="flex flex-col rounded border border-border bg-background p-5">
             <div className="text-xs text-muted">{formatMonth(n.publishedOn)}{n.source ? ` · ${n.source}` : ""}</div>
             <h3 className="mt-2 flex-1 font-medium"><F e={n.edit} k="title">{n.title}</F></h3>
-            <a href={safeHref(n.href ?? n.url)} {...ext(safeHref(n.href ?? n.url))} className="mt-4 inline-block text-sm font-medium text-accent underline">Continue reading →</a>
+            <a href={siteHref(n.href ?? n.url)} {...ext(siteHref(n.href ?? n.url))} className="mt-4 inline-block text-sm font-medium text-accent underline">Continue reading →</a>
           </li>
         ))}
       </ul>

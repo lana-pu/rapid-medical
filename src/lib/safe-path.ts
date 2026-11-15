@@ -1,3 +1,5 @@
+import { withBase } from "./demo";
+
 /**
  * A redirect target taken from a request (`next`, `redirect`, `back`) may only be a path on this site: it starts with
  * one "/", has no "//" or "\" at the start (browsers read "/\evil.com" as "//evil.com"), no backslashes or control
@@ -19,6 +21,12 @@ export function safeHref(u: string | null | undefined): string {
   const t = u.trim();
   if (/^https?:\/\/[^/\\]/i.test(t) || /^mailto:/i.test(t) || /^#/.test(t)) return t;
   return safeLocalPath(t, "#");
+}
+
+/** An href for a plain <a> (not next/link): a site path gets the build's base path (the static demo on Pages). */
+export function siteHref(u: string | null | undefined): string {
+  const h = safeHref(u);
+  return h.startsWith("/") ? withBase(h) : h;
 }
 
 /** Leaves the site: an absolute http(s) link (after `safeHref`, nothing else can point elsewhere). */

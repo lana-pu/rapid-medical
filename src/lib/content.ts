@@ -1,4 +1,6 @@
 import "server-only";
+import { newsHref, publicationHref } from "./material";
+import { REGIONS } from "./regions";
 import { draftMode } from "next/headers";
 import { and, asc, desc, eq, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
@@ -216,11 +218,13 @@ export async function getSitePage(key: SitePageKey, region: Region | null) {
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {
-  const [sols, pgs, jb, ev] = await Promise.all([
+  const [sols, pgs, jb, ev, pubs, nws] = await Promise.all([
     db.select({ slug: solutions.slug, region: solutions.region }).from(solutions).where(eq(solutions.status, "published")),
     db.select({ slug: pages.slug, region: pages.region, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
     db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
+    db.select({ id: publications.id, title: publications.title, regions: publications.regions }).from(publications).where(eq(publications.status, "published")),
+    db.select({ id: newsItems.id, title: newsItems.title }).from(newsItems).where(eq(newsItems.status, "published")),
   ]);
   return [
     "/", "/news-events", "/about-us", "/careers", "/contact-us",
@@ -229,5 +233,8 @@ export async function getAllPublicPaths(): Promise<string[]> {
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
     ...jb.map((j) => `/open-positions/${j.slug}`),
     ...ev.map((e) => `/events/${e.slug}`),
+    // own pages of publications (in each region that shows them, like Evidence) and news (docs/screens/material.md)
+    ...pubs.flatMap((p) => REGIONS.filter((r) => !(p.regions as string[] | null)?.length || (p.regions as string[]).includes(r)).map((r) => publicationHref(r, p))),
+    ...nws.map((n) => newsHref(n)),
   ];
 }

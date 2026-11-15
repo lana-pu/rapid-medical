@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { safeHref } from "@/lib/safe-path";
+import { safeHref, siteHref } from "@/lib/safe-path";
 
 export type LibraryRow = {
   id: number;
@@ -102,7 +102,7 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
             <li key={p.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[4rem_minmax(0,1fr)]">
               <span className="text-sm text-muted">{p.year}</span>
               <div className="min-w-0">
-                <div className="font-medium">{p.page ? <a href={p.page} className="hover:underline">{p.title}</a> : p.title}</div>
+                <div className="font-medium">{p.page ? <a href={siteHref(p.page)} className="hover:underline">{p.title}</a> : p.title}</div>
                 {(short || p.journal) && (
                   <div className="mt-1 text-sm text-muted">
                     {open === p.id ? p.authors : short}

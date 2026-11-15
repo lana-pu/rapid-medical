@@ -7,6 +7,7 @@ import { groupTherapies } from "@/lib/therapy-groups";
 import type { NewsCard } from "./news";
 import type { JobRow } from "./jobs";
 import { newsHref } from "@/lib/material";
+import { DEMO, withBase } from "@/lib/demo";
 import type { PublicationCard, PublicationGroup } from "./publications";
 
 /**
@@ -303,7 +304,8 @@ export function chooserToBlocks({ regional, suggested, next, back, current }: { 
       variant: "default",
       data: {
         // through /api/region: it remembers the choice; `back` returns to the page the visitor came from
-        options: REGION_CHOICES.map((o) => ({ region: o.region, label: o.label, href: `/api/region?to=${o.region}&back=${encodeURIComponent(back ?? `/${o.region}/${target}`)}`, suggested: suggested === o.region })),
+        // (the static demo has no API: straight to the region's page)
+        options: REGION_CHOICES.map((o) => ({ region: o.region, label: o.label, href: DEMO ? withBase(`/${o.region}/${target}`) : `/api/region?to=${o.region}&back=${encodeURIComponent(back ?? `/${o.region}/${target}`)}`, suggested: suggested === o.region })),
         current: current ?? null,
       },
     },
