@@ -455,8 +455,8 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/reset` | Запрос и установка нового пароля (ссылка на 1 час, после сброса все сессии закрыты) | [admin-login](screens/admin-login.md) |
 | `/admin/editor` | Pages: поиск страниц, статус словами, New page по шаблону, вход в редактор (в работе с 2026-11-12) | [admin-editor-pages](screens/admin-editor-pages.md) |
 | `/admin/site/{раздел}` | Раздел сайта: его страницы (Edit on page), списки записей, настройки; терапии — таблица терапии × регионы | [admin-sections](screens/admin-sections.md) |
-| `/admin/start` | После входа: Website или Training tool (инструмента пока нет — карточка неактивна) | [admin-choose](screens/admin-choose.md) |
-| `/admin` | Website — what needs you: дела (неопубликованные правки, расписание, новые заявки, картинки без описания), последние действия, сводка; меню админки | [admin-home](screens/admin-home.md) |
+| `/admin` (`/admin/start` → сюда) | После входа: выбор проекта — Website или Training tool (инструмента пока нет — карточка неактивна); без полоски пространств | [admin-choose](screens/admin-choose.md) |
+| `/admin/website` | Дашборд проекта Website: дела, быстрые действия, «продолжить», что впереди, неделя в цифрах, здоровье сайта, действия команды; шапка проекта со стрелкой назад | [admin-home](screens/admin-home.md) |
 | `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | [admin-list](screens/admin-list.md) |
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |

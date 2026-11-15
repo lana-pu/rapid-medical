@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { Elsewhere, Message } from "@/admin/inbox";
+import { UNDER_HEADER } from "./chrome";
 
 /**
  * Inbox — the list of messages, like a mail client (docs/screens/admin-inbox.md): every folder always shown, unread in
@@ -43,7 +44,7 @@ export function MessageList({ messages, elsewhere = [] }: { messages: Message[];
   const people = (n: number) => `${n} click${n === 1 ? "" : "s"}`;
 
   return (
-    <nav aria-label="Inbox" className="sticky top-0 flex h-screen w-96 flex-none flex-col border-r border-neutral-200 bg-white">
+    <nav aria-label="Inbox" className={`${UNDER_HEADER} flex w-96 flex-none flex-col border-r border-neutral-200 bg-white`}>
       <div className="space-y-2 border-b border-neutral-200 px-3 pb-3 pt-4">
         <div className="flex items-baseline justify-between px-1">
           <h2 className="text-base font-semibold">Inbox</h2>

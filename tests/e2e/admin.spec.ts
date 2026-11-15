@@ -4,13 +4,26 @@ import { E2E_CRON_SECRET } from "./secrets";
 
 test.describe.configure({ mode: "serial" });
 
-test("login → the dashboard (projects, what needs you); the Inbox is mail; list filters", async ({ page }) => {
+test("login → choose a project; the project in the header; its dashboard; the Inbox is mail; list filters", async ({ page }) => {
+  sql(`delete from contact_submissions where email='home@example.com'`); // left by an earlier failed run
   sql(`insert into contact_submissions(form,first_name,last_name,email,status,message) values ('contact','E2E','Home','home@example.com','new','Please call me back')`);
   await login(page);
-  await expect(page).toHaveURL(/\/admin$/); // above the projects (docs/admin-ia.md)
+  // the project picker: no project tools yet (docs/screens/admin-choose.md)
+  await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: /^Hello, / })).toBeVisible();
   await expect(page.getByRole("region", { name: "Projects" })).toContainText("Training tool");
-  await expect(page.getByText(/pictures? without a description/).first()).toBeVisible(); // not a message: on the dashboard
+  await expect(page.getByRole("navigation", { name: "Admin spaces" })).toHaveCount(0);
+  await page.getByRole("region", { name: "Projects" }).getByRole("link", { name: /Website/ }).click();
+  // inside the project: its name in the header with the way back, its spaces on the rail, its dashboard
+  await expect(page).toHaveURL(/\/admin\/website$/);
+  await expect(page.getByRole("banner")).toContainText("Website");
+  await expect(page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Home/ })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("navigation", { name: "Quick actions" }).getByRole("link", { name: "+ News item" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Site health" })).toContainText(/pictures? without a description/); // not a message: on the dashboard
+  await expect(page.getByRole("region", { name: "Coming up" })).toBeVisible();
+  await page.getByRole("link", { name: "All projects" }).click();
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.goto("/admin/website");
   await page.getByRole("link", { name: /unread messages? in the Inbox/ }).click();
   await expect(page).toHaveURL(/\/admin\/inbox$/);
   // the Inbox: messages only, like mail
@@ -130,7 +143,7 @@ test("requests: who answers, status and a note for the team; filters", async ({ 
 
 test("the admin: functions on a rail, the site as a tree with collections; page screens; section screens", async ({ page }) => {
   await login(page);
-  await page.goto("/admin");
+  await page.goto("/admin/website");
   // functions apart from navigation (docs/screens/admin-sections.md → «Меню слева»)
   // four spaces; the site tree only in Content (docs/admin-ia.md)
   const rail = page.getByRole("navigation", { name: "Admin spaces" });
@@ -576,7 +589,7 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   await expect(page.getByRole("region", { name: "Where people come from" })).toContainText("LinkedIn");
   await expect(page.getByRole("region", { name: "LinkedIn posts and campaigns" })).toContainText("e2e-post");
   await expect(page.getByRole("region", { name: "Most visited pages" })).toContainText("Large vessel stroke (Americas)");
-  await page.goto("/admin");
+  await page.goto("/admin/website");
   await expect(page.getByRole("link", { name: "This week — open analytics" })).toContainText("visits");
 });
 

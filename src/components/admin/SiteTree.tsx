@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { SiteNode } from "@/admin/site-tree";
+import { UNDER_HEADER } from "./chrome";
 
 /**
  * The site as a tree in the admin's left column (docs/screens/admin-sections.md → «Меню слева»): pages, the collections
@@ -80,7 +81,7 @@ export function SiteTree({ tree }: { tree: SiteNode[] }) {
   };
 
   return (
-    <nav aria-label="Site" className="sticky top-0 flex h-screen w-64 flex-none flex-col border-r border-neutral-200 bg-white">
+    <nav aria-label="Site" className={`${UNDER_HEADER} flex w-64 flex-none flex-col border-r border-neutral-200 bg-white`}>
       <div className="space-y-2 px-3 pb-2 pt-4">
         <div className="flex items-center justify-between px-1">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Site</span>

@@ -6,8 +6,10 @@
 `src/app/admin/(dashboard)/site/[section]/page.tsx`.
 
 ## Меню слева: четыре пространства (решение владелицы 2026-11-14, `docs/admin-ia.md`)
-Полоска слева (узкая, тёмная) — **пространства**, а не страницы: 📝 **Content** · 📥 **Inbox** (число того, что ждёт) ·
-🖼 **Media** · ⚙ **Settings**; внизу ✎ Edit site · ↗ View site · аккаунт (My account & security, Sign out).
+Над всем — **шапка проекта** (2026-11-15, `docs/admin-ia.md` → «проект отдельно»): «← · RM Rapid Medical / 🌐 Website»
+(стрелка — к выбору проекта `/admin`), справа ✎ Edit site · ↗ View site · аккаунт (My account & security, Sign out).
+Полоска слева (узкая, тёмная) — **пространства** проекта, а не страницы: 🏠 **Home** (дашборд `/admin/website`) ·
+📝 **Content** · 📥 **Inbox** (число того, что ждёт) · 📊 **Analytics** · 🖼 **Media** · ⚙ **Settings**.
 Вторая колонка у каждого пространства своя:
 - **Content** — дерево сайта: поиск по дереву и **+ New page** сверху; страницы один раз (дерево редактора,
   `src/admin/page-tree.ts`); коллекции под своей страницей со значком ▤ и числом (Evidence → Publications, Products ·
@@ -15,7 +17,7 @@
   Menu and footer. Ветки сворачиваются (запоминается в браузере). Клик по странице — экран страницы, по коллекции —
   её записи.
 - **Inbox** (`/admin/inbox`) — почта: список сообщений (формы и заметки на страницах) с папками и непрочитанными,
-  письмо справа (`docs/admin-ia.md` → «Уточнения 2026-11-15»; экран — `admin-inbox.md`). Логотип над полоской — **дашборд** `/admin`.
+  письмо справа (`docs/admin-ia.md` → «Уточнения 2026-11-15»; экран — `admin-inbox.md`).
 - **Media** — без второй колонки.
 - **Settings** — группы: *Site* — Contact details · Social links · Regional notices · Google defaults · Branding
   (дизайнер, админ) · Integrations (админ) · Redirects; *Team* — People and roles (админ) · Activity log;

@@ -750,7 +750,7 @@ export default function EditorOverlay() {
           canRedo={redoCount > 0}
           onRedo={doRedo}
           hasChanges={hasChanges}
-          backHref={withBase(DEMO ? "/admin/editor" : "/admin")}
+          backHref={withBase(DEMO ? "/admin/editor" : "/admin/website")}
           exitHref={DEMO ? null : `/api/editor?off=1&redirect=${encodeURIComponent(pathname)}`}
           demo={DEMO}
           onUndo={doUndo}
