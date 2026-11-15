@@ -52,5 +52,7 @@ describe("differences between regions with files (the admin's tab)", () => {
     expect([mediaKindOf("/uploads/x.MP4"), mediaKindOf("/uploads/ifu.pdf?v=2"), mediaKindOf("/us/evidence")]).toEqual(["video", "pdf", null]);
     // only the site's own or https addresses are files (security review 2026-11-15)
     expect([mediaKindOf("javascript:alert(1)//x.pdf"), mediaKindOf("data:text/html,x.png"), mediaKindOf("//evil.example/x.pdf"), mediaKindOf("http://x.example/a.jpg"), mediaKindOf("https://cdn.example/a.jpg")]).toEqual([null, null, null, null, "image"]);
+    // browsers drop tabs and line breaks: «/\t/evil.example/x.pdf» would be «//evil.example/x.pdf»
+    expect([mediaKindOf("/\t/evil.example/x.pdf"), mediaKindOf("/\\evil.example/x.png"), mediaKindOf("https://cdn.example/a\nb.jpg")]).toEqual([null, null, null]);
   });
 });

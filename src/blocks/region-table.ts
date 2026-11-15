@@ -2,6 +2,7 @@ import type { StoredBlock } from "@/db/schema";
 import { BLOCKS } from "./registry";
 import { checkBlockPath } from "./paths";
 import { blockName, matchSections } from "./diff";
+import { safeLocalPath } from "@/lib/safe-path";
 import type { BlockDef, BlockType } from "./types";
 
 /**
@@ -35,7 +36,7 @@ const SKIP = new Set(["id", "type", "variant", "source", "anchor", "edit"]);
 /** A file address by its extension: picture, video or PDF; anything else (a page link) is not media. */
 export function mediaKindOf(url: string): MediaKind | null {
   // only an address of the site itself or an https one: never «javascript:…/x.pdf» (security review 2026-11-15)
-  if (!/^(\/(?![\/\\])|https:\/\/)/i.test(url)) return null;
+  if (!(safeLocalPath(url, "") || (/^https:\/\//i.test(url) && !/[\\\u0000-\u001f\u007f\s]/.test(url)))) return null;
   const p = url.split(/[?#]/)[0].toLowerCase();
   if (/\.(png|jpe?g|webp|gif|svg|avif)$/.test(p)) return "image";
   if (/\.(mp4|webm|mov)$/.test(p)) return "video";

@@ -11,6 +11,7 @@ import { PageHeader, LinkButton, StatusBadge, RegionBadge, formatDate, Notice } 
 import { REGION_CHOICES } from "@/lib/regions";
 import { ListFilters, type ListFilter } from "@/components/admin/ListFilters";
 import { thumbsFor } from "@/admin/page-screen";
+import { safeLocalPath } from "@/lib/safe-path";
 import { BulkBar } from "@/components/admin/BulkBar";
 
 type SP = { q?: string; deleted?: string; bulk?: string; n?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
@@ -37,7 +38,8 @@ export default async function ResourceList({ params, searchParams }: { params: P
   // only the media library's own files, or a file of the site itself — never an outside address (security review)
   const thumbOf = (v: unknown) => {
     const u = String(v ?? "");
-    return thumbs[u] ?? (/^\/(?![\/\\])/.test(u) ? u : null);
+    if (Object.hasOwn(thumbs, u)) return thumbs[u];
+    return safeLocalPath(u, "") || null; // no «//», «/\», tabs or line breaks (browsers drop them and read «//evil»)
   };
   const flags = res.listColumns.filter((c) => c.kind === "boolean");
   const columns = res.listColumns.filter((c) => c.kind !== "boolean");

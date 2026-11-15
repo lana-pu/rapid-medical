@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { safeLocalPath } from "@/lib/safe-path";
 import type { PageFile } from "@/admin/page-screen";
 
 /**
@@ -21,8 +22,8 @@ export function PreviewModal({ file, onClose }: { file: Previewed | null; onClos
   }, [file, onClose]);
   if (!file) return null;
   // what may be opened: a file of the site itself (shown in the window) or an https address (a link only)
-  const local = /^\/(?![\/\\])/.test(file.url);
-  const safe = local || /^https:\/\//i.test(file.url);
+  const local = !!safeLocalPath(file.url, "");
+  const safe = local || (/^https:\/\//i.test(file.url) && !/[\\\u0000-\u001f\u007f\s]/.test(file.url));
   return (
     <div role="dialog" aria-modal="true" aria-label={`Preview: ${file.name}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" onClick={onClose}>
       <div className="flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
