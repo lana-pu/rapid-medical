@@ -12,10 +12,23 @@
    ]
   },
   {
-   "title": "Терапии и доказательства",
+   "title": "Терапии",
    "screens": [
+    "menu",
     "therapies",
-    "therapy",
+    "aneurysm",
+    "aneurysm-how",
+    "aneurysm-practice",
+    "aneurysm-evidence",
+    "lvo",
+    "lvo-how",
+    "lvo-practice",
+    "lvo-evidence"
+   ]
+  },
+  {
+   "title": "Доказательства",
+   "screens": [
     "study",
     "evidence",
     "webinars"
@@ -96,8 +109,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -204,7 +217,8 @@
             }
            ]
           }
-         ]
+         ],
+         "to": "lvo"
         },
         {
          "c": "box",
@@ -248,7 +262,665 @@
            ]
           }
          ],
-         "to": "therapy"
+         "to": "aneurysm"
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Access · DRIVEWIRE™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Access"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Active access"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "5 publications →"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-textMedia",
+       "v": "statement",
+       "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
+       "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4",
+       "stats": [
+        {
+         "label": "patients treated",
+         "value": "50K+",
+         "iconUrl": "/icons/stat-patients.svg"
+        },
+        {
+         "label": "issued patents",
+         "value": "100+",
+         "iconUrl": "/icons/stat-patents.svg"
+        },
+        {
+         "label": "clinical publications",
+         "value": "102",
+         "iconUrl": "/icons/stat-publications.svg"
+        }
+       ],
+       "body": "Our solution? Tools that adapt to each patient's anatomy.",
+       "link": {
+        "label": "Request a demo",
+        "href": "/contact-us?region=us&topic=demo"
+       },
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-text",
+       "v": "dark",
+       "title": "Engineered for precise control at every step.",
+       "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
+       "imageUrl": ""
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "row",
+         "justify": "between",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "Key studies"
+          },
+          {
+           "c": "link",
+           "text": "All evidence →",
+           "to": "evidence"
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "TIGERTRIEVER™ 13 · MeVO"
+              },
+              {
+               "c": "badge",
+               "text": "RCT",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "DISTALS"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "98 randomized · FDA IDE"
+            },
+            {
+             "c": "stat",
+             "value": "86.3% vs 27.7%",
+             "label": "reperfusion at 24 h without sICH"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "border": true,
+           "pad": "m",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "items": [
+              {
+               "c": "text",
+               "v": "caption",
+               "text": "COMANECI™ · wide-neck aneurysms"
+              },
+              {
+               "c": "badge",
+               "text": "Prospective, multicenter",
+               "tone": "info"
+              }
+             ]
+            },
+            {
+             "c": "heading",
+             "level": 4,
+             "text": "SUCCESS"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "90 patients · 17 US centers"
+            },
+            {
+             "c": "stat",
+             "value": "95%",
+             "label": "occlusion at 6 months"
+            },
+            {
+             "c": "link",
+             "text": "Study page →"
+            }
+           ],
+           "to": "study"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "row",
+         "justify": "between",
+         "items": [
+          {
+           "c": "heading",
+           "level": 2,
+           "text": "At the forefront of advancing stroke intervention"
+          },
+          {
+           "c": "link",
+           "text": "View all news →",
+           "to": "news"
+          }
+         ]
+        },
+        {
+         "c": "grid",
+         "cols": "7fr 1fr 4fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "card",
+           "media": {
+            "kind": "image",
+            "label": "WhatsApp-Image-2026-07-21",
+            "ratio": "16/9"
+           },
+           "eyebrow": "News · Jul 2026",
+           "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+           "actions": [
+            {
+             "c": "link",
+             "text": "Read →",
+             "to": "news-page"
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · May 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "News · Apr 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "grid",
+             "cols": "96px minmax(0,1fr)",
+             "gap": "m",
+             "align": "start",
+             "items": [
+              {
+               "c": "media",
+               "kind": "image",
+               "ratio": "4/3",
+               "tiny": true
+              },
+              {
+               "c": "stack",
+               "gap": "xs",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "Study · Feb 2026"
+                },
+                {
+                 "c": "text",
+                 "v": "strong",
+                 "text": "DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion"
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "menu",
+   "title": "Therapies menu (open)",
+   "url": "rapid-medical.com",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "tone": "dark",
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "text",
+         "v": "small",
+         "text": "DISTALS: TIGERTRIEVER™ 13 shows promising 90-day outcomes"
+        },
+        {
+         "c": "link",
+         "text": "Read the news →",
+         "to": "news-page"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     },
+     "menu": [
+      {
+       "c": "rm-navitem",
+       "v": "group",
+       "text": "Ischemic stroke"
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Large vessel stroke",
+       "to": "lvo",
+       "quiet": true,
+       "v": "menu"
+      },
+      {
+       "c": "rm-navitem",
+       "v": "group",
+       "text": "Hemorrhagic stroke"
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Aneurysm",
+       "to": "aneurysm",
+       "quiet": true,
+       "v": "menu"
+      },
+      {
+       "c": "rm-navitem",
+       "v": "group",
+       "text": "Access"
+      },
+      {
+       "c": "rm-navitem",
+       "v": "menu",
+       "text": "Access"
+      },
+      {
+       "c": "rm-navitem",
+       "text": "All therapies →",
+       "to": "therapies",
+       "quiet": true,
+       "on": true,
+       "v": "menu"
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "banner",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "cta": {
+        "label": "Explore Therapies",
+        "href": "/us/therapies"
+       },
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
+       "to": "therapies",
+       "label": "Explore Therapies"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "grid",
+       "cols": 3,
+       "gap": "m",
+       "align": "start",
+       "items": [
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Ischemic stroke · TIGERTRIEVER™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Large vessel stroke"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "A patient-centric approach to AIS"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "32 publications →"
+            }
+           ]
+          }
+         ],
+         "to": "lvo"
+        },
+        {
+         "c": "box",
+         "border": true,
+         "pad": "m",
+         "gap": "s",
+         "items": [
+          {
+           "c": "media",
+           "kind": "photo",
+           "label": "device render · одинаковый формат",
+           "ratio": "4/3"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Hemorrhagic stroke · COMANECI™"
+          },
+          {
+           "c": "heading",
+           "level": 4,
+           "text": "Aneurysm"
+          },
+          {
+           "c": "text",
+           "v": "small",
+           "text": "Bridging the gap in assist devices"
+          },
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "link",
+             "text": "Explore →"
+            },
+            {
+             "c": "link",
+             "text": "57 publications →"
+            }
+           ]
+          }
+         ],
+         "to": "aneurysm"
         },
         {
          "c": "box",
@@ -709,8 +1381,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -817,7 +1489,8 @@
             }
            ]
           }
-         ]
+         ],
+         "to": "lvo"
         },
         {
          "c": "box",
@@ -861,7 +1534,7 @@
            ]
           }
          ],
-         "to": "therapy"
+         "to": "aneurysm"
         },
         {
          "c": "box",
@@ -1429,7 +2102,7 @@
   },
   {
    "id": "therapies",
-   "title": "Therapies",
+   "title": "All therapies",
    "url": "rapid-medical.com/us/therapies",
    "body": [
     {
@@ -1457,8 +2130,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true,
        "on": true
       },
@@ -1494,18 +2167,6 @@
       "quiet": true,
       "v": "button"
      }
-    },
-    {
-     "c": "section",
-     "pad": "s",
-     "items": [
-      {
-       "c": "alert",
-       "tone": "info",
-       "title": "Vasospasm is not available in Americas.",
-       "text": "These are the therapies here."
-      }
-     ]
     },
     {
      "c": "rm-page",
@@ -1572,7 +2233,8 @@
             }
            ]
           }
-         ]
+         ],
+         "to": "lvo"
         },
         {
          "c": "box",
@@ -1615,7 +2277,8 @@
             }
            ]
           }
-         ]
+         ],
+         "to": "aneurysm"
         },
         {
          "c": "box",
@@ -1713,8 +2376,8 @@
    ]
   },
   {
-   "id": "therapy",
-   "title": "Aneurysm · COMANECI™",
+   "id": "aneurysm",
+   "title": "Aneurysm · Product overview",
    "url": "rapid-medical.com/us/therapies/aneurysm",
    "body": [
     {
@@ -1742,8 +2405,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true,
        "on": true
       },
@@ -1806,40 +2469,7 @@
        "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
        "to": "contact-new",
        "label": "Request a demo"
-      }
-     ]
-    },
-    {
-     "c": "section",
-     "pad": "s",
-     "rule": true,
-     "items": [
-      {
-       "c": "row",
-       "justify": "between",
-       "items": [
-        {
-         "c": "segmented",
-         "items": [
-          "Overview",
-          "How it works",
-          "In-Practice",
-          "Evidence",
-          "Specs"
-         ],
-         "active": 0
-        },
-        {
-         "c": "link",
-         "text": "Indications, Safety & Warnings ↓"
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "c": "rm-page",
-     "items": [
+      },
       {
        "c": "rm-text",
        "v": "lead",
@@ -1927,277 +2557,52 @@
        ],
        "title": "except SUCCESS",
        "eyebrow": "Leaves no trace —"
-      },
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
       {
-       "c": "rm-productDetails",
-       "v": "pills",
-       "anchor": "overview",
-       "hint": "Click on a tab below to learn more.",
-       "tabs": [
+       "c": "row",
+       "justify": "between",
+       "items": [
         {
-         "id": "overview",
-         "label": "Product overview",
-         "title": "Product overview",
-         "blocks": [
+         "c": "row",
+         "gap": "l",
+         "items": [
           {
-           "type": "text",
-           "variant": "default",
-           "data": {
-            "body": "COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures."
-           },
-           "edit": {
-            "r": "solutions",
-            "id": 2,
-            "map": {
-             "body": "overviewBody"
-            }
-           }
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "aneurysm",
+           "quiet": true,
+           "on": true
           },
           {
-           "type": "columns",
-           "variant": "features",
-           "data": {
-            "items": [
-             {
-              "body": "Unique braiding technology prevents flow disruption during the coiling procedure.",
-              "title": "Non-occlusive design",
-              "iconUrl": "/uploads/features/comaneci-non-occlusive.jpg"
-             },
-             {
-              "body": "100% radiopacity enables precise positioning & visualization throughout the procedure.",
-              "title": "Complete visibility",
-              "iconUrl": "/uploads/features/comaneci-visibility.jpg"
-             },
-             {
-              "body": "Operator-controlled adjustability enables adjustable vessel conformity.",
-              "title": "Proprietary active technology",
-              "iconUrl": "/uploads/features/comaneci-active-technology.jpg"
-             },
-             {
-              "body": ">25% smaller than the smallest occlusion balloons³ facilitates access to complex anatomy and enhances stability.",
-              "title": "Low profile delivery",
-              "iconUrl": "/uploads/features/comaneci-low-profile.jpg"
-             }
-            ],
-            "legacyImageUrl": "/uploads/duda/OUS-Aneurysm-Product-Overview-b1ffd9.jpg"
-           },
-           "edit": {
-            "r": "solutions",
-            "id": 2,
-            "map": {
-             "items": "overviewFeatures",
-             "legacyImageUrl": "overviewImageUrl"
-            }
-           }
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "aneurysm-how",
+           "quiet": true
           },
           {
-           "group": "Specifications",
-           "blocks": [
-            {
-             "type": "deviceDiagram",
-             "variant": "default",
-             "data": {
-              "caption": "COMANECI™ – device anatomy",
-              "markers": [
-               {
-                "x": 6,
-                "y": 70,
-                "label": "Radiopaque distal tip"
-               },
-               {
-                "x": 12,
-                "y": 74,
-                "label": "Distal radiopaque marker"
-               },
-               {
-                "x": 28,
-                "y": 56,
-                "label": "Cage length"
-               },
-               {
-                "x": 43,
-                "y": 72,
-                "label": "Proximal radiopaque marker"
-               },
-               {
-                "x": 52,
-                "y": 70,
-                "label": "Delivery wire"
-               },
-               {
-                "x": 58,
-                "y": 70,
-                "label": "Fluoro markers"
-               },
-               {
-                "x": 82,
-                "y": 58,
-                "label": "Thumb slider"
-               },
-               {
-                "x": 78,
-                "y": 76,
-                "label": "Handle"
-               }
-              ],
-              "imageUrl": "/uploads/duda/OUS-Aneurysm-Specifications-c4065c.jpg"
-             },
-             "edit": {
-              "r": "solutions",
-              "id": 2,
-              "map": {
-               "markers": "annotatedImage.markers"
-              }
-             }
-            },
-            {
-             "type": "specTable",
-             "variant": "table",
-             "data": {
-              "table": {
-               "rows": [
-                [
-                 "COMANECI 17",
-                 "ANPP3199",
-                 "0.5 – 3.0",
-                 "22",
-                 "7",
-                 "0.017″",
-                 "223"
-                ],
-                [
-                 "COMANECI PETIT",
-                 "ANPP3188",
-                 "1.5 – 3.5",
-                 "24",
-                 "7",
-                 "0.021″",
-                 "223"
-                ],
-                [
-                 "COMANECI",
-                 "ANPP3177",
-                 "1.5 – 4.5",
-                 "32",
-                 "7",
-                 "0.021″",
-                 "224"
-                ]
-               ],
-               "columns": [
-                "Product",
-                "Catalog number",
-                "Cage diameter (mm)",
-                "Cage length (mm)",
-                "Distal tip length (mm)",
-                "Minimum microcatheter ID compatibility (in)",
-                "Total length excluding handle (cm)"
-               ]
-              },
-              "note": "Not all products are available in all countries."
-             }
-            }
-           ]
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "aneurysm-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "aneurysm-evidence",
+           "quiet": true
           }
          ]
         },
         {
-         "id": "how",
-         "label": "How it works",
-         "title": "How it works",
-         "blocks": [
-          {
-           "type": "columns",
-           "variant": "steps",
-           "data": {
-            "items": [
-             {
-              "body": "After positioning the catheters, deploy the 1st coil loop; then deploy COMANECI.",
-              "title": "DEPLOY",
-              "videoUrl": "/uploads/duda/jLzXBp2RKNRvIZg3kNSw_How-to-1-v-de42db.mp4"
-             },
-             {
-              "body": "Close and re-expand COMANECI before detaching each coil.",
-              "title": "CONTINUE COILING",
-              "videoUrl": "/uploads/duda/F9cU7UdsSGSFNYolsjWT_How-to-2-v-53b2e3.mp4"
-             },
-             {
-              "body": "Remove the coiling catheter with COMANECI expanded. Remove COMANECI.",
-              "title": "REMOVE",
-              "videoUrl": "/uploads/duda/ExjqBNiTbuoBPClyXqvw_How-to-3-v-fdfc81.mp4"
-             }
-            ]
-           },
-           "edit": {
-            "r": "solutions",
-            "id": 2,
-            "map": {
-             "items": "howItWorks"
-            }
-           }
-          }
-         ]
-        },
-        {
-         "id": "practice",
-         "label": "In-Practice",
-         "title": "In practice",
-         "blocks": [
-          {
-           "type": "cta",
-           "variant": "panel",
-           "data": {
-            "title": "Webinars",
-            "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
-            "buttons": [
-             {
-              "label": "Request to view",
-              "href": "/us/webinars"
-             }
-            ]
-           }
-          },
-          {
-           "type": "people",
-           "variant": "physicians",
-           "data": {
-            "items": [
-             {
-              "kind": "case",
-              "title": "COMANECI case summary",
-              "person": "Dr. Josh Abecassis",
-              "linkUrl": "/uploads/duda/Abecassis_case-summary-1--49231d.pdf",
-              "imageUrl": "/uploads/duda/COMANECI-testimonial-1-4167de.jpg"
-             },
-             {
-              "kind": "case",
-              "title": "Y-Stent technique using dual COMANECI devices",
-              "linkUrl": "https://pubmed.ncbi.nlm.nih.gov/38578712/",
-              "imageUrl": "/uploads/duda/COMANECI-testimonial-2-942a3a.png"
-             },
-             {
-              "kind": "testimonial",
-              "title": "COMANECI in practice",
-              "linkUrl": "/us/success-study-final-results",
-              "imageUrl": "/uploads/duda/COMANECI-testimonial-3-405419.png"
-             }
-            ]
-           },
-           "edit": {
-            "r": "solutions",
-            "id": 2,
-            "map": {
-             "items": "inPractice"
-            }
-           }
-          }
-         ]
-        },
-        {
-         "id": "evidence",
-         "label": "Clinical evidence",
-         "href": "/us/evidence#comaneci",
-         "blocks": []
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
         }
        ]
       }
@@ -2206,122 +2611,453 @@
     {
      "c": "section",
      "pad": "l",
-     "tone": "surface",
      "items": [
       {
        "c": "stack",
        "gap": "m",
        "items": [
         {
-         "c": "row",
-         "justify": "between",
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "rm-text",
+         "v": "default",
+         "body": "COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures."
+        },
+        {
+         "c": "rm-columns",
+         "v": "features",
          "items": [
           {
-           "c": "heading",
-           "level": 2,
-           "text": "Clinical evidence"
+           "body": "Unique braiding technology prevents flow disruption during the coiling procedure.",
+           "title": "Non-occlusive design",
+           "iconUrl": "/uploads/features/comaneci-non-occlusive.jpg"
           },
           {
-           "c": "link",
-           "text": "All 57 COMANECI™ publications →",
-           "to": "evidence"
+           "body": "100% radiopacity enables precise positioning & visualization throughout the procedure.",
+           "title": "Complete visibility",
+           "iconUrl": "/uploads/features/comaneci-visibility.jpg"
+          },
+          {
+           "body": "Operator-controlled adjustability enables adjustable vessel conformity.",
+           "title": "Proprietary active technology",
+           "iconUrl": "/uploads/features/comaneci-active-technology.jpg"
+          },
+          {
+           "body": ">25% smaller than the smallest occlusion balloons³ facilitates access to complex anatomy and enhances stability.",
+           "title": "Low profile delivery",
+           "iconUrl": "/uploads/features/comaneci-low-profile.jpg"
+          }
+         ],
+         "legacyImageUrl": "/uploads/duda/OUS-Aneurysm-Product-Overview-b1ffd9.jpg"
+        },
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Specifications"
+        },
+        {
+         "c": "rm-deviceDiagram",
+         "v": "default",
+         "caption": "COMANECI™ – device anatomy",
+         "markers": [
+          {
+           "x": 6,
+           "y": 70,
+           "label": "Radiopaque distal tip"
+          },
+          {
+           "x": 12,
+           "y": 74,
+           "label": "Distal radiopaque marker"
+          },
+          {
+           "x": 28,
+           "y": 56,
+           "label": "Cage length"
+          },
+          {
+           "x": 43,
+           "y": 72,
+           "label": "Proximal radiopaque marker"
+          },
+          {
+           "x": 52,
+           "y": 70,
+           "label": "Delivery wire"
+          },
+          {
+           "x": 58,
+           "y": 70,
+           "label": "Fluoro markers"
+          },
+          {
+           "x": 82,
+           "y": 58,
+           "label": "Thumb slider"
+          },
+          {
+           "x": 78,
+           "y": 76,
+           "label": "Handle"
+          }
+         ],
+         "imageUrl": "/uploads/duda/OUS-Aneurysm-Specifications-c4065c.jpg"
+        },
+        {
+         "c": "rm-specTable",
+         "v": "table",
+         "table": {
+          "rows": [
+           [
+            "COMANECI 17",
+            "ANPP3199",
+            "0.5 – 3.0",
+            "22",
+            "7",
+            "0.017″",
+            "223"
+           ],
+           [
+            "COMANECI PETIT",
+            "ANPP3188",
+            "1.5 – 3.5",
+            "24",
+            "7",
+            "0.021″",
+            "223"
+           ],
+           [
+            "COMANECI",
+            "ANPP3177",
+            "1.5 – 4.5",
+            "32",
+            "7",
+            "0.021″",
+            "224"
+           ]
+          ],
+          "columns": [
+           "Product",
+           "Catalog number",
+           "Cage diameter (mm)",
+           "Cage length (mm)",
+           "Distal tip length (mm)",
+           "Minimum microcatheter ID compatibility (in)",
+           "Total length excluding handle (cm)"
+          ]
+         },
+         "note": "Not all products are available in all countries."
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "items": [
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Download IFU (PDF)"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Where available for this region"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=us&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "aneurysm-how",
+   "title": "Aneurysm · How it works",
+   "url": "rapid-medical.com/us/therapies/aneurysm",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "image",
+       "eyebrow": "Therapies / Aneurysm",
+       "eyebrowLinks": [
+        {
+         "label": "Europe & Middle East version",
+         "href": "/ous/therapies/aneurysm"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/aneurysm"
+        }
+       ],
+       "title": "Bridging the gap in assist devices",
+       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+       "cta": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-text",
+       "v": "lead",
+       "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents."
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "The temporary deployment of COMANECI™ provides the long-term support of a stent, achieving high packing density and 85% immediate complete occlusion compared to 79% with stent-assisted coiling.¹",
+       "title": "require implants",
+       "eyebrow": "Stability doesn't",
+       "footnote": "Avoiding implants like stents is preferable to allow the brain to heal naturally and minimize long-term stroke risks and bleeding complications.",
+       "imageUrl": "/uploads/duda/2_COMANECI-Aneurism-Stability-a69863.gif"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Unlike balloons, COMANECI™ provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an ischemic event. COMANECI™ demonstrates the highest complete occlusion and lowest complication rates.",
+       "link": {
+        "href": "/uploads/duda/1HV3uqyuQgOBFBJxUEN4_COMANECI_Aneurysm_--x22_See-the-Comparison--x22_-asset_RAPID-MEDICAL-06_COMANECI-GRAPHS_01-resized-v-bd5855.mp4",
+        "label": "See the comparison"
+       },
+       "title": "blood supply",
+       "eyebrow": "Continuous",
+       "videoUrl": "/uploads/duda/xTssjdbXR6QAyB451i8m_Comaneci-Blood-Flow-v-df9483.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.²",
+       "link": {
+        "href": "/us/success-study-final-results",
+        "label": "Unlock SUCCESS: The prospective study data"
+       },
+       "chart": {
+        "max": 100,
+        "kind": "stackedBar",
+        "unit": "%",
+        "title": "Successful intracranial aneurysm occlusion (Raymond Roy Classification I or II)",
+        "series": [
+         {
+          "name": "Raymond Roy Classification I",
+          "values": [
+           79,
+           89
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification II",
+          "values": [
+           7,
+           5
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification III",
+          "values": [
+           14,
+           5
+          ]
+         }
+        ],
+        "categories": [
+         "End of procedure (N=90)",
+         "Follow up ≤180 days (N=75)"
+        ],
+        "annotations": [
+         "Raymond I+II: 86% at end of procedure → 95% at follow-up (P=0.05)"
+        ]
+       },
+       "stats": [
+        {
+         "note": "at 6 months",
+         "label": "Successful occlusion",
+         "value": "95%"
+        },
+        {
+         "label": "Did not require retreatment",
+         "value": "99%"
+        },
+        {
+         "label": "Symptomatic thromboembolic events",
+         "value": "Zero"
+        }
+       ],
+       "title": "except SUCCESS",
+       "eyebrow": "Leaves no trace —"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "aneurysm",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "aneurysm-how",
+           "quiet": true,
+           "on": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "aneurysm-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "aneurysm-evidence",
+           "quiet": true
           }
          ]
         },
         {
-         "c": "grid",
-         "cols": 2,
-         "gap": "m",
-         "align": "start",
-         "items": [
-          {
-           "c": "box",
-           "border": true,
-           "pad": "m",
-           "gap": "s",
-           "items": [
-            {
-             "c": "row",
-             "justify": "between",
-             "items": [
-              {
-               "c": "text",
-               "v": "caption",
-               "text": "COMANECI™ · wide-neck aneurysms"
-              },
-              {
-               "c": "badge",
-               "text": "Prospective, multicenter",
-               "tone": "info"
-              }
-             ]
-            },
-            {
-             "c": "heading",
-             "level": 4,
-             "text": "SUCCESS"
-            },
-            {
-             "c": "text",
-             "v": "small",
-             "text": "90 patients · 17 US centers"
-            },
-            {
-             "c": "stat",
-             "value": "95%",
-             "label": "occlusion at 6 months"
-            },
-            {
-             "c": "link",
-             "text": "Study page →"
-            }
-           ],
-           "to": "study"
-          },
-          {
-           "c": "box",
-           "border": true,
-           "pad": "m",
-           "gap": "s",
-           "items": [
-            {
-             "c": "row",
-             "justify": "between",
-             "items": [
-              {
-               "c": "text",
-               "v": "caption",
-               "text": "COMANECI™ · stent-assisted coiling"
-              },
-              {
-               "c": "badge",
-               "text": "Retrospective",
-               "tone": "info"
-              }
-             ]
-            },
-            {
-             "c": "heading",
-             "level": 4,
-             "text": "Long-term outcomes"
-            },
-            {
-             "c": "text",
-             "v": "small",
-             "text": "[N — из публикации]"
-            },
-            {
-             "c": "stat",
-             "value": "[главная цифра]",
-             "label": "[конечная точка]"
-            },
-            {
-             "c": "link",
-             "text": "Study page →"
-            }
-           ]
-          }
-         ]
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
         }
        ]
       }
@@ -2333,99 +3069,802 @@
      "items": [
       {
        "c": "stack",
-       "gap": "s",
+       "gap": "m",
        "items": [
         {
-         "c": "heading",
-         "level": 2,
-         "text": "In practice"
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
         },
         {
-         "c": "grid",
-         "cols": "120px minmax(0,1fr)",
-         "gap": "m",
+         "c": "rm-columns",
+         "v": "steps",
          "items": [
           {
-           "c": "text",
-           "v": "small",
-           "text": "Webinar"
+           "body": "After positioning the catheters, deploy the 1st coil loop; then deploy COMANECI.",
+           "title": "DEPLOY",
+           "videoUrl": "/uploads/duda/jLzXBp2RKNRvIZg3kNSw_How-to-1-v-de42db.mp4"
           },
           {
-           "c": "stack",
-           "gap": "xs",
-           "items": [
-            {
-             "c": "text",
-             "v": "strong",
-             "text": "COMANECI: Tips & Tricks from Buffalo — Drs. Adnan Siddiqui & Jason Davies"
-            },
-            {
-             "c": "text",
-             "v": "caption",
-             "text": "Webinar"
-            }
-           ]
+           "body": "Close and re-expand COMANECI before detaching each coil.",
+           "title": "CONTINUE COILING",
+           "videoUrl": "/uploads/duda/F9cU7UdsSGSFNYolsjWT_How-to-2-v-53b2e3.mp4"
+          },
+          {
+           "body": "Remove the coiling catheter with COMANECI expanded. Remove COMANECI.",
+           "title": "REMOVE",
+           "videoUrl": "/uploads/duda/ExjqBNiTbuoBPClyXqvw_How-to-3-v-fdfc81.mp4"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=us&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "aneurysm-practice",
+   "title": "Aneurysm · In-Practice",
+   "url": "rapid-medical.com/us/therapies/aneurysm",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "image",
+       "eyebrow": "Therapies / Aneurysm",
+       "eyebrowLinks": [
+        {
+         "label": "Europe & Middle East version",
+         "href": "/ous/therapies/aneurysm"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/aneurysm"
+        }
+       ],
+       "title": "Bridging the gap in assist devices",
+       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+       "cta": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-text",
+       "v": "lead",
+       "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents."
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "The temporary deployment of COMANECI™ provides the long-term support of a stent, achieving high packing density and 85% immediate complete occlusion compared to 79% with stent-assisted coiling.¹",
+       "title": "require implants",
+       "eyebrow": "Stability doesn't",
+       "footnote": "Avoiding implants like stents is preferable to allow the brain to heal naturally and minimize long-term stroke risks and bleeding complications.",
+       "imageUrl": "/uploads/duda/2_COMANECI-Aneurism-Stability-a69863.gif"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Unlike balloons, COMANECI™ provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an ischemic event. COMANECI™ demonstrates the highest complete occlusion and lowest complication rates.",
+       "link": {
+        "href": "/uploads/duda/1HV3uqyuQgOBFBJxUEN4_COMANECI_Aneurysm_--x22_See-the-Comparison--x22_-asset_RAPID-MEDICAL-06_COMANECI-GRAPHS_01-resized-v-bd5855.mp4",
+        "label": "See the comparison"
+       },
+       "title": "blood supply",
+       "eyebrow": "Continuous",
+       "videoUrl": "/uploads/duda/xTssjdbXR6QAyB451i8m_Comaneci-Blood-Flow-v-df9483.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.²",
+       "link": {
+        "href": "/us/success-study-final-results",
+        "label": "Unlock SUCCESS: The prospective study data"
+       },
+       "chart": {
+        "max": 100,
+        "kind": "stackedBar",
+        "unit": "%",
+        "title": "Successful intracranial aneurysm occlusion (Raymond Roy Classification I or II)",
+        "series": [
+         {
+          "name": "Raymond Roy Classification I",
+          "values": [
+           79,
+           89
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification II",
+          "values": [
+           7,
+           5
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification III",
+          "values": [
+           14,
+           5
+          ]
+         }
+        ],
+        "categories": [
+         "End of procedure (N=90)",
+         "Follow up ≤180 days (N=75)"
+        ],
+        "annotations": [
+         "Raymond I+II: 86% at end of procedure → 95% at follow-up (P=0.05)"
+        ]
+       },
+       "stats": [
+        {
+         "note": "at 6 months",
+         "label": "Successful occlusion",
+         "value": "95%"
+        },
+        {
+         "label": "Did not require retreatment",
+         "value": "99%"
+        },
+        {
+         "label": "Symptomatic thromboembolic events",
+         "value": "Zero"
+        }
+       ],
+       "title": "except SUCCESS",
+       "eyebrow": "Leaves no trace —"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "aneurysm",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "aneurysm-how",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "aneurysm-practice",
+           "quiet": true,
+           "on": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "aneurysm-evidence",
+           "quiet": true
+          }
+         ]
+        },
+        {
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "rm-cta",
+         "v": "panel",
+         "title": "Webinars",
+         "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+         "buttons": [
+          {
+           "label": "Request to view",
+           "href": "/us/webinars"
           }
          ],
          "to": "webinars"
         },
         {
-         "c": "divider"
-        },
-        {
-         "c": "grid",
-         "cols": "120px minmax(0,1fr)",
-         "gap": "m",
+         "c": "rm-people",
+         "v": "physicians",
          "items": [
           {
-           "c": "text",
-           "v": "small",
-           "text": "Webinar"
+           "kind": "case",
+           "title": "COMANECI case summary",
+           "person": "Dr. Josh Abecassis",
+           "linkUrl": "/uploads/duda/Abecassis_case-summary-1--49231d.pdf",
+           "imageUrl": "/uploads/duda/COMANECI-testimonial-1-4167de.jpg"
           },
           {
-           "c": "stack",
-           "gap": "xs",
-           "items": [
-            {
-             "c": "text",
-             "v": "strong",
-             "text": "COMANECI Experience: Increasing packing density — Dr. Mani Puthuran"
-            },
-            {
-             "c": "text",
-             "v": "caption",
-             "text": "Webinar"
-            }
-           ]
+           "kind": "case",
+           "title": "Y-Stent technique using dual COMANECI devices",
+           "linkUrl": "https://pubmed.ncbi.nlm.nih.gov/38578712/",
+           "imageUrl": "/uploads/duda/COMANECI-testimonial-2-942a3a.png"
+          },
+          {
+           "kind": "testimonial",
+           "title": "COMANECI in practice",
+           "linkUrl": "/us/success-study-final-results",
+           "imageUrl": "/uploads/duda/COMANECI-testimonial-3-405419.png"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=us&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=us"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "aneurysm-evidence",
+   "title": "Aneurysm · Clinical evidence",
+   "url": "rapid-medical.com/us/therapies/aneurysm",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "image",
+       "eyebrow": "Therapies / Aneurysm",
+       "eyebrowLinks": [
+        {
+         "label": "Europe & Middle East version",
+         "href": "/ous/therapies/aneurysm"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/aneurysm"
+        }
+       ],
+       "title": "Bridging the gap in assist devices",
+       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+       "cta": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-text",
+       "v": "lead",
+       "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents."
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "The temporary deployment of COMANECI™ provides the long-term support of a stent, achieving high packing density and 85% immediate complete occlusion compared to 79% with stent-assisted coiling.¹",
+       "title": "require implants",
+       "eyebrow": "Stability doesn't",
+       "footnote": "Avoiding implants like stents is preferable to allow the brain to heal naturally and minimize long-term stroke risks and bleeding complications.",
+       "imageUrl": "/uploads/duda/2_COMANECI-Aneurism-Stability-a69863.gif"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Unlike balloons, COMANECI™ provides support without blocking blood flow to the brain. Clinicians can focus on accurate placement rather than the countdown to an ischemic event. COMANECI™ demonstrates the highest complete occlusion and lowest complication rates.",
+       "link": {
+        "href": "/uploads/duda/1HV3uqyuQgOBFBJxUEN4_COMANECI_Aneurysm_--x22_See-the-Comparison--x22_-asset_RAPID-MEDICAL-06_COMANECI-GRAPHS_01-resized-v-bd5855.mp4",
+        "label": "See the comparison"
+       },
+       "title": "blood supply",
+       "eyebrow": "Continuous",
+       "videoUrl": "/uploads/duda/xTssjdbXR6QAyB451i8m_Comaneci-Blood-Flow-v-df9483.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "95% successful long-term occlusion and 1% retreatment rates show the lasting durability of treatment with COMANECI in both ruptured and unruptured wide-neck aneurysms.²",
+       "link": {
+        "href": "/us/success-study-final-results",
+        "label": "Unlock SUCCESS: The prospective study data"
+       },
+       "chart": {
+        "max": 100,
+        "kind": "stackedBar",
+        "unit": "%",
+        "title": "Successful intracranial aneurysm occlusion (Raymond Roy Classification I or II)",
+        "series": [
+         {
+          "name": "Raymond Roy Classification I",
+          "values": [
+           79,
+           89
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification II",
+          "values": [
+           7,
+           5
+          ]
+         },
+         {
+          "name": "Raymond Roy Classification III",
+          "values": [
+           14,
+           5
+          ]
+         }
+        ],
+        "categories": [
+         "End of procedure (N=90)",
+         "Follow up ≤180 days (N=75)"
+        ],
+        "annotations": [
+         "Raymond I+II: 86% at end of procedure → 95% at follow-up (P=0.05)"
+        ]
+       },
+       "stats": [
+        {
+         "note": "at 6 months",
+         "label": "Successful occlusion",
+         "value": "95%"
+        },
+        {
+         "label": "Did not require retreatment",
+         "value": "99%"
+        },
+        {
+         "label": "Symptomatic thromboembolic events",
+         "value": "Zero"
+        }
+       ],
+       "title": "except SUCCESS",
+       "eyebrow": "Leaves no trace —"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "aneurysm",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "aneurysm-how",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "aneurysm-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "aneurysm-evidence",
+           "quiet": true,
+           "on": true
           }
          ]
         },
         {
-         "c": "divider"
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
         },
         {
-         "c": "grid",
-         "cols": "120px minmax(0,1fr)",
+         "c": "stack",
          "gap": "m",
          "items": [
           {
-           "c": "text",
-           "v": "small",
-           "text": "Document"
-          },
-          {
-           "c": "stack",
-           "gap": "xs",
+           "c": "row",
+           "justify": "between",
            "items": [
             {
-             "c": "text",
-             "v": "strong",
-             "text": "COMANECI™ Instructions for Use — Americas (PDF)"
+             "c": "heading",
+             "level": 3,
+             "text": "Key studies"
             },
             {
-             "c": "text",
-             "v": "caption",
-             "text": "IFU"
+             "c": "link",
+             "text": "All 57 COMANECI™ publications →",
+             "to": "evidence"
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "align": "start",
+           "items": [
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "COMANECI™ · wide-neck aneurysms"
+                },
+                {
+                 "c": "badge",
+                 "text": "Prospective, multicenter",
+                 "tone": "info"
+                }
+               ]
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "SUCCESS"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "90 patients · 17 US centers"
+              },
+              {
+               "c": "stat",
+               "value": "95%",
+               "label": "occlusion at 6 months"
+              },
+              {
+               "c": "link",
+               "text": "Study page →"
+              }
+             ],
+             "to": "study"
+            },
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "COMANECI™ · stent-assisted coiling"
+                },
+                {
+                 "c": "badge",
+                 "text": "Retrospective",
+                 "tone": "info"
+                }
+               ]
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Long-term outcomes"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[N — из публикации]"
+              },
+              {
+               "c": "stat",
+               "value": "[главная цифра]",
+               "label": "[конечная точка]"
+              },
+              {
+               "c": "link",
+               "text": "Study page →"
+              }
+             ]
             }
            ]
           }
@@ -2495,6 +3934,1392 @@
    ]
   },
   {
+   "id": "lvo",
+   "title": "Large vessel stroke · Product overview (content from the Europe page)",
+   "url": "rapid-medical.com/us/therapies/lvo",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
+        {
+         "label": "Americas version",
+         "href": "/us/therapies/lvo"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).",
+       "stats": [
+        {
+         "note": "mTICI ≥2b",
+         "label": "FPE",
+         "value": "47%"
+        },
+        {
+         "label": "ENT",
+         "value": "0%"
+        }
+       ],
+       "title": "should be the last",
+       "eyebrow": "The 1st pass",
+       "statsCaption": "In challenging ICAD cases⁵"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "lvo",
+           "quiet": true,
+           "on": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "lvo-how",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "lvo-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "lvo-evidence",
+           "quiet": true
+          }
+         ]
+        },
+        {
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "rm-text",
+         "v": "default",
+         "body": "The world's first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures."
+        },
+        {
+         "c": "rm-columns",
+         "v": "features",
+         "items": [
+          {
+           "body": "Distal Embolic Net (“TIGER DEN”) helps protect against distal emboli and provides the lowest ENT rate of any mechanical thrombectomy trial (2.6%).¹",
+           "title": "Reinforced distal protection",
+           "iconUrl": "/uploads/features/tt-distal-protection.jpg"
+          },
+          {
+           "body": "Radiopacity improves first-pass success with precise positioning & visual feedback.⁶˒⁷˒⁸",
+           "title": "Complete visibility",
+           "iconUrl": "/uploads/features/tt-visibility.jpg"
+          },
+          {
+           "body": "The only clot retriever equipped with real-time adjustability – accelerates clot integration and removes tension on the vessel.",
+           "title": "Proprietary active technology",
+           "iconUrl": "/uploads/features/tt-active-technology.jpg"
+          },
+          {
+           "body": "Lower profile microcatheter (MC) compatibility and lower delivery forces.",
+           "title": "Small microcatheter compatibility",
+           "iconUrl": "/uploads/features/tt-microcatheter.jpg"
+          }
+         ],
+         "legacyImageUrl": "/uploads/duda/OUS-LVO-Product-Overview-7f2534.jpg"
+        },
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Specifications"
+        },
+        {
+         "c": "rm-deviceDiagram",
+         "v": "default",
+         "caption": "TIGERTRIEVER™ – device anatomy",
+         "markers": [
+          {
+           "x": 4,
+           "y": 55,
+           "label": "Radiopaque distal tip"
+          },
+          {
+           "x": 12,
+           "y": 64,
+           "label": "Distal radiopaque marker"
+          },
+          {
+           "x": 27,
+           "y": 42,
+           "label": "Cage length"
+          },
+          {
+           "x": 41,
+           "y": 64,
+           "label": "Proximal radiopaque marker"
+          },
+          {
+           "x": 62,
+           "y": 56,
+           "label": "Fluoro markers"
+          },
+          {
+           "x": 80,
+           "y": 46,
+           "label": "Slider"
+          },
+          {
+           "x": 90,
+           "y": 64,
+           "label": "Handle"
+          }
+         ],
+         "imageUrl": "/uploads/duda/Specifications-Resized-98a228.jpg"
+        },
+        {
+         "c": "rm-specTable",
+         "v": "table",
+         "table": {
+          "note": "Not all products are available in all countries.",
+          "rows": [
+           [
+            "TIGERTRIEVER™ 13",
+            "TRPP3144",
+            "0.5 – 2.5",
+            "20.5",
+            "0.0165″ / 0.013″",
+            "233"
+           ],
+           [
+            "TIGERTRIEVER™ 17",
+            "TRPP3166",
+            "0.5 – 3.0",
+            "23",
+            "0.017″",
+            "223"
+           ],
+           [
+            "TIGERTRIEVER™ 17 ULTRA",
+            "TRPP3266",
+            "0.5 – 3.0",
+            "32",
+            "0.017″",
+            "224"
+           ],
+           [
+            "TIGERTRIEVER™ 21",
+            "TRPP3155",
+            "1.5 – 6.0",
+            "32",
+            "0.021″",
+            "224"
+           ],
+           [
+            "TIGERTRIEVER™ 25",
+            "TRPP3125",
+            "1.5 – 7.5",
+            "53",
+            "0.025″",
+            "226"
+           ]
+          ],
+          "columns": [
+           "Product",
+           "Catalog number",
+           "Cage diameter (mm)",
+           "Cage length (mm)",
+           "Minimum microcatheter compatibility ID (in)",
+           "Total length excluding handle (cm)"
+          ]
+         },
+         "note": "Not all products are available in all countries."
+        },
+        {
+         "c": "row",
+         "gap": "m",
+         "items": [
+          {
+           "c": "button",
+           "v": "secondary",
+           "text": "Download IFU (PDF)"
+          },
+          {
+           "c": "text",
+           "v": "caption",
+           "text": "Where available for this region"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-video",
+       "v": "band",
+       "title": "Active thrombectomy tailors the procedure to the patient.",
+       "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=ous&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=ous"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "lvo-how",
+   "title": "Large vessel stroke · How it works",
+   "url": "rapid-medical.com/us/therapies/lvo",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
+        {
+         "label": "Americas version",
+         "href": "/us/therapies/lvo"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).",
+       "stats": [
+        {
+         "note": "mTICI ≥2b",
+         "label": "FPE",
+         "value": "47%"
+        },
+        {
+         "label": "ENT",
+         "value": "0%"
+        }
+       ],
+       "title": "should be the last",
+       "eyebrow": "The 1st pass",
+       "statsCaption": "In challenging ICAD cases⁵"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "lvo",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "lvo-how",
+           "quiet": true,
+           "on": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "lvo-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "lvo-evidence",
+           "quiet": true
+          }
+         ]
+        },
+        {
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "rm-columns",
+         "v": "steps",
+         "items": [
+          {
+           "body": "the clot with active integration",
+           "title": "PENETRATE",
+           "videoUrl": "/uploads/duda/067J7P1fRCGyilO6KPCe_HowTo_1-v-0ed12e.mp4"
+          },
+          {
+           "body": "with complete visibility",
+           "title": "ADJUST",
+           "videoUrl": "/uploads/duda/0saPDx9aSyyoIoj5zk9d_HowTo_2-v-f8013f.mp4"
+          },
+          {
+           "body": "to relieve vessel traction",
+           "title": "RELAX",
+           "videoUrl": "/uploads/duda/sjIQ67SJQYupyII8PBjC_HowTo_3-v-7ba444.mp4"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-video",
+       "v": "band",
+       "title": "Active thrombectomy tailors the procedure to the patient.",
+       "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=ous&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=ous"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "lvo-practice",
+   "title": "Large vessel stroke · In-Practice",
+   "url": "rapid-medical.com/us/therapies/lvo",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
+        {
+         "label": "Americas version",
+         "href": "/us/therapies/lvo"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).",
+       "stats": [
+        {
+         "note": "mTICI ≥2b",
+         "label": "FPE",
+         "value": "47%"
+        },
+        {
+         "label": "ENT",
+         "value": "0%"
+        }
+       ],
+       "title": "should be the last",
+       "eyebrow": "The 1st pass",
+       "statsCaption": "In challenging ICAD cases⁵"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "lvo",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "lvo-how",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "lvo-practice",
+           "quiet": true,
+           "on": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "lvo-evidence",
+           "quiet": true
+          }
+         ]
+        },
+        {
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "rm-cta",
+         "v": "panel",
+         "title": "Webinars",
+         "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+         "buttons": [
+          {
+           "label": "Request to view",
+           "href": "/ous/webinars"
+          }
+         ],
+         "to": "webinars"
+        },
+        {
+         "c": "rm-people",
+         "v": "physicians",
+         "items": [
+          {
+           "kind": "case",
+           "title": "Double TIGER case",
+           "linkUrl": "/uploads/duda/Marie_DoubleTIGER_Case-fbe468.pdf",
+           "imageUrl": "/uploads/duda/Solutions-OUS-1-f0d8c4.png"
+          },
+          {
+           "kind": "case",
+           "title": "TIGERTRIEVER™ 25 first case",
+           "linkUrl": "/uploads/duda/Meirovitch_T25_first-case-4655bd.pdf",
+           "imageUrl": "/uploads/duda/Solutions-OUS-2-42f638.png"
+          },
+          {
+           "kind": "recording",
+           "title": "TIGERTRIEVER™ in the treatment of acute ischemic stroke with underlying ICAD",
+           "person": "Dr. Edgar Samaniego",
+           "linkUrl": "https://www.youtube.com/watch?v=kdIcJW-QDL4",
+           "imageUrl": "/uploads/duda/Solutions-OUS-3-311117.png",
+           "location": "SNIS Annual Meeting (2024)"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-video",
+       "v": "band",
+       "title": "Active thrombectomy tailors the procedure to the patient.",
+       "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=ous&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=ous"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "lvo-evidence",
+   "title": "Large vessel stroke · Clinical evidence",
+   "url": "rapid-medical.com/us/therapies/lvo",
+   "body": [
+    {
+     "c": "rm-nav",
+     "logo": {
+      "c": "rm-navitem",
+      "text": "Rapid Medical™",
+      "to": "home",
+      "quiet": true
+     },
+     "strip": [
+      {
+       "c": "rm-navitem",
+       "text": "🌐 Americas ▾",
+       "to": "region",
+       "quiet": true
+      }
+     ],
+     "items": [
+      {
+       "c": "rm-navitem",
+       "text": "Welcome",
+       "to": "home",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Therapies ▾",
+       "to": "menu",
+       "quiet": true,
+       "on": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Evidence",
+       "to": "evidence",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "News & Events",
+       "to": "news",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "About Us",
+       "to": "about",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Careers",
+       "to": "careers",
+       "quiet": true
+      }
+     ],
+     "cta": {
+      "c": "rm-navitem",
+      "text": "Contact Us",
+      "to": "contact-new",
+      "quiet": true,
+      "v": "button"
+     }
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "video",
+       "eyebrow": "Therapies / Large vessel stroke",
+       "eyebrowLinks": [
+        {
+         "label": "Americas version",
+         "href": "/us/therapies/lvo"
+        },
+        {
+         "label": "Asia & Pacific version",
+         "href": "/apac/therapies/lvo"
+        }
+       ],
+       "title": "A patient-centric approach to AIS",
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "to": "contact-new",
+       "label": "Request a demo"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "threeColumn",
+       "body": "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
+       "title": "control",
+       "eyebrow": "Gain active",
+       "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaLeft",
+       "body": "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
+       "title": "thrombectomy",
+       "eyebrow": "Accelerate",
+       "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "mediaRight",
+       "body": "Adjustability handles patient variability in real-time. TIGERTRIEVER™ has high first-pass success (FPE) and low emboli to new territory (ENT), outperforming competitors in challenging procedures involving stenosis, hard clot, and tortuosity in patients with intracranial atherosclerosis (ICAD).",
+       "stats": [
+        {
+         "note": "mTICI ≥2b",
+         "label": "FPE",
+         "value": "47%"
+        },
+        {
+         "label": "ENT",
+         "value": "0%"
+        }
+       ],
+       "title": "should be the last",
+       "eyebrow": "The 1st pass",
+       "statsCaption": "In challenging ICAD cases⁵"
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "rule": true,
+     "items": [
+      {
+       "c": "row",
+       "justify": "between",
+       "items": [
+        {
+         "c": "row",
+         "gap": "l",
+         "items": [
+          {
+           "c": "rm-navitem",
+           "text": "Product overview",
+           "to": "lvo",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "How it works",
+           "to": "lvo-how",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "In-Practice",
+           "to": "lvo-practice",
+           "quiet": true
+          },
+          {
+           "c": "rm-navitem",
+           "text": "Clinical evidence",
+           "to": "lvo-evidence",
+           "quiet": true,
+           "on": true
+          }
+         ]
+        },
+        {
+         "c": "link",
+         "text": "Indications, Safety & Warnings ↓"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "text",
+         "v": "caption",
+         "text": "Click on a tab below to learn more."
+        },
+        {
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "row",
+           "justify": "between",
+           "items": [
+            {
+             "c": "heading",
+             "level": 3,
+             "text": "Key studies"
+            },
+            {
+             "c": "link",
+             "text": "All 32 TIGERTRIEVER™ publications →",
+             "to": "evidence"
+            }
+           ]
+          },
+          {
+           "c": "grid",
+           "cols": 2,
+           "gap": "m",
+           "align": "start",
+           "items": [
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "TIGERTRIEVER™ · LVO"
+                },
+                {
+                 "c": "badge",
+                 "text": "Prospective, multicenter",
+                 "tone": "info"
+                }
+               ]
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "TIGER"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[N · центры — из публикации]"
+              },
+              {
+               "c": "stat",
+               "value": "[главная цифра]",
+               "label": "[конечная точка]"
+              },
+              {
+               "c": "link",
+               "text": "Study page →"
+              }
+             ]
+            },
+            {
+             "c": "box",
+             "border": true,
+             "pad": "m",
+             "gap": "s",
+             "items": [
+              {
+               "c": "row",
+               "justify": "between",
+               "items": [
+                {
+                 "c": "text",
+                 "v": "caption",
+                 "text": "TIGERTRIEVER™ · LVO"
+                },
+                {
+                 "c": "badge",
+                 "text": "Meta-analysis",
+                 "tone": "info"
+                }
+               ]
+              },
+              {
+               "c": "heading",
+               "level": 4,
+               "text": "Meta-analysis"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[N исследований / пациентов]"
+              },
+              {
+               "c": "stat",
+               "value": "[главная цифра]",
+               "label": "reperfusion vs self-expanding stent retrievers"
+              },
+              {
+               "c": "link",
+               "text": "Study page →"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-video",
+       "v": "band",
+       "title": "Active thrombectomy tailors the procedure to the patient.",
+       "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+      },
+      {
+       "c": "rm-cta",
+       "v": "band",
+       "title": "Questions?",
+       "body": "Reach out to learn more about our company and devices.",
+       "buttons": [
+        {
+         "href": "/contact-us?region=ous&topic=demo",
+         "label": "Request a demo"
+        },
+        {
+         "label": "Customer support",
+         "href": "/contact-us?region=ous"
+        }
+       ],
+       "to": "contact-new"
+      },
+      {
+       "c": "rm-indications",
+       "v": "default",
+       "indicationsHtml": "",
+       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+      }
+     ]
+    },
+    {
+     "c": "rm-navfoot",
+     "legal": [
+      {
+       "c": "rm-navitem",
+       "text": "Privacy Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Terms of Use",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Compliance Statement",
+       "to": "terms",
+       "quiet": true
+      },
+      {
+       "c": "rm-navitem",
+       "text": "Patents",
+       "to": "terms",
+       "quiet": true
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "study",
    "title": "SUCCESS study",
    "url": "rapid-medical.com/us/success-study-final-results",
@@ -2524,8 +5349,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -3191,6 +6016,145 @@
        "gap": "m",
        "items": [
         {
+         "c": "heading",
+         "level": 2,
+         "text": "Full study"
+        },
+        {
+         "c": "divider"
+        },
+        {
+         "c": "grid",
+         "cols": "4fr 1fr 7fr",
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "stack",
+           "gap": "s",
+           "items": [
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Source"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Peer-reviewed paper"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "row",
+             "justify": "between",
+             "align": "center",
+             "items": [
+              {
+               "c": "text",
+               "v": "small",
+               "text": "Published"
+              },
+              {
+               "c": "text",
+               "v": "small",
+               "text": "[журнал, дата — из PDF]"
+              }
+             ]
+            },
+            {
+             "c": "divider"
+            },
+            {
+             "c": "link",
+             "text": "Download PDF"
+            },
+            {
+             "c": "link",
+             "text": "Open on the journal site ↗"
+            }
+           ]
+          },
+          {
+           "c": "spacer",
+           "size": 1
+          },
+          {
+           "c": "stack",
+           "gap": "m",
+           "items": [
+            {
+             "c": "segmented",
+             "items": [
+              "Read here",
+              "Original PDF"
+             ],
+             "active": 0
+            },
+            {
+             "c": "prose",
+             "html": "<h3>Background</h3><p>Comaneci™ is a novel coil embolization assist device that is retrievable, radially adjustable, and designed as an adjunct to coiling of wide-necked aneurysms without limiting blood flow. Comaneci was introduced to the US market in 2019. The objective of this FDA-regulated post-market study is to assess the safety and performance of the device in US clinical practice.</p><h3>Method</h3><p>SUCCESS is a multicenter, single arm, open, prospective study, enrolling 90 consecutive subjects in 17 US centers between November 2020 and October 2023. Subjects had a wide neck (4-10 mm or dome to neck ratio &lt;2) intracranial aneurysm, ruptured or unruptured, that is suitable for coil embolization.</p><h3>Results</h3><p>Ninety (90) consecutive subjects were enrolled with mean age 62 (range 29-82) years. Of these, 63% were female and 36% had ruptured aneurysms. Successful Occlusion (Raymond Roy I and II) at end of procedure was 86%, and 95% at 6 month follow up (Fig. 1), good clinical outcome (mRS 0-2) was 73% at baseline, 80% at 30 days follow up and 82% at 6 months follow up (Fig. 2).</p><h3>Conclusions</h3><ul><li>Data demonstrates a high rate of successful aneurysm occlusion when using Comaneci as an assist device in wide neck aneurysms.</li><li>Safety profile is favorable with low thromboembolic rates compared with other modalities, such as balloons.</li></ul>"
+            },
+            {
+             "c": "table",
+             "columns": [
+              "",
+              "All (n=90)",
+              "Ruptured (n=32)",
+              "Unruptured (n=58)"
+             ],
+             "rows": [
+              [
+               "Thromboembolic events",
+               "5 (5.5%)",
+               "3 (9.4%)",
+               "2 (3.4%)"
+              ],
+              [
+               "Symptomatic thromboembolic events",
+               "0",
+               "0",
+               "0"
+              ],
+              [
+               "Mortality",
+               "4 (4.4%)",
+               "4 (12.5%)",
+               "0"
+              ],
+              [
+               "Coil entanglement / total coils",
+               "1/356 (0.3%)",
+               "0/134",
+               "1/222 (0.5%)"
+              ]
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
          "c": "divider"
         },
         {
@@ -3212,7 +6176,7 @@
           {
            "c": "link",
            "text": "COMANECI™ for aneurysms →",
-           "to": "therapy"
+           "to": "aneurysm"
           },
           {
            "c": "link",
@@ -3291,8 +6255,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -3557,7 +6521,8 @@
              "c": "link",
              "text": "Study page →"
             }
-           ]
+           ],
+           "to": "study"
           },
           {
            "c": "box",
@@ -4122,8 +7087,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -4310,8 +7275,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -5033,8 +7998,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -5383,8 +8348,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -5672,8 +8637,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -6436,8 +9401,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -7067,8 +10032,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -7133,7 +10098,7 @@
             {
              "c": "text",
              "v": "lead",
-             "text": "Tell us what you need — we’ll get it to the right team."
+             "text": "Please provide a few contact details below."
             },
             {
              "c": "stack",
@@ -7391,8 +10356,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {
@@ -7631,8 +10596,8 @@
       },
       {
        "c": "rm-navitem",
-       "text": "Therapies",
-       "to": "therapies",
+       "text": "Therapies ▾",
+       "to": "menu",
        "quiet": true
       },
       {

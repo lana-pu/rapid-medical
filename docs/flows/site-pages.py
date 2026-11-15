@@ -1117,8 +1117,7 @@ def therapies_new(region='us'):
             secs.append(S([H(g, 3), {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}], 'm'))
         mid = {'c': 'section', 'pad': 'l', 'items': [S(secs, 'xl')],
                'annotation': 'Где в направлении 2+ терапии (Europe, Asia & Pacific) — заголовки групп остаются, как сейчас. Правило одно: заголовок группы показывается, когда в ней больше одной терапии.'}
-    missing = {'c': 'alert', 'tone': 'info', 'title': 'Vasospasm is not available in Americas.', 'text': 'These are the therapies here.',
-               'annotation': 'Сохранено: плашка при переходе с терапии, которой нет в регионе (?missing=).'} if region == 'us' else None
+    missing = None  # плашка «not available in this region» убрана (владелица 2026-11-15): ссылок на такие терапии просто нет
     cta = dict(rm('US · Therapies', 4), annotation='«Questions?» и «Contact us» — без изменений.')
     items = [HEADER] + ([{'c': 'section', 'pad': 's', 'items': [missing]}] if missing else []) + [{'c': 'rm-page', 'items': [hero]}, mid, {'c': 'rm-page', 'items': [cta]}, FOOTER]
     return items
@@ -1370,8 +1369,8 @@ flow = {
         {'id': 'ther-asis', 'title': 'Therapies overview · as is (Americas)', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis()},
         {'id': 'ther-asis-phone', 'title': 'Therapies overview · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_asis(True)},
         ref_screen('ther-refs', 'Therapies overview · competitors and Mobbin', 'therapies', THER_REFS),
-        {'id': 'ther-new', 'title': 'Therapies overview · proposal, Americas', 'url': 'rapid-medical.com/us/therapies?missing=vasospasm', 'body': therapies_new('us'),
-         'notes': ['Сверка «было → стало»: регион, заголовок, вводный текст, примечание, видео — шапка без изменений; направление, продукт, название, подзаголовок, ссылка — на карточке; «Questions?» + «Contact us» — внизу; плашка ?missing= — сверху. Ничего не убрано. Добавлено: фото устройства, строка-доказательство (после MLR), число публикаций.']},
+        {'id': 'ther-new', 'title': 'Therapies overview · proposal, Americas', 'url': 'rapid-medical.com/us/therapies', 'body': therapies_new('us'),
+         'notes': ['Сверка «было → стало»: регион, заголовок, вводный текст, примечание, видео — шапка без изменений; направление, продукт, название, подзаголовок, ссылка — на карточке; «Questions?» + «Contact us» — внизу. Плашку ?missing= убрали решением владелицы (2026-11-15): ссылок на терапии, которых нет в регионе, быть не должно. Добавлено: фото устройства, строка-доказательство (после MLR), число публикаций.']},
         {'id': 'ther-new-ous', 'title': 'Therapies overview · proposal, Europe & Middle East (5 therapies)', 'url': 'rapid-medical.com/ous/therapies', 'body': therapies_new('ous')},
         {'id': 'th-asis-lvo', 'title': 'Therapy · as is · Large vessel stroke (Europe)', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': therapy_asis('OUS · Large vessel stroke')},
         {'id': 'th-asis-aneurysm', 'title': 'Therapy · as is · Aneurysm (Americas)', 'url': 'rapid-medical.com/us/therapies/aneurysm', 'body': therapy_asis('US · Aneurysm')},
