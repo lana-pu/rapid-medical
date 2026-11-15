@@ -99,7 +99,8 @@ function parseField(f: FieldDef, raw: FormDataEntryValue | null, errors: FieldEr
       try { return JSON.parse(s); } catch { errors[key] = "Invalid JSON"; return f.required ? {} : null; }
     case "url":
       if (required) errors[key] = "Required";
-      if (s && !/^(https?:\/\/|mailto:|\/)/i.test(s)) errors[key] = "Must be an absolute URL, mailto: or a path";
+      // "//host" and "/\host" open another site, so a path must start with exactly one "/" (security review 2026-11-15)
+      if (s && !/^(https?:\/\/[^/\\]|mailto:|\/(?![/\\]))/i.test(s)) errors[key] = "Must be an absolute URL, mailto: or a path";
       return s || null;
     case "slug": {
       const slug = s.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "");

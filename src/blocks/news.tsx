@@ -3,6 +3,7 @@ import { Section, H2, Img, Btn, SharedLine, formatMonth } from "@/components/sit
 import { Carousel } from "@/components/site/blocks/Carousel";
 import { NewsTimeline } from "@/components/site/blocks/NewsTimeline";
 import { NewsFeed } from "@/components/site/blocks/NewsFeed";
+import { isExternalHref, safeHref } from "@/lib/safe-path";
 import { F, FM, type EditBinding } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
@@ -28,13 +29,14 @@ export function newsOrigin(n: Pick<NewsCard, "source" | "url">): string | null {
     return null;
   }
 }
-const isExternal = (url: string) => /^https?:\/\//.test(url);
+const isExternal = isExternalHref;
+// every link of a news record goes through safeHref first (security review 2026-11-15)
 const ext = (url: string) => (isExternal(url) ? { target: "_blank", rel: "noopener noreferrer" } : {});
 
 function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
   if (variant === "highlights") {
     // DESIGN.md → News & Events: instead of a carousel, the first one large and the next three beside it
-    const [big, ...side] = d.items;
+    const [big, ...side] = d.items.map((n) => ({ ...n, url: safeHref(n.url) }));
     if (!big) return null;
     const inner = (
       <div id={d.anchor} className="mt-8 grid gap-8 border-t border-border pt-8 md:grid-cols-12 md:gap-10">
@@ -66,11 +68,14 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
     return nested ? inner : <Section>{inner}</Section>;
   }
   if (variant === "feed") {
-    const rows = d.items.map((n) => ({ id: n.id, date: formatMonth(n.publishedOn), title: <F e={n.edit} k="title">{n.title}</F>, meta: newsOrigin(n), href: n.url, external: isExternal(n.url) }));
+    const rows = d.items.map((n) => {
+      const href = safeHref(n.url);
+      return { id: n.id, date: formatMonth(n.publishedOn), title: <F e={n.edit} k="title">{n.title}</F>, meta: newsOrigin(n), href, external: isExternal(href) };
+    });
     const inner = (
       <SharedLine id={d.anchor} title={<F e={e} k="title">{d.title ?? "All news"}</F>} className="mt-16">
         {rows.length ? <NewsFeed items={rows} /> : <p className="text-muted">No news yet.</p>}
-        {d.allHref && <Link href={d.allHref} className="mt-4 inline-block text-sm underline">{d.allLabel}</Link>}
+        {d.allHref && <Link href={safeHref(d.allHref)} className="mt-4 inline-block text-sm underline">{d.allLabel}</Link>}
       </SharedLine>
     );
     return nested ? inner : <Section>{inner}</Section>;

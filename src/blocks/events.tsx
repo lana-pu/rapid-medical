@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Section, H2, SharedLine } from "@/components/site/primitives";
 import { F, type EditBinding } from "./edit";
+import { safeHref } from "@/lib/safe-path";
 import type { BlockDef, BlockProps } from "./types";
 
 export type EventsVariant = "upcoming" | "archive" | "next" | "past";
@@ -19,7 +20,7 @@ function Events({ variant, data: d, edit: e, nested }: BlockProps<"events">) {
         {!first ? (
           <div>
             <p>No upcoming events right now.</p>
-            {d.emptyHref && <a href={d.emptyHref} className="mt-2 inline-block text-sm underline">See past events ↓</a>}
+            {d.emptyHref && <a href={safeHref(d.emptyHref)} className="mt-2 inline-block text-sm underline">See past events ↓</a>}
           </div>
         ) : (
           <>
