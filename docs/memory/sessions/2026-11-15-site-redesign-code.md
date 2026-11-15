@@ -31,6 +31,14 @@
     продуктам + строка «forefront»; отмеченные карточками (место Key studies); «3 последние с картинкой» убран; архив —
     поиск, фильтр по продукту, сортировка, «первый автор et al.» с «All authors», «Show more»; `#product` фильтрует.
     Миграция 0024.
+  - Свои страницы материалов (6a64f1a) — у каждой публикации `/{region}/evidence/{id}-{slug}` (PDF на странице, если
+    он наш) и новости `/news-events/{id}-{slug}` (источник и оригинал — текста в базе нет); исследования SUCCESS,
+    DISTALS, Long-term outcomes — «страница из документа»: вывод, ключевые цифры с цитатами, паспорт «Study at a glance»
+    (данные — `src/blocks/studies.ts`, только дословно из документов; применяет `migrate-blocks`). Блоки `passport`,
+    Key numbers · `figures`. Спека — `screens/material.md`.
+  - Демо редизайна (a10acfd) — https://lana-pu.github.io/rapid-medical/redesign/ (папка `redesign/` ветки `gh-pages`,
+    старое демо в корне не тронуто): `DEMO_BASE_PATH=/rapid-medical/redesign DEMO_PORT=3400 npm run demo:export`, затем
+    `out/` → `redesign/`. Собирать только из тестовой базы ветки (скрипт проверяет пользователей и заявки).
 
 ## Принятые решения
 - Код редизайна — в ветке `site-redesign`, слияние в `main` целым куском после полного e2e на продакшн-сборке.
