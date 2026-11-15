@@ -10725,37 +10725,156 @@
          "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
         }
        ]
-      },
-      {
-       "c": "rm-columns",
-       "v": "principles",
-       "title": "Our guiding principles",
-       "intro": "What we at Rapid Medical believe in above all else.",
-       "items": [
-        {
-         "body": "We champion team collaboration to cultivate continuous learning.",
-         "title": "Relationship-centric"
-        },
-        {
-         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
-         "title": "Authentic"
-        },
-        {
-         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
-         "title": "Physician-focused"
-        },
-        {
-         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
-         "title": "Inventive"
-        },
-        {
-         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
-         "title": "Daring"
-        }
-       ],
-       "annotation": "Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана."
       }
      ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Our guiding principles"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "What we at Rapid Medical believe in above all else."
+        },
+        {
+         "c": "media",
+         "kind": "diagram",
+         "label": "«WE ARE RAPID» — графика-акроним, переделать на этапе графдизайна",
+         "ratio": "21/5"
+        },
+        {
+         "c": "grid",
+         "cols": 5,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "R"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Relationship-centric"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We champion team collaboration to cultivate continuous learning."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "A"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Authentic"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We celebrate the freedom to project our most genuine self into our daily behavior."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "P"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Physician-focused"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We operate through the lens of those we serve, considering the physician first in all our decision-making."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "I"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Inventive"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We unlock new ideas to expand capabilities and save more lives, safely & effectively."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "D"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Daring"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "annotation": "Идея «WE ARE RAPID» сохранена (владелица 2026-11-15: идея хорошая, исполнение — нет): первые буквы принципов складываются в R·A·P·I·D. Графика и текст — один блок: крупная буква, принцип, строка. Сейчас картинка и текст повторяют друг друга; окончательный вид — на этапе графического дизайна."
     },
     {
      "c": "section",
@@ -11161,37 +11280,156 @@
          "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
         }
        ]
-      },
-      {
-       "c": "rm-columns",
-       "v": "principles",
-       "title": "Our guiding principles",
-       "intro": "What we at Rapid Medical believe in above all else.",
-       "items": [
-        {
-         "body": "We champion team collaboration to cultivate continuous learning.",
-         "title": "Relationship-centric"
-        },
-        {
-         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
-         "title": "Authentic"
-        },
-        {
-         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
-         "title": "Physician-focused"
-        },
-        {
-         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
-         "title": "Inventive"
-        },
-        {
-         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
-         "title": "Daring"
-        }
-       ],
-       "annotation": "Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана."
       }
      ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 2,
+         "text": "Our guiding principles"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "What we at Rapid Medical believe in above all else."
+        },
+        {
+         "c": "media",
+         "kind": "diagram",
+         "label": "«WE ARE RAPID» — графика-акроним, переделать на этапе графдизайна",
+         "ratio": "21/5"
+        },
+        {
+         "c": "grid",
+         "cols": 5,
+         "gap": "m",
+         "align": "start",
+         "items": [
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "R"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Relationship-centric"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We champion team collaboration to cultivate continuous learning."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "A"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Authentic"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We celebrate the freedom to project our most genuine self into our daily behavior."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "P"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Physician-focused"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We operate through the lens of those we serve, considering the physician first in all our decision-making."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "I"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Inventive"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We unlock new ideas to expand capabilities and save more lives, safely & effectively."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "D"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Daring"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "annotation": "Идея «WE ARE RAPID» сохранена (владелица 2026-11-15: идея хорошая, исполнение — нет): первые буквы принципов складываются в R·A·P·I·D. Графика и текст — один блок: крупная буква, принцип, строка. Сейчас картинка и текст повторяют друг друга; окончательный вид — на этапе графического дизайна."
     },
     {
      "c": "section",
@@ -11414,32 +11652,149 @@
          "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
         }
        ]
-      },
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "l",
+     "tone": "surface",
+     "items": [
       {
-       "c": "rm-columns",
-       "v": "principles",
-       "title": "Our guiding principles",
-       "intro": "What we at Rapid Medical believe in above all else.",
+       "c": "stack",
+       "gap": "m",
        "items": [
         {
-         "body": "We champion team collaboration to cultivate continuous learning.",
-         "title": "Relationship-centric"
+         "c": "heading",
+         "level": 2,
+         "text": "Our guiding principles"
         },
         {
-         "body": "We celebrate the freedom to project our most genuine self into our daily behavior.",
-         "title": "Authentic"
+         "c": "text",
+         "v": "muted",
+         "text": "What we at Rapid Medical believe in above all else."
         },
         {
-         "body": "We operate through the lens of those we serve, considering the physician first in all our decision-making.",
-         "title": "Physician-focused"
+         "c": "media",
+         "kind": "diagram",
+         "label": "«WE ARE RAPID» — графика-акроним, переделать на этапе графдизайна",
+         "ratio": "21/5"
         },
         {
-         "body": "We unlock new ideas to expand capabilities and save more lives, safely & effectively.",
-         "title": "Inventive"
-        },
-        {
-         "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
-         "title": "Daring"
+         "c": "stack",
+         "gap": "m",
+         "items": [
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "R"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Relationship-centric"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We champion team collaboration to cultivate continuous learning."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "A"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Authentic"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We celebrate the freedom to project our most genuine self into our daily behavior."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "P"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Physician-focused"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We operate through the lens of those we serve, considering the physician first in all our decision-making."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "I"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Inventive"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We unlock new ideas to expand capabilities and save more lives, safely & effectively."
+            }
+           ]
+          },
+          {
+           "c": "box",
+           "pad": "s",
+           "gap": "xs",
+           "items": [
+            {
+             "c": "heading",
+             "level": 1,
+             "text": "D"
+            },
+            {
+             "c": "text",
+             "v": "strong",
+             "text": "Daring"
+            },
+            {
+             "c": "text",
+             "v": "small",
+             "text": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action."
+            }
+           ]
+          }
+         ]
         }
        ]
       }

@@ -810,9 +810,14 @@ def careers_new(state='roles', phone=False):
     cta = {'label': 'See open positions ↓', 'href': '#open-positions'} if state != 'empty' else {'label': 'Send us your details ↓', 'href': '#general-interest'}
     hero = dict(rm('Careers', 0, cta=cta), **({} if phone else {'annotation': 'Кнопка в шапке зависит от вакансий: есть — «See open positions ↓», нет — «Send us your details ↓». Тупика нет (находка 5).'}))
     quotes = rm('Careers', 1)
-    principles = dict(rm('Careers', 2, imageUrl=None), **({} if phone else {'annotation': 'Принципы — один раз, текстом; картинка «WE ARE RAPID» с теми же словами убрана.'}))
+    pr = RM['Careers'][2]['data']
+    letters = [{'c': 'box', 'pad': 's', 'gap': 'xs', 'items': [H(it['title'][0], 1), T(it['title'], 'strong'), T(it['body'], 'small')]} for it in pr['items']]
+    principles = {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([H(pr['title'], 2), T(pr['intro'], 'muted'),
+                  {'c': 'media', 'kind': 'diagram', 'label': '«WE ARE RAPID» — графика-акроним, переделать на этапе графдизайна', 'ratio': '21/5'},
+                  S(letters, 'm') if phone else {'c': 'grid', 'cols': 5, 'gap': 'm', 'align': 'start', 'items': letters}], 'm')],
+                  'annotation': None if phone else 'Идея «WE ARE RAPID» сохранена (владелица 2026-11-15: идея хорошая, исполнение — нет): первые буквы принципов складываются в R·A·P·I·D. Графика и текст — один блок: крупная буква, принцип, строка. Сейчас картинка и текст повторяют друг друга; окончательный вид — на этапе графического дизайна.'}
     pad = 'm' if phone else 'l'
-    return [HEADER, {'c': 'rm-page', 'items': [hero, quotes, principles]},
+    return [HEADER, {'c': 'rm-page', 'items': [hero, quotes]}, principles,
             {'c': 'section', 'pad': pad, 'rule': True, 'items': [dict(roles_block(state, phone), **({} if phone else {}))]},
             {'c': 'section', 'pad': pad, 'items': [candidate_form(phone)]}, FOOTER]
 

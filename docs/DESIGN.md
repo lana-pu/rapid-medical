@@ -240,7 +240,8 @@ this event» — материалы, привязанные к событию (�
 с тем же содержимым. Названия регионов — одинаковые везде, после ответа Emily (BACKLOG №9).
 
 ### Careers (2026-11-14)
-Одна страница: шапка с видео → цитаты → принципы (один раз, текстом) → **Open positions** (`#open-positions`) →
+Одна страница: шапка с видео → цитаты → принципы (акроним R·A·P·I·D: графика «WE ARE RAPID» и текст — один блок; графику
+переделать на этапе графдизайна) → **Open positions** (`#open-positions`) →
 **Submit general interest** (`#general-interest`). `/open-positions` — 301 на `/careers#open-positions`.
 - Кнопка в шапке по числу вакансий: есть — «See open positions ↓», нет — «Send us your details ↓».
 - **Open positions** — «общая линия»: слева заголовок и «N roles», справа отделы (подпись) и строки «роль · город ·
