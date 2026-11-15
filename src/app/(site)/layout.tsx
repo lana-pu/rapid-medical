@@ -6,6 +6,8 @@ import { MediaLightbox } from "@/components/site/MediaLightbox";
 import { getRememberedRegion, getSuggestedRegion } from "@/lib/region-cookie";
 import { RegionBanner } from "@/components/site/RegionBanner";
 import { RegionMemory } from "@/components/site/RegionMemory";
+import { VersionBanner } from "@/components/site/VersionBanner";
+import { viewingVersion } from "@/lib/version";
 import { REGION_LABELS } from "@/lib/regions";
 import { cookies } from "next/headers";
 import { getAllSettings } from "@/lib/settings";
@@ -18,6 +20,7 @@ import { navigationFrom } from "@/lib/navigation";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [region, settings, dm, editing, suggested, jar] = await Promise.all([getRememberedRegion(), getAllSettings(), draftMode(), isEditing(), getSuggestedRegion(), cookies()]);
+  const viewing = await viewingVersion();
   const showSuggestion = !!suggested && suggested !== region && jar.get("rm_geo_dismissed")?.value !== "1";
   const nav = region ? await getSolutionsNav(region) : [];
   const contact = (settings.contact ?? {}) as { phoneHq?: string; phoneUs?: string; email?: string };
@@ -30,7 +33,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <>
-      {dm.isEnabled && !editing && <PreviewBanner />}
+      <VersionBanner />
+      {dm.isEnabled && !editing && !viewing && <PreviewBanner />}
       {showSuggestion && suggested && <RegionBanner suggested={suggested} label={REGION_LABELS[suggested]} href={`/${suggested}/therapies`} />}
       <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} nav={navigation} />
       <div className="flex-1">{children}</div>

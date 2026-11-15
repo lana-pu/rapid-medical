@@ -1050,7 +1050,7 @@ export default function EditorOverlay() {
       {tool?.k === "history" && (
         <ToolPanel title="History" top={top} onClose={() => setTool(null)}>
           <div className="p-4">
-            <HistoryList items={tool.items} busy={busy} onRestore={restore} />
+            <HistoryList items={tool.items} busy={busy} onRestore={restore} viewHref={DEMO ? undefined : (id) => `${info?.livePath ?? pathname}?version=${id}`} />
           </div>
         </ToolPanel>
       )}

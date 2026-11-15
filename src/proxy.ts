@@ -52,6 +52,11 @@ export async function proxy(req: NextRequest) {
   // the page path for the 404 page (it gets no params): «MVO is not available in Americas» (docs/screens/therapy.md);
   // always overwritten here, so a visitor cannot send their own
   req.headers.set("x-rm-path", url.pathname);
+  // «View» a page's earlier version (History): which revision to show; honoured only for a signed-in editor
+  // (src/lib/version.ts). Always overwritten here, so a visitor cannot send their own.
+  const version = url.searchParams.get("version");
+  if (version && /^\d{1,10}$/.test(version)) req.headers.set("x-rm-version", version);
+  else req.headers.delete("x-rm-version");
   if (set.length === 0) return withHeaders(NextResponse.next({ request: { headers: req.headers } }));
 
   // Same request sees the new values (server components read request cookies), the browser keeps them.

@@ -110,6 +110,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
               <td className="px-3 py-2">{formatDate(r.createdAt, { dateStyle: "medium", timeStyle: "short" })}</td>
               <td className="px-3 py-2 text-neutral-500">{r.note}</td>
               <td className="px-3 py-2 text-right">
+                {path && <a href={`${path}?version=${r.id}`} target="_blank" rel="noreferrer" className="mr-3 underline" title="See the page as it was, without restoring it">view ↗</a>}
                 <Link href={`/admin/${res.slug}/${recordId}/history?a=${r.id}&b=live`} className="mr-3 underline">vs live</Link>
                 <form action={restoreAction} className="inline">
                   <input type="hidden" name="__resource" value={res.slug} /><input type="hidden" name="__id" value={recordId} /><input type="hidden" name="revision" value={r.id} />

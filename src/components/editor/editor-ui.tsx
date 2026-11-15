@@ -526,18 +526,19 @@ export function PresetList({ presets, onPick, busy, onDragPreset }: { presets: P
 
 const KIND: Record<string, string> = { published: "Published", draft: "Saved", restored: "Restored", created: "Created" };
 
-export function HistoryList({ items, busy, onRestore }: { items: HistoryItem[] | null; busy: boolean; onRestore: (id: number) => void }) {
+export function HistoryList({ items, busy, onRestore, viewHref }: { items: HistoryItem[] | null; busy: boolean; onRestore: (id: number) => void; viewHref?: (id: number) => string }) {
   if (!items) return <p className="text-sm text-neutral-500">Loading…</p>;
   if (!items.length) return <p className="text-sm text-neutral-500">No versions yet.</p>;
   return (
     <div className="space-y-3">
-      <p className="text-xs text-neutral-500">Restore puts a version on the page as unpublished changes. Check it, then Publish — or Undo.</p>
+      <p className="text-xs text-neutral-500">View shows a version without changing anything. Restore puts it on the page as unpublished changes — check it, then Publish, or Undo.</p>
       <ol className="space-y-2">
         {items.map((it, i) => (
           <li key={it.id} className="rounded border border-neutral-200 p-3 text-sm">
             <div className="flex items-center gap-2">
               <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${it.kind === "published" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-700"}`}>{KIND[it.kind] ?? it.kind}</span>
               <span className="flex-1 truncate text-neutral-600">{it.by || "—"}, {new Date(it.at).toLocaleString()}</span>
+              {i > 0 && viewHref && <a href={viewHref(it.id)} target="_blank" rel="noreferrer" className="text-xs underline" title="See the page as it was, without restoring it">View ↗</a>}
               {i > 0 && <button type="button" disabled={busy} onClick={() => onRestore(it.id)} className="text-xs font-medium underline disabled:opacity-50">Restore this version</button>}
             </div>
             {it.changes.length > 0 && (

@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { cookies, draftMode } from "next/headers";
+import { cookies, draftMode, headers } from "next/headers";
 import { getSession, isReady, type SessionUser } from "./auth";
 import { safeLocalPath } from "./safe-path";
 import { DEMO } from "./demo";
@@ -17,8 +17,9 @@ export const EDIT_COOKIE = "rm_edit";
 export const editingUser = cache(async (): Promise<SessionUser | null> => {
   if (DEMO) return { id: 0, email: "demo", name: "Demo editor", role: "admin" }; // static demo: editor always on, saves stay in the browser
   try {
-    const [dm, jar] = await Promise.all([draftMode(), cookies()]);
+    const [dm, jar, h] = await Promise.all([draftMode(), cookies(), headers()]);
     if (!dm.isEnabled || jar.get(EDIT_COOKIE)?.value !== "1") return null;
+    if (h.get("x-rm-version")) return null; // an earlier version is only looked at, not edited
     const user = await getSession();
     if (!isReady(user)) return null;
     return user;

@@ -558,3 +558,39 @@ test("every page once in the tree; drag a section from the catalogue onto the pa
   await page.click('[role=dialog] button:has-text("Click again to discard all")');
   await expect(page.getByRole("status")).toHaveText("Changes discarded");
 });
+
+test("History: View shows an earlier version without restoring it; Restore from there", async ({ page, browser }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await open(page, PAGE, { layout: false });
+  const h1 = page.locator("h1 [data-e]").first();
+  const original = (await h1.innerText()).trim();
+  await h1.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("Version view test");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+  await publishFromEditor(page);
+
+  // View the version before: a new tab, the old title, a banner, no editor; nothing changed
+  await page.getByRole("button", { name: "History", exact: true }).click();
+  const older = page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).nth(1);
+  const [tab] = await Promise.all([page.context().waitForEvent("page"), older.getByRole("link", { name: "View ↗" }).click()]);
+  await tab.waitForLoadState("load");
+  await expect(tab.getByRole("region", { name: "Earlier version" })).toContainText("not on the site");
+  await expect(tab.locator("h1")).toHaveText(original);
+  await expect(tab.locator("#rm-editor-ui")).toHaveCount(0);
+  expect(sql("select count(*) from drafts where resource='solutions'")).toBe("0");
+  // a visitor's ?version= changes nothing
+  const anon = await (await browser.newContext()).newPage();
+  await anon.goto(`${PAGE}?version=${new URL(tab.url()).searchParams.get("version")}`);
+  await expect(anon.locator("h1")).toHaveText("Version view test");
+  await expect(anon.getByRole("region", { name: "Earlier version" })).toHaveCount(0);
+
+  // Restore from the banner: the version becomes the draft, the editor opens; publish puts it back
+  await tab.getByRole("button", { name: "Restore this version" }).click();
+  await tab.waitForURL((u) => u.pathname === PAGE && !u.search.includes("version"));
+  await expect(tab.getByRole("status")).toHaveText("Live, with unpublished changes");
+  await expect(tab.locator("h1")).toHaveText(original);
+  await publishFromEditor(tab);
+});

@@ -19,6 +19,7 @@ import {
   type SitePageKey,
 } from "@/db";
 import { pageSummary } from "@/blocks/stored";
+import { asViewedVersion } from "./version";
 
 /**
  * Public read layer.
@@ -52,7 +53,8 @@ async function overlay<T extends { id: number }>(resource: string, rows: T[]): P
 
 async function one<T extends { id: number }>(resource: string, row: T | undefined | null): Promise<T | null> {
   if (!row) return null;
-  return (await overlay(resource, [row]))[0];
+  // an earlier version being viewed from History replaces the row (signed-in editors only; src/lib/version.ts)
+  return asViewedVersion(resource, (await overlay(resource, [row]))[0]);
 }
 
 /* ------------------------------------------------------------------ */
