@@ -152,21 +152,21 @@ export function evidenceToBlocks({ region, cfg, all, featured, products }: { reg
       edit: { r, map: { title: "title", body: "intro" } },
     },
     {
+      // DESIGN.md → Evidence: the region's publications counted per product, the line, the featured ones
       type: "publications",
-      variant: "spotlight",
-      data: { stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard) },
-      edit: { r, map: { "stat.value": "statValue", "stat.label": "statLabel", line: "forefrontText" } },
+      variant: "overview",
+      data: { stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard), groups },
+      edit: { r, map: { "stat.label": "statLabel", line: "forefrontText" } },
+    },
+    {
+      type: "publications",
+      variant: "library",
+      data: { anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
+      edit: { r, map: { title: "browseTitle" } },
     },
   ];
-  if (latest.length > 0) {
-    blocks.push({ type: "publications", variant: "cards", data: { title: cfg.featuredTitle ?? "Featured publications", items: latest.map(publicationCard) }, edit: { r, map: { title: "featuredTitle" } } });
-  }
-  blocks.push({
-    type: "publications",
-    variant: "byProduct",
-    data: { anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
-    edit: { r, map: { title: "browseTitle" } },
-  });
+  // «Featured publications» (the latest three with a picture) is gone — it repeated the featured ones (decision 2026-11-15)
+  void latest;
   return blocks;
 }
 

@@ -1,12 +1,14 @@
 import type { Stat } from "@/db/schema";
-import { Section, H2, Img, Btn, formatMonth } from "@/components/site/primitives";
+import { Section, H2, Img, Btn, KeyValue, SharedLine, formatMonth } from "@/components/site/primitives";
+import { PublicationLibrary, type LibraryRow } from "@/components/site/PublicationLibrary";
+import { safeHref } from "@/lib/safe-path";
 import { Tabs } from "@/components/site/Tabs";
 import { Carousel } from "@/components/site/blocks/Carousel";
 import { StatBadge } from "@/components/site/blocks/Stats";
 import { F, FM, type EditBinding } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type PublicationsVariant = "spotlight" | "cards" | "byProduct";
+export type PublicationsVariant = "spotlight" | "cards" | "byProduct" | "overview" | "library";
 
 export type PublicationCard = {
   id: number;
@@ -37,8 +39,74 @@ export type PublicationsData = {
   anchors?: string[];
 };
 
+const year = (d: Date | string | null | undefined) => (d ? String(new Date(d).getUTCFullYear()) : "");
+
 function Publications({ variant, data: d, edit: e }: BlockProps<"publications">) {
   const items = d.items ?? [];
+  if (variant === "overview") {
+    // DESIGN.md → Evidence: the number from the records (the region's), per product; the line; the featured ones
+    const groups = d.groups ?? [];
+    const total = groups.reduce((n, g) => n + g.items.length, 0);
+    const rows = [
+      { label: d.stat?.label ? d.stat.label.charAt(0).toUpperCase() + d.stat.label.slice(1) : "Clinical publications", value: <strong>{total}</strong> },
+      ...groups.map((g) => ({ label: g.label, value: <a href={`#${g.id}`} className="underline">{g.items.length}</a> })),
+    ];
+    return (
+      <Section>
+        <div className="grid gap-10 border-t border-border pt-8 md:grid-cols-12">
+          <div className="md:col-span-4">{total > 0 && <KeyValue rows={rows} />}</div>
+          <div className="md:col-span-7 md:col-start-6">
+            {d.line && <p className="text-xl"><F e={e} k="line">{d.line}</F></p>}
+          </div>
+        </div>
+        {items.length > 0 && (
+          <div className="mt-16">
+            <H2><F e={e} k="title">{d.title || "Featured publications"}</F></H2>
+            <ul className="mt-8 grid gap-6 md:grid-cols-3">
+              {items.map((p) => (
+                <li key={p.id} className="flex flex-col rounded border border-border p-5">
+                  {p.imageUrl && <FM e={p.edit} k="imageUrl" className="mb-4"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></FM>}
+                  <div className="text-xs uppercase tracking-wide text-muted">{[year(p.publishedOn), p.journal].filter(Boolean).join(" · ")}</div>
+                  <h3 className="mt-2 font-semibold leading-snug"><F e={p.edit} k="title">{p.title}</F></h3>
+                  <div className="mt-auto flex flex-wrap gap-x-4 pt-4 text-sm">
+                    {p.url && <a href={safeHref(p.url)} target="_blank" rel="noopener noreferrer" className="underline">Read ↗</a>}
+                    {p.pdfUrl && <a href={safeHref(p.pdfUrl)} target="_blank" rel="noopener noreferrer" className="underline">Download PDF</a>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Section>
+    );
+  }
+  if (variant === "library") {
+    const groups = d.groups ?? [];
+    const rows: LibraryRow[] = groups.flatMap((g) =>
+      g.items.map((p) => ({
+        id: p.id,
+        title: <F e={p.edit} k="title">{p.title}</F>,
+        text: p.title,
+        journal: p.journal,
+        authors: p.authors,
+        date: p.publishedOn ? new Date(p.publishedOn).getTime() : 0,
+        year: year(p.publishedOn),
+        url: p.url,
+        doi: p.doi,
+        pdfUrl: p.pdfUrl,
+        product: g.id,
+        productLabel: g.label,
+      })),
+    );
+    return (
+      <Section id={d.anchor} className="scroll-mt-16">
+        {d.anchors?.map((a) => <span key={a} id={a} className="block scroll-mt-16" />)}
+        <SharedLine title={<F e={e} k="title">{d.title || "All publications"}</F>}>
+          <PublicationLibrary rows={rows} products={groups.map((g) => ({ id: g.id, label: g.label, count: g.items.length }))} />
+        </SharedLine>
+      </Section>
+    );
+  }
   if (variant === "spotlight") {
     const stat = d.stat;
     return (
@@ -135,6 +203,8 @@ export const publications: BlockDef<"publications"> = {
     { id: "spotlight", label: "Highlight", description: "A number, a line and a carousel of featured publications" },
     { id: "cards", label: "Cards", description: "Grey band, three cards with an image" },
     { id: "byProduct", label: "By product", description: "Tabs by product, a list in each" },
+    { id: "overview", label: "Overview", description: "Publications counted from the records (per product) beside a line, then the featured ones as cards (Evidence)" },
+    { id: "library", label: "Archive", description: "Shared line: search, product filter with counts, sort, rows with the first author, Read / PDF, Show more (Evidence)" },
   ],
   fields: [
     { key: "title", label: "Title", kind: "text" },
@@ -147,6 +217,22 @@ export const publications: BlockDef<"publications"> = {
     cards: { title: "Sample publications", items: sample },
     byProduct: {
       title: "Sample by product",
+      groups: [
+        { id: "sample-a", label: "PRODUCT A", fullName: "Sample product A", items: sample.slice(0, 2) },
+        { id: "sample-b", label: "PRODUCT B", fullName: "Sample product B", items: sample.slice(2) },
+      ],
+    },
+    overview: {
+      stat: { value: "", label: "sample publications" },
+      line: "A short line beside the numbers.",
+      items: sample.slice(0, 3),
+      groups: [
+        { id: "sample-a", label: "PRODUCT A", fullName: "Sample product A", items: sample.slice(0, 2) },
+        { id: "sample-b", label: "PRODUCT B", fullName: "Sample product B", items: sample.slice(2) },
+      ],
+    },
+    library: {
+      title: "Sample archive",
       groups: [
         { id: "sample-a", label: "PRODUCT A", fullName: "Sample product A", items: sample.slice(0, 2) },
         { id: "sample-b", label: "PRODUCT B", fullName: "Sample product B", items: sample.slice(2) },

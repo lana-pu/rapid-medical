@@ -56,19 +56,20 @@ describe("evidenceToBlocks", () => {
 
   it("tabs by product: sub-products without a tab go under their family, empty products have no tab", () => {
     const bs = evidenceToBlocks({ region: "us", cfg: {}, all: [pub(1, "tt", null), pub(2, "tt-sub", "tt")], featured: [], products });
-    expect(types(bs)).toEqual(["hero:bannerCompact", "publications:spotlight", "publications:byProduct"]);
+    // DESIGN.md → Evidence: overview (counted per product, the line, the featured ones), then the archive
+    expect(types(bs)).toEqual(["hero:bannerCompact", "publications:overview", "publications:library"]);
     const by = bs[2] as BlockOf<"publications">;
     expect(by.data.groups!.map((g) => [g.id, g.items.length])).toEqual([["tt", 2]]);
     expect(by.data.groups![0].sublabel).toBe("13");
     expect(by.data.anchors).toEqual(["tt", "cm"]);
   });
-  it("counts publications when no number is set; cards need an image", () => {
-    const bs = evidenceToBlocks({ region: "us", cfg: {}, all: [pub(1, "tt", null, "/a.jpg")], featured: [], products });
-    const s = bs[1] as BlockOf<"publications">;
-    expect(s.data.stat?.value).toBe("1+");
-    expect(fieldPath(s.edit, "stat.value")).toBe("statValue");
-    expect(types(bs)[2]).toBe("publications:cards");
-    expect((bs[2] as BlockOf<"publications">).data.items![0].edit).toMatchObject({ r: "publications", id: 1 });
+  it("the overview counts per product from the same lists as the archive; no «latest three» block", () => {
+    const bs = evidenceToBlocks({ region: "us", cfg: { forefrontText: "Line" }, all: [pub(1, "tt", null, "/a.jpg"), pub(2, "cm", null)], featured: [pub(1, "tt", null, "/a.jpg")], products });
+    const o = bs[1] as BlockOf<"publications">;
+    expect(o.data.groups!.map((g) => [g.label, g.items.length])).toEqual([["TT", 1], ["CM", 1]]);
+    expect(o.data.items![0].edit).toMatchObject({ r: "publications", id: 1 });
+    expect(fieldPath(o.edit, "line")).toBe("forefrontText");
+    expect(bs.some((b) => b.type === "publications" && b.variant === "cards")).toBe(false);
   });
 });
 

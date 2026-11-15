@@ -96,10 +96,12 @@ export const SOURCES: Record<string, Source> = {
   officePins: { keys: ["offices"], fill: (_d, ctx) => ({ offices: ctx.lists?.offices ?? [] }) },
   /** Evidence: featured studies under the counter; the counter shows the number of studies unless typed in */
   featuredPublications: {
-    keys: ["items"],
+    keys: ["items", "groups"],
     fill: (d, ctx) => {
       const stat = (d.stat ?? {}) as { value?: string };
-      return { items: (ctx.lists?.evidence?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ctx.lists?.evidence?.all.length ?? 0}+` } };
+      const ev = ctx.lists?.evidence;
+      // `overview` counts per product from the same lists as the archive; `spotlight` keeps its typed number
+      return { items: (ev?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ev?.all.length ?? 0}+` }, groups: ev ? evidenceLists(ev).groups : [] };
     },
   },
   /** Evidence: the latest studies with a picture */

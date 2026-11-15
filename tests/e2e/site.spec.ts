@@ -44,21 +44,30 @@ test("therapy page has video hero, tabs and regulatory text", async ({ page }) =
   await expect(page.getByText("Sadasivan C")).toBeVisible();
 });
 
-test("evidence tabs follow the region", async ({ page }) => {
+test("evidence products follow the region", async ({ page }) => {
+  const lib = page.locator("#browse-by-product");
   await page.goto("/apac/evidence");
-  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toBeVisible();
+  await expect(lib.getByRole("button", { name: /^COLUMBUS™/ })).toBeVisible();
   await page.goto("/us/evidence");
-  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toHaveCount(0);
-  await expect(page.getByRole("tab", { name: "DRIVEWIRE™" })).toBeVisible();
+  await expect(lib.getByRole("button", { name: /^COLUMBUS™/ })).toHaveCount(0);
+  await expect(lib.getByRole("button", { name: /^DRIVEWIRE™/ })).toBeVisible();
 });
 
-test("a product anchor opens its evidence tab", async ({ page }) => {
+test("Evidence: the region's numbers, the archive with search and a product anchor that filters it", async ({ page }) => {
+  // DESIGN.md → Evidence; links from therapy cards end in #{product}
+  await page.goto("/about-us");
   await page.goto("/us/evidence#comaneci");
-  await expect(page.getByRole("tab", { name: /COMANECI/ })).toHaveAttribute("aria-selected", "true");
-  await page.goto("/us/evidence#drivewire");
-  await expect(page.getByRole("tab", { name: /DRIVEWIRE/ })).toHaveAttribute("aria-selected", "true");
-  await page.goto("/us/evidence#%");
-  await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
+  const lib = page.locator("#browse-by-product");
+  await expect(lib.getByRole("button", { name: /^COMANECI/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(lib.getByText(/^Showing \d+ of \d+$/)).toBeVisible();
+  const shown = Number((await lib.getByText(/^Showing/).innerText()).split(" of ")[1]);
+  await expect(page.locator("dl").first()).toContainText(String(shown)); // the same number in the overview
+  await lib.getByRole("button", { name: /^All \d+$/ }).click();
+  await lib.getByLabel("Search publications").fill("zzzz-nothing");
+  await expect(lib.getByText("Nothing found. Try fewer words or another product.")).toBeVisible();
+  await page.goto("/about-us");
+  await page.goto("/us/evidence#%"); // a malformed anchor does nothing
+  await expect(page.locator("#browse-by-product").getByRole("button", { name: /^All \d+$/ })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("about page renders the interactive map", async ({ page }) => {

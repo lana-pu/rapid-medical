@@ -3,14 +3,15 @@
 Код: `src/app/(site)/[seg]/evidence/page.tsx`. Восстановлено по коду `59169da`.
 
 ## Блоки
-Страница — список блоков, собирает `evidenceToBlocks()` (`src/blocks/from-settings.ts`).
+Страница хранится списком блоков по региону (`site_pages`, key `evidence`, ADR-007); без записи те же блоки собирает
+`evidenceToBlocks()` (`src/blocks/from-settings.ts`). Раскладка — `docs/DESIGN.md → Evidence` (решение 2026-11-15,
+ветка `site-redesign`, миграция `0024`).
 
 | Порядок | Блок · вариант | Из полей |
 |---|---|---|
-| 1 | Hero · `bannerCompact` | регион и ссылка «change», `title`, `intro`, `heroVideoUrl` |
-| 2 | Publications · `spotlight` | цифра (`statValue` или число публикаций), `statLabel`, `forefrontText`, карусель избранных (до 6) |
-| 3 | Publications · `cards` | `featuredTitle`, 3 последние с картинкой; есть такие публикации |
-| 4 | Publications · `byProduct`, якорь `#browse-by-product` | `browseTitle`, вкладки по продуктам |
+| 1 | Hero · `bannerCompact` (без изменений) | регион, `title`, `intro` (текст клиента), фоновое видео `heroVideoUrl` |
+| 2 | Publications · `overview`, источник `featuredPublications` | «общая линия»: слева «ключ — значение» — `statLabel` (по умолчанию «Clinical publications») и число публикаций региона из базы, ниже строки по продуктам (число — ссылка на `#{product}`); справа `forefrontText`. Ниже — «Featured publications»: отмеченные `featured` (до 6) карточками: картинка (если есть), год · журнал, заголовок, «Read ↗» / «Download PDF» |
+| 3 | Publications · `library`, якорь `#browse-by-product`, источник `publicationsByProduct` | «общая линия»: `browseTitle` («Browse by product») слева; справа архив — см. ниже |
 
 ## Доступ
 Публичный. Регион не из `us|ous|apac` → 404.
@@ -24,19 +25,23 @@
 | `site_settings.evidence` | `title`, `heroVideoUrl`, `intro`, `statValue`, `statLabel`, `statIconUrl`, `forefrontText`, `featuredTitle`, `browseTitle` |
 
 ## Структура и правила
-1. **Hero**: eyebrow «{REGION_LABELS[region]} · change» (→ `/choose-your-location?next=evidence`), `title` (дефолт «Evidence»), `intro`.
-2. **Счётчик**: `statValue` || «{кол-во публикаций}+», `statLabel` || «clinical publications»; `forefrontText` (если есть).
-3. **Карусель featured** (до 6): картинка, журнал · месяц, заголовок, авторы, «Read article» → `pdfUrl` || `url` || `#`.
-4. **Секция `featuredTitle`** (дефолт «Featured publications»): фактически **3 последние публикации с картинкой**,
-   а не featured. Показывается, если такие есть. Ссылка «Read ›» → `pdfUrl` || `url` || `#`.
-5. **Browse by product** (`#browse-by-product`): вкладка на каждый продукт региона, у которого ≥ 1 публикация.
-   Вкладка семейства (например, TIGERTRIEVER™) включает публикации подпродуктов (`family = slug`), у которых
-   нет своей вкладки в этом регионе. Строка: месяц, заголовок, авторы · журнал, «doi:…»/«Read» (`url`), «Download PDF».
-   На каждый продукт есть якорь `#{product.slug}` для диплинка со страниц терапий: страница прокручивается к вкладкам
-   и открывает вкладку этого продукта (и при смене якоря на уже открытой странице). Якорь без вкладки — первая вкладка.
+1. **Hero** — как было: «{регион}», `title`, `intro`, фоновое видео.
+2. **Обзор.** Число — из базы, по региону (в Americas 35 = TIGERTRIEVER™ 19 + COMANECI™ 12 + DRIVEWIRE™ 4), то же,
+   что в архиве; набранное `statValue` («85+») больше не показывается. Отмеченные публикации — вместо карусели; когда у
+   публикации появятся тип исследования, N и главная цифра, её карточка станет Key study (решение 2026-11-15).
+3. **Архив:** поиск по заголовку, авторам и журналу (все слова, без учёта диакритики); фильтр по продукту — чипы «All N»
+   и продукты региона с числом; сортировка «Newest first / Oldest first»; «Showing X of N» или «Nothing found. Try fewer
+   words or another product.»; по 20, «Show more». Строка: год · заголовок · «первый автор et al. · журнал» (номера
+   аффилиаций убираются; «All authors» раскрывает полный список на месте) · бейдж продукта · «doi:…»/«Read ↗» (`url`),
+   «Download PDF». Продукты и семейства — как раньше: вкладка семейства (TIGERTRIEVER™) включает подпродукты без своей
+   вкладки в регионе. Якорь `#{product.slug}` (ссылки «N publications →» с карточек терапий) прокручивает к архиву и
+   включает фильтр продукта, в том числе при смене якоря на открытой странице; неизвестный якорь — «All».
+4. Блок «3 последние публикации с картинкой» убран (решение 2026-11-15: повторял отмеченные; публикации — в архиве).
+5. Позже (данных пока нет): Key studies, вход по клиническому вопросу, фильтры по типу и показанию («N not yet
+   classified — Show them»), идущие исследования — `docs/flows/site-pages.md → Evidence`.
 
-Пустые состояния: нет featured → карусели нет; нет публикаций с картинкой → секции 4 нет; продукт без
-публикаций → вкладки нет; публикаций 0 → счётчик «0+», пустые вкладки.
+Пустые состояния: нет отмеченных → нет «Featured publications»; продукт без публикаций → нет чипа и строки в обзоре;
+публикаций 0 → обзор без чисел, архив «Nothing found».
 
 ## Действия
 Смена региона; листание карусели; переключение вкладок; внешние ссылки на статьи/PDF (новая вкладка).

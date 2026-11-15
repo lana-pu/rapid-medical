@@ -14,3 +14,14 @@ describe("safeHref", () => {
     expect(isExternalHref("/x")).toBe(false);
   });
 });
+
+import { firstAuthor } from "../../src/components/site/PublicationLibrary";
+
+describe("first author in the Evidence rows", () => {
+  it("first name et al., without affiliation numbers; one author as is", () => {
+    expect(firstAuthor("Zain Tariq 1, Ali Khan 2")).toBe("Zain Tariq et al.");
+    expect(firstAuthor("Salem MM, Khalife J")).toBe("Salem MM et al.");
+    expect(firstAuthor("Diego J Ojeda")).toBe("Diego J Ojeda");
+    expect(firstAuthor(null)).toBe("");
+  });
+});
