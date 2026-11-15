@@ -185,23 +185,32 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(tree.getByRole("link", { name: "Large vessel stroke", exact: true })).toHaveCount(1);
   await expect(tree.getByRole("link", { name: /^▤?\s*Publications/ })).toContainText("▤");
 
-  // a page screen: its regions; tabs Overview · Google & address · History
+  // a page screen: one screen — regions, performance, Google, files, details (docs/screens/admin-sections.md)
   await tree.getByRole("link", { name: "Medium vessel stroke", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/page\/therapies\/mvo$/);
   await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
   const regions = page.getByRole("region", { name: "Regions" });
-  await expect(regions).toContainText("No version in this region"); // MVO is not in the Americas
+  await expect(regions.getByRole("listitem", { name: "Americas" })).toContainText("No version"); // MVO is not in the Americas
+  await expect(regions.getByRole("listitem", { name: "Americas" }).getByRole("button", { name: /^Create from / })).toBeVisible();
   await expect(regions.getByRole("link", { name: "Edit on page" })).toHaveCount(2);
-  await expect(regions.getByRole("article", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
-  const tabs = page.getByRole("navigation", { name: "Page tabs" });
-  await tabs.getByRole("link", { name: "Google & address" }).click();
+  await expect(regions.getByRole("listitem", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
+  await expect(page.getByRole("region", { name: "Performance" })).toContainText("page views");
+  await expect(page.getByRole("region", { name: "Google" })).toContainText(/Title \d+\/60/);
+  await expect(page.getByRole("complementary", { name: "Details" })).toContainText("/ous/therapies/mvo");
+  await expect(page.getByRole("navigation", { name: "Page tabs" })).toHaveCount(0); // no tabs any more
+  // a link for a LinkedIn post, tagged with the campaign
+  await page.getByRole("button", { name: "Copy link for a post" }).click();
+  const post = page.getByRole("dialog", { name: "Link for a post" });
+  await post.getByLabel("Campaign name").fill("ESMINT 2026 recap");
+  await expect(post.getByLabel("Link")).toHaveValue(/\/therapies\/mvo\?utm_source=linkedin&utm_medium=social&utm_campaign=esmint-2026-recap$/);
+  await post.getByRole("button", { name: "Close" }).click();
+  // a region's Settings: the record's form under the page's header; regions switch; back to the page
+  await regions.getByRole("listitem", { name: "Europe & Middle East" }).getByRole("link", { name: "Settings" }).click();
   await expect(page.locator("input[name=metaTitle]")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
-  await page.getByRole("group", { name: "Region" }).getByRole("link", { name: "Europe & Middle East" }).click();
+  await expect(page.getByRole("heading", { name: "Settings", level: 1 })).toBeVisible();
   await expect(page.getByRole("group", { name: "Region" }).getByRole("link", { name: "Europe & Middle East" })).toHaveAttribute("aria-current", "page");
-  await tabs.getByRole("link", { name: "History" }).click();
-  await expect(page).toHaveURL(/\/history$/);
-  await tabs.getByRole("link", { name: "Overview" }).click();
+  await page.getByRole("link", { name: "← Page" }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/therapies\/mvo$/);
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Therapies" }).click();
   await expect(page.getByRole("heading", { name: "Therapies", level: 1 })).toBeVisible();
   await expect(page.getByRole("region", { name: "Pages under it" })).toHaveCount(0); // the tree shows them
@@ -693,7 +702,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   await login(page);
   await page.goto("/admin/page/evidence");
   // the page screen → + New publication → Back: to the page screen, not the collection's list
-  await page.getByRole("article", { name: "Publications" }).getByRole("link", { name: "+ New publication" }).click();
+  await page.getByRole("listitem", { name: "Publications" }).getByRole("link", { name: "+ New publication" }).click();
   await expect(page).toHaveURL(/\/admin\/publications\/new$/);
   await page.getByRole("link", { name: "← Back" }).click();
   await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
@@ -703,7 +712,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   await page.getByRole("banner").getByRole("link", { name: "Back", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
   // the editor's ← returns to the admin page it was opened from, after moving between pages in it
-  await page.getByRole("article", { name: "Americas" }).getByRole("link", { name: "Edit on page" }).click();
+  await page.getByRole("listitem", { name: "Americas" }).getByRole("link", { name: "Edit on page" }).click();
   await expect(page).toHaveURL(/\/us\/evidence/);
   await page.getByRole("link", { name: "Back to the admin" }).click();
   await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
@@ -713,4 +722,41 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   await fresh.getByRole("link", { name: "← Back" }).click();
   await expect(fresh).toHaveURL(/\/admin\/publications$/);
   await fresh.close();
+});
+
+test("page screen: Publish from the page; a new address keeps the old one working (a redirect); Create from a region", async ({ page, request }) => {
+  test.setTimeout(120_000);
+  sql(`delete from redirects where "from" in ('/e2e-move','/e2e-moved')`);
+  sql(`delete from pages where slug in ('e2e-move','e2e-moved')`);
+  sql(`insert into pages(slug,title,status,meta_title) values ('e2e-move','E2E move','published','E2E move | Rapid Medical')`);
+  const id = sql(`select id from pages where slug='e2e-move'`);
+  // a pending change of the address (as the Settings form leaves it)
+  sql(`insert into drafts(resource,record_id,data,updated_by_name) values ('pages',${id},'{"slug":"e2e-moved","title":"E2E move"}','E2E')`);
+  try {
+    await login(page);
+    await page.goto("/admin/page/e2e-move");
+    const row = page.getByRole("region", { name: "Regions" }).getByRole("listitem").first();
+    await expect(row).toContainText("Changes not published yet");
+    await row.getByRole("button", { name: "Publish" }).click();
+    // back on the page's screen, at its new address
+    await expect(page).toHaveURL(/\/admin\/page\/e2e-moved\?published=/);
+    await expect(page.getByText("is published")).toBeVisible();
+    expect(sql(`select "to" from redirects where "from"='/e2e-move'`)).toBe("/e2e-moved");
+    const old = await request.get("/e2e-move", { maxRedirects: 0 });
+    expect([301, 308]).toContain(old.status());
+    expect(old.headers()["location"]).toMatch(/\/e2e-moved$/);
+    await expect(page.getByRole("complementary", { name: "Details" })).toContainText(/moved it to \/e2e-moved/);
+  } finally {
+    sql(`delete from redirects where "from" in ('/e2e-move','/e2e-moved')`);
+    sql(`delete from drafts where resource='pages' and record_id=${id}`);
+    sql(`delete from pages where id=${id}`);
+  }
+
+  // Create from a region: a draft copy, the screen stays on the page
+  await page.goto("/admin/page/therapies/mvo");
+  const americas = page.getByRole("region", { name: "Regions" }).getByRole("listitem", { name: "Americas" });
+  await americas.getByRole("button", { name: /^Create from / }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/therapies\/mvo\?created=us/);
+  await expect(page.getByRole("region", { name: "Regions" }).getByRole("listitem", { name: "Americas" })).toContainText("Not on the site yet");
+  sql(`delete from solutions where region='us' and slug='mvo'`);
 });

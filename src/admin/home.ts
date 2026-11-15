@@ -91,7 +91,7 @@ function phrase(e: typeof auditLog.$inferSelect): string {
     case "media": return m.replaced ? `replaced ${what} in ${String(m.places ?? "")} places` : m.alt ? `described ${what}` : `changed ${what} in the media library`;
     case "comment": return m.deleted ? `deleted a comment on ${getResource(e.resource ?? "")?.titleSingular.toLowerCase() ?? "a page"}` : m.resolved === true ? `resolved a comment: “${what}”` : m.resolved === false ? `reopened a comment: “${what}”` : `commented: “${what}”`;
     case "request": return m.took ? `took the request ${what}` : `updated the request ${what}`;
-    case "save": return m.discardedDraft ? `discarded changes to ${what}` : m.created ? `created ${what}` : `saved ${what}`;
+    case "save": return m.addressTo ? `changed the address of ${what} to ${String(m.addressTo)} (redirect added)` : m.discardedDraft ? `discarded changes to ${what}` : m.created ? `created ${what}` : `saved ${what}`;
     default: return `${e.action} ${what}`.trim();
   }
 }

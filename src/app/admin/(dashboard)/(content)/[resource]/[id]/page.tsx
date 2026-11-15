@@ -44,7 +44,7 @@ export default async function EditResource({ params, searchParams }: { params: P
     <>
       {pageOf ? (
         // a page of the site: the page's header with its tabs (docs/screens/admin-sections.md → «Экран страницы»)
-        <PageTabs pageKey={pageOf} active="google" current={{ r: res.slug, id: Number(row.id) }} actions={
+        <PageTabs pageKey={pageOf} active="settings" current={{ r: res.slug, id: Number(row.id) }} actions={
           <>
             {otherRegions.map((r) => (
               <form key={r} action={duplicateResource}>
