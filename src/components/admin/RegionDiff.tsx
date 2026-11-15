@@ -21,6 +21,31 @@ type Data = { regions: RegionColumn[]; rows: RegionRow[] };
 const plain = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
 const fileName = (u: string) => decodeURIComponent(u.split(/[?#]/)[0].split("/").pop() ?? u);
 
+/**
+ * A row's place in words: the path up to the last «›» becomes the group's heading, the rest the row's name; a table
+ * cell («Table · rows 2 3») reads «Row 2 (its first cell), column 3».
+ */
+function placeOf(rows: RegionRow[]) {
+  const cut = (field: string) => {
+    const i = field.lastIndexOf(" › ");
+    return i < 0 ? { group: "", name: field } : { group: field.slice(0, i), name: field.slice(i + 3) };
+  };
+  const firstCell = new Map<string, string>();
+  for (const r of rows) {
+    const { group, name } = cut(r.field);
+    const m = /rows (\d+) 1$/.exec(name);
+    const v = r.cells.find((c) => c && !c.media)?.value;
+    if (m && v) firstCell.set(`${r.section}|${group}|${m[1]}`, plain(v).slice(0, 40));
+  }
+  return (r: RegionRow) => {
+    const { group, name } = cut(r.field);
+    const m = /^(.*?)\s*·?\s*rows (\d+) (\d+)$/.exec(name);
+    if (!m) return { group, name };
+    const head = firstCell.get(`${r.section}|${group}|${m[2]}`);
+    return { group: [group, m[1]].filter(Boolean).join(" › "), name: `Row ${m[2]}${head && m[3] !== "1" ? ` (${head})` : ""}, column ${m[3]}` };
+  };
+}
+
 /** This region's text, with the words that differ from the first region marked. */
 function Marked({ text, base }: { text: string; base: string | null }) {
   if (base === null || base === text) return <>{text}</>;
@@ -43,6 +68,7 @@ export function RegionDiff({ initial, ref0, thumbs: thumbs0, editHref, back }: {
   const [preview, setPreview] = useState<Previewed | null>(null);
 
   const rows = everything ? data.rows : data.rows.filter((r) => r.differs);
+  const place = placeOf(data.rows);
   const nDiff = data.rows.filter((r) => r.differs).length;
 
   const save = async (row: RegionRow, col: number, kind: "text" | "image" | "video" | "url", value: string) => {
@@ -162,6 +188,8 @@ export function RegionDiff({ initial, ref0, thumbs: thumbs0, editHref, back }: {
           <tbody>
             {rows.map((row, i) => {
               const head = i === 0 || rows[i - 1].section !== row.section || rows[i - 1].onlyIn !== row.onlyIn;
+              const { group, name } = place(row);
+              const sub = group && (head || place(rows[i - 1]).group !== group);
               return [
                 head && (
                   <tr key={`s-${row.key}`}>
@@ -172,8 +200,13 @@ export function RegionDiff({ initial, ref0, thumbs: thumbs0, editHref, back }: {
                     </td>
                   </tr>
                 ),
+                sub && (
+                  <tr key={`g-${row.key}`}>
+                    <td colSpan={data.regions.length + 1} className="border-b border-neutral-100 px-4 pb-1 pt-3 text-xs font-medium text-neutral-600">{group}</td>
+                  </tr>
+                ),
                 <tr key={row.key} aria-label={`${row.section} › ${row.field}`}>
-                  <td className="border-b border-neutral-100 px-4 py-3 align-top text-xs text-neutral-500">{row.field}</td>
+                  <td className="border-b border-neutral-100 px-4 py-3 align-top text-sm text-neutral-600">{name}</td>
                   {row.cells.map((cell, col) => {
                     const differs = col > 0 && row.differs && cell?.value !== row.cells[0]?.value;
                     return (
