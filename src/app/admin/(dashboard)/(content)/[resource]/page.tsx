@@ -34,6 +34,11 @@ export default async function ResourceList({ params, searchParams }: { params: P
   // a picture next to the name, and yes/no columns as labels by the name (docs/screens/admin-list.md)
   const thumbs = res.listThumb ? await thumbsFor(rows.map((r) => String(r[res.listThumb!] ?? "")).filter(Boolean)) : {};
   const FLAG: Record<string, string> = { featured: "Featured", noindex: "Hidden from search" };
+  // only the media library's own files, or a file of the site itself — never an outside address (security review)
+  const thumbOf = (v: unknown) => {
+    const u = String(v ?? "");
+    return thumbs[u] ?? (/^\/(?![\/\\])/.test(u) ? u : null);
+  };
   const flags = res.listColumns.filter((c) => c.kind === "boolean");
   const columns = res.listColumns.filter((c) => c.kind !== "boolean");
   const pages = Math.max(1, Math.ceil(total / per));
@@ -114,7 +119,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
                             {res.listThumb && (
                               <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-neutral-100">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                {row[res.listThumb] ? <img src={thumbs[String(row[res.listThumb])] ?? String(row[res.listThumb])} alt="" loading="lazy" className="h-full w-full object-cover" /> : null}
+                                {thumbOf(row[res.listThumb]) ? <img src={thumbOf(row[res.listThumb])!} alt="" loading="lazy" className="h-full w-full object-cover" /> : null}
                               </span>
                             )}
                             <span className="min-w-0 truncate">{cell}</span>
