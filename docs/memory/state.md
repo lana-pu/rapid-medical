@@ -357,7 +357,7 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 ## 2026-11-15 — закрытые страницы сайта в коде (ветка `site-redesign`)
 - Worktree `projects/rapid-medical-redesign`, ветка `site-redesign` (в origin, в `main` не влита), dev — порт 3300,
   своя база `rapid_medical_redesign`. В коде: Contact Us, юридические, About, Careers, обзор терапий, окно выбора
-  региона, раскладка News & Events (миграции 0021–0023). Перед слиянием — полный e2e на продакшн-сборке. Сессия:
+  региона, раскладка News & Events, Evidence — первый этап (миграции 0021–0024). Перед слиянием — полный e2e на продакшн-сборке. Сессия:
   `sessions/2026-11-15-site-redesign-code.md`.
 
 - Экран страницы — один экран вместо трёх вкладок (`docs/admin-page-screen.md`, принято): регионы строками (статус,
