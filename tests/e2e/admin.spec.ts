@@ -21,7 +21,11 @@ test("login → choose a project; the project in the header; its dashboard; the 
   await expect(page.getByRole("navigation", { name: "Quick actions" }).getByRole("link", { name: "+ News item" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Site health" })).toContainText(/pictures? without a description/); // not a message: on the dashboard
   await expect(page.getByRole("region", { name: "Coming up" })).toBeVisible();
-  await page.getByRole("link", { name: "All projects" }).click();
+  // the header's arrow is Back (to the picker we came from); «Rapid Medical» is the way to the projects from anywhere
+  await page.getByRole("banner").getByRole("link", { name: "Back", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.goto("/admin/inbox");
+  await page.getByRole("banner").getByRole("link", { name: /Rapid Medical/ }).click();
   await expect(page).toHaveURL(/\/admin$/);
   await page.goto("/admin/website");
   await page.getByRole("link", { name: /unread messages? in the Inbox/ }).click();
@@ -637,4 +641,31 @@ test("inbox: every folder shown; Subscribed with the Mailchimp list; what leaves
   sql(`delete from contact_submissions where email like '%@sub.example'`);
   sql(`delete from events where slug='e2e-outside'`);
   sql(`delete from page_views where kind='out'`);
+});
+
+test("back goes where you came from: a record's Back, the header arrow, the editor's ←; a direct link — the page above", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  await page.goto("/admin/page/evidence");
+  // the page screen → + New publication → Back: to the page screen, not the collection's list
+  await page.getByRole("article", { name: "Publications" }).getByRole("link", { name: "+ New publication" }).click();
+  await expect(page).toHaveURL(/\/admin\/publications\/new$/);
+  await page.getByRole("link", { name: "← Back" }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
+  // the header arrow is Back too
+  await page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Inbox/ }).click();
+  await expect(page).toHaveURL(/\/admin\/inbox$/);
+  await page.getByRole("banner").getByRole("link", { name: "Back", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
+  // the editor's ← returns to the admin page it was opened from, after moving between pages in it
+  await page.getByRole("article", { name: "Americas" }).getByRole("link", { name: "Edit on page" }).click();
+  await expect(page).toHaveURL(/\/us\/evidence/);
+  await page.getByRole("link", { name: "Back to the admin" }).click();
+  await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
+  // opened by a direct link (a new tab): Back has nothing behind it — the page above
+  const fresh = await page.context().newPage();
+  await fresh.goto("/admin/publications/new");
+  await fresh.getByRole("link", { name: "← Back" }).click();
+  await expect(fresh).toHaveURL(/\/admin\/publications$/);
+  await fresh.close();
 });

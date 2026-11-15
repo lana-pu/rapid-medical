@@ -3,8 +3,9 @@ import { db, products } from "@/db";
 import { getResource } from "@/admin/resources";
 import { crumbsFor } from "@/admin/site-sections";
 import { hasWorkflow } from "@/admin/workflow";
-import { PageHeader, LinkButton } from "@/components/admin/ui";
+import { PageHeader } from "@/components/admin/ui";
 import { ResourceForm } from "@/components/admin/ResourceForm";
+import { BackButton } from "@/components/admin/BackLink";
 
 export default async function NewResource({ params }: { params: Promise<{ resource: string }> }) {
   const { resource } = await params;
@@ -14,7 +15,7 @@ export default async function NewResource({ params }: { params: Promise<{ resour
 
   return (
     <>
-      <PageHeader crumbs={crumbsFor(res.slug, res.title)} title={`New ${res.titleSingular.toLowerCase()}`} actions={<LinkButton href={`/admin/${res.slug}`}>← Back</LinkButton>} />
+      <PageHeader crumbs={crumbsFor(res.slug, res.title)} title={`New ${res.titleSingular.toLowerCase()}`} actions={<BackButton fallback={`/admin/${res.slug}`} />} />
       <ResourceForm resourceSlug={res.slug} fields={res.fields} row={null} products={prods} workflow={hasWorkflow(res)} contentHref={null} />
     </>
   );

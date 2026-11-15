@@ -6,7 +6,7 @@ import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
 import { duplicateResource } from "@/admin/actions";
-import { PageHeader, LinkButton, Notice, Button } from "@/components/admin/ui";
+import { PageHeader, Notice, Button } from "@/components/admin/ui";
 import { crumbsFor } from "@/admin/site-sections";
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { PageTabs } from "@/components/admin/PageTabs";
@@ -15,6 +15,7 @@ import { pageKey } from "@/admin/page-tree";
 const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
+import { BackButton } from "@/components/admin/BackLink";
 
 type SP = { saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
 
@@ -70,7 +71,7 @@ export default async function EditResource({ params, searchParams }: { params: P
                 <Button type="submit" variant="secondary">Copy to {r.toUpperCase()}</Button>
               </form>
             ))}
-            <LinkButton href={`/admin/${res.slug}`}>← Back</LinkButton>
+            <BackButton fallback={`/admin/${res.slug}`} />
           </>
         }
       />
