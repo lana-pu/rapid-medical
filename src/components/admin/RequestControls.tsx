@@ -25,10 +25,10 @@ export function ReplyButton({ id, href }: { id: number; href: string }) {
 /** Who answers — saved as soon as it is chosen. */
 export function AssignSelect({ id, value, people }: { id: number; value: number | null; people: { id: number; name: string }[] }) {
   return (
-    <form action={assignRequest} className="flex items-center gap-2 text-sm">
+    <form action={assignRequest} className="text-sm">
       <input type="hidden" name="id" value={id} />
-      <label htmlFor={`assign-${id}`} className="text-neutral-500">Who answers</label>
-      <select id={`assign-${id}`} name="assignedToId" defaultValue={value ?? ""} key={value ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} className="rounded border border-neutral-300 bg-white px-2 py-1.5 text-sm">
+      <label htmlFor={`assign-${id}`} className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">Who answers</label>
+      <select id={`assign-${id}`} name="assignedToId" defaultValue={value ?? ""} key={value ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5 text-sm">
         <option value="">Nobody</option>
         {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
       </select>
