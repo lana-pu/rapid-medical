@@ -195,7 +195,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(regions.getByRole("listitem", { name: "Americas" }).getByRole("button", { name: /^Create from / })).toBeVisible();
   await expect(regions.getByRole("link", { name: "Edit on page" })).toHaveCount(2);
   await expect(regions.getByRole("listitem", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
-  await expect(page.getByRole("region", { name: "Performance" })).toContainText("page views");
+  await expect(page.getByRole("region", { name: "Performance" })).toContainText(/page views|No visits counted here yet/);
   await expect(page.getByRole("region", { name: "Google" })).toContainText(/Title \d+\/60/);
   await expect(page.getByRole("complementary", { name: "Details" })).toContainText("/ous/therapies/mvo");
   await expect(page.getByRole("navigation", { name: "Page tabs" })).toHaveCount(0); // no tabs any more
@@ -494,8 +494,12 @@ test("login throttling", async ({ page }) => {
 test("activity log records actions", async ({ page }) => {
   await login(page);
   await page.goto("/admin/activity");
-  await expect(page.locator("tbody td span", { hasText: /^publish$/ }).first()).toBeVisible();
-  await expect(page.locator("tbody td span", { hasText: /^login_failed$/ }).first()).toBeVisible();
+  // in words, not codes: changes first, sign-ins in their own view (docs/screens/admin-activity.md)
+  await expect(page.getByRole("listitem").filter({ hasText: / published / }).first()).toBeVisible();
+  await expect(page.getByText(/\{"/)).toHaveCount(0); // no raw JSON
+  await page.getByRole("navigation", { name: "Activity views" }).getByRole("link", { name: "Sign-ins" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: /failed to sign in/ }).first()).toBeVisible();
+  await expect(page.getByRole("listitem").filter({ hasText: /signed in/ }).first()).toBeVisible();
 });
 
 test("on-page editor: inline text edit → pending → publish; Home is a site page", async ({ page, browser }) => {

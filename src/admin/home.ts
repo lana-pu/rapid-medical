@@ -77,7 +77,7 @@ const ago = (d: Date, now = Date.now()) => {
   return "just now";
 };
 
-function phrase(e: typeof auditLog.$inferSelect): string {
+export function phrase(e: typeof auditLog.$inferSelect): string {
   const what = e.label || (e.resource ? `${getResource(e.resource)?.titleSingular ?? e.resource}${e.recordId ? ` #${e.recordId}` : ""}` : "");
   const m = e.meta as Record<string, unknown>;
   switch (e.action) {
@@ -101,7 +101,7 @@ function phrase(e: typeof auditLog.$inferSelect): string {
  * The names of the records an entry is about, as the site shows them: the record's own label (not «Therapy page #10»)
  * and, for a page in a region, its region («Medium vessel stroke (Europe & Middle East)»).
  */
-async function namesFor(entries: (typeof auditLog.$inferSelect)[]): Promise<Map<string, string>> {
+export async function namesFor(entries: (typeof auditLog.$inferSelect)[]): Promise<Map<string, string>> {
   const out = new Map<string, string>();
   for (const e of entries) {
     if (!e.resource || !e.recordId) continue;

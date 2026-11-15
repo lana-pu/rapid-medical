@@ -29,7 +29,7 @@
 | `pages` (Text pages) | Title · Slug · Region · No-index · Status |
 | `site-pages` (Site pages) | Name · Page · Region · Status |
 | `products` | Name · Slug · Family · Evidence tab in · Order |
-| `redirects` | From · To · 301 · Hits |
+| `redirects` | From · To · Used (сколько раз сработал); «Temporary» — меткой у адреса, если редирект не постоянный |
 
 ## Поиск, фильтры, сортировка
 - «Search…» — по названию записи (поле-подпись ресурса: Name / Title, у redirects — From), без учёта регистра.

@@ -1,8 +1,8 @@
 import { db, users } from "@/db";
 import { requireAdmin } from "@/lib/auth";
-import { resetTwoStep, setActive, setRole } from "@/admin/people";
-import { PageHeader, formatDate, inputCls } from "@/components/admin/ui";
-import { InviteAgain, InviteButton, NewPassword, ROLE_TEXT } from "@/components/admin/PeopleTools";
+import { resetTwoStep, setActive } from "@/admin/people";
+import { PageHeader, formatDate } from "@/components/admin/ui";
+import { InviteAgain, InviteButton, NewPassword, RoleSelect } from "@/components/admin/PeopleTools";
 
 /** People and roles (docs/screens/admin-people.md). */
 export default async function PeoplePage() {
@@ -23,26 +23,28 @@ export default async function PeoplePage() {
                 <span className="block font-medium">{u.name}{self && <span className="text-neutral-400"> (you)</span>}</span>
                 <span className="block text-neutral-500">{u.email}</span>
               </span>
-              <form action={setRole} className="flex items-center gap-1">
-                <input type="hidden" name="id" value={u.id} />
-                <select name="role" defaultValue={u.role} disabled={self} aria-label={`What ${u.name} can do`} className={`${inputCls} w-auto py-1`}>
-                  {Object.entries(ROLE_TEXT).map(([v, r]) => <option key={v} value={v}>{r.label}</option>)}
-                </select>
-                {!self && <button className="rounded border border-neutral-300 px-2 py-1 text-xs">Change</button>}
-              </form>
-              <span className="w-40" title="Two-step sign-in">
-                <span className={`rounded px-1.5 py-0.5 text-xs ${twoStep === "On" ? "bg-emerald-100 text-emerald-800" : twoStep === "Off" ? "bg-neutral-200 text-neutral-600" : "bg-amber-100 text-amber-900"}`}>{twoStep}</span>
+              <RoleSelect id={u.id} role={u.role} name={u.name} self={self} />
+              <span className="w-48" title="Two-step sign-in">
+                <span className={`rounded px-1.5 py-0.5 text-xs ${twoStep === "On" ? "bg-emerald-100 text-emerald-800" : twoStep === "Off" ? "bg-neutral-200 text-neutral-600" : "bg-amber-100 text-amber-900"}`}>{u.active ? `Two-step: ${twoStep}` : "Access off"}</span>
               </span>
               <span className="w-36 text-xs text-neutral-500">{u.lastLoginAt ? `Last in ${formatDate(u.lastLoginAt, { dateStyle: "medium", timeZone: "Asia/Jerusalem" })}` : ""}</span>
               <span className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
                 {waiting && u.active && <InviteAgain id={u.id} name={u.name} />}
-                {u.totpEnabledAt && (
-                  <form action={resetTwoStep}><input type="hidden" name="id" value={u.id} /><button className="text-xs underline">Reset two-step sign-in</button></form>
+                {/* rare actions out of the way (docs/screens/admin-people.md) */}
+                {(u.totpEnabledAt || !self || !waiting) && (
+                  <details className="relative">
+                    <summary className="cursor-pointer list-none rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50">More ▾</summary>
+                    <div className="absolute right-0 z-10 mt-1 w-64 space-y-2 rounded-lg border border-neutral-200 bg-white p-3 shadow-lg">
+                      {u.totpEnabledAt && (
+                        <form action={resetTwoStep}><input type="hidden" name="id" value={u.id} /><button className="text-xs underline">Reset two-step sign-in</button></form>
+                      )}
+                      {!self && (
+                        <form action={setActive}><input type="hidden" name="id" value={u.id} /><button className="text-xs underline">{u.active ? "Turn off access" : "Turn access back on"}</button></form>
+                      )}
+                      {!waiting && <NewPassword id={u.id} />}
+                    </div>
+                  </details>
                 )}
-                {!self && (
-                  <form action={setActive}><input type="hidden" name="id" value={u.id} /><button className="text-xs underline">{u.active ? "Turn off" : "Turn on"}</button></form>
-                )}
-                {!waiting && <NewPassword id={u.id} />}
               </span>
             </li>
           );

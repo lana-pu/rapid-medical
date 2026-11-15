@@ -34,12 +34,15 @@ export default async function NotFoundLogPage() {
 
   return (
     <>
-      <PageHeader title="Broken links (404s)" subtitle="Paths visitors requested that don't exist. Add a redirect or dismiss." />
+      <PageHeader title="Broken links" subtitle="Addresses visitors opened that lead nowhere. Send each to a page that exists, or dismiss it." />
+      {/* an empty list is good news: say so instead of an empty table (docs/audits/admin-ux-review-2026-11-15.md 7.6) */}
+      {rows.length === 0 ? (
+        <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-600">✓ No broken links: every address visitors opened led somewhere.</p>
+      ) : (
       <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
         <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500"><tr><th className="px-3 py-2">Path</th><th className="px-3 py-2">Hits</th><th className="px-3 py-2">Last seen</th><th className="px-3 py-2">Referer</th><th className="px-3 py-2">Redirect to</th></tr></thead>
+          <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500"><tr><th className="px-3 py-2">Address</th><th className="px-3 py-2">Opened</th><th className="px-3 py-2">Last time</th><th className="px-3 py-2">Came from</th><th className="px-3 py-2">Send to</th></tr></thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan={5} className="px-3 py-8 text-center text-neutral-400">No broken links recorded.</td></tr>}
             {rows.map((r) => (
               <tr key={r.path} className="border-t border-neutral-100">
                 <td className="px-3 py-2 font-mono text-xs">{r.path}</td>
@@ -59,6 +62,7 @@ export default async function NotFoundLogPage() {
           </tbody>
         </table>
       </div>
+      )}
     </>
   );
 }

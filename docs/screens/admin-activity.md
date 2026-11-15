@@ -4,7 +4,16 @@
 ([admin-sections](admin-sections.md)); последние действия на главной админки — [admin-home](admin-home.md).
 Код: `src/app/admin/(dashboard)/activity/page.tsx`, `src/lib/audit.ts`, таблица `audit_log`.
 
-## Что показано
+## Что показано (переделано 2026-11-15: словами, без JSON)
+- Строка — **предложение**, как на Home: «**Emily R** published Large vessel stroke (Americas) · 15 Nov, 14:20» (время
+  Израиля), со ссылкой на запись; одинаковые действия подряд склеены («· 4 times»). Сырой JSON подробностей и IP в
+  строках изменений не показываются.
+- Вид **Changes** (по умолчанию) и **Sign-ins** (только админ): входы — «Emily R signed in» (вход = шаг кода; шаг
+  пароля отдельной строкой не показывается), «Failed sign-in as {почта}», «signed out»; у входов — IP.
+- Фильтры в одну строку, применяются сразу: вид, **Anyone** (люди), **Any action** (словами: Published, Saved, Took off
+  the site, Deleted, Restored, Settings, People, Media, Requests, Notes), поиск по названию.
+
+Прежнее (до 2026-11-15):
 - Заголовок «Activity», подпись «{N} entries» (с учётом фильтров).
 - Таблица, новые сверху, по 100 строк: **When** (дата и время с секундами) · **Who** (имя; у неудачного входа — введённая
   почта; у системных действий — «—») · **Action** (код действия; `publish` — зелёным, `delete` и `login_failed` — красным)

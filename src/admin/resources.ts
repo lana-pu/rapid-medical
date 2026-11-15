@@ -501,8 +501,8 @@ export const RESOURCES: Resource[] = [
     listColumns: [
       { name: "from", label: "From" },
       { name: "to", label: "To" },
-      { name: "permanent", label: "301", kind: "boolean" },
-      { name: "hits", label: "Hits" },
+      { name: "permanent", label: "Temporary", kind: "boolean" },
+      { name: "hits", label: "Used" },
     ],
     fields: [
       { name: "from", label: "From path", type: "text", required: true, help: "e.g. /welcome_d or us.rapid-medical.com/lvo" },

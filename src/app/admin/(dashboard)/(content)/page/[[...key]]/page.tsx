@@ -91,7 +91,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
   }
 
   async function overview() {
-    const d = await pageDetails(cards, node.versions);
+    const d = await pageDetails(cards, node.versions, { key, title: node.title });
     return (
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-8">
@@ -146,6 +146,11 @@ export default async function SitePage({ params, searchParams }: { params: Promi
 
           <section aria-label="Performance">
             <h2 className={h2}>Performance · last 30 days</h2>
+            {d.performance.views + d.performance.landings + d.performance.requests === 0 ? (
+              <p className={`${card} p-4 text-sm text-neutral-600`}>
+                No visits counted here yet{d.performance.since ? ` (the counter started ${d.performance.since})` : ""}. <Link href="/admin/analytics?days=30" className="underline">Open analytics</Link>
+              </p>
+            ) : (
             <div className={`${card} p-4`}>
               <div className="grid grid-cols-3 gap-4">
                 <div><div className="text-2xl font-semibold tabular-nums">{d.performance.views}</div><div className="text-xs text-neutral-500">page views</div></div>
@@ -158,6 +163,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
                 <Link href="/admin/analytics?days=30" className="underline">Open analytics</Link>
               </p>
             </div>
+            )}
           </section>
 
           <section aria-label="Google">
@@ -171,7 +177,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
                     <li key={g.key} className={`${card} p-4`}>
                       <div className="mb-2 flex items-center justify-between gap-2">
                         <span className="text-xs font-medium text-neutral-500">{regionName(g.region)}</span>
-                        {!DEMO && <Link href={g.settingsHref} className="text-xs underline">Edit</Link>}
+                        {!DEMO && <Link href={g.settingsHref} className="text-xs underline">{g.inSettings ? "Edit in Settings → Google titles" : "Edit"}</Link>}
                       </div>
                       <div className="text-xs text-neutral-600">{SITE_HOST} › {g.path.split("/").filter(Boolean).join(" › ")}</div>
                       <div className="truncate text-lg leading-snug text-blue-800">{g.title}</div>
@@ -187,7 +193,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
               </ul>
             ) : (
               <p className={`${card} p-4 text-sm text-neutral-600`}>
-                The Google title and description of this page are set in <Link href="/admin/settings?group=seo" className="underline">Settings → Google titles &amp; descriptions</Link>.
+                This page has no Google texts of its own: Google shows its name — “{node.title} | Rapid Medical™” — and picks a description from the page.
               </p>
             )}
           </section>

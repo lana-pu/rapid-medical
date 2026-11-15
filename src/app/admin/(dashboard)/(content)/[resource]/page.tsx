@@ -125,7 +125,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
                               </span>
                             )}
                             <span className="min-w-0 truncate">{cell}</span>
-                            {flags.filter((f) => row[f.name]).map((f) => <span key={f.name} className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-normal text-amber-900 no-underline">{FLAG[f.name] ?? f.label}</span>)}
+                            {flags.filter((f) => (f.name === "permanent" ? !row[f.name] : row[f.name])).map((f) => <span key={f.name} className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-normal text-amber-900 no-underline">{FLAG[f.name] ?? f.label}</span>)}
                           </Link>
                         ) : cell}
                       </td>
