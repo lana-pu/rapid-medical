@@ -20,21 +20,26 @@ export function PreviewModal({ file, onClose }: { file: Previewed | null; onClos
     return () => window.removeEventListener("keydown", key);
   }, [file, onClose]);
   if (!file) return null;
+  // what may be opened: a file of the site itself (shown in the window) or an https address (a link only)
+  const local = /^\/(?![\/\\])/.test(file.url);
+  const safe = local || /^https:\/\//i.test(file.url);
   return (
     <div role="dialog" aria-modal="true" aria-label={`Preview: ${file.name}`} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" onClick={onClose}>
       <div className="flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-2 text-sm">
           <span className="min-w-0 flex-1 truncate font-medium">{file.name}</span>
-          <a href={file.url} target="_blank" rel="noreferrer" className="underline">Open in a new tab ↗</a>
+          {safe && <a href={file.url} target="_blank" rel="noreferrer noopener" className="underline">Open in a new tab ↗</a>}
           <button type="button" onClick={onClose} aria-label="Close preview" className="rounded px-2 py-1 text-lg leading-none hover:bg-neutral-100">×</button>
         </div>
         <div className="flex min-h-0 flex-1 items-center justify-center bg-neutral-100">
-          {file.kind === "image" && (
+          {!safe && <p className="p-8 text-sm text-neutral-600">This address cannot be previewed.</p>}
+          {safe && file.kind === "image" && (
             // eslint-disable-next-line @next/next/no-img-element -- a library file shown as it is, at any size
             <img src={file.url} alt="" className="max-h-[80vh] max-w-full object-contain" />
           )}
-          {file.kind === "video" && <video src={file.url} controls autoPlay muted className="max-h-[80vh] max-w-full" />}
-          {file.kind === "pdf" && <iframe src={file.url} title={file.name} className="h-[80vh] w-full bg-white" />}
+          {safe && file.kind === "video" && <video src={file.url} controls autoPlay muted className="max-h-[80vh] max-w-full" />}
+          {local && file.kind === "pdf" && <iframe src={file.url} title={file.name} referrerPolicy="no-referrer" className="h-[80vh] w-full bg-white" />}
+          {safe && !local && file.kind === "pdf" && <p className="p-8 text-sm text-neutral-600">An outside PDF: open it in a new tab.</p>}
         </div>
       </div>
     </div>

@@ -50,5 +50,7 @@ describe("differences between regions with files (the admin's tab)", () => {
     expect(pic.cells[0]?.f).toBe("blocks.0.data.imageUrl");
     expect(rows.some((r) => r.cells.some((c) => c?.value === "/contact-us"))).toBe(false);
     expect([mediaKindOf("/uploads/x.MP4"), mediaKindOf("/uploads/ifu.pdf?v=2"), mediaKindOf("/us/evidence")]).toEqual(["video", "pdf", null]);
+    // only the site's own or https addresses are files (security review 2026-11-15)
+    expect([mediaKindOf("javascript:alert(1)//x.pdf"), mediaKindOf("data:text/html,x.png"), mediaKindOf("//evil.example/x.pdf"), mediaKindOf("http://x.example/a.jpg"), mediaKindOf("https://cdn.example/a.jpg")]).toEqual([null, null, null, null, "image"]);
   });
 });
