@@ -32,6 +32,14 @@ const bump = (m: Map<string, { v: number; e?: number }>, k: string | null | unde
   m.set(k, x);
 };
 const clean = (p: string | undefined) => (p ? p.split(/[?#]/)[0] : undefined);
+/** A stored file name may carry a broken %-escape: show it as it is rather than fail the report (security review). */
+const safeDecode = (s: string) => {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+};
 
 export function buildReport(input: { days: number; now: Date; views: ViewRow[]; leads: LeadRow[]; pageTitle: (path: string) => string; formLabel: (form: string) => string; regionLabel: (r: string) => string }): Report {
   const { days, now, pageTitle } = input;
@@ -53,7 +61,7 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
   const downloads = new Map<string, { v: number }>();
   for (const v of views) {
     if (v.kind === "view") bump(topPages, pageTitle(v.path));
-    if (v.kind === "download") bump(downloads, v.file ? decodeURIComponent(v.file.split("/").pop() ?? v.file) : null);
+    if (v.kind === "download") bump(downloads, v.file ? safeDecode(v.file.split("/").pop() ?? v.file) : null);
     if (!v.visit) continue;
     bump(sources, v.source ?? "Direct");
     bump(campaigns, v.utmCampaign);

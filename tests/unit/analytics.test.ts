@@ -35,3 +35,8 @@ describe("analytics report", () => {
     expect(r.downloads).toEqual([{ label: "IFU TT.pdf", value: 1 }]);
   });
 });
+
+it("a broken %-escape in a stored file name does not break the report", () => {
+  const r = buildReport({ days: 7, now, views: [view(1, { kind: "download", file: "/uploads/%E0%A4%A.pdf" })], leads: [], pageTitle: (p) => p, formLabel: (f) => f, regionLabel: (x) => x });
+  expect(r.downloads).toEqual([{ label: "%E0%A4%A.pdf", value: 1 }]);
+});

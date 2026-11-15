@@ -561,6 +561,10 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   const bot = await request.post("/api/track", { headers: { "user-agent": "Googlebot/2.1", "content-type": "application/json" }, data: { k: "view", p: "/", v: true } });
   expect(bot.status()).toBe(204);
   expect(sql("select count(*) from page_views")).toBe("2");
+  // only the site's own pages are counted (security review 2026-11-15)
+  const ua = { "user-agent": "Mozilla/5.0 Chrome/131.0", "content-type": "application/json" };
+  for (const p of ["/admin/users", "//evil.example/x", "/API/track", "/us/%2e%2e/admin"]) expect((await request.post("/api/track", { headers: ua, data: { k: "view", p, v: false } })).status()).toBe(400);
+  expect(sql("select count(*) from page_views")).toBe("2");
 
   // the team's own visits are not counted; the screen shows where people came from
   await login(page);

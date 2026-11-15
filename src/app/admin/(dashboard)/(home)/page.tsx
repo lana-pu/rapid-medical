@@ -15,7 +15,7 @@ const KIND: Partial<Record<AttentionKind, string>> = { publish: "To publish", me
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
   const user = await requireUser();
-  const [all, activity, sum, unread, week] = await Promise.all([attention(user), recentActivity(), summary(), unreadCount(), analyticsReport(7)]);
+  const [all, activity, sum, unread, week] = await Promise.all([attention(user), recentActivity(), summary(), unreadCount(), analyticsReport(7).catch(() => null)]);
   const todo = all.filter((t) => t.kind !== "request" && t.kind !== "comment"); // messages live in the Inbox
   const first = user.name.split(/\s+/)[0] || user.name;
 
@@ -106,14 +106,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
         <section aria-label="Numbers" className="space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Website this week</h2>
-          <Link href="/admin/analytics?days=7" className="block rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-400" aria-label="This week — open analytics">
+          {week && <Link href="/admin/analytics?days=7" className="block rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-400" aria-label="This week — open analytics">
             <div className="flex gap-6">
               <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.visits[0]}</div><div className="text-xs text-neutral-500">visits</div></div>
               <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.leads[0]}</div><div className="text-xs text-neutral-500">requests ({week.tiles.leads[0] - week.tiles.leads[1] >= 0 ? "+" : ""}{week.tiles.leads[0] - week.tiles.leads[1]} vs last week)</div></div>
             </div>
             {week.headline && <p className="mt-2 text-xs text-neutral-600">{week.headline}.</p>}
             <span className="mt-2 inline-block text-xs underline">Open analytics</span>
-          </Link>
+          </Link>}
           <h2 className="pt-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">Website in numbers</h2>
           <Stat href="/admin/publications" value={sum.studies} label="studies on Evidence" note={sum.lastStudy ? `last added ${sum.lastStudy}` : undefined} />
           <Stat href="/admin/media" value={sum.files} label="files in the media library" note={sum.filesNoAlt ? `${sum.filesNoAlt} without a description` : undefined} />

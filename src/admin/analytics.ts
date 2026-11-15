@@ -1,5 +1,5 @@
 import "server-only";
-import { and, gte, ne } from "drizzle-orm";
+import { and, desc, gte, ne } from "drizzle-orm";
 import { contactSubmissions, db, pageViews } from "@/db";
 import { buildReport, type Report } from "@/lib/analytics";
 import { REGION_CHOICES } from "@/lib/regions";
@@ -15,7 +15,8 @@ export async function analyticsReport(days: number): Promise<Report> {
   const now = new Date();
   const since = new Date(now.getTime() - 2 * days * 86_400_000);
   const [views, leads, cards] = await Promise.all([
-    db.select().from(pageViews).where(gte(pageViews.at, since)),
+    // the columns the report needs, newest first, capped: the report's cost does not grow without bound (security review)
+    db.select({ at: pageViews.at, kind: pageViews.kind, path: pageViews.path, visit: pageViews.visit, region: pageViews.region, country: pageViews.country, source: pageViews.source, utmCampaign: pageViews.utmCampaign, file: pageViews.file }).from(pageViews).where(gte(pageViews.at, since)).orderBy(desc(pageViews.at)).limit(200_000),
     db.select().from(contactSubmissions).where(and(gte(contactSubmissions.createdAt, since), ne(contactSubmissions.status, "spam"))),
     listEditorPages(),
   ]);
@@ -33,7 +34,7 @@ export async function analyticsReport(days: number): Promise<Report> {
   return buildReport({
     days,
     now,
-    views: views.map((v) => ({ at: v.at, kind: v.kind, path: v.path, visit: v.visit, region: v.region, country: v.country, source: v.source, utmCampaign: v.utmCampaign, file: v.file })),
+    views,
     leads: leads.map((l) => ({ at: l.createdAt, form: l.form, topic: l.topic, region: l.region, country: l.country, meta: l.meta })),
     pageTitle,
     formLabel,
