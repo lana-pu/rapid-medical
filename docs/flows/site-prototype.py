@@ -227,6 +227,7 @@ flow = {
                    'визуальный стиль решается отдельно. Меню, «Contact Us», регион в шапке и ссылки Legal в футере кликаются. '
                    'Home и страница терапии — предварительно (ждут Emily), Evidence — черновик концепции, Webinars — как есть.',
     'start': 'home',
+    'view': 'present',
     'groups': [
         {'title': 'Главная и выбор региона', 'screens': ['home', 'region']},
         {'title': 'Терапии', 'screens': ['menu', 'therapies', 'aneurysm', 'aneurysm-how', 'aneurysm-practice', 'aneurysm-evidence', 'lvo', 'lvo-how', 'lvo-practice', 'lvo-evidence']},
