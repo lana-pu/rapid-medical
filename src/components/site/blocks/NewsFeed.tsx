@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { siteHref } from "@/lib/safe-path";
+import { safeHref } from "@/lib/safe-path";
 
+/** `href` comes ready (base path added by the block); here it is only checked again. */
 export type FeedRow = { id: number; date: string; title: ReactNode; meta?: string | null; href: string; external?: boolean };
 
 /** Material rows (DESIGN.md → «Строка материала»): date in its own column, title, kind and source; «Show more». */
@@ -15,7 +16,7 @@ export function NewsFeed({ items, pageSize = 10 }: { items: FeedRow[]; pageSize?
           <li key={n.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
             <span className="text-sm text-muted">{n.date}</span>
             <div className="min-w-0">
-              <a href={siteHref(n.href)} {...(n.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="font-medium hover:underline">{n.title}</a>
+              <a href={safeHref(n.href)} {...(n.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="font-medium hover:underline">{n.title}</a>
               {(n.meta || n.external) && <div className="mt-1 text-xs text-muted">{[n.meta, n.external ? "↗" : null].filter(Boolean).join(" ")}</div>}
             </div>
           </li>
