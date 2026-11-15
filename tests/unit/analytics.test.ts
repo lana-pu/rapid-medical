@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildReport, type ViewRow, type LeadRow } from "../../src/lib/analytics";
+import { buildReport, enoughVisits, type ViewRow, type LeadRow } from "../../src/lib/analytics";
 
 const now = new Date("2026-11-15T12:00:00Z");
 const ago = (d: number) => new Date(now.getTime() - d * 86_400_000);
@@ -39,4 +39,14 @@ describe("analytics report", () => {
 it("a broken %-escape in a stored file name does not break the report", () => {
   const r = buildReport({ days: 7, now, views: [view(1, { kind: "download", file: "/uploads/%E0%A4%A.pdf" })], leads: [], pageTitle: (p) => p, formLabel: (f) => f, regionLabel: (x) => x });
   expect(r.downloads).toEqual([{ label: "%E0%A4%A.pdf", value: 1 }]);
+});
+
+describe("enoughVisits (the dashboard's «This week»)", () => {
+  const now = new Date("2026-11-30T12:00:00Z");
+  it("needs a full week of counting and 50 visits", () => {
+    expect(enoughVisits({ countingSince: new Date("2026-11-15T00:00:00Z"), now, visits: 120 })).toBe(true);
+    expect(enoughVisits({ countingSince: new Date("2026-11-27T00:00:00Z"), now, visits: 500 })).toBe(false); // three days
+    expect(enoughVisits({ countingSince: new Date("2026-11-01T00:00:00Z"), now, visits: 12 })).toBe(false); // too few
+    expect(enoughVisits({ countingSince: null, now, visits: 0 })).toBe(false);
+  });
 });

@@ -106,3 +106,12 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
     headline: lead ? `${lead.label} brought ${lead.value} visit${lead.value === 1 ? "" : "s"} and ${lead.extra ?? 0} lead${(lead.extra ?? 0) === 1 ? "" : "s"}` : null,
   };
 }
+
+/** Below this the week's visits say more about the counter than about the site (docs/screens/admin-home.md). */
+export const ENOUGH = { days: 7, visits: 50 };
+
+/** Are there enough visits to show? The counter has run a full week and counted at least 50 visits in it. */
+export function enoughVisits(input: { countingSince: Date | null; now: Date; visits: number }): boolean {
+  if (!input.countingSince) return false;
+  return input.now.getTime() - input.countingSince.getTime() >= ENOUGH.days * 86_400_000 && input.visits >= ENOUGH.visits;
+}

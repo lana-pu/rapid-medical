@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { attention, comingUp, health, lastPublished, myRecent, recentActivity } from "@/admin/home";
 import { unreadCount } from "@/admin/inbox";
-import { analyticsReport } from "@/admin/analytics";
+import { analyticsReport, countingSince } from "@/admin/analytics";
+import { enoughVisits } from "@/lib/analytics";
 import { DEMO, withBase } from "@/lib/demo";
 import { Notice, formatDate } from "@/components/admin/ui";
 
@@ -25,7 +26,7 @@ const card = "rounded-lg border border-neutral-200 bg-white";
 export default async function WebsiteHome({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
   const user = await requireUser();
-  const [all, activity, unread, week, last, mine, upcoming, checks] = await Promise.all([
+  const [all, activity, unread, week, last, mine, upcoming, checks, since] = await Promise.all([
     attention(user),
     recentActivity(),
     unreadCount(),
@@ -34,7 +35,11 @@ export default async function WebsiteHome({ searchParams }: { searchParams: Prom
     myRecent(user.id),
     comingUp(),
     health(user),
+    countingSince().catch(() => null),
   ]);
+  // too few visits counted yet: say so instead of showing tiny numbers that look real (docs/screens/admin-home.md)
+  const enough = !!week && enoughVisits({ countingSince: since, now: new Date(), visits: week.tiles.visits[0] });
+  const sinceText = since ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Jerusalem" }).format(since) : null;
   const todo = all.filter((t) => t.kind === "publish" || t.kind === "links"); // messages live in the Inbox
 
   return (
@@ -126,14 +131,27 @@ export default async function WebsiteHome({ searchParams }: { searchParams: Prom
             {week && (
               <section aria-label="This week">
                 <h2 className={h2}>This week</h2>
-                <Link href="/admin/analytics?days=7" className={`${card} block p-4 hover:border-neutral-400`} aria-label="This week — open analytics">
-                  <div className="flex gap-6">
-                    <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.visits[0]}</div><div className="text-xs text-neutral-500">visits</div></div>
-                    <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.leads[0]}</div><div className="text-xs text-neutral-500">requests ({week.tiles.leads[0] - week.tiles.leads[1] >= 0 ? "+" : ""}{week.tiles.leads[0] - week.tiles.leads[1]} vs last week)</div></div>
+                {enough ? (
+                  <Link href="/admin/analytics?days=7" className={`${card} block p-4 hover:border-neutral-400`} aria-label="This week — open analytics">
+                    <div className="flex gap-6">
+                      <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.visits[0]}</div><div className="text-xs text-neutral-500">visits</div></div>
+                      <div><div className="text-2xl font-semibold tabular-nums">{week.tiles.leads[0]}</div><div className="text-xs text-neutral-500">requests ({week.tiles.leads[0] - week.tiles.leads[1] >= 0 ? "+" : ""}{week.tiles.leads[0] - week.tiles.leads[1]} vs last week)</div></div>
+                    </div>
+                    {week.headline && <p className="mt-2 text-xs text-neutral-600">{week.headline}.</p>}
+                    <span className="mt-2 inline-block text-xs underline">Open analytics</span>
+                  </Link>
+                ) : (
+                  <div className={`${card} p-4`} aria-label="This week — not enough visits yet">
+                    <div className="text-2xl font-semibold tabular-nums">{week.tiles.leads[0]}</div>
+                    <div className="text-xs text-neutral-500">requests from the site&apos;s forms</div>
+                    <p className="mt-3 text-sm text-neutral-700">
+                      {sinceText ? `Counting visits since ${sinceText}` : "The site has not counted any visits yet"} — numbers appear after the first week.
+                    </p>
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Visits to the old site are in <a href="https://analytics.google.com/" target="_blank" rel="noreferrer" className="underline">Google Analytics ↗</a>.
+                    </p>
                   </div>
-                  {week.headline && <p className="mt-2 text-xs text-neutral-600">{week.headline}.</p>}
-                  <span className="mt-2 inline-block text-xs underline">Open analytics</span>
-                </Link>
+                )}
               </section>
             )}
 

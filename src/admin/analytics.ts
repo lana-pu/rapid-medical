@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, gte, ne } from "drizzle-orm";
+import { and, desc, gte, min, ne } from "drizzle-orm";
 import { contactSubmissions, db, pageViews } from "@/db";
 import { buildReport, type Report } from "@/lib/analytics";
 import { REGION_CHOICES } from "@/lib/regions";
@@ -44,4 +44,10 @@ export async function analyticsReport(days: number): Promise<Report & { truncate
   });
   // the newest rows only: say so rather than show a silently smaller number (security review 2026-11-15)
   return { ...report, truncated: views.length >= ROW_CAP };
+}
+
+/** When the site's own counter counted its first page (null: nothing yet). */
+export async function countingSince(): Promise<Date | null> {
+  const [r] = await db.select({ first: min(pageViews.at) }).from(pageViews);
+  return r?.first ?? null;
 }
