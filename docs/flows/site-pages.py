@@ -1124,6 +1124,36 @@ def therapies_new(region='us'):
     return items
 
 
+# ---------- Therapy page ----------
+THERAPY_REFS = [
+    {'title': 'Конкуренты: страница устройства',
+     'ask': 'Общее у всех: устройство крупно как предмет, сразу «Contact a representative» и ссылка «Indications, Safety, and Warnings» в первом экране; навигация по разделам страницы.',
+     'refs': [('medtronic', 'Medtronic · Solitaire X', 'фото устройства, тип, название, строка; «Ordering information», «Contact a representative», «Indications, Safety, and Warnings»', 'https://www.medtronic.com/en-us/healthcare-professionals/products/neurological/neurovascular/stent-retrievers/solitaire-x-revascularization-device.html', 'png'),
+              ('medtronic-2', 'Medtronic · Solitaire X, ниже', 'преимущества со сносками и график из данных (перекрытие по диаметру сосуда)', 'https://www.medtronic.com/en-us/healthcare-professionals/products/neurological/neurovascular/stent-retrievers/solitaire-x-revascularization-device.html', 'png'),
+              ('penumbra', 'Penumbra · RED', 'липкая навигация по странице (Overview · Product Details · Related · Resources); разделы аккордеоном; видео сбоку', 'https://www.penumbrainc.com/products/red-reperfusion-catheters/', 'png'),
+              ('penumbra-2', 'Penumbra · RED, ниже', 'связанные устройства и «Resources»: новости, события, клинические данные', 'https://www.penumbrainc.com/products/red-reperfusion-catheters/', 'png'),
+              ('stryker', 'Stryker · Trevo NXT', 'доказательства прямо на странице: счётчик пациентов и ключевые исследования с главной цифрой', 'https://www.stryker.com/us/en/neurovascular/products/trevo-nxt.html', 'png')]},
+    {'title': 'Характеристики и разделы (Mobbin)',
+     'ask': 'Как подать спецификации и разделы, чтобы длинная страница читалась.',
+     'refs': [('fauna', 'Fauna Robotics', 'характеристики таблицей по группам рядом с изображением устройства; вкладки по разделам; PDF', 'sites/sections/30698000-885e-4983-af51-e8a1fa72a043'),
+              ('rivian', 'Rivian', 'ключевые числа плитками + полная таблица рядом; «User guide — Download», «Questions? — Contact us»', 'sites/sections/4e15c487-5553-4441-a9d7-29331a22361d'),
+              ('daylight', 'Daylight', 'особенности карточками с изображением, ниже характеристики колонками', 'sites/sections/5d57fbff-5355-4f3d-91b4-eff403615a2d')]},
+]
+
+
+def therapy_asis(name, phone=False):
+    blocks = RM[name]
+    notes = {}
+    if not phone and name == 'OUS · Large vessel stroke':
+        notes = {0: {'annotation': 'Hero: надпись «Therapies / Large vessel stroke» + ссылки на версии других регионов, заголовок, текст, «Request a demo», фоновое видео (tigerface).'},
+                 1: {'annotation': 'Benefits — 3 ряда «текст + медиа»: видео, анимированный график, круги-цифры 47% FPE / 0% ENT. У рядов надзаголовок + заголовок читаются одной фразой («Gain active / control»).'},
+                 4: {'annotation': 'Product details — вкладки: Product overview (текст, особенности 2×2, диаграмма устройства с маркерами, таблица спецификаций), How it works (шаги), In-Practice (вебинары «Request to view», врачи и кейсы), Clinical evidence (ссылка в Evidence). На телефоне — аккордеон.'},
+                 5: {'annotation': 'Closing — полоса с видео на всю ширину.'},
+                 6: {'annotation': '«Questions?» — Request a demo + Customer support (решение 2026-11-10).'},
+                 7: {'annotation': 'Indications and references — закреплён внизу (регуляторика своя у региона), не двигается и не удаляется.'}}
+    return [HEADER, page(name, None, notes), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -1161,6 +1191,8 @@ flow = {
         {'title': '9 · Обзор терапий — как есть', 'screens': ['ther-asis', 'ther-asis-phone']},
         {'title': '9 · Обзор терапий — конкуренты и Mobbin', 'screens': ['ther-refs']},
         {'title': '9 · Обзор терапий — предложение (всё сохранено, к обсуждению)', 'screens': ['ther-new', 'ther-new-ous']},
+        {'title': '10 · Страница терапии — как есть', 'screens': ['th-asis-lvo', 'th-asis-aneurysm', 'th-asis-phone']},
+        {'title': '10 · Страница терапии — конкуренты и Mobbin', 'screens': ['th-refs']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1222,6 +1254,10 @@ flow = {
               {'from': 'ther-asis-phone', 'to': 'ther-refs', 'label': 'как у других'},
               {'from': 'ther-refs', 'to': 'ther-new', 'label': 'предложение'},
               {'from': 'ther-new', 'to': 'ther-new-ous', 'label': 'регион с 5 терапиями'},
+              {'from': 'ther-new-ous', 'to': 'th-asis-lvo', 'label': 'следующая страница'},
+              {'from': 'th-asis-lvo', 'to': 'th-asis-aneurysm', 'label': 'другая терапия'},
+              {'from': 'th-asis-lvo', 'to': 'th-asis-phone', 'label': 'на телефоне'},
+              {'from': 'th-asis-phone', 'to': 'th-refs', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1307,6 +1343,10 @@ flow = {
         {'id': 'ther-new', 'title': 'Therapies overview · proposal, Americas', 'url': 'rapid-medical.com/us/therapies?missing=vasospasm', 'body': therapies_new('us'),
          'notes': ['Сверка «было → стало»: регион, заголовок, вводный текст, примечание, видео — шапка без изменений; направление, продукт, название, подзаголовок, ссылка — на карточке; «Questions?» + «Contact us» — внизу; плашка ?missing= — сверху. Ничего не убрано. Добавлено: фото устройства, строка-доказательство (после MLR), число публикаций.']},
         {'id': 'ther-new-ous', 'title': 'Therapies overview · proposal, Europe & Middle East (5 therapies)', 'url': 'rapid-medical.com/ous/therapies', 'body': therapies_new('ous')},
+        {'id': 'th-asis-lvo', 'title': 'Therapy · as is · Large vessel stroke (Europe)', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': therapy_asis('OUS · Large vessel stroke')},
+        {'id': 'th-asis-aneurysm', 'title': 'Therapy · as is · Aneurysm (Americas)', 'url': 'rapid-medical.com/us/therapies/aneurysm', 'body': therapy_asis('US · Aneurysm')},
+        {'id': 'th-asis-phone', 'title': 'Therapy · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': therapy_asis('OUS · Large vessel stroke', True)},
+        ref_screen('th-refs', 'Therapy · competitors and Mobbin', 'therapy', THERAPY_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
