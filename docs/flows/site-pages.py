@@ -973,24 +973,22 @@ def pub_row(year, title, tldr, badges):
 
 
 def evidence_concept():
-    facts = S([line('Publications', T('102', 'strong')), {'c': 'divider'}, line('Randomized trials', T('1 (DISTALS)', 'small')), {'c': 'divider'},
+    facts = S([line('Publications', T('35', 'strong')), {'c': 'divider'}, line('Randomized trials', T('[N] in classified', 'small')), {'c': 'divider'},
                line('Prospective multicenter', T('[N] in classified', 'small')), {'c': 'divider'}, line('Patients', T('[N] in classified studies', 'small'))], 's',
-              annotation='Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа — из разметки; пока размечены не все, подпись «in classified», чтобы цифра не вводила в заблуждение.')
+              annotation='Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Evidence региональный: в Americas — 35 публикаций (TIGERTRIEVER 19, COMANECI 12, DRIVEWIRE 4), не 102. Числа — из разметки; пока размечены не все, подпись «in classified».')
     head = S([{'c': 'eyebrow', 'text': 'Americas · change'}, H('Evidence', 1), {'c': 'divider'},
               {'c': 'grid', 'cols': '4fr 1fr 7fr', 'gap': 'm', 'align': 'start', 'items': [facts, {'c': 'spacer', 'size': 1},
                T('Clinical data behind TIGERTRIEVER™, COMANECI™ and DRIVEWIRE™ — key studies first, every publication below.', 'lead')]}], 'l')
-    keys = {'c': 'grid', 'cols': 4, 'gap': 'm', 'align': 'start', 'items': [
-        key_study('DISTALS', 'RCT', '98 randomized · FDA IDE', '86.3% vs 27.7%', 'reperfusion at 24 h without sICH', 'TIGERTRIEVER™ 13 · MeVO'),
+    keys = {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': [
         key_study('SUCCESS', 'Prospective, multicenter', '90 patients · 17 US centers', '95%', 'occlusion at 6 months', 'COMANECI™ · wide-neck aneurysms'),
         key_study('TIGER', 'Prospective, multicenter', '[N · центры — из публикации]', '[главная цифра]', '[конечная точка]', 'TIGERTRIEVER™ · LVO'),
         key_study('Meta-analysis', 'Meta-analysis', '[N исследований / пациентов]', '[главная цифра]', 'reperfusion vs self-expanding stent retrievers', 'TIGERTRIEVER™ · LVO')],
-        'annotation': 'Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Цифры — из одобренных материалов (MLR).'}
-    questions = {'c': 'grid', 'cols': 4, 'gap': 'm', 'align': 'start', 'items': [
-        {'c': 'card', 'eyebrow': '32 publications', 'title': 'Large vessel occlusion', 'text': 'TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers'},
-        {'c': 'card', 'eyebrow': '8 publications', 'title': 'Medium & distal vessels', 'text': 'TIGERTRIEVER™ 13 · DISTALS and MeVO experience'},
-        {'c': 'card', 'eyebrow': '57 publications', 'title': 'Aneurysms & vasospasm', 'text': 'COMANECI™ · wide-neck coiling, vasospasm angioplasty'},
-        {'c': 'card', 'eyebrow': '5 publications', 'title': 'Access & navigation', 'text': 'DRIVEWIRE™ · guidewire experience'}],
-        'annotation': 'Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы. Список групп, их названия и порядок правятся в админке (экран Filters).'}
+        'annotation': 'Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Только по продуктам региона: DISTALS (TIGERTRIEVER 13) в Americas не показываем — продукта нет в регионе (вопрос к Emily). Цифры — из одобренных материалов (MLR).'}
+    questions = {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': [
+        {'c': 'card', 'eyebrow': '19 publications', 'title': 'Large vessel occlusion', 'text': 'TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers'},
+        {'c': 'card', 'eyebrow': '12 publications', 'title': 'Aneurysms', 'text': 'COMANECI™ · wide-neck coiling'},
+        {'c': 'card', 'eyebrow': '4 publications', 'title': 'Access & navigation', 'text': 'DRIVEWIRE™ · guidewire experience'}],
+        'annotation': 'Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы, по региону: в Americas нет TIGERTRIEVER 13 и вазоспазма — их групп нет. Список групп, названия и порядок правятся в админке (экран Filters).'}
     lib_filters = {'c': 'row', 'gap': 's', 'wrap': True, 'align': 'center', 'items': [
         I('', v='search', placeholder='Search title, author, journal'), {'c': 'input', 'v': 'select', 'value': 'All products'},
         {'c': 'input', 'v': 'select', 'value': 'All indications'}, {'c': 'input', 'v': 'select', 'value': 'All study types'}, {'c': 'input', 'v': 'select', 'value': 'Newest first'}]}
@@ -1000,17 +998,17 @@ def evidence_concept():
             pub_row('2025', 'Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study',
                     'High rate of aneurysm occlusion with Comaneci in wide-neck aneurysms, sustained at 6 months.', [('Prospective, multicenter', 'info'), ('N = 90', 'neutral'), ('COMANECI™', 'neutral')]),
             {'c': 'divider'},
-            pub_row('2025', 'Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion',
-                    '[Вывод одной фразой]', [('Review', 'info'), ('MeVO', 'neutral'), ('TIGERTRIEVER™ 13', 'neutral')]),
+            pub_row('2025', 'Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke',
+                    '[Вывод одной фразой]', [('Retrospective', 'info'), ('LVO', 'neutral'), ('TIGERTRIEVER™', 'neutral')]),
             {'c': 'divider'},
             {'c': 'grid', 'cols': '80px minmax(0,1fr) 120px', 'gap': 'm', 'items': [T('2024', 'small'), S([T('Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent', 'strong'),
                 T('[First author] et al. · [journal] · 2024', 'small'), badge_row([('COMANECI™', 'neutral')])], 'xs',
                 annotation='Неразмеченная публикация (разметка по желанию): вместо вывода — «первый автор et al. · журнал · год», из бейджей — только продукт (он есть у всех). Строка аккуратная, просто беднее.'),
                 S([{'c': 'link', 'text': 'Journal ↗'}], 'xs')]},
             {'c': 'divider'},
-            {'c': 'row', 'gap': 's', 'items': [T('74 publications not yet classified are hidden by the study-type filter.', 'caption'), {'c': 'link', 'text': 'Show them'}],
+            {'c': 'row', 'gap': 's', 'items': [T('[N] publications not yet classified are hidden by the study-type filter.', 'caption'), {'c': 'link', 'text': 'Show them'}],
              'annotation': 'Фильтры по типу и показанию видят только размеченные — честная строка с числом и «Show them», чтобы ничего не терялось молча.'}]
-    lib = S([{'c': 'row', 'justify': 'between', 'items': [H('All publications', 2), T('Showing 1–20 of 102', 'caption')]}, lib_filters] + rows + [{'c': 'button', 'v': 'secondary', 'text': 'Show more', 'full': True}], 'm',
+    lib = S([{'c': 'row', 'justify': 'between', 'items': [H('All publications', 2), T('Showing 1–20 of 35', 'caption')]}, lib_filters] + rows + [{'c': 'button', 'v': 'secondary', 'text': 'Show more', 'full': True}], 'm',
             annotation='Уровень 2 — архив: поиск и фильтры по продукту, показанию, типу исследования, сортировка, счётчик (Shockwave). Строка: год · заголовок · вывод одной фразой (Semantic Scholar TLDR) · бейджи: дизайн, N, показание, продукт · PDF / журнал. Авторы — на странице статьи, не в списке. Пресс-релизы из списка уходят в новости (ADR-009: вид материала).')
     ongoing = S([H('Ongoing studies', 3), T('[Идущие исследования — например, исследование когнитивных исходов тромбэктомии (новость, янв. 2025); список — от клиента]', 'small')], 's',
                 annotation='Текущие исследования — сигнал для инвесторов (WATCHMAN «Active trials»). Только если клиент готов показывать.')
@@ -1083,9 +1081,9 @@ def therapies_asis(phone=False):
 
 
 # ---------- Therapies overview — proposal that keeps everything ----------
-THER_US = [('Ischemic stroke', 'TIGERTRIEVER™', 'Large vessel stroke', 'A patient-centric approach to AIS', '32 publications'),
-           ('Hemorrhagic stroke', 'COMANECI™', 'Aneurysm', 'Bridging the gap in assist devices', '57 publications'),
-           ('Access', 'DRIVEWIRE™', 'Access', 'Active access', '5 publications')]
+THER_US = [('Ischemic stroke', 'TIGERTRIEVER™', 'Large vessel stroke', 'A patient-centric approach to AIS', '19 publications'),
+           ('Hemorrhagic stroke', 'COMANECI™', 'Aneurysm', 'Bridging the gap in assist devices', '12 publications'),
+           ('Access', 'DRIVEWIRE™', 'Access', 'Active access', '4 publications')]
 THER_OUS = [('Ischemic stroke', [('TIGERTRIEVER™', 'Large vessel stroke', 'A patient-centric approach to AIS', '32 publications'),
                                  ('TIGERTRIEVER™ 13', 'Medium vessel stroke', '[подзаголовок терапии — как сейчас]', '8 publications')]),
             ('Hemorrhagic stroke', [('COMANECI™', 'Aneurysm', '[подзаголовок терапии — как сейчас]', '57 publications'),

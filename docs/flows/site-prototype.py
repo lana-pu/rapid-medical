@@ -54,25 +54,25 @@ def build(active, fn, *args):
 
 # ---------- pages decided last ----------
 def home_page(menu_open=False):
-    bar = {'c': 'section', 'pad': 's', 'tone': 'dark', 'items': [{'c': 'row', 'justify': 'between', 'items': [
-        T('DISTALS: TIGERTRIEVER™ 13 shows promising 90-day outcomes', 'small'), {'c': 'link', 'text': 'Read the news →', 'to': 'news-page'}]}]}
+    """Story order: promise → problem and our answer → the therapies → how they are engineered → proof → news."""
     hero = dict(rm('Home', 0), to='therapies', label='Explore Therapies')
+    statement = rm('Home', 1)
+    stats = statement.pop('stats')
+    statement['to'] = 'contact-new'
     cards = [sp.ther_card(f'{g} · {p}', t, b, n) for g, p, t, b, n in sp.THER_US]
     cards[0]['to'] = 'lvo'
     cards[1]['to'] = 'aneurysm'
-    statement = rm('Home', 1)
-    statement['stats'] = [dict(s, value='102') if 'publication' in s['label'] else s for s in statement['stats']]
-    statement['to'] = 'contact-new'
+    therapies = {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'row', 'justify': 'between', 'items': [H('Our therapies', 2), {'c': 'link', 'text': 'All therapies →', 'to': 'therapies'}]},
+                                                          {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}], 'm')]}
+    numbers = {'c': 'grid', 'cols': 3, 'gap': 'm', 'items': [{'c': 'stat', 'value': '102' if 'publication' in x['label'] else x['value'], 'label': x['label']} for x in stats]}
     studies = {'c': 'grid', 'cols': 2, 'gap': 'm', 'align': 'start', 'items': [
-        sp.key_study('DISTALS', 'RCT', '98 randomized · FDA IDE', '86.3% vs 27.7%', 'reperfusion at 24 h without sICH', 'TIGERTRIEVER™ 13 · MeVO'),
-        SUCCESS_CARD]}
-    news = S([{'c': 'row', 'justify': 'between', 'items': [H('At the forefront of advancing stroke intervention', 2), {'c': 'link', 'text': 'View all news →', 'to': 'news'}]},
-              sp.top_block()], 'm')
-    return [bar, nav('home', menu_open), {'c': 'rm-page', 'items': [hero]},
-            {'c': 'section', 'pad': 'l', 'items': [{'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}]},
-            {'c': 'rm-page', 'items': [statement, rm('Home', 2)]},
-            {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([{'c': 'row', 'justify': 'between', 'items': [H('Key studies', 2), {'c': 'link', 'text': 'All evidence →', 'to': 'evidence'}]}, studies], 'm')]},
-            {'c': 'section', 'pad': 'l', 'items': [news]}, FOOT]
+        SUCCESS_CARD, sp.key_study('TIGER', 'Prospective, multicenter', '[N · центры — из публикации]', '[главная цифра]', '[конечная точка]', 'TIGERTRIEVER™ · LVO')]}
+    proof = {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([
+        {'c': 'row', 'justify': 'between', 'items': [H('Backed by clinical evidence', 2), {'c': 'link', 'text': 'All evidence →', 'to': 'evidence'}]}, numbers, studies], 'l')]}
+    news = {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'row', 'justify': 'between', 'items': [H('At the forefront of advancing stroke intervention', 2), {'c': 'link', 'text': 'View all news →', 'to': 'news'}]},
+                                                    sp.top_block()], 'm')]}
+    return [nav('home', menu_open), {'c': 'rm-page', 'items': [hero, statement]}, therapies,
+            {'c': 'rm-page', 'items': [rm('Home', 2)]}, proof, news, FOOT]
 
 
 def block(b):
@@ -96,9 +96,9 @@ def therapy_page(snap, slug, tab, studies, pubs):
     pdx = next(b for b in blocks if b['type'] == 'productDetails')['data']
     i_pd = next(i for i, b in enumerate(blocks) if b['type'] == 'productDetails')
     hero = dict(rm(snap, 0), to='contact-new', label='Request a demo')
-    tabbar = {'c': 'section', 'pad': 's', 'rule': True, 'items': [{'c': 'row', 'justify': 'between', 'items': [
-        {'c': 'row', 'gap': 'l', 'items': [item(t, f'{slug}-{k}' if k != 'overview' else slug, on=(k == tab)) for t, k in TABS]},
-        {'c': 'link', 'text': 'Indications, Safety & Warnings ↓'}]}]}
+    safety = {'c': 'section', 'pad': 's', 'items': [{'c': 'row', 'justify': 'end', 'items': [{'c': 'link', 'text': '⚠ Indications, Safety & Warnings ↓'}]}]}
+    tabbar = {'c': 'section', 'pad': 's', 'rule': True, 'items': [S([T(pdx.get('hint', ''), 'caption'),
+        {'c': 'row', 'gap': 'l', 'items': [item(t, f'{slug}-{k}' if k != 'overview' else slug, on=(k == tab)) for t, k in TABS]}], 's')]}
     if tab == 'evidence':
         content = [S([{'c': 'row', 'justify': 'between', 'items': [H('Key studies', 3), {'c': 'link', 'text': f'All {pubs} publications →', 'to': 'evidence'}]},
                       {'c': 'grid', 'cols': 2, 'gap': 'm', 'align': 'start', 'items': studies}], 'm')]
@@ -112,8 +112,8 @@ def therapy_page(snap, slug, tab, studies, pubs):
             content.append({'c': 'row', 'gap': 'm', 'items': [{'c': 'button', 'v': 'secondary', 'text': 'Download IFU (PDF)'}, T('Where available for this region', 'caption')]})
     body = [rm(snap, i) for i in range(1, i_pd)]
     tail = [dict(rm(snap, i), to='contact-new') if blocks[i]['type'] == 'cta' else rm(snap, i) for i in range(i_pd + 1, len(blocks))]
-    return [nav('therapies'), {'c': 'rm-page', 'items': [hero] + body}, tabbar,
-            {'c': 'section', 'pad': 'l', 'items': [S([T(pdx.get('hint', ''), 'caption')] + content, 'm')]},
+    return [nav('therapies'), {'c': 'rm-page', 'items': [hero]}, safety, {'c': 'rm-page', 'items': body}, tabbar,
+            {'c': 'section', 'pad': 'l', 'items': [S(content, 'm')]},
             {'c': 'rm-page', 'items': tail}, FOOT]
 
 
@@ -158,24 +158,40 @@ def evidence_page():
     return mark(page_)
 
 
+def news35_page():
+    t = json.dumps(build('news', sp.news_article), ensure_ascii=False)
+    A, B = 'Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe', 'Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases'
+    t = t.replace(B, '@@').replace(A, B).replace('@@', A).replace('Jul 2026', '@@').replace('Sep 2025', 'Jul 2026').replace('@@', 'Sep 2025')
+    t = t.replace('September 3, 2025', 'July 21, 2026')
+    page_ = json.loads(t)
+    def fix(o):
+        if isinstance(o, list): return [fix(x) for x in o if not (isinstance(x, dict) and 'cases with DRIVEWIRE' in json.dumps(x, ensure_ascii=False) and x.get('c') == 'grid')]
+        if not isinstance(o, dict): return o
+        o = {k: fix(v) for k, v in o.items()}
+        if o.get('c') == 'grid' and A in json.dumps(o, ensure_ascii=False) and len(json.dumps(o)) < 900: o['to'] = 'news-page'
+        return o
+    return fix(page_)
+
+
 screens = [
     ('home', 'Home', 'rapid-medical.com', home_page()),
     ('menu', 'Therapies menu (open)', 'rapid-medical.com', home_page(True)),
     ('region', 'Choose your location (from the header)', 'rapid-medical.com', home_page(), sp.region_modal('empty', current='Americas')),
     ('therapies', 'All therapies', 'rapid-medical.com/us/therapies', therapies_page()),
-    ('aneurysm', 'Aneurysm · Product overview', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'overview', ANEURYSM_STUDIES, '57 COMANECI™')),
-    ('aneurysm-how', 'Aneurysm · How it works', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'how', ANEURYSM_STUDIES, '57 COMANECI™')),
-    ('aneurysm-practice', 'Aneurysm · In-Practice', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'practice', ANEURYSM_STUDIES, '57 COMANECI™')),
-    ('aneurysm-evidence', 'Aneurysm · Clinical evidence', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'evidence', ANEURYSM_STUDIES, '57 COMANECI™')),
-    ('lvo', 'Large vessel stroke · Product overview (content from the Europe page)', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'overview', LVO_STUDIES, '32 TIGERTRIEVER™')),
-    ('lvo-how', 'Large vessel stroke · How it works', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'how', LVO_STUDIES, '32 TIGERTRIEVER™')),
-    ('lvo-practice', 'Large vessel stroke · In-Practice', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'practice', LVO_STUDIES, '32 TIGERTRIEVER™')),
-    ('lvo-evidence', 'Large vessel stroke · Clinical evidence', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'evidence', LVO_STUDIES, '32 TIGERTRIEVER™')),
+    ('aneurysm', 'Aneurysm · Product overview', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'overview', ANEURYSM_STUDIES, '12 COMANECI™')),
+    ('aneurysm-how', 'Aneurysm · How it works', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'how', ANEURYSM_STUDIES, '12 COMANECI™')),
+    ('aneurysm-practice', 'Aneurysm · In-Practice', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'practice', ANEURYSM_STUDIES, '12 COMANECI™')),
+    ('aneurysm-evidence', 'Aneurysm · Clinical evidence', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'evidence', ANEURYSM_STUDIES, '12 COMANECI™')),
+    ('lvo', 'Large vessel stroke · Product overview (content from the Europe page)', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'overview', LVO_STUDIES, '19 TIGERTRIEVER™')),
+    ('lvo-how', 'Large vessel stroke · How it works', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'how', LVO_STUDIES, '19 TIGERTRIEVER™')),
+    ('lvo-practice', 'Large vessel stroke · In-Practice', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'practice', LVO_STUDIES, '19 TIGERTRIEVER™')),
+    ('lvo-evidence', 'Large vessel stroke · Clinical evidence', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'evidence', LVO_STUDIES, '19 TIGERTRIEVER™')),
     ('study', 'SUCCESS study', 'rapid-medical.com/us/success-study-final-results', study_page()),
     ('evidence', 'Evidence (draft concept)', 'rapid-medical.com/us/evidence', evidence_page()),
     ('webinars', 'Webinars (as is — discussion parked)', 'rapid-medical.com/us/webinars', build(None, sp.webinars_asis)),
     ('news', 'News & Events', 'rapid-medical.com/news-events', build('news', sp.news_events_new, 'none')),
-    ('news-page', 'News page', 'rapid-medical.com/news/drivewire-24-1000-cases', build('news', sp.news_article)),
+    ('news-35', 'News page · DRIVEWIRE™ 35 clearance', 'rapid-medical.com/news/drivewire-35-fda-clearance', news35_page()),
+    ('news-page', 'News page · DRIVEWIRE™ 24, 1,000 cases', 'rapid-medical.com/news/drivewire-24-1000-cases', build('news', sp.news_article)),
     ('event-past-new', 'Past event', 'rapid-medical.com/events/drivewire-24-esmint-2026', build('news', sp.event_past_new)),
     ('about', 'About Us', 'rapid-medical.com/about-us', build('about', sp.about_new)),
     ('careers', 'Careers', 'rapid-medical.com/careers', build('careers', sp.careers_new, 'roles')),
@@ -187,7 +203,7 @@ IDS = {s[0] for s in screens}
 TEXT_LINKS = {'← News & Events': 'news', '← Past events': 'news', 'Discuss SUCCESS with our team': 'contact-new',
               'All COMANECI™ publications →': 'evidence', 'COMANECI™ for aneurysms →': 'aneurysm', 'Contact a local representative': 'contact-new',
               'Contact us': 'contact-new', 'All offices and addresses →': 'about', 'Go to Americas →': 'home',
-              'Read →': 'news-page', 'All news and events →': 'news'}
+              'Read →': 'news-35', 'All news and events →': 'news'}
 
 
 def wire(o):
@@ -197,6 +213,8 @@ def wire(o):
     o = {k: wire(v) for k, v in o.items() if k not in ('annotation',)}
     if o.get('c') in ('link', 'button') and o.get('text') in TEXT_LINKS and 'to' not in o:
         o['to'] = TEXT_LINKS[o['text']]
+    if o.get('c') == 'link' and str(o.get('text', '')).endswith('publications →') and 'to' not in o:
+        o['to'] = 'evidence'
     if 'to' in o and o['to'] not in IDS:
         o.pop('to'); o.pop('label', None)
     return o
@@ -213,7 +231,7 @@ flow = {
         {'title': 'Главная и выбор региона', 'screens': ['home', 'region']},
         {'title': 'Терапии', 'screens': ['menu', 'therapies', 'aneurysm', 'aneurysm-how', 'aneurysm-practice', 'aneurysm-evidence', 'lvo', 'lvo-how', 'lvo-practice', 'lvo-evidence']},
         {'title': 'Доказательства', 'screens': ['study', 'evidence', 'webinars']},
-        {'title': 'Новости и события', 'screens': ['news', 'news-page', 'event-past-new']},
+        {'title': 'Новости и события', 'screens': ['news', 'news-35', 'news-page', 'event-past-new']},
         {'title': 'Компания и контакты', 'screens': ['about', 'careers', 'contact-new', 'contact-sent', 'terms']},
     ],
     'links': [],

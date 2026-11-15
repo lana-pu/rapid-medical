@@ -162,6 +162,13 @@ studies» — вопрос к Emily; Evidence и knowledge base — что чь�
 Владелица согласна со всеми 5 рекомендациями, проверить у Emily. Всё текущее содержимое остаётся; добавления —
 DESIGN.md → «Home».
 
+## Проверка прототипа на здравый смысл (2026-11-15)
+Владелица: Home нелогична, пройтись по сценариям. Исправлено: Home — порядок истории (обещание → проблема и ответ →
+терапии → как устроено → доказательства → новости), полоса новости над шапкой выключена, цифры — в блоке доказательств;
+региональные данные (в Americas 35 публикаций, без T13/вазоспазма, без DISTALS в ключевых); новость с главной ведёт на
+свою страницу (DRIVEWIRE 35), а не на чужую; на терапии «Indications, Safety & Warnings» — под шапкой, подсказка «Click on a
+tab below» — над вкладками; ссылки «N publications» ведут в Evidence.
+
 Референсы Mobbin: [Dovetail](https://mobbin.com/sites/sections/9f8b5502-cee7-4eb1-8aff-9dcd26e9e308),
 [Slack](https://mobbin.com/sites/sections/18717c77-0049-4c84-b21d-797bee5f295b),
 [Harvest](https://mobbin.com/sites/sections/3a55ba42-2d51-4f8a-9bc1-439dd3d2ad0b),

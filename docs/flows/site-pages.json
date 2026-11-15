@@ -16020,7 +16020,7 @@
               {
                "c": "text",
                "v": "strong",
-               "text": "102"
+               "text": "35"
               }
              ]
             },
@@ -16040,7 +16040,7 @@
               {
                "c": "text",
                "v": "small",
-               "text": "1 (DISTALS)"
+               "text": "[N] in classified"
               }
              ]
             },
@@ -16085,7 +16085,7 @@
              ]
             }
            ],
-           "annotation": "Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Числа — из разметки; пока размечены не все, подпись «in classified», чтобы цифра не вводила в заблуждение."
+           "annotation": "Счётчик с расшифровкой вместо «85+»: публикации, RCT, проспективные, пациенты (Terumo, Stryker). Evidence региональный: в Americas — 35 публикаций (TIGERTRIEVER 19, COMANECI 12, DRIVEWIRE 4), не 102. Числа — из разметки; пока размечены не все, подпись «in classified»."
           },
           {
            "c": "spacer",
@@ -16118,53 +16118,10 @@
         },
         {
          "c": "grid",
-         "cols": 4,
+         "cols": 3,
          "gap": "m",
          "align": "start",
          "items": [
-          {
-           "c": "box",
-           "border": true,
-           "pad": "m",
-           "gap": "s",
-           "items": [
-            {
-             "c": "row",
-             "justify": "between",
-             "items": [
-              {
-               "c": "text",
-               "v": "caption",
-               "text": "TIGERTRIEVER™ 13 · MeVO"
-              },
-              {
-               "c": "badge",
-               "text": "RCT",
-               "tone": "info"
-              }
-             ]
-            },
-            {
-             "c": "heading",
-             "level": 4,
-             "text": "DISTALS"
-            },
-            {
-             "c": "text",
-             "v": "small",
-             "text": "98 randomized · FDA IDE"
-            },
-            {
-             "c": "stat",
-             "value": "86.3% vs 27.7%",
-             "label": "reperfusion at 24 h without sICH"
-            },
-            {
-             "c": "link",
-             "text": "Study page →"
-            }
-           ]
-          },
           {
            "c": "box",
            "border": true,
@@ -16295,7 +16252,7 @@
            ]
           }
          ],
-         "annotation": "Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Цифры — из одобренных материалов (MLR)."
+         "annotation": "Уровень 1 — ключевые исследования (5–10): карточка с бейджем дизайна, N, главной цифрой и ссылкой на страницу исследования («страница из документа»). Как у iRhythm, Stryker, Terumo. Выбирает маркетинг (featured). Только по продуктам региона: DISTALS (TIGERTRIEVER 13) в Americas не показываем — продукта нет в регионе (вопрос к Emily). Цифры — из одобренных материалов (MLR)."
         }
        ]
       }
@@ -16316,36 +16273,30 @@
         },
         {
          "c": "grid",
-         "cols": 4,
+         "cols": 3,
          "gap": "m",
          "align": "start",
          "items": [
           {
            "c": "card",
-           "eyebrow": "32 publications",
+           "eyebrow": "19 publications",
            "title": "Large vessel occlusion",
            "text": "TIGERTRIEVER™ · reperfusion, first pass, vs stent retrievers"
           },
           {
            "c": "card",
-           "eyebrow": "8 publications",
-           "title": "Medium & distal vessels",
-           "text": "TIGERTRIEVER™ 13 · DISTALS and MeVO experience"
+           "eyebrow": "12 publications",
+           "title": "Aneurysms",
+           "text": "COMANECI™ · wide-neck coiling"
           },
           {
            "c": "card",
-           "eyebrow": "57 publications",
-           "title": "Aneurysms & vasospasm",
-           "text": "COMANECI™ · wide-neck coiling, vasospasm angioplasty"
-          },
-          {
-           "c": "card",
-           "eyebrow": "5 publications",
+           "eyebrow": "4 publications",
            "title": "Access & navigation",
            "text": "DRIVEWIRE™ · guidewire experience"
           }
          ],
-         "annotation": "Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы. Список групп, их названия и порядок правятся в админке (экран Filters)."
+         "annotation": "Вход по клиническому вопросу, а не только по продукту (iRhythm, Terumo): врач ищет «что есть по MeVO», а не «вкладку TIGERTRIEVER 13». Клик — архив с этим фильтром. Числа — живые, из базы, по региону: в Americas нет TIGERTRIEVER 13 и вазоспазма — их групп нет. Список групп, названия и порядок правятся в админке (экран Filters)."
         }
        ]
       }
@@ -16372,7 +16323,7 @@
           {
            "c": "text",
            "v": "caption",
-           "text": "Showing 1–20 of 102"
+           "text": "Showing 1–20 of 35"
           }
          ]
         },
@@ -16561,7 +16512,7 @@
             {
              "c": "text",
              "v": "strong",
-             "text": "Advancing beyond recent randomized controlled trials: Role of Tigertriever13 for distal medium vessel occlusion"
+             "text": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke"
             },
             {
              "c": "text",
@@ -16575,17 +16526,17 @@
              "items": [
               {
                "c": "badge",
-               "text": "Review",
+               "text": "Retrospective",
                "tone": "info"
               },
               {
                "c": "badge",
-               "text": "MeVO",
+               "text": "LVO",
                "tone": "neutral"
               },
               {
                "c": "badge",
-               "text": "TIGERTRIEVER™ 13",
+               "text": "TIGERTRIEVER™",
                "tone": "neutral"
               }
              ]
@@ -16672,7 +16623,7 @@
           {
            "c": "text",
            "v": "caption",
-           "text": "74 publications not yet classified are hidden by the study-type filter."
+           "text": "[N] publications not yet classified are hidden by the study-type filter."
           },
           {
            "c": "link",
@@ -17709,7 +17660,7 @@
             },
             {
              "c": "link",
-             "text": "32 publications →"
+             "text": "19 publications →"
             }
            ]
           }
@@ -17758,7 +17709,7 @@
             },
             {
              "c": "link",
-             "text": "57 publications →"
+             "text": "12 publications →"
             }
            ]
           }
@@ -17806,7 +17757,7 @@
             },
             {
              "c": "link",
-             "text": "5 publications →"
+             "text": "4 publications →"
             }
            ]
           }
