@@ -360,3 +360,9 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   региона, раскладка News & Events (миграции 0021–0023). Перед слиянием — полный e2e на продакшн-сборке. Сессия:
   `sessions/2026-11-15-site-redesign-code.md`.
 
+- Экран страницы — один экран вместо трёх вкладок (`docs/admin-page-screen.md`, принято): регионы строками (статус,
+  кто правил, расписание; Edit on page · Publish · Settings; нет версии — Create from {регион}), Performance за 30 дней,
+  превью в Google по регионам со счётчиками, файлы страницы (PDF на виду, картинки/видео свёрнуты), коллекции; справа
+  Details, Recent changes, All versions. Copy link for a post — ссылка с UTM LinkedIn-кампании. Смена адреса при
+  публикации создаёт 301 со старого (`moveAddress` в workflow). Share preview не делаем: правят 1–2 раза в месяц,
+  согласуют внутри команды.
