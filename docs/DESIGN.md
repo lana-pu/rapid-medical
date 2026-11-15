@@ -124,7 +124,7 @@
 | Text (`text`) | `default` · `lead` (медиа сбоку — по желанию) · `large` (крупный текст, широкая картинка под ним) · `surface` (серая полоса) · `dark` (тёмная полоса с фоновой картинкой или видео) · `facts` (общая линия: факты «ключ — значение» слева, текст и второй абзац справа; в коде с 2026-11-15) | терапии; About: `facts`; главная: `dark` |
 | Text and media (`textMedia`) | `mediaRight` · `mediaLeft` · `threeColumn`; медиа — цифры, график, видео или картинка · `links` (на белом, кнопки-ссылки) · `statement` (заголовок и видео, под ними цифры, фраза и кнопка) | терапии; список терапий; главная |
 | Key numbers (`keyNumbers`) | `circles` · `row` · `badge` | внутри Text and media; отдельно — витрина |
-| Columns (`columns`) | `steps` · `features` (+ картинка вместо списка, старый формат) · `principles` (первая буква выделена, картинка над колонками) · `cards` (карточки-ссылки: необязательный заголовок группы, картинка, текст, строка-доказательство; до 3 колонок) | вкладки терапий; Careers; обзор терапий по направлениям |
+| Columns (`columns`) | `steps` · `features` (+ картинка вместо списка, старый формат) · `principles` (крупная первая буква над названием — акроним R·A·P·I·D, картинка над колонками) · `cards` (карточки-ссылки: необязательный заголовок группы, картинка, текст, строка-доказательство; до 3 колонок) | вкладки терапий; Careers; обзор терапий по направлениям |
 | Video (`video`) | `band` | терапии |
 | Call to action (`cta`) | `band` · `panel` · `buttons` · `light` (серая полоса) | терапии: «Questions?», вебинары, кнопки вкладок; список терапий: `light` |
 | Product details (`productDetails`) | `pills` · `underline` | терапии; внутри вкладки — блоки и группы с подзаголовком |
@@ -134,13 +134,13 @@
 | Rich text (`richText`) | `default` | текстовые страницы из `pages`. Заголовок страницы — отдельный блок Hero · `page` |
 | Media (`media`) | `image` · `video` · `document` (кнопка на PDF) | витрина; постеры и видео в `pages` пока хранятся внутри текста |
 | Form (`form`) | `default` · `compact` · `section` (своя секция с заголовком и примечанием); тип формы — поле блока | Contact, Webinars, Careers |
-| Form (`form`) | `split` — композиция «общая линия»: линия, слева «ключ — значение» с контактами, справа форма (в коде с 2026-11-15) | Contact Us |
+| Form (`form`) | `split` — композиция «общая линия»: линия, слева заголовок, примечание (длинное — первое предложение и полный текст под ссылкой) или «ключ — значение» с контактами, справа форма (в коде с 2026-11-15) | Contact Us, Careers |
 | Gallery (`gallery`) | `quotes` | Careers |
 | News (`news`) | `cards` · `carousel` · `timeline` | главная, News & Events |
 | Events (`events`) | `upcoming` (карточки: дата, город, название, ссылка) · `archive` (список по годам, новые сверху) | News & Events |
 | Publications (`publications`) | `spotlight` (цифра и карусель) · `cards` · `byProduct` (вкладки) | Evidence |
 | Webinars (`webinars`) | `cards` | Webinars |
-| Jobs (`jobs`) | `list` | Open positions |
+| Jobs (`jobs`) | `list` · `roles` (общая линия: заголовок и «N roles» слева; фильтры отдел/город, роли по отделам, первые 6 и «Show all N roles» справа; в коде с 2026-11-15) | Careers (`roles`) |
 | Region chooser (`regionChooser`) | `default` | выбор региона |
 | Offices and map (`officesMap`) | `offices` (карточки: подпись, юрлицо, адрес, Phone / Fax / Orders, «Get directions ↗») · `map` (карта, строка с кнопкой) | About |
 | Indications and references (`indications`) | `default`, закреплён | терапии |
@@ -152,7 +152,7 @@
 
 ## Решения по страницам (вайрфреймы, `docs/flows/site-pages.md`)
 
-Записываются после закрытия страницы. Реализация — ветка `site-redesign` (с 2026-11-15): Contact Us, юридические страницы, About — в коде; остальные
+Записываются после закрытия страницы. Реализация — ветка `site-redesign` (с 2026-11-15): Contact Us, юридические страницы, About, Careers — в коде; остальные
 по очереди. Порядок прежний: спека экрана → примитивы/блоки → страница.
 
 ### Композиция «общая линия» (Contact Us, 2026-11-14)
@@ -244,7 +244,7 @@ this event» — материалы, привязанные к событию (�
 основная, метка «{страна} is here»). Страница `/choose-your-location` остаётся запасной (прямые ссылки, без JS, noindex)
 с тем же содержимым. Названия регионов — одинаковые везде, после ответа Emily (BACKLOG №9).
 
-### Careers (2026-11-14)
+### Careers (2026-11-14) — в коде с 2026-11-15
 Одна страница: шапка с видео → цитаты → принципы (акроним R·A·P·I·D: графика «WE ARE RAPID» и текст — один блок; графику
 переделать на этапе графдизайна) → **Open positions** (`#open-positions`) →
 **Submit general interest** (`#general-interest`). `/open-positions` — 301 на `/careers#open-positions`.

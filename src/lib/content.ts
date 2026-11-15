@@ -209,7 +209,7 @@ export async function getAllPublicPaths(): Promise<string[]> {
     db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
   ]);
   return [
-    "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us",
+    "/", "/news-events", "/about-us", "/careers", "/contact-us",
     ...["us", "ous", "apac"].flatMap((r) => [`/${r}/therapies`, `/${r}/evidence`, `/${r}/webinars`]),
     ...sols.map((s) => `/${s.region}/therapies/${s.slug}`),
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),

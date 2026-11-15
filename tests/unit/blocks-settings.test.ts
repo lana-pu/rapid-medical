@@ -38,11 +38,12 @@ describe("homeToBlocks", () => {
 });
 
 describe("careersToBlocks", () => {
-  it("counts jobs in the button, skips an empty gallery", () => {
-    expect((careersToBlocks({ c: {}, jobCount: 3 })[0] as BlockOf<"hero">).data.cta?.label).toBe("View open positions (3)");
+  it("the button goes down the page, the roles sit above the general application, skips an empty gallery", () => {
+    // DESIGN.md → Careers: open positions are a section of Careers
+    expect((careersToBlocks({ c: {}, jobCount: 3 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "See open positions ↓", href: "#open-positions" });
     // none open: the general-interest form, not an empty list (usability pass 2026-11-13)
-    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "Submit general interest", href: "#general-interest" });
-    expect(types(careersToBlocks({ c: {}, jobCount: 0 }))).toEqual(["hero:bannerCompact", "columns:principles", "form:section"]);
+    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "Send us your details ↓", href: "#general-interest" });
+    expect(types(careersToBlocks({ c: {}, jobCount: 0 }))).toEqual(["hero:bannerCompact", "columns:principles", "jobs:roles", "form:split"]);
     const full = careersToBlocks({ c: { quotes: [{ quote: "q" }] }, jobCount: 0 });
     expect(types(full)[1]).toBe("gallery:quotes");
     expect(fieldPath(full[1].edit, "items.0.author")).toBe("quotes.0.author");

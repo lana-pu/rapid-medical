@@ -17,7 +17,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <Section>
-      <Link href="/open-positions" className="text-sm underline">← All positions</Link>
+      <Link href="/careers#open-positions" className="text-sm underline">← All positions</Link>
       <H1 className="mt-4"><E r="jobs" id={j.id} f="title">{j.title}</E></H1>
       <div className="mt-2 text-muted">{[j.department, j.location].filter(Boolean).join(" · ")}</div>
       <E r="jobs" id={j.id} f="descriptionHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(j.descriptionHtml)} /></E>
@@ -28,7 +28,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       {!j.applyUrl && !j.applyEmail && (
         <div className="mt-10 max-w-2xl border-t border-border pt-8">
           <h2 className="text-xl font-semibold">Apply for this position</h2>
-          <div className="mt-4"><ContactForm form="careers" topics={[j.title]} meta={{ job: j.slug }} /></div>
+          <div className="mt-4"><ContactForm form="careers" topics={[j.title]} defaultTopic={j.title} meta={{ job: j.slug }} /></div>
         </div>
       )}
     </Section>

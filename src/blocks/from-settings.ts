@@ -5,6 +5,7 @@ import { REGION_CHOICES, REGION_FORM_VALUE, REGION_LABELS, type Region } from "@
 import type { Block } from "./types";
 import { groupTherapies } from "@/lib/therapy-groups";
 import type { NewsCard } from "./news";
+import type { JobRow } from "./jobs";
 import type { PublicationCard, PublicationGroup } from "./publications";
 
 /**
@@ -74,13 +75,24 @@ export type CareersSettings = {
   principlesTitle?: string; principlesBody?: string; principlesImageUrl?: string; principles?: { title: string; body: string }[]; eeoStatement?: string;
 };
 
-export function careersToBlocks({ c, jobCount }: { c: CareersSettings; jobCount: number }): Block[] {
+/** The Careers hero button: down to the roles, or — with none open — down to the general application (DESIGN.md → Careers). */
+export function careersCta(jobCount: number) {
+  return jobCount ? { label: "See open positions ↓", href: "#open-positions" } : { label: "Send us your details ↓", href: "#general-interest" };
+}
+
+/** A job record as a row of the open positions: its page, and «Apply ↗» to the application link or email. */
+export function jobRow(j: Pick<Job, "title" | "slug" | "department" | "location" | "applyUrl" | "applyEmail">): JobRow {
+  const applyHref = j.applyUrl || (j.applyEmail ? `mailto:${j.applyEmail}?subject=${encodeURIComponent(j.title)}` : null);
+  return { title: j.title, href: `/open-positions/${j.slug}`, department: j.department, location: j.location, applyHref };
+}
+
+export function careersToBlocks({ c, jobCount, jobs = [] }: { c: CareersSettings; jobCount: number; jobs?: JobRow[] }): Block[] {
   const r = "settings:careers";
   const blocks: Block[] = [
     {
       type: "hero",
       variant: "bannerCompact",
-      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: jobCount ? { label: `View open positions (${jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } },
+      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: careersCta(jobCount) },
       edit: { r, map: { title: "heroTitle", subtitle: "heroSub", body: "heroBody" } },
     },
   ];
@@ -91,9 +103,10 @@ export function careersToBlocks({ c, jobCount }: { c: CareersSettings; jobCount:
     data: { title: c.principlesTitle ?? "Our guiding principles", intro: c.principlesBody, imageUrl: c.principlesImageUrl, items: c.principles ?? [] },
     edit: { r, map: { title: "principlesTitle", intro: "principlesBody", imageUrl: "principlesImageUrl", items: "principles" } },
   });
+  blocks.push({ type: "jobs", variant: "roles", data: { anchor: "open-positions", title: "Open positions", note: "Applications go through Spark Hire.", generalHref: "#general-interest", items: jobs } });
   blocks.push({
     type: "form",
-    variant: "section",
+    variant: "split",
     data: { anchor: "general-interest", title: "Submit general interest", note: c.eeoStatement, form: "careers", topics: ["General interest", "Internship", "Other"] },
     edit: { r, map: { note: "eeoStatement" } },
   });

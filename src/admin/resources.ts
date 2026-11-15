@@ -382,7 +382,7 @@ export const RESOURCES: Resource[] = [
     table: jobs,
     labelField: "title",
     sortBy: "sortOrder",
-    revalidate: ["/careers", "/open-positions"],
+    revalidate: ["/careers"],
     previewUrl: (r) => `/open-positions/${r.slug}`,
     listColumns: [
       { name: "title", label: "Title" },

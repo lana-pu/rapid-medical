@@ -26,6 +26,13 @@ export type FormBlockData = {
   contactsLink?: { label: string; href: string } | null;
 };
 
+/** «Rapid Medical is an equal opportunity employer» — the first sentence of a note, shown before the full text. */
+export function firstSentence(s: string | null | undefined): string {
+  const t = (s ?? "").trim();
+  const m = /^(.{20,240}?[.!?])\s/.exec(t);
+  return m ? m[1] : t;
+}
+
 function Form({ variant, data: d, edit: e, nested }: BlockProps<"form">) {
   const f = <ContactForm form={d.form} topics={d.topics} defaultTopic={d.defaultTopic} defaultRegion={d.defaultRegion} defaultCountry={d.defaultCountry} meta={d.meta} compact={variant !== "default" && variant !== "split"} />;
   const form = d.preview ? <fieldset disabled>{f}</fieldset> : f;
@@ -41,10 +48,27 @@ function Form({ variant, data: d, edit: e, nested }: BlockProps<"form">) {
   if (variant === "split") {
     // «Shared line» (DESIGN.md → Решения по страницам): a hairline, then the context (4/12) and the form (7/12) start level.
     const rows = (d.contacts ?? []).map((c) => ({ label: c.label, value: c.href ? <a href={c.href} className="underline">{c.value}</a> : c.value }));
+    const lead = firstSentence(d.note);
     const inner = (
-      <div className="mt-8 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
+      // the anchor sits on the grid: a split form flows into the section above it, so it has no section of its own
+      <div id={d.anchor} className={`grid scroll-mt-16 gap-10 border-t border-border pt-8 md:grid-cols-12 ${d.title ? "" : "mt-8"}`}>
         <div className="md:col-span-4">
-          {rows.length > 0 && <KeyValue rows={rows} footer={d.contactsLink && <Link href={d.contactsLink.href} className="text-sm underline">{d.contactsLink.label}</Link>} />}
+          {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
+          {d.note && (
+            // a long legal note (EEO) stays one line with the full text folded under a link (DESIGN.md → Careers)
+            lead.length < d.note.length ? (
+              <div className="mt-3 text-sm">
+                <p className="text-muted">{lead}</p>
+                <details className="group mt-2">
+                  <summary className="cursor-pointer list-none underline"><span className="group-open:hidden">Read our EEO statement</span><span className="hidden group-open:inline">Hide the statement</span></summary>
+                  <p className="mt-2 text-muted"><F e={e} k="note">{d.note}</F></p>
+                </details>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm text-muted"><F e={e} k="note">{d.note}</F></p>
+            )
+          )}
+          {rows.length > 0 && <div className={d.title || d.note ? "mt-6" : ""}><KeyValue rows={rows} footer={d.contactsLink && <Link href={d.contactsLink.href} className="text-sm underline">{d.contactsLink.label}</Link>} /></div>}
         </div>
         <div className="md:col-span-7 md:col-start-6">{form}</div>
       </div>
@@ -64,7 +88,7 @@ export const form: BlockDef<"form"> = {
     { id: "default", label: "Full", description: "All fields" },
     { id: "compact", label: "Compact", description: "Without country and state" },
     { id: "section", label: "Section", description: "Compact form in its own section, with a heading and a note" },
-    { id: "split", label: "Beside contacts", description: "A hairline, contacts on the left, the form on the right (Contact Us)" },
+    { id: "split", label: "Shared line", description: "A hairline; heading, note or contacts on the left, the form on the right (Contact Us, Careers)" },
   ],
   fields: [
     { key: "title", label: "Title (section)", kind: "text" },

@@ -437,7 +437,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/about-us` | О компании, руководство, офисы, интерактивная карта; **(решение 2026-11-10)** биографии руководства раскрываются здесь же | [about-us](screens/about-us.md) |
 | `/team/{slug}` | Нет отдельной страницы (решение 2026-11-10, аудит Emily: один абзац, 2 секунды): 308 на `/about-us#{slug}`, биография раскрывается на About; в sitemap не входит | [about-us](screens/about-us.md) |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |
-| `/open-positions`, `/open-positions/{slug}` | Вакансии и вакансия с формой | [open-positions](screens/open-positions.md) |
+| `/open-positions` (→ `/careers#open-positions`), `/open-positions/{slug}` | Вакансия с формой; список — секция Careers | [open-positions](screens/open-positions.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |
 | `/style-guide` | Витрина блоков: каждый блок во всех вариантах на примерных данных (не из БД). `noindex`, не в sitemap, без ссылок из меню | — |
 | `/sitemap.xml`, `/robots.txt` | SEO (disallow `/admin`, `/api`) | — |

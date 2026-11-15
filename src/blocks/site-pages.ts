@@ -41,7 +41,7 @@ export function homeToStored(home: HomeSettings): StoredBlock[] {
 
 export function careersToStored(c: CareersSettings): StoredBlock[] {
   const blocks = careersToBlocks({ c, jobCount: 0 });
-  return toStored(blocks, { region: null }, { [find(blocks, "hero")]: "openPositions" });
+  return toStored(blocks, { region: null }, { [find(blocks, "hero")]: "openPositions", [find(blocks, "jobs", "roles")]: "openRoles" });
 }
 
 export function aboutToStored(about: AboutSettings): StoredBlock[] {

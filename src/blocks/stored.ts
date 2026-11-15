@@ -1,6 +1,7 @@
 import type { NewsItem, Region, StoredBlock, TeamMember } from "@/db/schema";
 import { groupTherapies } from "@/lib/therapy-groups";
-import { evidenceLists, newsCard, publicationCard, therapyCards, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import { careersCta, evidenceLists, newsCard, publicationCard, therapyCards, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import type { JobRow } from "./jobs";
 import { teamCard } from "./from-pages";
 import type { Office } from "./offices-map";
 import { REGION_CHOICES, REGION_LABELS } from "@/lib/regions";
@@ -50,6 +51,8 @@ export type SourceLists = {
   jobCount?: number;
   evidence?: EvidenceLists;
   therapies?: OverviewTherapy[];
+  /** Careers: the open positions as rows */
+  jobs?: JobRow[];
   /** About: figures counted from the records (publications, offices) */
   facts?: { label: string; value: string }[];
 };
@@ -74,8 +77,10 @@ export const SOURCES: Record<string, Source> = {
   openPositions: {
     keys: ["cta"],
     // with no open positions the first action is the general-interest form, not an empty list (docs/screens/careers.md)
-    fill: (_d, ctx) => ({ cta: ctx.lists?.jobCount ? { label: `View open positions (${ctx.lists.jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } }),
+    fill: (_d, ctx) => ({ cta: careersCta(ctx.lists?.jobCount ?? 0) }),
   },
+  /** Careers: the open positions from the job records */
+  openRoles: { keys: ["items"], fill: (_d, ctx) => ({ items: ctx.lists?.jobs ?? [] }) },
   /** About: leadership cards (each edits its team record) */
   team: { keys: ["members"], fill: (_d, ctx) => ({ members: (ctx.lists?.team ?? []).map(teamCard) }) },
   /** About: offices from Contact details */

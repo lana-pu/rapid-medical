@@ -133,9 +133,26 @@ test.describe("usability pass 2026-11-13", () => {
     await expect(page.getByText("Which webinar?*")).toBeVisible();
   });
 
-  test("careers with no open positions leads to the general-interest form", async ({ page }) => {
+  test("careers with no open positions leads to the general-interest form", async ({ page, request }) => {
     await page.goto("/careers");
-    await expect(page.getByRole("link", { name: "Submit general interest" }).first()).toHaveAttribute("href", /#general-interest$/);
+    await expect(page.getByRole("link", { name: "Send us your details ↓" }).first()).toHaveAttribute("href", /#general-interest$/);
+    // the section stays and says so (DESIGN.md → Careers)
+    await expect(page.locator("#open-positions")).toContainText("No open positions right now.");
+    // the old list address leads to the section on Careers
+    const old = await request.get("/open-positions", { maxRedirects: 0 });
+    expect(old.status()).toBe(308);
+    expect(old.headers()["location"]).toBe("/careers#open-positions");
+    // a candidate's form: area of interest as chips, a LinkedIn or CV link instead of Organization
+    const f = page.locator("form[data-form=careers]");
+    await expect(f.locator("input[name=organization]")).toHaveCount(0);
+    await f.getByText("Internship", { exact: true }).click();
+    await f.locator("input[name=firstName]").fill("E2E");
+    await f.locator("input[name=lastName]").fill("Candidate");
+    await f.locator("input[name=email]").fill("candidate@example.com");
+    await f.locator("input[name=meta_linkedin]").fill("https://linkedin.com/in/e2e");
+    await f.locator("select[name=countryCode]").selectOption("DE");
+    await f.getByRole("button", { name: "Submit" }).click();
+    await expect(page.getByRole("status")).toContainText("we've received your details");
   });
 
   test("therapy: the breadcrumb leads back, support opens with its topic", async ({ page }) => {

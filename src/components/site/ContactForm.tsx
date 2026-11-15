@@ -100,8 +100,8 @@ export function ContactForm({
 
       {form === "event" ? (
         <input type="hidden" name="topic" value={defaultTopic ?? topics[0] ?? ""} />
-      ) : form === "contact" ? (
-        <TopicChips topics={topics} defaultTopic={defaultTopic} error={err("topic")} />
+      ) : form === "contact" || form === "careers" ? (
+        <TopicChips topics={topics} defaultTopic={defaultTopic} error={err("topic")} legend={form === "careers" ? "Area of interest*" : undefined} />
       ) : (
         <label className="block text-sm">
           <span className="mb-1 block">{form === "webinar" ? "Which webinar?*" : form === "careers" ? "Area of interest*" : "How can we help? Select a topic.*"}</span>
@@ -120,6 +120,15 @@ export function ContactForm({
           <Field name="email" label="Email*" type="email" error={err("email")} required />
           <Field name="phone" label="Phone" type="tel" />
           <Field name="organization" label="Organization" />
+          <CountryState defaultCountry={defaultCountry} error={err("country")} />
+        </div>
+      ) : form === "careers" ? (
+        // a candidate, not a customer (DESIGN.md → Careers): no Organization; a LinkedIn or CV link instead of a file
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field name="firstName" label="First Name*" error={err("firstName")} required />
+          <Field name="lastName" label="Last Name*" error={err("lastName")} required />
+          <Field name="email" label="Email*" type="email" error={err("email")} required />
+          <Field name="meta_linkedin" label="LinkedIn or CV link" type="url" placeholder="https://" />
           <CountryState defaultCountry={defaultCountry} error={err("country")} />
         </div>
       ) : (
@@ -144,7 +153,7 @@ export function ContactForm({
 
       <label className="block text-sm">
         <span className="mb-1 block">Message</span>
-        <textarea name="message" rows={4} className={input} />
+        <textarea name="message" rows={4} className={input} placeholder={form === "careers" ? "What would you like to work on?" : undefined} />
       </label>
 
       <label className="flex items-start gap-2 text-sm">
@@ -152,7 +161,7 @@ export function ContactForm({
         <span>Sign me up! I would like to receive Rapid Medical news and updates.</span>
       </label>
 
-      <button disabled={pending} className={`rounded bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground disabled:opacity-50 ${form === "contact" ? "w-full" : ""}`}>
+      <button disabled={pending} className={`rounded bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground disabled:opacity-50 ${form === "contact" || form === "careers" ? "w-full" : ""}`}>
         {pending ? "Sending…" : "Submit"}
       </button>
 
@@ -165,7 +174,7 @@ export function ContactForm({
 }
 
 /** Topic first, as chips: the frequent ones visible, the rest under «Other topic» (DESIGN.md → Формы). */
-function TopicChips({ topics, defaultTopic, error }: { topics: string[]; defaultTopic?: string; error?: string | null }) {
+function TopicChips({ topics, defaultTopic, error, legend = "How can we help? Select a topic.*" }: { topics: string[]; defaultTopic?: string; error?: string | null; legend?: string }) {
   const main = topics.slice(0, CHIPS);
   const rest = topics.slice(CHIPS);
   const [topic, setTopic] = useState(defaultTopic && topics.includes(defaultTopic) ? defaultTopic : "");
@@ -174,7 +183,7 @@ function TopicChips({ topics, defaultTopic, error }: { topics: string[]; default
     `cursor-pointer rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"} has-[:focus-visible]:outline has-[:focus-visible]:outline-2`;
   return (
     <fieldset className="text-sm" aria-invalid={!!error || undefined}>
-      <legend className="mb-2">How can we help? Select a topic.*</legend>
+      <legend className="mb-2">{legend}</legend>
       <input type="hidden" name="topic" value={topic} />
       <div className="flex flex-wrap gap-2">
         {main.map((t) => (
@@ -222,11 +231,11 @@ function CountryState({ defaultCountry, error }: { defaultCountry?: string; erro
   );
 }
 
-function Field({ name, label, type = "text", error, required }: { name: string; label: string; type?: string; error?: string | null; required?: boolean }) {
+function Field({ name, label, type = "text", error, required, placeholder }: { name: string; label: string; type?: string; error?: string | null; required?: boolean; placeholder?: string }) {
   return (
     <label className="block text-sm">
       <span className="mb-1 block">{label}</span>
-      <input name={name} type={type} required={required} aria-invalid={!!error || undefined} className={`${input} ${error ? invalid : ""}`} />
+      <input name={name} type={type} required={required} placeholder={placeholder} aria-invalid={!!error || undefined} className={`${input} ${error ? invalid : ""}`} />
       {error && <span className="mt-1 block text-xs text-danger">{error}</span>}
     </label>
   );

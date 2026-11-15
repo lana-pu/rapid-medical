@@ -17,14 +17,13 @@ export const pageKey = (path: string) => path.split("#")[0].replace(/^\/(us|ous|
 const CATALOGUE: { key: string; title: string; type: string; regional: boolean }[] = [
   { key: "/webinars", title: "Webinars", type: "Webinars list", regional: true },
   { key: "/news-events", title: "News & Events", type: "News and events list", regional: false },
-  { key: "/open-positions", title: "Open positions", type: "Jobs list", regional: false },
   { key: "/contact-us", title: "Contact Us", type: "Contact page", regional: false },
 ];
 
 /** Order of the top of the tree: the site's menu (docs/site-ia.md). */
 const TOP = ["/", "/therapies", "/evidence", "/webinars", "/news-events", "/about-us", "/careers", "/contact-us"];
 /** A page that sits under another one, not by its address. */
-const PARENT: Record<string, string> = { "/open-positions": "/careers" };
+const PARENT: Record<string, string> = {};
 const OTHER = "other";
 
 export function buildPageTree(cards: Card[]): PageNode[] {

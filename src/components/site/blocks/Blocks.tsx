@@ -118,8 +118,10 @@ export function Principles({ items, render }: { items: { title: string; body: st
   return (
     <ul className="grid gap-8 sm:grid-cols-2 md:grid-cols-5">
       {items.map((p, i) => (
-        <li key={i} className="text-center">
-          <h3 className="text-xl first-letter:font-bold first-letter:text-accent">{render ? render(i, "title") : p.title}</h3>
+        <li key={i}>
+          {/* the letters spell the acronym (R·A·P·I·D, DESIGN.md → Careers): a large initial, then the principle */}
+          <div aria-hidden className="text-5xl font-semibold leading-none text-accent">{p.title.trim().charAt(0)}</div>
+          <h3 className="mt-3 text-lg font-semibold">{render ? render(i, "title") : p.title}</h3>
           <p className="mt-2 text-sm text-muted">{render ? render(i, "body") : p.body}</p>
         </li>
       ))}

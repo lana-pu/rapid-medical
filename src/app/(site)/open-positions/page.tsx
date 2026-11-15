@@ -1,9 +1,6 @@
-import { getJobs } from "@/lib/content";
-import { BlockList } from "@/blocks/render";
-import { jobsToBlocks } from "@/blocks/from-settings";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata = { title: "Open Positions", description: "Explore job opportunities at Rapid Medical." };
-
-export default async function OpenPositionsPage() {
-  return <BlockList blocks={jobsToBlocks(await getJobs())} />;
+/** Open positions live on Careers (DESIGN.md → Careers, 2026-11-14); the old address keeps working. */
+export default function OpenPositionsPage() {
+  permanentRedirect("/careers#open-positions");
 }
