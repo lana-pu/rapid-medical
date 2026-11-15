@@ -107,11 +107,8 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
   };
 }
 
-/** Below this the week's visits say more about the counter than about the site (docs/screens/admin-home.md). */
-export const ENOUGH = { days: 7, visits: 50 };
-
-/** Are there enough visits to show? The counter has run a full week and counted at least 50 visits in it. */
-export function enoughVisits(input: { countingSince: Date | null; now: Date; visits: number }): boolean {
-  if (!input.countingSince) return false;
-  return input.now.getTime() - input.countingSince.getTime() >= ENOUGH.days * 86_400_000 && input.visits >= ENOUGH.visits;
+/** Did the site's counter start inside this period? Then the visits are «since {date}» and have nothing to compare with. */
+export function countingStartedWithin(input: { countingSince: Date | null; now: Date; days: number }): boolean {
+  if (!input.countingSince) return true;
+  return input.now.getTime() - input.countingSince.getTime() < input.days * 86_400_000;
 }

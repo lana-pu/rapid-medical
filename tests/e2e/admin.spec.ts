@@ -594,16 +594,15 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   await expect(page.getByRole("region", { name: "LinkedIn posts and campaigns" })).toContainText("e2e-post");
   await expect(page.getByRole("region", { name: "Most visited pages" })).toContainText("Large vessel stroke (Americas)");
   await page.goto("/admin/website");
-  // too few visits counted yet: no tiny numbers that look real, but the requests and where the old site's visits are
-  const week = page.getByRole("region", { name: "This week" });
-  await expect(week).toContainText(/Counting visits since .+ — numbers appear after the first week/);
-  await expect(week.getByRole("link", { name: /Google Analytics/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: "This week — open analytics" })).toHaveCount(0);
-  // a full week of counting and 50 visits: the numbers
+  // numbers from the first day, with since when they are counted and where the old site's visits are
+  const week = page.getByRole("link", { name: "This week — open analytics" });
+  await expect(week).toContainText("visits");
+  await expect(week).toContainText(/Visits counted since/);
+  await expect(page.getByRole("region", { name: "This week" }).getByRole("link", { name: /Google Analytics/ })).toBeVisible();
+  // a counter older than the week: no «since», visits compared with last week
   sql(`insert into page_views(kind,path,visit,at) values ('view','/',false, now() - interval '8 days')`);
-  sql(`insert into page_views(kind,path,visit,source) select 'view','/',true,'Direct' from generate_series(1,50)`);
   await page.reload();
-  await expect(page.getByRole("link", { name: "This week — open analytics" })).toContainText("visits");
+  await expect(week).not.toContainText(/counted since/);
   sql("delete from page_views");
 });
 
