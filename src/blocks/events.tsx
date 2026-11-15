@@ -1,17 +1,82 @@
 import Link from "next/link";
-import { Section, H2 } from "@/components/site/primitives";
+import { Section, H2, SharedLine } from "@/components/site/primitives";
 import { F, type EditBinding } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type EventsVariant = "upcoming" | "archive";
+export type EventsVariant = "upcoming" | "archive" | "next" | "past";
 
-export type EventCard = { id: number; title: string; href: string; dates: string; year: number; place?: string | null; congress?: string | null; registrationOpen?: boolean; edit?: EditBinding };
+export type EventCard = { id: number; title: string; href: string; dates: string; year: number; place?: string | null; congress?: string | null; registrationOpen?: boolean; /** `next`: start time as typed («12:45 PM»), city and venue apart */ time?: string | null; city?: string | null; venue?: string | null; edit?: EditBinding };
 
-export type EventsData = { title?: string | null; anchor?: string; items: EventCard[] };
+export type EventsData = { title?: string | null; anchor?: string; items: EventCard[]; /** `next` with nothing coming: where the archive is */ emptyHref?: string };
 
 /** Events from the records (docs/screens/events.md). Which list an event is in comes from its dates. */
-function Events({ variant, data: d, edit: e }: BlockProps<"events">) {
+function Events({ variant, data: d, edit: e, nested }: BlockProps<"events">) {
+  if (variant === "next") {
+    // DESIGN.md → News & Events: the nearest one as a card, the rest as rows; nothing coming — a line, not a gap
+    const [first, ...rest] = d.items;
+    const inner = (
+      <SharedLine id={d.anchor} title={<F e={e} k="title">{d.title ?? "Upcoming events"}</F>} className="mt-16">
+        {!first ? (
+          <div>
+            <p>No upcoming events right now.</p>
+            {d.emptyHref && <a href={d.emptyHref} className="mt-2 inline-block text-sm underline">See past events ↓</a>}
+          </div>
+        ) : (
+          <>
+            <article className="rounded border border-border p-6">
+              <div className="text-xs uppercase tracking-wide text-muted">{[first.dates, first.time, first.city].filter(Boolean).join(" · ")}</div>
+              <h3 className="mt-2 text-xl font-semibold"><Link href={first.href} className="hover:underline"><F e={first.edit} k="title">{first.title}</F></Link></h3>
+              {(first.congress || first.venue) && <p className="mt-1 text-sm text-muted">{[first.congress, first.venue].filter(Boolean).join(" · ")}</p>}
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                {first.registrationOpen && <Link href={first.href} className="rounded bg-accent px-4 py-2 font-medium text-accent-foreground">Register</Link>}
+                <Link href={first.href} className="underline">Details →</Link>
+              </div>
+            </article>
+            {rest.length > 0 && (
+              <ul className="mt-6 divide-y divide-border border-y border-border">
+                {rest.map((i) => (
+                  <li key={i.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
+                    <span className="text-sm text-muted">{i.dates}</span>
+                    <div className="min-w-0">
+                      <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
+                      {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </SharedLine>
+    );
+    return nested ? inner : <Section>{inner}</Section>;
+  }
   if (d.items.length === 0) return null;
+  if (variant === "past") {
+    // the archive in the same rows as the news, by year (#past-events — «← Past events» on an event comes back here)
+    const years = [...new Set(d.items.map((i) => i.year))];
+    const inner = (
+      <SharedLine id={d.anchor} title={<F e={e} k="title">{d.title ?? "Past events"}</F>} className="mt-16">
+        {years.map((y) => (
+          <div key={y} className="mt-8 first:mt-0">
+            <div className="text-sm font-semibold">{y}</div>
+            <ul className="mt-2 divide-y divide-border border-y border-border">
+              {d.items.filter((i) => i.year === y).map((i) => (
+                <li key={i.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
+                  <span className="text-sm text-muted">{i.dates}</span>
+                  <div className="min-w-0">
+                    <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
+                    {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </SharedLine>
+    );
+    return nested ? inner : <Section>{inner}</Section>;
+  }
   if (variant === "archive") {
     const years = [...new Set(d.items.map((i) => i.year))];
     return (
@@ -66,13 +131,15 @@ export const events: BlockDef<"events"> = {
   variants: [
     { id: "upcoming", label: "Upcoming", description: "Cards: dates, congress and city, title, link to details and registration" },
     { id: "archive", label: "Archive", description: "Past events by year, newest first" },
+    { id: "next", label: "Upcoming, shared line", description: "The nearest as a card with Register, the rest as rows; nothing coming — a line and a link to the archive (News & Events)" },
+    { id: "past", label: "Past, shared line", description: "Past events as rows by year, like the news rows (News & Events)" },
   ],
   fields: [
     { key: "title", label: "Title", kind: "text" },
     { key: "items", label: "Events", kind: "items", note: "edited in the event records" },
   ],
   example: { title: "Upcoming events", items: sample },
-  examples: { archive: { title: "Past events", items: sample } },
+  examples: { archive: { title: "Past events", items: sample }, next: { title: "Upcoming events", items: sample }, past: { title: "Past events", items: sample } },
   Component: Events,
   flow: () => true,
 };

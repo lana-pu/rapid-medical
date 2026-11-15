@@ -109,3 +109,19 @@ export function formatMonth(d: Date | string | null | undefined) {
   if (!d) return "";
   return new Date(d).toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
+
+/**
+ * «Shared line» (DESIGN.md → Решения по страницам): a hairline, the section's name on the left (4/12) and its content
+ * on the right (7/12), both starting level. On a phone the name stands above the content.
+ */
+export function SharedLine({ title, aside, children, id, className = "" }: { title?: ReactNode; /** under the name, e.g. «8 roles» */ aside?: ReactNode; children: ReactNode; id?: string; className?: string }) {
+  return (
+    <div id={id} className={`grid scroll-mt-16 gap-6 border-t border-border pt-8 md:grid-cols-12 md:gap-10 ${className}`}>
+      <div className="md:col-span-4">
+        {title && <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>}
+        {aside && <div className="mt-2 text-sm text-muted">{aside}</div>}
+      </div>
+      <div className="min-w-0 md:col-span-7 md:col-start-6">{children}</div>
+    </div>
+  );
+}

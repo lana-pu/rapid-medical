@@ -248,23 +248,33 @@ const eventCard = (e: Event, now?: string): EventCard => ({
   dates: formatEventDates(e),
   year: Number(day(e.startsOn).slice(0, 4)),
   place: [e.venue, e.city].filter(Boolean).join(", ") || null,
+  time: e.startTime || null,
+  city: e.city || null,
+  venue: e.venue || null,
   congress: e.congress || null,
   registrationOpen: registrationOpen(e, now),
   edit: record("events", e.id),
 });
 
-/** News & Events: upcoming events first, then news, then the events archive (docs/screens/events.md). */
+/** The four highlights on News & Events: the newest marked ones, then the newest of the rest (ADR-009 «highlights»). */
+export function newsHighlights(items: NewsItem[], n = 4): NewsItem[] {
+  const marked = items.filter((i) => i.featured);
+  return [...marked, ...items.filter((i) => !i.featured)].slice(0, n);
+}
+
+/**
+ * News & Events (DESIGN.md → News & Events, docs/screens/news-events.md): the title, the highlights, upcoming events
+ * (a line when there are none), all news without the highlights, past events. Shared line under the title.
+ */
 export function newsPageToBlocks(items: NewsItem[], eventItems: Event[] = [], now?: string): Block[] {
-  const featured = items.filter((n) => n.featured);
-  const slides = (featured.length ? featured : items).slice(0, 5);
+  const top = newsHighlights(items);
+  const shown = new Set(top.map((i) => i.id));
   const { upcoming, past } = splitEvents(eventItems, now);
-  const blocks: Block[] = [{ type: "hero", variant: "title", data: { title: "News &", title2: "Events" } }];
-  if (upcoming.length > 0) blocks.push({ type: "events", variant: "upcoming", data: { title: "Upcoming events", anchor: "upcoming-events", items: upcoming.map((e) => eventCard(e, now)) } });
-  if (slides.length > 0) {
-    blocks.push({ type: "news", variant: "carousel", data: { title: "Latest news", items: slides.map(newsCard), allHref: "#all-news", allLabel: "View all news ↓" } });
-  }
-  blocks.push({ type: "news", variant: "timeline", data: { anchor: "all-news", items: items.map(newsCard) } });
-  if (past.length > 0) blocks.push({ type: "events", variant: "archive", data: { title: "Past events", anchor: "past-events", items: past.map((e) => eventCard(e, now)) } });
+  const blocks: Block[] = [{ type: "hero", variant: "page", data: { title: "News & Events" } }];
+  if (top.length > 0) blocks.push({ type: "news", variant: "highlights", data: { anchor: "highlights", items: top.map(newsCard) } });
+  blocks.push({ type: "events", variant: "next", data: { title: "Upcoming events", anchor: "upcoming-events", items: upcoming.map((e) => eventCard(e, now)), emptyHref: past.length ? "#past-events" : undefined } });
+  blocks.push({ type: "news", variant: "feed", data: { title: "All news", anchor: "all-news", items: items.filter((i) => !shown.has(i.id)).map(newsCard) } });
+  if (past.length > 0) blocks.push({ type: "events", variant: "past", data: { title: "Past events", anchor: "past-events", items: past.map((e) => eventCard(e, now)) } });
   return blocks;
 }
 

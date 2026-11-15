@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatEventDates, isPast, registrationOpen, splitEvents } from "@/lib/events";
 import { newsPageToBlocks } from "@/blocks/from-settings";
+import type { BlockOf } from "@/blocks/types";
 import type { Event } from "@/db/schema";
 
 const ev = (id: number, startsOn: string, extra: Partial<Event> = {}) =>
@@ -33,9 +34,12 @@ describe("event dates", () => {
 });
 
 describe("News & Events with events", () => {
-  it("upcoming events on top, archive at the bottom, nothing when there are none", () => {
+  it("upcoming events after the highlights, archive at the bottom; nothing coming — the section stays with a line", () => {
+    // DESIGN.md → News & Events
     const bs = newsPageToBlocks([], [ev(1, "2026-12-01"), ev(2, "2025-10-22")], "2026-11-11");
-    expect(bs.map((b) => `${b.type}:${b.variant}`)).toEqual(["hero:title", "events:upcoming", "news:timeline", "events:archive"]);
-    expect(newsPageToBlocks([], [], "2026-11-11").map((b) => b.type)).toEqual(["hero", "news"]);
+    expect(bs.map((b) => `${b.type}:${b.variant}`)).toEqual(["hero:page", "events:next", "news:feed", "events:past"]);
+    const none = newsPageToBlocks([], [ev(2, "2025-10-22")], "2026-11-11");
+    expect((none[1] as BlockOf<"events">).data).toMatchObject({ items: [], emptyHref: "#past-events" });
+    expect(newsPageToBlocks([], [], "2026-11-11").map((b) => `${b.type}:${b.variant}`)).toEqual(["hero:page", "events:next", "news:feed"]);
   });
 });

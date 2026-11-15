@@ -106,15 +106,15 @@ describe("therapiesToBlocks", () => {
 });
 
 describe("newsPageToBlocks", () => {
-  it("carousel: featured first, otherwise the newest, at most 5", () => {
-    const mixed = newsPageToBlocks([news(1), news(2, true)]);
-    expect((mixed[1] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([2]);
-    const plain = newsPageToBlocks([1, 2, 3, 4, 5, 6].map((i) => news(i)));
-    expect((plain[1] as BlockOf<"news">).data.items).toHaveLength(5);
-    expect((plain[2] as BlockOf<"news">).data.items).toHaveLength(6);
+  it("highlights: the marked ones first, then the newest, four in all; the news rows start after them", () => {
+    // DESIGN.md → News & Events: no carousel, no repeats
+    const mixed = newsPageToBlocks([news(1), news(2, true), news(3), news(4), news(5), news(6)]);
+    expect(types(mixed)).toEqual(["hero:page", "news:highlights", "events:next", "news:feed"]);
+    expect((mixed[1] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([2, 1, 3, 4]);
+    expect((mixed[3] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([5, 6]);
   });
-  it("no news: no carousel, the list stays", () => {
-    expect(types(newsPageToBlocks([]))).toEqual(["hero:title", "news:timeline"]);
+  it("no news: no highlights, the rows say so", () => {
+    expect(types(newsPageToBlocks([]))).toEqual(["hero:page", "events:next", "news:feed"]);
   });
 });
 

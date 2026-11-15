@@ -249,3 +249,22 @@ test("choose your location is a window: opens when a regional page is asked for,
   await dialog.getByRole("link", { name: /Go to Americas/ }).click();
   await page.waitForURL(/\/us\/evidence$/);
 });
+
+test("News & Events: highlights instead of a carousel, rows without repeats, upcoming events never disappear", async ({ page }) => {
+  // DESIGN.md → News & Events
+  await page.goto("/news-events");
+  await expect(page.getByRole("heading", { level: 1, name: "News & Events" })).toBeVisible();
+  const top = await page.locator("#highlights h2, #highlights li").allInnerTexts();
+  expect(top.length).toBe(4);
+  const rows = page.locator("#all-news li");
+  await expect(rows).toHaveCount(10);
+  const rowTexts = await rows.allInnerTexts();
+  const bigTitle = (await page.locator("#highlights h2").innerText()).trim();
+  expect(rowTexts.some((t) => t.includes(bigTitle))).toBe(false); // the highlights are not repeated below
+  await page.locator("#all-news").getByRole("button", { name: "Show more" }).click();
+  await expect(rows).toHaveCount(20);
+  // the seeded events are all past: the section stays with a line and a way to the archive
+  await expect(page.locator("#upcoming-events")).toContainText("No upcoming events right now.");
+  await expect(page.locator("#upcoming-events").getByRole("link", { name: "See past events ↓" })).toHaveAttribute("href", "#past-events");
+  await expect(page.locator("#past-events")).toBeVisible();
+});
