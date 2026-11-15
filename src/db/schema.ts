@@ -335,7 +335,7 @@ export const publications = pgTable(
     pdfUrl: text("pdf_url"),
     /** A PDF copied from an open-access source: its licence (e.g. «CC BY 4.0») and where it came from — shown under it */
     pdfLicense: text("pdf_license").notNull().default(""),
-    pdfSource: text("pdf_source").notNull().default(""),
+    pdfSource: text("pdf_source"), // a url field: empty is null, like pdf_url
     doi: text("doi"),
     productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
     /** Regions where it is shown; empty = all */

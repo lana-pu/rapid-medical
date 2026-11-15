@@ -183,6 +183,13 @@
       "when": 1794755268320,
       "tag": "0025_publication_pdf_licence",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794758104574,
+      "tag": "0026_publication_pdf_source_nullable",
+      "breakpoints": true
     }
   ]
 }
