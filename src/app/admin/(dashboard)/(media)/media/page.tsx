@@ -1,61 +1,135 @@
-import { desc, eq, ilike, or, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db, media } from "@/db";
 import { findMediaUsage, mediaIndex, usageIn } from "@/lib/media-usage";
+import { mediaLibrary, pageSections, type Group, type LibraryItem } from "@/admin/media-library";
 import { PageHeader, formatDate, inputCls, Notice } from "@/components/admin/ui";
-import { MediaGrid } from "@/components/admin/MediaGrid";
-import { AltField, DescribeQueue, ReplaceButton } from "@/components/admin/MediaTools";
+import { MediaGrid, type GridItem } from "@/components/admin/MediaGrid";
+import { AltField, DeleteFile, DescribeQueue, ReplaceButton } from "@/components/admin/MediaTools";
 import { editorHref } from "@/lib/demo";
 
-type SP = { q?: string; type?: string; page?: string; id?: string; describe?: string };
+/**
+ * The media library in order (docs/screens/admin-media.md → «Порядок в медиатеке»): groups on the left built from where
+ * files are used (pages by section, lists, site settings, not used), the grid on the right. Admin chrome palette.
+ */
+type SP = { q?: string; show?: string; in?: string; sort?: string; page?: string; id?: string; describe?: string };
 
 const noAlt = sql`${media.mime} like 'image/%' and ${media.alt} = ''`;
+const SHOW: Record<string, { label: string; test: (m: LibraryItem) => boolean }> = {
+  unused: { label: "Not used", test: (m) => m.usedCount === 0 },
+  noalt: { label: "No description", test: (m) => m.mime.startsWith("image/") && !m.alt },
+  image: { label: "Pictures", test: (m) => m.mime.startsWith("image/") },
+  video: { label: "Videos", test: (m) => m.mime.startsWith("video/") },
+  pdf: { label: "PDFs", test: (m) => m.mime === "application/pdf" },
+};
+const SORTS = { new: "Newest", name: "Name", size: "Size" } as const;
+const PER = 60;
+
+const toGrid = (m: LibraryItem): GridItem => ({ id: m.id, url: m.url, filename: m.filename, mime: m.mime, size: m.size, alt: m.alt, thumb: m.mime.startsWith("image/") ? m.url : null, used: m.used });
 
 export default async function MediaPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   if (sp.id) return <MediaDetail id={Number(sp.id)} />;
   if (sp.describe) return <Describe />;
 
-  const per = 60;
-  const page = Math.max(1, Number(sp.page ?? 1));
-  const conds = [];
-  if (sp.q) conds.push(or(ilike(media.filename, `%${sp.q}%`), ilike(media.alt, `%${sp.q}%`)));
-  if (sp.type === "image") conds.push(ilike(media.mime, "image/%"));
-  if (sp.type === "video") conds.push(ilike(media.mime, "video/%"));
-  if (sp.type === "pdf") conds.push(eq(media.mime, "application/pdf"));
-  if (sp.type === "noalt") conds.push(noAlt);
-  const where = conds.length ? sql.join(conds, sql` AND `) : undefined;
-  const [rows, [{ n }], [{ missing }]] = await Promise.all([
-    db.select().from(media).where(where).orderBy(desc(media.createdAt)).limit(per).offset((page - 1) * per),
-    db.select({ n: sql<number>`count(*)::int` }).from(media).where(where),
-    db.select({ missing: sql<number>`count(*)::int` }).from(media).where(noAlt),
-  ]);
-  const pages = Math.max(1, Math.ceil(n / per));
+  const lib = await mediaLibrary();
+  const show = sp.show && SHOW[sp.show] ? sp.show : "";
+  const group = sp.in ? lib.groups.find((g) => g.key === sp.in) : undefined;
+  const sort = (sp.sort && sp.sort in SORTS ? sp.sort : "new") as keyof typeof SORTS;
+  const needle = sp.q?.trim().toLowerCase() ?? "";
+  const inGroup = group ? lib.idsOf(group.key) : null;
+  const shown = lib.items
+    .filter((m) => (!show || SHOW[show].test(m)) && (!inGroup || inGroup.has(m.id)) && (!needle || m.filename.toLowerCase().includes(needle) || m.alt.toLowerCase().includes(needle)))
+    .sort((a, b) => (sort === "name" ? a.filename.localeCompare(b.filename) : sort === "size" ? b.size - a.size : b.createdAt.getTime() - a.createdAt.getTime()));
+  const missing = lib.items.filter(SHOW.noalt.test).length;
+  const title = group?.label ?? (show ? SHOW[show].label : "All files");
+
+  // A page of the site: its files by the section of the page; everything else: one grid, 60 per page.
+  const sections = group?.section === "site" ? await pageSections(group.key.slice(5), shown) : null;
+  const pages = Math.max(1, Math.ceil(shown.length / PER));
+  const page = Math.min(pages, Math.max(1, Number(sp.page ?? 1)));
+  const href = (over: Partial<SP>) => {
+    const q = new URLSearchParams();
+    for (const [k, v] of Object.entries({ q: sp.q, show, in: group?.key, sort: sort === "new" ? "" : sort, ...over })) if (v) q.set(k, String(v));
+    const s = q.toString();
+    return s ? `/admin/media?${s}` : "/admin/media";
+  };
+  const byId = new Map(shown.map((m) => [m.id, m]));
 
   return (
-    <>
-      <PageHeader
-        title="Media library"
-        subtitle={`${n} files`}
-        actions={missing > 0 ? <Link href="/admin/media?describe=1" className="rounded bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-700">Describe pictures ({missing})</Link> : undefined}
-      />
-      <form className="mb-4 flex flex-wrap items-center gap-2">
-        <input name="q" defaultValue={sp.q ?? ""} placeholder="Search filename or alt…" className={`${inputCls} max-w-xs`} />
-        <select name="type" defaultValue={sp.type ?? ""} className={`${inputCls} w-auto`}>
-          <option value="">All types</option><option value="image">Images</option><option value="video">Videos</option><option value="pdf">PDFs</option><option value="noalt">No description ({missing})</option>
-        </select>
-        <button className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">Apply</button>
-      </form>
-      <MediaGrid items={rows.map((m) => ({ ...m, createdAt: m.createdAt.toISOString() }))} />
-      {pages > 1 && (
-        <div className="mt-4 flex justify-center gap-3 text-sm">
-          {page > 1 && <Link href={`/admin/media?q=${sp.q ?? ""}&type=${sp.type ?? ""}&page=${page - 1}`} className="underline">‹ Prev</Link>}
-          <span className="text-neutral-500">Page {page} of {pages}</span>
-          {page < pages && <Link href={`/admin/media?q=${sp.q ?? ""}&type=${sp.type ?? ""}&page=${page + 1}`} className="underline">Next ›</Link>}
-        </div>
-      )}
-    </>
+    <div className="-m-8 flex min-h-[calc(100vh-3rem)]">
+      <Groups lib={lib} current={group?.key ?? show} missing={missing} />
+      <div className="min-w-0 flex-1 p-8">
+        <PageHeader
+          title={title}
+          subtitle={`${shown.length} file${shown.length === 1 ? "" : "s"}${group?.section === "site" ? " · every region of the page" : ""}`}
+          actions={missing > 0 ? <Link href="/admin/media?describe=1" className="rounded bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-700">Describe pictures ({missing})</Link> : undefined}
+        />
+        <form className="mb-4 flex flex-wrap items-center gap-2" role="search">
+          {show && <input type="hidden" name="show" value={show} />}
+          {group && <input type="hidden" name="in" value={group.key} />}
+          <input name="q" defaultValue={sp.q ?? ""} placeholder="Search name or description…" aria-label="Search files" className={`${inputCls} max-w-xs`} />
+          <select name="sort" defaultValue={sort} aria-label="Sort" className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900">
+            {Object.entries(SORTS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+          </select>
+          <button className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">Apply</button>
+          {needle && <Link href={href({ q: "" })} className="text-sm underline">Clear search</Link>}
+        </form>
+        {sections ? (
+          <div className="space-y-8">
+            {sections.map((s) => (
+              <section key={s.section} aria-label={s.section}>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">{s.section} <span className="font-normal normal-case text-neutral-400">· {s.ids.length}</span></h2>
+                <MediaGrid upload={false} items={s.ids.map((id) => byId.get(id)).filter((m): m is LibraryItem => !!m).map(toGrid)} />
+              </section>
+            ))}
+          </div>
+        ) : (
+          <>
+            <MediaGrid upload={!show && !group} selectable={show === "unused"} items={shown.slice((page - 1) * PER, page * PER).map(toGrid)} />
+            {!shown.length && <p className="py-10 text-center text-sm text-neutral-500">{show === "unused" ? "Every file is used somewhere." : show === "noalt" ? "Every picture has a description." : "Nothing matches."}</p>}
+          </>
+        )}
+        {!sections && pages > 1 && (
+          <div className="mt-4 flex justify-center gap-3 text-sm">
+            {page > 1 && <Link href={href({ page: String(page - 1) })} className="underline">‹ Prev</Link>}
+            <span className="text-neutral-500">Page {page} of {pages}</span>
+            {page < pages && <Link href={href({ page: String(page + 1) })} className="underline">Next ›</Link>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** The left column: the whole library, what needs doing, types, and where files are used. */
+function Groups({ lib, current, missing }: { lib: Awaited<ReturnType<typeof mediaLibrary>>; current: string; missing: number }) {
+  const n = (t: (m: LibraryItem) => boolean) => lib.items.filter(t).length;
+  const row = (href: string, key: string, label: string, count: number, indent = false) => (
+    <li key={key}>
+      <Link href={href} aria-current={current === key ? "page" : undefined} className={`flex items-center gap-2 px-3 py-1.5 text-sm ${indent ? "pl-6" : ""} ${current === key ? "bg-neutral-100 font-medium text-neutral-900" : "text-neutral-700 hover:bg-neutral-50"}`}>
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        <span className="shrink-0 text-xs text-neutral-400">{count}</span>
+      </Link>
+    </li>
+  );
+  const heading = (t: string) => <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">{t}</div>;
+  const of = (section: Group["section"]) => lib.groups.filter((g) => g.section === section);
+  return (
+    <nav aria-label="Media groups" className="w-64 shrink-0 overflow-y-auto border-r border-neutral-200 bg-white py-2">
+      <ul>
+        {row("/admin/media", "", "All files", lib.items.length)}
+        {row("/admin/media?show=unused", "unused", "Not used", n(SHOW.unused.test))}
+        {row("/admin/media?show=noalt", "noalt", "No description", missing)}
+      </ul>
+      {heading("Type")}
+      <ul>{(["image", "video", "pdf"] as const).map((k) => row(`/admin/media?show=${k}`, k, SHOW[k].label, n(SHOW[k].test)))}</ul>
+      {of("site").some((g) => !g.other) && <>{heading("On the site")}<ul>{of("site").filter((g) => !g.other).map((g) => row(`/admin/media?in=${encodeURIComponent(g.key)}`, g.key, g.label, g.count, g.child))}</ul></>}
+      {of("site").some((g) => g.other) && <>{heading("Other pages")}<ul>{of("site").filter((g) => g.other).map((g) => row(`/admin/media?in=${encodeURIComponent(g.key)}`, g.key, g.label, g.count))}</ul></>}
+      {of("lists").length > 0 && <>{heading("Lists")}<ul>{of("lists").map((g) => row(`/admin/media?in=${encodeURIComponent(g.key)}`, g.key, g.label, g.count))}</ul></>}
+      {of("settings").length > 0 && <ul className="mt-2 border-t border-neutral-100 pt-2">{of("settings").map((g) => row(`/admin/media?in=${encodeURIComponent(g.key)}`, g.key, g.label, g.count))}</ul>}
+    </nav>
   );
 }
 
@@ -71,6 +145,7 @@ async function MediaDetail({ id }: { id: number }) {
         actions={
           <>
             {usage.length > 0 && <ReplaceButton file={{ id: m.id, url: m.url, filename: m.filename, mime: m.mime }} places={usage.length} />}
+            {usage.length === 0 && <DeleteFile id={m.id} filename={m.filename} />}
             <Link href="/admin/media" className="self-center text-sm underline">← Library</Link>
           </>
         }

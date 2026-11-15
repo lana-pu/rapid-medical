@@ -62,3 +62,32 @@ test("describe pictures: filter, queue, Enter saves and moves on", async ({ page
   expect(sql(`select alt from media where filename = '${name}'`)).toBe("E2E: device on a white background");
   sql(`update media set alt = '' where filename = '${name}'`);
 });
+
+test("library in order: groups by where files are used, a page by its sections, unused files deleted after a list", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  await page.goto("/admin/media");
+  const groups = page.getByRole("navigation", { name: "Media groups" });
+  await expect(groups.getByRole("link", { name: /^Not used/ })).toBeVisible({ timeout: 20_000 });
+  await expect(groups.getByRole("link", { name: /^Large vessel stroke/ })).toBeVisible();
+
+  // a therapy page: its files under the sections of the page
+  await groups.getByRole("link", { name: /^Large vessel stroke/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Large vessel stroke" })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("region").first()).toBeVisible();
+  await expect(page.getByText(/^On Large vessel stroke/).first()).toBeVisible();
+
+  // a fresh upload is not used anywhere: select it in «Not used» and delete after the list
+  const name = `e2e-unused-${Date.now()}`;
+  await page.goto("/admin/media");
+  await page.setInputFiles("input[type=file]", { name: `${name}.png`, mimeType: "image/png", buffer: PNG });
+  await expect(page.getByText(name).first()).toBeVisible({ timeout: 20_000 });
+  await page.goto(`/admin/media?show=unused&q=${name}`);
+  await page.getByRole("checkbox", { name: new RegExp(`^Select ${name}`) }).check();
+  await page.getByRole("button", { name: /^Delete selected \(1\)/ }).click();
+  const dlg = page.getByRole("dialog", { name: "Delete files" });
+  await expect(dlg).toContainText(name);
+  await dlg.getByRole("button", { name: "Delete 1" }).click();
+  await expect(page.getByText("Every file is used somewhere.")).toBeVisible({ timeout: 20_000 });
+  expect(sql(`select count(*) from media where filename like '${name}%'`)).toBe("0");
+});
