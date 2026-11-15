@@ -10,7 +10,7 @@
  */
 import { readFile, writeFile } from "node:fs/promises";
 import postgres from "postgres";
-import { sameArticle } from "../src/lib/material";
+import { sameArticle, sameArticleByTitle } from "../src/lib/material";
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
 const TOOL = "rapid-medical-site";
@@ -56,6 +56,52 @@ async function fetchAbstract(pmid: string): Promise<{ abstract: string; title: s
   return { abstract: parts.filter(Boolean).join("\n\n"), title };
 }
 
+/** OpenAlex keeps abstracts as word → positions; rebuilt in order. By DOI, else by a title search (first agreeing hit). */
+async function fromOpenAlex(doi: string, ours: string): Promise<{ abstract: string; source: string } | null> {
+  const works: { id: string; title?: string; abstract_inverted_index?: Record<string, number[]> | null }[] = [];
+  let bySearch = false;
+  if (doi) {
+    const w = await get(`https://api.openalex.org/works/doi:${encodeURIComponent(doi)}`);
+    try { works.push(JSON.parse(w)); } catch { /* not there */ }
+  }
+  if (!works.length) {
+    const q = ours.replace(/[…"*]/g, " ").replace(/\s+/g, " ").trim();
+    const w = await get(`https://api.openalex.org/works?per-page=5&search=${encodeURIComponent(q)}`);
+    try { works.push(...(JSON.parse(w).results ?? [])); bySearch = true; } catch { /* nothing */ }
+  }
+  for (const w of works) {
+    const inv = w.abstract_inverted_index;
+    if (!inv || !w.title || !(bySearch ? sameArticleByTitle(ours, w.title) : sameArticle(ours, w.title))) continue;
+    const words: string[] = [];
+    for (const [word, at] of Object.entries(inv)) for (const i of at) words[i] = word;
+    const abstract = words.filter(Boolean).join(" ").replace(/\s+([.,;:)])/g, "$1").trim();
+    if (abstract.length > 80) return { abstract, source: `OpenAlex ${w.id.replace("https://openalex.org/", "")}` };
+  }
+  return null;
+}
+
+/** Crossref has some publishers' abstracts (JATS); by DOI only. */
+async function fromCrossref(doi: string, ours: string): Promise<{ abstract: string; source: string } | null> {
+  if (!doi) return null;
+  const j = await get(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+  try {
+    const m = JSON.parse(j).message as { abstract?: string; title?: string[] };
+    const title = m.title?.[0] ?? "";
+    if (!m.abstract || !sameArticle(ours, title)) return null;
+    const abstract = m.abstract
+      .replace(/<jats:title>([^<]*)<\/jats:title>/g, "\n\n$1: ")
+      .replace(/<\/jats:p>\s*<jats:p>/g, "\n\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/^\s*Abstract:?\s*/i, "")
+      .replace(/(\n\n)+/g, "\n\n")
+      .trim();
+    return abstract.length > 80 ? { abstract, source: `Crossref, doi:${doi}` } : null;
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
   // --recheck: check the abstracts already written against PubMed's titles again
@@ -74,16 +120,22 @@ async function main() {
       const hits = await search(`"${r.title.replace(/["…]/g, " ").replace(/\s+/g, " ").trim()}"[ti]`);
       if (hits.length === 1) { pmid = hits[0]; byTitle = true; }
     }
-    if (!pmid) { missed.push(`${r.id} (not in PubMed): ${r.title.slice(0, 70)}`); continue; }
-    const { abstract, title } = await fetchAbstract(pmid);
-    // the hit must be this article — even by DOI (a record had another article's DOI): most words of our title
-    // (often shortened with «…») are in PubMed's title
-    if (!abstract || !sameArticle(r.title, title)) {
+    let got: { abstract: string; source: string } | null = null;
+    if (pmid) {
+      const { abstract, title } = await fetchAbstract(pmid);
+      // the hit must be this article — even by DOI (a record had another article's DOI): most words of our title
+      // (often shortened with «…») are in PubMed's title
+      if (abstract && sameArticle(r.title, title)) got = { abstract, source: `PubMed ${pmid}` };
+    }
+    // not in PubMed (conference abstracts, some journals): OpenAlex, then Crossref — the same title check
+    if (!got && !recheck) got = (await fromOpenAlex(doi, r.title)) ?? (await fromCrossref(doi, r.title));
+    if (!got) {
+      if (recheck && !(await sql`select abstract_source from publications where id = ${r.id}`)[0]?.abstract_source?.startsWith("PubMed")) continue;
       if (recheck) await sql`update publications set abstract = '', abstract_source = '' where id = ${r.id}`;
-      missed.push(`${r.id} (${abstract ? `title differs: «${title.slice(0, 50)}»` : "no abstract"} — PubMed ${pmid}): ${r.title.slice(0, 70)}`);
+      missed.push(`${r.id}${pmid ? ` (PubMed ${pmid}: no agreeing abstract)` : " (nowhere)"}: ${r.title.slice(0, 70)}`);
       continue;
     }
-    const source = `PubMed ${pmid}`;
+    const { abstract, source } = got;
     if (recheck) continue; // already written and confirmed
     await sql`update publications set abstract = ${abstract}, abstract_source = ${source} where id = ${r.id}`;
     found.push({ id: r.id, title: r.title, abstract, source });

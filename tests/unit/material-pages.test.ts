@@ -58,3 +58,15 @@ describe("an abstract belongs to this article", () => {
     expect(sameArticle("Thrombectomy for distal medium vessel occlusion with a new generation of stentriever", "Mechanical thrombectomy in pediatric stroke: systematic review, individual patient data meta-analysis")).toBe(false);
   });
 });
+
+import { sameArticleByTitle } from "../../src/lib/material";
+
+describe("a hit found only by our title", () => {
+  it("needs enough words, all of them, and a cut title must match the beginning", () => {
+    expect(sameArticleByTitle("E-272 Novel use of a triple stent retriever ‘bouquet’ …", "E-272 Novel use of a triple stent retriever ‘bouquet’ deployment with zoom 88")).toBe(true);
+    expect(sameArticleByTitle("Comaneci-assisted coiling of wide-necked intracranial Aneurysm: Single center preliminary experience", "Comaneci-Assisted Coiling of Wide-Necked Intracranial Aneurysm: A Single-Center Preliminary Experience")).toBe(true);
+    expect(sameArticleByTitle("MCA Aneurysm Embolization", "P501 Technical and nursing aspects in a case of distal MCA aneurysm embolization")).toBe(false); // too short
+    expect(sameArticleByTitle("Mechanical thrombectomy … Propensity score analysis", "Conscious sedation versus general anaesthesia during mechanical thrombectomy for stroke: a propensity score analysis")).toBe(false);
+    expect(sameArticleByTitle("Revascularization of acute basilar artery occlusion …", "Successful Endovascular Revascularization of Acute Basilar Artery Occlusion Approached via an Aberrant Artery")).toBe(false);
+  });
+});

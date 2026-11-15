@@ -37,3 +37,23 @@ export function sameArticle(ours: string, theirs: string): boolean {
   if (!words.length) return false;
   return words.filter((w) => pool.has(w)).length / words.length >= 0.6;
 }
+
+/**
+ * A hit found only by searching our title (no DOI, no PubMed link) is trusted only when the title says enough: at least
+ * 4 words longer than 3 letters, every one of them in the hit's title, and a title shortened with «…» must agree with
+ * the hit's beginning and end (a short or cut title matched other articles, 2026-11-15).
+ */
+export function sameArticleByTitle(ours: string, theirs: string): boolean {
+  // hyphens both ways: «Single center» = «Single-Center», «Post-Traumatic» = «Posttraumatic»
+  const check = (flat: (x: string) => string) => {
+    const words = flat(ours).split(" ").filter((w) => w.length > 3);
+    if (words.length < 4) return false;
+    const pool = new Set(flat(theirs).split(" "));
+    if (!words.every((w) => pool.has(w))) return false;
+    if (!ours.includes("…")) return true;
+    const parts = ours.split("…").map((x) => flat(x)).filter(Boolean);
+    const t = flat(theirs);
+    return t.startsWith(parts[0]) && (parts.length < 2 || t.includes(parts[parts.length - 1]));
+  };
+  return check((x) => norm(x.replace(/(\w)-(\w)/g, "$1$2"))) || check((x) => norm(x));
+}
