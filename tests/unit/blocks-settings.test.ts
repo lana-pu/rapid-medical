@@ -79,14 +79,29 @@ describe("therapiesToBlocks", () => {
     { slug: "aneurysm", navLabel: "Aneurysm", heroTitle: "Remodel", therapyGroup: "hemorrhagic" },
     { slug: "new", navLabel: "New", heroTitle: "Soon" },
   ];
-  it("one card group per therapy group, in menu order; the landing's own rows are not shown", () => {
+  it("groups of one therapy stand in one row with the group on the card; the landing's own rows are not shown", () => {
+    // DESIGN.md → Обзор терапий: a group heading only when the group has 2+ therapies
     const bs = therapiesToBlocks({ region: "ous", landing: { blocks: [{ title: "A", body: "a" }] }, items });
-    expect(types(bs)).toEqual(["hero:bannerCompact", "columns:cards", "columns:cards", "columns:cards", "columns:cards", "cta:light"]);
-    const groups = bs.slice(1, 5).map((b) => (b as BlockOf<"columns">).data);
-    expect(groups.map((g) => g.title)).toEqual(["Ischemic stroke", "Hemorrhagic stroke", "Access", null]);
-    expect(groups[0].items[0]).toMatchObject({ eyebrow: "TIGERTRIEVER™", title: "LVO", body: "Title", note: "TIGER trial", href: "/ous/therapies/lvo" });
-    expect(groups[3].items[0].href).toBe("/ous/therapies/new");
-    expect((bs[5] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
+    expect(types(bs)).toEqual(["hero:bannerCompact", "columns:cards", "cta:light"]);
+    const row = (bs[1] as BlockOf<"columns">).data;
+    expect(row.title).toBeNull();
+    expect(row.items.map((c) => c.eyebrow)).toEqual(["Ischemic stroke · TIGERTRIEVER™", "Hemorrhagic stroke", "Access · DRIVEWIRE™", undefined]);
+    expect(row.items[0]).toMatchObject({ title: "LVO", body: "Title", note: "TIGER trial", href: "/ous/therapies/lvo" });
+    expect(row.items[3].href).toBe("/ous/therapies/new");
+    expect((bs[2] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
+  });
+  it("a group of two keeps its heading; publications lead to the product's Evidence tab", () => {
+    const two = [...items, { slug: "mvo", navLabel: "MVO", heroTitle: "Distal", therapyGroup: "ischemic", productName: "TIGERTRIEVER™ 13", productSlug: "tt13" }];
+    const lvo = { ...two[1], productSlug: "tt" };
+    const bs = therapiesToBlocks({ region: "ous", landing: {}, items: [two[0], lvo, two[2], two[3], two[4]], publications: { tt: 19, tt13: 1 } });
+    const sections = bs.filter((b) => b.type === "columns").map((b) => (b as BlockOf<"columns">).data);
+    expect(sections.map((g) => g.title)).toEqual(["Ischemic stroke", null]);
+    expect(sections[0].items.map((c) => [c.eyebrow, c.more])).toEqual([
+      ["TIGERTRIEVER™", { label: "19 publications →", href: "/ous/evidence#tt" }],
+      ["TIGERTRIEVER™ 13", { label: "1 publication →", href: "/ous/evidence#tt13" }],
+    ]);
+    // no Evidence tab with publications for the product → no link
+    expect(sections[1].items.every((c) => c.more === null)).toBe(true);
   });
 });
 

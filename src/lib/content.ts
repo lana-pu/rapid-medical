@@ -63,7 +63,7 @@ export async function getSolutionsNav(region: Region) {
   const rows = await db
     .select({
       id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, therapyGroup: solutions.therapyGroup, proofPoint: solutions.proofPoint,
-      heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name,
+      heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name, productSlug: products.slug,
       blocks: solutions.blocks,
     })
     .from(solutions)

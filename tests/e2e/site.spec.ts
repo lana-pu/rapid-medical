@@ -171,13 +171,18 @@ test.describe("usability pass 2026-11-13", () => {
 });
 
 test.describe("usability pass 2026-11-13, part 2", () => {
-  test("switching region on a therapy that the region does not have explains it", async ({ request, page }) => {
+  test("switching region on a therapy that the region does not have lands on its overview", async ({ request, page }) => {
+    // no «not available» notice (decision 2026-11-15): the site has no links to therapies a region lacks
     const r = await request.get("/api/region?to=us&back=%2Fous%2Ftherapies%2Fmvo", { maxRedirects: 0 });
-    expect(r.headers()["location"]).toContain("/us/therapies?missing=mvo");
+    expect(r.headers()["location"]).toMatch(/\/us\/therapies$/);
     await page.goto("/us/therapies?missing=mvo");
-    await expect(page.getByRole("status")).toContainText("Medium vessel stroke is not available in Americas");
-    await page.goto("/us/therapies?missing=lvo"); // LVO is in the Americas: no false notice
-    await expect(page.getByText(/is not available in Americas/)).toHaveCount(0);
+    await expect(page.getByText(/is not available in/)).toHaveCount(0);
+    // the overview: groups of one therapy in one row, the group on the card; publications lead to Evidence
+    await expect(page.getByText("Ischemic stroke · TIGERTRIEVER™")).toBeVisible();
+    await expect(page.getByRole("link", { name: /^\d+ publications? →$/ }).first()).toHaveAttribute("href", "/us/evidence#tigertriever");
+    // old Duda addresses of therapies the Americas do not have go to the overview, not to a missing page
+    const old = await request.get("/us/vasospasm", { maxRedirects: 0 });
+    expect(old.headers()["location"]).toMatch(/\/us\/therapies$/);
     const keep = await request.get("/api/region?to=ous&back=%2Fus%2Fevidence%23comaneci", { maxRedirects: 0 });
     expect(keep.headers()["location"]).toMatch(/\/ous\/evidence#comaneci$/);
   });

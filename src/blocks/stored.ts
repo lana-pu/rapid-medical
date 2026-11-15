@@ -1,6 +1,5 @@
 import type { NewsItem, Region, StoredBlock, TeamMember } from "@/db/schema";
-import { groupTherapies } from "@/lib/therapy-groups";
-import { careersCta, evidenceLists, newsCard, publicationCard, therapyCards, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import { careersCta, evidenceLists, newsCard, overviewSections, publicationCard, type EvidenceLists, type OverviewTherapy } from "./from-settings";
 import type { JobRow } from "./jobs";
 import { teamCard } from "./from-pages";
 import type { Office } from "./offices-map";
@@ -51,6 +50,8 @@ export type SourceLists = {
   jobCount?: number;
   evidence?: EvidenceLists;
   therapies?: OverviewTherapy[];
+  /** Therapies overview: publications per Evidence tab of the region */
+  publicationCounts?: Record<string, number>;
   /** Careers: the open positions as rows */
   jobs?: JobRow[];
   /** About: figures counted from the records (publications, offices) */
@@ -118,8 +119,11 @@ export const SOURCES: Record<string, Source> = {
   therapyGroup: {
     keys: ["title", "items"],
     fill: (d, ctx) => {
-      const g = groupTherapies(ctx.lists?.therapies ?? []).find((x) => x.value === (d.group ?? ""));
-      return g && ctx.region ? { title: g.label || null, items: therapyCards(g.items, ctx.region), group: undefined } : null;
+      // one stored block per group; a group of one therapy shows nothing here unless it is the first such group,
+      // which carries all of them in one row (overviewSections)
+      if (!ctx.region) return null;
+      const g = overviewSections(ctx.lists?.therapies ?? [], ctx.region, ctx.lists?.publicationCounts).find((x) => x.group === (d.group ?? ""));
+      return g ? { title: g.title, items: g.items, group: undefined } : null;
     },
   },
 };

@@ -176,25 +176,52 @@ export type TherapiesLanding = {
   closingTitle?: string; closingBody?: string; metaTitle?: string; metaDescription?: string;
 };
 
-export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; heroImageUrl?: string | null };
+export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; productSlug?: string | null; heroImageUrl?: string | null };
 
-/** Overview cards of one therapy group (also used by the stored page's `therapyGroup` source). */
-export function therapyCards(items: OverviewTherapy[], region: Region) {
-  return items.map((s) => ({
-    eyebrow: s.productName ?? undefined,
-    title: s.navLabel,
-    body: s.heroTitle,
-    note: s.proofPoint || undefined,
-    // No picture: only some therapies have a hero image (others a video), so cards would differ in height.
-    href: `/${region}/therapies/${s.slug}`,
-  }));
+/** Publications per Evidence tab of a region (tab = product slug) — the same lists the Evidence page shows. */
+export function publicationCounts(lists: EvidenceLists): Record<string, number> {
+  return Object.fromEntries(evidenceLists(lists).groups.map((g) => [g.id, g.items.length]));
+}
+
+/** Overview cards (also used by the stored page's `therapyGroup` source). `caption`: the group's name goes on the card. */
+export function therapyCards(items: OverviewTherapy[], region: Region, { caption, publications }: { caption?: string; publications?: Record<string, number> } = {}) {
+  return items.map((s) => {
+    const n = s.productSlug ? publications?.[s.productSlug] ?? 0 : 0;
+    return {
+      eyebrow: [caption, s.productName].filter(Boolean).join(" · ") || undefined,
+      title: s.navLabel,
+      body: s.heroTitle,
+      note: s.proofPoint || undefined,
+      // No picture yet: the decision is one 4:3 device render per card (requested from the client, BACKLOG №22);
+      // hero images differ (some therapies have a video), so cards would differ in height.
+      href: `/${region}/therapies/${s.slug}`,
+      // «N publications →» — Evidence on that product's tab; only when the region lists some
+      more: n ? { label: `${n} publication${n === 1 ? "" : "s"} →`, href: `/${region}/evidence#${s.productSlug}` } : null,
+    };
+  });
+}
+
+/**
+ * The overview's sections (DESIGN.md → Обзор терапий): a group with 2+ therapies keeps its heading; groups of one
+ * therapy have no heading of their own — their cards stand in one row (at the first such group), the group's name on
+ * the card («Ischemic stroke · TIGERTRIEVER™»).
+ */
+export function overviewSections(items: OverviewTherapy[], region: Region, publications?: Record<string, number>) {
+  const groups = groupTherapies(items);
+  const singles = groups.filter((g) => g.items.length === 1);
+  const out: { group: string; title: string | null; items: ReturnType<typeof therapyCards> }[] = [];
+  for (const g of groups) {
+    if (g.items.length > 1) out.push({ group: g.value, title: g.label || null, items: therapyCards(g.items, region, { publications }) });
+    else if (g === singles[0]) out.push({ group: g.value, title: null, items: singles.flatMap((x) => therapyCards(x.items, region, { caption: x.label, publications })) });
+  }
+  return out;
 }
 
 /**
  * Regional therapies overview (decision 2026-11-10): one group of link cards per therapy group, built from the
  * therapy records themselves. The landing's own `blocks` texts are no longer shown (kept in settings, not deleted).
  */
-export function therapiesToBlocks({ region, landing, items }: { region: Region; landing: TherapiesLanding; items: OverviewTherapy[] }): Block[] {
+export function therapiesToBlocks({ region, landing, items, publications }: { region: Region; landing: TherapiesLanding; items: OverviewTherapy[]; publications?: Record<string, number> }): Block[] {
   const r = `settings:therapies:${region}`;
   const blocks: Block[] = [
     {
@@ -204,7 +231,7 @@ export function therapiesToBlocks({ region, landing, items }: { region: Region; 
       edit: { r, map: { title: "title", body: "intro", note: "note" } },
     },
   ];
-  for (const g of groupTherapies(items)) blocks.push({ type: "columns", variant: "cards", data: { title: g.label || null, items: therapyCards(g.items, region) } });
+  for (const g of overviewSections(items, region, publications)) blocks.push({ type: "columns", variant: "cards", data: { title: g.title, items: g.items } });
   blocks.push({
     type: "cta",
     variant: "light",
