@@ -19,19 +19,29 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
  * A long document as «shared line» (DESIGN.md → Текстовая страница): «Last revised» and «On this page» from the text
  * itself, the section's documents. Headings get anchors; a «Last Revised: …» heading moves to the rail.
  */
+/** Upper bounds: the text is editor-made, but it is parsed on every request (security review 2026-11-15). */
+const MAX_HTML = 400_000;
+const MAX_HEADINGS = 300;
+
 export function documentParts(html: string) {
-  let lastRevised: string | null = null;
-  let body = html.replace(/<h[1-6][^>]*>\s*(?:<[^>]+>\s*)*Last Revised:\s*([^<]+?)\s*(?:<\/[^>]+>\s*)*<\/h[1-6]>/i, (_, d: string) => {
-    lastRevised = d.trim();
-    return "";
-  });
   const toc: { id: string; title: string }[] = [];
+  if (html.length > MAX_HTML) return { body: html, lastRevised: null as string | null, toc };
+  let lastRevised: string | null = null;
   const used = new Set<string>();
-  body = body.replace(/<(h[2-6])([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag: string, attrs: string, inner: string) => {
+  // headings first (linear, lazy match up to the closing tag), then their plain text is tested — no nested quantifiers
+  const body = html.replace(/<(h[1-6])([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag: string, attrs: string, inner: string) => {
     const title = plain(inner);
-    if (!title) return m;
-    let id = slug(title);
-    for (let n = 2; used.has(id); n++) id = `${slug(title)}-${n}`;
+    if (lastRevised === null) {
+      const rev = /^Last Revised:\s*(.+)$/i.exec(title);
+      if (rev) {
+        lastRevised = rev[1].trim();
+        return "";
+      }
+    }
+    if (!/^h[2-6]$/i.test(tag) || !title || toc.length >= MAX_HEADINGS) return m;
+    const base = slug(title);
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
     used.add(id);
     toc.push({ id, title });
     return `<${tag}${attrs.replace(/\sid="[^"]*"/i, "")} id="${id}" class="scroll-mt-24">${inner}</${tag}>`;
