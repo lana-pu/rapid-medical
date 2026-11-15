@@ -269,6 +269,12 @@
         <aside class="k-side">${r.notes.length ? `<div class="k-panel"><div class="k-kicker" style="margin-bottom:8px">Notes</div><ol class="k-notes">${r.notes.map((t, i) => `<li><span class="k-num">${i + 1}</span><span>${esc(t)}</span></li>`).join('')}</ol></div>` : ''}
         <div class="k-panel"><div class="k-kicker" style="margin-bottom:8px">Screens</div><ol>${screens.map(x => `<li><a href="#proto-${esc(x.id)}" aria-current="${x.id === s.id}">${esc(x.title || x.id)}</a></li>`).join('')}</ol></div></aside></div></main>`;
     }
+    function vPresent(id) {
+      const s = byId[id] || byId[flow.start] || screens[0]; if (!s) return vLibrary();
+      const r = renderScreen(s);
+      return `<main class="k-present" id="stage"><div id="fit">${r.html}</div>
+        <nav class="k-present-bar"><a href="#proto-${esc(s.id)}">Notes</a><a href="#board">Board</a><span>${s.n} / ${screens.length}</span></nav></main>`;
+    }
     function fitProto() {
       const fit = root.querySelector('#fit'); if (!fit) return; const sc = fit.firstElementChild; if (!sc) return;
       const w = WIDTH[sc.classList.contains('mobile') ? 'mobile' : sc.classList.contains('tablet') ? 'tablet' : 'desktop'];
@@ -286,22 +292,25 @@
     function show() {
       const h = location.hash.slice(1);
       let html, mode;
-      if (flow && h.startsWith('proto-')) { html = vProto(h.slice(6)); mode = 'proto'; }
+      if (flow && !h && flow.view === 'present') { location.replace('#present-' + (flow.start || screens[0].id)); return; }
+      if (flow && h.startsWith('present-')) { html = vPresent(h.slice(8)); mode = 'present'; }
+      else if (flow && h.startsWith('proto-')) { html = vProto(h.slice(6)); mode = 'proto'; }
       else if (!flow || h === 'library' || h.startsWith('c-')) { html = vLibrary(); mode = 'library'; }
       else { html = vBoard(); mode = 'board'; }
-      root.innerHTML = top(mode) + html; root.classList.toggle('k-board', mode === 'board');
+      root.innerHTML = (mode === 'present' ? '' : top(mode)) + html; root.classList.toggle('k-board', mode === 'board');
       if (mode === 'board') requestAnimationFrame(drawArrows);
-      if (mode === 'proto') requestAnimationFrame(fitProto);
+      if (mode === 'proto' || mode === 'present') requestAnimationFrame(fitProto);
       if (mode === 'library' && h.startsWith('c-')) { const el = document.getElementById(h); if (el) el.scrollIntoView(); }
     }
     root.addEventListener('click', e => {
       const hot = e.target.closest('[data-to]');
       if (hot && location.hash.startsWith('#proto-')) { e.preventDefault(); location.hash = 'proto-' + hot.dataset.to; return; }
+      if (hot && location.hash.startsWith('#present-')) { e.preventDefault(); location.hash = 'present-' + hot.dataset.to; return; }
       const stage = e.target.closest('#stage');
       if (stage && !hot) { stage.classList.add('k-hint'); setTimeout(() => stage.classList.remove('k-hint'), 700); }
     });
     window.addEventListener('hashchange', () => { show(); window.scrollTo(0, 0); });
-    window.addEventListener('resize', () => { if (location.hash.startsWith('#proto-')) fitProto(); else requestAnimationFrame(drawArrows); });
+    window.addEventListener('resize', () => { if (/^#(proto|present)-/.test(location.hash)) fitProto(); else requestAnimationFrame(drawArrows); });
     show();
   }
 
