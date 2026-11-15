@@ -21,23 +21,26 @@ const hits = new Map<string, number[]>();
 let minute = { start: 0, n: 0 };
 function limited(key: string) {
   const now = Date.now();
-  if (now - minute.start > WINDOW) minute = { start: now, n: 0 };
-  if (++minute.n > PER_MINUTE) return true;
   const arr = (hits.get(key) ?? []).filter((t) => now - t < WINDOW);
   arr.push(now);
   hits.set(key, arr);
   // keep memory bounded: drop addresses that have been quiet for a minute, one by one (no global reset)
   if (hits.size > 10_000) for (const [k, v] of hits) if (now - v[v.length - 1] >= WINDOW) hits.delete(k);
-  return arr.length > PER_ADDRESS;
+  if (arr.length > PER_ADDRESS) return true; // a noisy address does not spend the shared budget
+  if (now - minute.start > WINDOW) minute = { start: now, n: 0 };
+  return ++minute.n > PER_MINUTE;
 }
-/** The client's address as the host sets it (Vercel: x-real-ip / x-vercel-forwarded-for), not a client-sent list. */
-const clientAddress = (req: NextRequest) => req.headers.get("x-real-ip") ?? req.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() ?? (req.headers.get("x-forwarded-for") ?? "").split(",").pop()?.trim() ?? "local";
+/**
+ * The client's address from the one place the host writes it: Vercel's x-vercel-forwarded-for, else the right-most
+ * x-forwarded-for entry (added by the last proxy). Client-sent values on the left are ignored.
+ */
+const clientAddress = (req: NextRequest) => req.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() || (req.headers.get("x-forwarded-for") ?? "").split(",").pop()?.trim() || "local";
 const cut = (v: unknown, n = 200) => (typeof v === "string" && v.trim() ? v.trim().slice(0, n) : null);
 
 export async function POST(req: NextRequest) {
   const ua = req.headers.get("user-agent") ?? "";
   if (!ua || BOT.test(ua) || req.cookies.get("rm_admin")) return new NextResponse(null, { status: 204 });
-  if (limited(clientAddress(req) || "local")) return new NextResponse(null, { status: 204 });
+  if (limited(clientAddress(req))) return new NextResponse(null, { status: 204 });
   let b: Record<string, unknown>;
   try {
     const text = await req.text();
@@ -48,7 +51,8 @@ export async function POST(req: NextRequest) {
   }
   const kind = b.k === "download" ? "download" : b.k === "view" ? "view" : null;
   const path = typeof b.p === "string" ? b.p.split(/[?#]/)[0] : null;
-  if (!kind || !path || !PAGE.test(path) || /^\/(admin|api)(\/|$)/i.test(path)) return new NextResponse(null, { status: 400 });
+  const dots = (x: string) => x.split("/").some((seg) => seg === "." || seg === "..");
+  if (!kind || !path || !PAGE.test(path) || dots(path) || /^\/(admin|api)(\/|$)/i.test(path)) return new NextResponse(null, { status: 400 });
   const visit = kind === "view" && b.v === true;
   const cc = req.headers.get("x-vercel-ip-country"); // set by the host; no client-sent country
   const m = /^\/(us|ous|apac)(\/|$)/.exec(path);
@@ -66,7 +70,7 @@ export async function POST(req: NextRequest) {
     utmSource: utm.utm_source,
     utmMedium: utm.utm_medium,
     utmCampaign: utm.utm_campaign,
-    file: kind === "download" && typeof b.f === "string" && FILE.test(b.f.split(/[?#]/)[0]) ? b.f.split(/[?#]/)[0] : null,
+    file: kind === "download" && typeof b.f === "string" && FILE.test(b.f.split(/[?#]/)[0]) && !dots(b.f.split(/[?#]/)[0]) ? b.f.split(/[?#]/)[0] : null,
   });
   return new NextResponse(null, { status: 204 });
 }

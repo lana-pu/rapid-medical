@@ -11,12 +11,14 @@ import { pageKey } from "./page-tree";
 const regionLabel = (r: string) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
 const FIXED: Record<string, string> = { "/news-events": "News & Events", "/contact-us": "Contact Us", "/open-positions": "Open positions", "/careers": "Careers", "/about-us": "About", "/": "Home" };
 
-export async function analyticsReport(days: number): Promise<Report> {
+const ROW_CAP = 200_000;
+
+export async function analyticsReport(days: number): Promise<Report & { truncated: boolean }> {
   const now = new Date();
   const since = new Date(now.getTime() - 2 * days * 86_400_000);
   const [views, leads, cards] = await Promise.all([
     // the columns the report needs, newest first, capped: the report's cost does not grow without bound (security review)
-    db.select({ at: pageViews.at, kind: pageViews.kind, path: pageViews.path, visit: pageViews.visit, region: pageViews.region, country: pageViews.country, source: pageViews.source, utmCampaign: pageViews.utmCampaign, file: pageViews.file }).from(pageViews).where(gte(pageViews.at, since)).orderBy(desc(pageViews.at)).limit(200_000),
+    db.select({ at: pageViews.at, kind: pageViews.kind, path: pageViews.path, visit: pageViews.visit, region: pageViews.region, country: pageViews.country, source: pageViews.source, utmCampaign: pageViews.utmCampaign, file: pageViews.file }).from(pageViews).where(gte(pageViews.at, since)).orderBy(desc(pageViews.at)).limit(ROW_CAP),
     db.select().from(contactSubmissions).where(and(gte(contactSubmissions.createdAt, since), ne(contactSubmissions.status, "spam"))),
     listEditorPages(),
   ]);
@@ -31,7 +33,7 @@ export async function analyticsReport(days: number): Promise<Report> {
     const base = FIXED[key] ?? (key === "/webinars" ? "Webinars" : path);
     return m && base !== path ? `${base} (${regionLabel(m[1])})` : base;
   };
-  return buildReport({
+  const report = buildReport({
     days,
     now,
     views,
@@ -40,4 +42,6 @@ export async function analyticsReport(days: number): Promise<Report> {
     formLabel,
     regionLabel,
   });
+  // the newest rows only: say so rather than show a silently smaller number (security review 2026-11-15)
+  return { ...report, truncated: views.length >= ROW_CAP };
 }

@@ -42,6 +42,7 @@ export default async function Analytics({ searchParams }: { searchParams: Promis
         }
       />
 
+      {r.truncated && <p className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">There were more visits than this screen reads at once; the oldest days of the period are left out. Choose a shorter period.</p>}
       {r.headline && <p className="mb-6 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-950">In the last {days} days, <b>{r.headline}</b>.</p>}
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
