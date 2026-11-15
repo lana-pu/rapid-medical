@@ -781,7 +781,14 @@ test("page screen: files with previews; differences between regions with preview
     await expect(page).toHaveURL(/\?view=regions$/);
     await expect(page.getByRole("button", { name: /^Only differences/ })).toHaveAttribute("aria-pressed", "true");
     const table = page.locator("table");
+    // Asia & Pacific is not in use now: hidden at first, the eye brings it back
+    const regionsGroup = page.getByRole("group", { name: "Regions in the table" });
+    await expect(regionsGroup.getByRole("button", { name: /Asia & Pacific/ })).toHaveAttribute("aria-pressed", "false");
+    await expect(table.locator("thead")).not.toContainText("Asia & Pacific");
+    await regionsGroup.getByRole("button", { name: /Asia & Pacific/ }).click();
     for (const r of ["Americas", "Europe & Middle East", "Asia & Pacific"]) await expect(table.locator("thead")).toContainText(r);
+    // each group is a section of the page, with a way to see it there
+    await expect(table.getByRole("link", { name: /^Show on page/ }).first()).toHaveAttribute("href", /#section-\d+$/);
     // a text of Asia & Pacific edited in place: saved as that region's unpublished change
     const heads = await table.locator("thead th").allInnerTexts();
     const col = heads.findIndex((h) => h.startsWith("Asia & Pacific")) + 1; // columns follow the region menu

@@ -139,6 +139,25 @@ export default function EditorOverlay() {
       /* storage blocked: the project's Home */
     }
   }, []);
+  // «Show on page» from the admin's comparison of regions: #section-{n} opens the page at section n
+  // (docs/screens/on-page-editor.md → «Ссылка на секцию»)
+  useEffect(() => {
+    const m = /^#section-(\d+)$/.exec(location.hash);
+    if (!m) return;
+    const t = setTimeout(() => {
+      for (const el of document.querySelectorAll<HTMLElement>("[data-rm-b]")) {
+        try {
+          const info = JSON.parse(el.dataset.rmB ?? "{}") as { i?: number; l?: string };
+          if (info.i !== Number(m[1]) || info.l) continue;
+          (el.nextElementSibling as HTMLElement | null)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          break;
+        } catch {
+          /* a marker that is not ours */
+        }
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, []);
   const onBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (DEMO || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     try {
