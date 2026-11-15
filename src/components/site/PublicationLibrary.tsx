@@ -17,6 +17,8 @@ export type LibraryRow = {
   pdfUrl?: string | null;
   product: string;
   productLabel: string;
+  /** the publication's own page */
+  page?: string | null;
 };
 
 const PAGE = 20;
@@ -100,7 +102,7 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
             <li key={p.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[4rem_minmax(0,1fr)]">
               <span className="text-sm text-muted">{p.year}</span>
               <div className="min-w-0">
-                <div className="font-medium">{p.title}</div>
+                <div className="font-medium">{p.page ? <a href={p.page} className="hover:underline">{p.title}</a> : p.title}</div>
                 {(short || p.journal) && (
                   <div className="mt-1 text-sm text-muted">
                     {open === p.id ? p.authors : short}

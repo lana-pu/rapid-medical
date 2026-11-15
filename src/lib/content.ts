@@ -124,6 +124,15 @@ export async function getPublications(region: Region) {
   return overlay("publications", rows);
 }
 
+/** One publication on its own page, if it is shown in this region (the same rule as Evidence). */
+export async function getPublication(region: Region, id: number) {
+  const row = await db.query.publications.findFirst({
+    where: and(eq(publications.id, id), await visible(publications.status), regionFilter(publications, region)),
+    with: { product: true },
+  });
+  return one("publications", row);
+}
+
 export async function getFeaturedPublications(region: Region, limit = 3) {
   const rows = await db.query.publications.findMany({
     where: and(await visible(publications.status), eq(publications.featured, true), regionFilter(publications, region)),
@@ -140,6 +149,11 @@ export async function getNews(limit?: number) {
     limit,
   });
   return overlay("news", rows);
+}
+
+/** One news item on its own page. */
+export async function getNewsItem(id: number) {
+  return one("news", await db.query.newsItems.findFirst({ where: and(eq(newsItems.id, id), await visible(newsItems.status)) }));
 }
 
 export async function getFeaturedNews(limit = 4) {

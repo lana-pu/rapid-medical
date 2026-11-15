@@ -441,6 +441,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/team/{slug}` | Нет отдельной страницы (решение 2026-11-10, аудит Emily: один абзац, 2 секунды): 308 на `/about-us#{slug}`, биография раскрывается на About; в sitemap не входит | [about-us](screens/about-us.md) |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |
 | `/open-positions` (→ `/careers#open-positions`), `/open-positions/{slug}` | Вакансия с формой; список — секция Careers | [open-positions](screens/open-positions.md) |
+| `/{region}/evidence/{id}-{slug}`, `/news-events/{id}-{slug}` | Страницы публикаций и новостей; исследования — шаблон «из документа» | [material](screens/material.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |
 | `/style-guide` | Витрина блоков: каждый блок во всех вариантах на примерных данных (не из БД). `noindex`, не в sitemap, без ссылок из меню | — |
 | `/sitemap.xml`, `/robots.txt` | SEO (disallow `/admin`, `/api`) | — |

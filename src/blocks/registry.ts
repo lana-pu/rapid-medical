@@ -3,6 +3,7 @@ import { hero } from "./hero";
 import { text } from "./text";
 import { textMedia } from "./text-media";
 import { keyNumbers } from "./key-numbers";
+import { passport } from "./passport";
 import { columns } from "./columns";
 import { video } from "./video";
 import { cta } from "./call-to-action";
@@ -35,6 +36,7 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   textMedia,
   media,
   keyNumbers,
+  passport,
   columns,
   video,
   cta,

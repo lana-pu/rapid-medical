@@ -6,6 +6,7 @@ import type { Block } from "./types";
 import { groupTherapies } from "@/lib/therapy-groups";
 import type { NewsCard } from "./news";
 import type { JobRow } from "./jobs";
+import { newsHref } from "@/lib/material";
 import type { PublicationCard, PublicationGroup } from "./publications";
 
 /**
@@ -16,7 +17,7 @@ import type { PublicationCard, PublicationGroup } from "./publications";
 
 const record = (r: string, id: number) => ({ r, id, prefix: "" });
 
-export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
+export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, href: newsHref(n), imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
 
 export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("publications", p.id) });
 
@@ -155,13 +156,13 @@ export function evidenceToBlocks({ region, cfg, all, featured, products }: { reg
       // DESIGN.md → Evidence: the region's publications counted per product, the line, the featured ones
       type: "publications",
       variant: "overview",
-      data: { stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard), groups },
+      data: { region, stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard), groups },
       edit: { r, map: { "stat.label": "statLabel", line: "forefrontText" } },
     },
     {
       type: "publications",
       variant: "library",
-      data: { anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
+      data: { region, anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
       edit: { r, map: { title: "browseTitle" } },
     },
   ];

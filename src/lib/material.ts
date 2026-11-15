@@ -1,0 +1,25 @@
+/**
+ * Own pages of publications and news (ADR-009 «material», decision 2026-11-15: every record has one). Addresses carry
+ * the record id and a readable slug from the title: /{region}/evidence/{id}-{slug}, /news-events/{id}-{slug}.
+ * The id decides; a different slug redirects to the right one. Safe on client and server.
+ */
+export function titleSlug(title: string): string {
+  return title
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[™®©]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .replace(/^(.{0,80})-.*$/, (all, head: string) => (all.length > 80 ? head : all))
+    .replace(/-+$/, "") || "item";
+}
+
+export const publicationHref = (region: string, p: { id: number; title: string }) => `/${region}/evidence/${p.id}-${titleSlug(p.title)}`;
+export const newsHref = (n: { id: number; title: string }) => `/news-events/${n.id}-${titleSlug(n.title)}`;
+
+/** «123-some-title» → 123; anything else → null. */
+export function idFromParam(param: string): number | null {
+  const m = /^(\d{1,9})(?:-[a-z0-9-]*)?$/.exec(param);
+  return m ? Number(m[1]) : null;
+}

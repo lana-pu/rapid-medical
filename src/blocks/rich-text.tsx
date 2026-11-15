@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeHref } from "@/lib/safe-path";
 import { Section, Prose, KeyValue } from "@/components/site/primitives";
 import { safeHtml } from "@/lib/html";
 import { F } from "./edit";
@@ -10,6 +11,9 @@ export type RichTextData = {
   html: string;
   /** `document`: the other documents of the section (Legal: the footer's list), the current one marked. */
   related?: { label: string; href: string; current?: boolean }[];
+  /** `document` on a study or material page: source rows (journal, date…) and links (Download PDF, the original) */
+  meta?: { label: string; value: string }[];
+  links?: { label: string; href: string }[];
 };
 
 const plain = (h: string) => h.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "’").replace(/\s+/g, " ").trim();
@@ -54,12 +58,20 @@ function RichText({ variant, data: d, edit: e, nested }: BlockProps<"richText">)
   if (variant === "document") {
     const { body, lastRevised, toc } = documentParts(html);
     const related = d.related ?? [];
-    if (lastRevised || toc.length > 2 || related.length) {
+    const meta = (d.meta ?? []).filter((m) => m.label && m.value);
+    const links = (d.links ?? []).filter((l) => l.label && l.href);
+    if (lastRevised || toc.length > 2 || related.length || meta.length || links.length) {
       const inner = (
         <div className="mt-8 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
           <aside className="md:col-span-4">
             <div className="space-y-8 md:sticky md:top-6">
               {lastRevised && <KeyValue rows={[{ label: "Last revised", value: lastRevised }]} />}
+              {meta.length > 0 && <KeyValue rows={meta.map((m, i) => ({ label: <F e={e} k={`meta.${i}.label`}>{m.label}</F>, value: <F e={e} k={`meta.${i}.value`}>{m.value}</F> }))} />}
+              {links.length > 0 && (
+                <ul className="space-y-1.5 text-sm">
+                  {links.map((l) => <li key={l.href}><a href={safeHref(l.href)} target="_blank" rel="noopener noreferrer" className="underline">{l.label}</a></li>)}
+                </ul>
+              )}
               {toc.length > 2 && (
                 <nav aria-label="On this page" className="text-sm">
                   <div className="mb-2 font-medium">On this page</div>

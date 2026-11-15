@@ -277,3 +277,31 @@ test("News & Events: highlights instead of a carousel, rows without repeats, upc
   await expect(page.locator("#upcoming-events").getByRole("link", { name: "See past events ↓" })).toHaveAttribute("href", "#past-events");
   await expect(page.locator("#past-events")).toBeVisible();
 });
+
+test("publications, news and studies have their own pages (docs/screens/material.md)", async ({ page, request }) => {
+  // Evidence row → the publication's page: its facts, the PDF shown here or the original, more of the product
+  await page.goto("/us/evidence");
+  const row = page.locator("#browse-by-product li a[href^='/us/evidence/']").first();
+  const title = (await row.innerText()).trim();
+  await row.click();
+  await expect(page).toHaveURL(/\/us\/evidence\/\d+-[a-z0-9-]+$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+  await expect(page.getByText(/^Publication · /)).toBeVisible();
+  await expect(page.locator("object[type='application/pdf'], a:has-text('Read the article ↗')").first()).toBeVisible();
+  // a wrong slug goes to the right one; a publication of another region is not there
+  const id = page.url().match(/evidence\/(\d+)/)![1];
+  expect((await request.get(`/us/evidence/${id}-wrong`, { maxRedirects: 0 })).status()).toBe(308);
+  expect((await request.get("/us/evidence/999999-nothing")).status()).toBe(404);
+  // News & Events row → the news page: source, the original, more news
+  await page.goto("/news-events");
+  await page.locator("#all-news li a").first().click();
+  await expect(page).toHaveURL(/\/news-events\/\d+-[a-z0-9-]+$/);
+  await expect(page.getByRole("link", { name: /Read the full release/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "More news" })).toBeVisible();
+  // a study page: the conclusion, key figures with their quotes, the passport and the source
+  await page.goto("/us/success-study-final-results");
+  await expect(page.getByText("Study · COMANECI™")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Study at a glance" })).toBeVisible();
+  await expect(page.getByText("90 consecutive subjects")).toBeVisible();
+  await expect(page.getByText("95%", { exact: true })).toBeVisible();
+});

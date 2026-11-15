@@ -101,7 +101,7 @@ export const SOURCES: Record<string, Source> = {
       const stat = (d.stat ?? {}) as { value?: string };
       const ev = ctx.lists?.evidence;
       // `overview` counts per product from the same lists as the archive; `spotlight` keeps its typed number
-      return { items: (ev?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ev?.all.length ?? 0}+` }, groups: ev ? evidenceLists(ev).groups : [] };
+      return { items: (ev?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ev?.all.length ?? 0}+` }, groups: ev ? evidenceLists(ev).groups : [], region: ctx.region ?? undefined };
     },
   },
   /** Evidence: the latest studies with a picture */
@@ -115,7 +115,7 @@ export const SOURCES: Record<string, Source> = {
   /** Evidence: one tab per product */
   publicationsByProduct: {
     keys: ["groups", "anchors"],
-    fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug) }),
+    fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug), region: ctx.region ?? undefined }),
   },
   /** Therapies overview: the cards of one therapy group (`data.group`: ischemic / hemorrhagic / access / "" = the rest) */
   therapyGroup: {

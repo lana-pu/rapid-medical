@@ -2,6 +2,8 @@ import type { Stat } from "@/db/schema";
 import { Section, H2, Img, Btn, KeyValue, SharedLine, formatMonth } from "@/components/site/primitives";
 import { PublicationLibrary, type LibraryRow } from "@/components/site/PublicationLibrary";
 import { safeHref } from "@/lib/safe-path";
+import { publicationHref } from "@/lib/material";
+import Link from "next/link";
 import { Tabs } from "@/components/site/Tabs";
 import { Carousel } from "@/components/site/blocks/Carousel";
 import { StatBadge } from "@/components/site/blocks/Stats";
@@ -27,6 +29,8 @@ export type PublicationCard = {
 export type PublicationGroup = { id: string; label: string; sublabel?: string; fullName: string; items: PublicationCard[] };
 
 export type PublicationsData = {
+  /** `overview`, `library`: the region, for the publications' own pages */
+  region?: string;
   title?: string | null;
   anchor?: string;
   /** `spotlight`: number above the carousel and a line under it. */
@@ -67,7 +71,7 @@ function Publications({ variant, data: d, edit: e }: BlockProps<"publications">)
                 <li key={p.id} className="flex flex-col rounded border border-border p-5">
                   {p.imageUrl && <FM e={p.edit} k="imageUrl" className="mb-4"><Img src={p.imageUrl} className="aspect-video w-full rounded object-cover" /></FM>}
                   <div className="text-xs uppercase tracking-wide text-muted">{[year(p.publishedOn), p.journal].filter(Boolean).join(" · ")}</div>
-                  <h3 className="mt-2 font-semibold leading-snug"><F e={p.edit} k="title">{p.title}</F></h3>
+                  <h3 className="mt-2 font-semibold leading-snug">{d.region ? <Link href={publicationHref(d.region, p)} className="hover:underline"><F e={p.edit} k="title">{p.title}</F></Link> : <F e={p.edit} k="title">{p.title}</F>}</h3>
                   <div className="mt-auto flex flex-wrap gap-x-4 pt-4 text-sm">
                     {p.url && <a href={safeHref(p.url)} target="_blank" rel="noopener noreferrer" className="underline">Read ↗</a>}
                     {p.pdfUrl && <a href={safeHref(p.pdfUrl)} target="_blank" rel="noopener noreferrer" className="underline">Download PDF</a>}
@@ -96,6 +100,7 @@ function Publications({ variant, data: d, edit: e }: BlockProps<"publications">)
         pdfUrl: p.pdfUrl,
         product: g.id,
         productLabel: g.label,
+        page: d.region ? publicationHref(d.region, p) : null,
       })),
     );
     return (

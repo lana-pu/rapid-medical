@@ -22,8 +22,10 @@ export function Eyebrow({ children, as = "div" }: { children: ReactNode; as?: "d
   return <Tag className="mb-2 block text-xs font-semibold uppercase tracking-widest text-muted">{children}</Tag>;
 }
 
-export function H1({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <h1 className={`text-3xl font-semibold leading-tight tracking-tight md:text-5xl ${className}`}>{children}</h1>;
+/** `long`: a material's title (an article, a press release) — often two or three lines, one step smaller. */
+export function H1({ children, className = "", size = "page" }: { children: ReactNode; className?: string; size?: "page" | "long" }) {
+  const scale = size === "long" ? "text-2xl md:text-4xl" : "text-3xl md:text-5xl";
+  return <h1 className={`font-semibold leading-tight tracking-tight ${scale} ${className}`}>{children}</h1>;
 }
 
 export function H2({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -87,11 +89,11 @@ export async function Img({ src, alt = "", className = "", sizes = "(max-width: 
 }
 
 /** Key — value rows with hairlines (DESIGN.md → «Таблица ключ — значение»): contacts, dates, short facts. */
-export function KeyValue({ rows, footer }: { rows: { label: string; value: ReactNode }[]; footer?: ReactNode }) {
+export function KeyValue({ rows, footer }: { rows: { label: ReactNode; value: ReactNode }[]; footer?: ReactNode }) {
   return (
     <dl className="divide-y divide-border text-sm">
-      {rows.map((r) => (
-        <div key={r.label} className="flex items-baseline justify-between gap-4 py-2.5">
+      {rows.map((r, i) => (
+        <div key={i} className="flex items-baseline justify-between gap-4 py-2.5">
           <dt className="text-muted">{r.label}</dt>
           <dd className="text-right">{r.value}</dd>
         </div>
