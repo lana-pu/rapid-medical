@@ -277,8 +277,10 @@ cookie; заблокированное хранилище → заявка пр�
 
 **В — своя аналитика без cookie (решение 2026-11-15, `docs/analytics-admin.md`).** На каждой странице сайта (не в
 редакторе и не в превью) браузер шлёт `POST /api/track` (`navigator.sendBeacon`): страница, первая ли это страница
-визита в вкладке, внешний referrer и UTM для первой; по клику на PDF — скачивание (файл и страница). Сервер пишет строку в
-`page_views` (время, вид `view`/`download`, путь, регион из пути или `rm_region`, страна из гео-заголовка, источник
+визита в вкладке, внешний referrer и UTM для первой; по клику на PDF — скачивание (файл и страница); по клику на кнопку
+регистрации или отклика, уводящую с сайта (`Btn track="out"`, только `/events/{slug}` и `/open-positions/{slug}`), — уход
+(`out`, только страница, без адреса назначения; считается в Inbox, `screens/admin-inbox.md`). Сервер пишет строку в
+`page_views` (время, вид `view`/`download`/`out`, путь, регион из пути или `rm_region`, страна из гео-заголовка, источник
 словами, referrer-домен, UTM, файл) — **без IP, cookie и идентификатора посетителя**; ботов (по User-Agent) и людей
 с сессией админки не пишет; не больше 120 запросов в минуту с одного адреса (адрес — `x-vercel-forwarded-for` или
 правая запись `x-forwarded-for`) и 3000 записей в минуту всего (тратит только прошедший лимит адреса; в памяти). Страница — только обычные символы адреса (без `//`, `%`, сегментов `.`/`..`, не `/admin`, `/api`); файл —
@@ -461,6 +463,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | [admin-history](screens/admin-history.md) |
 | `/admin/settings?group=` | Site settings по группам (Menu and footer и Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | [admin-settings](screens/admin-settings.md) |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
+| `/admin/inbox` | Inbox: всё, что отправлено с сайта, и заметки; папки всегда видны, Subscribed + CSV для Mailchimp, что ушло мимо сайта (внешняя регистрация, Apply) | [admin-inbox](screens/admin-inbox.md) |
 | `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
 | `/admin/not-found-log` | Broken links: битые ссылки → редирект в один клик или dismiss | [admin-not-found-log](screens/admin-not-found-log.md) |
 | `/admin/activity` | Журнал действий: фильтры по действию, человеку, названию | [admin-activity](screens/admin-activity.md) |

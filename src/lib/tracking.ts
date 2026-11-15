@@ -142,3 +142,8 @@ export function countDownload(href: string) {
     /* ignore */
   }
 }
+
+/** A click on a registration or application button that leaves the site (Btn track="out"): only the page is sent. */
+export function countOut() {
+  beacon({ k: "out", p: location.pathname });
+}

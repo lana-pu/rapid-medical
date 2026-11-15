@@ -34,7 +34,7 @@ export function Lead({ children }: { children: ReactNode }) {
   return <p className="mt-4 max-w-2xl text-lg text-muted">{children}</p>;
 }
 
-export function Btn({ href, children, variant = "primary", external, onDark }: { href: string; children: ReactNode; variant?: "primary" | "secondary"; external?: boolean; /** On a dark band: inverted colours (DESIGN.md → Btn). */ onDark?: boolean }) {
+export function Btn({ href, children, variant = "primary", external, onDark, track }: { href: string; children: ReactNode; variant?: "primary" | "secondary"; external?: boolean; /** On a dark band: inverted colours (DESIGN.md → Btn). */ onDark?: boolean; /** "out": a registration or application that leaves the site — counted for the Inbox (screens/admin-inbox.md). */ track?: "out" }) {
   const base = "inline-flex items-center rounded px-4 py-2 text-sm font-medium";
   const cls = onDark
     ? variant === "primary"
@@ -45,7 +45,7 @@ export function Btn({ href, children, variant = "primary", external, onDark }: {
       : `${base} border border-foreground hover:bg-surface`;
   if (external || href.startsWith("http") || href.startsWith("mailto:"))
     return (
-      <a href={href} className={cls} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener">
+      <a href={href} className={cls} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener" data-rm-out={track === "out" ? "" : undefined}>
         {children}
       </a>
     );

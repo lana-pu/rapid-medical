@@ -579,3 +579,49 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   await page.goto("/admin");
   await expect(page.getByRole("link", { name: "This week — open analytics" })).toContainText("visits");
 });
+
+test("inbox: every folder shown; Subscribed with the Mailchimp list; what leaves the site is named with its clicks", async ({ page, browser, request }) => {
+  test.setTimeout(120_000);
+  sql(`delete from contact_submissions where email like '%@sub.example'`);
+  sql(`delete from events where slug='e2e-outside'`);
+  sql(`delete from page_views where kind='out'`);
+  sql(`insert into contact_submissions(form,topic,first_name,last_name,email,opt_in,status,created_at) values
+    ('webinar','DISTALS update','Sub','Old','ann@sub.example',true,'done', now() - interval '2 days'),
+    ('contact','Request a demo','Sub','New','Ann@sub.example',true,'new', now()),
+    ('contact','Spam','Sub','Spam','spam@sub.example',true,'spam', now())`);
+  sql(`insert into events(slug,title,starts_on,registration,registration_url,status) values ('e2e-outside','E2E outside congress', now() + interval '30 days','link','https://example.org/register','published')`);
+
+  // a visitor clicks Register on the event page: only the page is counted (no destination, no cookie)
+  const ctx = await browser.newContext({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" });
+  await ctx.route("https://example.org/**", (r) => r.fulfill({ body: "ok" }));
+  const visitor = await ctx.newPage();
+  await visitor.goto("/events/e2e-outside");
+  await visitor.getByRole("link", { name: "Register" }).click();
+  await expect.poll(() => sql("select count(*) from page_views where kind='out' and path='/events/e2e-outside'")).toBe("1");
+  await ctx.close();
+  // a leave is counted only on an event or a job page
+  const ua = { "user-agent": "Mozilla/5.0 Chrome/131.0", "content-type": "application/json" };
+  expect((await request.post("/api/track", { headers: ua, data: { k: "out", p: "/us/therapies/lvo" } })).status()).toBe(400);
+
+  await login(page);
+  await page.goto("/admin/inbox");
+  const inbox = page.getByRole("navigation", { name: "Inbox" });
+  for (const f of ["Inbox", "Unread", "Contact", "Webinars", "Careers", "Events", "Subscribed", "Notes on pages", "Done", "Spam"])
+    await expect(inbox.getByRole("tab", { name: new RegExp(`^${f}`) })).toBeVisible();
+  // Events: the outside registration, with its clicks; the empty folder says what arrives here
+  await inbox.getByRole("tab", { name: /^Events/ }).click();
+  await expect(inbox.getByRole("link", { name: /E2E outside congress — outside the site/ })).toContainText("Registration on example.org");
+  await expect(inbox.getByRole("link", { name: /E2E outside congress/ })).toContainText("1 click on Register");
+  // Subscribed: one person (two requests, one address), spam left out; the export has them once
+  await inbox.getByRole("tab", { name: /^Subscribed/ }).click();
+  await expect(inbox.getByRole("link", { name: /Sub New/ })).toBeVisible();
+  await expect(inbox.getByRole("link", { name: /Sub Spam/ })).toHaveCount(0);
+  const csv = await (await page.request.get("/api/admin/submissions.csv?subscribed=1")).text();
+  expect(csv.match(/ann@sub\.example/gi)).toHaveLength(1);
+  expect(csv).not.toContain("spam@sub.example");
+  expect(csv.split("\r\n")[0]).toContain("email,firstName,lastName");
+
+  sql(`delete from contact_submissions where email like '%@sub.example'`);
+  sql(`delete from events where slug='e2e-outside'`);
+  sql(`delete from page_views where kind='out'`);
+});

@@ -12,6 +12,7 @@ const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|monitor|curl|wge
 /** A page of the site: plain address characters only, no «//», no %-escapes (security review 2026-11-15). */
 const PAGE = /^\/(?!\/)[A-Za-z0-9\-._~/]{0,299}$/;
 /** A PDF of the site: the same, plus valid %-escapes (file names with spaces). */
+const OUT_PAGE = /^\/(events|open-positions)\/[A-Za-z0-9\-_]{1,120}$/;
 const FILE = /^\/(?!\/)(?:[A-Za-z0-9\-._~/]|%[0-9A-Fa-f]{2}){0,299}\.pdf$/i;
 const WINDOW = 60_000;
 const PER_ADDRESS = 120;
@@ -49,10 +50,12 @@ export async function POST(req: NextRequest) {
   } catch {
     return new NextResponse(null, { status: 400 });
   }
-  const kind = b.k === "download" ? "download" : b.k === "view" ? "view" : null;
+  const kind = b.k === "download" ? "download" : b.k === "view" ? "view" : b.k === "out" ? "out" : null;
   const path = typeof b.p === "string" ? b.p.split(/[?#]/)[0] : null;
   const dots = (x: string) => x.split("/").some((seg) => seg === "." || seg === "..");
   if (!kind || !path || !PAGE.test(path) || dots(path) || /^\/(admin|api)(\/|$)/i.test(path)) return new NextResponse(null, { status: 400 });
+  // a click that leaves the site counts only on an event or a job page (screens/admin-inbox.md)
+  if (kind === "out" && !OUT_PAGE.test(path)) return new NextResponse(null, { status: 400 });
   const visit = kind === "view" && b.v === true;
   const cc = req.headers.get("x-vercel-ip-country"); // set by the host; no client-sent country
   const m = /^\/(us|ous|apac)(\/|$)/.exec(path);
