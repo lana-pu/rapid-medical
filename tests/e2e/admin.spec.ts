@@ -575,6 +575,9 @@ test("user walk 2026-11-14: a draft is deleted from its own page; a request name
   const id = sql("select id from contact_submissions where email = 'walk@example.com' order by id desc limit 1");
   expect(sql(`select meta->>'previous_page' from contact_submissions where id = ${id}`)).toBe("/us/therapies/lvo");
   await page.goto(`/admin/submissions/${id}`);
+  // the message first; how they found the site is folded away (docs/screens/admin-requests.md)
+  await expect(page.getByText("Page before the form")).toBeHidden();
+  await page.getByText("How they found us").click();
   await expect(page.getByText("Page before the form")).toBeVisible();
   sql(`delete from contact_submissions where id = ${id}`);
 });

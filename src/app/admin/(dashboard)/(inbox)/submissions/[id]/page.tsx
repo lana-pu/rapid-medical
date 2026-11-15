@@ -53,15 +53,12 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   });
 
   const state = s.status === "done" ? "Done" : s.status === "spam" ? "Spam" : `${STATUS_LABEL[s.status] ?? s.status} · ${owner ? `${owner.id === me.id ? "you answer" : `${owner.name} answers`}` : "nobody answers"}`;
-  const rows: [string, string][] = [
-    ["Name", `${s.firstName} ${s.lastName}`],
-    ["Organization", s.organization],
-    ["Email", s.email],
-    ["Phone", s.phone],
-    ["Country", s.country],
-    ["State", s.state],
-    ["News and updates", s.optIn ? "Yes" : "No"],
-  ];
+  // the person and the request in front; how they found the site — folded away (docs/screens/admin-requests.md)
+  const contactRows = ([["Phone", s.phone], ["Country", s.country], ["State", s.state]] as [string, string][]).filter(([, v]) => v);
+  const VISIT = new Set(["form_page", "previous_page", "landing_page", "referrer", "utm_source", "utm_medium", "utm_campaign"]);
+  const visit = Object.entries(meta).filter(([k, v]) => VISIT.has(k) && v);
+  const about = Object.entries(meta).filter(([k, v]) => !VISIT.has(k) && v && v !== s.topic);
+  const card = "rounded-lg border border-neutral-200 bg-white";
   const statusButton = (status: string, text: string) => (
     <form action={setStatus}>
       <input type="hidden" name="id" value={s.id} />
@@ -71,11 +68,26 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   );
 
   return (
-    <>
+    <div className="mx-auto max-w-3xl">
       <MarkRead id={s.id} read={!!s.readAt} />
-      <PageHeader crumbs={[{ label: "Inbox", href: "/admin/inbox" }]} title={s.topic || formLabel(s.form)} subtitle={`${formLabel(s.form)} · ${s.region || "no region"} · ${when(s.createdAt)}`} />
+      <PageHeader crumbs={[{ label: "Inbox", href: "/admin/inbox" }]} title={s.topic || formLabel(s.form)} />
 
-      <div role="toolbar" aria-label="Request actions" className="mb-6 flex flex-wrap items-center gap-2 rounded-lg border border-neutral-200 bg-white p-3">
+      {/* who wrote, when — like the head of an email */}
+      <div className="-mt-2 mb-5 flex flex-wrap items-start justify-between gap-x-6 gap-y-1">
+        <div className="min-w-0">
+          <div className="text-base">
+            <b className="font-semibold text-neutral-900">{`${s.firstName} ${s.lastName}`.trim()}</b>
+            {s.organization && <span className="text-neutral-700"> · {s.organization}</span>}
+          </div>
+          <a href={`mailto:${s.email}`} className="text-sm text-neutral-600 underline decoration-neutral-300 hover:decoration-neutral-900">{s.email}</a>
+          <div className="mt-1 text-xs text-neutral-500">
+            {[formLabel(s.form), s.region || null, ...about.map(([k, v]) => `${sourceLabel(k)}: ${v}`)].filter(Boolean).join(" · ")}
+          </div>
+        </div>
+        <div className="shrink-0 text-sm text-neutral-500">{when(s.createdAt)}</div>
+      </div>
+
+      <div role="toolbar" aria-label="Request actions" className={`${card} mb-5 flex flex-wrap items-center gap-2 p-3`}>
         <ReplyButton id={s.id} href={reply} />
         {s.status === "done" ? statusButton("in_progress", "Reopen") : s.status !== "spam" && statusButton("done", "✓ Done")}
         {s.status === "spam" ? statusButton("new", "Not spam") : statusButton("spam", "Spam")}
@@ -84,27 +96,41 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
         <span role="status" aria-label="Request state" className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-700">{state}</span>
       </div>
 
-      <div className="max-w-4xl space-y-4">
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-2 rounded-lg border border-neutral-200 bg-white p-5 text-sm">
-          {rows.map(([k, v]) => (
-            <div key={k} className="contents">
-              <dt className="text-neutral-500">{k}</dt>
-              <dd>{v || <span className="text-neutral-300">—</span>}</dd>
-            </div>
-          ))}
-          {Object.entries(meta).map(([k, v]) => (
-            <div key={k} className="contents">
-              <dt className="text-neutral-500">{sourceLabel(k)}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="rounded-lg border border-neutral-200 bg-white p-5 text-sm">
-          <div className="mb-2 text-xs uppercase text-neutral-500">Message</div>
-          <p className="whitespace-pre-wrap">{s.message || <span className="text-neutral-300">(empty)</span>}</p>
-        </div>
+      <div className="space-y-4">
+        <article aria-label="Message" className={`${card} px-6 py-5`}>
+          {s.message ? <p className="whitespace-pre-wrap text-base leading-relaxed text-neutral-900">{s.message}</p> : <p className="text-sm text-neutral-400">Sent without a message.</p>}
+        </article>
 
-        <section aria-label="Notes for the team" className="rounded-lg border border-neutral-200 bg-white p-5 text-sm">
+        {(contactRows.length > 0 || s.optIn) && (
+          <section aria-label="Contact" className={`${card} p-5 text-sm`}>
+            <div className="mb-2 text-xs uppercase text-neutral-500">Contact</div>
+            <dl className="grid grid-cols-[120px_1fr] gap-y-1.5">
+              {contactRows.map(([k, v]) => (
+                <div key={k} className="contents">
+                  <dt className="text-neutral-500">{k}</dt>
+                  <dd>{k === "Phone" ? <a href={`tel:${v.replace(/[^\d+]/g, "")}`} className="underline decoration-neutral-300">{v}</a> : v}</dd>
+                </div>
+              ))}
+            </dl>
+            {s.optIn && <p className={contactRows.length ? "mt-2 text-neutral-600" : "text-neutral-600"}>✓ Wants news and updates</p>}
+          </section>
+        )}
+
+        {visit.length > 0 && (
+          <details className={`${card} p-5 text-sm`}>
+            <summary className="cursor-pointer text-xs uppercase text-neutral-500">How they found us</summary>
+            <dl className="mt-3 grid grid-cols-[180px_1fr] gap-y-1.5">
+              {visit.map(([k, v]) => (
+                <div key={k} className="contents">
+                  <dt className="text-neutral-500">{sourceLabel(k)}</dt>
+                  <dd className="break-all">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+        )}
+
+        <section aria-label="Notes for the team" className={`${card} p-5 text-sm`}>
           <div className="mb-3 text-xs uppercase text-neutral-500">Notes for the team <span className="normal-case text-neutral-400">· only people in the admin see them</span></div>
           {notes.length > 0 && (
             <ul className="mb-4 space-y-3">
@@ -124,9 +150,9 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
         </section>
 
         {history.length > 0 && (
-          <div className="rounded-lg border border-neutral-200 bg-white p-5 text-sm">
-            <div className="mb-2 text-xs uppercase text-neutral-500">History</div>
-            <ul className="space-y-1">
+          <details className={`${card} p-5 text-sm`}>
+            <summary className="cursor-pointer text-xs uppercase text-neutral-500">History ({history.length})</summary>
+            <ul className="mt-3 space-y-1">
               {history.map((h) => {
                 const m = h.meta as Record<string, unknown>;
                 const said = [
@@ -142,9 +168,9 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                 );
               })}
             </ul>
-          </div>
+          </details>
         )}
       </div>
-    </>
+    </div>
   );
 }
