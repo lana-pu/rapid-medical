@@ -46,6 +46,7 @@ export async function saveSeo(_prev: SeoSaved, fd: FormData): Promise<SeoSaved> 
     revalidatePath("/admin/seo");
     return { ok: true, pending: false };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Not saved" };
+    console.error("saveSeo failed", err); // the reason stays in the server log, not in the admin
+    return { ok: false, error: "Not saved. Try again." };
   }
 }
