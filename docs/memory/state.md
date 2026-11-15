@@ -337,3 +337,8 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 - Inbox — всё, что отправляют с сайта (`screens/admin-inbox.md`): папки видны всегда (у пустой — что в неё приходит),
   папка Subscribed (галочка «News and updates») с выгрузкой для Mailchimp, в Events и Careers — строки о внешней
   регистрации и откликах (Spark Hire / почта) с числом кликов за 30 дней (`page_views` вид `out`).
+- Админка: вход — выбор проекта `/admin` (без полоски пространств); внутри проекта шапка «← · Rapid Medical / Website»
+  (Edit site, View site, аккаунт), на полоске первым 🏠 Home — дашборд `/admin/website`: быстрые действия, дела,
+  «Continue where you left off», Recent activity, This week, Coming up (расписание, события с числом регистраций),
+  Site health (картинки, описания для Google, 2FA, давность новостей и исследований). «Website in numbers» убрали.
+  Локальный журнал для показа — `seed-activity.sql` в скретчпаде; e2e global-setup чистит `audit_log` при каждом прогоне.
