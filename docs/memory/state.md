@@ -375,3 +375,7 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   (`PAUSED_REGIONS`), глазик возвращает. Группы = секции страницы («Section N · …», число отличий, сворачивание,
   Show on page ↗ → редактор на `#section-N`), колонка подписей серая и закреплена, ячейки спецификаций —
   «{продукт} · {столбец}», легенда.
+- Прогон «глазами новичка» (`docs/audits/admin-walkthrough-2026-11-15.md`, гипотеза; проверка с Emily — позже) и правки:
+  Settings страницы словами (Address, Order, Title/Description in Google, Picture for links; регион — текстом; «Create
+  {регион} version» только для регионов без версии), статусы словами (On the site, Draft…), пустая History скрыта,
+  подсказка-строка на экране страницы и во вкладке отличий, пояснение к Replace everywhere, «▤ list of items» в дереве.
