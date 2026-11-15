@@ -542,3 +542,36 @@ test("user walk 2026-11-14: a draft is deleted from its own page; a request name
   await expect(page.getByText("Page before the form")).toBeVisible();
   sql(`delete from contact_submissions where id = ${id}`);
 });
+
+test("analytics: the site counts visits without cookies (not bots, not the team); sources and requests on the screen", async ({ page, browser, request }) => {
+  test.setTimeout(120_000);
+  sql("delete from page_views");
+  // a visitor from a LinkedIn post: one visit, its source and campaign
+  // a real browser's name: headless browsers are left out like bots
+  const visitor = await (await browser.newContext({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" })).newPage();
+  await visitor.goto("/us/therapies/lvo?utm_source=linkedin&utm_medium=social&utm_campaign=e2e-post");
+  await expect.poll(() => sql("select count(*) from page_views where visit and source='LinkedIn' and utm_campaign='e2e-post'")).toBe("1");
+  await visitor.goto("/us/evidence"); // a second page of the same visit: a view, not a visit
+  await expect.poll(() => sql("select count(*) from page_views where kind='view'")).toBe("2");
+  expect(sql("select count(*) from page_views where visit")).toBe("1");
+  expect(sql("select count(*) from page_views where path like '/us/%' and country is null and region='us'")).toBe("2");
+  // no cookie of ours on the visitor
+  expect((await visitor.context().cookies()).map((c) => c.name)).not.toContain("rm_visit");
+  // a bot is not counted
+  const bot = await request.post("/api/track", { headers: { "user-agent": "Googlebot/2.1", "content-type": "application/json" }, data: { k: "view", p: "/", v: true } });
+  expect(bot.status()).toBe(204);
+  expect(sql("select count(*) from page_views")).toBe("2");
+
+  // the team's own visits are not counted; the screen shows where people came from
+  await login(page);
+  await page.goto("/us/therapies/lvo");
+  await page.waitForLoadState("networkidle");
+  expect(sql("select count(*) from page_views")).toBe("2");
+  await page.goto("/admin/analytics?days=7");
+  await expect(page.getByText(/LinkedIn brought 1 visit/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Where people come from" })).toContainText("LinkedIn");
+  await expect(page.getByRole("region", { name: "LinkedIn posts and campaigns" })).toContainText("e2e-post");
+  await expect(page.getByRole("region", { name: "Most visited pages" })).toContainText("Large vessel stroke (Americas)");
+  await page.goto("/admin");
+  await expect(page.getByRole("link", { name: "This week — open analytics" })).toContainText("visits");
+});

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { captureFirstTouch, eventForLink, rememberPage, track } from "@/lib/tracking";
+import { captureFirstTouch, countDownload, countView, eventForLink, rememberPage, track } from "@/lib/tracking";
 
 /**
  * Remembers where the visit came from (for form submissions) and reports link clicks that matter:
@@ -15,6 +15,7 @@ export function Tracking() {
   useEffect(() => {
     captureFirstTouch();
     rememberPage(pathname);
+    countView(pathname);
   }, [pathname]);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function Tracking() {
       if (!a) return;
       const ev = eventForLink(a.getAttribute("href") ?? "", { inHeader: !!a.closest("header"), pathname: location.pathname });
       if (ev) track(ev.name, ev.params);
+      countDownload(a.getAttribute("href") ?? "");
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);

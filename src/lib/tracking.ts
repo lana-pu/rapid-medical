@@ -4,6 +4,8 @@
  * Client-side only; every browser API is guarded, so a blocked storage or a missing gtag never breaks a page.
  */
 
+import { DEMO } from "./demo";
+
 type Gtag = (command: "event", name: string, params?: Record<string, string>) => void;
 
 /** Sends a GA4 event when GA is configured and loaded; otherwise does nothing. */
@@ -91,4 +93,52 @@ export function eventForLink(href: string, ctx: { inHeader: boolean; pathname: s
     return { name: "select_therapy", params: { region: m[1], therapy: m[2], source } };
   }
   return null;
+}
+
+/* ------------------------------------------------------------------ */
+/*  The site's own counter, without cookies (spec.md → Аналитика → В)  */
+/* ------------------------------------------------------------------ */
+
+const VISIT = "rm_visit";
+
+function beacon(body: Record<string, unknown>) {
+  if (DEMO) return; // the static demo has no server to count on
+  try {
+    const data = JSON.stringify(body);
+    if (navigator.sendBeacon?.("/api/track", new Blob([data], { type: "application/json" }))) return;
+    void fetch("/api/track", { method: "POST", body: data, keepalive: true, headers: { "content-type": "application/json" } });
+  } catch {
+    /* counting never breaks a page */
+  }
+}
+
+/** A page view; the first one in this tab is the visit, with where it came from. */
+export function countView(pathname: string) {
+  let first = false;
+  try {
+    first = !sessionStorage.getItem(VISIT);
+    if (first) sessionStorage.setItem(VISIT, "1");
+  } catch {
+    /* storage blocked: every view counts as a page, none as a visit */
+  }
+  const body: Record<string, unknown> = { k: "view", p: pathname, v: first };
+  if (first) {
+    const url = new URL(location.href);
+    body.r = document.referrer && new URL(document.referrer).host !== location.host ? document.referrer : "(direct)";
+    body.us = url.searchParams.get("utm_source") ?? undefined;
+    body.um = url.searchParams.get("utm_medium") ?? undefined;
+    body.uc = url.searchParams.get("utm_campaign") ?? undefined;
+  }
+  beacon(body);
+}
+
+/** A PDF opened from a page. */
+export function countDownload(href: string) {
+  try {
+    const u = new URL(href, location.href);
+    if (u.host !== location.host || !/\.pdf$/i.test(u.pathname)) return;
+    beacon({ k: "download", p: location.pathname, f: u.pathname });
+  } catch {
+    /* ignore */
+  }
 }

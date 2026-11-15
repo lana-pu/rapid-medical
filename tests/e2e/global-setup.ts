@@ -19,5 +19,5 @@ export default async function globalSetup() {
     if (!dir.isDirectory()) continue;
     for (const f of readdirSync(join(uploads, dir.name))) if (f.startsWith("e2e-")) rmSync(join(uploads, dir.name, f));
   }
-  execSync(`psql "${process.env.DATABASE_URL}" -q -c "delete from drafts; delete from revisions; delete from audit_log; delete from sessions; delete from login_attempts; delete from not_found_log; delete from site_settings where key='workflow'; update users set totp_secret='JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP', totp_enabled_at=now(), recovery_codes='[]' where email='e2e@rapid-medical.com'"`, { stdio: "inherit" });
+  execSync(`psql "${process.env.DATABASE_URL}" -q -c "delete from page_views; delete from drafts; delete from revisions; delete from audit_log; delete from sessions; delete from login_attempts; delete from not_found_log; delete from site_settings where key='workflow'; update users set totp_secret='JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP', totp_enabled_at=now(), recovery_codes='[]' where email='e2e@rapid-medical.com'"`, { stdio: "inherit" });
 }

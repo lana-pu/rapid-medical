@@ -144,6 +144,33 @@ export const loginAttempts = pgTable(
   (t) => [index("login_attempts_key").on(t.key, t.at)],
 );
 
+/**
+ * The site's own visit counter, without cookies (spec.md → Аналитика → В; docs/screens/admin-analytics.md): one row per
+ * page view or PDF download. No IP, no cookie, no visitor id. `visit` — the first page of a browser tab's visit.
+ */
+export const pageViews = pgTable(
+  "page_views",
+  {
+    id: serial("id").primaryKey(),
+    at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+    /** view · download */
+    kind: text("kind").notNull(),
+    path: text("path").notNull(),
+    visit: boolean("visit").notNull().default(false),
+    region: text("region"),
+    country: text("country"),
+    /** in words: LinkedIn, Google, Direct… (src/lib/source.ts) — set on the first page of a visit */
+    source: text("source"),
+    referrerHost: text("referrer_host"),
+    utmSource: text("utm_source"),
+    utmMedium: text("utm_medium"),
+    utmCampaign: text("utm_campaign"),
+    /** download: the file */
+    file: text("file"),
+  },
+  (t) => [index("page_views_at_idx").on(t.at)],
+);
+
 /** Public 404s, so editors can create redirects for old links. */
 export const notFoundLog = pgTable(
   "not_found_log",

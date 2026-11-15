@@ -9,13 +9,14 @@ import { useEffect, useRef, useState } from "react";
  * editor's; each space has its own second column. Admin chrome: its own neutral palette, as the editor.
  */
 
-export type Space = "home" | "content" | "inbox" | "media" | "settings";
+export type Space = "home" | "content" | "inbox" | "analytics" | "media" | "settings";
 
 /** Which space a screen belongs to (docs/admin-ia.md). */
 export function spaceOf(path: string): Space {
   if (path === "/admin") return "home";
   if (/^\/admin\/(inbox|submissions)(\/|$)/.test(path)) return "inbox";
   if (/^\/admin\/media(\/|$)/.test(path)) return "media";
+  if (/^\/admin\/analytics(\/|$)/.test(path)) return "analytics";
   if (/^\/admin\/(settings|users|activity|account|redirects|not-found-log)(\/|$)/.test(path)) return "settings";
   return "content";
 }
@@ -46,6 +47,7 @@ export function AdminRail(props: {
   const spaces: { key: Space; href: string; icon: string; label: string; badge?: number }[] = [
     { key: "content", href: "/admin/page", icon: "📝", label: "Content — the site's pages and collections" },
     { key: "inbox", href: "/admin/inbox", icon: "📥", label: "Inbox — messages from the site's forms and notes", badge: props.unread },
+    { key: "analytics", href: "/admin/analytics", icon: "📊", label: "Analytics — visits, sources and requests" },
     { key: "media", href: "/admin/media", icon: "🖼", label: "Media library" },
     { key: "settings", href: "/admin/settings", icon: "⚙", label: "Settings — the site and the team" },
   ];
