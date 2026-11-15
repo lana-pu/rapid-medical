@@ -587,6 +587,17 @@ test("History: View shows an earlier version without restoring it; Restore from 
   await expect(anon.locator("h1")).toHaveText("Version view test");
   await expect(anon.getByRole("region", { name: "Earlier version" })).toHaveCount(0);
 
+  // a version shows only on its own page; restoring checks the page too (security review 2026-11-15)
+  const rev = new URL(tab.url()).searchParams.get("version");
+  const other = await page.context().newPage();
+  await other.goto(`/ous/therapies/lvo?version=${rev}`);
+  await expect(other.getByRole("region", { name: "Earlier version" })).toHaveCount(0);
+  const wrong = await page.request.post("/api/version/restore", { form: { rev: rev!, path: "/ous/therapies/lvo" } });
+  expect(wrong.status()).toBe(400);
+  const cross = await page.request.post("/api/version/restore", { form: { rev: rev!, path: PAGE }, headers: { origin: "https://evil.example" } });
+  expect(cross.status()).toBe(403);
+  await other.close();
+
   // Restore from the banner: the version becomes the draft, the editor opens; publish puts it back
   await tab.getByRole("button", { name: "Restore this version" }).click();
   await tab.waitForURL((u) => u.pathname === PAGE && !u.search.includes("version"));
