@@ -4,7 +4,7 @@ import { auditLog, contactSubmissions, db, users } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { saveRequest, takeRequest } from "@/admin/requests";
 import { STATUS_LABEL, formLabel } from "@/admin/request-labels";
-import { Button, LinkButton, Notice, PageHeader, formatDate, inputCls } from "@/components/admin/ui";
+import { Button, Notice, PageHeader, formatDate, inputCls } from "@/components/admin/ui";
 import { sourceLabel } from "@/lib/tracking";
 
 const when = (d: Date) => formatDate(d, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jerusalem" });
@@ -34,7 +34,7 @@ export default async function SubmissionPage({ params, searchParams }: { params:
 
   return (
     <>
-      <PageHeader crumbs={[{ label: "Website", href: "/admin" }, { label: "Contact Us", href: "/admin/site/contact" }, { label: "Requests", href: "/admin/submissions" }]} title={s.topic || formLabel(s.form)} subtitle={`${formLabel(s.form)} · ${s.region || "no region"} · ${when(s.createdAt)}`} actions={<LinkButton href="/admin/submissions">← Requests</LinkButton>} />
+      <PageHeader crumbs={[{ label: "Inbox", href: "/admin/inbox" }]} title={s.topic || formLabel(s.form)} subtitle={`${formLabel(s.form)} · ${s.region || "no region"} · ${when(s.createdAt)}`} />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">

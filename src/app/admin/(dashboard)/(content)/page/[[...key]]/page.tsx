@@ -3,17 +3,24 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { REGION_CHOICES, REGIONS } from "@/lib/regions";
 import { DEMO, editorHref, withBase } from "@/lib/demo";
-import { adminPageHref, pageScreen } from "@/admin/site-tree";
-import { LinkButton, formatDate } from "@/components/admin/ui";
+import { pageScreen } from "@/admin/site-tree";
 import { PageTabs } from "@/components/admin/PageTabs";
 
-/** One page of the site: its regions, the collections it shows, the pages under it (docs/screens/admin-sections.md). */
+/** One page of the site: its versions by region and the collections it shows, as cards (docs/screens/admin-sections.md). */
 
+/** Status in words a non-technical person reads at a glance (docs/admin-ia.md → «Уточнения 2026-11-15»). */
 const STATUS = {
-  live: { text: "Live", cls: "bg-emerald-100 text-emerald-800" },
-  changed: { text: "Live, with unpublished changes", cls: "bg-amber-100 text-amber-900" },
-  draft: { text: "Draft — not live yet", cls: "bg-neutral-200 text-neutral-700" },
+  live: { text: "On the site", hint: "Visitors see the latest version.", cls: "bg-emerald-50 text-emerald-800", dot: "bg-emerald-500" },
+  changed: { text: "Changes not published yet", hint: "Edits wait for Publish.", cls: "bg-amber-50 text-amber-900", dot: "bg-amber-500" },
+  draft: { text: "Not on the site yet", hint: "A draft — publish it to show it.", cls: "bg-neutral-100 text-neutral-700", dot: "bg-neutral-400" },
 } as const;
+
+const ago = (d: Date | string) => {
+  const s = Math.round((new Date(d).getTime() - Date.now()) / 1000);
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  for (const [u, n] of [["day", 86400], ["hour", 3600], ["minute", 60]] as const) if (Math.abs(s) >= n) return rtf.format(Math.round(s / n), u);
+  return "just now";
+};
 const regionName = (r: string | null) => (r ? (REGION_CHOICES.find((c) => c.region === r)?.label ?? r) : "All regions");
 
 export default async function SitePage({ params }: { params: Promise<{ key?: string[] }> }) {
@@ -35,82 +42,60 @@ export default async function SitePage({ params }: { params: Promise<{ key?: str
       />
       {node.fieldsOnly && <p className="-mt-3 mb-6 text-sm text-neutral-500">Its texts are edited on the page, its items in the collections below.</p>}
 
-      <section aria-label="Regions" className="mb-8">
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">{regional ? "Regions" : "Page"}</h2>
-        <div className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
+      <section aria-label="Regions" className="mb-10">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">{regional ? "In each region" : "The page"}</h2>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {rows.map(({ region, v }) => {
             const card = v ? cards.find((c) => c.r === v.r && c.id === v.id) : undefined;
+            if (!v)
+              return (
+                <div key={region ?? "all"} className="rounded-xl border border-dashed border-neutral-300 p-5 text-neutral-500">
+                  <div className="text-base font-semibold text-neutral-700">{regionName(region)}</div>
+                  <p className="mt-2 text-sm">No version in this region — visitors there do not see this page.</p>
+                </div>
+              );
+            const st = STATUS[v.status];
             return (
-              <div key={region ?? "all"} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
-                <span className="w-44 font-medium">{regionName(region)}</span>
-                {!v ? (
-                  <span className="text-neutral-400">No version in this region</span>
-                ) : (
-                  <>
-                    <span className={`rounded px-1.5 py-0.5 text-xs ${STATUS[v.status].cls}`}>{STATUS[v.status].text}</span>
-                    {card?.changedBy && <span className="text-xs text-neutral-500">{card.changedBy}{card.changedAt ? `, ${formatDate(card.changedAt, { dateStyle: "medium", timeStyle: "short" })}` : ""}</span>}
-                    <span className="flex-1" />
-                    <a href={editorHref(v.path)} className="font-medium underline">Edit on page ✎</a>
-                    {card && !DEMO && <Link href={card.adminHref} className="text-xs underline">Google &amp; address</Link>}
-                    {card && <Link href={`${card.adminHref}/history`} className="text-xs underline">History</Link>}
-                    <a href={withBase(v.path)} target="_blank" rel="noreferrer" className="text-xs underline">View ↗</a>
-                  </>
-                )}
-              </div>
+              <article key={region ?? "all"} aria-label={regionName(region)} className="flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="text-base font-semibold">{regionName(region)}</div>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs ${st.cls}`}><span aria-hidden className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />{st.text}</span>
+                </div>
+                <p className="mt-2 text-sm text-neutral-500">
+                  {card?.changedBy ? `Edited by ${card.changedBy}${card.changedAt ? `, ${ago(card.changedAt)}` : ""}` : st.hint}
+                </p>
+                <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
+                  <a href={editorHref(v.path)} className="rounded-lg bg-neutral-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-neutral-700">Edit on page</a>
+                  {card && !DEMO && <Link href={card.adminHref} className="text-sm underline decoration-neutral-300 hover:decoration-neutral-900">Google &amp; address</Link>}
+                  <a href={withBase(v.path)} target="_blank" rel="noreferrer" className="text-sm underline decoration-neutral-300 hover:decoration-neutral-900">View ↗</a>
+                </div>
+              </article>
             );
           })}
         </div>
       </section>
 
       {collections.length > 0 && (
-        <section aria-label="Collections on this page" className="mb-8">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">Collections on this page</h2>
-          <div className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
+        <section aria-label="Collections on this page" className="mb-10">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">Collections shown on this page</h2>
+          <div className="grid gap-4 md:grid-cols-2">
             {collections.map((c) => (
-              <div key={c.res} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
-                <span aria-hidden className="text-neutral-400">▤</span>
-                <Link href={`/admin/${c.res}`} className="font-medium underline">{c.title}</Link>
-                <span className="text-neutral-500">{c.count}</span>
-                <span className="min-w-0 flex-1 truncate text-xs text-neutral-500">{c.where}</span>
-                <LinkButton href={`/admin/${c.res}/new`} variant="secondary">+ New {c.newLabel.toLowerCase()}</LinkButton>
-              </div>
+              <article key={c.res} aria-label={c.title} className="flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500">▤</span>
+                  <div>
+                    <div className="font-semibold">{c.title}</div>
+                    <div className="text-xs text-neutral-500">{c.count} {c.count === 1 ? "record" : "records"}</div>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-neutral-600">{c.where}</p>
+                <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
+                  <Link href={`/admin/${c.res}`} className="rounded-lg border border-neutral-300 px-3.5 py-2 text-sm font-medium hover:bg-neutral-50">Open {c.title.toLowerCase()}</Link>
+                  <Link href={`/admin/${c.res}/new`} className="text-sm underline decoration-neutral-300 hover:decoration-neutral-900">+ New {c.newLabel.toLowerCase()}</Link>
+                </div>
+              </article>
             ))}
           </div>
-        </section>
-      )}
-
-      {node.children.length > 0 && (
-        <section aria-label="Pages under it">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">Pages under it</h2>
-          <table className="w-full overflow-hidden rounded-lg border border-neutral-200 bg-white text-sm">
-            {regional && (
-              <thead className="bg-neutral-50 text-left text-xs text-neutral-500">
-                <tr>
-                  <th className="px-4 py-2 font-medium">Page</th>
-                  {REGIONS.map((r) => <th key={r} className="px-4 py-2 font-medium">{regionName(r)}</th>)}
-                </tr>
-              </thead>
-            )}
-            <tbody className="divide-y divide-neutral-100">
-              {node.children.map((c) => (
-                <tr key={c.key}>
-                  <td className="px-4 py-2.5"><Link href={adminPageHref(c.key)} className="font-medium underline decoration-neutral-300 hover:decoration-neutral-900">{c.title}</Link></td>
-                  {regional ? (
-                    REGIONS.map((r) => {
-                      const v = c.versions.find((x) => x.region === r) ?? c.versions.find((x) => x.region === null);
-                      return (
-                        <td key={r} className="px-4 py-2.5 text-xs" data-cell={`${c.key}:${r}`}>
-                          {v ? <a href={editorHref(v.path)} className="inline-flex items-center gap-1.5 underline decoration-neutral-300 hover:decoration-neutral-900"><span className={`rounded px-1.5 py-0.5 ${STATUS[v.status].cls}`}>{STATUS[v.status].text.split(",")[0]}</span>Edit ✎</a> : <span className="text-neutral-400">No version</span>}
-                        </td>
-                      );
-                    })
-                  ) : (
-                    <td className="px-4 py-2.5 text-right text-xs text-neutral-500">{c.versions.filter((v) => v.region).map((v) => regionName(v.region)).join(" · ") || "All regions"}</td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </section>
       )}
     </>

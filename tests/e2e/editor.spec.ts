@@ -249,7 +249,7 @@ test("menu and footer: a label changed on the page waits for Publish; Site setti
   }
 });
 
-test("comments: on a section, a pin on the page, reply, resolve; listed on the admin home", async ({ page }) => {
+test("comments: on a section, a pin on the page, reply, resolve; in the Inbox as notes", async ({ page }) => {
   test.setTimeout(150_000);
   sql("delete from comments");
   await login(page);
@@ -272,8 +272,9 @@ test("comments: on a section, a pin on the page, reply, resolve; listed on the a
   await panel.getByRole("button", { name: "Reply", exact: true }).click();
   await expect(panel.locator("[data-comment]")).toContainText("Done, see the footnote");
 
-  await page.goto("/admin");
-  await expect(page.getByText(/1 open comment on /)).toBeVisible();
+  // a note on a page is a message in the Inbox (docs/admin-ia.md → «Уточнения 2026-11-15»)
+  await page.goto("/admin/inbox");
+  await expect(page.getByRole("navigation", { name: "Inbox" }).getByRole("link", { name: /Note on/ })).toContainText("Check the claim with regulatory");
 
   await open(page);
   await page.getByRole("button", { name: /^1 comment on Hero/ }).click();

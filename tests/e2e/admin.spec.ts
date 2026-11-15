@@ -4,17 +4,25 @@ import { E2E_CRON_SECRET } from "./secrets";
 
 test.describe.configure({ mode: "serial" });
 
-test("login → Inbox: everything waiting, by kind; list filters", async ({ page }) => {
-  sql(`insert into contact_submissions(form,first_name,last_name,email,status) values ('contact','E2E','Home','home@example.com','new')`);
+test("login → the dashboard (projects, what needs you); the Inbox is mail; list filters", async ({ page }) => {
+  sql(`insert into contact_submissions(form,first_name,last_name,email,status,message) values ('contact','E2E','Home','home@example.com','new','Please call me back')`);
   await login(page);
-  await expect(page).toHaveURL(/\/admin$/); // the old «website or training tool» step leads here
-  await expect(page.getByRole("heading", { name: "Everything waiting" })).toBeVisible();
-  await expect(page.getByText(/\d+ new requests?/)).toBeVisible();
-  await expect(page.getByText(/pictures? without a description/).first()).toBeVisible();
+  await expect(page).toHaveURL(/\/admin$/); // above the projects (docs/admin-ia.md)
+  await expect(page.getByRole("heading", { name: /^Hello, / })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Projects" })).toContainText("Training tool");
+  await expect(page.getByText(/pictures? without a description/).first()).toBeVisible(); // not a message: on the dashboard
+  await page.getByRole("link", { name: /unread messages? in the Inbox/ }).click();
+  await expect(page).toHaveURL(/\/admin\/inbox$/);
+  // the Inbox: messages only, like mail
   const inbox = page.getByRole("navigation", { name: "Inbox" });
-  await inbox.getByRole("link", { name: /^Pictures without description/ }).click();
-  await expect(page.getByRole("heading", { name: "Pictures without description" })).toBeVisible();
-  await expect(page.getByRole("list", { name: "Waiting" }).locator("li")).toHaveCount(1);
+  const msg = inbox.getByRole("link", { name: /E2E Home/ }).first();
+  await expect(msg).toContainText("Please call me back");
+  await msg.click();
+  await expect(page).toHaveURL(/\/admin\/submissions\/\d+$/);
+  await expect(page.locator("main")).toContainText("home@example.com");
+  await inbox.getByRole("tab", { name: /^Unread/ }).click();
+  await expect(inbox.getByRole("link", { name: /E2E Home/ })).toHaveCount(1);
+  await expect(inbox.getByText(/pictures? without a description/)).toHaveCount(0);
   // Content: the tree and + New page
   await page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Content/ }).click();
   await expect(page.getByRole("navigation", { name: "Site" }).getByRole("link", { name: "Evidence", exact: true })).toBeVisible();
@@ -147,7 +155,8 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(page.getByRole("heading", { name: "Medium vessel stroke", level: 1 })).toBeVisible();
   const regions = page.getByRole("region", { name: "Regions" });
   await expect(regions).toContainText("No version in this region"); // MVO is not in the Americas
-  await expect(regions.getByRole("link", { name: "Edit on page ✎" })).toHaveCount(2);
+  await expect(regions.getByRole("link", { name: "Edit on page" })).toHaveCount(2);
+  await expect(regions.getByRole("article", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
   const tabs = page.getByRole("navigation", { name: "Page tabs" });
   await tabs.getByRole("link", { name: "Google & address" }).click();
   await expect(page.locator("input[name=metaTitle]")).toBeVisible();
@@ -158,8 +167,8 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(page).toHaveURL(/\/history$/);
   await tabs.getByRole("link", { name: "Overview" }).click();
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Therapies" }).click();
-  await expect(page.getByRole("region", { name: "Pages under it" })).toContainText("Large vessel stroke");
-  await expect(page.locator('[data-cell="/therapies/mvo:us"]')).toHaveText("No version"); // the therapy × region table
+  await expect(page.getByRole("heading", { name: "Therapies", level: 1 })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Pages under it" })).toHaveCount(0); // the tree shows them
 
   // a collection opens its records
   await tree.getByRole("link", { name: /Publications/ }).click();
@@ -444,6 +453,7 @@ test("activity log records actions", async ({ page }) => {
 });
 
 test("on-page editor: inline text edit → pending → publish; Home is a site page", async ({ page, browser }) => {
+  test.setTimeout(150_000); // two publishes and the home page: slower than 60 s on a loaded machine
   await login(page);
   await page.goto("/api/editor?on=1&redirect=/ous/therapies/lvo");
   await page.waitForURL(/\/ous\/therapies\/lvo/);

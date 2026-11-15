@@ -20,6 +20,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
             ...(canDesign(user) ? [{ href: "/admin/settings?group=branding", label: "Branding" }] : []),
             ...(admin ? [{ href: "/admin/settings?group=integrations", label: "Integrations" }] : []),
             { href: "/admin/redirects", label: "Redirects" },
+            { href: "/admin/not-found-log", label: "Broken links" },
             ...(admin ? [{ heading: "Team", href: "/admin/users", label: "People and roles" }] : []),
             { ...(admin ? {} : { heading: "Team" }), href: "/admin/activity", label: "Activity log" },
             { heading: "You", href: "/admin/account", label: "My account & security" },

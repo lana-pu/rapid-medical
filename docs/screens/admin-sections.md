@@ -14,13 +14,13 @@
   Webinars → Webinars · News & Events → News, Events · About → Team · Careers → Open positions → Jobs); в конце
   Menu and footer. Ветки сворачиваются (запоминается в браузере). Клик по странице — экран страницы, по коллекции —
   её записи.
-- **Inbox** — виды того, что ждёт, с числами: All · Requests · Comments · To publish · Pictures without description ·
-  Broken links. `/admin` — Inbox (главная).
+- **Inbox** (`/admin/inbox`) — почта: список сообщений (формы и заметки на страницах) с папками и непрочитанными,
+  письмо справа (`docs/admin-ia.md` → «Уточнения 2026-11-15»). Логотип над полоской — **дашборд** `/admin`.
 - **Media** — без второй колонки.
 - **Settings** — группы: *Site* — Contact details · Social links · Regional notices · Google defaults · Branding
   (дизайнер, админ) · Integrations (админ) · Redirects; *Team* — People and roles (админ) · Activity log;
   *You* — My account & security. Menu and footer — в Content, не здесь.
-`/admin/start` (выбор «Website / Training tool») ведёт в Inbox; когда появится Training tool — переключатель над полоской.
+`/admin/start` ведёт на дашборд `/admin`, где выбор проекта (Website, Training tool…).
 
 ## Экран страницы (`/admin/page/…` — адрес страницы на сайте без региона, Home — `/admin/page`)
 Шапка: хлебные крошки по дереву («Site › Therapies › Large vessel stroke»), название и вид страницы, **вкладки**
@@ -34,8 +34,8 @@ Overview:
    (Webinars, News & Events, Open positions, Contact) — «Its texts are edited on the page, its items in the
    collections below».
 2. **Collections on this page** — коллекции страницы: значок ▤, название, число, где показываются, **Open**, **+ New**.
-3. **Pages under it** — дочерние страницы дерева; у региональных — колонки регионов (статус и Edit ✎ или «No
-   version»): так на экране Therapies видна таблица терапии × регион.
+Регионы и коллекции — **карточками**, без технических таблиц (2026-11-15); «Pages under it» убран — вложенные
+страницы видны в дереве.
 Экраны разделов (`/admin/site/{раздел}`, ниже) остаются по прямым ссылкам; из меню ведёт дерево.
 
 ## Экран раздела

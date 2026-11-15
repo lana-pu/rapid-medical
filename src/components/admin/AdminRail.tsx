@@ -9,18 +9,20 @@ import { useEffect, useRef, useState } from "react";
  * editor's; each space has its own second column. Admin chrome: its own neutral palette, as the editor.
  */
 
-export type Space = "content" | "inbox" | "media" | "settings";
+export type Space = "home" | "content" | "inbox" | "media" | "settings";
 
 /** Which space a screen belongs to (docs/admin-ia.md). */
 export function spaceOf(path: string): Space {
-  if (path === "/admin" || /^\/admin\/(submissions|not-found-log)(\/|$)/.test(path)) return "inbox";
+  if (path === "/admin") return "home";
+  if (/^\/admin\/(inbox|submissions)(\/|$)/.test(path)) return "inbox";
   if (/^\/admin\/media(\/|$)/.test(path)) return "media";
-  if (/^\/admin\/(settings|users|activity|account|redirects)(\/|$)/.test(path)) return "settings";
+  if (/^\/admin\/(settings|users|activity|account|redirects|not-found-log)(\/|$)/.test(path)) return "settings";
   return "content";
 }
 
 export function AdminRail(props: {
-  waiting: number;
+  /** unread messages in the Inbox */
+  unread: number;
   editHref: string;
   user: { name: string; email: string; role: string };
   logout: () => Promise<void>;
@@ -43,7 +45,7 @@ export function AdminRail(props: {
 
   const spaces: { key: Space; href: string; icon: string; label: string; badge?: number }[] = [
     { key: "content", href: "/admin/page", icon: "📝", label: "Content — the site's pages and collections" },
-    { key: "inbox", href: "/admin", icon: "📥", label: "Inbox — what is waiting for you", badge: props.waiting },
+    { key: "inbox", href: "/admin/inbox", icon: "📥", label: "Inbox — messages from the site's forms and notes", badge: props.unread },
     { key: "media", href: "/admin/media", icon: "🖼", label: "Media library" },
     { key: "settings", href: "/admin/settings", icon: "⚙", label: "Settings — the site and the team" },
   ];
@@ -52,7 +54,9 @@ export function AdminRail(props: {
 
   return (
     <nav aria-label="Admin spaces" ref={ref} className="sticky top-0 flex h-screen w-16 flex-none flex-col items-center gap-1 bg-neutral-950 py-3 text-neutral-200">
-      <Link href="/admin" {...tip("Rapid Medical admin")} className="mb-2 flex h-9 w-9 items-center justify-center rounded bg-white text-xs font-bold text-black">RM</Link>
+      {/* above the projects: the dashboard — choose a project, what needs someone (docs/admin-ia.md) */}
+      <Link href="/admin" {...tip("Dashboard — projects and what needs you")} aria-current={space === "home" ? "page" : undefined} className={`mb-2 flex h-10 w-10 items-center justify-center rounded text-xs font-bold ${space === "home" ? "bg-amber-400 text-black ring-2 ring-white" : "bg-white text-black hover:bg-neutral-200"}`}>RM</Link>
+      <span aria-hidden className="mb-1 h-px w-8 bg-neutral-700" />
       {spaces.map((i) => (
         <Link key={i.key} href={i.href} {...tip(i.label)} aria-current={space === i.key ? "page" : undefined} className={`${icon} ${space === i.key ? "bg-white text-black" : "hover:bg-neutral-800"}`}>
           <span aria-hidden>{i.icon}</span>
