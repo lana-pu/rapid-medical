@@ -342,3 +342,9 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   «Continue where you left off», Recent activity, This week, Coming up (расписание, события с числом регистраций),
   Site health (картинки, описания для Google, 2FA, давность новостей и исследований). «Website in numbers» убрали.
   Локальный журнал для показа — `seed-activity.sql` в скретчпаде; e2e global-setup чистит `audit_log` при каждом прогоне.
+- «Назад» везде = туда, откуда пришли в этой вкладке (стрелка в шапке, «← Back» в записи/новой записи/истории, ← в
+  редакторе — на страницу админки, с которой его открыли); без истории — на страницу выше. К проектам — «Rapid Medical»
+  в шапке. `src/components/admin/BackLink.tsx`.
+- Inbox как Gmail: без открытого письма список на всю ширину; при открытии — колонка слева и письмо справа, фильтры
+  сохраняются. Два уровня: состояние (Inbox · Unread · In progress · Done · Spam · All) и «From» — список всех форм
+  сайта + Notes + Subscribed to news.
