@@ -229,6 +229,19 @@
    ]
   },
   {
+   "title": "11 · Home — как есть",
+   "screens": [
+    "home-asis",
+    "home-asis-phone"
+   ]
+  },
+  {
+   "title": "11 · Home — конкуренты и Mobbin",
+   "screens": [
+    "home-refs"
+   ]
+  },
+  {
    "title": "404 — как есть (отложено до графического дизайна)",
    "screens": [
     "nf-asis",
@@ -540,6 +553,21 @@
   {
    "from": "th-asis-phone",
    "to": "th-refs",
+   "label": "как у других"
+  },
+  {
+   "from": "th-refs",
+   "to": "home-asis",
+   "label": "следующая страница"
+  },
+  {
+   "from": "home-asis",
+   "to": "home-asis-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "home-asis-phone",
+   "to": "home-refs",
    "label": "как у других"
   },
   {
@@ -19507,6 +19535,382 @@
            "source": "Daylight",
            "caption": "особенности карточками с изображением, ниже характеристики колонками",
            "url": "https://mobbin.com/sites/sections/5d57fbff-5355-4f3d-91b4-eff403615a2d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "home-asis",
+   "title": "Home · as is",
+   "url": "rapid-medical.com",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "banner",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "cta": {
+        "label": "Explore Therapies",
+        "href": "/us/therapies"
+       },
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
+       "annotation": "Hero: «EXPAND / WHAT’S POSSIBLE», «in neurovascular therapy», строка, «Explore Therapies» (регион последнего визита или выбор региона), фоновое видео."
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "statement",
+       "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
+       "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4",
+       "stats": [
+        {
+         "label": "patients treated",
+         "value": "50K+",
+         "iconUrl": "/icons/stat-patients.svg"
+        },
+        {
+         "label": "issued patents",
+         "value": "100+",
+         "iconUrl": "/icons/stat-patents.svg"
+        },
+        {
+         "label": "clinical publications",
+         "value": "85+",
+         "iconUrl": "/icons/stat-publications.svg"
+        }
+       ],
+       "body": "Our solution? Tools that adapt to each patient's anatomy.",
+       "link": {
+        "label": "Request a demo",
+        "href": "/contact-us?region=us&topic=demo"
+       },
+       "annotation": "Statement: фраза про «fingerprints», видео, цифры 50K+ patients · 100+ patents · 85+ publications (в Evidence их 102), «solution line», Request a demo."
+      },
+      {
+       "c": "rm-text",
+       "v": "dark",
+       "title": "Engineered for precise control at every step.",
+       "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
+       "imageUrl": "",
+       "annotation": "«Engineered for precise control at every step» — тёмная полоса с текстом."
+      },
+      {
+       "c": "rm-news",
+       "v": "cards",
+       "title": "At the forefront of advancing stroke intervention",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        }
+       ],
+       "allHref": "/news-events",
+       "allLabel": "View all news ›",
+       "annotation": "Новости: 4 featured (или последние), «Continue reading» уводит на BusinessWire, «View all news»."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "home-asis-phone",
+   "title": "Home · as is, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "banner",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "cta": {
+        "label": "Explore Therapies",
+        "href": "/us/therapies"
+       },
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
+      },
+      {
+       "c": "rm-textMedia",
+       "v": "statement",
+       "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
+       "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4",
+       "stats": [
+        {
+         "label": "patients treated",
+         "value": "50K+",
+         "iconUrl": "/icons/stat-patients.svg"
+        },
+        {
+         "label": "issued patents",
+         "value": "100+",
+         "iconUrl": "/icons/stat-patents.svg"
+        },
+        {
+         "label": "clinical publications",
+         "value": "85+",
+         "iconUrl": "/icons/stat-publications.svg"
+        }
+       ],
+       "body": "Our solution? Tools that adapt to each patient's anatomy.",
+       "link": {
+        "label": "Request a demo",
+        "href": "/contact-us?region=us&topic=demo"
+       }
+      },
+      {
+       "c": "rm-text",
+       "v": "dark",
+       "title": "Engineered for precise control at every step.",
+       "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
+       "imageUrl": ""
+      },
+      {
+       "c": "rm-news",
+       "v": "cards",
+       "title": "At the forefront of advancing stroke intervention",
+       "items": [
+        {
+         "id": 1,
+         "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
+         "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 2,
+         "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
+         "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-05-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
+         "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+         "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "source": "BusinessWire",
+         "edit": {
+          "r": "news",
+          "id": 4,
+          "prefix": ""
+         }
+        }
+       ],
+       "allHref": "/news-events",
+       "allLabel": "View all news ›"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "home-refs",
+   "title": "Home · competitors and Mobbin",
+   "body": [
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Конкуренты: главная"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Terumo — первым экраном новое (клинические исследования), под ним три направления. Shockwave — направления большими карточками с устройством. Imperative Care — новость полосой над шапкой."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/home/terumo.png",
+           "source": "Terumo Neuro",
+           "caption": "первый экран — «Explore new clinical studies», сразу под ним Hemorrhagic / Ischemic / Access",
+           "url": "https://www.terumoneuro.com/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/home/shockwave.png",
+           "source": "Shockwave Medical",
+           "caption": "направления — две большие карточки с устройством и «See products»",
+           "url": "https://shockwavemedical.com/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/home/imperative.png",
+           "source": "Imperative Care",
+           "caption": "главная новость полосой над шапкой («Read the press release»); миссия одной фразой",
+           "url": "https://imperativecare.com/"
+          },
+          {
+           "c": "ref",
+           "src": "refs/home/penumbra.png",
+           "source": "Penumbra",
+           "caption": "первый экран и навигация по направлениям",
+           "url": "https://www.penumbrainc.com/"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "c": "section",
+     "pad": "s",
+     "items": [
+      {
+       "c": "stack",
+       "gap": "m",
+       "items": [
+        {
+         "c": "heading",
+         "level": 3,
+         "text": "Устройство как предмет (Mobbin)"
+        },
+        {
+         "c": "text",
+         "v": "muted",
+         "text": "Близко к мудбордам: одно устройство крупно, короткая фраза рядом."
+        },
+        {
+         "c": "grid",
+         "cols": 2,
+         "gap": "m",
+         "items": [
+          {
+           "c": "ref",
+           "src": "refs/home/until.webp",
+           "source": "Until",
+           "caption": "«From Principle to Protocol»: устройство крупно справа, фраза слева, живая подпись-данные",
+           "url": "https://mobbin.com/sites/sections/e858eb71-c18a-49e5-b7d6-02dacd00a8aa"
+          },
+          {
+           "c": "ref",
+           "src": "refs/home/seed.webp",
+           "source": "Seed",
+           "caption": "фраза и одна кнопка слева, научная визуализация справа",
+           "url": "https://mobbin.com/sites/sections/6d8239a6-b3ad-46de-bcc3-a1139c73c707"
+          },
+          {
+           "c": "ref",
+           "src": "refs/home/ease.webp",
+           "source": "Ease",
+           "caption": "крупная фраза, ниже графика + фото в одной сетке",
+           "url": "https://mobbin.com/sites/sections/6695790f-7142-4e99-86a9-2632963b795d"
           }
          ]
         }

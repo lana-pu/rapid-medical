@@ -1154,6 +1154,31 @@ def therapy_asis(name, phone=False):
     return [HEADER, page(name, None, notes), FOOTER]
 
 
+# ---------- Home ----------
+HOME_REFS = [
+    {'title': 'Конкуренты: главная',
+     'ask': 'Terumo — первым экраном новое (клинические исследования), под ним три направления. Shockwave — направления большими карточками с устройством. Imperative Care — новость полосой над шапкой.',
+     'refs': [('terumo', 'Terumo Neuro', 'первый экран — «Explore new clinical studies», сразу под ним Hemorrhagic / Ischemic / Access', 'https://www.terumoneuro.com/', 'png'),
+              ('shockwave', 'Shockwave Medical', 'направления — две большие карточки с устройством и «See products»', 'https://shockwavemedical.com/', 'png'),
+              ('imperative', 'Imperative Care', 'главная новость полосой над шапкой («Read the press release»); миссия одной фразой', 'https://imperativecare.com/', 'png'),
+              ('penumbra', 'Penumbra', 'первый экран и навигация по направлениям', 'https://www.penumbrainc.com/', 'png')]},
+    {'title': 'Устройство как предмет (Mobbin)',
+     'ask': 'Близко к мудбордам: одно устройство крупно, короткая фраза рядом.',
+     'refs': [('until', 'Until', '«From Principle to Protocol»: устройство крупно справа, фраза слева, живая подпись-данные', 'sites/sections/e858eb71-c18a-49e5-b7d6-02dacd00a8aa'),
+              ('seed', 'Seed', 'фраза и одна кнопка слева, научная визуализация справа', 'sites/sections/6d8239a6-b3ad-46de-bcc3-a1139c73c707'),
+              ('ease', 'Ease', 'крупная фраза, ниже графика + фото в одной сетке', 'sites/sections/6695790f-7142-4e99-86a9-2632963b795d')]},
+]
+
+
+def home_asis(phone=False):
+    ex = None if phone else {
+        0: {'annotation': 'Hero: «EXPAND / WHAT’S POSSIBLE», «in neurovascular therapy», строка, «Explore Therapies» (регион последнего визита или выбор региона), фоновое видео.'},
+        1: {'annotation': 'Statement: фраза про «fingerprints», видео, цифры 50K+ patients · 100+ patents · 85+ publications (в Evidence их 102), «solution line», Request a demo.'},
+        2: {'annotation': '«Engineered for precise control at every step» — тёмная полоса с текстом.'},
+        3: {'annotation': 'Новости: 4 featured (или последние), «Continue reading» уводит на BusinessWire, «View all news».'}}
+    return [HEADER, page('Home', None, ex), FOOTER]
+
+
 ASIS_NOTE = 'Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.'
 
 flow = {
@@ -1193,6 +1218,8 @@ flow = {
         {'title': '9 · Обзор терапий — предложение (всё сохранено, к обсуждению)', 'screens': ['ther-new', 'ther-new-ous']},
         {'title': '10 · Страница терапии — как есть', 'screens': ['th-asis-lvo', 'th-asis-aneurysm', 'th-asis-phone']},
         {'title': '10 · Страница терапии — конкуренты и Mobbin', 'screens': ['th-refs']},
+        {'title': '11 · Home — как есть', 'screens': ['home-asis', 'home-asis-phone']},
+        {'title': '11 · Home — конкуренты и Mobbin', 'screens': ['home-refs']},
         {'title': '404 — как есть (отложено до графического дизайна)', 'screens': ['nf-asis', 'nf-region']},
     ],
     'links': [
@@ -1258,6 +1285,9 @@ flow = {
               {'from': 'th-asis-lvo', 'to': 'th-asis-aneurysm', 'label': 'другая терапия'},
               {'from': 'th-asis-lvo', 'to': 'th-asis-phone', 'label': 'на телефоне'},
               {'from': 'th-asis-phone', 'to': 'th-refs', 'label': 'как у других'},
+              {'from': 'th-refs', 'to': 'home-asis', 'label': 'следующая страница'},
+              {'from': 'home-asis', 'to': 'home-asis-phone', 'label': 'на телефоне'},
+              {'from': 'home-asis-phone', 'to': 'home-refs', 'label': 'как у других'},
               {'from': 'text-new-phone', 'to': 'nf-asis', 'label': '404'},
               {'from': 'nf-asis', 'to': 'nf-region', 'label': 'терапии нет в регионе'},
               {'from': 'contact-new', 'to': 'contact-error', 'label': 'отправка с ошибкой'},
@@ -1347,6 +1377,9 @@ flow = {
         {'id': 'th-asis-aneurysm', 'title': 'Therapy · as is · Aneurysm (Americas)', 'url': 'rapid-medical.com/us/therapies/aneurysm', 'body': therapy_asis('US · Aneurysm')},
         {'id': 'th-asis-phone', 'title': 'Therapy · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': therapy_asis('OUS · Large vessel stroke', True)},
         ref_screen('th-refs', 'Therapy · competitors and Mobbin', 'therapy', THERAPY_REFS),
+        {'id': 'home-asis', 'title': 'Home · as is', 'url': 'rapid-medical.com', 'body': home_asis()},
+        {'id': 'home-asis-phone', 'title': 'Home · as is, phone', 'device': 'mobile', 'url': 'rapid-medical.com', 'body': home_asis(True)},
+        ref_screen('home-refs', 'Home · competitors and Mobbin', 'home', HOME_REFS),
         ref_screen('study-mobbin', 'Study page · examples from Mobbin', 'study', STUDY_REFS),
         ref_screen('text-mobbin', 'Text page and 404 · examples from Mobbin', 'text', TEXT_REFS),
         ref_screen('contact-mobbin', 'Contact Us · examples from Mobbin', 'contact', CONTACT_REFS),
