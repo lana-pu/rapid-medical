@@ -25,6 +25,11 @@ export const SOURCE_LABELS: Record<string, string> = {
   utm_source: "Campaign source",
   utm_medium: "Campaign medium",
   utm_campaign: "Campaign",
+  // the form's own fields (meta): what the request is about
+  webinar: "Webinar",
+  event: "Event",
+  job: "Job",
+  dietary: "Dietary requirements",
 };
 export const sourceLabel = (k: string) => SOURCE_LABELS[k] ?? k;
 const UTM = ["utm_source", "utm_medium", "utm_campaign"] as const;
