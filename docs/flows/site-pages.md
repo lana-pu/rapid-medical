@@ -4,6 +4,10 @@
 `python3 docs/flows/site-pages.py && python3 .claude/skills/wireframes/scripts/build.py docs/flows/site-pages.json <scratchpad>/site-pages.html --pack docs/flows/pack.js`,
 публиковать тем же путём файла.
 
+**Кликабельный прототип сайта** со всеми решениями (Americas, desktop, 15 экранов): `site-prototype.py` → `site-prototype.json`,
+сборка с `--pack pack.js proto-pack.js`; приватная ссылка: https://claude.ai/artifact/QWbwYnfEghNLZAM1ykvd14. Экраны берутся из
+тех же функций `site-pages.py` — правка решения обновляет оба артефакта.
+
 ## Цикл на каждую страницу (решение владелицы 2026-11-13)
 Строго по одной странице, следующая — только после закрытия текущей.
 1. **Показ.** Как страница собрана сейчас (настоящие блоки из `rm-pages.json`, десктоп и телефон) + экран с примерами из

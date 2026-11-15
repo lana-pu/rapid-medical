@@ -1394,5 +1394,6 @@ flow = {
 
 ORDER = [sid for g in flow['groups'] for sid in g['screens']]
 flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))
-OUT.write_text(json.dumps(clean(flow), ensure_ascii=False, indent=1), encoding='utf8')
-print('ok:', OUT.name, len(flow['screens']), 'screens')
+if __name__ == '__main__':
+    OUT.write_text(json.dumps(clean(flow), ensure_ascii=False, indent=1), encoding='utf8')
+    print('ok:', OUT.name, len(flow['screens']), 'screens')
