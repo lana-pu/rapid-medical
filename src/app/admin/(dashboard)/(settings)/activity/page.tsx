@@ -2,7 +2,7 @@ import Link from "next/link";
 import { desc, eq, and, ilike, inArray, notInArray, sql } from "drizzle-orm";
 import { requireUser } from "@/lib/auth";
 import { db, auditLog, users } from "@/db";
-import { PageHeader, formatDate } from "@/components/admin/ui";
+import { PageHeader } from "@/components/admin/ui";
 import { ListFilters, type ListFilter } from "@/components/admin/ListFilters";
 import { getResource } from "@/admin/resources";
 import { namesFor, phrase } from "@/admin/home";
@@ -18,7 +18,8 @@ const ACTION_WORDS: [string, string][] = [
   ["publish", "Published"], ["save", "Saved"], ["unpublish", "Took off the site"], ["delete", "Deleted"], ["restore", "Restored a version"],
   ["schedule", "Scheduled"], ["bulk", "Several at once"], ["settings", "Settings"], ["user", "People"], ["media", "Media"], ["request", "Requests"], ["comment", "Notes"],
 ];
-const when = (d: Date) => formatDate(d, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jerusalem" });
+// as everywhere in the admin: «15 Nov, 18:39», the office's time
+const when = (d: Date) => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jerusalem" }).format(d);
 
 export default async function ActivityPage({ searchParams }: { searchParams: Promise<{ view?: string; action?: string; user?: string; q?: string; page?: string }> }) {
   const me = await requireUser();
