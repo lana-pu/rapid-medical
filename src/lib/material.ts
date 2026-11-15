@@ -39,21 +39,36 @@ export function sameArticle(ours: string, theirs: string): boolean {
 }
 
 /**
- * A hit found only by searching our title (no DOI, no PubMed link) is trusted only when the title says enough: at least
- * 4 words longer than 3 letters, every one of them in the hit's title, and a title shortened with «…» must agree with
- * the hit's beginning and end (a short or cut title matched other articles, 2026-11-15).
+ * A hit found only by searching our title (no DOI, no PubMed link) is trusted only when the title says enough and
+ * something else agrees (security review 2026-11-15 — a short or cut title had matched other articles):
+ * at least 4 words longer than 3 letters, all of them in the hit's title **in the same order**; a title cut with «…»
+ * agrees with the hit's beginning; and the year (±1) or the first author's surname agrees with the record.
  */
-export function sameArticleByTitle(ours: string, theirs: string): boolean {
+export function sameArticleByTitle(
+  ours: string,
+  theirs: string,
+  record?: { year?: number | null; authors?: string | null },
+  hit?: { year?: number | null; firstAuthor?: string | null },
+): boolean {
   // hyphens both ways: «Single center» = «Single-Center», «Post-Traumatic» = «Posttraumatic»
   const check = (flat: (x: string) => string) => {
     const words = flat(ours).split(" ").filter((w) => w.length > 3);
     if (words.length < 4) return false;
-    const pool = new Set(flat(theirs).split(" "));
-    if (!words.every((w) => pool.has(w))) return false;
+    const seq = flat(theirs).split(" ");
+    let at = 0;
+    for (const w of words) {
+      const i = seq.indexOf(w, at);
+      if (i < 0) return false;
+      at = i + 1;
+    }
     if (!ours.includes("…")) return true;
-    const parts = ours.split("…").map((x) => flat(x)).filter(Boolean);
-    const t = flat(theirs);
-    return t.startsWith(parts[0]) && (parts.length < 2 || t.includes(parts[parts.length - 1]));
+    const first = ours.split("…").map((x) => flat(x)).filter(Boolean)[0];
+    return flat(theirs).startsWith(first);
   };
-  return check((x) => norm(x.replace(/(\w)-(\w)/g, "$1$2"))) || check((x) => norm(x));
+  if (!(check((x) => norm(x.replace(/(\w)-(\w)/g, "$1$2"))) || check((x) => norm(x)))) return false;
+  if (!record || !hit) return true;
+  const yearOk = !!record.year && !!hit.year && Math.abs(record.year - hit.year) <= 1;
+  const surname = norm(hit.firstAuthor ?? "").split(" ").filter((w) => w.length > 2).pop();
+  const authorOk = !!surname && norm(record.authors ?? "").split(" ").includes(surname);
+  return yearOk || authorOk;
 }

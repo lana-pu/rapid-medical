@@ -68,5 +68,12 @@ describe("a hit found only by our title", () => {
     expect(sameArticleByTitle("MCA Aneurysm Embolization", "P501 Technical and nursing aspects in a case of distal MCA aneurysm embolization")).toBe(false); // too short
     expect(sameArticleByTitle("Mechanical thrombectomy … Propensity score analysis", "Conscious sedation versus general anaesthesia during mechanical thrombectomy for stroke: a propensity score analysis")).toBe(false);
     expect(sameArticleByTitle("Revascularization of acute basilar artery occlusion …", "Successful Endovascular Revascularization of Acute Basilar Artery Occlusion Approached via an Aberrant Artery")).toBe(false);
+    // the same words in another order are another title
+    expect(sameArticleByTitle("Stent retriever thrombectomy versus aspiration outcomes", "Aspiration versus stent retriever thrombectomy outcomes")).toBe(false);
+    // and something besides the title must agree: the year or the first author
+    const t = "Comaneci-assisted coiling of wide-necked intracranial aneurysm: a single center preliminary experience";
+    expect(sameArticleByTitle(t, t, { year: 2022, authors: "Vinacci G, Sirakov A" }, { year: 2022, firstAuthor: "Someone Else" })).toBe(true);
+    expect(sameArticleByTitle(t, t, { year: 2022, authors: "Vinacci G, Sirakov A" }, { year: 2015, firstAuthor: "Gabriele Vinacci" })).toBe(true);
+    expect(sameArticleByTitle(t, t, { year: 2022, authors: "Vinacci G" }, { year: 2015, firstAuthor: "Someone Else" })).toBe(false);
   });
 });

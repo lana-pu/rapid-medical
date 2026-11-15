@@ -57,8 +57,11 @@ async function fetchAbstract(pmid: string): Promise<{ abstract: string; title: s
 }
 
 /** OpenAlex keeps abstracts as word → positions; rebuilt in order. By DOI, else by a title search (first agreeing hit). */
-async function fromOpenAlex(doi: string, ours: string): Promise<{ abstract: string; source: string } | null> {
-  const works: { id: string; title?: string; abstract_inverted_index?: Record<string, number[]> | null }[] = [];
+type Row = { id: number; title: string; url: string | null; doi: string | null; year: number | null; authors: string | null; journal: string | null };
+
+async function fromOpenAlex(doi: string, ours: string, row: Row): Promise<{ abstract: string; source: string } | null> {
+  type Work = { id: string; title?: string; publication_year?: number; authorships?: { author?: { display_name?: string } }[]; abstract_inverted_index?: Record<string, number[]> | null };
+  const works: Work[] = [];
   let bySearch = false;
   if (doi) {
     const w = await get(`https://api.openalex.org/works/doi:${encodeURIComponent(doi)}`);
@@ -69,9 +72,18 @@ async function fromOpenAlex(doi: string, ours: string): Promise<{ abstract: stri
     const w = await get(`https://api.openalex.org/works?per-page=5&search=${encodeURIComponent(q)}`);
     try { works.push(...(JSON.parse(w).results ?? [])); bySearch = true; } catch { /* nothing */ }
   }
-  for (const w of works) {
-    const inv = w.abstract_inverted_index;
-    if (!inv || !w.title || !(bySearch ? sameArticleByTitle(ours, w.title) : sameArticle(ours, w.title))) continue;
+  const agrees = (w: Work) =>
+    !!w.abstract_inverted_index && !!w.title &&
+    (bySearch
+      ? sameArticleByTitle(ours, w.title, { year: row.year, authors: row.authors }, { year: w.publication_year, firstAuthor: w.authorships?.[0]?.author?.display_name })
+      : sameArticle(ours, w.title));
+  const ok = works.filter(agrees);
+  // a search must point at one article: agreeing hits with different titles are ambiguous (OpenAlex often keeps one
+  // article twice — the journal's and PubMed's record — with the same title: that is still one article)
+  const titles = new Set(ok.map((w) => (w.title ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()));
+  if (bySearch && titles.size !== 1) return null;
+  for (const w of ok) {
+    const inv = w.abstract_inverted_index!;
     const words: string[] = [];
     for (const [word, at] of Object.entries(inv)) for (const i of at) words[i] = word;
     const abstract = words.filter(Boolean).join(" ").replace(/\s+([.,;:)])/g, "$1").trim();
@@ -106,15 +118,16 @@ async function main() {
   const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
   // --recheck: check the abstracts already written against PubMed's titles again
   const recheck = process.argv.includes("--recheck");
-  const rows = await sql<{ id: number; title: string; url: string | null; doi: string | null }[]>`
-    select id, title, url, doi from publications where ${recheck ? sql`abstract <> ''` : sql`abstract = ''`} order by id`;
+  const rows = await sql<Row[]>`
+    select id, title, url, doi, extract(year from published_on)::int as year, authors, journal from publications where ${recheck ? sql`abstract <> ''` : sql`abstract = ''`} order by id`;
   const found: { id: number; title: string; abstract: string; source: string }[] = [];
   const missed: string[] = [];
   for (const r of rows) {
     // a PubMed link or a DOI identifies the article; a title search must agree on the title
     let byTitle = false;
     let pmid = /pubmed\.ncbi\.nlm\.nih\.gov\/(\d+)/.exec(r.url ?? "")?.[1] ?? /ncbi\.nlm\.nih\.gov\/pubmed\/(\d+)/.exec(r.url ?? "")?.[1];
-    const doi = (r.doi || /doi\.org\/(10\.[^?#\s]+)/.exec(r.url ?? "")?.[1] || "").replace(/^https?:\/\/doi\.org\//, "");
+    // the DOI: its field, the link, or a citation pasted into the authors / journal field («Life 2021 … doi.org/10.3390/…»)
+    const doi = (r.doi || /doi\.org\/(10\.[^?#\s]+)/.exec(r.url ?? "")?.[1] || /\b(10\.\d{4,9}\/[^\s,;]+[^\s,;.)])/.exec(`${r.authors ?? ""} ${r.journal ?? ""}`)?.[1] || "").replace(/^https?:\/\/doi\.org\//, "");
     if (!pmid && doi) pmid = (await search(`${doi}[doi]`))[0];
     if (!pmid) {
       const hits = await search(`"${r.title.replace(/["…]/g, " ").replace(/\s+/g, " ").trim()}"[ti]`);
@@ -128,7 +141,7 @@ async function main() {
       if (abstract && sameArticle(r.title, title)) got = { abstract, source: `PubMed ${pmid}` };
     }
     // not in PubMed (conference abstracts, some journals): OpenAlex, then Crossref — the same title check
-    if (!got && !recheck) got = (await fromOpenAlex(doi, r.title)) ?? (await fromCrossref(doi, r.title));
+    if (!got && !recheck) got = (await fromOpenAlex(doi, r.title, r)) ?? (await fromCrossref(doi, r.title));
     if (!got) {
       if (recheck && !(await sql`select abstract_source from publications where id = ${r.id}`)[0]?.abstract_source?.startsWith("PubMed")) continue;
       if (recheck) await sql`update publications set abstract = '', abstract_source = '' where id = ${r.id}`;
