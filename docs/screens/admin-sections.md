@@ -25,7 +25,7 @@
   Menu and footer. Ветки сворачиваются (запоминается в браузере). Клик по странице — экран страницы, по коллекции —
   её записи.
 - **Inbox** (`/admin/inbox`) — почта: список сообщений (формы и заметки на страницах) с папками и непрочитанными,
-  письмо справа (`docs/admin-ia.md` → «Уточнения 2026-11-15»; экран — `admin-inbox.md`).
+  письмо справа; пока письмо не открыто — список на всю ширину, как в Gmail (экран — `admin-inbox.md`).
 - **Media** — без второй колонки.
 - **Settings** — группы: *Site* — Contact details · Social links · Regional notices · Google defaults · Branding
   (дизайнер, админ) · Integrations (админ) · Redirects; *Team* — People and roles (админ) · Activity log;

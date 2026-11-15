@@ -1,14 +1,9 @@
 import { elsewhere, inboxMessages } from "@/admin/inbox";
-import { MessageList } from "@/components/admin/MessageList";
+import { InboxShell } from "@/components/admin/InboxShell";
 import { AdminMain } from "@/components/admin/AdminMain";
 
-/** Inbox: the messages in the second column, the open one on the right — like mail (docs/admin-ia.md). */
+/** Inbox like Gmail: the list on the whole width; an open message beside a narrowed list (docs/screens/admin-inbox.md). */
 export default async function InboxLayout({ children }: { children: React.ReactNode }) {
   const [messages, outside] = await Promise.all([inboxMessages(), elsewhere()]);
-  return (
-    <>
-      <MessageList messages={messages} elsewhere={outside} />
-      <AdminMain>{children}</AdminMain>
-    </>
-  );
+  return <InboxShell messages={messages} elsewhere={outside} detail={<AdminMain>{children}</AdminMain>} />;
 }

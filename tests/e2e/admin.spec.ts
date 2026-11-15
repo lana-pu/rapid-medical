@@ -623,16 +623,30 @@ test("inbox: every folder shown; Subscribed with the Mailchimp list; what leaves
   await login(page);
   await page.goto("/admin/inbox");
   const inbox = page.getByRole("navigation", { name: "Inbox" });
-  for (const f of ["Inbox", "Unread", "Contact", "Webinars", "Careers", "Events", "Subscribed", "Notes on pages", "Done", "Spam"])
+  // two levels: the state (tabs) and which form it came from (every form of the site in one list)
+  for (const f of ["Inbox", "Unread", "In progress", "Done", "Spam", "All"])
     await expect(inbox.getByRole("tab", { name: new RegExp(`^${f}`) })).toBeVisible();
-  // Events: the outside registration, with its clicks; the empty folder says what arrives here
-  await inbox.getByRole("tab", { name: /^Events/ }).click();
+  const from = inbox.getByLabel("Which form");
+  for (const f of ["All sources", "Contact Us — contact form", "Webinars — recording requests", "Careers & jobs — applications", "Events — registrations", "Notes on pages", "Subscribed to news"])
+    await expect(from.locator("option", { hasText: f })).toHaveCount(1);
+  // like Gmail: no message open — the list takes the whole width, no reading pane
+  await expect(page.getByRole("main")).toHaveCount(0);
+  // Events: the outside registration, with its clicks
+  await from.selectOption("event");
   await expect(inbox.getByRole("link", { name: /E2E outside congress — outside the site/ })).toContainText("Registration on example.org");
   await expect(inbox.getByRole("link", { name: /E2E outside congress/ })).toContainText("1 click on Register");
-  // Subscribed: one person (two requests, one address), spam left out; the export has them once
-  await inbox.getByRole("tab", { name: /^Subscribed/ }).click();
+  // Subscribed to news, all states: one person (two requests, one address), spam left out; the export has them once
+  await inbox.getByRole("tab", { name: /^All/ }).click();
+  await from.selectOption("subscribed");
   await expect(inbox.getByRole("link", { name: /Sub New/ })).toBeVisible();
+  await expect(inbox.getByRole("link", { name: /Sub Old/ })).toBeVisible(); // done, still subscribed
   await expect(inbox.getByRole("link", { name: /Sub Spam/ })).toHaveCount(0);
+  // opening a message narrows the list beside it; the filters stay
+  await inbox.getByRole("link", { name: /Sub New/ }).click();
+  await expect(page).toHaveURL(/\/admin\/submissions\/\d+$/);
+  await expect(page.getByRole("main")).toContainText("Ann@sub.example");
+  await expect(from).toHaveValue("subscribed");
+  await expect(inbox.getByRole("link", { name: /Sub Old/ })).toBeVisible();
   const csv = await (await page.request.get("/api/admin/submissions.csv?subscribed=1")).text();
   expect(csv.match(/ann@sub\.example/gi)).toHaveLength(1);
   expect(csv).not.toContain("spam@sub.example");

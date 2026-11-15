@@ -1,31 +1,40 @@
 # Экран: Inbox (`/admin/inbox`)
 
 Почтовый ящик проекта Website (`docs/admin-ia.md` → «Уточнения 2026-11-15»): **всё, что можно отправить с сайта**, и
-заметки команды на страницах. Вторая колонка — список с папками, справа — открытое сообщение (заявка — экран
+заметки команды на страницах. Список на всю ширину; открытое сообщение — справа от сузившегося списка (заявка — экран
 `admin-requests.md`, заметка открывает страницу в редакторе). Код: `src/admin/inbox.ts`,
-`src/components/admin/MessageList.tsx`.
+`src/components/admin/InboxShell.tsx`, `src/components/admin/MessageList.tsx`.
 
 ## Что приходит
-| Откуда на сайте | Форма | Папка |
+| Откуда на сайте | Форма | В списке «Откуда» |
 |---|---|---|
-| Contact Us (`/contact-us`, темы: демо, заказ, IFU, поддержка…) | `contact` | Contact |
-| Webinars (`/{region}/webinars`) — запрос записи | `webinar` | Webinars |
-| Careers (`/careers#general-interest`) и вакансия без внешней ссылки (`/open-positions/{slug}`) | `careers` | Careers |
-| Событие с регистрацией формой (`/events/{slug}`) | `event` | Events |
+| Contact Us (`/contact-us`, темы: демо, заказ, IFU, поддержка…) | `contact` | Contact Us — contact form |
+| Webinars (`/{region}/webinars`) — запрос записи | `webinar` | Webinars — recording requests |
+| Careers (`/careers#general-interest`) и вакансия без внешней ссылки (`/open-positions/{slug}`) | `careers` | Careers & jobs — applications |
+| Событие с регистрацией формой (`/events/{slug}`) | `event` | Events — registrations |
 | Заметки на страницах (редактор) | — | Notes on pages |
 
-## Папки (решение владелицы 2026-11-15)
-Inbox · Unread · Contact · Webinars · Careers · Events · Subscribed · Notes on pages · Done · Spam.
-- Папки видны **всегда**, даже пустые, как в почте. Число у папки — непрочитанные (у Subscribed — сколько людей).
-- Пустая папка говорит, что в неё приходит и с какой страницы, например: «Requests for webinar recordings from the
-  Webinars page arrive here.»
-- **Subscribed** — все, кто в любой форме поставил галочку «News and updates» (кроме спама). Сверху —
-  **Export for Mailchimp** (CSV: email, имя, фамилия, организация, страна, регион, форма, дата; один человек — одна
-  строка, по последней заявке). Подписка на сайте отдельной формой — вопрос к Emily, не делаем.
+## Как в Gmail (решение владелицы 2026-11-15, вечер)
+- **Письмо не открыто** (`/admin/inbox`) — список на всю ширину: строка = точка «не прочитано» · от кого (имя,
+  организация) · тема и начало сообщения серым · откуда (форма) · когда.
+- **Письмо открыто** (`/admin/submissions/{id}`) — список сдвигается в колонку слева (кто, тема, начало сообщения),
+  письмо — справа. Фильтры при этом сохраняются. «Inbox» в крошках возвращает к списку на всю ширину.
+
+## Два уровня фильтров
+1. **Состояние** — вкладки: **Inbox** (всё, что не Done и не Spam; заметки — пока не решены) · **Unread** (новые
+   заявки и открытые заметки) · **In progress** · **Done** · **Spam** · **All** (всё, кроме спама). У вкладки — число
+   непрочитанного (у Done, Spam, All — без числа).
+2. **Откуда** — выпадающий список со всеми формами сайта и числом писем в выбранном состоянии:
+   All sources · Contact Us — contact form · Webinars — recording requests · Careers & jobs — applications ·
+   Events — registrations · Notes on pages (команда) · Subscribed to news (поставили галочку «News and updates»).
+Фильтры складываются: «Unread» + «Webinars» — непрочитанные запросы записей. Пусто — подсказка, что сюда приходит и
+с какой страницы.
+- **Subscribed to news** — сверху **Export for Mailchimp** (CSV: email, имя, фамилия, организация, страна, регион,
+  форма, дата; один человек — одна строка, по последней заявке). Подписка на сайте отдельной формой — вопрос к Emily.
 
 ## Что уходит мимо сайта (решение 2026-11-15)
 Регистрация на событие **по внешней ссылке** и вакансия **со ссылкой Apply / адресом для отклика** не оставляют у нас
-заявки. Чтобы это не выглядело как «заявок нет», в папках Events и Careers над письмами — серые строки:
+заявки. Чтобы это не выглядело как «заявок нет», при выбранных Events или Careers & jobs над письмами — серые строки:
 - «{Событие} — registration on {host}. {N} clicks on Register in 30 days.» — для опубликованных предстоящих событий с
   `registration = link`;
 - «{Вакансия} — applications go to {host или почта}. {N} clicks on Apply in 30 days.» — для опубликованных вакансий с
