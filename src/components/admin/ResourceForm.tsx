@@ -5,7 +5,7 @@ import type { FieldDef } from "@/admin/fields";
 import { autosaveResource, saveResource, type SaveState } from "@/admin/actions";
 import { DEMO } from "@/lib/demo";
 import { REGIONS, type Product } from "@/db/schema";
-import { REGION_LABELS } from "@/lib/regions";
+import { REGION_CHOICES, REGION_LABELS } from "@/lib/regions";
 import { Button, inputCls, Notice } from "./ui";
 import { Repeater } from "./Repeater";
 import { ImageField } from "./ImageField";
@@ -311,18 +311,30 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
           </select>
         </div>
       );
-    case "region":
+    case "region": {
+      // names as in the region menu (Europe & Middle East, not the long site label)
+      const regionLabel = (r: string) => REGION_CHOICES.find((c) => c.region === r)?.label ?? REGION_LABELS[r as keyof typeof REGION_LABELS] ?? r;
+      if (f.fixedAfterCreate && str)
+        return (
+          <div className={wrap}>
+            <Label f={f} error={error} />
+            <input type="hidden" name={name} value={str} />
+            <p className="py-2 text-sm text-neutral-800">{regionLabel(str)}</p>
+            <p className="text-xs text-neutral-500">For another region, create its version on the page&apos;s screen.</p>
+          </div>
+        );
       return (
         <div className={wrap}>
           <Label f={f} error={error} />
           <select id={name} name={name} defaultValue={str} className={inputCls}>
-            {!f.required && <option value="">— global —</option>}
+            {!f.required && <option value="">— all regions —</option>}
             {REGIONS.map((r) => (
-              <option key={r} value={r}>{REGION_LABELS[r]}</option>
+              <option key={r} value={r}>{regionLabel(r)}</option>
             ))}
           </select>
         </div>
       );
+    }
     case "regions": {
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (

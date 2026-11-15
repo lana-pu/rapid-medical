@@ -88,7 +88,7 @@ export function SiteTree({ tree }: { tree: SiteNode[] }) {
           <Link href="/admin/editor?new=1" className="rounded border border-neutral-300 px-2 py-0.5 text-xs hover:bg-neutral-50">+ New page</Link>
         </div>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a page or collection" aria-label="Find a page or collection" className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm" />
-        <p className="px-1 text-[10px] text-neutral-400">▤ collection — records of one kind</p>
+        <p className="px-1 text-[10px] text-neutral-400">▤ list of items (news, studies, team…)</p>
       </div>
       <ul className="flex-1 overflow-y-auto px-2 pb-4">{tree.map((n) => row(n, 0))}</ul>
     </nav>

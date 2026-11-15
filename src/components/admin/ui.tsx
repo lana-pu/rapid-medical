@@ -45,7 +45,9 @@ export function StatusBadge({ status }: { status: string }) {
         : status === "new"
           ? "bg-blue-100 text-blue-800"
           : "bg-neutral-100 text-neutral-700";
-  return <span className={`rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{status}</span>;
+  // words, not codes (docs/audits/admin-walkthrough-2026-11-15.md)
+  const WORDS: Record<string, string> = { published: "On the site", draft: "Draft", new: "New", in_progress: "In progress", done: "Done", spam: "Spam" };
+  return <span className={`rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{WORDS[status] ?? status}</span>;
 }
 
 export function RegionBadge({ region }: { region: Region | null | undefined }) {

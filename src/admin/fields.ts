@@ -42,6 +42,8 @@ export type FieldDef = {
   rows?: number;
   /** Edited on the page (ADR-007): not in the form; a form save keeps the current value. */
   onPage?: boolean;
+  /** Set when the record is created, then shown as text (a page's region: another region is a copy of the page). */
+  fixedAfterCreate?: boolean;
 };
 
 export type ListColumn = {

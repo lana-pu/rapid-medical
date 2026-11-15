@@ -72,6 +72,12 @@ export default async function SitePage({ params, searchParams }: { params: Promi
         </nav>
       )}
 
+      {/* one line on what to do here: the screen is opened once or twice a month (docs/audits/admin-walkthrough-2026-11-15.md) */}
+      <p className="-mt-2 mb-6 text-sm text-neutral-600">
+        {view === "regions"
+          ? "What is different between the regional versions of this page. Click a text to change it in that region; the change waits there until you publish it."
+          : "To change texts and pictures, use Edit on page in a region. Visitors see the changes after Publish."}
+      </p>
       {view === "regions" ? await regionsView() : await overview()}
     </>
   );

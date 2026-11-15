@@ -42,7 +42,7 @@ export type Resource = {
 };
 
 const statusField: FieldDef = { name: "status", label: "Status", type: "status", half: true };
-const sortField: FieldDef = { name: "sortOrder", label: "Sort order", type: "number", half: true };
+const sortField: FieldDef = { name: "sortOrder", label: "Order", type: "number", half: true, help: "Smaller numbers come first." };
 
 const actionLinkFields: FieldDef[] = [
   { name: "label", label: "Label", type: "text", required: true, half: true },
@@ -63,15 +63,15 @@ export const RESOURCES: Resource[] = [
     onCreate: (d) => ({ ...d, heroTitle: d.heroTitle || d.navLabel, blocks: templateBlocks("therapy", String(d.navLabel ?? "")) }),
     listColumns: [
       { name: "navLabel", label: "Name" },
-      { name: "slug", label: "Slug" },
+      { name: "slug", label: "Address" },
       { name: "region", label: "Region", kind: "region" },
       { name: "productId", label: "Product", kind: "product" },
       { name: "status", label: "Status", kind: "status" },
     ],
     fields: [
       { name: "navLabel", label: "Menu label", type: "text", required: true, half: true, section: "Basics" },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true, section: "Basics", help: "lvo, mvo, aneurysm, vasospasm, access" },
-      { name: "region", label: "Region", type: "region", required: true, half: true, section: "Basics" },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true, section: "Basics", help: "The end of the page link: /{region}/therapies/lvo. If you change it, old links keep working." },
+      { name: "region", label: "Region", type: "region", required: true, half: true, section: "Basics", fixedAfterCreate: true },
       { name: "productId", label: "Product", type: "product", half: true, section: "Basics" },
       { ...statusField, section: "Basics" },
       { ...sortField, section: "Basics" },
@@ -199,9 +199,9 @@ export const RESOURCES: Resource[] = [
       { onPage: true, name: "referencesHtml", label: "References ", type: "markdown", section: "Regulatory", rows: 8 },
 
       blocksField,
-      { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
-      { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
-      { name: "shareImageUrl", label: "Social share image (Open Graph; falls back to the hero image)", type: "image", section: "SEO" },
+      { name: "metaTitle", label: "Title in Google", type: "text", section: "Google and sharing", half: true, help: "Up to 60 characters. Empty — the page name." },
+      { name: "metaDescription", label: "Description in Google", type: "textarea", section: "Google and sharing", rows: 2, help: "Up to 155 characters. Empty — Google picks text from the page." },
+      { name: "shareImageUrl", label: "Picture for links (LinkedIn and others)", type: "image", section: "Google and sharing", help: "Shown when the page link is shared. Empty — the page's main picture." },
     ],
   },
 
@@ -258,7 +258,7 @@ export const RESOURCES: Resource[] = [
     ],
     fields: [
       { name: "title", label: "Title", type: "text", required: true, half: true, section: "Event" },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true, section: "Event" },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true, section: "Event" },
       { name: "subtitle", label: "Subtitle", type: "text", section: "Event", placeholder: "Real-world experience from two perspectives" },
       { name: "startsOn", label: "Date (first day)", type: "date", required: true, half: true, section: "Event", help: "YYYY-MM-DD. The event moves to “Past events” on its own the day after it ends." },
       { name: "endsOn", label: "Last day (if several days)", type: "date", half: true, section: "Event" },
@@ -364,7 +364,7 @@ export const RESOURCES: Resource[] = [
     ],
     fields: [
       { name: "name", label: "Name", type: "text", required: true, half: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true },
       { name: "title", label: "Short title", type: "text", required: true, half: true, placeholder: "CO-FOUNDER & CEO" },
       { name: "longTitle", label: "Long title", type: "text", half: true },
       { name: "photoUrl", label: "Photo", type: "image" },
@@ -392,7 +392,7 @@ export const RESOURCES: Resource[] = [
     ],
     fields: [
       { name: "title", label: "Title", type: "text", required: true, half: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true },
       { name: "location", label: "Location", type: "text", half: true },
       { name: "department", label: "Department", type: "text", half: true },
       { name: "descriptionHtml", label: "Description ", type: "markdown", rows: 12 },
@@ -416,21 +416,21 @@ export const RESOURCES: Resource[] = [
     onCreate: (d) => ({ ...d, blocks: templateBlocks("text", String(d.title ?? "")) }),
     listColumns: [
       { name: "title", label: "Title" },
-      { name: "slug", label: "Slug" },
+      { name: "slug", label: "Address" },
       { name: "region", label: "Region", kind: "region" },
       { name: "noindex", label: "No-index", kind: "boolean" },
       { name: "status", label: "Status", kind: "status" },
     ],
     fields: [
       { name: "title", label: "Title", type: "text", required: true, half: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true },
-      { name: "region", label: "Region (empty = global)", type: "region", half: true },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true, help: "The end of the page link. If you change it, old links keep working." },
+      { name: "region", label: "Region (empty = all regions)", type: "region", half: true, fixedAfterCreate: true },
       { name: "noindex", label: "Hide from search engines", type: "boolean", half: true },
       { onPage: true, name: "bodyHtml", label: "Body ", type: "markdown", rows: 20 },
       blocksField,
-      { name: "metaTitle", label: "Meta title", type: "text", section: "SEO", half: true },
-      { name: "metaDescription", label: "Meta description", type: "textarea", section: "SEO", rows: 2 },
-      { ...statusField, section: "SEO" },
+      { name: "metaTitle", label: "Title in Google", type: "text", section: "Google and sharing", half: true, help: "Up to 60 characters. Empty — the page name." },
+      { name: "metaDescription", label: "Description in Google", type: "textarea", section: "Google and sharing", rows: 2, help: "Up to 155 characters. Empty — Google picks text from the page." },
+      { ...statusField, section: "Google and sharing" },
     ],
   },
 
@@ -466,14 +466,14 @@ export const RESOURCES: Resource[] = [
     revalidate: ["/us/evidence", "/ous/evidence", "/apac/evidence"],
     listColumns: [
       { name: "name", label: "Name" },
-      { name: "slug", label: "Slug" },
+      { name: "slug", label: "Address" },
       { name: "family", label: "Family" },
       { name: "regions", label: "Evidence tab in", kind: "regions" },
       { name: "sortOrder", label: "Order" },
     ],
     fields: [
       { name: "name", label: "Name", type: "text", required: true, half: true, placeholder: "TIGERTRIEVER™ 13" },
-      { name: "slug", label: "Slug", type: "slug", required: true, half: true },
+      { name: "slug", label: "Address", type: "slug", required: true, half: true },
       { name: "fullName", label: "Full name", type: "text", required: true },
       { name: "family", label: "Family slug (parent product)", type: "text", half: true, help: "e.g. tigertriever; empty for a top-level product" },
       sortField,

@@ -77,9 +77,12 @@ export function ReplaceButton({ file, places }: { file: FileInfo; places: number
 
   if (!open) {
     return (
-      <Button type="button" onClick={() => setOpen(true)} disabled={DEMO} title={DEMO ? "Replacing files needs the server; not in the demo" : undefined}>
-        Replace everywhere
-      </Button>
+      <span className="inline-flex flex-col items-end gap-1">
+        <Button type="button" onClick={() => setOpen(true)} disabled={DEMO} title={DEMO ? "Replacing files needs the server; not in the demo" : undefined}>
+          Replace everywhere
+        </Button>
+        <span className="max-w-xs text-right text-xs text-neutral-500">Upload a new version: it takes this file&apos;s place everywhere it is used. Pages get it as unpublished changes — visitors see it after Publish.</span>
+      </span>
     );
   }
   const accept = kind === "image" ? "image/*" : kind === "video" ? "video/mp4,video/webm" : kind === "pdf" ? ".pdf" : undefined;

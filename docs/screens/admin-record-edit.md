@@ -23,7 +23,7 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 - **Месяц и год** (`month`, флоу pub-new): поле «Published» у публикаций — выбор месяца, хранится первым числом месяца.
 - **Поля `onPage` (ADR-007, 2026-11-12)** в форме не показываются: содержимое страницы правится на странице. Вместо них —
   блок «Page content» со ссылкой «Edit on page ✎». Сохранение формы оставляет их как есть (черновик поверх live).
-  Терапии: в форме Basics (без breadcrumb) и SEO; текстовые страницы: без `bodyHtml`. Новая запись получает список блоков
+  Терапии: в форме Basics (без breadcrumb) и «Google and sharing» (было SEO); текстовые страницы: без `bodyHtml`. Новая запись получает список блоков
   из шаблона (`src/blocks/templates.ts`).
 - **UnsavedGuard**: предупреждение при уходе с несохранённой формой + локальная копия в `localStorage`
   (`rm-draft:{resource}:{id|new}`) с восстановлением.
@@ -69,10 +69,19 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
 | **Schedule publication** (datetime-local, Set, clear) — «Publish later» | всегда | любая роль; время — по Израилю, подпись «Time zone: Israel (UTC+2/+3)» по дате |
 | **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |
-| **Copy to {REGION}** (в шапке) | только `solutions` | дубликат как draft в другом регионе |
+| **Create {регион} version** (в шапке; было «Copy to {REGION}») | только `solutions`, только регионы, где этой терапии ещё нет | дубликат как draft в этом регионе |
 
 Уведомления после действий — через query-параметры: `published`, `unpublished`, `discarded`,
 `scheduled`, `restored`, `error`.
 
 ## Известные расхождения (код ↔ заявленная модель) — см. BACKLOG P0
 - Unpublish, Discard, Schedule, restore, bulk delete — без проверки роли.
+
+## Слова в форме (прогон «глазами новичка», 2026-11-15, `docs/audits/admin-walkthrough-2026-11-15.md`)
+- Slug → **Address** («The end of the page link…; if you change it, old links keep working» — редирект создаётся при
+  публикации); Sort order → **Order** («Smaller numbers come first»); Meta title / Meta description → **Title in Google**
+  (до 60) / **Description in Google** (до 155); Social share image → **Picture for links (LinkedIn and others)**; раздел
+  SEO → **Google and sharing**.
+- **Регион страницы** у созданной записи — текстом, не выпадашкой («For another region, create its version on the page's
+  screen»); названия регионов в формах — короткие, как в меню регионов.
+- Статус — словами: On the site · Draft · New · In progress · Done · Spam. Пустой блок History не показывается.
