@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Region } from "@/db/schema";
-import { REGION_SHORT } from "@/lib/regions";
+import { REGION_CHOICES, REGION_SHORT } from "@/lib/regions";
 
 /* Small, unstyled-ish primitives for the admin. Swap freely later. */
 
@@ -51,8 +51,9 @@ export function StatusBadge({ status }: { status: string }) {
 }
 
 export function RegionBadge({ region }: { region: Region | null | undefined }) {
-  if (!region) return <span className="text-xs text-neutral-400">global</span>;
-  return <span className="rounded bg-neutral-200 px-2 py-0.5 text-xs font-medium text-neutral-800">{REGION_SHORT[region]}</span>;
+  if (!region) return <span className="text-xs text-neutral-400">All regions</span>;
+  // names as in the region menu, not codes (docs/screens/admin-list.md)
+  return <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-700">{REGION_CHOICES.find((c) => c.region === region)?.label ?? REGION_SHORT[region]}</span>;
 }
 
 export type Crumb = { label: string; href?: string };

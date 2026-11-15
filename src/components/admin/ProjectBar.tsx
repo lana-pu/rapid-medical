@@ -27,7 +27,7 @@ export function ProjectBar({ project, editHref, user }: { project?: { name: stri
         </>
       )}
       <span className="flex-1" />
-      {project && editHref && <a href={editHref} className="rounded px-2.5 py-1.5 hover:bg-neutral-100">✎ Edit site</a>}
+      {project && editHref && <a href={editHref} className="rounded px-2.5 py-1.5 hover:bg-neutral-100">✎ Edit the site</a>}
       {project && <a href="/" target="_blank" rel="noreferrer" className="rounded px-2.5 py-1.5 hover:bg-neutral-100">View site ↗</a>}
       <AccountMenu user={user} />
     </header>

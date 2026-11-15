@@ -53,6 +53,7 @@ test("login → choose a project; the project in the header; its dashboard; the 
 });
 
 test("editing a live record creates pending changes, preview shows them, publish goes live", async ({ page, browser }) => {
+  test.setTimeout(120_000); // the longest walk of the suite; under load it passes 60 s
   await login(page);
   const id = sql("select id from solutions where region='ous' and slug='lvo'");
   await page.goto(`/admin/solutions/${id}`);

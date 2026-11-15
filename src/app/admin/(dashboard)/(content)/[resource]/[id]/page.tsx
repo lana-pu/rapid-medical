@@ -65,7 +65,7 @@ export default async function EditResource({ params, searchParams }: { params: P
         <PageHeader
         crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
         title={String(row[res.labelField] ?? res.titleSingular)}
-        subtitle={`${res.titleSingular} #${row.id}`}
+        subtitle={res.titleSingular}
         actions={
           <>
             {otherRegions.map((r) => (

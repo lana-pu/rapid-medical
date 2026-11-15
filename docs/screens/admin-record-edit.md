@@ -85,3 +85,4 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 - **Регион страницы** у созданной записи — текстом, не выпадашкой («For another region, create its version on the page's
   screen»); названия регионов в формах — короткие, как в меню регионов.
 - Статус — словами: On the site · Draft · New · In progress · Done · Spam. Пустой блок History не показывается.
+- В шапке записи — без технического номера («News item», а не «News item #1») (2026-11-15).

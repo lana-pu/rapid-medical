@@ -35,12 +35,15 @@ export const SOURCES: (Filter & { empty: string; short: string })[] = [
 
 const sourceOf = (m: Message) => SOURCES.find((s) => s.key !== "any" && s.key !== "subscribed" && s.test(m))?.short ?? "";
 
+/** The office's time (Israel), as everywhere in the admin: the list and the open request show the same time. */
+const TZ = "Asia/Jerusalem";
+const dayOf = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 const when = (iso: string) => {
   const d = new Date(iso);
-  const today = new Date();
-  return d.toDateString() === today.toDateString()
-    ? d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
-    : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", ...(d.getFullYear() !== today.getFullYear() ? { year: "numeric" } : {}) });
+  const now = new Date();
+  return dayOf(d) === dayOf(now)
+    ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ }).format(d)
+    : new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: TZ, ...(dayOf(d).slice(0, 4) !== dayOf(now).slice(0, 4) ? { year: "numeric" } : {}) }).format(d);
 };
 
 export function MessageList({ messages, elsewhere = [], state, source, onState, onSource, wide }: {

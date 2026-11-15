@@ -15,16 +15,21 @@
 
 ## Шапка экрана
 «Website» и подпись «rapid-medical.com · last published {что} by {кто}, {когда}» (из журнала; нет публикаций —
-без второй части). Справа **Edit the site** (редактор на главной) и **View site ↗**.
+без второй части). Справа **Edit the site** (редактор на главной; то же название в шапке проекта) и **View site ↗**. Правка одной страницы
+везде называется **Edit on page**.
 Ниже — **быстрые действия**: + Page (выбор шаблона), + News item, + Event, + Publication, Upload files.
 
 ## Колонка слева
-- **Needs your attention** — что ждёт действия: неопубликованные правки записей и настроек (кто, когда, Open / Open on
+- **Needs your attention** — что ждёт действия (есть непрочитанные, но ничего не ждёт публикации — «Nothing to publish:
+  everything is live.», без противоречия «Nothing waiting»): неопубликованные правки записей и настроек (кто, когда, Open / Open on
   page), битые ссылки, на которые попадали посетители. Над списком — плашка «{N} unread messages in the Inbox», если
   есть. Пусто → «Nothing waiting. Everything is live.» Заявки и заметки сюда не попадают — они в Inbox.
 - **Continue where you left off** — мои последние 5 записей или страниц, которые я сохраняла или публиковала (из
   журнала), со ссылкой. Пусто — блока нет.
-- **Recent activity** — последние 8 действий команды словами («Emily R published Large vessel stroke · 2 hours ago»),
+- **Recent activity** — последние 8 действий команды словами («Emily R published Large vessel stroke · 2 hours ago»);
+  **одинаковые действия подряд склеиваются** («Admin saved Medium vessel stroke · 4 times · just now»), у записи без
+  подписи — её название из базы, а не «Therapy page #10»; у страниц — регион («Medium vessel stroke (Europe & Middle
+  East)») (2026-11-15);
   без входов; ссылка **All activity**.
 
 ## Колонка справа

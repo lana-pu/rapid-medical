@@ -72,7 +72,7 @@ export default async function WebsiteHome({ searchParams }: { searchParams: Prom
                 </Link>
               )}
               {todo.length === 0 ? (
-                <p className={`${card} p-6 text-sm text-neutral-600`}>Nothing waiting. Everything is live.</p>
+                <p className={`${card} p-6 text-sm text-neutral-600`}>{unread > 0 ? "Nothing to publish: everything is live." : "Nothing waiting. Everything is live."}</p>
               ) : (
                 <ul className="space-y-2">
                   {todo.map((t) => (

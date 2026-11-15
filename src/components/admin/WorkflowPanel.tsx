@@ -68,7 +68,7 @@ export function WorkflowPanel({
           <div className="mt-3 text-xs">
             <Link href={previewHref} target="_blank" className="underline">Preview {pending ? "with the unpublished changes" : "page"} ↗</Link>
             <span className="ml-2 text-neutral-400">(the link works 7 days)</span>
-            {editHref && <a href={editHref} className="ml-4 font-medium underline">Edit on site ✎</a>}
+            {editHref && <a href={editHref} className="ml-4 font-medium underline">Edit on page ✎</a>}
           </div>
         )}
       </div>

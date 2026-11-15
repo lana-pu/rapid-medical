@@ -39,6 +39,8 @@ export type Resource = {
   onCreate?: (data: Record<string, unknown>) => Record<string, unknown>;
   /** The site cannot do without these records (Home, About…): no create, unpublish or delete. */
   alwaysLive?: boolean;
+  /** A picture field shown as a thumbnail next to the name in lists (docs/screens/admin-list.md). */
+  listThumb?: string;
 };
 
 const statusField: FieldDef = { name: "status", label: "Status", type: "status", half: true };
@@ -208,6 +210,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "publications",
+    listThumb: "imageUrl",
     title: "Publications",
     titleSingular: "Publication",
     table: publications,
@@ -242,6 +245,7 @@ export const RESOURCES: Resource[] = [
   {
     // Decision 2026-11-10 (docs/screens/events.md): marketing publishes events; upcoming / past comes from the dates.
     slug: "events",
+    listThumb: "imageUrl",
     title: "Events",
     titleSingular: "Event",
     table: events,
@@ -291,6 +295,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "news",
+    listThumb: "imageUrl",
     title: "News",
     titleSingular: "News item",
     table: newsItems,
@@ -319,6 +324,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "webinars",
+    listThumb: "imageUrl",
     title: "Webinars",
     titleSingular: "Webinar",
     table: webinars,
@@ -349,6 +355,7 @@ export const RESOURCES: Resource[] = [
   /* ------------------------------------------------------------- */
   {
     slug: "team",
+    listThumb: "photoUrl",
     title: "Team",
     titleSingular: "Team member",
     table: teamMembers,

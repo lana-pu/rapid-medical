@@ -2,6 +2,7 @@ import "server-only";
 import { and, count, desc, eq, gte, inArray, isNotNull, isNull, like, max, notInArray, sql } from "drizzle-orm";
 import { auditLog, comments, contactSubmissions, db, events, media, newsItems, notFoundLog, pages, publications, users } from "@/db";
 import { day, today } from "@/lib/events";
+import { REGION_CHOICES } from "@/lib/regions";
 import { whereTo } from "@/lib/subscribers";
 import { listSettingDrafts } from "@/lib/settings";
 import { getSettingsGroup, mayEditGroup, mayEditOnPage } from "./settings";
@@ -96,11 +97,41 @@ function phrase(e: typeof auditLog.$inferSelect): string {
   }
 }
 
+/**
+ * The names of the records an entry is about, as the site shows them: the record's own label (not «Therapy page #10»)
+ * and, for a page in a region, its region («Medium vessel stroke (Europe & Middle East)»).
+ */
+async function namesFor(entries: (typeof auditLog.$inferSelect)[]): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  for (const e of entries) {
+    if (!e.resource || !e.recordId) continue;
+    const key = `${e.resource}:${e.recordId}`;
+    if (out.has(key)) continue;
+    const res = getResource(e.resource);
+    const row = res ? await getRow(res, Number(e.recordId)).catch(() => null) : null;
+    const name = row ? String(row[res!.labelField] ?? "") : "";
+    const region = row?.region ? REGION_CHOICES.find((c) => c.region === row.region)?.label : null;
+    out.set(key, name ? `${name}${region ? ` (${region})` : ""}` : e.label || `a deleted ${res?.titleSingular.toLowerCase() ?? "record"}`);
+  }
+  return out;
+}
+
+/** The team's actions in words; the same action on the same record, one after another, reads once with a count. */
 export async function recentActivity(limit = 8): Promise<{ id: number; who: string; text: string; ago: string; href: string | null }[]> {
-  const rows = await db.select().from(auditLog).where(notInArray(auditLog.action, ["login", "login_failed", "logout"])).orderBy(desc(auditLog.createdAt)).limit(limit);
-  return rows.map((e) => {
+  const rows = await db.select().from(auditLog).where(notInArray(auditLog.action, ["login", "login_failed", "logout"])).orderBy(desc(auditLog.createdAt)).limit(limit * 6);
+  const runs: { e: (typeof auditLog.$inferSelect); n: number }[] = [];
+  for (const e of rows) {
+    const last = runs[runs.length - 1];
+    const same = last && last.e.userName === e.userName && last.e.action === e.action && last.e.resource === e.resource && last.e.recordId === e.recordId && (e.resource || last.e.label === e.label);
+    if (same) last.n += 1;
+    else if (runs.length < limit) runs.push({ e, n: 1 });
+    else break;
+  }
+  const names = await namesFor(runs.map((x) => x.e));
+  return runs.map(({ e, n }) => {
     const r = e.resource ? getResource(e.resource) : null;
-    return { id: e.id, who: e.userName || "Someone", text: phrase(e), ago: ago(e.createdAt), href: r && e.recordId ? `/admin/${r.slug}/${e.recordId}` : null };
+    const named = e.resource && e.recordId ? { ...e, label: names.get(`${e.resource}:${e.recordId}`) ?? e.label } : e;
+    return { id: e.id, who: e.userName || "Someone", text: `${phrase(named)}${n > 1 ? ` · ${n} times` : ""}`, ago: ago(e.createdAt), href: r && e.recordId ? `/admin/${r.slug}/${e.recordId}` : null };
   });
 }
 
@@ -126,16 +157,16 @@ export async function myRecent(userId: number, limit = 5): Promise<{ key: string
     .where(and(eq(auditLog.userId, userId), inArray(auditLog.action, ["save", "publish", "restore"]), isNotNull(auditLog.resource), isNotNull(auditLog.recordId)))
     .orderBy(desc(auditLog.createdAt)).limit(60);
   const seen = new Set<string>();
-  const out: { key: string; text: string; ago: string; href: string }[] = [];
+  const picked: (typeof auditLog.$inferSelect)[] = [];
   for (const e of rows) {
     const key = `${e.resource}:${e.recordId}`;
-    const href = recordHref(e);
-    if (seen.has(key) || !href) continue;
+    if (seen.has(key) || !recordHref(e)) continue;
     seen.add(key);
-    out.push({ key, text: label(e), ago: ago(e.createdAt), href });
-    if (out.length >= limit) break;
+    picked.push(e);
+    if (picked.length >= limit) break;
   }
-  return out;
+  const names = await namesFor(picked);
+  return picked.map((e) => ({ key: `${e.resource}:${e.recordId}`, text: names.get(`${e.resource}:${e.recordId}`) ?? label(e), ago: ago(e.createdAt), href: recordHref(e)! }));
 }
 
 /* ------------------------------------------------------------------ */
