@@ -166,7 +166,10 @@ export async function myRecent(userId: number, limit = 5): Promise<{ key: string
     if (picked.length >= limit) break;
   }
   const names = await namesFor(picked);
-  return picked.map((e) => ({ key: `${e.resource}:${e.recordId}`, text: names.get(`${e.resource}:${e.recordId}`) ?? label(e), ago: ago(e.createdAt), href: recordHref(e)! }));
+  // a record deleted since cannot be continued: it is not offered
+  return picked
+    .filter((e) => !names.get(`${e.resource}:${e.recordId}`)?.startsWith("a deleted "))
+    .map((e) => ({ key: `${e.resource}:${e.recordId}`, text: names.get(`${e.resource}:${e.recordId}`) ?? label(e), ago: ago(e.createdAt), href: recordHref(e)! }));
 }
 
 /* ------------------------------------------------------------------ */
