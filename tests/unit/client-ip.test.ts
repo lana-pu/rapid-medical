@@ -19,5 +19,12 @@ describe("clientIp: the address the host wrote, not the one the visitor sent", (
     expect(clientIp(h({}), false)).toBeNull();
     expect(clientIp(h({ "x-forwarded-for": " " }), false)).toBeNull();
     expect(clientIp(h({ "x-forwarded-for": "evil<script>" }), false)).toBeNull();
+    expect(clientIp(h({ "x-forwarded-for": "999.1.1.1" }), false)).toBeNull();
+    expect(clientIp(h({ "x-forwarded-for": "::::" }), false)).toBeNull();
+  });
+  it("takes off a port, brackets and an IPv6 zone", () => {
+    expect(clientIp(h({ "x-forwarded-for": "203.0.113.7:443" }), false)).toBe("203.0.113.7");
+    expect(clientIp(h({ "x-forwarded-for": "[2001:db8::1]:443" }), false)).toBe("2001:db8::1");
+    expect(clientIp(h({ "x-forwarded-for": "fe80::1%eth0" }), false)).toBe("fe80::1");
   });
 });

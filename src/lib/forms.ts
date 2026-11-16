@@ -36,7 +36,9 @@ const schema = z.object({
  * More than FORM_MAX sends from one address in FORM_WINDOW_MS → «Too many requests». Counted in the database (the
  * sign-in attempts table, key «form:{address}»): the same for every server instance and kept across restarts
  * (docs/screens/contact-us.md → Лимит). A request without a known address shares one bucket with a wider cap — it is
- * never let through uncounted. Counted first: a refused send writes nothing; the address's old rows go on each call.
+ * never let through uncounted (no address means no proxy in front — a host set up wrong; refusing everyone then would
+ * break every form). Counted first: a refused send writes nothing; the address's old rows go on each call. Count and
+ * write run under a lock per address, so sends at the same moment cannot slip past the limit together.
  */
 const FORM_MAX = 8;
 const FORM_MAX_UNKNOWN = 60; // direct requests with no proxy in front (development, e2e) all land here
@@ -44,11 +46,14 @@ const FORM_WINDOW_MS = 10 * 60 * 1000;
 async function limited(ip: string | null): Promise<boolean> {
   const key = `form:${ip ?? "unknown"}`;
   const since = new Date(Date.now() - FORM_WINDOW_MS);
-  await db.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
-  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
-  if (n >= (ip ? FORM_MAX : FORM_MAX_UNKNOWN)) return true;
-  await db.insert(loginAttempts).values({ key });
-  return false;
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${key}))`);
+    await tx.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
+    const [{ n }] = await tx.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
+    if (n >= (ip ? FORM_MAX : FORM_MAX_UNKNOWN)) return true;
+    await tx.insert(loginAttempts).values({ key });
+    return false;
+  });
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
