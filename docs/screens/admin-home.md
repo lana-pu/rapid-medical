@@ -1,50 +1,52 @@
-# Экран: Website — what needs you (`/admin`)
+# Экран: дашборд проекта Website (`/admin/website`)
 
-> **2026-11-14: главная стала Inbox** (`docs/admin-ia.md`): одна лента «Everything waiting» с видами (Requests ·
-> Comments · To publish · Pictures without description · Broken links) во второй колонке; «Recent activity» — в
-> Settings → Activity log, сводка убрана. Ниже — прежнее описание ленты, оно в силе.
+Решение владелицы 2026-11-15 (`docs/admin-ia.md` → «проект отдельно»): сначала выбор проекта (`admin-choose.md`),
+потом этот экран — первый пункт **Home** на полоске пространств. Код: `src/app/admin/(dashboard)/(home)/website/`,
+`src/admin/home.ts`.
 
-
-Основа: флоу админки `docs/flows/admin.json` (экран home), разбор админки сценарий №12 («первым — что не опубликовано и
-что ждёт ответа, а не счётчики записей»), ADR-006. Код: `src/app/admin/(dashboard)/page.tsx`, `src/admin/home.ts`.
-
-## Вход
-После входа и выбора «Website» (экран выбора — `screens/admin-choose.md`) открывается этот экран. Логотип «Rapid Medical»
-в меню ведёт сюда же.
-
-## Шапка
-«Hello, {имя}» и кнопка **New page** (→ `/admin/editor?new=1`, выбор шаблона).
-
-## Needs your attention
-Список дел, новые сверху, у каждого — что, кто и когда, одна кнопка действия. Пусто → «Nothing waiting. Everything is live.»
-| Дело | Текст | Действие |
+## Что обычно делают на дашборде сайта (бенчмарк, по памяти о продуктах — гипотеза, не проверено на людях)
+| Продукт | Что на главной | Берём |
 |---|---|---|
-| Неопубликованные правки записи | «{Название} — unpublished changes by {кто} · {когда}» | Open on page (страницы) или Open (запись) |
-| Правки настроек, сделанные на странице | «{Группа настроек} — unpublished changes by {кто}» | Open |
-| Запланированная публикация | «{Название} — publishes {дата, время} ({часовой пояс})» | Open |
-| Новые заявки | «{N} new request(s)» (статус New) | Open requests |
-| Открытые комментарии на странице | «{N} open comment(s) on {страница}» | Open on page |
-| Картинки без описания | «{N} picture(s) without a description» | Describe pictures |
-Неопубликованные записи без правок (черновики, которые никогда не были на сайте) сюда не попадают — они в своих списках.
+| WordPress | At a Glance (счётчики), Activity (опубликовано, комментарии), Quick Draft, Site Health | дела, действия команды, здоровье; счётчики — нет |
+| Shopify | «Things to do» (заказы), цифры дня против прошлого периода, подсказки | список дел, неделя против прошлой |
+| Wix / Squarespace | трафик кратко, новые сообщения форм, «Next steps» | неделя в цифрах, ссылка в Inbox |
+| Webflow | последняя публикация, статус сайта, журнал действий | «Last published … by …» в шапке |
+| Notion / Figma / Linear | «Jump back in» — недавно открытое мной | «Continue where you left off» |
 
-## Recent activity
-Последние 8 действий из журнала словами: «Emily R published Large vessel stroke · 2 hours ago», «Daniel K saved Evidence
-“…”», «Noa B replaced a file in 3 places». Ссылка **All activity** → `/admin/activity`. Входы и неудачные входы не показываются.
+## Шапка экрана
+«Website» и подпись «rapid-medical.com · last published {что} by {кто}, {когда}» (из журнала; нет публикаций —
+без второй части). Справа **Edit the site** (редактор на главной; то же название в шапке проекта) и **View site ↗**. Правка одной страницы
+везде называется **Edit on page**.
+Ниже — **быстрые действия**: + Page (выбор шаблона), + News item, + Event, + Publication, Upload files.
 
-## Сводка
-Три карточки со ссылками:
-- **Evidence** — «{N} studies · last added {дата}»;
-- **Media library** — «{N} files · {M} without description»;
-- **People and roles** — «{N} people · two-step sign-in on for everyone» или «{K} without two-step sign-in»
-  (карточка только у админа).
+## Колонка слева
+- **Needs your attention** — что ждёт действия (есть непрочитанные, но ничего не ждёт публикации — «Nothing to publish:
+  everything is live.», без противоречия «Nothing waiting»): неопубликованные правки записей и настроек (кто, когда, Open / Open on
+  page), битые ссылки, на которые попадали посетители. Над списком — плашка «{N} unread messages in the Inbox», если
+  есть. Пусто → «Nothing waiting. Everything is live.» Заявки и заметки сюда не попадают — они в Inbox.
+- **Continue where you left off** — мои последние 5 записей или страниц, которые я сохраняла или публиковала (из
+  журнала), со ссылкой. Пусто — блока нет.
+- **Recent activity** — последние 8 действий команды словами («Emily R published Large vessel stroke · 2 hours ago»);
+  **одинаковые действия подряд склеиваются** («Admin saved Medium vessel stroke · 4 times · just now»), у записи без
+  подписи — её название из базы, а не «Therapy page #10»; у страниц — регион («Medium vessel stroke (Europe & Middle
+  East)») (2026-11-15);
+  без входов; ссылка **All activity**.
 
-## Меню слева (все экраны админки)
-По разделам сайта — см. `admin-sections.md` (2026-11-13): Find a page; Website (Home … Menu and footer); Work; Admin.
-Внизу: имя и роль словами (Editor, Designer, Admin), My account, View site ↗, Edit site ✎, выход.
+## Колонка справа
+- **This week** — визиты и заявки против прошлой недели, главный источник; ссылка в Analytics. Цифры — **с первого дня**
+  (решение владелицы 2026-11-15). Пока счётчик работает меньше недели — под цифрами «Counted since {дата}», сравнения
+  визитов с прошлой неделей нет (её счётчик не видел), ссылка на Google Analytics за историей старого сайта.
+- **Coming up** — запланированные публикации (что, когда по Израилю) и ближайшие опубликованные события: дата,
+  регистрация («{N} registered» для формы, «registration on {сайт}» для ссылки, «closes {дата}»). Пусто — «Nothing
+  scheduled».
+- **Site health** — только то, что можно исправить, со ссылкой: картинки без описания (Describe pictures), страницы
+  без описания для Google, люди без двухэтапного входа (только админу), давность свежего контента: последняя новость,
+  публикация и событие — «{N} days ago», дольше 60 дней — жёлтым. Всё в порядке — «All good».
 
 ## Состояния
 | Состояние | Что видно |
 |---|---|
 | Нет дел | «Nothing waiting. Everything is live.» |
 | Нет журнала | «No activity yet.» |
+| Аналитика недоступна | блока This week нет |
 | Нет прав на раздел | `?error=forbidden` → «That area is for admins.» |

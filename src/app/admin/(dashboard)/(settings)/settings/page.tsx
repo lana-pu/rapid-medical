@@ -7,11 +7,14 @@ import { SETTINGS_GROUPS, getSettingsGroup, groupValue, mayEditGroup } from "@/a
 import { getLiveSetting, setSetting, getSettingDraft, deleteSettingDraft } from "@/lib/settings";
 import { db, products } from "@/db";
 import { PageHeader, Notice, Button } from "@/components/admin/ui";
+import { SettingsOverview } from "./Overview";
 import { SettingsFields } from "@/components/admin/SettingsFields";
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string; error?: string; f?: string }> }) {
   const sp = await searchParams;
   const me = await requireUser();
+  // no group asked: the overview of everything in Settings (docs/screens/admin-settings.md → «Обзор Settings»)
+  if (!sp.group) return <SettingsOverview user={me} />;
   const groups = SETTINGS_GROUPS.filter((g) => mayEditGroup(me, g));
   const asked = getSettingsGroup(sp.group ?? "contact");
   const group = asked && mayEditGroup(me, asked) ? asked : groups[0];
@@ -68,7 +71,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   return (
     <>
       {/* the groups are listed in the Settings column (docs/admin-ia.md); the page shows one */}
-      <PageHeader crumbs={[{ label: "Settings" }]} title={group.title} />
+      <PageHeader crumbs={[{ label: "Settings", href: "/admin/settings" }]} title={group.title} />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.error && (
         <Notice kind="error">
@@ -85,9 +88,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       {group.description && <p className="mb-4 text-sm text-neutral-500">{group.description}</p>}
       <form action={save} className="space-y-6">
         <input type="hidden" name="__group" value={group.key} />
-        <div className="rounded-lg border border-neutral-200 bg-white p-5">
-          <SettingsFields fields={group.fields} value={value} products={prods} />
-        </div>
+        {/* the form in blocks, each with a line on what it is for (docs/screens/admin-settings.md) */}
+        {[...new Set(group.fields.map((f) => f.section ?? ""))].map((name) => (
+          <section key={name || "_"} aria-label={name || group.title} className="rounded-lg border border-neutral-200 bg-white p-5">
+            {name && (
+              <div className="mb-4">
+                <h2 className="text-sm font-semibold text-neutral-900">{name}</h2>
+                {group.sections?.[name] && <p className="mt-0.5 text-sm text-neutral-500">{group.sections[name]}</p>}
+              </div>
+            )}
+            <SettingsFields fields={group.fields.filter((f) => (f.section ?? "") === name)} value={value} products={prods} />
+          </section>
+        ))}
         <Button type="submit">Save</Button>
       </form>
     </>

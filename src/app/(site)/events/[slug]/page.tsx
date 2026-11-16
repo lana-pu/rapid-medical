@@ -79,7 +79,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             {!open ? (
               <p className="rounded border border-border bg-surface px-4 py-3 text-sm">Registration is closed.</p>
             ) : e.registration === "link" && e.registrationUrl ? (
-              <Btn href={e.registrationUrl} external>Register</Btn>
+              <Btn href={e.registrationUrl} external track="out">Register</Btn>
             ) : (
               <div className="rounded border border-border p-6">
                 <h2 className="text-xl font-semibold">Register</h2>

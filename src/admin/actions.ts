@@ -6,6 +6,8 @@ import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { fromIsraelInput } from "@/lib/israel-time";
 import { getResource } from "./resources";
+import { adminPageHref } from "./site-tree";
+import { pageKey } from "./page-tree";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
 import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, schedule, restoreRevision, hasWorkflow } from "./workflow";
 
@@ -38,7 +40,8 @@ async function persist(fd: FormData): Promise<Persisted | { state: NonNullable<S
   let data = parsed.data;
   if (id) {
     const current = await getEditable(res, id);
-    if (current) for (const f of res.fields) if (f.onPage) data[f.name] = current.row[f.name];
+    // …and fields fixed when the record was created (a page's region): the server keeps them, whatever the form sends
+    if (current) for (const f of res.fields) if (f.onPage || f.fixedAfterCreate) data[f.name] = current.row[f.name];
   } else if (res.onCreate) data = res.onCreate(data);
 
   try {
@@ -86,12 +89,23 @@ async function ctx(fd: FormData) {
   return { user, res, id };
 }
 
+/** Back to the page's screen after an action started there (docs/screens/admin-sections.md → «Экран страницы»). */
+const pageScreenBack = (fd: FormData) => {
+  const b = String(fd.get("__back") ?? "");
+  if (/^\/admin\/seo(\?page=[a-zA-Z0-9\-/%]*)?$/.test(b) && !b.includes("//")) return b; // Search & sharing
+  return /^\/admin\/page(\/[a-z0-9\-/]*)?(\?view=regions)?$/.test(b) && !b.includes("//") ? b : null;
+};
+
 export async function publishResource(fd: FormData) {
   const { user, res, id } = await ctx(fd);
   await publish(res, id, user);
   const row = await getRow(res, id);
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
-  redirect(`/admin/${res.slug}/${id}?published=1`);
+  // back to the page's screen — at its new address, if publishing moved the page
+  const moved = row ? res.previewUrl?.(row) : null;
+  const asked = pageScreenBack(fd);
+  const back = asked ? (moved && asked.startsWith("/admin/page") ? adminPageHref(pageKey(moved)) + (asked.includes("?view=regions") ? "?view=regions" : "") : asked) : null;
+  redirect(back ? `${back}${back.includes("?") ? "&" : "?"}published=${encodeURIComponent(String(row?.region ?? "all"))}` : `/admin/${res.slug}/${id}?published=1`);
 }
 
 export async function unpublishResource(fd: FormData) {
@@ -141,7 +155,8 @@ export async function duplicateResource(fd: FormData) {
   if (region) overrides.region = region;
   const newId = await duplicateRow(res, id, overrides);
   await audit(user, "save", { resource: res.slug, recordId: newId, meta: { duplicatedFrom: id, ...overrides } });
-  redirect(`/admin/${res.slug}/${newId}`);
+  const back = pageScreenBack(fd);
+  redirect(back ? `${back}?created=${encodeURIComponent(String(region ?? ""))}` : `/admin/${res.slug}/${newId}`);
 }
 
 export async function bulkResource(fd: FormData) {

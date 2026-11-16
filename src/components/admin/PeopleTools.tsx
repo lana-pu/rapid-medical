@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { invitePerson, inviteAgain, setPassword } from "@/admin/people";
+import { invitePerson, inviteAgain, setPassword, setRole } from "@/admin/people";
 import { DEMO } from "@/lib/demo";
 import { Button, inputCls } from "./ui";
 
@@ -115,5 +115,26 @@ export function NewPassword({ id }: { id: number }) {
       </form>
       {msg && <span className="text-neutral-600">{msg}</span>}
     </details>
+  );
+}
+
+/** A person's role, readable and saved as soon as it is chosen (docs/screens/admin-people.md). */
+export function RoleSelect({ id, role, name, self }: { id: number; role: string; name: string; self: boolean }) {
+  return (
+    <form action={setRole}>
+      <input type="hidden" name="id" value={id} />
+      <select
+        name="role"
+        defaultValue={role}
+        key={role}
+        disabled={self || DEMO}
+        aria-label={`What ${name} can do`}
+        title={self ? "Your own role is changed by another admin" : ROLE_TEXT[role]?.text}
+        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+        className="min-w-32 rounded border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900 disabled:bg-neutral-50 disabled:text-neutral-500"
+      >
+        {Object.entries(ROLE_TEXT).map(([v, r]) => <option key={v} value={v}>{r.label}</option>)}
+      </select>
+    </form>
   );
 }

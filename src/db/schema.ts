@@ -523,6 +523,9 @@ export const sitePages = pgTable(
     region: regionEnum("region"),
     title: text("title").notNull(),
     blocks: jsonb("blocks").$type<StoredBlock[]>().notNull().default([]),
+    /** How Google shows the page (docs/screens/admin-seo.md); empty title = the page name */
+    metaTitle: text("meta_title").notNull().default(""),
+    metaDescription: text("meta_description").notNull().default(""),
     status: statusEnum("status").notNull().default("published"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -564,12 +567,28 @@ export const contactSubmissions = pgTable("contact_submissions", {
   status: submissionStatusEnum("status").notNull().default("new"),
   /** Who answers (docs/screens/admin-requests.md) */
   assignedToId: integer("assigned_to_id").references(() => users.id, { onDelete: "set null" }),
-  /** Note for the team, admin only */
+  /** The former single note for the team; kept, no longer written — notes are a thread in request_notes */
   note: text("note").notNull().default(""),
+  /** When someone in the team first opened it: unread until then (docs/screens/admin-requests.md) */
+  readAt: timestamp("read_at", { withTimezone: true }),
   ip: text("ip"),
   userAgent: text("user_agent"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** The team's notes on a request, as a thread (docs/screens/admin-requests.md). */
+export const requestNotes = pgTable(
+  "request_notes",
+  {
+    id: serial("id").primaryKey(),
+    submissionId: integer("submission_id").notNull().references(() => contactSubmissions.id, { onDelete: "cascade" }),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    userName: text("user_name").notNull().default(""),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("request_notes_submission").on(t.submissionId)],
+);
 
 /* ------------------------------------------------------------------ */
 /*  Redirects (legacy Duda URLs → new)                                  */

@@ -1,6 +1,6 @@
 import "server-only";
 import { and, desc, eq, lte, isNotNull, sql } from "drizzle-orm";
-import { db, drafts, revisions, type Draft, type Revision } from "@/db";
+import { db, drafts, redirects, revisions, type Draft, type Revision } from "@/db";
 import type { SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { getResource, type Resource } from "./resources";
@@ -119,12 +119,27 @@ export async function publish(res: Resource, id: number, user: SessionUser): Pro
   const draft = await getDraft(res, id);
   const live = await getRow(res, id);
   if (!live) throw new Error("Record not found");
+  const before = live.status === "published" ? (res.previewUrl?.(live) ?? null) : null; // the address visitors know
   const next = { ...(draft?.data ?? {}), status: "published" };
   await saveRow(res, id, next);
   if (draft) await db.delete(drafts).where(eq(drafts.id, draft.id));
   const row = (await getRow(res, id))!;
   await addRevision(res, id, "published", snapshot(res, row), user);
   await audit(user, "publish", { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
+  const after = res.previewUrl?.(row) ?? null;
+  if (before && after && before !== after) await moveAddress(before, after, user, { resource: res.slug, recordId: id, label: String(row[res.labelField] ?? "") });
+}
+
+/**
+ * A published page got a new address (docs/screens/admin-sections.md → «Смена адреса»): the old one redirects to the
+ * new one, so old links and posts keep working; redirects to the old address follow it; a redirect sitting on the new
+ * address goes — the page lives there again.
+ */
+async function moveAddress(from: string, to: string, user: SessionUser, what: { resource: string; recordId: number; label: string }) {
+  await db.delete(redirects).where(eq(redirects.from, to));
+  await db.insert(redirects).values({ from, to, permanent: true }).onConflictDoUpdate({ target: redirects.from, set: { to, permanent: true } });
+  await db.update(redirects).set({ to }).where(eq(redirects.to, from));
+  await audit(user, "save", { ...what, meta: { addressFrom: from, addressTo: to, redirect: true } });
 }
 
 /**

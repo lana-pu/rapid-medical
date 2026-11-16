@@ -77,9 +77,12 @@ export function ReplaceButton({ file, places }: { file: FileInfo; places: number
 
   if (!open) {
     return (
-      <Button type="button" onClick={() => setOpen(true)} disabled={DEMO} title={DEMO ? "Replacing files needs the server; not in the demo" : undefined}>
-        Replace everywhere
-      </Button>
+      <span className="inline-flex flex-col items-end gap-1">
+        <Button type="button" onClick={() => setOpen(true)} disabled={DEMO} title={DEMO ? "Replacing files needs the server; not in the demo" : undefined}>
+          Replace everywhere
+        </Button>
+        <span className="max-w-xs text-right text-xs text-neutral-500">Upload a new version: it takes this file&apos;s place everywhere it is used. Pages get it as unpublished changes — visitors see it after Publish.</span>
+      </span>
     );
   }
   const accept = kind === "image" ? "image/*" : kind === "video" ? "video/mp4,video/webm" : kind === "pdf" ? ".pdf" : undefined;
@@ -236,5 +239,25 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
         })}
       </ol>
     </>
+  );
+}
+
+/** Delete a file nobody uses (the server checks again, drafts included) — after a confirmation. */
+export function DeleteFile({ id, filename }: { id: number; filename: string }) {
+  const router = useRouter();
+  const [err, setErr] = useState<string | null>(null);
+  async function remove() {
+    if (!window.confirm(`Delete ${filename}? This cannot be undone.`)) return;
+    const res = await fetch(`/api/admin/media?id=${id}`, { method: "DELETE" });
+    if (res.status === 409) return setErr("It is used now — see the places on the right.");
+    if (!res.ok) return setErr("Could not delete the file.");
+    router.push("/admin/media?show=unused");
+    router.refresh();
+  }
+  return (
+    <span className="flex items-center gap-2">
+      <button type="button" onClick={remove} className="rounded border border-red-300 bg-white px-3 py-2 text-sm text-red-700 hover:bg-red-50">Delete file</button>
+      {err && <span className="text-xs text-red-700">{err}</span>}
+    </span>
   );
 }

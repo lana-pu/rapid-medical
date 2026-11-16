@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildReport, type ViewRow, type LeadRow } from "../../src/lib/analytics";
+import { buildReport, countingStartedWithin, type ViewRow, type LeadRow } from "../../src/lib/analytics";
 
 const now = new Date("2026-11-15T12:00:00Z");
 const ago = (d: number) => new Date(now.getTime() - d * 86_400_000);
@@ -33,5 +33,19 @@ describe("analytics report", () => {
     expect(r.campaigns).toEqual([{ label: "post-1", value: 1, extra: 1 }]);
     expect(r.leadForms).toEqual([{ label: "Contact form · Request a demo", value: 1 }]);
     expect(r.downloads).toEqual([{ label: "IFU TT.pdf", value: 1 }]);
+  });
+});
+
+it("a broken %-escape in a stored file name does not break the report", () => {
+  const r = buildReport({ days: 7, now, views: [view(1, { kind: "download", file: "/uploads/%E0%A4%A.pdf" })], leads: [], pageTitle: (p) => p, formLabel: (f) => f, regionLabel: (x) => x });
+  expect(r.downloads).toEqual([{ label: "%E0%A4%A.pdf", value: 1 }]);
+});
+
+describe("countingStartedWithin (the dashboard's «This week»)", () => {
+  const now = new Date("2026-11-30T12:00:00Z");
+  it("is true while the counter is younger than the period, and with nothing counted", () => {
+    expect(countingStartedWithin({ countingSince: new Date("2026-11-27T00:00:00Z"), now, days: 7 })).toBe(true);
+    expect(countingStartedWithin({ countingSince: new Date("2026-11-15T00:00:00Z"), now, days: 7 })).toBe(false);
+    expect(countingStartedWithin({ countingSince: null, now, days: 7 })).toBe(true);
   });
 });

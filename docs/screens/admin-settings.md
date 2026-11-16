@@ -5,6 +5,24 @@
 Код: `src/app/admin/(dashboard)/settings/page.tsx`, `src/admin/settings.ts` (`SETTINGS_GROUPS`, `mayEditGroup`,
 `groupValue`), `src/lib/settings.ts`, `src/components/admin/SettingsFields.tsx`; таблицы `site_settings`, `setting_drafts`.
 
+## Обзор Settings и порядок (решение владелицы 2026-11-15: «очень много всего, не разбито по блокам»)
+Референсы: incident.io и Remote (Mobbin) — блоки по группам, у каждого значок, название и строка «что меняет и где видно».
+- `/admin/settings` без `?group=` — **обзор**: группы блоков, у каждого — название, одна строка простыми словами, где это
+  видно на сайте, и состояние, если есть что сделать («2 pages without a description», «3 broken links»):
+  - **On the site** — Contact details («Phones, emails and offices — in the footer and on Contact Us»), Social links
+    («The icons in the footer»), Regional notices («The region chooser and the notes under each region»);
+  - **Search & sharing** — Google & sharing (`/admin/seo`, экран — [admin-seo](admin-seo.md)), Old links (редиректы и
+    битые ссылки на одном экране, вкладки Broken links · Redirects);
+  - **Look** — Branding (дизайнер, админ);
+  - **Team** — People and roles (админ), Activity log;
+  - **Connections** — Integrations (админ);
+  - **You** — My account & security.
+- Колонка слева — та же структура: «Overview» и группы с заголовками.
+- **Форма группы разбита на блоки** с заголовком и строкой пояснения (поле `section` у полей группы и `sections` с
+  пояснениями у группы). Contact details: «Phones and email on the site» · «Where requests go» (почты заказов и IFU:
+  «The contact form sends orders by region and IFU requests here; everything else goes to the main team address») ·
+  «Offices».
+
 ## Что показано
 - Заголовок «Site settings», вкладки — группы, доступные роли, в этом порядке:
 
@@ -20,7 +38,7 @@
 | Integrations | Google Analytics 4 ID, UserWay, «Suggest region by visitor country» | админ |
 
 - Под вкладками — описание группы (если есть) и форма полей группы, **Save**.
-- Без `?group=` открывается Contact details. Группа, которую роль не открывает (или неизвестная), — открывается первая
+- Без `?group=` — обзор (выше; до 2026-11-15 открывалась Contact details). Группа, которую роль не открывает (или неизвестная), — открывается первая
   доступная, без сообщения.
 - Значения в форме: значения по умолчанию группы (есть у Menu and footer — нынешнее меню), поверх — сохранённые, поверх —
   неопубликованные правки с сайта.

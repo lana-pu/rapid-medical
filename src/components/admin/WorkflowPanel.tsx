@@ -66,9 +66,9 @@ export function WorkflowPanel({
         </div>
         {previewHref && (
           <div className="mt-3 text-xs">
-            <Link href={previewHref} target="_blank" className="underline">Preview {pending ? "with pending changes" : "page"} ↗</Link>
-            <span className="ml-2 text-neutral-400">(share this link — valid 7 days)</span>
-            {editHref && <a href={editHref} className="ml-4 font-medium underline">Edit on site ✎</a>}
+            <Link href={previewHref} target="_blank" className="underline">Preview {pending ? "with the unpublished changes" : "page"} ↗</Link>
+            <span className="ml-2 text-neutral-400">(the link works 7 days)</span>
+            {editHref && <a href={editHref} className="ml-4 font-medium underline">Edit on page ✎</a>}
           </div>
         )}
       </div>
@@ -85,14 +85,13 @@ export function WorkflowPanel({
         <p className="mt-1 text-[11px] text-neutral-500">Publishes the pending changes (or the draft record) at that time. Time zone: {israelZoneLabel(draft?.publishAt ?? new Date())}.</p>
       </div>
 
-      {/* History */}
-      <div className="rounded-lg border border-neutral-200 bg-white p-4">
+      {/* History — only when there is some (an empty «No revisions yet» box said nothing) */}
+      {revisions.length > 0 && <div className="rounded-lg border border-neutral-200 bg-white p-4">
         <div className="flex items-center justify-between">
           <span className="text-xs uppercase text-neutral-500">History</span>
           {revisions.length > 1 && <Link href={`/admin/${resourceSlug}/${id}/history`} className="text-xs underline">Compare ↗</Link>}
         </div>
         <ul className="mt-2 max-h-72 divide-y divide-neutral-100 overflow-auto text-xs">
-          {revisions.length === 0 && <li className="py-2 text-neutral-400">No revisions yet.</li>}
           {revisions.map((r) => (
             <li key={r.id} className="flex items-center justify-between gap-2 py-1.5">
               <div>
@@ -109,7 +108,7 @@ export function WorkflowPanel({
             </li>
           ))}
         </ul>
-      </div>
+      </div>}
     </aside>
   );
 }

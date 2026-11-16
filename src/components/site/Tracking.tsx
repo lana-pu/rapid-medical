@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { captureFirstTouch, countDownload, countView, eventForLink, rememberPage, track } from "@/lib/tracking";
+import { captureFirstTouch, countDownload, countOut, countView, eventForLink, rememberPage, track } from "@/lib/tracking";
 
 /**
  * Remembers where the visit came from (for form submissions) and reports link clicks that matter:
@@ -25,6 +25,7 @@ export function Tracking() {
       const ev = eventForLink(a.getAttribute("href") ?? "", { inHeader: !!a.closest("header"), pathname: location.pathname });
       if (ev) track(ev.name, ev.params);
       countDownload(a.getAttribute("href") ?? "");
+      if (a.hasAttribute("data-rm-out")) countOut();
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);

@@ -1,6 +1,9 @@
 import type { Region } from "@/db/schema";
 
 export const REGIONS = ["us", "ous", "apac"] as const;
+
+/** Regions the team does not use now: hidden by default where regions are compared (owner, 2026-11-15). */
+export const PAUSED_REGIONS: readonly string[] = ["apac"];
 export type { Region };
 
 export const REGION_LABELS: Record<Region, string> = {

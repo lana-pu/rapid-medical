@@ -53,7 +53,7 @@ Emily (BACKLOG №22; возможно, у компании есть reprint-п�
 
 **Аннотация — у всех остальных (решение 2026-11-15).** Где полного текста на странице нет, справа — «Abstract»: текст
 аннотации как опубликован (разделы «Background: …» — жирной подписью), под ним «Abstract as published in {journal} ·
-source: PubMed {id}» (ссылка) и «Read the full article ↗». Поля записи `abstract`, `abstractSource` (миграция 0027,
+source: PubMed {id}» (ссылка) и «Read the full article ↗». Поля записи `abstract`, `abstractSource` (миграция 0029,
 правятся в админке). Заполняет `scripts/fetch-abstracts.ts` (бесплатно): PubMed (по ссылке PubMed, DOI или точному
 названию), иначе OpenAlex (по DOI или поиску названия — там и тезисы конференций), иначе Crossref (по DOI). Найденная
 статья должна совпасть по названию: по DOI — ≥ 60 % значимых слов (так отсеялась запись с чужим DOI); найденная только

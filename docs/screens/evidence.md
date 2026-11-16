@@ -5,7 +5,7 @@
 ## Блоки
 Страница хранится списком блоков по региону (`site_pages`, key `evidence`, ADR-007); без записи те же блоки собирает
 `evidenceToBlocks()` (`src/blocks/from-settings.ts`). Раскладка — `docs/DESIGN.md → Evidence` (решение 2026-11-15,
-ветка `site-redesign`, миграция `0024`).
+ветка `site-redesign`, миграция `0026`).
 
 | Порядок | Блок · вариант | Из полей |
 |---|---|---|

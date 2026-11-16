@@ -33,7 +33,7 @@ your details ↓» → `#general-interest`.
 CV link (`meta.linkedin`), Country (список; State / Province — для США и Канады), Message («What would you like to work
 on?»), подписка, Submit на всю ширину. Без Organization, Phone и Region: регион письма — из страны, как в Contact Us.
 
-`/open-positions` — 308 на `/careers#open-positions` (миграция `0022_careers_roles` добавила секцию в хранимую страницу и
+`/open-positions` — 308 на `/careers#open-positions` (миграция `0024_careers_roles` добавила секцию в хранимую страницу и
 перевела форму на `split`). Страница вакансии `/open-positions/{slug}` остаётся: «← All positions» ведёт на
 `/careers#open-positions`, форма — та же форма кандидата с выбранной вакансией.
 

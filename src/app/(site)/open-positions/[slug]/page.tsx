@@ -22,8 +22,8 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       <div className="mt-2 text-muted">{[j.department, j.location].filter(Boolean).join(" · ")}</div>
       <E r="jobs" id={j.id} f="descriptionHtml" k="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(j.descriptionHtml)} /></E>
       <div className="mt-8 flex gap-3">
-        {j.applyUrl && <Btn href={j.applyUrl}>Apply</Btn>}
-        {j.applyEmail && <Btn href={`mailto:${j.applyEmail}?subject=${encodeURIComponent(j.title)}`} variant="secondary">Apply by email</Btn>}
+        {j.applyUrl && <Btn href={j.applyUrl} track="out">Apply</Btn>}
+        {j.applyEmail && <Btn href={`mailto:${j.applyEmail}?subject=${encodeURIComponent(j.title)}`} variant="secondary" track="out">Apply by email</Btn>}
       </div>
       {!j.applyUrl && !j.applyEmail && (
         <div className="mt-10 max-w-2xl border-t border-border pt-8">

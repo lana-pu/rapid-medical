@@ -9,9 +9,13 @@
 ## Что показано
 - Крошки «Website › {раздел}», заголовок — название списка (Therapies, Publications…), подпись «{N} items»,
   кнопка **+ New {тип записи}** (например, «+ New publication») → `/admin/{resource}/new`.
-- Таблица: колонки ресурса (ниже), первая колонка — ссылка на запись. Статус — как в базе (`published` / `draft`),
-  регион — US / OUS / APAC или «global», список регионов — «US, OUS» или «all», флажок — «✓», событие — «Upcoming» / «Past».
-- Пусто: «Nothing here.» По 50 строк, внизу «‹ Prev · Page X of Y · Next ›» (если страниц больше одной).
+- Таблица: колонки ресурса (ниже), первая колонка — ссылка на запись. **Обновлено 2026-11-15** (в одном стиле с новыми
+  экранами): у записей с картинкой (новости, события, вебинары, команда, публикации) — **миниатюра** 40 px слева от
+  названия; флажки (Featured, No-index) — **меткой рядом с названием** («Featured», «Hidden from search»), а не колонкой
+  с «✓»; статус — словами (On the site · Draft); регион — коротким названием, как в меню регионов; событие — «Upcoming» /
+  «Past».
+- Пусто: «Nothing here.» (с фильтрами — «Nothing matches — clear filters»). По 50 строк, внизу «Showing 1–50 of 53 ·
+  ‹ Prev · Next ›».
 
 | Ресурс | Колонки |
 |---|---|
@@ -25,13 +29,14 @@
 | `pages` (Text pages) | Title · Slug · Region · No-index · Status |
 | `site-pages` (Site pages) | Name · Page · Region · Status |
 | `products` | Name · Slug · Family · Evidence tab in · Order |
-| `redirects` | From · To · 301 · Hits |
+| `redirects` | From · To · Used (сколько раз сработал); «Temporary» — меткой у адреса, если редирект не постоянный |
 
 ## Поиск, фильтры, сортировка
 - «Search…» — по названию записи (поле-подпись ресурса: Name / Title, у redirects — From), без учёта регистра.
-- Фильтры появляются, только если такая колонка есть в списке: **Any status** (Published · Draft), **Any region**
-  (названия регионов и «Global»), **Any region** для списка регионов («Shown in US/OUS/APAC»; записи «all» видны в любом),
-  **Any product**, **Featured?** (Featured · Not featured). **Apply** применяет, **Reset** (если что-то задано) сбрасывает.
+- Фильтры появляются, только если такая колонка есть в списке, и стоят **в одну строку с поиском** компактными списками
+  (2026-11-15): **Any status** (On the site · Draft), **Any region** (названия регионов и «All regions»), **Any region**
+  для списка регионов («Shown in {регион}»), **Any product**, **Featured** (Featured · Not featured). Выбор **применяется
+  сразу** (без Apply); поиск — по Enter. **Clear filters** (если что-то задано) сбрасывает.
 - Клик по заголовку колонки — сортировка по ней, повторный — в обратную сторону (стрелка ↑ / ↓). По умолчанию —
   по полю ресурса: порядок, id, имя, заголовок — по возрастанию; даты — новые сверху.
 - Параметры живут в адресе (`?q=&status=&region=&regions=&productId=&featured=&sort=&dir=&page=`).

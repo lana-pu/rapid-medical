@@ -20,6 +20,10 @@ import { PagesPanel, RecordPanel, type OpenRecord } from "./PagesPanel";
 import { pageKey, type PageNode } from "@/admin/page-tree";
 import type { Preset } from "@/blocks/templates";
 
+/** sessionStorage: the admin page the editor was opened from. */
+const EDITOR_BACK = "rm_editor_back";
+const isAdminPage = (path: string) => /^\/admin(\/|$)/.test(path) && !/^\/admin\/(login|reset)(\/|$)/.test(path);
+
 /**
  * The page editor (docs/screens/on-page-editor.md, ADR-006/007), loaded only in editor mode.
  * - Fields: elements with `data-e` (text in place; rich text, links and media in the side panel).
@@ -123,6 +127,49 @@ function hitTest(boxes: Box[], x: number, y: number): Box | undefined {
 
 export default function EditorOverlay() {
   const router = useRouter();
+  // ← returns to the admin page the editor was opened from, even after moving between the site's pages here
+  // (docs/screens/admin-sections.md → «Кнопки «назад»»); none — the project's Home
+  const backHref = withBase(DEMO ? "/admin/editor" : "/admin/website");
+  useEffect(() => {
+    if (DEMO) return;
+    try {
+      const r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.origin === location.origin && isAdminPage(r.pathname)) sessionStorage.setItem(EDITOR_BACK, r.pathname + r.search);
+    } catch {
+      /* storage blocked: the project's Home */
+    }
+  }, []);
+  // «Show on page» from the admin's comparison of regions: #section-{n} opens the page at section n
+  // (docs/screens/on-page-editor.md → «Ссылка на секцию»)
+  useEffect(() => {
+    const m = /^#section-(\d+)$/.exec(location.hash);
+    if (!m) return;
+    const t = setTimeout(() => {
+      for (const el of document.querySelectorAll<HTMLElement>("[data-rm-b]")) {
+        try {
+          const info = JSON.parse(el.dataset.rmB ?? "{}") as { i?: number; l?: string };
+          if (info.i !== Number(m[1]) || info.l) continue;
+          (el.nextElementSibling as HTMLElement | null)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          break;
+        } catch {
+          /* a marker that is not ours */
+        }
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, []);
+  const onBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (DEMO || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    try {
+      const from = sessionStorage.getItem(EDITOR_BACK);
+      if (from && isAdminPage(from.split("?")[0])) {
+        e.preventDefault();
+        location.href = from;
+      }
+    } catch {
+      /* storage blocked: the link's own address */
+    }
+  };
   const pathname = usePathname();
   const [refreshing, startRefresh] = useTransition();
   const [off, setOff] = useState(false);
@@ -750,7 +797,8 @@ export default function EditorOverlay() {
           canRedo={redoCount > 0}
           onRedo={doRedo}
           hasChanges={hasChanges}
-          backHref={withBase(DEMO ? "/admin/editor" : "/admin")}
+          backHref={backHref}
+          onBack={onBack}
           exitHref={DEMO ? null : `/api/editor?off=1&redirect=${encodeURIComponent(pathname)}`}
           demo={DEMO}
           onUndo={doUndo}

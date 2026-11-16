@@ -39,3 +39,20 @@ describe("texts in all regions", () => {
     expect(fieldLabel(pd, "tabs.0.blocks.0.blocks.0.data.body")).toBe("Tab “Overview” › Specifications › Text › Text");
   });
 });
+
+describe("differences between regions with files (the admin's tab)", () => {
+  it("adds pictures, videos and PDFs as rows; page links stay out", async () => {
+    const { mediaKindOf } = await import("../../src/blocks/region-table");
+    const rows = regionTextRows([us, eu], { media: true });
+    const pic = rows.find((r) => r.cells[0]?.media === "image")!;
+    expect(pic.cells.map((c) => c?.value)).toEqual(["/uploads/a.jpg", "/uploads/b.jpg"]);
+    expect(pic.differs).toBe(true);
+    expect(pic.cells[0]?.f).toBe("blocks.0.data.imageUrl");
+    expect(rows.some((r) => r.cells.some((c) => c?.value === "/contact-us"))).toBe(false);
+    expect([mediaKindOf("/uploads/x.MP4"), mediaKindOf("/uploads/ifu.pdf?v=2"), mediaKindOf("/us/evidence")]).toEqual(["video", "pdf", null]);
+    // only the site's own or https addresses are files (security review 2026-11-15)
+    expect([mediaKindOf("javascript:alert(1)//x.pdf"), mediaKindOf("data:text/html,x.png"), mediaKindOf("//evil.example/x.pdf"), mediaKindOf("http://x.example/a.jpg"), mediaKindOf("https://cdn.example/a.jpg")]).toEqual([null, null, null, null, "image"]);
+    // browsers drop tabs and line breaks: «/\t/evil.example/x.pdf» would be «//evil.example/x.pdf»
+    expect([mediaKindOf("/\t/evil.example/x.pdf"), mediaKindOf("/\\evil.example/x.png"), mediaKindOf("https://cdn.example/a\nb.jpg")]).toEqual([null, null, null]);
+  });
+});

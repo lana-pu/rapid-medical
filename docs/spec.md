@@ -174,8 +174,9 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |
-| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda); у PDF — `pages[]` (страницы картинками: размер и WebP-варианты) и `text` (текст по страницам, разделитель `\f`), `pageCount` (страниц в файле), миграции 0028–0029 |
-| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `note` (заметка для команды), `ip`, `userAgent` |
+| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda); у PDF — `pages[]` (страницы картинками: размер и WebP-варианты) и `text` (текст по страницам, разделитель `\f`), `pageCount` (страниц в файле), миграции 0030–0031 |
+| `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `readAt` (открыли), `note` (прежняя заметка), `ip`, `userAgent` |
+| `request_notes` | Лента заметок команды к заявке: `submissionId`, `userId`, `userName`, `body`, `createdAt` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
 | `not_found_log` | Публичные 404 (дедуп по пути) для создания редиректов |
 
@@ -280,10 +281,15 @@ cookie; заблокированное хранилище → заявка пр�
 
 **В — своя аналитика без cookie (решение 2026-11-15, `docs/analytics-admin.md`).** На каждой странице сайта (не в
 редакторе и не в превью) браузер шлёт `POST /api/track` (`navigator.sendBeacon`): страница, первая ли это страница
-визита в вкладке, внешний referrer и UTM для первой; по клику на PDF — скачивание (файл и страница). Сервер пишет строку в
-`page_views` (время, вид `view`/`download`, путь, регион из пути или `rm_region`, страна из гео-заголовка, источник
+визита в вкладке, внешний referrer и UTM для первой; по клику на PDF — скачивание (файл и страница); по клику на кнопку
+регистрации или отклика, уводящую с сайта (`Btn track="out"`, только `/events/{slug}` и `/open-positions/{slug}`), — уход
+(`out`, только страница, без адреса назначения; считается в Inbox, `screens/admin-inbox.md`). Сервер пишет строку в
+`page_views` (время, вид `view`/`download`/`out`, путь, регион из пути или `rm_region`, страна из гео-заголовка, источник
 словами, referrer-домен, UTM, файл) — **без IP, cookie и идентификатора посетителя**; ботов (по User-Agent) и людей
-с сессией админки не пишет; не больше 120 запросов в минуту с одного адреса (в памяти). «Визит» = первая страница
+с сессией админки не пишет; не больше 120 запросов в минуту с одного адреса (адрес — `x-vercel-forwarded-for` или
+правая запись `x-forwarded-for`) и 3000 записей в минуту всего (тратит только прошедший лимит адреса; в памяти). Страница — только обычные символы адреса (без `//`, `%`, сегментов `.`/`..`, не `/admin`, `/api`); файл —
+то же плюс корректные `%XX`; страна — только из `x-vercel-ip-country`. Отчёт читает не больше 200 000 строк и говорит,
+если упёрся в предел; битое имя файла показывает как есть (ревью безопасности 2026-11-15). «Визит» = первая страница
 вкладки. Отчёты — экран Analytics (`screens/admin-analytics.md`).
 
 ## Инструмент Tigertriever (предложение, кода нет)
@@ -454,14 +460,16 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/reset` | Запрос и установка нового пароля (ссылка на 1 час, после сброса все сессии закрыты) | [admin-login](screens/admin-login.md) |
 | `/admin/editor` | Pages: поиск страниц, статус словами, New page по шаблону, вход в редактор (в работе с 2026-11-12) | [admin-editor-pages](screens/admin-editor-pages.md) |
 | `/admin/site/{раздел}` | Раздел сайта: его страницы (Edit on page), списки записей, настройки; терапии — таблица терапии × регионы | [admin-sections](screens/admin-sections.md) |
-| `/admin/start` | После входа: Website или Training tool (инструмента пока нет — карточка неактивна) | [admin-choose](screens/admin-choose.md) |
-| `/admin` | Website — what needs you: дела (неопубликованные правки, расписание, новые заявки, картинки без описания), последние действия, сводка; меню админки | [admin-home](screens/admin-home.md) |
+| `/admin` (`/admin/start` → сюда) | После входа: выбор проекта — Website или Training tool (инструмента пока нет — карточка неактивна); без полоски пространств | [admin-choose](screens/admin-choose.md) |
+| `/admin/website` | Дашборд проекта Website: дела, быстрые действия, «продолжить», что впереди, неделя в цифрах, здоровье сайта, действия команды; шапка проекта со стрелкой назад | [admin-home](screens/admin-home.md) |
 | `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | [admin-list](screens/admin-list.md) |
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | [admin-history](screens/admin-history.md) |
 | `/admin/settings?group=` | Site settings по группам (Menu and footer и Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | [admin-settings](screens/admin-settings.md) |
 | `/admin/media` | Медиатека: загрузка, alt, где используется, удаление; замена файла везде — черновиком (решение 2026-11-11) или сразу с публикацией; фильтр «без описания» и очередь описаний (2026-11-12) | [admin-media](screens/admin-media.md) |
+| `/admin/seo` | Search & sharing: тексты для Google всех страниц в одном месте — список с проблемами и редактор с превью; одно поле на страницу (запись или Settings) | [admin-seo](screens/admin-seo.md) |
+| `/admin/inbox` | Inbox: всё, что отправлено с сайта, и заметки; папки всегда видны, Subscribed + CSV для Mailchimp, что ушло мимо сайта (внешняя регистрация, Apply) | [admin-inbox](screens/admin-inbox.md) |
 | `/admin/submissions`, `/admin/submissions/{id}` | Requests: статус, кто отвечает, заметка для команды, фильтры по форме, региону и «Mine», CSV | [admin-requests](screens/admin-requests.md) |
 | `/admin/not-found-log` | Broken links: битые ссылки → редирект в один клик или dismiss | [admin-not-found-log](screens/admin-not-found-log.md) |
 | `/admin/activity` | Журнал действий: фильтры по действию, человеку, названию | [admin-activity](screens/admin-activity.md) |

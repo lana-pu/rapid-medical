@@ -128,7 +128,7 @@ export const canDesign = (u: { role: string }) => u.role === "designer" || u.rol
 
 export async function requireAdmin(): Promise<SessionUser> {
   const s = await requireUser();
-  if (s.role !== "admin") redirect("/admin?error=forbidden");
+  if (s.role !== "admin") redirect("/admin/website?error=forbidden");
   return s;
 }
 

@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import { db, products } from "@/db";
+import { eq } from "drizzle-orm";
+import { db, products, solutions } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/admin/resources";
 import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
 import { duplicateResource } from "@/admin/actions";
-import { PageHeader, LinkButton, Notice, Button } from "@/components/admin/ui";
+import { PageHeader, Notice, Button } from "@/components/admin/ui";
 import { crumbsFor } from "@/admin/site-sections";
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { PageTabs } from "@/components/admin/PageTabs";
@@ -15,6 +16,8 @@ import { pageKey } from "@/admin/page-tree";
 const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
+import { REGION_CHOICES } from "@/lib/regions";
+import { BackButton } from "@/components/admin/BackLink";
 
 type SP = { saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
 
@@ -35,7 +38,10 @@ export default async function EditResource({ params, searchParams }: { params: P
   const previewPath = res.previewUrl?.(row) ?? null;
   const previewHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/preview?token=${await makePreviewToken(previewPath)}`) : null;
   const editHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
-  const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => r !== row.region) : [];
+  // a therapy page in a region it is not in yet: create that region's version (not a copy over an existing one)
+  const taken = res.slug === "solutions" ? (await db.select({ region: solutions.region }).from(solutions).where(eq(solutions.slug, String(row.slug ?? "")))).map((x) => x.region) : [];
+  const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => !taken.includes(r)) : [];
+  const regionLabel = (r: string) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
   // records that are pages of the site (therapy, text and site pages) show as a tab of their page
   const pageOf = PAGE_RESOURCES.includes(res.slug) && previewPath ? pageKey(previewPath) : null;
 
@@ -43,14 +49,14 @@ export default async function EditResource({ params, searchParams }: { params: P
     <>
       {pageOf ? (
         // a page of the site: the page's header with its tabs (docs/screens/admin-sections.md → «Экран страницы»)
-        <PageTabs pageKey={pageOf} active="google" current={{ r: res.slug, id: Number(row.id) }} actions={
+        <PageTabs pageKey={pageOf} active="settings" current={{ r: res.slug, id: Number(row.id) }} actions={
           <>
             {otherRegions.map((r) => (
               <form key={r} action={duplicateResource}>
                 <input type="hidden" name="__resource" value={res.slug} />
                 <input type="hidden" name="__id" value={row.id} />
                 <input type="hidden" name="region" value={r} />
-                <Button type="submit" variant="secondary">Copy to {r.toUpperCase()}</Button>
+                <Button type="submit" variant="secondary">Create {regionLabel(r)} version</Button>
               </form>
             ))}
           </>
@@ -59,7 +65,7 @@ export default async function EditResource({ params, searchParams }: { params: P
         <PageHeader
         crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
         title={String(row[res.labelField] ?? res.titleSingular)}
-        subtitle={`${res.titleSingular} #${row.id}`}
+        subtitle={res.titleSingular}
         actions={
           <>
             {otherRegions.map((r) => (
@@ -67,10 +73,10 @@ export default async function EditResource({ params, searchParams }: { params: P
                 <input type="hidden" name="__resource" value={res.slug} />
                 <input type="hidden" name="__id" value={row.id} />
                 <input type="hidden" name="region" value={r} />
-                <Button type="submit" variant="secondary">Copy to {r.toUpperCase()}</Button>
+                <Button type="submit" variant="secondary">Create {regionLabel(r)} version</Button>
               </form>
             ))}
-            <LinkButton href={`/admin/${res.slug}`}>← Back</LinkButton>
+            <BackButton fallback={`/admin/${res.slug}`} />
           </>
         }
       />

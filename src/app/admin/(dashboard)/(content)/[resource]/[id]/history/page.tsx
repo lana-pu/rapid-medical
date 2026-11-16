@@ -5,9 +5,10 @@ import { diffWords } from "diff";
 import { getResource } from "@/admin/resources";
 import { listRevisions, getRevision, getEditable, snapshot } from "@/admin/workflow";
 import { restoreAction } from "@/admin/actions";
-import { PageHeader, LinkButton, formatDate, inputCls, Button } from "@/components/admin/ui";
+import { PageHeader, formatDate, inputCls, Button } from "@/components/admin/ui";
 import { PageTabs } from "@/components/admin/PageTabs";
 import { pageKey } from "@/admin/page-tree";
+import { BackButton } from "@/components/admin/BackLink";
 
 function asText(v: unknown): string {
   if (v == null) return "";
@@ -65,7 +66,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
       {pageOf ? (
         <PageTabs pageKey={pageOf} active="history" current={{ r: res.slug, id: recordId }} />
       ) : (
-        <PageHeader title={`History · ${editable.row[res.labelField]}`} subtitle={`${revs.length} revisions`} actions={<LinkButton href={`/admin/${res.slug}/${recordId}`}>← Back to record</LinkButton>} />
+        <PageHeader title={`History · ${editable.row[res.labelField]}`} subtitle={`${revs.length} revisions`} actions={<BackButton fallback={`/admin/${res.slug}/${recordId}`} />} />
       )}
       <form className="mb-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 md:grid-cols-[1fr_1fr_auto]">
         <label className="text-sm">From

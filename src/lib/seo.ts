@@ -18,3 +18,16 @@ export function regionalAlternates(path: (r: Region) => string, available: Regio
 
 /** Client-supplied titles already end with "| Rapid Medical", so bypass the layout template. */
 export const absoluteTitle = (t: string | null | undefined, fallback: string): Metadata["title"] => (t ? { absolute: t } : fallback);
+
+/** How long Google shows a title and a description (docs/screens/admin-seo.md). */
+export const TITLE_MAX = 60;
+export const DESCRIPTION_MAX = 155;
+
+/** What to fix in a page's Google texts, in words. */
+export function seoProblems(title: string, description: string): string[] {
+  const out: string[] = [];
+  if (!description.trim()) out.push("No description");
+  if (title.length > TITLE_MAX) out.push("Title too long");
+  if (description.length > DESCRIPTION_MAX) out.push("Description too long");
+  return out;
+}

@@ -9,23 +9,39 @@ import { regionForCountry } from "@/lib/regions";
  * admin are not counted; one address — at most 120 requests a minute (in memory, per instance).
  */
 const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|monitor|curl|wget|python|axios|node-fetch/i;
-const PATH = /^\/[^\s<>"']{0,299}$/;
+/** A page of the site: plain address characters only, no «//», no %-escapes (security review 2026-11-15). */
+const PAGE = /^\/(?!\/)[A-Za-z0-9\-._~/]{0,299}$/;
+/** A PDF of the site: the same, plus valid %-escapes (file names with spaces). */
+const OUT_PAGE = /^\/(events|open-positions)\/[A-Za-z0-9\-_]{1,120}$/;
+const FILE = /^\/(?!\/)(?:[A-Za-z0-9\-._~/]|%[0-9A-Fa-f]{2}){0,299}\.pdf$/i;
+const WINDOW = 60_000;
+const PER_ADDRESS = 120;
+/** All addresses together, per instance: a ceiling on writes whatever the address says. */
+const PER_MINUTE = 3_000;
 const hits = new Map<string, number[]>();
+let minute = { start: 0, n: 0 };
 function limited(key: string) {
   const now = Date.now();
-  const arr = (hits.get(key) ?? []).filter((t) => now - t < 60_000);
+  const arr = (hits.get(key) ?? []).filter((t) => now - t < WINDOW);
   arr.push(now);
   hits.set(key, arr);
-  if (hits.size > 10_000) hits.clear(); // keep memory bounded
-  return arr.length > 120;
+  // keep memory bounded: drop addresses that have been quiet for a minute, one by one (no global reset)
+  if (hits.size > 10_000) for (const [k, v] of hits) if (now - v[v.length - 1] >= WINDOW) hits.delete(k);
+  if (arr.length > PER_ADDRESS) return true; // a noisy address does not spend the shared budget
+  if (now - minute.start > WINDOW) minute = { start: now, n: 0 };
+  return ++minute.n > PER_MINUTE;
 }
+/**
+ * The client's address from the one place the host writes it: Vercel's x-vercel-forwarded-for, else the right-most
+ * x-forwarded-for entry (added by the last proxy). Client-sent values on the left are ignored.
+ */
+const clientAddress = (req: NextRequest) => req.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() || (req.headers.get("x-forwarded-for") ?? "").split(",").pop()?.trim() || "local";
 const cut = (v: unknown, n = 200) => (typeof v === "string" && v.trim() ? v.trim().slice(0, n) : null);
 
 export async function POST(req: NextRequest) {
   const ua = req.headers.get("user-agent") ?? "";
   if (!ua || BOT.test(ua) || req.cookies.get("rm_admin")) return new NextResponse(null, { status: 204 });
-  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "local";
-  if (limited(ip)) return new NextResponse(null, { status: 204 });
+  if (limited(clientAddress(req))) return new NextResponse(null, { status: 204 });
   let b: Record<string, unknown>;
   try {
     const text = await req.text();
@@ -34,11 +50,14 @@ export async function POST(req: NextRequest) {
   } catch {
     return new NextResponse(null, { status: 400 });
   }
-  const kind = b.k === "download" ? "download" : b.k === "view" ? "view" : null;
-  const path = typeof b.p === "string" && PATH.test(b.p) ? b.p.split(/[?#]/)[0] : null;
-  if (!kind || !path || path.startsWith("/admin") || path.startsWith("/api")) return new NextResponse(null, { status: 400 });
+  const kind = b.k === "download" ? "download" : b.k === "view" ? "view" : b.k === "out" ? "out" : null;
+  const path = typeof b.p === "string" ? b.p.split(/[?#]/)[0] : null;
+  const dots = (x: string) => x.split("/").some((seg) => seg === "." || seg === "..");
+  if (!kind || !path || !PAGE.test(path) || dots(path) || /^\/(admin|api)(\/|$)/i.test(path)) return new NextResponse(null, { status: 400 });
+  // a click that leaves the site counts only on an event or a job page (screens/admin-inbox.md)
+  if (kind === "out" && !OUT_PAGE.test(path)) return new NextResponse(null, { status: 400 });
   const visit = kind === "view" && b.v === true;
-  const cc = req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? req.headers.get("x-country-code");
+  const cc = req.headers.get("x-vercel-ip-country"); // set by the host; no client-sent country
   const m = /^\/(us|ous|apac)(\/|$)/.exec(path);
   const region = m?.[1] ?? req.cookies.get("rm_region")?.value ?? regionForCountry(cc) ?? null;
   const ref = visit ? cut(b.r, 500) : null;
@@ -54,7 +73,7 @@ export async function POST(req: NextRequest) {
     utmSource: utm.utm_source,
     utmMedium: utm.utm_medium,
     utmCampaign: utm.utm_campaign,
-    file: kind === "download" && typeof b.f === "string" && PATH.test(b.f) ? b.f.split(/[?#]/)[0] : null,
+    file: kind === "download" && typeof b.f === "string" && FILE.test(b.f.split(/[?#]/)[0]) && !dots(b.f.split(/[?#]/)[0]) ? b.f.split(/[?#]/)[0] : null,
   });
   return new NextResponse(null, { status: 204 });
 }

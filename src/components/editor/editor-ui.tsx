@@ -33,6 +33,8 @@ export function TopBar(props: {
   onRedo?: () => void;
   hasChanges: boolean;
   backHref: string;
+  /** ← back to the admin page the editor was opened from (the link's href is the fallback) */
+  onBack?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   exitHref: string | null;
   demo: boolean;
   onUndo: () => void;
@@ -62,7 +64,7 @@ export function TopBar(props: {
   return (
     <div className="fixed inset-x-0 z-[1000] border-b border-neutral-800 bg-neutral-950 text-white shadow-lg" style={{ top: props.demo ? 24 : 0 }}>
       <div className="flex flex-wrap items-center gap-2 px-2 text-sm md:h-12 md:flex-nowrap" style={{ minHeight: BAR_H }}>
-        <a href={props.backHref} className={btn} aria-label="Back to the admin" title="Back to the admin">←</a>
+        <a href={props.backHref} onClick={props.onBack} className={btn} aria-label="Back to the admin" title="Back to the admin">←</a>
         {/* page picker (on-page-editor.md → «Устройство экрана») */}
         <div className="relative min-w-0" ref={pickRef}>
           <button type="button" aria-label="Choose a page" aria-expanded={pick} onClick={() => { setPick((x) => !x); props.loadPages(); }} className={`${btn} flex max-w-[34ch] items-center gap-1.5`}>

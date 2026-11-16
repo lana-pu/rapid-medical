@@ -82,7 +82,7 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
 
   return (
     <>
-      <PageHeader crumbs={[{ label: "Website", href: "/admin" }]} title={s.title} subtitle={s.intro} actions={view ? <a href={withBase(view)} target="_blank" rel="noreferrer" className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">View on the site ↗</a> : undefined} />
+      <PageHeader crumbs={[{ label: "Website", href: "/admin/website" }]} title={s.title} subtitle={s.intro} actions={view ? <a href={withBase(view)} target="_blank" rel="noreferrer" className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm">View on the site ↗</a> : undefined} />
 
       {sitePageCards.length > 0 && (
         <Box title={s.key === "therapies" ? "Overview pages" : "Pages"}>
