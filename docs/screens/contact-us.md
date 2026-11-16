@@ -51,7 +51,7 @@ Hero · `page` («Let’s connect», текст не редактируется)
 | Исходное | Форма, «(* indicates a required field)», ссылка на `/privacy-statement` |
 | Отправка | Кнопка «Sending…», disabled |
 | Ошибки валидации | Текст ошибки под полем, рамка и текст цветом `--danger`, `aria-invalid`; введённое остаётся. Общей плашки нет — она остаётся только для ошибок не про поля (лимит) |
-| Лимит | «Too many requests. Please try again later.» — > 8 отправок с IP за 10 минут (в памяти инстанса) |
+| Лимит | «Too many requests. Please try again later.» — > 8 отправок с адреса за 10 минут; счёт в базе (`login_attempts`, ключ `form:{адрес}`), общий для всех экземпляров сервера и не сбрасывается перезапуском; адрес — тот, что записал хостинг (`x-vercel-forwarded-for`, иначе правая запись `x-forwarded-for`), подставленный посетителем не учитывается; служебных полей (`meta`: источник визита, вебинар…) — не больше 20 (аудит 2026-11-13, решено 2026-11-16) |
 | Успех | «Thank you for contacting us. We will get back to you as soon as possible.» + «We’ll reply to {email}.» и сводка: тема, страна; «Send another request» возвращает пустую форму (форма заменяется) |
 
 ## Что происходит при отправке

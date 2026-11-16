@@ -138,7 +138,7 @@ export const loginAttempts = pgTable(
   "login_attempts",
   {
     id: serial("id").primaryKey(),
-    key: text("key").notNull(), // "email:<e>" or "ip:<ip>"
+    key: text("key").notNull(), // "email:<e>", "ip:<ip>", "totp:<id>"; site forms: "form:<ip>"
     at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("login_attempts_key").on(t.key, t.at)],

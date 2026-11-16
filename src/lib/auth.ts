@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
 import { generateSecret, verify as verifyTotp, generateURI } from "otplib";
 import { db, users, sessions, passwordResets, loginAttempts, type User } from "@/db";
+import { clientIp } from "./client-ip";
 
 /**
  * Authentication.
@@ -53,7 +54,7 @@ export async function verifyPassword(plain: string, hash: string) {
 async function clientInfo() {
   try {
     const h = await headers();
-    return { ip: (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null, userAgent: h.get("user-agent")?.slice(0, 300) ?? null };
+    return { ip: clientIp(h), userAgent: h.get("user-agent")?.slice(0, 300) ?? null };
   } catch {
     return { ip: null, userAgent: null };
   }

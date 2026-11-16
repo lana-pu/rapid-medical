@@ -2,6 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { db, auditLog } from "@/db";
 import type { SessionUser } from "./auth";
+import { clientIp } from "./client-ip";
 
 export type AuditAction = "login" | "login_failed" | "logout" | "save" | "publish" | "unpublish" | "delete" | "restore" | "bulk" | "settings" | "user" | "media" | "schedule" | "request" | "comment";
 
@@ -11,7 +12,7 @@ export async function audit(user: SessionUser | null, action: AuditAction, opts:
     let ip: string | null = null;
     try {
       const h = await headers();
-      ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null;
+      ip = clientIp(h);
     } catch { /* outside a request */ }
     await db.insert(auditLog).values({
       userId: user && user.id > 0 ? user.id : null,

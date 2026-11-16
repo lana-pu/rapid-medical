@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { db, pageViews } from "@/db";
 import { hostOf, sourceOf } from "@/lib/source";
 import { regionForCountry } from "@/lib/regions";
+import { clientIp } from "@/lib/client-ip";
 
 /**
  * The site's own visit counter, without cookies (spec.md → Аналитика → В). The page sends a beacon: a view (first page
@@ -31,11 +32,8 @@ function limited(key: string) {
   if (now - minute.start > WINDOW) minute = { start: now, n: 0 };
   return ++minute.n > PER_MINUTE;
 }
-/**
- * The client's address from the one place the host writes it: Vercel's x-vercel-forwarded-for, else the right-most
- * x-forwarded-for entry (added by the last proxy). Client-sent values on the left are ignored.
- */
-const clientAddress = (req: NextRequest) => req.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() || (req.headers.get("x-forwarded-for") ?? "").split(",").pop()?.trim() || "local";
+/** The client's address as the host wrote it (src/lib/client-ip.ts). */
+const clientAddress = (req: NextRequest) => clientIp(req.headers) ?? "local";
 const cut = (v: unknown, n = 200) => (typeof v === "string" && v.trim() ? v.trim().slice(0, n) : null);
 
 export async function POST(req: NextRequest) {

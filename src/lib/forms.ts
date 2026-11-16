@@ -2,12 +2,16 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { db, contactSubmissions } from "@/db";
+import { and, eq, gt, like, lt, sql } from "drizzle-orm";
+import { db, contactSubmissions, loginAttempts } from "@/db";
+import { clientIp } from "./client-ip";
 import { sendMail } from "@/lib/mail";
 import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 import { sourceLabel } from "./tracking";
 import { countryName, formRegionForCountry, isCountryCode } from "./countries";
+
+const MAX_META = 20;
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
@@ -24,17 +28,24 @@ const schema = z.object({
   state: z.string().trim().max(80).default(""),
   message: z.string().trim().max(4000).default(""),
   optIn: z.boolean().default(false),
-  meta: z.record(z.string().max(40), z.string().max(500)).default({}),
+  // visit source, webinar and the like — a handful; a request stuffed with more is refused (security check 2026-11-13)
+  meta: z.record(z.string().max(40), z.string().max(500)).refine((m) => Object.keys(m).length <= MAX_META, "Too many fields").default({}),
 });
 
-// Very small in-memory rate limiter (per instance). Replace with Redis/Upstash in multi-instance hosting.
-const hits = new Map<string, number[]>();
-function limited(ip: string) {
-  const now = Date.now();
-  const arr = (hits.get(ip) ?? []).filter((t) => now - t < 10 * 60 * 1000);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 8;
+/**
+ * More than FORM_MAX sends from one address in FORM_WINDOW_MS → «Too many requests». Counted in the database (the
+ * sign-in attempts table, key «form:{address}»): the same for every server instance and kept across restarts
+ * (docs/screens/contact-us.md → Лимит).
+ */
+const FORM_MAX = 8;
+const FORM_WINDOW_MS = 10 * 60 * 1000;
+async function limited(ip: string): Promise<boolean> {
+  const key = `form:${ip}`;
+  await db.insert(loginAttempts).values({ key });
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, new Date(Date.now() - FORM_WINDOW_MS))));
+  // old form rows go now and then; sign-in rows are cleaned by their own rule
+  if (Math.random() < 0.05) await db.delete(loginAttempts).where(and(like(loginAttempts.key, "form:%"), lt(loginAttempts.at, new Date(Date.now() - FORM_WINDOW_MS * 6))));
+  return n > FORM_MAX;
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -42,8 +53,8 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
   if (fd.get("website")) return { ok: true };
 
   const h = await headers();
-  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null;
-  if (ip && limited(ip)) return { ok: false, message: "Too many requests. Please try again later." };
+  const ip = clientIp(h);
+  if (ip && (await limited(ip))) return { ok: false, message: "Too many requests. Please try again later." };
 
   let meta: Record<string, string> = {};
   try { meta = JSON.parse(String(fd.get("meta") ?? "{}")); } catch { meta = {}; }
