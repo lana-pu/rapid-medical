@@ -54,13 +54,13 @@ async function main() {
         const p = await processImage(m.filename, buf, m.mime, prefix + "/variants", { skipOriginal: true });
         await db.update(schema.media).set({ width: p.width, height: p.height, variants: p.variants, placeholder: p.placeholder, key: m.url.replace(/^\/uploads\//, "") }).where(eq(schema.media.id, m.id));
       } else if (m.mime === PDF) {
-        const { pages, text } = await storeDocumentPages(m.id, buf);
+        const { pages, text, pageCount } = await storeDocumentPages(m.id, buf);
         // pictures of an earlier drawing that are not reused go away
         const keep = new Set(pages.flatMap((p) => p.variants.map((v) => v.url)));
         for (const old of m.pages.flatMap((p) => p.variants.map((v) => v.url))) {
           if (!keep.has(old) && old.startsWith("/uploads/")) await unlink(path.join(process.cwd(), "public", old)).catch(() => {});
         }
-        await db.update(schema.media).set({ pages, text, key: m.url.replace(/^\/uploads\//, "") }).where(eq(schema.media.id, m.id));
+        await db.update(schema.media).set({ pages, text, pageCount, key: m.url.replace(/^\/uploads\//, "") }).where(eq(schema.media.id, m.id));
         console.log(`  ${m.filename}: ${pages.length} pages${text ? "" : ", no text"}`);
       } else {
         const poster = await videoPoster(m.filename, buf, prefix + "/variants");

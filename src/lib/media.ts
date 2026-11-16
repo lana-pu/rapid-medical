@@ -39,8 +39,8 @@ export async function ingestFile(file: { name: string; buf: Buffer; mime: string
  */
 export async function withPages(row: Media, buf: Buffer): Promise<Media> {
   try {
-    const { pages, text } = await storeDocumentPages(row.id, buf);
-    const [updated] = await db.update(media).set({ pages, text }).where(eq(media.id, row.id)).returning();
+    const { pages, text, pageCount } = await storeDocumentPages(row.id, buf);
+    const [updated] = await db.update(media).set({ pages, text, pageCount }).where(eq(media.id, row.id)).returning();
     return updated;
   } catch (err) {
     console.error(`[media] pages of ${row.url} not drawn:`, err);

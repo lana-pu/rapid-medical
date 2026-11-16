@@ -33,6 +33,13 @@ export async function DocumentPages({ href, title, caption }: { href: string; ti
   return (
     <figure data-document>
       <DocumentPagesView pages={doc.pages} first={initialPages(doc.pages)} title={title} />
+      {doc.pageCount > doc.pages.length && (
+        // the limits stopped the drawing: say so, the whole file is one click away (screens/material.md)
+        <p className="mt-4 text-sm">
+          The first {doc.pages.length} of {doc.pageCount} pages are shown.{" "}
+          <a href={src} target="_blank" rel="noopener noreferrer" className="underline">Download PDF</a> for the whole document.
+        </p>
+      )}
       {caption && <figcaption className="mt-4 text-xs text-muted">{caption}</figcaption>}
       {text.some(Boolean) && (
         <details className="mt-8 border-t border-border pt-4 text-sm">

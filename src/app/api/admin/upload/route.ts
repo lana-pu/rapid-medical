@@ -3,6 +3,7 @@ import { getSession, isReady } from "@/lib/auth";
 import { ingestFile } from "@/lib/media";
 import { audit } from "@/lib/audit";
 import { sniffType, svgIsSafe } from "@/lib/file-type";
+import { MAX_PDF_BYTES } from "@/lib/document-pages";
 
 const MAX = 200 * 1024 * 1024;
 
@@ -17,6 +18,8 @@ export async function POST(req: Request) {
   const buf = Buffer.from(await file.arrayBuffer());
   const kind = sniffType(buf);
   if (!kind) return NextResponse.json({ error: "Upload a PNG, JPEG, WebP, GIF, SVG, MP4, WebM or PDF file" }, { status: 400 });
+  // a PDF is drawn into pictures of its pages on upload: a smaller limit keeps that bounded (security check 2026-11-16)
+  if (kind.mime === "application/pdf" && buf.length > MAX_PDF_BYTES) return NextResponse.json({ error: `PDF too large (max ${MAX_PDF_BYTES / 1024 / 1024} MB)` }, { status: 400 });
   if (kind.mime === "image/svg+xml" && !svgIsSafe(buf)) return NextResponse.json({ error: "This SVG contains scripts" }, { status: 400 });
 
   if ((process.env.STORAGE_DRIVER ?? "local") === "local" && process.env.VERCEL)

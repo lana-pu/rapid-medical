@@ -29,10 +29,10 @@ export const lookupMedia = cache(async (urls: (string | null | undefined)[]): Pr
   return out;
 });
 
-export type DocumentInfo = { url: string; size: number; pages: DocPage[]; text: string };
+export type DocumentInfo = { url: string; size: number; pages: DocPage[]; text: string; pageCount: number };
 
 /** A library PDF with its pages as pictures and text (screens/material.md → «Документ на странице»). Cached per request. */
 export const lookupDocument = cache(async (url: string): Promise<DocumentInfo | null> => {
-  const row = await db.query.media.findFirst({ where: eq(media.url, url), columns: { url: true, size: true, pages: true, text: true } });
+  const row = await db.query.media.findFirst({ where: eq(media.url, url), columns: { url: true, size: true, pages: true, text: true, pageCount: true } });
   return row ?? null;
 });

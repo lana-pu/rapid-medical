@@ -34,3 +34,13 @@ describe("document on the page (screens/material.md)", () => {
     expect(fileSize(1_585_152)).toBe("1.5 MB");
   });
 });
+
+describe("document on the page: limits (security check 2026-11-16)", () => {
+  it("draws a page at its largest variant, but never above 16 Mpx", async () => {
+    const { drawWidth, MAX_PIXELS } = await import("@/lib/document-pages");
+    expect(drawWidth(595, 842)).toBe(1600); // A4
+    expect(drawWidth(3456, 2592)).toBe(4000); // the 122 × 91 cm poster: 4000 × 3000 = 12 Mpx
+    const w = drawWidth(595, 59500); // a strip 100 times taller than wide
+    expect(w * Math.round((w * 59500) / 595)).toBeLessThanOrEqual(MAX_PIXELS * 1.01);
+  });
+});

@@ -214,6 +214,8 @@ export const media = pgTable("media", {
   pages: jsonb("pages").$type<DocPage[]>().notNull().default([]),
   /** A PDF's text, pages separated by «\f» — under the pages for search engines and screen readers */
   text: text("text").notNull().default(""),
+  /** Pages in the PDF; more than `pages` when the limits stopped the drawing (the page then says so) */
+  pageCount: integer("page_count").notNull().default(0),
   /** Original Duda URL, kept for traceability during migration */
   sourceUrl: text("source_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
