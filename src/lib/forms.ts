@@ -38,19 +38,24 @@ const schema = z.object({
  * (docs/screens/contact-us.md → Лимит). A request without a known address shares one bucket with a wider cap — it is
  * never let through uncounted (no address means no proxy in front — a host set up wrong; refusing everyone then would
  * break every form). Counted first: a refused send writes nothing; the address's old rows go on each call. Count and
- * write run under a lock per address, so sends at the same moment cannot slip past the limit together.
+ * write run under a lock per address, so sends at the same moment cannot slip past the limit together; an address
+ * already over the limit is refused before any lock, and a busy lock is not waited for — the send is refused.
  */
 const FORM_MAX = 8;
-const FORM_MAX_UNKNOWN = 60; // direct requests with no proxy in front (development, e2e) all land here
+const FORM_MAX_UNKNOWN = 60; // no trusted address: development, e2e, a host without TRUSTED_PROXY_HOPS
 const FORM_WINDOW_MS = 10 * 60 * 1000;
 async function limited(ip: string | null): Promise<boolean> {
   const key = `form:${ip ?? "unknown"}`;
   const since = new Date(Date.now() - FORM_WINDOW_MS);
+  const count = async (q: Pick<typeof db, "select">) =>
+    (await q.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since))))[0].n;
+  const max = ip ? FORM_MAX : FORM_MAX_UNKNOWN;
+  if ((await count(db)) >= max) return true; // over already: no lock, no transaction
   return db.transaction(async (tx) => {
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${key}))`);
+    const [{ got }] = await tx.execute<{ got: boolean }>(sql`select pg_try_advisory_xact_lock(hashtextextended(${key}, 0)) as got`);
+    if (!got) return true; // another send from this address is being counted right now
     await tx.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
-    const [{ n }] = await tx.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
-    if (n >= (ip ? FORM_MAX : FORM_MAX_UNKNOWN)) return true;
+    if ((await count(tx)) >= max) return true;
     await tx.insert(loginAttempts).values({ key });
     return false;
   });
