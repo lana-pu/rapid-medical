@@ -15,7 +15,8 @@
   `next` — только путь внутри `/admin` или `/api/editor` (вход в редактор на странице), остальное → `/admin` (Inbox).
 - Сообщения: «Invalid email or password.» (нет такой почты, учётная запись отключена или пароль неверный — одно и то же
   сообщение); «Too many attempts. Try again in 15 minutes.»; после сброса пароля — «Password updated. Please sign in.»
-- Лимит: 8 неудачных попыток за 15 минут **по почте** и отдельно **по IP**; пока лимит исчерпан, не пускает и с верным паролем.
+- Лимит: 8 неудачных попыток за 15 минут **по почте** и отдельно **по IP** (IP — тот, что записал хостинг, как у форм сайта:
+  `src/lib/client-ip.ts`, 2026-11-16); пока лимит исчерпан, не пускает и с верным паролем.
 
 ## Второй шаг (`/admin/login/2fa`)
 - «Two-factor authentication», подпись «Enter the 6-digit code from your authenticator app, or a recovery code.»,
@@ -30,8 +31,8 @@
   или нет: «If that address has an account, a reset link is on its way (valid 1 hour).»
   Письмо «Reset your Rapid Medical admin password» со ссылкой `/admin/reset?token=…` — только активным учётным записям.
 - **Почта не настроена** (нет `SMTP_HOST`; решение 2026-11-16 — честно, без обещания письма, аудит K.1): на проде формы
-  нет — «Reset by email is not set up yet. Ask an admin to set a new password for you (People and roles → Set a
-  new password).» При разработке форма есть, ответ — «Email is not set up here: the reset link is in the server log.»
+  нет — нейтрально, без подробностей о настройке: «Password reset is not available. Ask an admin to set a new password
+  for you.» (админ — People and roles → Set a new password; проверка безопасности 2026-11-16) При разработке форма есть, ответ — «Email is not set up here: the reset link is in the server log.»
   Не больше 3 писем на адрес и 10 с одного IP за 15 минут (ответ тот же).
 - **Новый пароль** (`?token=`): «Choose a new password», поле «New password (10+ characters)», **Set password**.
   Короче 10 символов → «Use at least 10 characters.». Ссылка неверна, просрочена или уже использована → форма запроса

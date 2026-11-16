@@ -9,7 +9,8 @@ export const metadata = { title: "Reset password · Rapid Medical admin" };
 
 export default async function ResetPage({ searchParams }: { searchParams: Promise<{ token?: string; sent?: string; error?: string }> }) {
   const sp = await searchParams;
-  // without email the page does not promise one (docs/screens/admin-login.md, 2026-11-16)
+  // without email the page does not promise one (docs/screens/admin-login.md, 2026-11-16); visitors see a neutral line,
+  // the server log mention renders only in development (`next start` is always production)
   const mail = mailConfigured();
   const dev = process.env.NODE_ENV !== "production";
 
@@ -56,7 +57,7 @@ export default async function ResetPage({ searchParams }: { searchParams: Promis
         <form action={request} className="w-full max-w-sm space-y-4 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm">
           <h1 className="text-lg font-semibold">Reset password</h1>
           {!mail && !dev ? (
-            <p className="rounded bg-amber-50 px-3 py-2 text-sm text-amber-900">Reset by email is not set up yet. Ask an admin to set a new password for you (People and roles → Set a new password).</p>
+            <p className="rounded bg-amber-50 px-3 py-2 text-sm text-amber-900">Password reset is not available. Ask an admin to set a new password for you.</p>
           ) : sp.sent ? (
             <p className="rounded bg-green-50 px-3 py-2 text-sm text-green-800">
               {mail ? "If that address has an account, a reset link is on its way (valid 1 hour)." : "Email is not set up here: the reset link is in the server log."}
