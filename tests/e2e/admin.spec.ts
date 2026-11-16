@@ -323,6 +323,41 @@ test("unpublish keeps the pending changes in the record and cancels the schedule
   }
 });
 
+test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete keeps what is on the site, counts are real, Home and About have no New or Delete", async ({ page }) => {
+  await login(page);
+  // a draft and a live news item ticked together: the draft goes with its schedule, the live one stays and the message says so
+  const live = sql("select id from news_items where status = 'published' order by id desc limit 1");
+  const draft = sql("insert into news_items(title, url, published_on, status) values ('E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${draft},null,now() + interval '1 day','Admin')`);
+  await page.goto("/admin/news?sort=id&dir=desc"); // both on the first page: the newest rows
+  await page.check(`input[name=ids][value="${draft}"]`);
+  await page.check(`input[name=ids][value="${live}"]`);
+  page.once("dialog", (d) => d.accept());
+  await page.click("button[value=delete]");
+  await page.waitForURL(/bulk=delete/);
+  expect(sql(`select count(*) from news_items where id=${draft}`)).toBe("0");
+  expect(sql(`select count(*) from drafts where resource='news' and record_id=${draft}`)).toBe("0");
+  expect(sql(`select status from news_items where id=${live}`)).toBe("published");
+  await expect(page.getByText("Deleted 1 item(s).")).toBeVisible();
+  await expect(page.getByText("1 on the site was not deleted: unpublish it first.")).toBeVisible();
+
+  // Home, About…: no «+ New» (it led to a 404), no Unpublish or Delete that did nothing
+  await page.goto("/admin/site_pages");
+  await expect(page.getByRole("link", { name: /^\+ New/ })).toHaveCount(0);
+  await page.locator("input[name=ids]").first().check();
+  await expect(page.locator("button[value=publish]")).toBeVisible();
+  await expect(page.locator("button[value=unpublish], button[value=delete]")).toHaveCount(0);
+
+  // Broken links: a refused address says why
+  sql("insert into not_found_log(path, hits) values ('/e2e-broken', 1) on conflict do nothing");
+  await page.goto("/admin/not-found-log");
+  const row = page.locator("tr", { hasText: "/e2e-broken" });
+  await row.locator("input[name=to]").fill("//evil.example");
+  await row.getByRole("button", { name: "Add" }).click();
+  await expect(page.getByText("Not added: send «/e2e-broken» to a page of this site (/path) or a full https:// address.")).toBeVisible();
+  sql("delete from not_found_log where path = '/e2e-broken'");
+});
+
 test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ page }) => {
   await login(page);
   await page.goto("/admin/news");

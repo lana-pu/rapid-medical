@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, lte, isNotNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, lte, isNotNull, sql } from "drizzle-orm";
 import { db, drafts, redirects, revisions, type Draft, type Revision } from "@/db";
 import type { SessionUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
@@ -165,13 +165,32 @@ export async function discardDraft(res: Resource, id: number, user: SessionUser)
   await audit(user, "save", { resource: res.slug, recordId: id, meta: { discardedDraft: true } });
 }
 
+/**
+ * Of `ids`, deletes the records that are not on the site — with their pending changes and schedule — and returns them;
+ * a live record stays (unpublish it first, on purpose: UX walk 2026-11-14). The list's Delete (docs/screens/admin-list.md).
+ */
+export async function deleteNotLive(res: Resource, ids: number[]): Promise<{ deleted: number[]; live: number }> {
+  if (res.alwaysLive) return { deleted: [], live: 0 };
+  const deleted: number[] = [];
+  let live = 0;
+  for (const id of ids) {
+    const row = await getRow(res, id);
+    if (!row) continue; // gone meanwhile
+    if (row.status === "published") live++;
+    else deleted.push(id);
+  }
+  if (deleted.length) {
+    await db.delete(drafts).where(and(eq(drafts.resource, res.slug), inArray(drafts.recordId, deleted)));
+    await bulk(res, deleted, "delete");
+  }
+  return { deleted, live };
+}
+
 /** Delete a record that is not on the site (its page: «Delete draft»). A live record is unpublished first, on purpose. */
 export async function deleteUnpublished(res: Resource, id: number, user: SessionUser): Promise<boolean> {
-  const live = await getRow(res, id);
-  if (!live || res.alwaysLive || live.status === "published") return false;
-  await db.delete(drafts).where(and(eq(drafts.resource, res.slug), eq(drafts.recordId, id))); // a schedule goes with it
-  await bulk(res, [id], "delete");
-  await audit(user, "bulk", { resource: res.slug, meta: { action: "delete", ids: [id] } });
+  const { deleted } = await deleteNotLive(res, [id]); // one rule for the page and the list
+  if (!deleted.length) return false;
+  await audit(user, "bulk", { resource: res.slug, meta: { action: "delete", ids: deleted } });
   return true;
 }
 

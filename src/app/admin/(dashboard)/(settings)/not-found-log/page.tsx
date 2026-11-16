@@ -6,10 +6,11 @@ import { db, notFoundLog, redirects } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { OldLinksTabs } from "@/components/admin/OldLinksTabs";
-import { formatDate, inputCls, Button } from "@/components/admin/ui";
+import { formatDate, inputCls, Button, Notice } from "@/components/admin/ui";
 
-export default async function NotFoundLogPage() {
+export default async function NotFoundLogPage({ searchParams }: { searchParams: Promise<{ error?: string; from?: string }> }) {
   await requireUser(); // the layout checks too; a page never relies on it alone
+  const sp = await searchParams;
   const rows = await db.select().from(notFoundLog).where(isNull(notFoundLog.resolvedAt)).orderBy(desc(notFoundLog.hits)).limit(200);
 
   async function createRedirect(fd: FormData) {
@@ -18,7 +19,7 @@ export default async function NotFoundLogPage() {
     const from = String(fd.get("from"));
     const to = String(fd.get("to") ?? "").trim();
     // a path on this site (not «//host», not «\») or a full https address
-    if (safeLocalPath(to, "") === "" && !/^https:\/\/[^\s/]+(\/\S*)?$/.test(to)) redirect("/admin/not-found-log?error=1");
+    if (safeLocalPath(to, "") === "" && !/^https:\/\/[^\s/]+(\/\S*)?$/.test(to)) redirect(`/admin/not-found-log?error=1&from=${encodeURIComponent(from)}`);
     await db.insert(redirects).values({ from, to }).onConflictDoUpdate({ target: redirects.from, set: { to } });
     await db.update(notFoundLog).set({ resolvedAt: new Date() }).where(eq(notFoundLog.path, from));
     await audit(user, "save", { resource: "redirects", label: `${from} → ${to}` });
@@ -37,6 +38,8 @@ export default async function NotFoundLogPage() {
     <>
       <OldLinksTabs active="broken" broken={rows.length} />
       <p className="mb-4 text-sm text-neutral-600">Addresses visitors opened that lead nowhere. Send each to a page that exists, or dismiss it.</p>
+      {/* a refused address says why (docs/screens/admin-not-found-log.md, 2026-11-16): it used to just reload */}
+      {sp.error && <div className="mb-4"><Notice kind="error">Not added: send «{sp.from ?? "this address"}» to a page of this site (/path) or a full https:// address.</Notice></div>}
       {/* an empty list is good news: say so instead of an empty table (docs/audits/admin-ux-review-2026-11-15.md 7.6) */}
       {rows.length === 0 ? (
         <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-600">✓ No broken links: every address visitors opened led somewhere.</p>
