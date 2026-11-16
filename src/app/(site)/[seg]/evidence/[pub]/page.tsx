@@ -9,7 +9,7 @@ import { safeHref } from "@/lib/safe-path";
 import { REGION_LABELS } from "@/lib/regions";
 import { Section, H1, Eyebrow, KeyValue, Btn, formatMonth } from "@/components/site/primitives";
 import { ShareLinks } from "@/components/site/ShareLinks";
-import { PdfViewer, isLocalPdf } from "@/components/site/PdfViewer";
+import { DocumentPages, isLocalPdf } from "@/components/site/DocumentPages";
 
 type Params = Promise<{ seg: string; pub: string }>;
 
@@ -105,8 +105,8 @@ export default async function PublicationPage({ params }: { params: Params }) {
           </aside>
           <div className="min-w-0 md:col-span-7 md:col-start-6">
             {pdf && isLocalPdf(pdf) ? (
-              // «embed the PDF» mode of the template: pages here, download beside
-              <PdfViewer href={pdf} title={p.title} caption={pdfCaption(p)} />
+              // our own file: its pages as pictures, download beside (the document on the page, 2026-11-16)
+              <DocumentPages href={pdf} title={p.title} caption={pdfCaption(p)} />
             ) : p.abstract ? (
               // no right to the full text here: the abstract as published, with its source (decision 2026-11-15)
               <section aria-labelledby="abstract">
@@ -125,8 +125,9 @@ export default async function PublicationPage({ params }: { params: Params }) {
                 )}
               </section>
             ) : (
-              <div className="rounded border border-border bg-surface p-6">
-                <p>The full article is published {p.journal ? <>in <em>{p.journal}</em></> : "by its journal"}.</p>
+              // only a link, no abstract anywhere: one line and the way to the original — no box (2026-11-16)
+              <div className="max-w-prose">
+                <p className="text-base">The full article is published {p.journal ? <>in <em>{p.journal}</em></> : "by its journal"}.</p>
                 {(original && original !== "#") || (pdf && pdf !== "#") ? (
                   <div className="mt-4"><Btn href={(original && original !== "#" ? original : pdf)!} external>Read the article ↗</Btn></div>
                 ) : null}

@@ -287,7 +287,7 @@ test("publications, news and studies have their own pages (docs/screens/material
   await expect(page).toHaveURL(/\/us\/evidence\/\d+-[a-z0-9-]+$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
   await expect(page.getByText(/^Publication · /)).toBeVisible();
-  await expect(page.locator("object[type='application/pdf'], a:has-text('Read the article ↗')").first()).toBeVisible();
+  await expect(page.locator("figure[data-document] img, h2:has-text('Abstract'), a:has-text('Read the article ↗')").first()).toBeVisible();
   // a wrong slug goes to the right one; a publication of another region is not there
   const id = page.url().match(/evidence\/(\d+)/)![1];
   expect((await request.get(`/us/evidence/${id}-wrong`, { maxRedirects: 0 })).status()).toBe(308);
@@ -308,9 +308,20 @@ test("publications, news and studies have their own pages (docs/screens/material
   await expect(page.getByRole("heading", { name: "Study at a glance" })).toBeVisible();
   await expect(page.getByText("90 consecutive subjects")).toBeVisible();
   await expect(page.getByText("95%", { exact: true })).toBeVisible();
-  // the study itself is shown on the page, not linked (decision 2026-11-15)
-  await expect(page.locator("object[type='application/pdf']")).toHaveCount(1);
+  // the study itself is shown on the page, not linked (decision 2026-11-15): its pages as pictures (2026-11-16)
+  await expect(page.locator("object[type='application/pdf']")).toHaveCount(0);
+  await expect(page.locator("figure[data-document]")).toHaveCount(1);
   await page.goto("/LongTerm_Outcomes");
-  await expect(page.locator("object[type='application/pdf']")).toHaveCount(1);
+  const doc = page.locator("figure[data-document]");
+  await expect(doc).toHaveCount(1);
+  // the first pages, then «Show all»; a page opens large; the text is under the pages
+  await expect(doc.locator("img")).toHaveCount(2);
+  await doc.getByRole("button", { name: /^Show all \d+ pages$/ }).click();
+  await expect(doc.locator("img")).toHaveCount(7);
+  await doc.getByRole("button", { name: "Enlarge page 1 of 7" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(doc.getByText("Text of this document")).toBeVisible();
   await expect(page.getByRole("link", { name: "Open PDF" })).toHaveCount(0);
 });

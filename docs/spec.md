@@ -48,7 +48,7 @@ Studio, материалы в `docs/tigertriever/`. Пользователи п�
 | Стили | Tailwind 4 + CSS-токены, нейтральный дизайн | `src/app/globals.css`, `docs/DESIGN.md` |
 | Блоки | Реестр блоков страниц: тип, варианты, поля, пример, компонент; рендер списка блоков | `src/blocks/`, `docs/DESIGN.md → Коллекция блоков` |
 | Rich text | Tiptap 3 → HTML, санитайз `sanitize-html` на выводе | `src/components/admin/RichText.tsx`, `src/lib/html.ts` |
-| Медиа | `sharp` (WebP 480/960/1600 + blur), `ffmpeg` (постер видео), драйвер `local` / `s3` | `src/lib/media.ts`, `src/lib/images.ts`, `src/lib/storage.ts` |
+| Медиа | `sharp` (WebP 480/960/1600 + blur), `ffmpeg` (постер видео), `pdfjs-dist` + `@napi-rs/canvas` (страницы PDF в WebP и текст), драйвер `local` / `s3` | `src/lib/media.ts`, `src/lib/images.ts`, `src/lib/storage.ts` |
 | Auth | Серверные сессии в БД, bcrypt, TOTP (`otplib`), preview-JWT (`jose`) | `src/lib/auth.ts`, `src/lib/preview.ts` |
 | Почта | `nodemailer` по SMTP; без SMTP — `console.log` | `src/lib/mail.ts` |
 | Тесты | Vitest (unit), Playwright (e2e), CI на GitHub Actions | `tests/`, `.github/workflows/ci.yml` |
@@ -174,7 +174,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |
-| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda) |
+| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda); у PDF — `pages[]` (страницы картинками: размер и WebP-варианты) и `text` (текст по страницам, разделитель `\f`), миграция 0028 |
 | `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `note` (заметка для команды), `ip`, `userAgent` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
 | `not_found_log` | Публичные 404 (дедуп по пути) для создания редиректов |

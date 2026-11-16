@@ -197,6 +197,13 @@
       "when": 1794758813905,
       "tag": "0027_publication_abstract",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1794840037803,
+      "tag": "0028_media_document_pages",
+      "breakpoints": true
     }
   ]
 }

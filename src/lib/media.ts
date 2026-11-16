@@ -2,6 +2,8 @@ import "server-only";
 import { db, media, type Media } from "@/db";
 import { processImage, videoPoster } from "./images";
 import { putObject, safeName, deleteObject } from "./storage";
+import { storeDocumentPages } from "./document-pages";
+import { eq } from "drizzle-orm";
 
 const PREFIX = () => new Date().toISOString().slice(0, 7);
 
@@ -27,16 +29,32 @@ export async function ingestFile(file: { name: string; buf: Buffer; mime: string
   let posterUrl: string | null = null;
   if (mime.startsWith("video/")) posterUrl = (await videoPoster(name, buf, prefix))?.url ?? null;
   const [row] = await db.insert(media).values({ url: stored.url, key: stored.key, filename: stored.key.split("/").pop()!, mime, size: stored.size, posterUrl, alt }).returning();
+  if (mime === "application/pdf") return withPages(row, buf);
   return row;
 }
 
-/** Remove a library entry and its files (original + variants + poster). */
+/**
+ * A PDF's pages as pictures and its text (screens/material.md → «Документ на странице»). A file that cannot be drawn
+ * stays uploaded: the page then offers «Download PDF».
+ */
+export async function withPages(row: Media, buf: Buffer): Promise<Media> {
+  try {
+    const { pages, text } = await storeDocumentPages(row.id, buf);
+    const [updated] = await db.update(media).set({ pages, text }).where(eq(media.id, row.id)).returning();
+    return updated;
+  } catch (err) {
+    console.error(`[media] pages of ${row.url} not drawn:`, err);
+    return row;
+  }
+}
+
+/** Remove a library entry and its files (original + variants + PDF pages + poster). */
 export async function removeMedia(row: Media): Promise<void> {
-  const keys = [row.key, ...row.variants.map((v) => keyFromUrl(v.url)), row.posterUrl ? keyFromUrl(row.posterUrl) : null].filter((k): k is string => !!k);
+  const keys = [row.key, ...row.variants.map((v) => keyFromUrl(v.url)), ...row.pages.flatMap((p) => p.variants.map((v) => keyFromUrl(v.url))), row.posterUrl ? keyFromUrl(row.posterUrl) : null].filter((k): k is string => !!k);
   for (const k of keys) await deleteObject(k).catch(() => {});
 }
 
-function keyFromUrl(url: string): string | null {
+export function keyFromUrl(url: string): string | null {
   const m = /\/uploads\/(.+)$/.exec(url);
   if (m) return m[1];
   const base = process.env.S3_PUBLIC_URL?.replace(/\/$/, "");

@@ -189,6 +189,9 @@ export const notFoundLog = pgTable(
 /*  Media library                                                       */
 /* ------------------------------------------------------------------ */
 
+/** One page of a PDF drawn as a picture: its size at the largest variant and WebP variants, ascending width. */
+export type DocPage = { w: number; h: number; variants: { w: number; url: string }[] };
+
 export const media = pgTable("media", {
   id: serial("id").primaryKey(),
   /** Public URL (local /uploads/... or CDN) */
@@ -207,6 +210,10 @@ export const media = pgTable("media", {
   placeholder: text("placeholder"),
   /** Poster image URL for videos */
   posterUrl: text("poster_url"),
+  /** A PDF's pages as pictures, in order (decision 2026-11-16, `src/lib/document-pages.ts`); empty = not drawn */
+  pages: jsonb("pages").$type<DocPage[]>().notNull().default([]),
+  /** A PDF's text, pages separated by «\f» — under the pages for search engines and screen readers */
+  text: text("text").notNull().default(""),
   /** Original Duda URL, kept for traceability during migration */
   sourceUrl: text("source_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

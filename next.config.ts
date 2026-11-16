@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   // Classic rendering model: pages read from Postgres per request / ISR,
   // and the admin calls revalidatePath() after every publish.
   cacheComponents: false,
+  // PDF pages are drawn on upload (src/lib/document-pages.ts): pdfjs and its canvas run from node_modules, and the
+  // fonts and character maps pdfjs reads at run time travel with the upload routes.
+  serverExternalPackages: ["pdfjs-dist", "@napi-rs/canvas"],
+  outputFileTracingIncludes: {
+    "/api/admin/*": ["./node_modules/pdfjs-dist/standard_fonts/**/*", "./node_modules/pdfjs-dist/cmaps/**/*"],
+  },
   images: {
     remotePatterns: [
       // Duda CDN – only until media is migrated to our own storage

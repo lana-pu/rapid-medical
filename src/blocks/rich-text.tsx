@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { safeHref } from "@/lib/safe-path";
-import { PdfViewer, isLocalPdf } from "@/components/site/PdfViewer";
+import { DocumentPages, isLocalPdf } from "@/components/site/DocumentPages";
 import { Section, Prose, KeyValue } from "@/components/site/primitives";
 import { safeHtml } from "@/lib/html";
 import { F } from "./edit";
@@ -95,7 +95,7 @@ function RichText({ variant, data: d, edit: e, nested }: BlockProps<"richText">)
           <div className="min-w-0 md:col-span-7 md:col-start-6">
             {/* a page whose whole text is one «Open PDF» link shows the PDF instead of the link */}
             {!(pdf && plain(body) === "Open PDF") && <F e={e} k="html" kind="rich"><Prose html={body} /></F>}
-            {pdf && <div className={plain(body) === "Open PDF" ? "" : "mt-10"}><PdfViewer href={pdf.href} title={pdf.title ?? "Document"} caption={pdf.caption} /></div>}
+            {pdf && <div className={plain(body) === "Open PDF" ? "" : "mt-10"}><DocumentPages href={pdf.href} title={pdf.title ?? "Document"} caption={pdf.caption} /></div>}
           </div>
         </div>
       );
