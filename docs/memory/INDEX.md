@@ -27,6 +27,7 @@
 - [client-brief-lesson-content](findings/client-brief-lesson-content.md) — что клиент сказал о содержимом урока инструмента: структура секции, материал по этапам, статусы (2026-11-08)
 - [website-audit-ga4-oct-2026](findings/website-audit-ga4-oct-2026.md) — аудит Emily по GA4 (13.10.2026): что закрыто сборкой, что нет, предложения (2026-11-10)
 - [client-email-2026-11-10](findings/client-email-2026-11-10.md) — письмо Emily: COMANECI US = только номера каталога, доступы, Mailchimp, лидов нет, запрос DAM, заголовок главной (2026-11-10)
+- [duda-form-leads-2026-11-16](findings/duda-form-leads-2026-11-16.md) — выгрузки форм Duda: 197 заявок в Contact us, клиенты и дистрибьюторы без ответа; куда уходят уведомления (2026-11-16)
 - [design-references](findings/design-references.md) — референсы визуала: решено — тёмная тема; v3 — 12 сайтов с сильной арт-дирекцией, рецепт для Rapid Medical (2026-11-11)
 - [site-ux-pass-2026-11-13](findings/site-ux-pass-2026-11-13.md) — юзабилити публичного сайта глазами нового посетителя (2026-11-13)
 - [evidence-benchmark-2026-11-14](findings/evidence-benchmark-2026-11-14.md) — как конкуренты и смежные компании показывают клинические данные; практики и анти-паттерны (2026-11-14)
