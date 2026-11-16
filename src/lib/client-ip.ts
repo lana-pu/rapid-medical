@@ -16,9 +16,20 @@ export function clientIp(
   hops = Number(process.env.TRUSTED_PROXY_HOPS ?? 0),
 ): string | null {
   if (onVercel) return asIp(h.get("x-vercel-forwarded-for")?.split(",")[0]);
-  if (!Number.isInteger(hops) || hops < 1) return null;
+  if (!Number.isInteger(hops) || hops < 1) {
+    warnOnce();
+    return null;
+  }
   const entries = (h.get("x-forwarded-for") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   return entries.length >= hops ? asIp(entries[entries.length - hops]) : null;
+}
+
+let warned = false;
+/** A production server off Vercel with no TRUSTED_PROXY_HOPS has no per-address limits: say so once in the log. */
+function warnOnce() {
+  if (warned || process.env.NODE_ENV !== "production" || process.env.VERCEL) return;
+  warned = true;
+  console.warn("[client-ip] TRUSTED_PROXY_HOPS is not set: visitor addresses are unknown, per-address limits share one bucket (.env.example)");
 }
 
 function asIp(raw: string | undefined): string | null {

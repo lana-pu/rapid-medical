@@ -39,7 +39,8 @@ const schema = z.object({
  * never let through uncounted (no address means no proxy in front — a host set up wrong; refusing everyone then would
  * break every form). Counted first: a refused send writes nothing; the address's old rows go on each call. Count and
  * write run under a lock per address, so sends at the same moment cannot slip past the limit together; an address
- * already over the limit is refused before any lock, and a busy lock is not waited for — the send is refused.
+ * already over the limit is refused before any lock; a busy lock is waited for at most 2 s (then the send is refused),
+ * so sends sharing the «unknown» bucket queue instead of failing.
  */
 const FORM_MAX = 8;
 const FORM_MAX_UNKNOWN = 60; // no trusted address: development, e2e, a host without TRUSTED_PROXY_HOPS
@@ -51,14 +52,15 @@ async function limited(ip: string | null): Promise<boolean> {
     (await q.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since))))[0].n;
   const max = ip ? FORM_MAX : FORM_MAX_UNKNOWN;
   if ((await count(db)) >= max) return true; // over already: no lock, no transaction
+  // a lock not got in 2 s aborts the transaction: it rolls back, and the send is refused
   return db.transaction(async (tx) => {
-    const [{ got }] = await tx.execute<{ got: boolean }>(sql`select pg_try_advisory_xact_lock(hashtextextended(${key}, 0)) as got`);
-    if (!got) return true; // another send from this address is being counted right now
+    await tx.execute(sql`set local lock_timeout = '2s'`);
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${key}, 0))`);
     await tx.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
     if ((await count(tx)) >= max) return true;
     await tx.insert(loginAttempts).values({ key });
     return false;
-  });
+  }).catch(() => true);
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
