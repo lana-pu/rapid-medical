@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { and, eq, gt, like, lt, sql } from "drizzle-orm";
+import { and, eq, gt, lt, sql } from "drizzle-orm";
 import { db, contactSubmissions, loginAttempts } from "@/db";
 import { clientIp } from "./client-ip";
 import { sendMail } from "@/lib/mail";
@@ -35,17 +35,20 @@ const schema = z.object({
 /**
  * More than FORM_MAX sends from one address in FORM_WINDOW_MS → «Too many requests». Counted in the database (the
  * sign-in attempts table, key «form:{address}»): the same for every server instance and kept across restarts
- * (docs/screens/contact-us.md → Лимит).
+ * (docs/screens/contact-us.md → Лимит). A request without a known address shares one bucket with a wider cap — it is
+ * never let through uncounted. Counted first: a refused send writes nothing; the address's old rows go on each call.
  */
 const FORM_MAX = 8;
+const FORM_MAX_UNKNOWN = 60; // direct requests with no proxy in front (development, e2e) all land here
 const FORM_WINDOW_MS = 10 * 60 * 1000;
-async function limited(ip: string): Promise<boolean> {
-  const key = `form:${ip}`;
+async function limited(ip: string | null): Promise<boolean> {
+  const key = `form:${ip ?? "unknown"}`;
+  const since = new Date(Date.now() - FORM_WINDOW_MS);
+  await db.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
+  if (n >= (ip ? FORM_MAX : FORM_MAX_UNKNOWN)) return true;
   await db.insert(loginAttempts).values({ key });
-  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, new Date(Date.now() - FORM_WINDOW_MS))));
-  // old form rows go now and then; sign-in rows are cleaned by their own rule
-  if (Math.random() < 0.05) await db.delete(loginAttempts).where(and(like(loginAttempts.key, "form:%"), lt(loginAttempts.at, new Date(Date.now() - FORM_WINDOW_MS * 6))));
-  return n > FORM_MAX;
+  return false;
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -54,7 +57,7 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
 
   const h = await headers();
   const ip = clientIp(h);
-  if (ip && (await limited(ip))) return { ok: false, message: "Too many requests. Please try again later." };
+  if (await limited(ip)) return { ok: false, message: "Too many requests. Please try again later." };
 
   let meta: Record<string, string> = {};
   try { meta = JSON.parse(String(fd.get("meta") ?? "{}")); } catch { meta = {}; }

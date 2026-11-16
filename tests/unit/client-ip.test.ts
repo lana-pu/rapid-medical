@@ -4,15 +4,20 @@ import { clientIp } from "../../src/lib/client-ip";
 const h = (o: Record<string, string>) => new Headers(o);
 
 describe("clientIp: the address the host wrote, not the one the visitor sent", () => {
-  it("takes Vercel's header first", () => {
-    expect(clientIp(h({ "x-vercel-forwarded-for": "203.0.113.7", "x-forwarded-for": "1.1.1.1, 203.0.113.7" }))).toBe("203.0.113.7");
+  it("on Vercel takes Vercel's header first", () => {
+    expect(clientIp(h({ "x-vercel-forwarded-for": "203.0.113.7", "x-forwarded-for": "1.1.1.1, 203.0.113.7" }), true)).toBe("203.0.113.7");
   });
-  it("else the right-most x-forwarded-for entry: a forged left one does not change it", () => {
-    expect(clientIp(h({ "x-forwarded-for": "6.6.6.6, 198.51.100.2" }))).toBe("198.51.100.2");
-    expect(clientIp(h({ "x-forwarded-for": "198.51.100.2" }))).toBe("198.51.100.2");
+  it("elsewhere ignores a Vercel header the visitor sent", () => {
+    expect(clientIp(h({ "x-vercel-forwarded-for": "6.6.6.6", "x-forwarded-for": "198.51.100.2" }), false)).toBe("198.51.100.2");
   });
-  it("null without either", () => {
-    expect(clientIp(h({}))).toBeNull();
-    expect(clientIp(h({ "x-forwarded-for": " " }))).toBeNull();
+  it("takes the right-most x-forwarded-for entry: a forged left one does not change it; empty entries are skipped", () => {
+    expect(clientIp(h({ "x-forwarded-for": "6.6.6.6, 198.51.100.2" }), false)).toBe("198.51.100.2");
+    expect(clientIp(h({ "x-forwarded-for": "198.51.100.2, " }), false)).toBe("198.51.100.2");
+    expect(clientIp(h({ "x-forwarded-for": "2001:db8::1" }), false)).toBe("2001:db8::1");
+  });
+  it("null without an address, or with something that is not one", () => {
+    expect(clientIp(h({}), false)).toBeNull();
+    expect(clientIp(h({ "x-forwarded-for": " " }), false)).toBeNull();
+    expect(clientIp(h({ "x-forwarded-for": "evil<script>" }), false)).toBeNull();
   });
 });
