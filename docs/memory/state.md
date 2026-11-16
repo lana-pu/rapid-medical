@@ -394,3 +394,13 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 - Медиатека: группы слева по месту использования (страницы по разделам, Other pages, списки, Site settings), Not used,
   No description, типы; страница — файлы по секциям; удаление неиспользуемых пачкой после списка
   (`src/admin/media-library.ts`). Сессия: `sessions/2026-11-15-admin-ux.md`.
+
+## 2026-11-16 — документ на странице (ветка `site-redesign`)
+- Вместо просмотрщика PDF браузера — страницы картинками (`DocumentPages`, `src/lib/document-pages.ts`): рисуются при
+  загрузке (pdfjs-dist + @napi-rs/canvas, WebP 800/1600, постер до 4000), хранятся в `media.pages` / `media.text`
+  (миграция 0028). Видны 2 страницы (альбомные — 3), «Show all N pages», клик — крупно, под ними свёрнут «Text of this
+  document». 32 PDF (183 страницы, 60 МБ) нарисованы `npm run media:process`. Решения владелицы: текст под страницами —
+  да; только PDF и картинки; сворачивать после 2 страниц — принято по прототипу («ok go»).
+- Сайты журналов не встраиваем: проверено на 94 ссылках и в браузере (`findings/embed-external-pages-2026-11-16.md`).
+- e2e global-setup — через драйвер `postgres` вместо `psql`. Ещё 3 e2e-файла (admin, editor, media) вызывают `psql`
+  напрямую: на Маке владелицы его нет, они падают локально (в CI `postgresql-client` ставится).
