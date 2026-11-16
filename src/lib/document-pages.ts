@@ -52,7 +52,7 @@ async function pdfjs() {
 const assets = (dir: string) => path.join(process.cwd(), "node_modules", "pdfjs-dist", dir) + path.sep;
 
 /** Draws every page (up to MAX_PAGES) of a PDF into WebP pictures and takes out its text. */
-export async function drawPdf(buf: Buffer): Promise<Drawn> {
+export async function drawPdf(buf: Buffer, budgetMs = DRAW_BUDGET_MS): Promise<Drawn> {
   const { getDocument } = await pdfjs();
   const { createCanvas } = await import("@napi-rs/canvas");
   const task = getDocument({
@@ -69,7 +69,7 @@ export async function drawPdf(buf: Buffer): Promise<Drawn> {
     const n = Math.min(doc.numPages, MAX_PAGES);
     const started = Date.now();
     for (let i = 1; i <= n; i++) {
-      if (Date.now() - started > DRAW_BUDGET_MS) break; // the rest stays in «Download PDF»
+      if (Date.now() - started > budgetMs) break; // the rest stays in «Download PDF»
       const page = await doc.getPage(i);
       const base = page.getViewport({ scale: 1 });
       const widths = variantWidths(base.width);
@@ -79,8 +79,18 @@ export async function drawPdf(buf: Buffer): Promise<Drawn> {
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // @napi-rs/canvas is what pdfjs uses in Node itself; its types differ from the DOM's
-      await page.render({ canvas: canvas as never, canvasContext: ctx as never, viewport: vp }).promise;
+      // @napi-rs/canvas is what pdfjs uses in Node itself; its types differ from the DOM's.
+      // The budget bounds the drawing itself, not only the gaps between pages: a heavy page is cancelled when time runs out.
+      const render = page.render({ canvas: canvas as never, canvasContext: ctx as never, viewport: vp });
+      const stop = setTimeout(() => render.cancel(), Math.max(0, budgetMs - (Date.now() - started)));
+      try {
+        await render.promise;
+      } catch {
+        page.cleanup();
+        break; // cancelled (or failed): the pages so far stay, the rest is in «Download PDF»
+      } finally {
+        clearTimeout(stop);
+      }
       // the pixels go to sharp as they are: no PNG in between
       const px = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
       const drawn = sharp(Buffer.from(px.buffer, px.byteOffset, px.byteLength), { raw: { width: canvas.width, height: canvas.height, channels: 4 } });

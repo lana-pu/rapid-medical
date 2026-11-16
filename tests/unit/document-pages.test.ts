@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { variantWidths } from "@/lib/document-pages";
 import { fileSize, initialPages, textPages, zoomWidth } from "@/lib/document-view";
@@ -43,4 +45,24 @@ describe("document on the page: limits (security check 2026-11-16)", () => {
     const w = drawWidth(595, 59500); // a strip 100 times taller than wide
     expect(w * Math.round((w * 59500) / 595)).toBeLessThanOrEqual(MAX_PIXELS * 1.01);
   });
+});
+
+describe("document on the page: drawing a real file", () => {
+  const file = (name: string) => readFileSync(join(process.cwd(), "public/uploads", name));
+
+  it("draws every page and takes out the text", async () => {
+    const { drawPdf } = await import("@/lib/document-pages");
+    const d = await drawPdf(file("duda/Sandner-2_COMANECI-case-report-3b0855.pdf"));
+    expect(d.total).toBe(1);
+    expect(d.pages).toHaveLength(1);
+    expect(d.pages[0].images.map((i) => i.w)).toEqual([800, 1600]);
+    expect(d.text.length).toBeGreaterThan(100);
+  }, 60_000);
+
+  it("stops when the time is up, inside a page as well — the pages left out are counted", async () => {
+    const { drawPdf } = await import("@/lib/document-pages");
+    const d = await drawPdf(file("duda/DISTALS-ESOC-May-2026-for-web-a86bcf.pdf"), 1);
+    expect(d.total).toBe(20);
+    expect(d.pages.length).toBeLessThan(20);
+  }, 60_000);
 });
