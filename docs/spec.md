@@ -50,7 +50,7 @@ Studio, материалы в `docs/tigertriever/`. Пользователи п�
 | Rich text | Tiptap 3 → HTML, санитайз `sanitize-html` на выводе | `src/components/admin/RichText.tsx`, `src/lib/html.ts` |
 | Медиа | `sharp` (WebP 480/960/1600 + blur), `ffmpeg` (постер видео), `pdfjs-dist` + `@napi-rs/canvas` (страницы PDF в WebP и текст), драйвер `local` / `s3` | `src/lib/media.ts`, `src/lib/images.ts`, `src/lib/storage.ts` |
 | Auth | Серверные сессии в БД, bcrypt, TOTP (`otplib`), preview-JWT (`jose`) | `src/lib/auth.ts`, `src/lib/preview.ts` |
-| Почта | `nodemailer` по SMTP; без SMTP — `console.log` | `src/lib/mail.ts` |
+| Почта | `nodemailer` по SMTP; без SMTP при разработке — письмо целиком в консоль, на проде — только «кому» и тема (ссылки и данные заявок в лог не попадают; аудит K.1, 2026-11-16) | `src/lib/mail.ts` |
 | Тесты | Vitest (unit), Playwright (e2e), CI на GitHub Actions | `tests/`, `.github/workflows/ci.yml` |
 | Хостинг | Не подключён (Vercel+Neon описаны в README, но не настроены); работает только демо на GitHub Pages | `docs/memory/infrastructure.md` |
 
@@ -239,7 +239,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Отправка любой формы (contact / webinar / careers / event) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 
-Без `SMTP_HOST` письма только логируются в консоль (включая токен сброса пароля и данные заявки).
+Без `SMTP_HOST` письма не уходят: при разработке текст письма в консоли (с токеном сброса и данными заявки), на проде — только «кому» и тема; заявка всё равно в Inbox, приглашение — ссылкой в People and roles, сброс пароля честно говорит, что почты нет (`screens/admin-login.md`).
 Ошибка отправки не видна посетителю (заявка всё равно сохраняется, ответ «Thank you»).
 
 ## Интеграции

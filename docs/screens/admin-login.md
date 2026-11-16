@@ -29,7 +29,10 @@
 - **Запрос**: «Reset password», поле «Your email», **Send reset link**, «Back to sign in». Ответ всегда один, есть почта
   или нет: «If that address has an account, a reset link is on its way (valid 1 hour).»
   Письмо «Reset your Rapid Medical admin password» со ссылкой `/admin/reset?token=…` — только активным учётным записям.
-  Без SMTP письмо пишется в лог сервера. Не больше 3 писем на адрес и 10 с одного IP за 15 минут (ответ тот же).
+- **Почта не настроена** (нет `SMTP_HOST`; решение 2026-11-16 — честно, без обещания письма, аудит K.1): на проде формы
+  нет — «Reset by email is not set up yet. Ask an admin to set a new password for you (People and roles → Set a
+  new password).» При разработке форма есть, ответ — «Email is not set up here: the reset link is in the server log.»
+  Не больше 3 писем на адрес и 10 с одного IP за 15 минут (ответ тот же).
 - **Новый пароль** (`?token=`): «Choose a new password», поле «New password (10+ characters)», **Set password**.
   Короче 10 символов → «Use at least 10 characters.». Ссылка неверна, просрочена или уже использована → форма запроса
   с «That link is invalid or has expired. Request a new one.»
