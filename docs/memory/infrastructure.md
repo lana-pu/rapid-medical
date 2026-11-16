@@ -42,6 +42,7 @@
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | `scripts/seed.ts` — первый admin (bootstrap запускает seed только при пустых `solutions` или `users`) | при первом запуске |
 | `CRON_SECRET` | `/api/cron/publish` (если пусто — эндпоинт открыт) | рекомендуется |
 | `STORAGE_DRIVER` | `local` (дефолт) / `s3` | нет |
+| `TRUSTED_PROXY_HOPS` | не на Vercel: сколько прокси перед сайтом (1 — один nginx / балансировщик); без неё сайт не верит `X-Forwarded-For`, лимиты форм — в общей корзине (`src/lib/client-ip.ts`, 2026-11-16) | при своём хостинге с прокси — да |
 | `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | `src/lib/storage.ts`, `src/lib/media.ts` | при `s3` |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `MAIL_TO` | `src/lib/mail.ts` (без `SMTP_HOST` — лог в консоль) | для писем |
 | `APP_PORT`, `DB_PORT` | `docker-compose.yml` | нет |
