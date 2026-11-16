@@ -593,6 +593,7 @@ test("user walk 2026-11-14: a draft is deleted from its own page; a request name
   await form.locator("input[name=firstName]").fill("Walk");
   await form.locator("input[name=lastName]").fill("Tester");
   await form.locator("input[name=email]").fill("walk@example.com");
+  await form.locator("select[name=countryCode]").selectOption("DE"); // Country is required on the new Contact Us
   await form.getByRole("button", { name: "Submit" }).click();
   await expect(page.getByText(/Thank you/)).toBeVisible();
   const id = sql("select id from contact_submissions where email = 'walk@example.com' order by id desc limit 1");

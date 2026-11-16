@@ -10,6 +10,8 @@ export default defineConfig({
   timeout: 60_000,
   retries: 0,
   workers: 1, // tests share one database
+  // a save refreshes the page from the server; on a laptop under a full run that took over 5 s now and then (2026-11-16)
+  expect: { timeout: 10_000 },
   use: { baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3100", trace: "retain-on-failure" },
   webServer: process.env.E2E_BASE_URL
     ? undefined
