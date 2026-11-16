@@ -73,6 +73,8 @@ test("sections: add from presets, edit its text, move, undo, delete; the regulat
   await page.getByRole("button", { name: "↷ Redo" }).click();
   await expect.poll(async () => (await ids(page))[2]).toBe(added);
   await expect(page.getByRole("button", { name: "↷ Redo" })).toBeDisabled();
+  // Redo goes grey as soon as its list is empty, before the save ends; the keys wait for the save like the buttons do
+  await expect(page.getByRole("button", { name: "↶ Undo" })).toBeEnabled();
   await page.keyboard.press("ControlOrMeta+Z");
   await expect.poll(async () => (await ids(page))[1]).toBe(added);
 
