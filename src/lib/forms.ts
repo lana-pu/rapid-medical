@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { and, eq, gt, lt, sql } from "drizzle-orm";
+import { and, eq, lt, sql } from "drizzle-orm";
 import { db, contactSubmissions, loginAttempts } from "@/db";
 import { clientIp } from "./client-ip";
 import { sendMail } from "@/lib/mail";
@@ -37,10 +37,8 @@ const schema = z.object({
  * sign-in attempts table, key «form:{address}»): the same for every server instance and kept across restarts
  * (docs/screens/contact-us.md → Лимит). A request without a known address shares one bucket with a wider cap — it is
  * never let through uncounted (no address means no proxy in front — a host set up wrong; refusing everyone then would
- * break every form). Counted first: a refused send writes nothing; the address's old rows go on each call. Count and
- * write run under a lock per address, so sends at the same moment cannot slip past the limit together; an address
- * already over the limit is refused before any lock; a busy lock is waited for at most 2 s (then the send is refused),
- * so sends sharing the «unknown» bucket queue instead of failing.
+ * break every form). One statement counts and writes («insert only while under the cap»): no lock, no waiting on a
+ * database connection; sends at the very same moment may pass a slot or two over the cap. A refused send writes nothing.
  */
 const FORM_MAX = 8;
 const FORM_MAX_UNKNOWN = 60; // no trusted address: development, e2e, a host without TRUSTED_PROXY_HOPS
@@ -48,19 +46,16 @@ const FORM_WINDOW_MS = 10 * 60 * 1000;
 async function limited(ip: string | null): Promise<boolean> {
   const key = `form:${ip ?? "unknown"}`;
   const since = new Date(Date.now() - FORM_WINDOW_MS);
-  const count = async (q: Pick<typeof db, "select">) =>
-    (await q.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since))))[0].n;
   const max = ip ? FORM_MAX : FORM_MAX_UNKNOWN;
-  if ((await count(db)) >= max) return true; // over already: no lock, no transaction
-  // a lock not got in 2 s aborts the transaction: it rolls back, and the send is refused
-  return db.transaction(async (tx) => {
-    await tx.execute(sql`set local lock_timeout = '2s'`);
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${key}, 0))`);
-    await tx.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
-    if ((await count(tx)) >= max) return true;
-    await tx.insert(loginAttempts).values({ key });
-    return false;
-  }).catch(() => true);
+  try {
+    await db.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
+    const added = await db.execute(
+      sql`insert into ${loginAttempts} (key) select ${key} where (select count(*) from ${loginAttempts} where key = ${key} and at > ${since.toISOString()}::timestamptz) < ${max} returning id`,
+    );
+    return added.length === 0;
+  } catch {
+    return true; // the database is not answering: refuse rather than send unlimited mail
+  }
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
