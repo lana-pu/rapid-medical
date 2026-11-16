@@ -11,7 +11,7 @@
 |---|---|---|
 | Терапии, текстовые страницы | поля записи `metaTitle` / `metaDescription` (по региону) | как правка страницы: черновик → **Publish** |
 | Home, About, Careers, Evidence, обзор Therapies | поля записи `site_pages.meta_title` / `meta_description` (миграция 0022; прежние тексты из кода и из Settings перенесены) | черновик → **Publish** |
-| Webinars, News & Events, Open positions, Contact Us | Settings → группа `seo` (у Contact — по региону и общий) | сразу при сохранении (как все настройки сайта) |
+| Webinars, News & Events, Contact Us (Open positions — нет: адрес ведёт на Careers, 2026-11-14) | Settings → группа `seo` (у Contact — по региону и общий) | сразу при сохранении (как все настройки сайта) |
 Новости, события, вакансии, публикации получают заголовок из своего названия — в списке их нет.
 
 ## Вид — список и редактор (master–detail), не таблица-куча

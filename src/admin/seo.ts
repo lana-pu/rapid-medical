@@ -51,7 +51,6 @@ const regionOrder = (r: Region | null) => (r ? REGION_CHOICES.findIndex((c) => c
 const LIST_PAGES: { key: string; name: string; versions: { region: Region | null; path: string; title: string; description: string }[] }[] = [
   { key: "/webinars", name: "Webinars", versions: [{ region: null, path: "/us/webinars", title: "webinarsTitle", description: "webinarsDescription" }] },
   { key: "/news-events", name: "News & Events", versions: [{ region: null, path: "/news-events", title: "newsTitle", description: "newsDescription" }] },
-  { key: "/open-positions", name: "Open positions", versions: [{ region: null, path: "/open-positions", title: "jobsTitle", description: "jobsDescription" }] },
   {
     key: "/contact-us",
     name: "Contact Us",

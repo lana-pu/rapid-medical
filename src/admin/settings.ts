@@ -123,14 +123,12 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     // the pages built from lists keep their Google texts here; every other page keeps them on itself — all of them
     // are edited in Search & sharing (docs/screens/admin-seo.md)
     description: "How Google shows the pages built from lists. All pages are in Search & sharing.",
-    revalidate: ["/us/webinars", "/ous/webinars", "/apac/webinars", "/contact-us", "/news-events", "/open-positions"],
+    revalidate: ["/us/webinars", "/ous/webinars", "/apac/webinars", "/contact-us", "/news-events"],
     fields: [
       { name: "webinarsTitle", label: "Webinars – title", type: "text", half: true },
       { name: "webinarsDescription", label: "Webinars – description", type: "text", half: true },
       { name: "newsTitle", label: "News & Events – title", type: "text", half: true },
       { name: "newsDescription", label: "News & Events – description", type: "text", half: true },
-      { name: "jobsTitle", label: "Open positions – title", type: "text", half: true },
-      { name: "jobsDescription", label: "Open positions – description", type: "text", half: true },
       { name: "contactTitle", label: "Contact Us – title", type: "text", half: true },
       { name: "contactDescription", label: "Contact Us – description", type: "text", half: true },
       { name: "contactTitleUs", label: "Contact Us (Americas) – title", type: "text", half: true },
