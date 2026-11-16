@@ -30,6 +30,7 @@
 - [duda-form-leads-2026-11-16](findings/duda-form-leads-2026-11-16.md) — выгрузки форм Duda: 197 заявок в Contact us, клиенты и дистрибьюторы без ответа; куда уходят уведомления (2026-11-16)
 - [embed-external-pages-2026-11-16](findings/embed-external-pages-2026-11-16.md) — встраивать страницы журналов нельзя: 63 из 94 ссылок публикаций запрещают, остальное — чужой сайт в окне (2026-11-16)
 - [create-from-document-probe-2026-11-16](findings/create-from-document-probe-2026-11-16.md) — проба «Create from a document»: текст SUCCESS и DISTALS извлекается, ClinicalTrials.gov даёт паспорт; SUCCESS — 8 центров в реестре против 17 в статье, PDF под CC BY-NC (2026-11-16)
+- [publication-duplicates-2026-11-16](findings/publication-duplicates-2026-11-16.md) — дубли публикаций: ~27 групп, уникальных статей ~74–75 из 102; пары делят регионы, посетитель дублей не видит, но число на главной считает записи (2026-11-16)
 - [design-references](findings/design-references.md) — референсы визуала: решено — тёмная тема; v3 — 12 сайтов с сильной арт-дирекцией, рецепт для Rapid Medical (2026-11-11)
 - [site-ux-pass-2026-11-13](findings/site-ux-pass-2026-11-13.md) — юзабилити публичного сайта глазами нового посетителя (2026-11-13)
 - [evidence-benchmark-2026-11-14](findings/evidence-benchmark-2026-11-14.md) — как конкуренты и смежные компании показывают клинические данные; практики и анти-паттерны (2026-11-14)
