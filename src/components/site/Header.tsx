@@ -42,7 +42,7 @@ export function Header({
       </div>
 
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
-        <Link href="/" className="flex items-center" aria-label="Rapid Medical – home">
+        <Link href="/" className="flex min-w-0 items-center" aria-label="Rapid Medical – home">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt="Rapid Medical" className="h-8 w-auto" />
@@ -82,15 +82,16 @@ export function Header({
           )}
         </nav>
 
-        <Link href={region ? `/contact-us?region=${region}` : "/contact-us"} className="rounded bg-accent px-3 py-1.5 text-sm text-accent-foreground">
+        <Link href={region ? `/contact-us?region=${region}` : "/contact-us"} className="shrink-0 whitespace-nowrap rounded bg-accent px-3 py-1.5 text-sm text-accent-foreground">
           <E r={NAV} f="contactLabel">{nav.contactLabel}</E>
         </Link>
       </div>
 
       {/* Mobile nav – plain links; replace with a drawer when design lands */}
-      <nav className="flex gap-4 overflow-x-auto border-t border-border px-4 py-2 text-sm md:hidden" aria-label="Mobile">
+      <nav className="flex justify-between gap-x-1.5 overflow-x-auto border-t border-border px-4 py-2 text-sm md:hidden" aria-label="Mobile">
         {nav.menu.filter((m) => menuHref(m, region) !== "/").map((m, i) => (
-          <Link key={i} href={menuHref(m, region)}>{m.label}</Link>
+          // one line each: «News & Events» does not break in two; the row scrolls sideways if it does not fit
+          <Link key={i} href={menuHref(m, region)} className="shrink-0 whitespace-nowrap">{m.label}</Link>
         ))}
       </nav>
     </header>
