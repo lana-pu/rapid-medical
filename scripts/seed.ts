@@ -97,13 +97,29 @@ async function main() {
     else await db.insert(pages).values({ ...pp, status: pp.status ?? "published" });
   }
 
-  /* media library snapshot (rows + variants/posters) – only rows not present yet */
+  /* media library snapshot (rows + variants/posters/PDF pages) – rows not present yet are added; a present row that lacks
+     what the snapshot has already processed (variants, poster, PDF pages and text) gets it, so nothing is drawn twice */
   try {
     const snap = await json<Omit<schema.Media, "id" | "createdAt">[]>("media");
-    const have = new Set((await db.select({ url: schema.media.url }).from(schema.media)).map((r) => r.url));
-    const fresh = snap.filter((m) => !have.has(m.url));
+    const rows = await db.select().from(schema.media);
+    const byUrl = new Map(rows.map((r) => [r.url, r]));
+    const fresh = snap.filter((m) => !byUrl.has(m.url));
     for (let i = 0; i < fresh.length; i += 50) await db.insert(schema.media).values(fresh.slice(i, i + 50));
-    console.log(`media: ${fresh.length} rows added from snapshot (${have.size} already present)`);
+    let filled = 0;
+    for (const m of snap) {
+      const r = byUrl.get(m.url);
+      if (!r) continue;
+      const set: Partial<schema.Media> = {};
+      if (!r.variants.length && m.variants?.length) Object.assign(set, { variants: m.variants, width: m.width, height: m.height, placeholder: m.placeholder });
+      if (!r.posterUrl && m.posterUrl) set.posterUrl = m.posterUrl;
+      if (!r.pages.length && m.pages?.length) Object.assign(set, { pages: m.pages, text: m.text, pageCount: m.pageCount });
+      if (!r.key && m.key) set.key = m.key;
+      if (Object.keys(set).length) {
+        await db.update(schema.media).set(set).where(eq(schema.media.id, r.id));
+        filled++;
+      }
+    }
+    console.log(`media: ${fresh.length} rows added from snapshot, ${filled} present rows completed (${byUrl.size} already present)`);
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
   }
