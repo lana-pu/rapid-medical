@@ -183,6 +183,9 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
   const [err, setErr] = useState<Record<number, string>>({});
   const refs = useRef<Record<number, HTMLInputElement | null>>({});
   const left = items.filter((m) => !done[m.id]);
+  // the first open field takes the focus when it appears: on opening the queue, and again if saving refreshes the page
+  // from the server and the list is drawn anew (the explicit focus below then lands on a field that is gone)
+  const firstOpen = items.findIndex((m) => !done[m.id]);
 
   const save = async (m: DescribeItem, i: number) => {
     const v = (values[m.id] ?? "").trim();
@@ -214,6 +217,7 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
                     <input
                       ref={(el) => { refs.current[m.id] = el; }}
                       aria-label={`Description of ${m.filename}`}
+                      autoFocus={i === firstOpen}
                       value={values[m.id] ?? ""}
                       onChange={(e) => setValues({ ...values, [m.id]: e.target.value })}
                       onKeyDown={(e) => e.key === "Enter" && save(m, i)}
