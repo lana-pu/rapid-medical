@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db, passwordResets, users } from "@/db";
-import { requireUser, listSessions, destroyAllSessions, hashPassword, verifyPassword } from "@/lib/auth";
+import { requireUser, listSessions, destroyAllSessions, hashPassword, confirmOwnPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { PageHeader, Button, inputCls, Notice, formatDate } from "@/components/admin/ui";
 
@@ -15,7 +15,9 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     "use server";
     const u = await requireUser();
     const row = await db.query.users.findFirst({ where: eq(users.id, u.id) });
-    if (!row || !(await verifyPassword(String(fd.get("current")), row.passwordHash))) redirect("/admin/account?error=Current+password+is+wrong");
+    const check = row ? await confirmOwnPassword(u.id, String(fd.get("current")), row.passwordHash) : "wrong";
+    if (check === "throttled") redirect("/admin/account?error=Too+many+attempts.+Try+again+in+15+minutes.");
+    if (check !== "ok") redirect("/admin/account?error=Current+password+is+wrong");
     const next = String(fd.get("next") ?? "");
     if (next.length < 10) redirect("/admin/account?error=Use+10%2B+characters");
     await db.update(users).set({ passwordHash: await hashPassword(next) }).where(eq(users.id, u.id));
@@ -30,7 +32,9 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     "use server";
     const u = await requireUser();
     const row = await db.query.users.findFirst({ where: eq(users.id, u.id) });
-    if (!row || !(await verifyPassword(String(fd.get("password")), row.passwordHash))) redirect("/admin/account?error=Password+is+wrong");
+    const check = row ? await confirmOwnPassword(u.id, String(fd.get("password")), row.passwordHash) : "wrong";
+    if (check === "throttled") redirect("/admin/account?error=Too+many+attempts.+Try+again+in+15+minutes.");
+    if (check !== "ok") redirect("/admin/account?error=Password+is+wrong");
     await db.update(users).set({ totpSecret: null, totpEnabledAt: null, recoveryCodes: [] }).where(eq(users.id, u.id));
     await audit(u, "user", { recordId: u.id, meta: { totpReset: true, own: true } });
     redirect("/admin/login/setup");

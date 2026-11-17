@@ -898,3 +898,25 @@ test("search & sharing: every page's Google texts in one place; a page's text wa
     sql(`update site_settings set value = jsonb_set(value, '{newsDescription}', to_jsonb('${news.replace(/'/g, "''")}'::text)) where key='seo'`);
   }
 });
+
+test("My account: re-typing the password is limited like sign-in — 8 wrong in 15 minutes (docs/screens/admin-account.md)", async ({ page }) => {
+  await login(page);
+  try {
+    for (let i = 0; i < 8; i++) {
+      await page.goto("/admin/account");
+      await page.fill("input[name=password]", `wrong-password-${i}`);
+      await page.getByRole("button", { name: "Set up on a new phone" }).click();
+      await page.waitForURL(/error=/);
+      await expect(page.getByText("Password is wrong")).toBeVisible();
+    }
+    await page.goto("/admin/account");
+    await page.fill("input[name=password]", "wrong-password-9");
+    await page.getByRole("button", { name: "Set up on a new phone" }).click();
+    await page.waitForURL(/error=/);
+    await expect(page.getByText("Too many attempts. Try again in 15 minutes.")).toBeVisible();
+    // two-step sign-in is untouched
+    expect(sql("select totp_enabled_at is not null from users where email = 'e2e@rapid-medical.com'")).toBe("t");
+  } finally {
+    sql("delete from login_attempts where key like 'pw:%'");
+  }
+});

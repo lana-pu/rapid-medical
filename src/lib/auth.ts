@@ -156,6 +156,19 @@ export async function recordWrongCode(userId: number): Promise<boolean> {
   return codeAttemptsExhausted(userId);
 }
 
+/**
+ * The signed-in person re-types their own password to confirm (My account: change password, two-step on a new phone).
+ * Limited like sign-in — 8 wrong in 15 minutes — so a taken-over session cannot guess it and move two-step sign-in to
+ * another phone (security check 2026-11-13; docs/screens/admin-account.md).
+ */
+export async function confirmOwnPassword(userId: number, plain: string, hash: string): Promise<"ok" | "wrong" | "throttled"> {
+  const key = `pw:${userId}`;
+  if (await tooManyAttempts([key])) return "throttled";
+  if (await verifyPassword(plain, hash)) return "ok";
+  await recordAttempt([key]);
+  return "wrong";
+}
+
 async function recordAttempt(keys: string[]) {
   await db.insert(loginAttempts).values(keys.map((key) => ({ key })));
   // opportunistic cleanup
