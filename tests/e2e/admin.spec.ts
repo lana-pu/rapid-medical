@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 import { login, sql, ADMIN, totp, freshCodeWindow, publishFromEditor, TOTP_SECRET, TWO_STEP_SQL } from "./helpers";
 import { E2E_CRON_SECRET } from "./secrets";
 
+/** The site under test: the same address as playwright.config.ts (E2E_BASE_URL or the built server on 3100). */
+const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3100";
+
 test.describe.configure({ mode: "serial" });
 
 test("login → choose a project; the project in the header; its dashboard; the Inbox is mail; list filters", async ({ page }) => {
@@ -342,8 +345,10 @@ test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete k
   await expect(page.getByText("1 on the site was not deleted: unpublish it first.")).toBeVisible();
 
   // Home, About…: no «+ New» (it led to a 404), no Unpublish or Delete that did nothing
-  await page.goto("/admin/site_pages");
-  await expect(page.getByRole("link", { name: /^\+ New/ })).toHaveCount(0);
+  await page.goto("/admin/site-pages");
+  await expect(page.getByRole("heading", { name: "Site pages" })).toBeVisible(); // the real list, not a 404
+  // the list's own «+ New» led to a 404; the site tree's «+ New page» (the page editor) is a different, working link
+  await expect(page.locator('a[href="/admin/site-pages/new"]')).toHaveCount(0);
   await page.locator("input[name=ids]").first().check();
   await expect(page.locator("button[value=publish]")).toBeVisible();
   await expect(page.locator("button[value=unpublish], button[value=delete]")).toHaveCount(0);
@@ -501,10 +506,10 @@ test("security: uploads by content, redirects stay on the site, two-step codes a
   // redirects from parameters never leave the site
   for (const url of ["/api/preview?exit=1&redirect=https://evil.example", "/api/preview?exit=1&redirect=/%5Cevil.example", "/api/editor?on=1&redirect=/%5Cevil.example"]) {
     const r = await page.request.get(url, { maxRedirects: 0 });
-    expect(new URL(r.headers()["location"], "http://localhost:3100").host).toBe("localhost:3100");
+    expect(new URL(r.headers()["location"], BASE).host).toBe(new URL(BASE).host);
   }
   await page.goto("/admin/login?next=/%5Cevil.example");
-  expect(new URL(page.url()).host).toBe("localhost:3100");
+  expect(new URL(page.url()).host).toBe(new URL(BASE).host);
 
   // five wrong codes from the phone: the session is closed, the password is needed again
   const p2 = await (await browser.newContext()).newPage();
