@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { resolveEditorNext } from "@/lib/editing";
 import { eq } from "drizzle-orm";
 import { db, users } from "@/db";
-import { getSession, totpCheck, consumeRecoveryCode, markSessionVerified, destroySession, codeAttemptsExhausted, recordWrongCode } from "@/lib/auth";
+import { getSession, totpCheck, consumeRecoveryCode, markSessionVerified, destroySession, takeCodeAttempt } from "@/lib/auth";
 import { safeLocalPath } from "@/lib/safe-path";
 import { audit } from "@/lib/audit";
 import { inputCls } from "@/components/admin/ui";
@@ -23,19 +23,21 @@ export default async function TwoFactorPage({ searchParams }: { searchParams: Pr
     const next = String(fd.get("next") ?? "/admin");
     const user = await db.query.users.findFirst({ where: eq(users.id, s.id) });
     // a 6-digit code must not be guessable: few tries, then the password again (security check 2026-11-13)
-    if (await codeAttemptsExhausted(s.id)) {
+    const t = await takeCodeAttempt(s.id); // counted before the check: codes sent at once cannot all slip through
+    if (!t.allowed) {
       await destroySession();
       redirect("/admin/login?error=throttled");
     }
     const ok = user?.totpSecret ? (await totpCheck(user.totpSecret, code)) || (await consumeRecoveryCode(s.id, code)) : false;
     if (!ok) {
       await audit(s, "login_failed", { meta: { step: "2fa" } });
-      if (await recordWrongCode(s.id)) {
+      if (t.last) {
         await destroySession();
         redirect("/admin/login?error=throttled");
       }
       redirect(`/admin/login/2fa?error=1&next=${encodeURIComponent(safeLocalPath(next, "/admin"))}`);
     }
+    await t.release();
     await markSessionVerified();
     await audit(s, "login", { meta: { step: "2fa" } });
     const editorPath = await resolveEditorNext(next);

@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull, lt, sql } from "drizzle-orm";
 import { generateSecret, verify as verifyTotp, generateURI } from "otplib";
 import { db, users, sessions, passwordResets, loginAttempts, type User } from "@/db";
 import { clientIp } from "./client-ip";
@@ -137,23 +137,36 @@ export async function requireAdmin(): Promise<SessionUser> {
 /*  Login + throttling                                                 */
 /* ------------------------------------------------------------------ */
 
-async function tooManyAttempts(keys: string[], max = MAX_ATTEMPTS): Promise<boolean> {
+/**
+ * One try at a password or a code, counted **before** it is checked (security review 2026-11-17): tries sent at the same
+ * moment cannot all pass a check made before any of them was written. `allowed` — under the limit; `last` — this was
+ * the last allowed try; `release()` — the try succeeded and does not count.
+ */
+type Attempt = { allowed: boolean; last: boolean; release: () => Promise<void> };
+async function takeAttempt(keys: string[], max = MAX_ATTEMPTS): Promise<Attempt> {
+  const rows = await db.insert(loginAttempts).values(keys.map((key) => ({ key }))).returning({ id: loginAttempts.id });
+  const release = async () => {
+    await db.delete(loginAttempts).where(inArray(loginAttempts.id, rows.map((r) => r.id)));
+  };
   const since = new Date(Date.now() - WINDOW_MS);
+  let worst = 0;
   for (const key of keys) {
     const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(loginAttempts).where(and(eq(loginAttempts.key, key), gt(loginAttempts.at, since)));
-    if (n >= max) return true;
+    worst = Math.max(worst, n);
   }
-  return false;
+  // opportunistic cleanup
+  if (Math.random() < 0.05) await db.delete(loginAttempts).where(lt(loginAttempts.at, new Date(Date.now() - WINDOW_MS * 4)));
+  if (worst > max) {
+    await release(); // a refused try is not written: the window does not keep sliding while someone hammers
+    return { allowed: false, last: true, release: async () => {} };
+  }
+  return { allowed: true, last: worst >= max, release };
 }
 
 /** Codes from the phone: 5 wrong ones in 15 minutes and the session is closed — the password is needed again. */
 const MAX_CODE_ATTEMPTS = 5;
-export async function codeAttemptsExhausted(userId: number): Promise<boolean> {
-  return tooManyAttempts([`totp:${userId}`], MAX_CODE_ATTEMPTS);
-}
-export async function recordWrongCode(userId: number): Promise<boolean> {
-  await recordAttempt([`totp:${userId}`]);
-  return codeAttemptsExhausted(userId);
+export async function takeCodeAttempt(userId: number): Promise<Attempt> {
+  return takeAttempt([`totp:${userId}`], MAX_CODE_ATTEMPTS);
 }
 
 /**
@@ -162,17 +175,11 @@ export async function recordWrongCode(userId: number): Promise<boolean> {
  * another phone (security check 2026-11-13; docs/screens/admin-account.md).
  */
 export async function confirmOwnPassword(userId: number, plain: string, hash: string): Promise<"ok" | "wrong" | "throttled"> {
-  const key = `pw:${userId}`;
-  if (await tooManyAttempts([key])) return "throttled";
-  if (await verifyPassword(plain, hash)) return "ok";
-  await recordAttempt([key]);
-  return "wrong";
-}
-
-async function recordAttempt(keys: string[]) {
-  await db.insert(loginAttempts).values(keys.map((key) => ({ key })));
-  // opportunistic cleanup
-  if (Math.random() < 0.05) await db.delete(loginAttempts).where(lt(loginAttempts.at, new Date(Date.now() - WINDOW_MS * 4)));
+  const t = await takeAttempt([`pw:${userId}`]);
+  if (!t.allowed) return "throttled";
+  if (!(await verifyPassword(plain, hash))) return "wrong";
+  await t.release();
+  return "ok";
 }
 
 export type AuthResult = { ok: true; user: User } | { ok: false; reason: "invalid" | "throttled" };
@@ -181,14 +188,13 @@ export async function authenticate(email: string, password: string): Promise<Aut
   const e = email.toLowerCase().trim();
   const { ip } = await clientInfo();
   const keys = [`email:${e}`, ...(ip ? [`ip:${ip}`] : [])];
-  if (await tooManyAttempts(keys)) return { ok: false, reason: "throttled" };
+  const t = await takeAttempt(keys); // counted before the (slow) check: a burst cannot slip past the limit
+  if (!t.allowed) return { ok: false, reason: "throttled" };
 
   const user = await db.query.users.findFirst({ where: eq(users.email, e) });
   const ok = user && user.active && (await verifyPassword(password, user.passwordHash));
-  if (!ok) {
-    await recordAttempt(keys);
-    return { ok: false, reason: "invalid" };
-  }
+  if (!ok) return { ok: false, reason: "invalid" };
+  await t.release();
   await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
   return { ok: true, user };
 }
@@ -243,8 +249,13 @@ export async function createPasswordReset(email: string): Promise<{ token: strin
   const e = email.toLowerCase().trim();
   const { ip } = await clientInfo();
   const keys = [`reset:${e}`, ...(ip ? [`resetip:${ip}`] : [])];
-  if ((await tooManyAttempts([keys[0]], 3)) || (keys[1] && (await tooManyAttempts([keys[1]], 10)))) return null;
-  await recordAttempt(keys);
+  // each request counts (an email would go out), counted before anything else
+  const byEmail = await takeAttempt([keys[0]], 3);
+  if (!byEmail.allowed) return null;
+  if (keys[1] && !(await takeAttempt([keys[1]], 10)).allowed) {
+    await byEmail.release(); // refused by the address limit: not counted against the email
+    return null;
+  }
   const user = await db.query.users.findFirst({ where: eq(users.email, e) });
   if (!user || !user.active) return null;
   const token = crypto.randomBytes(32).toString("hex");
