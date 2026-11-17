@@ -12,11 +12,13 @@ for (const path of PUBLIC) {
 test("seeded pages and bios keep their text", async ({ page }) => {
   await page.goto("/terms");
   await expect(page.getByRole("heading", { name: "1. Acceptance of the Terms" })).toBeVisible();
-  // Bios open on About (decision 2026-11-10): /team/{slug} lands on the card, "Read bio" opens it in place.
+  // Bios open on About (decision 2026-11-10): /team/{slug} lands on the card, two lines of the bio show at once,
+  // "Read full bio" opens the whole of it in place (DESIGN.md → About).
   await page.goto("/team/ronen");
   await expect(page).toHaveURL(/\/about-us#ronen$/);
-  await page.locator("#ronen").getByText("Read bio").click();
-  await expect(page.getByText("Ronen Eckhouse is the co-founder")).toBeVisible();
+  await expect(page.locator("#ronen")).toContainText("Co-Founder & CEO"); // the usual case, not CAPITALS
+  await page.locator("#ronen").getByText("Read full bio").click();
+  await expect(page.locator("#ronen details").getByText("Haas School of Business", { exact: false })).toBeVisible();
 });
 
 test("legacy URLs redirect", async ({ request }) => {
@@ -42,37 +44,58 @@ test("therapy page has video hero, tabs and regulatory text", async ({ page }) =
   await expect(page.getByText("Sadasivan C")).toBeVisible();
 });
 
-test("evidence tabs follow the region", async ({ page }) => {
+test("evidence products follow the region", async ({ page }) => {
+  const lib = page.locator("#browse-by-product");
   await page.goto("/apac/evidence");
-  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toBeVisible();
+  await expect(lib.getByRole("button", { name: /^COLUMBUS™/ })).toBeVisible();
   await page.goto("/us/evidence");
-  await expect(page.getByRole("tab", { name: "COLUMBUS™" })).toHaveCount(0);
-  await expect(page.getByRole("tab", { name: "DRIVEWIRE™" })).toBeVisible();
+  await expect(lib.getByRole("button", { name: /^COLUMBUS™/ })).toHaveCount(0);
+  await expect(lib.getByRole("button", { name: /^DRIVEWIRE™/ })).toBeVisible();
 });
 
-test("a product anchor opens its evidence tab", async ({ page }) => {
+test("Evidence: the region's numbers, the archive with search and a product anchor that filters it", async ({ page }) => {
+  // DESIGN.md → Evidence; links from therapy cards end in #{product}
+  await page.goto("/about-us");
   await page.goto("/us/evidence#comaneci");
-  await expect(page.getByRole("tab", { name: /COMANECI/ })).toHaveAttribute("aria-selected", "true");
-  await page.goto("/us/evidence#drivewire");
-  await expect(page.getByRole("tab", { name: /DRIVEWIRE/ })).toHaveAttribute("aria-selected", "true");
-  await page.goto("/us/evidence#%");
-  await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
+  const lib = page.locator("#browse-by-product");
+  await expect(lib.getByRole("button", { name: /^COMANECI/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(lib.getByText(/^Showing \d+ of \d+$/)).toBeVisible();
+  const shown = Number((await lib.getByText(/^Showing/).innerText()).split(" of ")[1]);
+  await expect(page.locator("dl").first()).toContainText(String(shown)); // the same number in the overview
+  await lib.getByRole("button", { name: /^All \d+$/ }).click();
+  await lib.getByLabel("Search publications").fill("zzzz-nothing");
+  await expect(lib.getByText("Nothing found. Try fewer words or another product.")).toBeVisible();
+  await page.goto("/about-us");
+  await page.goto("/us/evidence#%"); // a malformed anchor does nothing
+  await expect(page.locator("#browse-by-product").getByRole("button", { name: /^All \d+$/ })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("about page renders the interactive map", async ({ page }) => {
   await page.goto("/about-us");
   await expect(page.locator("svg path").first()).toBeVisible({ timeout: 15000 });
   await expect(page.getByText("UNITED STATES AND CANADA")).toBeVisible();
+  // the intro's facts: publications counted, offices from Contact details; each office card has directions
+  await expect(page.locator("dl").first()).toContainText("Clinical publications");
+  await expect(page.locator("dl").first()).toContainText("Israel · USA · Germany");
+  await expect(page.locator("#offices").getByText("Get directions ↗")).toHaveCount(3);
 });
 
 test("contact form stores a submission", async ({ page }) => {
   await page.goto("/contact-us?region=us&topic=demo");
-  await expect(page.locator("select[name=topic]")).toHaveValue("Request a demo");
+  // topic first, as chips (docs/screens/contact-us.md); the one from the address is chosen
+  await expect(page.locator("input[name=topic]")).toHaveValue("Request a demo");
+  await expect(page.getByRole("radio", { name: "Request a demo" })).toBeChecked();
+  // contacts of the region beside the form
+  await expect(page.getByText("Call Americas")).toBeVisible();
   await page.fill("input[name=firstName]", "E2E");
   await page.fill("input[name=lastName]", "Tester");
   await page.fill("input[name=email]", "e2e@example.com");
+  await expect(page.locator("input[name=state]")).toHaveCount(0);
+  await page.selectOption("select[name=countryCode]", "US"); // State appears only for the US and Canada
+  await expect(page.locator("input[name=state]")).toHaveCount(1);
   await page.click('button:has-text("Submit")');
   await expect(page.getByText("Thank you for contacting us.")).toBeVisible();
+  await expect(page.getByText("We’ll reply to e2e@example.com.", { exact: false })).toBeVisible();
 });
 
 test("unknown path returns 404", async ({ request }) => {
@@ -101,8 +124,10 @@ test.describe("usability pass 2026-11-13", () => {
     await page.fill("input[name=lastName]", "Mendes");
     await page.fill("input[name=email]", "laura@clinic"); // the browser lets it through, the server does not
     await page.fill("textarea[name=message]", "Please call me about a demo.");
+    await page.selectOption("select[name=countryCode]", "PT");
     await page.click('button:has-text("Submit")');
-    await expect(page.getByText("Please check the highlighted fields.")).toBeVisible();
+    // the error is at the field, not in a banner (DESIGN.md → Формы)
+    await expect(page.getByText("Enter a valid email")).toBeVisible();
     await expect(page.locator("input[name=firstName]")).toHaveValue("Laura");
     await expect(page.locator("textarea[name=message]")).toHaveValue("Please call me about a demo.");
     await expect(page.locator("input[name=email]")).toHaveAttribute("aria-invalid", "true");
@@ -117,9 +142,26 @@ test.describe("usability pass 2026-11-13", () => {
     await expect(page.getByText("Which webinar?*")).toBeVisible();
   });
 
-  test("careers with no open positions leads to the general-interest form", async ({ page }) => {
+  test("careers with no open positions leads to the general-interest form", async ({ page, request }) => {
     await page.goto("/careers");
-    await expect(page.getByRole("link", { name: "Submit general interest" }).first()).toHaveAttribute("href", /#general-interest$/);
+    await expect(page.getByRole("link", { name: "Send us your details ↓" }).first()).toHaveAttribute("href", /#general-interest$/);
+    // the section stays and says so (DESIGN.md → Careers)
+    await expect(page.locator("#open-positions")).toContainText("No open positions right now.");
+    // the old list address leads to the section on Careers
+    const old = await request.get("/open-positions", { maxRedirects: 0 });
+    expect(old.status()).toBe(308);
+    expect(old.headers()["location"]).toBe("/careers#open-positions");
+    // a candidate's form: area of interest as chips, a LinkedIn or CV link instead of Organization
+    const f = page.locator("form[data-form=careers]");
+    await expect(f.locator("input[name=organization]")).toHaveCount(0);
+    await f.getByText("Internship", { exact: true }).click();
+    await f.locator("input[name=firstName]").fill("E2E");
+    await f.locator("input[name=lastName]").fill("Candidate");
+    await f.locator("input[name=email]").fill("candidate@example.com");
+    await f.locator("input[name=meta_linkedin]").fill("https://linkedin.com/in/e2e");
+    await f.locator("select[name=countryCode]").selectOption("DE");
+    await f.getByRole("button", { name: "Submit" }).click();
+    await expect(page.getByRole("status")).toContainText("we've received your details");
   });
 
   test("therapy: the breadcrumb leads back, support opens with its topic", async ({ page }) => {
@@ -138,13 +180,18 @@ test.describe("usability pass 2026-11-13", () => {
 });
 
 test.describe("usability pass 2026-11-13, part 2", () => {
-  test("switching region on a therapy that the region does not have explains it", async ({ request, page }) => {
+  test("switching region on a therapy that the region does not have lands on its overview", async ({ request, page }) => {
+    // no «not available» notice (decision 2026-11-15): the site has no links to therapies a region lacks
     const r = await request.get("/api/region?to=us&back=%2Fous%2Ftherapies%2Fmvo", { maxRedirects: 0 });
-    expect(r.headers()["location"]).toContain("/us/therapies?missing=mvo");
+    expect(r.headers()["location"]).toMatch(/\/us\/therapies$/);
     await page.goto("/us/therapies?missing=mvo");
-    await expect(page.getByRole("status")).toContainText("Medium vessel stroke is not available in Americas");
-    await page.goto("/us/therapies?missing=lvo"); // LVO is in the Americas: no false notice
-    await expect(page.getByText(/is not available in Americas/)).toHaveCount(0);
+    await expect(page.getByText(/is not available in/)).toHaveCount(0);
+    // the overview: groups of one therapy in one row, the group on the card; publications lead to Evidence
+    await expect(page.getByText("Ischemic stroke · TIGERTRIEVER™")).toBeVisible();
+    await expect(page.getByRole("link", { name: /^\d+ publications? →$/ }).first()).toHaveAttribute("href", "/us/evidence#tigertriever");
+    // old Duda addresses of therapies the Americas do not have go to the overview, not to a missing page
+    const old = await request.get("/us/vasospasm", { maxRedirects: 0 });
+    expect(old.headers()["location"]).toMatch(/\/us\/therapies$/);
     const keep = await request.get("/api/region?to=ous&back=%2Fus%2Fevidence%23comaneci", { maxRedirects: 0 });
     expect(keep.headers()["location"]).toMatch(/\/ous\/evidence#comaneci$/);
   });
@@ -185,4 +232,96 @@ test.describe("user walk 2026-11-14", () => {
     await page.waitForURL(/\/apac\/therapies\/mvo/);
     await expect.poll(region).toBe("apac");
   });
+});
+
+test("choose your location is a window: opens when a regional page is asked for, not on arrival; the header opens it too", async ({ page, request }) => {
+  // without JavaScript: the page with the same content
+  expect(await (await request.get("/choose-your-location?back=%2Fabout-us")).text()).toContain("Find your country");
+  // DESIGN.md → Выбор региона: no IP country here, so the region is unknown
+  await page.goto("/about-us");
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Evidence", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Choose your location" });
+  await expect(dialog).toBeVisible();
+  await expect(page).toHaveURL(/\/about-us$/); // the visitor stays where they were
+  // the country search marks its region
+  await dialog.getByLabel("Find your country").fill("United Arab");
+  await expect(dialog.getByText("United Arab Emirates is here")).toBeVisible();
+  await dialog.getByRole("link", { name: /Go to Europe & Middle East/ }).click();
+  await page.waitForURL(/\/ous\/evidence$/);
+  // the header: the same window with the current region; the choice returns to the same page
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("link", { name: /^Region: Europe & Middle East/ }).click();
+  await expect(dialog.getByText("Current region")).toBeVisible();
+  await expect(dialog.getByText("Your choice")).toBeVisible();
+  await dialog.getByRole("link", { name: /Go to Americas/ }).click();
+  await page.waitForURL(/\/us\/evidence$/);
+});
+
+test("News & Events: highlights instead of a carousel, rows without repeats, upcoming events never disappear", async ({ page }) => {
+  // DESIGN.md → News & Events
+  await page.goto("/news-events");
+  await expect(page.getByRole("heading", { level: 1, name: "News & Events" })).toBeVisible();
+  const top = await page.locator("#highlights h2, #highlights li").allInnerTexts();
+  expect(top.length).toBe(4);
+  const rows = page.locator("#all-news li");
+  await expect(rows).toHaveCount(10);
+  const rowTexts = await rows.allInnerTexts();
+  const bigTitle = (await page.locator("#highlights h2").innerText()).trim();
+  expect(rowTexts.some((t) => t.includes(bigTitle))).toBe(false); // the highlights are not repeated below
+  await page.locator("#all-news").getByRole("button", { name: "Show more" }).click();
+  await expect(rows).toHaveCount(20);
+  // the seeded events are all past: the section stays with a line and a way to the archive
+  await expect(page.locator("#upcoming-events")).toContainText("No upcoming events right now.");
+  await expect(page.locator("#upcoming-events").getByRole("link", { name: "See past events ↓" })).toHaveAttribute("href", "#past-events");
+  await expect(page.locator("#past-events")).toBeVisible();
+});
+
+test("publications, news and studies have their own pages (docs/screens/material.md)", async ({ page, request }) => {
+  // Evidence row → the publication's page: its facts, the PDF shown here or the original, more of the product
+  await page.goto("/us/evidence");
+  const row = page.locator("#browse-by-product li a[href^='/us/evidence/']").first();
+  const title = (await row.innerText()).trim();
+  await row.click();
+  await expect(page).toHaveURL(/\/us\/evidence\/\d+-[a-z0-9-]+$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+  await expect(page.getByText(/^Publication · /)).toBeVisible();
+  await expect(page.locator("figure[data-document] img, h2:has-text('Abstract'), a:has-text('Read the article ↗')").first()).toBeVisible();
+  // a wrong slug goes to the right one; a publication of another region is not there
+  const id = page.url().match(/evidence\/(\d+)/)![1];
+  expect((await request.get(`/us/evidence/${id}-wrong`, { maxRedirects: 0 })).status()).toBe(308);
+  expect((await request.get("/us/evidence/999999-nothing")).status()).toBe(404);
+  // no right to the full text: the abstract as published, with its source
+  await page.goto("/ous/evidence/13");
+  await expect(page.getByRole("heading", { name: "Abstract" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^PubMed \d+$/ })).toBeVisible();
+  // News & Events row → the news page: source, the original, more news
+  await page.goto("/news-events");
+  await page.locator("#all-news li a").first().click();
+  await expect(page).toHaveURL(/\/news-events\/\d+-[a-z0-9-]+$/);
+  await expect(page.getByRole("link", { name: /Read the full release/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "More news" })).toBeVisible();
+  // a study page: the conclusion, key figures with their quotes, the passport and the source
+  await page.goto("/us/success-study-final-results");
+  await expect(page.getByText("Study · COMANECI™")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Study at a glance" })).toBeVisible();
+  await expect(page.getByText("90 consecutive subjects")).toBeVisible();
+  await expect(page.getByText("95%", { exact: true })).toBeVisible();
+  // the study itself is shown on the page, not linked (decision 2026-11-15): its pages as pictures (2026-11-16)
+  await expect(page.locator("object[type='application/pdf']")).toHaveCount(0);
+  await expect(page.locator("figure[data-document]")).toHaveCount(1);
+  await page.goto("/LongTerm_Outcomes");
+  const doc = page.locator("figure[data-document]");
+  await expect(doc).toHaveCount(1);
+  // the first pages, then «Show all»; a page opens large; the text is under the pages
+  await expect(doc.locator("img")).toHaveCount(2);
+  await doc.getByRole("button", { name: /^Show all \d+ pages$/ }).click();
+  await expect(doc.locator("img")).toHaveCount(7);
+  await doc.getByRole("button", { name: "Enlarge page 1 of 7" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(doc.getByText("Text of this document")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open PDF" })).toHaveCount(0);
 });

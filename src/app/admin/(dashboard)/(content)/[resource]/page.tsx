@@ -14,7 +14,7 @@ import { thumbsFor } from "@/admin/page-screen";
 import { safeLocalPath } from "@/lib/safe-path";
 import { BulkBar } from "@/components/admin/BulkBar";
 
-type SP = { q?: string; deleted?: string; bulk?: string; n?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
+type SP = { q?: string; bulk?: string; n?: string; live?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
 
 export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
   await requireUser(); // the layout checks too; a page never relies on it alone
@@ -49,7 +49,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
   const qs = (over: Partial<SP>) => {
     const u = new URLSearchParams();
     const merged = { ...sp, ...over } as Record<string, string | undefined>;
-    for (const [k, v] of Object.entries(merged)) if (v && !["deleted", "bulk", "n"].includes(k)) u.set(k, v);
+    for (const [k, v] of Object.entries(merged)) if (v && !["bulk", "n", "live"].includes(k)) u.set(k, v);
     const str = u.toString();
     return `/admin/${res.slug}${str ? `?${str}` : ""}`;
   };
@@ -57,9 +57,10 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
   return (
     <>
-      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={`${total} items`} actions={<LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
-      {sp.deleted && <Notice kind="success">Deleted.</Notice>}
+      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={`${total} items`} actions={res.alwaysLive ? undefined : <LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
+      {/* Home, About… cannot be created: no «+ New» that leads to a 404 (docs/screens/admin-list.md, 2026-11-16) */}
       {sp.bulk && <Notice kind="success">{sp.bulk === "delete" ? "Deleted" : sp.bulk === "publish" ? "Published" : "Unpublished"} {sp.n} item(s).</Notice>}
+      {sp.bulk === "delete" && Number(sp.live) > 0 && <Notice kind="error">{sp.live} on the site {Number(sp.live) === 1 ? "was" : "were"} not deleted: unpublish {Number(sp.live) === 1 ? "it" : "them"} first.</Notice>}
 
       <ListFilters
         base={`/admin/${res.slug}`}
@@ -77,14 +78,14 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
       <form action={bulkResource}>
         <input type="hidden" name="__resource" value={res.slug} />
-        <BulkBar hasStatus={has("status")} />
+        <BulkBar hasStatus={has("status")} fixed={!!res.alwaysLive} />
         <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">
               <tr>
                 <th className="w-8 px-3 py-2"><input type="checkbox" data-select-all aria-label="Select all" /></th>
-                {columns.map((c) => (
-                  <th key={c.name} className="px-3 py-2 font-medium">
+                {columns.map((c, i) => (
+                  <th key={`${c.name}-${i}`} className="px-3 py-2 font-medium">
                     <Link href={sortLink(c.name)} className="hover:text-neutral-900">
                       {c.label}{sp.sort === c.name ? (sp.dir === "desc" ? " ↓" : " ↑") : ""}
                     </Link>

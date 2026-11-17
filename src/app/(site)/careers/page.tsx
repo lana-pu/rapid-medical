@@ -4,7 +4,7 @@ import { resolveBlocks } from "@/blocks/stored";
 import { PageMark } from "@/components/editor/PageMark";
 import { BlockList } from "@/blocks/render";
 import { absoluteTitle } from "@/lib/seo";
-import { careersToBlocks, type CareersSettings } from "@/blocks/from-settings";
+import { careersToBlocks, jobRow, type CareersSettings } from "@/blocks/from-settings";
 
 /** How Google shows the page: its own fields (docs/screens/admin-seo.md), the old texts as the fallback. */
 export async function generateMetadata() {
@@ -14,11 +14,12 @@ export async function generateMetadata() {
 
 export default async function CareersPage() {
   const [page, c, jobs] = await Promise.all([getSitePage("careers", null), getSetting<CareersSettings>("careers"), getJobs()]);
-  if (!page) return <BlockList blocks={careersToBlocks({ c, jobCount: jobs.length })} />;
+  const rows = jobs.map(jobRow);
+  if (!page) return <BlockList blocks={careersToBlocks({ c, jobCount: jobs.length, jobs: rows })} />;
   return (
     <>
       <PageMark r="site-pages" id={page.id} />
-      <BlockList blocks={resolveBlocks(page.blocks, { region: null, lists: { jobCount: jobs.length } }, { r: "site-pages", id: page.id })} />
+      <BlockList blocks={resolveBlocks(page.blocks, { region: null, lists: { jobCount: jobs.length, jobs: rows } }, { r: "site-pages", id: page.id })} />
     </>
   );
 }

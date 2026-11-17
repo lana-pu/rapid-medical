@@ -12,6 +12,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/db/schema";
 import { solutionToStored, pageToStored } from "../src/blocks/convert";
+import { studyPageBlocks } from "../src/blocks/studies";
 import { SITE_PAGES, homeToStored, aboutToStored, careersToStored, evidenceToStored, therapiesToStored } from "../src/blocks/site-pages";
 
 async function main() {
@@ -42,6 +43,14 @@ async function main() {
       await db.update(drafts).set({ data: { ...d.data, blocks: pageToStored({ ...p, ...(d.data as Partial<schema.Page>), id: p.id }) } }).where(eq(drafts.id, d.id));
     }
   }
+  // study pages still as imported → «page from a document» with passport and key figures (src/blocks/studies.ts)
+  let st = 0;
+  for (const p of await db.select().from(pages)) {
+    const next = studyPageBlocks(p.slug, p.blocks);
+    if (!next) continue;
+    await db.update(pages).set({ blocks: next }).where(eq(pages.id, p.id));
+    st++;
+  }
   // singleton pages: texts from site settings (settings rows stay, for rollback)
   const { siteSettings, sitePages, REGIONS } = schema;
   const settings = new Map((await db.select().from(siteSettings)).map((r) => [r.key, (r.value ?? {}) as Record<string, any>]));
@@ -60,7 +69,7 @@ async function main() {
       k++;
     }
   }
-  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${k} site pages created`);
+  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${st} study pages, ${k} site pages created`);
   await client.end();
 }
 main().catch((e) => {

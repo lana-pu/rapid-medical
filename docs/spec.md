@@ -48,9 +48,9 @@ Studio, материалы в `docs/tigertriever/`. Пользователи п�
 | Стили | Tailwind 4 + CSS-токены, нейтральный дизайн | `src/app/globals.css`, `docs/DESIGN.md` |
 | Блоки | Реестр блоков страниц: тип, варианты, поля, пример, компонент; рендер списка блоков | `src/blocks/`, `docs/DESIGN.md → Коллекция блоков` |
 | Rich text | Tiptap 3 → HTML, санитайз `sanitize-html` на выводе | `src/components/admin/RichText.tsx`, `src/lib/html.ts` |
-| Медиа | `sharp` (WebP 480/960/1600 + blur), `ffmpeg` (постер видео), драйвер `local` / `s3` | `src/lib/media.ts`, `src/lib/images.ts`, `src/lib/storage.ts` |
+| Медиа | `sharp` (WebP 480/960/1600 + blur), `ffmpeg` (постер видео), `pdfjs-dist` + `@napi-rs/canvas` (страницы PDF в WebP и текст), драйвер `local` / `s3` | `src/lib/media.ts`, `src/lib/images.ts`, `src/lib/storage.ts` |
 | Auth | Серверные сессии в БД, bcrypt, TOTP (`otplib`), preview-JWT (`jose`) | `src/lib/auth.ts`, `src/lib/preview.ts` |
-| Почта | `nodemailer` по SMTP; без SMTP — `console.log` | `src/lib/mail.ts` |
+| Почта | `nodemailer` по SMTP; без SMTP при разработке — письмо целиком в консоль, на проде — только «кому» и тема (ссылки и данные заявок в лог не попадают; аудит K.1, 2026-11-16) | `src/lib/mail.ts` |
 | Тесты | Vitest (unit), Playwright (e2e), CI на GitHub Actions | `tests/`, `.github/workflows/ci.yml` |
 | Хостинг | Не подключён (Vercel+Neon описаны в README, но не настроены); работает только демо на GitHub Pages | `docs/memory/infrastructure.md` |
 
@@ -94,7 +94,10 @@ on-page editor (`data-e`), поэтому правка на странице п�
   - Регион по IP **применяется сразу** при первом заходе на любую страницу (пишется в `rm_region`), без
     баннера-вопроса. Ручной выбор в переключателе шапки тоже пишется в `rm_region` и IP больше не перебивается.
   - Страна не определилась (VPN, нет заголовка, страны нет в карте) → «Therapies» и «Evidence» ведут на
-    `/choose-your-location`; это единственный случай, когда посетитель видит выбор региона.
+    `/choose-your-location`; это единственный случай, когда посетитель видит выбор региона. **С 2026-11-15** выбор —
+    модальное окно поверх текущей страницы (`RegionModal`), страница — запасной путь без JavaScript; переключатель в
+    шапке открывает то же окно с текущим регионом (`screens/choose-your-location.md`). Ручной выбор ставит cookie
+    `rm_region_chosen` (год) — для пометки «Your choice».
   - «Therapies» в шапке — выпадающий список терапий текущего региона, сгруппированный по направлениям
     (Ischemic stroke / Hemorrhagic stroke / Access), внизу «All therapies» → `/{region}/therapies`.
     «Evidence» → `/{region}/evidence`. www-адреса `/our-solutions`, `/evidence` → в регион, при неизвестной
@@ -137,7 +140,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
 | `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `blocks` (ADR-007; `bodyHtml` — до переноса), SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
-| `site_pages` (ADR-007, 2026-11-12) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`; строки настроек оставлены для отката). Правятся только в редакторе страницы; создать, снять с публикации или удалить нельзя (`alwaysLive`). Списки (новости, команда, офисы, публикации, карточки терапий, число вакансий) подставляются при показе |
+| `site_pages` (ADR-007, 2026-11-12) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`; строки настроек оставлены для отката). Правятся только в редакторе страницы; создать, снять с публикации или удалить нельзя (`alwaysLive`). Списки (новости, команда, офисы, публикации, карточки терапий, число вакансий, факты About — число публикаций и страны офисов) подставляются при показе |
 | `products` | `products` | `slug`, `name`, `fullName`, `family`, `regions[]` (вкладка Evidence), `aliases` (напр. APAC → COLUMBUS™) | — | **Без workflow**: сохранение сразу live |
 | `redirects` | `redirects` | `from` (host+path или path), `to`, `permanent`, `hits` | — | **Без workflow** |
 
@@ -171,7 +174,7 @@ JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (
 | `setting_drafts` | Отложенные изменения группы настроек (из on-page editor) |
 | `revisions` | Неизменяемые снимки: `created` / `draft` / `published` / `restored`; baseline «Import» перед первой правкой сид-записи |
 | `audit_log` | Кто что сделал: login, login_failed, save, publish, unpublish, delete, restore, bulk, settings, user, media, schedule, request, comment, logout (`review` — в старых записях) |
-| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda) |
+| `media` | Медиатека: `url`, `key`, `mime`, размеры, `alt`, `variants[]`, `placeholder`, `posterUrl`, `sourceUrl` (Duda); у PDF — `pages[]` (страницы картинками: размер и WebP-варианты) и `text` (текст по страницам, разделитель `\f`), `pageCount` (страниц в файле), миграции 0030–0031 |
 | `contact_submissions` | Заявки форм: `form` (contact/webinar/careers/event), контакты, `meta`, `status`, `assignedToId` (кто отвечает), `readAt` (открыли), `note` (прежняя заметка), `ip`, `userAgent` |
 | `request_notes` | Лента заметок команды к заявке: `submissionId`, `userId`, `userName`, `body`, `createdAt` |
 | `users`, `sessions`, `password_resets`, `login_attempts` | Аккаунты и безопасность |
@@ -236,7 +239,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 | Отправка любой формы (contact / webinar / careers / event) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 
-Без `SMTP_HOST` письма только логируются в консоль (включая токен сброса пароля и данные заявки).
+Без `SMTP_HOST` письма не уходят: при разработке текст письма в консоли (с токеном сброса и данными заявки), на проде — только «кому» и тема; заявка всё равно в Inbox, приглашение — ссылкой в People and roles, сброс пароля честно говорит, что почты нет (`screens/admin-login.md`).
 Ошибка отправки не видна посетителю (заявка всё равно сохраняется, ответ «Thank you»).
 
 ## Интеграции
@@ -443,7 +446,8 @@ reopening» в пакете S0 (2026-11-11).
 | `/about-us` | О компании, руководство, офисы, интерактивная карта; **(решение 2026-11-10)** биографии руководства раскрываются здесь же | [about-us](screens/about-us.md) |
 | `/team/{slug}` | Нет отдельной страницы (решение 2026-11-10, аудит Emily: один абзац, 2 секунды): 308 на `/about-us#{slug}`, биография раскрывается на About; в sitemap не входит | [about-us](screens/about-us.md) |
 | `/careers` | Карьера, цитаты, принципы, форма | [careers](screens/careers.md) |
-| `/open-positions`, `/open-positions/{slug}` | Вакансии и вакансия с формой | [open-positions](screens/open-positions.md) |
+| `/open-positions` (→ `/careers#open-positions`), `/open-positions/{slug}` | Вакансия с формой; список — секция Careers | [open-positions](screens/open-positions.md) |
+| `/{region}/evidence/{id}-{slug}`, `/news-events/{id}-{slug}` | Страницы публикаций и новостей; исследования — шаблон «из документа» | [material](screens/material.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |
 | `/style-guide` | Витрина блоков: каждый блок во всех вариантах на примерных данных (не из БД). `noindex`, не в sitemap, без ссылок из меню | — |
 | `/sitemap.xml`, `/robots.txt` | SEO (disallow `/admin`, `/api`) | — |

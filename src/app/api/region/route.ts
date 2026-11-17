@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
   res.cookies.set("rm_region", to, { path: "/", maxAge: YEAR, sameSite: "lax" });
   // A manual choice wins over the IP: don't offer "go to your region" afterwards.
   res.cookies.set("rm_geo_dismissed", "1", { path: "/", maxAge: 60 * 60 * 24 * 30, sameSite: "lax" });
+  // «Current region · Your choice» in the chooser (not «From your location»)
+  res.cookies.set("rm_region_chosen", "1", { path: "/", maxAge: YEAR, sameSite: "lax" });
   return res;
 }
 
@@ -41,8 +43,8 @@ async function targetFor(to: string, back: string | null): Promise<string> {
   const therapy = /^\/therapies\/([a-z0-9-]+)$/.exec(rest);
   if (therapy) {
     const found = await db.query.solutions.findFirst({ columns: { id: true }, where: and(eq(solutions.region, to as "us"), eq(solutions.slug, therapy[1]), eq(solutions.status, "published")) });
-    // not in that region: its overview says so (docs/screens/therapy.md, usability pass 2026-11-13)
-    return found ? `/${to}${rest}${hash}` : `/${to}/therapies?missing=${therapy[1]}`;
+    // not in that region: its therapies overview, without a notice (decision 2026-11-15, docs/screens/therapies.md)
+    return found ? `/${to}${rest}${hash}` : `/${to}/therapies`;
   }
   const page = /^\/([a-zA-Z0-9_-]+)$/.exec(rest);
   if (page) {

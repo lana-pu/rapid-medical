@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 import { login, sql, ADMIN, totp, freshCodeWindow, publishFromEditor, TOTP_SECRET, TWO_STEP_SQL } from "./helpers";
 import { E2E_CRON_SECRET } from "./secrets";
 
+/** The site under test: the same address as playwright.config.ts (E2E_BASE_URL or the built server on 3100). */
+const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3100";
+
 test.describe.configure({ mode: "serial" });
 
 test("login → choose a project; the project in the header; its dashboard; the Inbox is mail; list filters", async ({ page }) => {
@@ -323,6 +326,43 @@ test("unpublish keeps the pending changes in the record and cancels the schedule
   }
 });
 
+test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete keeps what is on the site, counts are real, Home and About have no New or Delete", async ({ page }) => {
+  await login(page);
+  // a draft and a live news item ticked together: the draft goes with its schedule, the live one stays and the message says so
+  const live = sql("select id from news_items where status = 'published' order by id desc limit 1");
+  const draft = sql("insert into news_items(title, url, published_on, status) values ('E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${draft},null,now() + interval '1 day','Admin')`);
+  await page.goto("/admin/news?sort=id&dir=desc"); // both on the first page: the newest rows
+  await page.check(`input[name=ids][value="${draft}"]`);
+  await page.check(`input[name=ids][value="${live}"]`);
+  page.once("dialog", (d) => d.accept());
+  await page.click("button[value=delete]");
+  await page.waitForURL(/bulk=delete/);
+  expect(sql(`select count(*) from news_items where id=${draft}`)).toBe("0");
+  expect(sql(`select count(*) from drafts where resource='news' and record_id=${draft}`)).toBe("0");
+  expect(sql(`select status from news_items where id=${live}`)).toBe("published");
+  await expect(page.getByText("Deleted 1 item(s).")).toBeVisible();
+  await expect(page.getByText("1 on the site was not deleted: unpublish it first.")).toBeVisible();
+
+  // Home, About…: no «+ New» (it led to a 404), no Unpublish or Delete that did nothing
+  await page.goto("/admin/site-pages");
+  await expect(page.getByRole("heading", { name: "Site pages" })).toBeVisible(); // the real list, not a 404
+  // the list's own «+ New» led to a 404; the site tree's «+ New page» (the page editor) is a different, working link
+  await expect(page.locator('a[href="/admin/site-pages/new"]')).toHaveCount(0);
+  await page.locator("input[name=ids]").first().check();
+  await expect(page.locator("button[value=publish]")).toBeVisible();
+  await expect(page.locator("button[value=unpublish], button[value=delete]")).toHaveCount(0);
+
+  // Broken links: a refused address says why
+  sql("insert into not_found_log(path, hits) values ('/e2e-broken', 1) on conflict do nothing");
+  await page.goto("/admin/not-found-log");
+  const row = page.locator("tr", { hasText: "/e2e-broken" });
+  await row.locator("input[name=to]").fill("//evil.example");
+  await row.getByRole("button", { name: "Add" }).click();
+  await expect(page.getByText("Not added: send «/e2e-broken» to a page of this site (/path) or a full https:// address.")).toBeVisible();
+  sql("delete from not_found_log where path = '/e2e-broken'");
+});
+
 test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ page }) => {
   await login(page);
   await page.goto("/admin/news");
@@ -466,10 +506,10 @@ test("security: uploads by content, redirects stay on the site, two-step codes a
   // redirects from parameters never leave the site
   for (const url of ["/api/preview?exit=1&redirect=https://evil.example", "/api/preview?exit=1&redirect=/%5Cevil.example", "/api/editor?on=1&redirect=/%5Cevil.example"]) {
     const r = await page.request.get(url, { maxRedirects: 0 });
-    expect(new URL(r.headers()["location"], "http://localhost:3100").host).toBe("localhost:3100");
+    expect(new URL(r.headers()["location"], BASE).host).toBe(new URL(BASE).host);
   }
   await page.goto("/admin/login?next=/%5Cevil.example");
-  expect(new URL(page.url()).host).toBe("localhost:3100");
+  expect(new URL(page.url()).host).toBe(new URL(BASE).host);
 
   // five wrong codes from the phone: the session is closed, the password is needed again
   const p2 = await (await browser.newContext()).newPage();
@@ -593,6 +633,7 @@ test("user walk 2026-11-14: a draft is deleted from its own page; a request name
   await form.locator("input[name=firstName]").fill("Walk");
   await form.locator("input[name=lastName]").fill("Tester");
   await form.locator("input[name=email]").fill("walk@example.com");
+  await form.locator("select[name=countryCode]").selectOption("DE"); // Country is required on the new Contact Us
   await form.getByRole("button", { name: "Submit" }).click();
   await expect(page.getByText(/Thank you/)).toBeVisible();
   const id = sql("select id from contact_submissions where email = 'walk@example.com' order by id desc limit 1");
@@ -860,5 +901,27 @@ test("search & sharing: every page's Google texts in one place; a page's text wa
     sql(`update site_pages set meta_description='${home.replace(/'/g, "''")}' where key='home'`);
     sql(`delete from drafts where resource='site-pages' and record_id=(select id from site_pages where key='home')`);
     sql(`update site_settings set value = jsonb_set(value, '{newsDescription}', to_jsonb('${news.replace(/'/g, "''")}'::text)) where key='seo'`);
+  }
+});
+
+test("My account: re-typing the password is limited like sign-in — 8 wrong in 15 minutes (docs/screens/admin-account.md)", async ({ page }) => {
+  await login(page);
+  try {
+    for (let i = 0; i < 8; i++) {
+      await page.goto("/admin/account");
+      await page.fill("input[name=password]", `wrong-password-${i}`);
+      await page.getByRole("button", { name: "Set up on a new phone" }).click();
+      await page.waitForURL(/error=/);
+      await expect(page.getByText("Password is wrong")).toBeVisible();
+    }
+    await page.goto("/admin/account");
+    await page.fill("input[name=password]", "wrong-password-9");
+    await page.getByRole("button", { name: "Set up on a new phone" }).click();
+    await page.waitForURL(/error=/);
+    await expect(page.getByText("Too many attempts. Try again in 15 minutes.")).toBeVisible();
+    // two-step sign-in is untouched
+    expect(sql("select totp_enabled_at is not null from users where email = 'e2e@rapid-medical.com'")).toBe("t");
+  } finally {
+    sql("delete from login_attempts where key like 'pw:%'");
   }
 });

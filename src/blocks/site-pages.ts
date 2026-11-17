@@ -41,25 +41,19 @@ export function homeToStored(home: HomeSettings): StoredBlock[] {
 
 export function careersToStored(c: CareersSettings): StoredBlock[] {
   const blocks = careersToBlocks({ c, jobCount: 0 });
-  return toStored(blocks, { region: null }, { [find(blocks, "hero")]: "openPositions" });
+  return toStored(blocks, { region: null }, { [find(blocks, "hero")]: "openPositions", [find(blocks, "jobs", "roles")]: "openRoles" });
 }
 
 export function aboutToStored(about: AboutSettings): StoredBlock[] {
   // a placeholder office keeps the offices section in the list; its content comes from Contact details
   const blocks = aboutToBlocks({ about, offices: [{ name: "" }] as never, team: [] });
-  return toStored(blocks, { region: null }, { [find(blocks, "people")]: "team", [find(blocks, "officesMap", "offices")]: "offices", [find(blocks, "officesMap", "map")]: "officePins" });
+  return toStored(blocks, { region: null }, { [find(blocks, "text", "facts")]: "companyFacts", [find(blocks, "people")]: "team", [find(blocks, "officesMap", "offices")]: "offices", [find(blocks, "officesMap", "map")]: "officePins" });
 }
 
 export function evidenceToStored(cfg: EvidenceSettings, region: Region): StoredBlock[] {
   const blocks = evidenceToBlocks({ region, cfg, all: [], featured: [], products: [] });
-  const stored = toStored(blocks, { region }, { [find(blocks, "hero")]: "regionLabel", [find(blocks, "publications", "spotlight")]: "featuredPublications", [find(blocks, "publications", "byProduct")]: "publicationsByProduct" });
-  // the counter shows the number of studies unless a value was typed in
-  const spot = stored.find((b) => b.variant === "spotlight");
-  if (spot) spot.data = { ...spot.data, stat: { ...(spot.data.stat as object), value: cfg.statValue ?? "" } };
-  // the latest studies with a picture: listed only when there are some, so it is not among the blocks above
-  const at = stored.findIndex((b) => b.variant === "byProduct");
-  stored.splice(at, 0, { id: newBlockId(), type: "publications", variant: "cards", data: { title: cfg.featuredTitle ?? "Featured publications" }, source: "latestPublications" });
-  return stored;
+  // DESIGN.md → Evidence: overview (counted per product, the line, the featured ones) and the archive
+  return toStored(blocks, { region }, { [find(blocks, "hero")]: "regionLabel", [find(blocks, "publications", "overview")]: "featuredPublications", [find(blocks, "publications", "library")]: "publicationsByProduct" });
 }
 
 export function therapiesToStored(landing: TherapiesLanding, region: Region): StoredBlock[] {

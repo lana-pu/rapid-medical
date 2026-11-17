@@ -2,11 +2,16 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { db, contactSubmissions } from "@/db";
+import { and, eq, lt, sql } from "drizzle-orm";
+import { db, contactSubmissions, loginAttempts } from "@/db";
+import { clientIp } from "./client-ip";
 import { sendMail } from "@/lib/mail";
 import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 import { sourceLabel } from "./tracking";
+import { countryName, formRegionForCountry, isCountryCode } from "./countries";
+
+const MAX_META = 20;
 
 export type FormState = { ok: true } | { ok: false; errors?: Record<string, string>; message?: string } | null;
 
@@ -23,17 +28,34 @@ const schema = z.object({
   state: z.string().trim().max(80).default(""),
   message: z.string().trim().max(4000).default(""),
   optIn: z.boolean().default(false),
-  meta: z.record(z.string().max(40), z.string().max(500)).default({}),
+  // visit source, webinar and the like — a handful; a request stuffed with more is refused (security check 2026-11-13)
+  meta: z.record(z.string().max(40), z.string().max(500)).refine((m) => Object.keys(m).length <= MAX_META, "Too many fields").default({}),
 });
 
-// Very small in-memory rate limiter (per instance). Replace with Redis/Upstash in multi-instance hosting.
-const hits = new Map<string, number[]>();
-function limited(ip: string) {
-  const now = Date.now();
-  const arr = (hits.get(ip) ?? []).filter((t) => now - t < 10 * 60 * 1000);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 8;
+/**
+ * More than FORM_MAX sends from one address in FORM_WINDOW_MS → «Too many requests». Counted in the database (the
+ * sign-in attempts table, key «form:{address}»): the same for every server instance and kept across restarts
+ * (docs/screens/contact-us.md → Лимит). A request without a known address shares one bucket with a wider cap — it is
+ * never let through uncounted (no address means no proxy in front — a host set up wrong; refusing everyone then would
+ * break every form). One statement counts and writes («insert only while under the cap»): no lock, no waiting on a
+ * database connection; sends at the very same moment may pass a slot or two over the cap. A refused send writes nothing.
+ */
+const FORM_MAX = 8;
+const FORM_MAX_UNKNOWN = 60; // no trusted address: development, e2e, a host without TRUSTED_PROXY_HOPS
+const FORM_WINDOW_MS = 10 * 60 * 1000;
+async function limited(ip: string | null): Promise<boolean> {
+  const key = `form:${ip ?? "unknown"}`;
+  const since = new Date(Date.now() - FORM_WINDOW_MS);
+  const max = ip ? FORM_MAX : FORM_MAX_UNKNOWN;
+  try {
+    await db.delete(loginAttempts).where(and(eq(loginAttempts.key, key), lt(loginAttempts.at, since)));
+    const added = await db.execute(
+      sql`insert into ${loginAttempts} (key) select ${key} where (select count(*) from ${loginAttempts} where key = ${key} and at > ${since.toISOString()}::timestamptz) < ${max} returning id`,
+    );
+    return added.length === 0;
+  } catch {
+    return true; // the database is not answering: refuse rather than send unlimited mail
+  }
 }
 
 export async function submitForm(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -41,12 +63,15 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
   if (fd.get("website")) return { ok: true };
 
   const h = await headers();
-  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || null;
-  if (ip && limited(ip)) return { ok: false, message: "Too many requests. Please try again later." };
+  const ip = clientIp(h);
+  if (await limited(ip)) return { ok: false, message: "Too many requests. Please try again later." };
 
   let meta: Record<string, string> = {};
   try { meta = JSON.parse(String(fd.get("meta") ?? "{}")); } catch { meta = {}; }
 
+  // Contact form: a country from the list (ISO code) → its name, and the mail region follows from it (no Region field).
+  const code = fd.get("countryCode");
+  const fromList = isCountryCode(code);
   const parsed = schema.safeParse({
     form: fd.get("form"),
     topic: fd.get("topic") ?? "",
@@ -55,8 +80,8 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
     organization: fd.get("organization") ?? "",
     email: fd.get("email"),
     phone: fd.get("phone") ?? "",
-    region: fd.get("region") ?? "",
-    country: fd.get("country") ?? "",
+    region: fromList ? formRegionForCountry(code) : (fd.get("region") ?? ""),
+    country: fromList ? countryName(code) : (fd.get("country") ?? ""),
     state: fd.get("state") ?? "",
     message: fd.get("message") ?? "",
     optIn: fd.get("optIn") === "on",

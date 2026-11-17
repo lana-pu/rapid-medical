@@ -102,6 +102,8 @@
 
 1. **`/us/vasospasm` → `/us/therapies/vasospasm`** — редирект ведёт на страницу, которой нет: Vasospasm в Americas нет.
    Куда вести — на Aneurysm, на обзор терапий, или в Americas терапия есть, но не опубликована?
+   **2026-11-15:** ведёт на обзор терапий Americas (`/us/therapies`, миграция `0025`; так же `/us/mvo`). Если клиент
+   скажет, что Vasospasm в Americas есть, — завести страницу и вернуть редирект на неё.
 2. **Страницы без входящих ссылок:** Long-term outcomes (Comaneci) и IFU – Canada открываются только по прямой ссылке.
    Так и задумано (ссылки из писем, QR) или ссылки потерялись при переносе?
 3. **Название региона OUS:** «Europe & Middle East» в выборе и меню против «Europe, Middle East, Latin America & Australia»

@@ -223,7 +223,8 @@ export const REDIRECTS = [
   { from: "/eitan", to: "/about-us#eitan" },
   { from: "/james", to: "/about-us#james" },
   { from: "/giora", to: "/about-us#giora" },
-  ...["us", "ous", "apac"].flatMap((r) => ["lvo", "mvo", "aneurysm", "vasospasm"].map((s) => ({ from: `/${r}/${s}`, to: `/${r}/therapies/${s}` }))),
+  // MVO and vasospasm are not in the Americas: their old addresses there go to the Americas overview (site-ia, question 1)
+  ...["us", "ous", "apac"].flatMap((r) => ["lvo", "mvo", "aneurysm", "vasospasm"].map((s) => ({ from: `/${r}/${s}`, to: r === "us" && (s === "mvo" || s === "vasospasm") ? "/us/therapies" : `/${r}/therapies/${s}` }))),
   // Decision 2026-11-10: one-media wrapper pages unpublished (migration 0012); the media opens in a window instead
   { from: "/us/see-the-comparison", to: "/us/therapies/aneurysm" },
   { from: "/apac/see-the-comparison", to: "/apac/therapies/aneurysm" },

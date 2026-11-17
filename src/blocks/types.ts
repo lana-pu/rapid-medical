@@ -4,6 +4,7 @@ import type { HeroData, HeroVariant } from "./hero";
 import type { TextData, TextVariant } from "./text";
 import type { TextMediaData, TextMediaVariant } from "./text-media";
 import type { KeyNumbersData, KeyNumbersVariant } from "./key-numbers";
+import type { PassportData, PassportVariant } from "./passport";
 import type { ColumnsData, ColumnsVariant } from "./columns";
 import type { DeviceDiagramData, DeviceDiagramVariant } from "./device-diagram";
 import type { SpecTableData, SpecTableVariant } from "./spec-table";
@@ -35,6 +36,7 @@ export type BlockMap = {
   text: { variant: TextVariant; data: TextData };
   textMedia: { variant: TextMediaVariant; data: TextMediaData };
   keyNumbers: { variant: KeyNumbersVariant; data: KeyNumbersData };
+  passport: { variant: PassportVariant; data: PassportData };
   columns: { variant: ColumnsVariant; data: ColumnsData };
   deviceDiagram: { variant: DeviceDiagramVariant; data: DeviceDiagramData };
   specTable: { variant: SpecTableVariant; data: SpecTableData };

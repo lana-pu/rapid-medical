@@ -17,3 +17,9 @@ export async function getSuggestedRegion(): Promise<Region | null> {
   const v = (await cookies()).get(GEO_COOKIE)?.value;
   return isRegion(v) ? v : null;
 }
+
+/** Where the current region came from, for «Current region» in the chooser: the visitor's own choice, the IP, or neither. */
+export function regionSource(region: Region, suggested: Region | null, chosen: string | undefined): "location" | "chosen" | null {
+  if (chosen === "1") return "chosen";
+  return suggested === region ? "location" : null;
+}

@@ -47,18 +47,20 @@ describe("aboutToBlocks", () => {
   const types = (bs: { type: string; variant: string }[]) => bs.map((b) => `${b.type}:${b.variant}`);
 
   it("keeps the page order", () => {
-    expect(types(aboutToBlocks({ about: { intro: "i" }, offices: [office], team }))).toEqual(["hero:page", "text:large", "text:surface", "people:team", "officesMap:offices", "officesMap:map"]);
+    expect(types(aboutToBlocks({ about: { intro: "i" }, offices: [office], team }))).toEqual(["hero:page", "text:facts", "people:team", "officesMap:offices", "officesMap:map"]);
   });
-  it("skips the intro and the office list when empty, keeps the map and defaults", () => {
+  it("skips the office list when empty, keeps the intro with its facts, the map and defaults", () => {
     const bs = aboutToBlocks({ about: {}, offices: [], team: [] });
-    expect(types(bs)).toEqual(["hero:page", "text:surface", "people:team", "officesMap:map"]);
-    expect((bs[1] as BlockOf<"text">).data.title).toBe("What we do");
+    expect(types(bs)).toEqual(["hero:page", "text:facts", "people:team", "officesMap:map"]);
+    expect((bs[1] as BlockOf<"text">).data.title2).toBe("What we do");
+    expect((bs[1] as BlockOf<"text">).data.countries).toBe("30+");
     expect((bs[3] as BlockOf<"officesMap">).data.closingLine).toBe("Have a question? We’d love to hear from you.");
   });
   it("binds fields to settings and each person to their record", () => {
     const bs = aboutToBlocks({ about: { intro: "i" }, offices: [office], team });
     expect(fieldPath(bs[1].edit, "imageUrl")).toBe("heroImageUrl");
-    const people = bs[3] as BlockOf<"people">;
+    expect(fieldPath(bs[1].edit, "body2")).toBe("whatWeDoBody");
+    const people = bs[2] as BlockOf<"people">;
     expect(fieldPath(people.edit, "intro")).toBe("leadershipIntro");
     expect(fieldPath(people.edit, "title")).toBeNull();
     const m = people.data.members![0];
@@ -66,8 +68,8 @@ describe("aboutToBlocks", () => {
     expect(m.slug).toBe("jane");
     expect(m.edit).toMatchObject({ r: "team", id: 3 });
     expect(fieldPath(m.edit, "photoUrl")).toBe("photoUrl");
-    expect(bs[4].edit?.r).toBe("settings:contact");
-    expect(fieldPath(bs[4].edit, "offices.0.name")).toBe("offices.0.name");
-    expect(fieldPath(bs[5].edit, "subtitle")).toBe("mapSub");
+    expect(bs[3].edit?.r).toBe("settings:contact");
+    expect(fieldPath(bs[3].edit, "offices.0.name")).toBe("offices.0.name");
+    expect(fieldPath(bs[4].edit, "subtitle")).toBe("mapSub");
   });
 });

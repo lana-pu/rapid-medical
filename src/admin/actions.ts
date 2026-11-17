@@ -9,7 +9,7 @@ import { getResource } from "./resources";
 import { adminPageHref } from "./site-tree";
 import { pageKey } from "./page-tree";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
-import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, schedule, restoreRevision, hasWorkflow } from "./workflow";
+import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, deleteNotLive, schedule, restoreRevision, hasWorkflow } from "./workflow";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -166,18 +166,31 @@ export async function bulkResource(fd: FormData) {
   const ids = [...new Set(fd.getAll("ids").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   const res = getResource(slug);
   if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
-  if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted
-  if (action === "publish" && hasWorkflow(res)) {
+  if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted: no buttons for it
+  // the message counts what was done, not what was ticked (docs/screens/admin-list.md, 2026-11-16)
+  let done = 0;
+  let live = 0;
+  if (action === "delete") {
+    // the same rule as «Delete draft» on a record's page: only what is not on the site, with its draft and schedule
+    const r = await deleteNotLive(res, ids);
+    if (r.deleted.length) await audit(user, "bulk", { resource: res.slug, meta: { action, ids: r.deleted } });
+    done = r.deleted.length;
+    live = r.live;
+  } else if (hasWorkflow(res)) {
+    // the same as one by one: Publish takes the pending changes; Unpublish keeps them, cancels the schedule
     for (const id of ids) {
-      if (await getEditable(res, id)) await publish(res, id, user); // a row gone meanwhile is skipped
+      if (!(await getEditable(res, id))) continue; // a row gone meanwhile is skipped
+      if (action === "publish") await publish(res, id, user);
+      else await unpublish(res, id, user);
+      done++;
     }
-  } else if (action === "unpublish" && hasWorkflow(res)) {
-    // the same as one by one: pending changes kept, approval reset, schedule cancelled
-    for (const id of ids) await unpublish(res, id, user);
   } else {
-    await bulk(res, ids, action);
-    await audit(user, "bulk", { resource: res.slug, meta: { action, ids } });
+    const there: number[] = [];
+    for (const id of ids) if (await getRow(res, id)) there.push(id);
+    await bulk(res, there, action);
+    if (there.length) await audit(user, "bulk", { resource: res.slug, meta: { action, ids: there } });
+    done = there.length;
   }
   revalidate(res.revalidate);
-  redirect(`/admin/${res.slug}?bulk=${action}&n=${ids.length}`);
+  redirect(`/admin/${res.slug}?bulk=${action}&n=${done}${live ? `&live=${live}` : ""}`);
 }

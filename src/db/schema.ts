@@ -138,7 +138,7 @@ export const loginAttempts = pgTable(
   "login_attempts",
   {
     id: serial("id").primaryKey(),
-    key: text("key").notNull(), // "email:<e>" or "ip:<ip>"
+    key: text("key").notNull(), // "email:<e>", "ip:<ip>", "totp:<id>"; site forms: "form:<ip>"
     at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("login_attempts_key").on(t.key, t.at)],
@@ -189,6 +189,9 @@ export const notFoundLog = pgTable(
 /*  Media library                                                       */
 /* ------------------------------------------------------------------ */
 
+/** One page of a PDF drawn as a picture: its size at the largest variant and WebP variants, ascending width. */
+export type DocPage = { w: number; h: number; variants: { w: number; url: string }[] };
+
 export const media = pgTable("media", {
   id: serial("id").primaryKey(),
   /** Public URL (local /uploads/... or CDN) */
@@ -207,6 +210,12 @@ export const media = pgTable("media", {
   placeholder: text("placeholder"),
   /** Poster image URL for videos */
   posterUrl: text("poster_url"),
+  /** A PDF's pages as pictures, in order (decision 2026-11-16, `src/lib/document-pages.ts`); empty = not drawn */
+  pages: jsonb("pages").$type<DocPage[]>().notNull().default([]),
+  /** A PDF's text, pages separated by «\f» — under the pages for search engines and screen readers */
+  text: text("text").notNull().default(""),
+  /** Pages in the PDF; more than `pages` when the limits stopped the drawing (the page then says so) */
+  pageCount: integer("page_count").notNull().default(0),
   /** Original Duda URL, kept for traceability during migration */
   sourceUrl: text("source_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -333,6 +342,14 @@ export const publications = pgTable(
     publishedOn: timestamp("published_on", { withTimezone: false, mode: "date" }).notNull(),
     url: text("url"), // DOI / journal link
     pdfUrl: text("pdf_url"),
+    /** A PDF copied from an open-access source: its licence (e.g. «CC BY 4.0») and where it came from — shown under it */
+    pdfLicense: text("pdf_license").notNull().default(""),
+    pdfSource: text("pdf_source"), // a url field: empty is null, like pdf_url
+    /** The article's abstract, quoted with its source, shown on the publication's page when the full text cannot be
+     * (decision 2026-11-15). Paragraphs separated by a blank line; a section starts «Label: …». */
+    abstract: text("abstract").notNull().default(""),
+    /** Where the abstract was taken from, e.g. «PubMed 33284987» */
+    abstractSource: text("abstract_source").notNull().default(""),
     doi: text("doi"),
     productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
     /** Regions where it is shown; empty = all */

@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import type { Page } from "@playwright/test";
 
 export const ADMIN = { email: "e2e@rapid-medical.com", password: "e2e-password-123456" };
@@ -7,8 +7,27 @@ export const TOTP_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
 /** SQL columns that give a test person two-step sign-in with TOTP_SECRET. */
 export const TWO_STEP_SQL = `totp_secret='${TOTP_SECRET}', totp_enabled_at=now()`;
 
+/**
+ * Runs SQL against the test database and returns what `psql -t -A` would print (rows by line, columns by «|»,
+ * true/false as t/f, null empty; several statements → the last one's rows). Through the site's own driver in a child
+ * process, so it stays synchronous for the tests and needs no psql on the machine.
+ */
+const RUN_SQL = `
+const postgres = require("postgres");
+let q = ""; process.stdin.on("data", (d) => (q += d)).on("end", async () => {
+  const db = postgres(process.env.DATABASE_URL, { max: 1, onnotice: () => {} });
+  try {
+    let res = await db.unsafe(q);
+    if (res.length && Array.isArray(res[0])) res = res[res.length - 1];
+    const cell = (v) => v === null || v === undefined ? "" : v === true ? "t" : v === false ? "f" : v instanceof Date ? v.toISOString() : typeof v === "object" ? JSON.stringify(v) : String(v);
+    process.stdout.write(res.map((r) => Object.values(r).map(cell).join("|")).join("\\n"));
+  } catch (e) { process.stderr.write(String(e && e.message || e)); process.exitCode = 1; }
+  finally { await db.end(); }
+});`;
+
 export function sql(q: string): string {
-  return execSync(`psql "${process.env.DATABASE_URL}" -t -A -c "${q.replace(/"/g, '\\"')}"`).toString().trim();
+  if (!process.env.DATABASE_URL) process.loadEnvFile(".env");
+  return execFileSync(process.execPath, ["-e", RUN_SQL], { input: q, env: process.env }).toString().trim();
 }
 
 export async function login(page: Page, email = ADMIN.email, password = ADMIN.password) {

@@ -23,10 +23,30 @@ const REGION_MAP: Record<string, string> = { us: "Americas", ous: "Europe", apac
 /** URL parameters are arbitrary: only the map's own keys count ("constructor" is not a topic). */
 const pick = (map: Record<string, string>, key?: string) => (key && Object.hasOwn(map, key) ? map[key] : undefined);
 
-export function contactToBlocks({ region, topic }: { region?: string; topic?: string }): Block[] {
+/**
+ * Contact Us: title, then the form beside the region's contacts (docs/screens/contact-us.md). Americas → the US office,
+ * every other region → headquarters, as orders are routed (`recipientFor`).
+ */
+export function contactToBlocks({ region, topic, country, offices = [] }: { region?: string; topic?: string; country?: string; offices?: Office[] }): Block[] {
+  const office = offices.find((o) => (region === "us" ? o.label === "USA" : o.label === "Headquarters"));
+  const where = region === "us" ? "Americas" : "headquarters";
+  const contacts: { label: string; value: string; href?: string }[] = [];
+  if (office?.phone) contacts.push({ label: `Call ${where}`, value: office.phone, href: `tel:${office.phone.replace(/[^+\d]/g, "")}` });
+  if (office?.ordersEmail) contacts.push({ label: "Orders", value: office.ordersEmail, href: `mailto:${office.ordersEmail}` });
   return [
     { type: "hero", variant: "page", data: { title: "Let’s connect", body: "Please provide a few contact details below." } },
-    { type: "form", variant: "default", data: { topics: TOPICS, defaultTopic: pick(TOPIC_KEYS, topic), defaultRegion: pick(REGION_MAP, region) } },
+    {
+      type: "form",
+      variant: "split",
+      data: {
+        topics: TOPICS,
+        defaultTopic: pick(TOPIC_KEYS, topic),
+        defaultRegion: pick(REGION_MAP, region),
+        defaultCountry: country,
+        contacts,
+        contactsLink: offices.length ? { label: "All offices and addresses →", href: "/about-us#offices" } : null,
+      },
+    },
   ];
 }
 
@@ -35,13 +55,25 @@ export const teamCard = (m: TeamMember) => ({ name: m.name, title: m.title, long
 
 export type AboutSettings = { intro?: string; whatWeDoTitle?: string; whatWeDoBody?: string; leadershipIntro?: string; heroImageUrl?: string; mapTitle?: string; mapSub?: string; mapFallbackImageUrl?: string; closingLine?: string };
 
-export function aboutToBlocks({ about, offices, team }: { about: AboutSettings; offices: Office[]; team: TeamMember[] }): Block[] {
+/** About facts counted from the records: publications (all regions) and the countries of the offices. */
+export function companyFacts(publications: number, offices: Office[]): { label: string; value: string }[] {
+  const tc = (s: string) => (s.length <= 3 ? s : s.charAt(0) + s.slice(1).toLowerCase());
+  const countries = [...new Set(offices.map((o) => (o.address ?? "").trim().split("\n").pop()?.trim() ?? "").filter(Boolean).map(tc))];
+  return [
+    ...(publications ? [{ label: "Clinical publications", value: String(publications) }] : []),
+    ...(countries.length ? [{ label: "Offices", value: countries.join(" · ") }] : []),
+  ];
+}
+
+export function aboutToBlocks({ about, offices, team, facts = [] }: { about: AboutSettings; offices: Office[]; team: TeamMember[]; facts?: { label: string; value: string }[] }): Block[] {
   const r = "settings:about";
   const blocks: Block[] = [{ type: "hero", variant: "page", data: { title: "About Us" } }];
-  if (about.intro || about.heroImageUrl) {
-    blocks.push({ type: "text", variant: "large", data: { body: about.intro, imageUrl: about.heroImageUrl }, edit: { r, map: { body: "intro", imageUrl: "heroImageUrl" } } });
-  }
-  blocks.push({ type: "text", variant: "surface", data: { title: about.whatWeDoTitle ?? "What we do", body: about.whatWeDoBody }, edit: { r, map: { title: "whatWeDoTitle", body: "whatWeDoBody" } } });
+  blocks.push({
+    type: "text",
+    variant: "facts",
+    data: { body: about.intro, imageUrl: about.heroImageUrl, title2: about.whatWeDoTitle ?? "What we do", body2: about.whatWeDoBody, countries: "30+", headquarters: "Yokneam, Israel", facts },
+    edit: { r, map: { body: "intro", imageUrl: "heroImageUrl", title2: "whatWeDoTitle", body2: "whatWeDoBody" } },
+  });
   blocks.push({
     type: "people",
     variant: "team",

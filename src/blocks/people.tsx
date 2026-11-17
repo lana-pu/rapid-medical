@@ -1,4 +1,5 @@
 import { safeHtml } from "@/lib/html";
+import { displayCase, plainText } from "@/lib/text-case";
 import Link from "next/link";
 import type { InPracticeItem } from "@/db/schema";
 import { Section, H2, Img, Prose } from "@/components/site/primitives";
@@ -31,14 +32,18 @@ function People({ variant, data: d, edit: e, nested }: BlockProps<"people">) {
             <li key={i} id={m.slug} className="scroll-mt-24">
               {/* Bio on the spot instead of a separate one-paragraph page (decision 2026-11-10, Emily's audit). */}
               <FM e={m.edit} k="photoUrl"><Img src={m.photoUrl} alt={m.name} className="aspect-square w-full rounded object-cover" /></FM>
-              <div className="mt-3 font-semibold uppercase tracking-wide"><F e={m.edit} k="name">{m.name}</F></div>
-              <div className="text-sm text-muted"><F e={m.edit} k="title">{m.title}</F></div>
+              <div className="mt-4 text-lg font-semibold"><F e={m.edit} k="name">{displayCase(m.name)}</F></div>
+              <div className="text-sm text-muted"><F e={m.edit} k="title">{displayCase(m.title)}</F></div>
               {m.bioHtml ? (
-                <details className="group mt-2 text-sm">
-                  <summary className="cursor-pointer list-none underline">Read bio</summary>
-                  {m.longTitle && m.longTitle !== m.title && <div className="mt-2 text-xs uppercase text-muted">{m.longTitle}</div>}
-                  <Prose html={safeHtml(m.bioHtml)} className="mt-2" />
-                </details>
+                // two lines of the bio at once, the whole bio opens on the spot (DESIGN.md → About)
+                <div className="mt-3 text-sm [&:has(details[open])>p]:hidden">
+                  <p className="line-clamp-2 text-muted">{plainText(m.bioHtml)}</p>
+                  <details className="group">
+                    <summary className="mt-2 cursor-pointer list-none underline group-open:mt-0 group-open:mb-2"><span className="group-open:hidden">Read full bio</span><span className="hidden group-open:inline">Show less</span></summary>
+                    {m.longTitle && m.longTitle !== m.title && <div className="text-xs text-muted">{displayCase(m.longTitle)}</div>}
+                    <Prose html={safeHtml(m.bioHtml)} className="mt-2" />
+                  </details>
+                </div>
               ) : m.href ? (
                 <Link href={m.href} className="mt-2 inline-block text-sm underline">Profile →</Link>
               ) : null}

@@ -1,14 +1,108 @@
-import { Section, Prose } from "@/components/site/primitives";
+import Link from "next/link";
+import { safeHref } from "@/lib/safe-path";
+import { DocumentPages, isLocalPdf } from "@/components/site/DocumentPages";
+import { Section, Prose, KeyValue } from "@/components/site/primitives";
 import { safeHtml } from "@/lib/html";
 import { F } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type RichTextVariant = "default";
+export type RichTextVariant = "default" | "document";
 
-export type RichTextData = { html: string };
+export type RichTextData = {
+  html: string;
+  /** `document`: the other documents of the section (Legal: the footer's list), the current one marked. */
+  related?: { label: string; href: string; current?: boolean }[];
+  /** `document` on a study or material page: source rows (journal, date…) and links (Download PDF, the original) */
+  meta?: { label: string; value: string }[];
+  links?: { label: string; href: string }[];
+  /** `document`: the full document shown on the page under the text (our own PDF only) */
+  pdf?: { href: string; title?: string; caption?: string } | null;
+};
 
-function RichText({ data: d, edit: e, nested }: BlockProps<"richText">) {
-  const inner = <F e={e} k="html" kind="rich" className="mt-8 max-w-3xl"><Prose html={safeHtml(d.html)} /></F>;
+const plain = (h: string) => h.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "’").replace(/\s+/g, " ").trim();
+const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "section";
+
+/**
+ * A long document as «shared line» (DESIGN.md → Текстовая страница): «Last revised» and «On this page» from the text
+ * itself, the section's documents. Headings get anchors; a «Last Revised: …» heading moves to the rail.
+ */
+/** Upper bounds: the text is editor-made, but it is parsed on every request (security review 2026-11-15). */
+const MAX_HTML = 400_000;
+const MAX_HEADINGS = 300;
+
+export function documentParts(html: string) {
+  const toc: { id: string; title: string }[] = [];
+  if (html.length > MAX_HTML) return { body: html, lastRevised: null as string | null, toc };
+  let lastRevised: string | null = null;
+  const used = new Set<string>();
+  // headings first (linear, lazy match up to the closing tag), then their plain text is tested — no nested quantifiers
+  const body = html.replace(/<(h[1-6])([^>]*)>([\s\S]*?)<\/\1>/gi, (m, tag: string, attrs: string, inner: string) => {
+    const title = plain(inner);
+    if (lastRevised === null) {
+      const rev = /^Last Revised:\s*(.+)$/i.exec(title);
+      if (rev) {
+        lastRevised = rev[1].trim();
+        return "";
+      }
+    }
+    if (!/^h[2-6]$/i.test(tag) || !title || toc.length >= MAX_HEADINGS) return m;
+    const base = slug(title);
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    toc.push({ id, title });
+    return `<${tag}${attrs.replace(/\sid="[^"]*"/i, "")} id="${id}" class="scroll-mt-24">${inner}</${tag}>`;
+  });
+  return { body, lastRevised: lastRevised as string | null, toc };
+}
+
+function RichText({ variant, data: d, edit: e, nested }: BlockProps<"richText">) {
+  const html = safeHtml(d.html);
+  if (variant === "document") {
+    const { body, lastRevised, toc } = documentParts(html);
+    const related = d.related ?? [];
+    const meta = (d.meta ?? []).filter((m) => m.label && m.value);
+    const links = (d.links ?? []).filter((l) => l.label && l.href);
+    const pdf = d.pdf && isLocalPdf(d.pdf.href) ? d.pdf : null;
+    if (lastRevised || toc.length > 2 || related.length || meta.length || links.length || pdf) {
+      const inner = (
+        <div className="mt-8 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
+          <aside className="md:col-span-4">
+            <div className="space-y-8 md:sticky md:top-6">
+              {lastRevised && <KeyValue rows={[{ label: "Last revised", value: lastRevised }]} />}
+              {meta.length > 0 && <KeyValue rows={meta.map((m, i) => ({ label: <F e={e} k={`meta.${i}.label`}>{m.label}</F>, value: <F e={e} k={`meta.${i}.value`}>{m.value}</F> }))} />}
+              {links.length > 0 && (
+                <ul className="space-y-1.5 text-sm">
+                  {links.map((l) => <li key={l.href}><a href={safeHref(l.href)} target="_blank" rel="noopener noreferrer" className="underline">{l.label}</a></li>)}
+                </ul>
+              )}
+              {toc.length > 2 && (
+                <nav aria-label="On this page" className="text-sm">
+                  <div className="mb-2 font-medium">On this page</div>
+                  <ol className="space-y-1.5">{toc.map((t) => <li key={t.id}><a href={`#${t.id}`} className="text-muted hover:text-foreground">{t.title}</a></li>)}</ol>
+                </nav>
+              )}
+              {related.length > 0 && (
+                <nav aria-label="Legal" className="text-sm">
+                  <div className="mb-2 font-medium">Legal</div>
+                  <ul className="space-y-1.5">
+                    {related.map((r) => <li key={r.href}>{r.current ? <span className="font-medium" aria-current="page">{r.label}</span> : <Link href={r.href} className="text-muted hover:text-foreground">{r.label}</Link>}</li>)}
+                  </ul>
+                </nav>
+              )}
+            </div>
+          </aside>
+          <div className="min-w-0 md:col-span-7 md:col-start-6">
+            {/* a page whose whole text is one «Open PDF» link shows the PDF instead of the link */}
+            {!(pdf && plain(body) === "Open PDF") && <F e={e} k="html" kind="rich"><Prose html={body} /></F>}
+            {pdf && <div className={plain(body) === "Open PDF" ? "" : "mt-10"}><DocumentPages href={pdf.href} title={pdf.title ?? "Document"} caption={pdf.caption} /></div>}
+          </div>
+        </div>
+      );
+      return nested ? inner : <Section>{inner}</Section>;
+    }
+  }
+  const inner = <F e={e} k="html" kind="rich" className="mt-8 max-w-3xl"><Prose html={html} /></F>;
   return nested ? inner : <Section>{inner}</Section>;
 }
 
@@ -17,7 +111,10 @@ export const richText: BlockDef<"richText"> = {
   name: "Rich text",
   description: "Long formatted text: legal pages, articles, biographies.",
   category: "content",
-  variants: [{ id: "default", label: "Default", description: "Headings, paragraphs, lists, links, images" }],
+  variants: [
+    { id: "default", label: "Default", description: "Headings, paragraphs, lists, links, images" },
+    { id: "document", label: "Document", description: "Long document: date, «On this page» and the section's documents on the left" },
+  ],
   fields: [{ key: "html", label: "Text", kind: "rich", required: true }],
   example: {
     html: "<h2>Sample heading</h2><p>A paragraph of sample text with a <a href=\"/style-guide#richText\">link</a>.</p><h3>Sample subheading</h3><ul><li>First item</li><li>Second item</li></ul>",

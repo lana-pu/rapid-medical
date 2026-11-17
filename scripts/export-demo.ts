@@ -36,7 +36,10 @@ let publicEntries: string[] = [];
 function rewrite(html: string) {
   const names = publicEntries.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
   const re = new RegExp(`(?<!${BASE.replace(/\//g, "\\/")})/(${names})(?=[/"'?\\s,)\\\\])`, "g");
-  return html.replace(re, `${BASE}/$1`);
+  // links written inside texts (a therapy page's HTML → /us/success-study-final-results) are site paths too
+  const site = new RegExp(`href="/(?!/|${BASE.slice(1).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:/|"))`, "g");
+  // a link that got the base path in code and again from next/link (admin «Preview page») keeps one
+  return html.replace(re, `${BASE}/$1`).replace(site, `href="${BASE}/`).split(`${BASE}${BASE}`).join(BASE);
 }
 
 async function main() {

@@ -22,8 +22,10 @@ export function Eyebrow({ children, as = "div" }: { children: ReactNode; as?: "d
   return <Tag className="mb-2 block text-xs font-semibold uppercase tracking-widest text-muted">{children}</Tag>;
 }
 
-export function H1({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <h1 className={`text-3xl font-semibold leading-tight tracking-tight md:text-5xl ${className}`}>{children}</h1>;
+/** `long`: a material's title (an article, a press release) — often two or three lines, one step smaller. */
+export function H1({ children, className = "", size = "page" }: { children: ReactNode; className?: string; size?: "page" | "long" }) {
+  const scale = size === "long" ? "text-2xl md:text-4xl" : "text-3xl md:text-5xl";
+  return <h1 className={`font-semibold leading-tight tracking-tight ${scale} ${className}`}>{children}</h1>;
 }
 
 export function H2({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -86,6 +88,21 @@ export async function Img({ src, alt = "", className = "", sizes = "(max-width: 
   );
 }
 
+/** Key — value rows with hairlines (DESIGN.md → «Таблица ключ — значение»): contacts, dates, short facts. */
+export function KeyValue({ rows, footer }: { rows: { label: ReactNode; value: ReactNode }[]; footer?: ReactNode }) {
+  return (
+    <dl className="divide-y divide-border text-sm">
+      {rows.map((r, i) => (
+        <div key={i} className="flex items-baseline justify-between gap-4 py-2.5">
+          <dt className="text-muted">{r.label}</dt>
+          <dd className="text-right">{r.value}</dd>
+        </div>
+      ))}
+      {footer && <div className="pt-3">{footer}</div>}
+    </dl>
+  );
+}
+
 export function Prose({ html, className = "" }: { html: string; className?: string }) {
   return <div className={`prose-rm ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
@@ -93,4 +110,20 @@ export function Prose({ html, className = "" }: { html: string; className?: stri
 export function formatMonth(d: Date | string | null | undefined) {
   if (!d) return "";
   return new Date(d).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
+
+/**
+ * «Shared line» (DESIGN.md → Решения по страницам): a hairline, the section's name on the left (4/12) and its content
+ * on the right (7/12), both starting level. On a phone the name stands above the content.
+ */
+export function SharedLine({ title, aside, children, id, className = "" }: { title?: ReactNode; /** under the name, e.g. «8 roles» */ aside?: ReactNode; children: ReactNode; id?: string; className?: string }) {
+  return (
+    <div id={id} className={`grid scroll-mt-16 gap-6 border-t border-border pt-8 md:grid-cols-12 md:gap-10 ${className}`}>
+      <div className="md:col-span-4">
+        {title && <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>}
+        {aside && <div className="mt-2 text-sm text-muted">{aside}</div>}
+      </div>
+      <div className="min-w-0 md:col-span-7 md:col-start-6">{children}</div>
+    </div>
+  );
 }

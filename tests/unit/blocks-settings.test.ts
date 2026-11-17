@@ -38,11 +38,12 @@ describe("homeToBlocks", () => {
 });
 
 describe("careersToBlocks", () => {
-  it("counts jobs in the button, skips an empty gallery", () => {
-    expect((careersToBlocks({ c: {}, jobCount: 3 })[0] as BlockOf<"hero">).data.cta?.label).toBe("View open positions (3)");
+  it("the button goes down the page, the roles sit above the general application, skips an empty gallery", () => {
+    // DESIGN.md → Careers: open positions are a section of Careers
+    expect((careersToBlocks({ c: {}, jobCount: 3 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "See open positions ↓", href: "#open-positions" });
     // none open: the general-interest form, not an empty list (usability pass 2026-11-13)
-    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "Submit general interest", href: "#general-interest" });
-    expect(types(careersToBlocks({ c: {}, jobCount: 0 }))).toEqual(["hero:bannerCompact", "columns:principles", "form:section"]);
+    expect((careersToBlocks({ c: {}, jobCount: 0 })[0] as BlockOf<"hero">).data.cta).toEqual({ label: "Send us your details ↓", href: "#general-interest" });
+    expect(types(careersToBlocks({ c: {}, jobCount: 0 }))).toEqual(["hero:bannerCompact", "columns:principles", "jobs:roles", "form:split"]);
     const full = careersToBlocks({ c: { quotes: [{ quote: "q" }] }, jobCount: 0 });
     expect(types(full)[1]).toBe("gallery:quotes");
     expect(fieldPath(full[1].edit, "items.0.author")).toBe("quotes.0.author");
@@ -55,19 +56,20 @@ describe("evidenceToBlocks", () => {
 
   it("tabs by product: sub-products without a tab go under their family, empty products have no tab", () => {
     const bs = evidenceToBlocks({ region: "us", cfg: {}, all: [pub(1, "tt", null), pub(2, "tt-sub", "tt")], featured: [], products });
-    expect(types(bs)).toEqual(["hero:bannerCompact", "publications:spotlight", "publications:byProduct"]);
+    // DESIGN.md → Evidence: overview (counted per product, the line, the featured ones), then the archive
+    expect(types(bs)).toEqual(["hero:bannerCompact", "publications:overview", "publications:library"]);
     const by = bs[2] as BlockOf<"publications">;
     expect(by.data.groups!.map((g) => [g.id, g.items.length])).toEqual([["tt", 2]]);
     expect(by.data.groups![0].sublabel).toBe("13");
     expect(by.data.anchors).toEqual(["tt", "cm"]);
   });
-  it("counts publications when no number is set; cards need an image", () => {
-    const bs = evidenceToBlocks({ region: "us", cfg: {}, all: [pub(1, "tt", null, "/a.jpg")], featured: [], products });
-    const s = bs[1] as BlockOf<"publications">;
-    expect(s.data.stat?.value).toBe("1+");
-    expect(fieldPath(s.edit, "stat.value")).toBe("statValue");
-    expect(types(bs)[2]).toBe("publications:cards");
-    expect((bs[2] as BlockOf<"publications">).data.items![0].edit).toMatchObject({ r: "publications", id: 1 });
+  it("the overview counts per product from the same lists as the archive; no «latest three» block", () => {
+    const bs = evidenceToBlocks({ region: "us", cfg: { forefrontText: "Line" }, all: [pub(1, "tt", null, "/a.jpg"), pub(2, "cm", null)], featured: [pub(1, "tt", null, "/a.jpg")], products });
+    const o = bs[1] as BlockOf<"publications">;
+    expect(o.data.groups!.map((g) => [g.label, g.items.length])).toEqual([["TT", 1], ["CM", 1]]);
+    expect(o.data.items![0].edit).toMatchObject({ r: "publications", id: 1 });
+    expect(fieldPath(o.edit, "line")).toBe("forefrontText");
+    expect(bs.some((b) => b.type === "publications" && b.variant === "cards")).toBe(false);
   });
 });
 
@@ -78,27 +80,42 @@ describe("therapiesToBlocks", () => {
     { slug: "aneurysm", navLabel: "Aneurysm", heroTitle: "Remodel", therapyGroup: "hemorrhagic" },
     { slug: "new", navLabel: "New", heroTitle: "Soon" },
   ];
-  it("one card group per therapy group, in menu order; the landing's own rows are not shown", () => {
+  it("groups of one therapy stand in one row with the group on the card; the landing's own rows are not shown", () => {
+    // DESIGN.md → Обзор терапий: a group heading only when the group has 2+ therapies
     const bs = therapiesToBlocks({ region: "ous", landing: { blocks: [{ title: "A", body: "a" }] }, items });
-    expect(types(bs)).toEqual(["hero:bannerCompact", "columns:cards", "columns:cards", "columns:cards", "columns:cards", "cta:light"]);
-    const groups = bs.slice(1, 5).map((b) => (b as BlockOf<"columns">).data);
-    expect(groups.map((g) => g.title)).toEqual(["Ischemic stroke", "Hemorrhagic stroke", "Access", null]);
-    expect(groups[0].items[0]).toMatchObject({ eyebrow: "TIGERTRIEVER™", title: "LVO", body: "Title", note: "TIGER trial", href: "/ous/therapies/lvo" });
-    expect(groups[3].items[0].href).toBe("/ous/therapies/new");
-    expect((bs[5] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
+    expect(types(bs)).toEqual(["hero:bannerCompact", "columns:cards", "cta:light"]);
+    const row = (bs[1] as BlockOf<"columns">).data;
+    expect(row.title).toBeNull();
+    expect(row.items.map((c) => c.eyebrow)).toEqual(["Ischemic stroke · TIGERTRIEVER™", "Hemorrhagic stroke", "Access · DRIVEWIRE™", undefined]);
+    expect(row.items[0]).toMatchObject({ title: "LVO", body: "Title", note: "TIGER trial", href: "/ous/therapies/lvo" });
+    expect(row.items[3].href).toBe("/ous/therapies/new");
+    expect((bs[2] as BlockOf<"cta">).data.buttons[0].href).toBe("/contact-us?region=ous");
+  });
+  it("a group of two keeps its heading; publications lead to the product's Evidence tab", () => {
+    const two = [...items, { slug: "mvo", navLabel: "MVO", heroTitle: "Distal", therapyGroup: "ischemic", productName: "TIGERTRIEVER™ 13", productSlug: "tt13" }];
+    const lvo = { ...two[1], productSlug: "tt" };
+    const bs = therapiesToBlocks({ region: "ous", landing: {}, items: [two[0], lvo, two[2], two[3], two[4]], publications: { tt: 19, tt13: 1 } });
+    const sections = bs.filter((b) => b.type === "columns").map((b) => (b as BlockOf<"columns">).data);
+    expect(sections.map((g) => g.title)).toEqual(["Ischemic stroke", null]);
+    expect(sections[0].items.map((c) => [c.eyebrow, c.more])).toEqual([
+      ["TIGERTRIEVER™", { label: "19 publications →", href: "/ous/evidence#tt" }],
+      ["TIGERTRIEVER™ 13", { label: "1 publication →", href: "/ous/evidence#tt13" }],
+    ]);
+    // no Evidence tab with publications for the product → no link
+    expect(sections[1].items.every((c) => c.more === null)).toBe(true);
   });
 });
 
 describe("newsPageToBlocks", () => {
-  it("carousel: featured first, otherwise the newest, at most 5", () => {
-    const mixed = newsPageToBlocks([news(1), news(2, true)]);
-    expect((mixed[1] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([2]);
-    const plain = newsPageToBlocks([1, 2, 3, 4, 5, 6].map((i) => news(i)));
-    expect((plain[1] as BlockOf<"news">).data.items).toHaveLength(5);
-    expect((plain[2] as BlockOf<"news">).data.items).toHaveLength(6);
+  it("highlights: the marked ones first, then the newest, four in all; the news rows start after them", () => {
+    // DESIGN.md → News & Events: no carousel, no repeats
+    const mixed = newsPageToBlocks([news(1), news(2, true), news(3), news(4), news(5), news(6)]);
+    expect(types(mixed)).toEqual(["hero:page", "news:highlights", "events:next", "news:feed"]);
+    expect((mixed[1] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([2, 1, 3, 4]);
+    expect((mixed[3] as BlockOf<"news">).data.items.map((n) => n.id)).toEqual([5, 6]);
   });
-  it("no news: no carousel, the list stays", () => {
-    expect(types(newsPageToBlocks([]))).toEqual(["hero:title", "news:timeline"]);
+  it("no news: no highlights, the rows say so", () => {
+    expect(types(newsPageToBlocks([]))).toEqual(["hero:page", "events:next", "news:feed"]);
   });
 });
 
@@ -114,11 +131,12 @@ describe("webinarsToBlocks", () => {
 describe("chooserToBlocks", () => {
   const opts = (next?: string) => (chooserToBlocks({ regional: {}, suggested: "us", next })[1] as BlockOf<"regionChooser">).data.options;
   it("keeps a safe next and marks the suggested region", () => {
-    expect(opts("evidence").find((o) => o.suggested)?.href).toBe("/us/evidence");
+    // through /api/region, which remembers the choice (DESIGN.md → Выбор региона)
+    expect(opts("evidence").find((o) => o.suggested)?.href).toBe("/api/region?to=us&back=%2Fus%2Fevidence");
     expect(opts().filter((o) => o.suggested)).toHaveLength(1);
   });
   it("ignores an unsafe next", () => {
-    expect(opts("//evil.example")[0].href).toMatch(/\/therapies$/);
+    expect(opts("//evil.example")[0].href).toMatch(/%2Ftherapies$/);
   });
 });
 

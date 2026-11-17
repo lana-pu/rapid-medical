@@ -5,6 +5,9 @@ import { REGION_CHOICES, REGION_FORM_VALUE, REGION_LABELS, type Region } from "@
 import type { Block } from "./types";
 import { groupTherapies } from "@/lib/therapy-groups";
 import type { NewsCard } from "./news";
+import type { JobRow } from "./jobs";
+import { newsHref } from "@/lib/material";
+import { DEMO, withBase } from "@/lib/demo";
 import type { PublicationCard, PublicationGroup } from "./publications";
 
 /**
@@ -15,7 +18,7 @@ import type { PublicationCard, PublicationGroup } from "./publications";
 
 const record = (r: string, id: number) => ({ r, id, prefix: "" });
 
-export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
+export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, href: newsHref(n), imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
 
 export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("publications", p.id) });
 
@@ -74,13 +77,24 @@ export type CareersSettings = {
   principlesTitle?: string; principlesBody?: string; principlesImageUrl?: string; principles?: { title: string; body: string }[]; eeoStatement?: string;
 };
 
-export function careersToBlocks({ c, jobCount }: { c: CareersSettings; jobCount: number }): Block[] {
+/** The Careers hero button: down to the roles, or — with none open — down to the general application (DESIGN.md → Careers). */
+export function careersCta(jobCount: number) {
+  return jobCount ? { label: "See open positions ↓", href: "#open-positions" } : { label: "Send us your details ↓", href: "#general-interest" };
+}
+
+/** A job record as a row of the open positions: its page, and «Apply ↗» to the application link or email. */
+export function jobRow(j: Pick<Job, "title" | "slug" | "department" | "location" | "applyUrl" | "applyEmail">): JobRow {
+  const applyHref = j.applyUrl || (j.applyEmail ? `mailto:${j.applyEmail}?subject=${encodeURIComponent(j.title)}` : null);
+  return { title: j.title, href: `/open-positions/${j.slug}`, department: j.department, location: j.location, applyHref };
+}
+
+export function careersToBlocks({ c, jobCount, jobs = [] }: { c: CareersSettings; jobCount: number; jobs?: JobRow[] }): Block[] {
   const r = "settings:careers";
   const blocks: Block[] = [
     {
       type: "hero",
       variant: "bannerCompact",
-      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: jobCount ? { label: `View open positions (${jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } },
+      data: { title: c.heroTitle ?? "Unlock your potential", subtitle: c.heroSub, body: c.heroBody, videoUrl: c.heroVideoUrl, imageUrl: c.heroImageUrl, cta: careersCta(jobCount) },
       edit: { r, map: { title: "heroTitle", subtitle: "heroSub", body: "heroBody" } },
     },
   ];
@@ -91,9 +105,10 @@ export function careersToBlocks({ c, jobCount }: { c: CareersSettings; jobCount:
     data: { title: c.principlesTitle ?? "Our guiding principles", intro: c.principlesBody, imageUrl: c.principlesImageUrl, items: c.principles ?? [] },
     edit: { r, map: { title: "principlesTitle", intro: "principlesBody", imageUrl: "principlesImageUrl", items: "principles" } },
   });
+  blocks.push({ type: "jobs", variant: "roles", data: { anchor: "open-positions", title: "Open positions", note: "Applications go through Spark Hire.", generalHref: "#general-interest", items: jobs } });
   blocks.push({
     type: "form",
-    variant: "section",
+    variant: "split",
     data: { anchor: "general-interest", title: "Submit general interest", note: c.eeoStatement, form: "careers", topics: ["General interest", "Internship", "Other"] },
     edit: { r, map: { note: "eeoStatement" } },
   });
@@ -139,21 +154,21 @@ export function evidenceToBlocks({ region, cfg, all, featured, products }: { reg
       edit: { r, map: { title: "title", body: "intro" } },
     },
     {
+      // DESIGN.md → Evidence: the region's publications counted per product, the line, the featured ones
       type: "publications",
-      variant: "spotlight",
-      data: { stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard) },
-      edit: { r, map: { "stat.value": "statValue", "stat.label": "statLabel", line: "forefrontText" } },
+      variant: "overview",
+      data: { region, stat: { value: cfg.statValue || `${all.length}+`, label: cfg.statLabel || "clinical publications", iconUrl: cfg.statIconUrl }, line: cfg.forefrontText, items: featured.map(publicationCard), groups },
+      edit: { r, map: { "stat.label": "statLabel", line: "forefrontText" } },
+    },
+    {
+      type: "publications",
+      variant: "library",
+      data: { region, anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
+      edit: { r, map: { title: "browseTitle" } },
     },
   ];
-  if (latest.length > 0) {
-    blocks.push({ type: "publications", variant: "cards", data: { title: cfg.featuredTitle ?? "Featured publications", items: latest.map(publicationCard) }, edit: { r, map: { title: "featuredTitle" } } });
-  }
-  blocks.push({
-    type: "publications",
-    variant: "byProduct",
-    data: { anchor: "browse-by-product", title: cfg.browseTitle ?? "Browse by product", groups, anchors: products.map((p) => p.slug) },
-    edit: { r, map: { title: "browseTitle" } },
-  });
+  // «Featured publications» (the latest three with a picture) is gone — it repeated the featured ones (decision 2026-11-15)
+  void latest;
   return blocks;
 }
 
@@ -163,25 +178,52 @@ export type TherapiesLanding = {
   closingTitle?: string; closingBody?: string; metaTitle?: string; metaDescription?: string;
 };
 
-export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; heroImageUrl?: string | null };
+export type OverviewTherapy = { slug: string; navLabel: string; heroTitle: string; therapyGroup?: string | null; proofPoint?: string | null; productName?: string | null; productSlug?: string | null; heroImageUrl?: string | null };
 
-/** Overview cards of one therapy group (also used by the stored page's `therapyGroup` source). */
-export function therapyCards(items: OverviewTherapy[], region: Region) {
-  return items.map((s) => ({
-    eyebrow: s.productName ?? undefined,
-    title: s.navLabel,
-    body: s.heroTitle,
-    note: s.proofPoint || undefined,
-    // No picture: only some therapies have a hero image (others a video), so cards would differ in height.
-    href: `/${region}/therapies/${s.slug}`,
-  }));
+/** Publications per Evidence tab of a region (tab = product slug) — the same lists the Evidence page shows. */
+export function publicationCounts(lists: EvidenceLists): Record<string, number> {
+  return Object.fromEntries(evidenceLists(lists).groups.map((g) => [g.id, g.items.length]));
+}
+
+/** Overview cards (also used by the stored page's `therapyGroup` source). `caption`: the group's name goes on the card. */
+export function therapyCards(items: OverviewTherapy[], region: Region, { caption, publications }: { caption?: string; publications?: Record<string, number> } = {}) {
+  return items.map((s) => {
+    const n = s.productSlug ? publications?.[s.productSlug] ?? 0 : 0;
+    return {
+      eyebrow: [caption, s.productName].filter(Boolean).join(" · ") || undefined,
+      title: s.navLabel,
+      body: s.heroTitle,
+      note: s.proofPoint || undefined,
+      // No picture yet: the decision is one 4:3 device render per card (requested from the client, BACKLOG №22);
+      // hero images differ (some therapies have a video), so cards would differ in height.
+      href: `/${region}/therapies/${s.slug}`,
+      // «N publications →» — Evidence on that product's tab; only when the region lists some
+      more: n ? { label: `${n} publication${n === 1 ? "" : "s"} →`, href: `/${region}/evidence#${s.productSlug}` } : null,
+    };
+  });
+}
+
+/**
+ * The overview's sections (DESIGN.md → Обзор терапий): a group with 2+ therapies keeps its heading; groups of one
+ * therapy have no heading of their own — their cards stand in one row (at the first such group), the group's name on
+ * the card («Ischemic stroke · TIGERTRIEVER™»).
+ */
+export function overviewSections(items: OverviewTherapy[], region: Region, publications?: Record<string, number>) {
+  const groups = groupTherapies(items);
+  const singles = groups.filter((g) => g.items.length === 1);
+  const out: { group: string; title: string | null; items: ReturnType<typeof therapyCards> }[] = [];
+  for (const g of groups) {
+    if (g.items.length > 1) out.push({ group: g.value, title: g.label || null, items: therapyCards(g.items, region, { publications }) });
+    else if (g === singles[0]) out.push({ group: g.value, title: null, items: singles.flatMap((x) => therapyCards(x.items, region, { caption: x.label, publications })) });
+  }
+  return out;
 }
 
 /**
  * Regional therapies overview (decision 2026-11-10): one group of link cards per therapy group, built from the
  * therapy records themselves. The landing's own `blocks` texts are no longer shown (kept in settings, not deleted).
  */
-export function therapiesToBlocks({ region, landing, items }: { region: Region; landing: TherapiesLanding; items: OverviewTherapy[] }): Block[] {
+export function therapiesToBlocks({ region, landing, items, publications }: { region: Region; landing: TherapiesLanding; items: OverviewTherapy[]; publications?: Record<string, number> }): Block[] {
   const r = `settings:therapies:${region}`;
   const blocks: Block[] = [
     {
@@ -191,7 +233,7 @@ export function therapiesToBlocks({ region, landing, items }: { region: Region; 
       edit: { r, map: { title: "title", body: "intro", note: "note" } },
     },
   ];
-  for (const g of groupTherapies(items)) blocks.push({ type: "columns", variant: "cards", data: { title: g.label || null, items: therapyCards(g.items, region) } });
+  for (const g of overviewSections(items, region, publications)) blocks.push({ type: "columns", variant: "cards", data: { title: g.title, items: g.items } });
   blocks.push({
     type: "cta",
     variant: "light",
@@ -208,23 +250,33 @@ const eventCard = (e: Event, now?: string): EventCard => ({
   dates: formatEventDates(e),
   year: Number(day(e.startsOn).slice(0, 4)),
   place: [e.venue, e.city].filter(Boolean).join(", ") || null,
+  time: e.startTime || null,
+  city: e.city || null,
+  venue: e.venue || null,
   congress: e.congress || null,
   registrationOpen: registrationOpen(e, now),
   edit: record("events", e.id),
 });
 
-/** News & Events: upcoming events first, then news, then the events archive (docs/screens/events.md). */
+/** The four highlights on News & Events: the newest marked ones, then the newest of the rest (ADR-009 «highlights»). */
+export function newsHighlights(items: NewsItem[], n = 4): NewsItem[] {
+  const marked = items.filter((i) => i.featured);
+  return [...marked, ...items.filter((i) => !i.featured)].slice(0, n);
+}
+
+/**
+ * News & Events (DESIGN.md → News & Events, docs/screens/news-events.md): the title, the highlights, upcoming events
+ * (a line when there are none), all news without the highlights, past events. Shared line under the title.
+ */
 export function newsPageToBlocks(items: NewsItem[], eventItems: Event[] = [], now?: string): Block[] {
-  const featured = items.filter((n) => n.featured);
-  const slides = (featured.length ? featured : items).slice(0, 5);
+  const top = newsHighlights(items);
+  const shown = new Set(top.map((i) => i.id));
   const { upcoming, past } = splitEvents(eventItems, now);
-  const blocks: Block[] = [{ type: "hero", variant: "title", data: { title: "News &", title2: "Events" } }];
-  if (upcoming.length > 0) blocks.push({ type: "events", variant: "upcoming", data: { title: "Upcoming events", anchor: "upcoming-events", items: upcoming.map((e) => eventCard(e, now)) } });
-  if (slides.length > 0) {
-    blocks.push({ type: "news", variant: "carousel", data: { title: "Latest news", items: slides.map(newsCard), allHref: "#all-news", allLabel: "View all news ↓" } });
-  }
-  blocks.push({ type: "news", variant: "timeline", data: { anchor: "all-news", items: items.map(newsCard) } });
-  if (past.length > 0) blocks.push({ type: "events", variant: "archive", data: { title: "Past events", anchor: "past-events", items: past.map((e) => eventCard(e, now)) } });
+  const blocks: Block[] = [{ type: "hero", variant: "page", data: { title: "News & Events" } }];
+  if (top.length > 0) blocks.push({ type: "news", variant: "highlights", data: { anchor: "highlights", items: top.map(newsCard) } });
+  blocks.push({ type: "events", variant: "next", data: { title: "Upcoming events", anchor: "upcoming-events", items: upcoming.map((e) => eventCard(e, now)), emptyHref: past.length ? "#past-events" : undefined } });
+  blocks.push({ type: "news", variant: "feed", data: { title: "All news", anchor: "all-news", items: items.filter((i) => !shown.has(i.id)).map(newsCard) } });
+  if (past.length > 0) blocks.push({ type: "events", variant: "past", data: { title: "Past events", anchor: "past-events", items: past.map((e) => eventCard(e, now)) } });
   return blocks;
 }
 
@@ -238,7 +290,7 @@ export function webinarsToBlocks({ region, list, product }: { region: Region; li
   ];
 }
 
-export function chooserToBlocks({ regional, suggested, next }: { regional: { chooserTitle?: string; chooserNote?: string }; suggested: Region | null; next?: string }): Block[] {
+export function chooserToBlocks({ regional, suggested, next, back, current }: { regional: { chooserTitle?: string; chooserNote?: string }; suggested: Region | null; next?: string; back?: string | null; current?: { label: string; source: "location" | "chosen" | null } | null }): Block[] {
   const target = next && /^[a-z-]+$/.test(next) ? next : "therapies";
   return [
     {
@@ -247,7 +299,16 @@ export function chooserToBlocks({ regional, suggested, next }: { regional: { cho
       data: { title: regional.chooserTitle ?? "Choose your location.", body: regional.chooserNote ?? "Product availability and regulatory information differ by region." },
       edit: { r: "settings:regional", map: { title: "chooserTitle", body: "chooserNote" } },
     },
-    { type: "regionChooser", variant: "default", data: { options: REGION_CHOICES.map((o) => ({ label: o.label, href: `/${o.region}/${target}`, suggested: suggested === o.region })) } },
+    {
+      type: "regionChooser",
+      variant: "default",
+      data: {
+        // through /api/region: it remembers the choice; `back` returns to the page the visitor came from
+        // (the static demo has no API: straight to the region's page)
+        options: REGION_CHOICES.map((o) => ({ region: o.region, label: o.label, href: DEMO ? withBase(`/${o.region}/${target}`) : `/api/region?to=${o.region}&back=${encodeURIComponent(back ?? `/${o.region}/${target}`)}`, suggested: suggested === o.region })),
+        current: current ?? null,
+      },
+    },
   ];
 }
 

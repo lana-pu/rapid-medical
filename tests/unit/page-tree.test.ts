@@ -24,7 +24,8 @@ describe("page tree", () => {
     expect(t.children[0].versions.map((v) => v.region)).toEqual(["us", "apac"]);
   });
   it("list pages stand where they are on the site; text pages under Other pages", () => {
-    expect(tree.find((n) => n.key === "/careers")!.children.map((c) => c.key)).toEqual(["/open-positions"]);
+    // open positions are a section of Careers (DESIGN.md → Careers), not a page of their own
+    expect(tree.find((n) => n.key === "/careers")!.children).toEqual([]);
     expect(tree.find((n) => n.key === "/webinars")!.fieldsOnly).toBe(true);
     expect(tree.find((n) => n.key === "other")!.children.map((c) => c.title)).toEqual(["DISTALS results", "Terms of Use"]);
   });

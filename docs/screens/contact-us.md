@@ -4,8 +4,14 @@
 сервер `src/lib/forms.ts` (`submitForm`). Восстановлено по коду `59169da`.
 
 ## Блоки
-Страница — список блоков, собирает `contactToBlocks()` (`src/blocks/from-pages.ts`), в одной секции:
-Hero · `page` («Let’s connect», текст не редактируется) и Form · `default` (тема и регион — из параметров URL).
+Страница — список блоков, собирает `contactToBlocks()` (`src/blocks/from-pages.ts`):
+Hero · `page` («Let’s connect», текст не редактируется) и Form · `split` — композиция «общая линия» (DESIGN.md, решение
+2026-11-14): тонкая линия, под ней слева (4/12) таблица «ключ — значение» с контактами региона, справа (7/12) форма.
+
+**Контакты слева** (из Settings → Contact details, офисы): регион `us` → офис с подписью «USA» (Rapid Medical Inc.), иначе
+— «Headquarters» (Ltd.). Строки: «Call {регион}» — телефон ссылкой `tel:`, «Orders» — почта заказов офиса ссылкой
+`mailto:`; ниже «All offices and addresses →» → `/about-us#offices`. Строка срока ответа появится, когда клиент даст
+цифру (BACKLOG №22). Без офисов колонка пустая, форма остаётся справа.
 
 ## Доступ
 Публичный. `/{region}/contact-us` → редирект сюда с `?region={region}`.
@@ -21,27 +27,32 @@ Hero · `page` («Let’s connect», текст не редактируется)
 ## Поля формы
 | Поле | Клиент | Сервер (zod) |
 |---|---|---|
-| Topic (select: Request a demo · Product question / Support · Customer Service / Orders · Meetings & Events · Investor relations · Other) | required | строка ≤ 120, **не обязательна** |
+| Topic — первым, чипами (DESIGN.md → Формы): Request a demo · Product question / Support · Customer Service / Orders · **Other topic ▾** (список: Instructions for Use (IFU) · Meetings & Events · Investor relations · Other). Тема из `?topic=` выбрана; тема из «Other» — открытым списком | required | строка ≤ 120, **не обязательна** |
 | First Name / Last Name | required | trim, 1–80 |
-| Organization | — | ≤ 160 |
 | Email | required, `type=email` | валидный e-mail, ≤ 160 |
 | Phone | — | ≤ 40 |
-| Region (Americas · Europe · Asia Pacific · Middle East) | — | ≤ 40 |
-| Country, State/Province | — (скрыты в `compact`) | ≤ 80 |
+| Organization | — | ≤ 160 |
+| Country (список стран ISO, значение — код) | required | код → название страны (`country`); **регион письма выводится из страны** (`regionForCountry` → Americas / Europe / Asia Pacific), поля Region на форме нет |
+| State / Province | только когда страна — США или Канада (решение владелицы 2026-11-15) | ≤ 80 |
 | Message | — | ≤ 4000 |
 | Opt-in «Sign me up!» | checkbox | boolean |
-| `form` (hidden) | `contact` | `contact` / `webinar` / `careers` |
-| `meta` (hidden JSON) | `{}` | `Record<string,string>` |
+| `form` (hidden) | `contact` | `contact` / `webinar` / `careers` / `event` |
+| `meta` (hidden JSON) | источник визита | `Record<string,string>` |
 | `website` (honeypot, скрыт) | — | заполнен → тихий «успех», ничего не сохраняется |
+
+Поля парами: имя / фамилия, e-mail / телефон, организация / страна, штат — отдельной строкой. Кнопка «Submit» на всю
+ширину формы, под ней строка согласия с Privacy Statement. Тексты подписей, согласия и кнопки — прежние (тексты за
+клиентом). Формы Webinars, Careers, событие — пока прежние (тема списком, поле Region), переводятся вместе со своими
+страницами.
 
 ## Состояния
 | Состояние | Что видно |
 |---|---|
 | Исходное | Форма, «(* indicates a required field)», ссылка на `/privacy-statement` |
 | Отправка | Кнопка «Sending…», disabled |
-| Ошибки валидации | «Please check the highlighted fields.» + текст ошибки у поля |
-| Лимит | «Too many requests. Please try again later.» — > 8 отправок с IP за 10 минут (в памяти инстанса) |
-| Успех | «Thank you for contacting us. We will get back to you as soon as possible.» (форма заменяется) |
+| Ошибки валидации | Текст ошибки под полем, рамка и текст цветом `--danger`, `aria-invalid`; введённое остаётся. Общей плашки нет — она остаётся только для ошибок не про поля (лимит) |
+| Лимит | «Too many requests. Please try again later.» — > 8 отправок с адреса за 10 минут; счёт в базе (`login_attempts`, ключ `form:{адрес}`), общий для всех экземпляров сервера и не сбрасывается перезапуском; адрес — тот, что записал хостинг: на Vercel — только `x-vercel-forwarded-for`; на другом хостинге — `x-forwarded-for`, только если задано `TRUSTED_PROXY_HOPS` (сколько прокси перед сайтом), иначе заголовку не верим; подставленное посетителем не учитывается, значение — только настоящий IP; запрос без адреса — в общую корзину «unknown» с лимитом 60 за 10 минут, а не мимо лимита; отклонённая отправка в счёт не пишется; счёт и запись — одним запросом без блокировок (при одновременных отправках лимит может превыситься на одну-две); служебных полей (`meta`: источник визита, вебинар…) — не больше 20 (аудит 2026-11-13, решено 2026-11-16) |
+| Успех | «Thank you for contacting us. We will get back to you as soon as possible.» + «We’ll reply to {email}.» и сводка: тема, страна; «Send another request» возвращает пустую форму (форма заменяется) |
 
 ## Что происходит при отправке
 1. Запись в `contact_submissions` (`status = new`, IP из `x-forwarded-for`, User-Agent).

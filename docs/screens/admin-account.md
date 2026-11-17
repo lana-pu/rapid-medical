@@ -17,8 +17,8 @@
 ## Действия и сообщения
 | Действие | Успех | Ошибка |
 |---|---|---|
-| Set up on a new phone | ключ, коды восстановления и отметка «включено» стираются → `/admin/login/setup` | «Password is wrong» |
-| Change password | «Password changed. Other sessions were signed out.» — все сессии, кроме этой, закрыты | «Current password is wrong», «Use 10+ characters» |
+| Set up on a new phone | ключ, коды восстановления и отметка «включено» стираются → `/admin/login/setup` | «Password is wrong»; 8 неверных за 15 минут — «Too many attempts. Try again in 15 minutes.» |
+| Change password | «Password changed. Other sessions were signed out.» — все сессии, кроме этой, закрыты | «Current password is wrong», «Use 10+ characters»; 8 неверных за 15 минут (вместе с «Set up on a new phone», ключ `pw:{id}`) — «Too many attempts. Try again in 15 minutes.» (аудит 2026-11-13, сделано 2026-11-16) |
 | Sign out other sessions | «Other sessions signed out» | — |
 
 Сообщения приходят в адресе (`?msg=` — зелёным, `?error=` — красным).

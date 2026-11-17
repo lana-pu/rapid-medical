@@ -1,6 +1,6 @@
 import type { NewsItem, Region, StoredBlock, TeamMember } from "@/db/schema";
-import { groupTherapies } from "@/lib/therapy-groups";
-import { evidenceLists, newsCard, publicationCard, therapyCards, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import { careersCta, evidenceLists, newsCard, overviewSections, publicationCard, type EvidenceLists, type OverviewTherapy } from "./from-settings";
+import type { JobRow } from "./jobs";
 import { teamCard } from "./from-pages";
 import type { Office } from "./offices-map";
 import { REGION_CHOICES, REGION_LABELS } from "@/lib/regions";
@@ -50,6 +50,12 @@ export type SourceLists = {
   jobCount?: number;
   evidence?: EvidenceLists;
   therapies?: OverviewTherapy[];
+  /** Therapies overview: publications per Evidence tab of the region */
+  publicationCounts?: Record<string, number>;
+  /** Careers: the open positions as rows */
+  jobs?: JobRow[];
+  /** About: figures counted from the records (publications, offices) */
+  facts?: { label: string; value: string }[];
 };
 
 const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -72,8 +78,10 @@ export const SOURCES: Record<string, Source> = {
   openPositions: {
     keys: ["cta"],
     // with no open positions the first action is the general-interest form, not an empty list (docs/screens/careers.md)
-    fill: (_d, ctx) => ({ cta: ctx.lists?.jobCount ? { label: `View open positions (${ctx.lists.jobCount})`, href: "/open-positions" } : { label: "Submit general interest", href: "#general-interest" } }),
+    fill: (_d, ctx) => ({ cta: careersCta(ctx.lists?.jobCount ?? 0) }),
   },
+  /** Careers: the open positions from the job records */
+  openRoles: { keys: ["items"], fill: (_d, ctx) => ({ items: ctx.lists?.jobs ?? [] }) },
   /** About: leadership cards (each edits its team record) */
   team: { keys: ["members"], fill: (_d, ctx) => ({ members: (ctx.lists?.team ?? []).map(teamCard) }) },
   /** About: offices from Contact details */
@@ -82,14 +90,18 @@ export const SOURCES: Record<string, Source> = {
     binding: { r: "settings:contact", map: { offices: "offices" } },
     fill: (_d, ctx) => (ctx.lists?.offices?.length ? { offices: ctx.lists.offices } : null),
   },
+  /** About: facts counted from the records (publications, office countries) — the page's own facts stay editable */
+  companyFacts: { keys: ["facts"], fill: (_d, ctx) => ({ facts: ctx.lists?.facts ?? [] }) },
   /** About: the map's pins — the same offices; the map's own texts stay editable on the page */
   officePins: { keys: ["offices"], fill: (_d, ctx) => ({ offices: ctx.lists?.offices ?? [] }) },
   /** Evidence: featured studies under the counter; the counter shows the number of studies unless typed in */
   featuredPublications: {
-    keys: ["items"],
+    keys: ["items", "groups"],
     fill: (d, ctx) => {
       const stat = (d.stat ?? {}) as { value?: string };
-      return { items: (ctx.lists?.evidence?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ctx.lists?.evidence?.all.length ?? 0}+` } };
+      const ev = ctx.lists?.evidence;
+      // `overview` counts per product from the same lists as the archive; `spotlight` keeps its typed number
+      return { items: (ev?.featured ?? []).map(publicationCard), stat: { ...stat, value: stat.value || `${ev?.all.length ?? 0}+` }, groups: ev ? evidenceLists(ev).groups : [], region: ctx.region ?? undefined };
     },
   },
   /** Evidence: the latest studies with a picture */
@@ -103,14 +115,17 @@ export const SOURCES: Record<string, Source> = {
   /** Evidence: one tab per product */
   publicationsByProduct: {
     keys: ["groups", "anchors"],
-    fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug) }),
+    fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug), region: ctx.region ?? undefined }),
   },
   /** Therapies overview: the cards of one therapy group (`data.group`: ischemic / hemorrhagic / access / "" = the rest) */
   therapyGroup: {
     keys: ["title", "items"],
     fill: (d, ctx) => {
-      const g = groupTherapies(ctx.lists?.therapies ?? []).find((x) => x.value === (d.group ?? ""));
-      return g && ctx.region ? { title: g.label || null, items: therapyCards(g.items, ctx.region), group: undefined } : null;
+      // one stored block per group; a group of one therapy shows nothing here unless it is the first such group,
+      // which carries all of them in one row (overviewSections)
+      if (!ctx.region) return null;
+      const g = overviewSections(ctx.lists?.therapies ?? [], ctx.region, ctx.lists?.publicationCounts).find((x) => x.group === (d.group ?? ""));
+      return g ? { title: g.title, items: g.items, group: undefined } : null;
     },
   },
 };

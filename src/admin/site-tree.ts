@@ -30,7 +30,7 @@ export const COLLECTION_PAGES: { res: string; title: string; under: string; wher
   { res: "news", title: "News", under: "/news-events", where: "Cards on News & Events and on the home page" },
   { res: "events", title: "Events", under: "/news-events", where: "On News & Events; each event has its own page" },
   { res: "team", title: "Team", under: "/about-us", where: "Leadership on About; each person has their own page" },
-  { res: "jobs", title: "Jobs", under: "/open-positions", where: "On Open positions; each position has its own page" },
+  { res: "jobs", title: "Jobs", under: "/careers", where: "Open positions on Careers; each position has its own page" },
 ];
 
 export const adminPageHref = (key: string) => (key === "/" ? "/admin/page" : `/admin/page${key}`);

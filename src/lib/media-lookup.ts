@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
-import { inArray } from "drizzle-orm";
-import { db, media } from "@/db";
+import { eq, inArray } from "drizzle-orm";
+import { db, media, type DocPage } from "@/db";
 
 export type MediaInfo = { url: string; srcSet: string | null; width: number | null; height: number | null; placeholder: string | null; posterUrl: string | null; alt: string };
 
@@ -27,4 +27,12 @@ export const lookupMedia = cache(async (urls: (string | null | undefined)[]): Pr
     });
   }
   return out;
+});
+
+export type DocumentInfo = { url: string; size: number; pages: DocPage[]; text: string; pageCount: number };
+
+/** A library PDF with its pages as pictures and text (screens/material.md → «Документ на странице»). Cached per request. */
+export const lookupDocument = cache(async (url: string): Promise<DocumentInfo | null> => {
+  const row = await db.query.media.findFirst({ where: eq(media.url, url), columns: { url: true, size: true, pages: true, text: true, pageCount: true } });
+  return row ?? null;
 });

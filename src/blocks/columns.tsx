@@ -7,7 +7,7 @@ import type { BlockDef, BlockProps } from "./types";
 
 export type ColumnsVariant = "steps" | "features" | "principles" | "cards";
 
-export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string; /** `cards` */ eyebrow?: string; href?: string; /** `cards`: one emphasised line under the text (proof point) */ note?: string };
+export type ColumnItem = { title: string; body?: string; iconUrl?: string; imageUrl?: string; videoUrl?: string; /** `cards` */ eyebrow?: string; href?: string; /** `cards`: one emphasised line under the text (proof point) */ note?: string; /** `cards`: a second link under the card's own («N publications →»); the card then links by its «Explore →» */ more?: { label: string; href: string } | null };
 
 export type ColumnsData = {
   /** `principles`: heading, text and a picture above the columns. */
@@ -37,6 +37,22 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
         <ul className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${d.title ? "mt-6" : ""}`}>
           {d.items.map((c, i) => (
             <li key={i}>
+              {c.more ? (
+                // two links: the card's page and the publications about it (DESIGN.md → Обзор терапий)
+                <div className="flex h-full flex-col overflow-hidden rounded border border-border">
+                  {c.imageUrl && <Img src={c.imageUrl} className="aspect-[4/3] w-full object-cover" />}
+                  <div className="flex flex-1 flex-col p-6">
+                    {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>}
+                    <h3 className="mt-1 text-xl font-medium"><Link href={c.href ?? "#"} className="hover:underline">{c.title}</Link></h3>
+                    {c.body && <p className="mt-2 text-sm text-muted">{c.body}</p>}
+                    {c.note && <p className="mt-3 text-sm font-medium">{c.note}</p>}
+                    <div className="mt-auto flex flex-wrap gap-x-6 gap-y-2 pt-6 text-sm">
+                      <Link href={c.href ?? "#"} className="font-medium underline" aria-label={`Explore ${c.title}`}>Explore →</Link>
+                      <Link href={c.more.href} className="underline">{c.more.label}</Link>
+                    </div>
+                  </div>
+                </div>
+              ) : (
               <Link href={c.href ?? "#"} className="group block h-full overflow-hidden rounded border border-border hover:bg-surface">
                 {c.imageUrl && <Img src={c.imageUrl} className="aspect-video w-full object-cover" />}
                 <div className="p-6">
@@ -46,6 +62,7 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
                   {c.note && <p className="mt-3 text-sm font-medium">{c.note}</p>}
                 </div>
               </Link>
+              )}
             </li>
           ))}
         </ul>

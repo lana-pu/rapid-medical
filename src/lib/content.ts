@@ -1,4 +1,6 @@
 import "server-only";
+import { newsHref, publicationHref } from "./material";
+import { REGIONS } from "./regions";
 import { draftMode } from "next/headers";
 import { and, asc, desc, eq, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
@@ -63,7 +65,7 @@ export async function getSolutionsNav(region: Region) {
   const rows = await db
     .select({
       id: solutions.id, slug: solutions.slug, navLabel: solutions.navLabel, therapyGroup: solutions.therapyGroup, proofPoint: solutions.proofPoint,
-      heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name,
+      heroTitle: solutions.heroTitle, heroBody: solutions.heroBody, heroImageUrl: solutions.heroImageUrl, productName: products.name, productSlug: products.slug,
       blocks: solutions.blocks,
     })
     .from(solutions)
@@ -109,6 +111,12 @@ function regionFilter(table: { regions: PgColumn }, region: Region) {
   return or(sql`jsonb_array_length(${table.regions}) = 0`, sql`${table.regions} @> ${JSON.stringify([region])}::jsonb`);
 }
 
+/** All published publications, every region — the company-wide figure (About, Home). */
+export async function getPublicationCount() {
+  const rows = await db.query.publications.findMany({ columns: { id: true }, where: await visible(publications.status) });
+  return rows.length;
+}
+
 export async function getPublications(region: Region) {
   const rows = await db.query.publications.findMany({
     where: and(await visible(publications.status), regionFilter(publications, region)),
@@ -116,6 +124,15 @@ export async function getPublications(region: Region) {
     orderBy: [desc(publications.publishedOn), desc(publications.id)],
   });
   return overlay("publications", rows);
+}
+
+/** One publication on its own page, if it is shown in this region (the same rule as Evidence). */
+export async function getPublication(region: Region, id: number) {
+  const row = await db.query.publications.findFirst({
+    where: and(eq(publications.id, id), await visible(publications.status), regionFilter(publications, region)),
+    with: { product: true },
+  });
+  return one("publications", row);
 }
 
 export async function getFeaturedPublications(region: Region, limit = 3) {
@@ -134,6 +151,11 @@ export async function getNews(limit?: number) {
     limit,
   });
   return overlay("news", rows);
+}
+
+/** One news item on its own page. */
+export async function getNewsItem(id: number) {
+  return one("news", await db.query.newsItems.findFirst({ where: and(eq(newsItems.id, id), await visible(newsItems.status)) }));
 }
 
 export async function getFeaturedNews(limit = 4) {
@@ -196,18 +218,23 @@ export async function getSitePage(key: SitePageKey, region: Region | null) {
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {
-  const [sols, pgs, jb, ev] = await Promise.all([
+  const [sols, pgs, jb, ev, pubs, nws] = await Promise.all([
     db.select({ slug: solutions.slug, region: solutions.region }).from(solutions).where(eq(solutions.status, "published")),
     db.select({ slug: pages.slug, region: pages.region, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
     db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
+    db.select({ id: publications.id, title: publications.title, regions: publications.regions }).from(publications).where(eq(publications.status, "published")),
+    db.select({ id: newsItems.id, title: newsItems.title }).from(newsItems).where(eq(newsItems.status, "published")),
   ]);
   return [
-    "/", "/news-events", "/about-us", "/careers", "/open-positions", "/contact-us",
+    "/", "/news-events", "/about-us", "/careers", "/contact-us",
     ...["us", "ous", "apac"].flatMap((r) => [`/${r}/therapies`, `/${r}/evidence`, `/${r}/webinars`]),
     ...sols.map((s) => `/${s.region}/therapies/${s.slug}`),
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
     ...jb.map((j) => `/open-positions/${j.slug}`),
     ...ev.map((e) => `/events/${e.slug}`),
+    // own pages of publications (in each region that shows them, like Evidence) and news (docs/screens/material.md)
+    ...pubs.flatMap((p) => REGIONS.filter((r) => !(p.regions as string[] | null)?.length || (p.regions as string[]).includes(r)).map((r) => publicationHref(r, p))),
+    ...nws.map((n) => newsHref(n)),
   ];
 }
