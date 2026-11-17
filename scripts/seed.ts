@@ -12,6 +12,7 @@ import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
 import { markdownToHtml } from "../src/lib/html";
+import { assertResettable } from "./local-db";
 import { SOLUTIONS } from "../content/seed/solutions";
 import { groupForSlug } from "../src/lib/therapy-groups";
 import { SETTINGS, PRODUCTS, REDIRECTS, WEBINARS } from "../content/seed/settings";
@@ -26,6 +27,7 @@ async function json<T>(name: string): Promise<T> {
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
+  if (RESET) assertResettable(url, "seed --reset"); // test databases only (security check 2026-11-17)
   const client = postgres(url, { max: 1 });
   const db = drizzle(client, { schema });
   const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars, events } = schema;
