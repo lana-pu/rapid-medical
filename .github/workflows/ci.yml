@@ -29,6 +29,8 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg postgresql-client
       - run: npm ci
+      # dependencies that reach the site must audit clean; dev-only advisories are reviewed by hand (docs/memory/infrastructure.md)
+      - run: npm audit --omit=dev --audit-level=moderate
       - run: cp .env.example .env && sed -i "s|^DATABASE_URL=.*|DATABASE_URL=$DATABASE_URL|; s|^AUTH_SECRET=.*|AUTH_SECRET=$AUTH_SECRET|" .env
       - run: npm run lint
       - run: npm run typecheck

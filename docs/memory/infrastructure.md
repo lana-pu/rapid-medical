@@ -99,3 +99,12 @@ Playwright chromium → `npm run test:e2e`; при падении — артеф
 ## Duda
 Сырой краул `content/raw/` (8 МБ) в git не входит: пересоздаётся `npm run duda:scrape`. Краулер читает sitemap всех хостов.
 Обновить инвентарь: `npx tsx scripts/audit-duda.ts > content/audit.md`.
+
+## Зависимости и уязвимости (2026-11-17)
+- CI: `npm audit --omit=dev --audit-level=moderate` — продовые зависимости должны быть чистыми, иначе CI красный.
+- Next.js 16.4.6, vitest 4.1.12. Продовые зависимости — 0 уязвимостей.
+- Принятые (только разработка, не эксплуатируются): **esbuild ≤ 0.24.2** (CORS dev-сервера esbuild) — тянет drizzle-kit
+  0.31.11 (последний) через `@esbuild-kit`, сервер esbuild он не запускает; `npm audit` «чинит» откатом drizzle-kit на
+  0.18.1 — не берём. **picomatch ≤ 4.0.7** (ReDoS на extglob) — линтер и vite / vitest; шаблоны задаём мы сами, не
+  посетители; исправленной версии picomatch ещё нет. Пересмотреть при следующем обновлении зависимостей.
+
