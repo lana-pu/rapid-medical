@@ -134,6 +134,8 @@ export function ToolRail(props: {
   comments: number | null;
   /** a material built from a document: values still to check against its PDF (null — not such a page) */
   checks?: number | null;
+  /** «the PDF» / «the page text» — what the values were checked against */
+  checksFrom?: string;
   settingsHref: string | null;
   onTool: (t: ToolKey) => void;
   onPreview: () => void;
@@ -161,7 +163,7 @@ export function ToolRail(props: {
       {item("history", "🕘", "History", props.hasPage && !props.demo)}
       {item("comments", "💬", "Comments", props.hasPage && !props.demo, props.comments)}
       {item("regions", "⇄", "Regions", props.hasPage && !props.demo)}
-      {props.checks != null && item("checks", "✓", "Checked against the PDF", true, props.checks)}
+      {props.checks != null && item("checks", "✓", `Checked against ${props.checksFrom ?? "the PDF"}`, true, props.checks)}
       <span className="flex-1" />
       <button type="button" aria-label="Preview" title="Preview — as visitors will see it" onClick={props.onPreview} className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>👁</span></button>
       {props.settingsHref && <a href={props.settingsHref} aria-label="Page settings" title="Page settings (SEO, address)" className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>⚙</span></a>}

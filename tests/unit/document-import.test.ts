@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked, comparisonUnit } from "@/lib/document-import";
+import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked, comparisonUnit, suggestFromUrl, sourceName } from "@/lib/document-import";
 import { registryRows } from "@/lib/clinicaltrials";
 
 // Short excerpts of the real texts (media.text of the PDFs on the site, 2026-11-18)
@@ -176,5 +176,36 @@ describe("groups compared and patients as dots (DESIGN.md → Набор инф�
     expect(parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] })).ok).toBe(false);
     expect(instructionsFor("study")).toMatch(/"comparisons" \(optional/);
     expect(instructionsFor("news")).toMatch(/"comparisons": \[\] and "matrices": \[\]/);
+  });
+});
+
+describe("a web page: its link and the text a person pasted (the site does not fetch it)", () => {
+  const RELEASE = "Rapid Medical announced today that the first 50 patients were treated. The device reached the target in 96% of cases. About Rapid Medical: a developer of neurovascular devices. Media contact: press office.";
+  it("the kind comes from the address; a press-release service is news, a DOI a publication", () => {
+    expect(suggestFromUrl("https://www.businesswire.com/news/home/1/en/x").kind).toBe("news");
+    expect(suggestFromUrl("https://www.prnewswire.co.uk/news-releases/x.html").kind).toBe("news");
+    expect(suggestFromUrl("https://doi.org/10.1136/jnis-2025-024136").kind).toBe("publication");
+    expect(suggestFromUrl("not a link").kind).toBe("news");
+    expect(suggestFromUrl("https://evil-businesswire.com/x").reason).toMatch(/A page on the web/);
+  });
+  it("the checks and the instructions speak of the page text, not the PDF", () => {
+    expect(sourceName("page")).toBe("the page text");
+    expect(sourceName({ mediaId: null })).toBe("the page text");
+    expect(sourceName({ mediaId: 4 })).toBe("the PDF");
+    expect(checkQuoted(RELEASE, "figures", 0, { label: "Reached", value: "97%", quote: "The device reached the target in 97% of cases." }, "page").reason).toBe("The quote is not in the page text");
+    expect(checkQuoted(RELEASE, "figures", 0, { label: "Reached", value: "96%", quote: "The device reached the target in 96% of cases." }, "page").status).toBe("ok");
+    const ins = instructionsFor("news", "page");
+    expect(ins).toMatch(/from the text pasted after these instructions/);
+    expect(ins).not.toMatch(/PDF/);
+  });
+  it("a page has no PDF: its text is copied onto the page (or linked), never «Show the PDF»", () => {
+    const answer = { title: "First 50 patients", conclusion: "The first 50 patients were treated.", figures: [], passport: [], comparisons: [], matrices: [] };
+    const blocks = documentBlocks({ kind: "news", title: "First 50 patients", answer, passport: [], passportSource: null, pdf: null, text: RELEASE, original: "https://www.prnewswire.com/x.html", mode: "embed" });
+    const doc = blocks.at(-1)!.data as { html: string; pdf: unknown; links: { label: string }[] };
+    expect(doc.pdf).toBeNull();
+    expect(doc.html).toContain("<p>Rapid Medical announced today");
+    expect(doc.links.map((l) => l.label)).toEqual(["Open the original ↗"]);
+    const linked = documentBlocks({ kind: "publication", title: "x", answer, passport: [], passportSource: null, pdf: null, text: RELEASE, original: "https://doi.org/10.1/x", mode: "link" });
+    expect((linked.at(-1)!.data as { html: string }).html).toBe("");
   });
 });

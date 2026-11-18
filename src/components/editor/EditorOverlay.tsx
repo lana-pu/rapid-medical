@@ -6,6 +6,7 @@ import * as live from "@/admin/inline";
 import * as pageLive from "@/admin/page-editor";
 import * as commentsLive from "@/admin/comments";
 import * as docChecks from "@/admin/document-actions";
+import { sourceName } from "@/lib/document-import";
 import type { DocumentCheck } from "@/db/schema";
 import type { CommentView } from "@/admin/comments";
 import type { PendingItem, InlineKind } from "@/admin/inline";
@@ -858,6 +859,7 @@ export default function EditorOverlay() {
           demo={DEMO}
           comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
           checks={checks ? openChecks : null}
+          checksFrom={checks ? sourceName(checks) : undefined}
           settingsHref={info && !DEMO ? info.adminHref : null}
           onPreview={() => { setPreview(true); setSelected(null); setPanel(null); setTool(null); }}
           onTool={(k: ToolKey) => {
@@ -1145,7 +1147,7 @@ export default function EditorOverlay() {
         </ToolPanel>
       )}
       {tool?.k === "checks" && checks && (
-        <ToolPanel title="Checked against the PDF" top={top} onClose={() => setTool(null)}>
+        <ToolPanel title={`Checked against ${sourceName(checks)}`} top={top} onClose={() => setTool(null)}>
           <div className="space-y-3 p-4 text-sm">
             <p className={openChecks ? "font-medium text-amber-800" : "text-green-800"}>
               {checks.items.length - openChecks} of {checks.items.length} checked{openChecks ? " — Publish waits for the rest" : ""}
@@ -1155,7 +1157,7 @@ export default function EditorOverlay() {
               {checks.items.map((x) => (
                 <li key={x.id} className="py-3">
                   <div><b>{x.value}</b> <span className="text-neutral-700">{x.label}</span></div>
-                  {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in the PDF</p>}
+                  {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in {sourceName(checks)}</p>}
                   {x.status === "confirmed" && <p className="mt-1 text-xs text-green-800">✓ Confirmed by {x.confirmedBy}</p>}
                   {x.status === "check" && (
                     <div className="mt-1">
@@ -1214,7 +1216,7 @@ export default function EditorOverlay() {
           )}
           {openChecks > 0 && (
             <p role="status" className="mb-4 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-              Check {openChecks} value{openChecks > 1 ? "s" : ""} against the PDF first —{" "}
+              Check {openChecks} value{openChecks > 1 ? "s" : ""} against {checks ? sourceName(checks) : "the PDF"} first —{" "}
               <button type="button" className="underline" onClick={() => { setModal(null); setTool({ k: "checks" }); }}>open the checks</button>
             </p>
           )}

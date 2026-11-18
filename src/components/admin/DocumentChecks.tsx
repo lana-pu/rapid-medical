@@ -1,5 +1,6 @@
 import type { DocumentCheck } from "@/db/schema";
 import { confirmCheck } from "@/admin/document-actions";
+import { sourceName } from "@/lib/document-import";
 
 /**
  * «Checked against the PDF» on a material built from a document (docs/screens/admin-create-from-document.md): every
@@ -8,18 +9,19 @@ import { confirmCheck } from "@/admin/document-actions";
 export function DocumentChecks({ id, check, demo }: { id: number; check: DocumentCheck; demo?: boolean }) {
   const done = check.items.filter((x) => x.status !== "check").length;
   const open = check.items.length - done;
+  const doc = sourceName(check);
   return (
-    <section id="checks" aria-label="Checked against the PDF" className="rounded-lg border border-neutral-200 bg-white p-5 text-sm">
+    <section id="checks" aria-label={`Checked against ${doc}`} className="rounded-lg border border-neutral-200 bg-white p-5 text-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold">Checked against the PDF</h2>
+        <h2 className="font-semibold">Checked against {doc}</h2>
         <span className={open ? "font-medium text-amber-800" : "text-green-800"}>{done} of {check.items.length} checked</span>
       </div>
       <p className="mt-1 text-xs text-neutral-500">
         Built from {check.file}.{" "}
-        {check.registry?.ok ? `ClinicalTrials.gov ${check.nct} added to the passport where the PDF says nothing.` : check.registry ? `ClinicalTrials.gov not used: ${check.registry.error}.` : ""}
+        {check.registry?.ok ? `ClinicalTrials.gov ${check.nct} added to the passport where ${doc} says nothing.` : check.registry ? `ClinicalTrials.gov not used: ${check.registry.error}.` : ""}
       </p>
-      {open > 0 && <p role="status" className="mt-3 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">Publish is closed: check {open} value{open > 1 ? "s" : ""} below against the PDF.</p>}
-      {check.items.length === 0 && <p className="mt-3 text-neutral-600">No quoted values: the page shows the PDF.</p>}
+      {open > 0 && <p role="status" className="mt-3 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">Publish is closed: check {open} value{open > 1 ? "s" : ""} below against {doc}.</p>}
+      {check.items.length === 0 && <p className="mt-3 text-neutral-600">{check.mediaId == null ? "No quoted values." : "No quoted values: the page shows the PDF."}</p>}
       <ul className="mt-3 divide-y divide-neutral-100">
         {check.items.map((x) => (
           <li key={x.id} className="py-3">
@@ -28,7 +30,7 @@ export function DocumentChecks({ id, check, demo }: { id: number; check: Documen
               <span className="text-neutral-700">{x.label}</span>
               <span className="text-xs text-neutral-400">{{ figures: "Key figure", passport: "Passport", comparison: "Comparison", matrix: "Dot matrix" }[x.part]}</span>
             </div>
-            {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in the PDF</p>}
+            {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in {doc}</p>}
             {x.status === "confirmed" && <p className="mt-1 text-xs text-green-800">✓ Confirmed by {x.confirmedBy}{x.confirmedAt ? `, ${new Date(x.confirmedAt).toLocaleString("en-GB", { timeZone: "Asia/Jerusalem", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}{x.reason ? ` · was: ${x.reason}` : ""}</p>}
             {x.status === "check" && (
               <div className="mt-1">

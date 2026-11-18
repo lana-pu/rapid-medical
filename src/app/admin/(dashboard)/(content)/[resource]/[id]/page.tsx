@@ -21,7 +21,7 @@ import { REGION_CHOICES } from "@/lib/regions";
 import { BackButton } from "@/components/admin/BackLink";
 import { DocumentChecks } from "@/components/admin/DocumentChecks";
 import type { DocumentCheck } from "@/db/schema";
-import { unchecked } from "@/lib/document-import";
+import { sourceName, unchecked } from "@/lib/document-import";
 
 type SP = { created?: string; checked?: string; saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
 
@@ -115,7 +115,7 @@ export default async function EditResource({ params, searchParams }: { params: P
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-6">
           {res.slug === "materials" && row.documentCheck ? <DocumentChecks id={Number(row.id)} check={row.documentCheck as DocumentCheck} demo={DEMO} /> : null}
-          <ResourceForm resourceSlug={res.slug} fields={fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} publishBlocked={checksOpen ? `Check ${checksOpen} value${checksOpen > 1 ? "s" : ""} against the PDF first` : null} />
+          <ResourceForm resourceSlug={res.slug} fields={fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} publishBlocked={checksOpen ? `Check ${checksOpen} value${checksOpen > 1 ? "s" : ""} against ${sourceName(row.documentCheck as DocumentCheck)} first` : null} />
         </div>
         {hasWorkflow(res) && (
           <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} label={String(row[res.labelField] ?? "")} />

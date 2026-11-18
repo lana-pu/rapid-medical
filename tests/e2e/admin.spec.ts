@@ -986,3 +986,48 @@ test("create from a document: kind from the file, the team's AI answer checked a
     sql(`delete from materials where id=${id}`);
   }
 });
+
+test("create from a page: the link and the pasted text, the AI's numbers checked against that text (docs/screens/admin-create-from-document.md)", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  await page.goto("/admin/create-from-document");
+  await page.getByRole("link", { name: "Start from a link" }).click();
+  await expect(page).toHaveURL(/\/admin\/create-from-document\/link$/);
+  await expect(page.getByRole("radio", { name: /^Document/ })).toHaveCount(0); // an IFU is always a PDF
+  await page.getByLabel("Link to the page *").fill("https://www.prnewswire.com/news-releases/e2e-release.html");
+  await expect(page.getByText(/Suggested from the link · The link is a press-release service/)).toBeVisible();
+  await expect(page.getByRole("radio", { name: /^News/ })).toBeChecked();
+  await expect(page.getByLabel(/Show the PDF/)).toHaveCount(0);
+  // too little text: said in words
+  await page.locator("textarea[name=pageText]").evaluate((el) => el.removeAttribute("minlength"));
+  await page.locator("textarea[name=pageText]").fill("Too short.");
+  await page.locator("textarea[name=answer]").fill("{}");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await expect(page.getByTestId("import-error")).toContainText("Paste the whole text of the page");
+  const text = "E2E Medical announced today that the first 50 patients were treated in the E2E registry. The device reached the target vessel in 96% of cases on the first attempt. About E2E Medical: a test company that develops neurovascular devices. Media contact: the press office of the test company.";
+  await page.locator("textarea[name=pageText]").fill(text);
+  const answer = {
+    title: "E2E first 50 patients from a page",
+    conclusion: "The first 50 patients were treated in the E2E registry.",
+    figures: [
+      { value: "96%", label: "Reached on the first attempt", quote: "The device reached the target vessel in 96% of cases on the first attempt." },
+      { value: "60", label: "Patients treated", quote: "the first 60 patients were treated in the E2E registry" },
+    ],
+  };
+  await page.locator("textarea[name=answer]").fill(JSON.stringify(answer));
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await page.waitForURL(/\/admin\/materials\/\d+\?created=document/);
+  const id = page.url().match(/materials\/(\d+)/)![1];
+  try {
+    const checks = page.getByRole("region", { name: "Checked against the page text" });
+    await expect(checks).toContainText("1 of 2 checked");
+    await expect(checks).toContainText("Built from www.prnewswire.com/news-releases/e2e-release.html");
+    await expect(checks).toContainText("Check: The quote is not in the page text");
+    await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
+    expect(sql(`select coalesce(pdf_url, '-') || ' ' || (document_check->>'mediaId' is null) from materials where id=${id}`)).toBe("- true");
+  } finally {
+    sql(`delete from revisions where resource='materials' and record_id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`delete from materials where id=${id}`);
+  }
+});

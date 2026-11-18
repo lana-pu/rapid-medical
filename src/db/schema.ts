@@ -394,7 +394,9 @@ export const newsItems = pgTable(
 
 /** «Create from a document» (docs/screens/admin-create-from-document.md): what was checked, and by whom. */
 export type DocumentCheck = {
-  mediaId: number;
+  /** the PDF of the media library; null — a web page whose text was pasted */
+  mediaId: number | null;
+  /** the PDF's file name, or the page's address without https:// */
   file: string;
   nct: string | null;
   /** the registry's rows were added; or why they could not be (the draft is built without them) */

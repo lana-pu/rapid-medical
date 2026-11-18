@@ -1,7 +1,8 @@
 # Экран: Create from a document (`/admin/create-from-document`)
 
 Бриф: `docs/briefs/create-from-document.md`. Решения: 2026-11-14 (вайрфреймы imp-new, imp-prompt, imp-review в
-`docs/flows/site-pages.md`), 2026-11-18 (только PDF; реестр — документ главнее; проверка в карточке записи).
+`docs/flows/site-pages.md`), 2026-11-18 (только PDF; реестр — документ главнее; проверка в карточке записи), 2026-11-18
+(страница по ссылке — ссылка + вставленный текст: BusinessWire и NeuroNews отдают серверу 403, сайт никуда не ходит).
 
 ## Вход
 Publications & news → «Create from a document» (кнопка в шапке списка и в его срезах Evidence и News).
@@ -10,6 +11,7 @@ Publications & news → «Create from a document» (кнопка в шапке �
 - «Upload a PDF»: через общую загрузку медиатеки (тип по содержимому файла, PDF до 50 МБ; страницы рисуются, текст
   достаётся). После загрузки — сразу шаг 2.
 - Ниже — PDF из медиатеки, новые сверху, поиск по имени; «Use this PDF» → шаг 2.
+- «Or a page on the web» (пресс-релиз, статья) → «Start from a link» → шаг 2 для страницы.
 
 ## Шаг 2 — что это и сводка (`/admin/create-from-document/{mediaId}`)
 Слева файл: имя, страниц, ссылка открыть. PDF без текста (скан) — предупреждение: цитаты проверить не получится,
@@ -35,6 +37,18 @@ Publications & news → «Create from a document» (кнопка в шапке �
 6. «Build the draft» → материал-черновик → его карточка с «Built from {file}».
 Ошибка (нет JSON, не тот формат, не тот номер NCT…) — сообщение над кнопкой словами; всё введённое остаётся.
 
+## Шаг 2 для страницы (`/admin/create-from-document/link`)
+Та же форма, что для PDF, с отличиями:
+- Вместо файла — блок **«0. The page»**: «Link to the page» (https, обязательно; это и есть ссылка на оригинал — отдельного
+  поля нет) и «Text of the page» (обязательно, от 200 знаков): «Open the page, select the text from the headline to the
+  end, copy and paste it here». Сайт страницу **не скачивает** — сверка идёт по вставленному тексту.
+- Вид: без «Document» (IFU — всегда PDF). По умолчанию — новость; подсказка по адресу: BusinessWire, PR Newswire,
+  GlobeNewswire → новость; doi.org, PubMed → публикация.
+- Полный текст: «Copy the text onto the page» (по умолчанию) или «Link to the original only»; «Show the PDF» нет.
+- Инструкция для ИИ — про текст, не про PDF; шаг «In your AI chat: paste the instructions, then the same page text».
+- Проверки — «Checked against the page text», «✓ Found in the page text», «Built from {адрес}».
+Ошибки: нет ссылки или не https; текста меньше 200 знаков («Paste the whole text of the page»); вид «Document».
+
 ## Карточка записи — «Checked against the PDF» (`#checks`)
 У материала, собранного из документа: «Built from {file}», «N of M checked», реестр («ClinicalTrials.gov NCT… added» /
 «not reached: …»). Строки: значение, подпись, статус — ✓ Found in the PDF / ✓ Confirmed by {кто}, {когда} / Check:
@@ -55,6 +69,6 @@ check N values below»; сервер отказывает в публикаци�
 `/news-events/{id}-{slug}`), правится на странице. Без секций — прежний шаблон публикации или новости.
 
 ## Данные
-`materials.documentCheck` (миграция 0033): `mediaId`, `file`, `nct`, `registry` (`{ok}` / `{ok:false, error}`), `items[]`
+`materials.documentCheck` (миграция 0033): `mediaId` (у страницы — null), `file` (имя PDF или адрес страницы без https://), `nct`, `registry` (`{ok}` / `{ok:false, error}`), `items[]`
 (`id`, `part` figures/passport, `label`, `value`, `quote`, `status` ok/check/confirmed, `reason`, `confirmedBy`,
 `confirmedAt`). Код: `src/lib/document-import.ts`, `src/lib/clinicaltrials.ts`, `src/admin/document-actions.ts`.

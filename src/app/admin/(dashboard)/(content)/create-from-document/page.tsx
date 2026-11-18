@@ -19,12 +19,17 @@ export default async function CreateFromDocument({ searchParams }: { searchParam
     .limit(40);
   return (
     <>
-      <PageHeader crumbs={[{ label: "Publications & news", href: "/admin/materials" }]} title="Create from a document" subtitle="Step 1 of 2 · the PDF" actions={<BackButton fallback="/admin/materials" />} />
+      <PageHeader crumbs={[{ label: "Publications & news", href: "/admin/materials" }]} title="Create from a document" subtitle="Step 1 of 2 · the PDF or the page" actions={<BackButton fallback="/admin/materials" />} />
       <div className="max-w-3xl space-y-8">
         <section className="rounded-lg border border-neutral-200 bg-white p-5">
           <h2 className="text-sm font-semibold">Upload a PDF</h2>
           <p className="mt-1 text-sm text-neutral-600">A study, a poster, a press release, an article or an IFU. The site draws its pages and reads its text; the summary on top comes later, from your own AI.</p>
           <div className="mt-4"><PdfUpload /></div>
+        </section>
+        <section className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="text-sm font-semibold">Or a page on the web</h2>
+          <p className="mt-1 text-sm text-neutral-600">A press release (BusinessWire, PR Newswire) or an article about us: paste its link and its text — the numbers are checked against that text.</p>
+          <Link href="/admin/create-from-document/link" className="mt-3 inline-block rounded border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:border-neutral-900">Start from a link</Link>
         </section>
         <section aria-label="PDFs in the media library">
           <div className="flex flex-wrap items-end justify-between gap-3">

@@ -24,6 +24,24 @@ export function suggestKind(text: string): Suggestion {
 }
 
 /** The first ClinicalTrials.gov number in the text (NCT + 8 digits). */
+/** What the draft is built from: a PDF of the media library, or a web page whose text a person pasted (the site does not fetch it). */
+export type DocSource = "pdf" | "page";
+/** «the PDF» / «the page text» — the words of every check message; a check of a page has no mediaId. */
+export const sourceName = (src: DocSource | { mediaId: number | null }) => ((typeof src === "string" ? src === "page" : src.mediaId == null) ? "the page text" : "the PDF");
+
+/** The kind a web page looks like, from its address (BusinessWire → news, doi.org → publication); news by default. */
+export function suggestFromUrl(url: string): Suggestion {
+  let host = "";
+  try {
+    host = new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    /* not a link yet */
+  }
+  if (/(^|\.)(businesswire|prnewswire|globenewswire)\.com$/.test(host) || /(^|\.)prnewswire\.co\.uk$/.test(host)) return { kind: "news", reason: "The link is a press-release service." };
+  if (/(^|\.)(doi\.org|pubmed\.ncbi\.nlm\.nih\.gov|ncbi\.nlm\.nih\.gov)$/.test(host)) return { kind: "publication", reason: "The link is a DOI or PubMed: a journal article." };
+  return { kind: "news", reason: "A page on the web — most often a press release or an article about us." };
+}
+
 export function findNct(text: string): string | null {
   return /\bNCT\d{8}\b/.exec(text)?.[0] ?? null;
 }
@@ -106,7 +124,8 @@ export function parseAnswer(raw: string): { ok: true; answer: Answer } | { ok: f
 }
 
 /** The instructions the team pastes into its own AI chat, with the PDF attached. */
-export function instructionsFor(kind: MaterialKind): string {
+export function instructionsFor(kind: MaterialKind, source: DocSource = "pdf"): string {
+  const D = source === "pdf" ? "the PDF" : "the text";
   const passport =
     kind === "study"
       ? `- "passport": up to 8 rows about the study: Design, Regulation, Patients, Centers, Enrollment period, Assessment (who evaluated the results), Registry (NCT number). Only rows the document states.\n`
@@ -118,7 +137,7 @@ export function instructionsFor(kind: MaterialKind): string {
 `
       : `- "comparisons": [] and "matrices": [] (leave empty for this kind).
 `;
-  return `You help publish a ${kind === "news" ? "press release" : kind === "case" ? "clinical case" : kind === "study" ? "clinical study" : "journal publication"} from the attached PDF on a medical device company's website. Every fact must be checkable against the PDF.
+  return `You help publish a ${kind === "news" ? "press release" : kind === "case" ? "clinical case" : kind === "study" ? "clinical study" : "journal publication"} ${source === "pdf" ? "from the attached PDF" : "from the text pasted after these instructions"} on a medical device company's website. Every fact must be checkable against ${D}.
 
 Reply with JSON only, no other text:
 {
@@ -133,8 +152,8 @@ Reply with JSON only, no other text:
 - "title": the document's own title, shortened only if longer than 120 characters.
 - "conclusion": the main finding in one sentence, in the document's own words where possible.
 - "figures": 3 or 4 key results, most important first. "value" is the number as written (e.g. "95%", "0", "149"); "label" says what it measures in a few words.
-${passport}${groups}- "quote" (in every figure, passport row and group): one sentence copied exactly from the PDF, character for character, that contains the value. Do not paraphrase, shorten or fix it.
-- Use only what the PDF says. If something is not in the PDF, leave it out. Never estimate, round or combine numbers.`;
+${passport}${groups}- "quote" (in every figure, passport row and group): one sentence copied exactly from ${D}, character for character, that contains the value. Do not paraphrase, shorten or fix it.
+- Use only what ${D} says. If something is not in ${D}, leave it out. Never estimate, round or combine numbers.`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -158,16 +177,16 @@ export type CheckItem = {
 };
 
 /** One quoted value checked against the document. */
-export function checkQuoted(text: string, part: CheckItem["part"], i: number, x: { label: string; value: string; quote: string }): CheckItem {
+export function checkQuoted(text: string, part: CheckItem["part"], i: number, x: { label: string; value: string; quote: string }, src: DocSource = "pdf"): CheckItem {
   const base = { id: `${part}-${i}`, part, label: x.label, value: x.value, quote: x.quote };
-  if (compact(x.quote).length < 12) return { ...base, status: "check", reason: "The quote is too short to check — look at the PDF" };
-  if (!quoteFound(text, x.quote)) return { ...base, status: "check", reason: "The quote is not in the PDF" };
+  if (compact(x.quote).length < 12) return { ...base, status: "check", reason: `The quote is too short to check — look at ${sourceName(src)}` };
+  if (!quoteFound(text, x.quote)) return { ...base, status: "check", reason: `The quote is not in ${sourceName(src)}` };
   if (!valueInQuote(x.value, x.quote)) return { ...base, status: "check", reason: "The number is not in the quote" };
   return { ...base, status: "ok" };
 }
 
 /** The groups of the page's comparisons and matrices checked against the document, each tied to its block. */
-export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[]): CheckItem[] {
+export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[], src: DocSource = "pdf"): CheckItem[] {
   const comps = blocks.filter((b) => b.type === "comparison");
   const mats = blocks.filter((b) => b.type === "dotMatrix");
   return [
@@ -177,21 +196,21 @@ export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[])
       const pct = comparisonUnit(c) === "%";
       const items: CheckItem[] = c.groups.flatMap((g, j) => {
         const label = `${c.title} — ${g.label}`;
-        let v = checkQuoted(text, "comparison", j, { label, value: g.value, quote: g.quote });
+        let v = checkQuoted(text, "comparison", j, { label, value: g.value, quote: g.quote }, src);
         if (v.status === "ok" && pct && !g.value.includes("%") && !percentInQuote(g.value, g.quote)) v = { ...v, status: "check", reason: "The quote does not give it in %" };
         const out = [{ ...v, value: pct && !g.value.includes("%") ? `${g.value}%` : g.value, id: `comparison-${i}-${j}`, block }];
-        if (g.n) out.push({ ...checkQuoted(text, "comparison", j, { label: `${label} — n`, value: g.n, quote: g.quote }), id: `comparison-${i}-${j}-n`, block });
+        if (g.n) out.push({ ...checkQuoted(text, "comparison", j, { label: `${label} — n`, value: g.n, quote: g.quote }, src), id: `comparison-${i}-${j}-n`, block });
         return out;
       });
       if (c.pValue) {
         const p = c.pQuote
-          ? checkQuoted(text, "comparison", 0, { label: `${c.title} — p-value`, value: c.pValue, quote: c.pQuote })
-          : { id: "", part: "comparison" as const, label: `${c.title} — p-value`, value: c.pValue, quote: "", status: "check" as const, reason: "No quote for the p-value — look at the PDF" };
+          ? checkQuoted(text, "comparison", 0, { label: `${c.title} — p-value`, value: c.pValue, quote: c.pQuote }, src)
+          : { id: "", part: "comparison" as const, label: `${c.title} — p-value`, value: c.pValue, quote: "", status: "check" as const, reason: `No quote for the p-value — look at ${sourceName(src)}` };
         items.push({ ...p, id: `comparison-${i}-p`, block });
       }
       return items;
     }),
-    ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) => ({ ...checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }), id: `matrix-${i}-${j}`, block: mats[i]?.id }))),
+    ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) => ({ ...checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }, src), id: `matrix-${i}-${j}`, block: mats[i]?.id }))),
   ];
 }
 
@@ -278,10 +297,13 @@ export function documentBlocks(o: {
   answer: Answer | null;
   passport: { label: string; value: string }[];
   passportSource: { label: string; href?: string | null } | null;
-  pdf: { url: string; text: string };
+  /** the PDF; null for a web page (its pasted text comes in `text`) */
+  pdf: { url: string; text: string } | null;
+  text?: string;
   original?: string | null;
   mode: FullTextMode;
 }): StoredBlock[] {
+  const text = o.text ?? o.pdf?.text ?? "";
   const eyebrow = [KIND_EYEBROW[o.kind], o.product].filter(Boolean).join(" · ");
   const out: StoredBlock[] = [{ id: blockId(), type: "hero", variant: "page", data: { eyebrow, title: o.title, body: o.answer?.conclusion ?? "" } }];
   if (o.answer?.figures.length) out.push({ id: blockId(), type: "keyNumbers", variant: "figures", data: { items: o.answer.figures.map((f) => ({ value: f.value, label: f.label, note: f.quote })) } });
@@ -290,9 +312,10 @@ export function documentBlocks(o: {
   for (const m of o.answer?.matrices ?? [])
     out.push({ id: blockId(), type: "dotMatrix", variant: "default", data: { title: m.title, caption: m.caption ?? null, groups: m.groups } });
   if (o.passport.length) out.push({ id: blockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: o.passport, source: o.passportSource } });
-  const mode: FullTextMode = o.kind === "document" ? "embed" : o.mode;
+  // a page has no PDF to show: its text is copied or it is linked
+  const mode: FullTextMode = !o.pdf ? (o.mode === "link" ? "link" : "copy") : o.kind === "document" ? "embed" : o.mode;
   const links = [
-    ...(mode !== "link" ? [{ label: "Download PDF", href: o.pdf.url }] : []),
+    ...(o.pdf && mode !== "link" ? [{ label: "Download PDF", href: o.pdf.url }] : []),
     ...(o.original ? [{ label: "Open the original ↗", href: o.original }] : []),
   ];
   out.push({
@@ -300,10 +323,10 @@ export function documentBlocks(o: {
     type: "richText",
     variant: "document",
     data: {
-      html: mode === "copy" ? textToHtml(o.pdf.text) : "",
+      html: mode === "copy" ? textToHtml(text) : "",
       meta: [],
       links,
-      pdf: mode === "embed" ? { href: o.pdf.url, title: `${o.title} — full document` } : null,
+      pdf: mode === "embed" && o.pdf ? { href: o.pdf.url, title: `${o.title} — full document` } : null,
     },
   });
   return out;

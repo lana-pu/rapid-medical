@@ -1,8 +1,9 @@
 "use server";
 /**
- * «Create from a document» (docs/screens/admin-create-from-document.md): a PDF of the media library + the answer of the
- * team's own AI → a draft material whose every quoted value was looked for in the PDF; a person confirms what the site
- * could not. The site calls no AI; the only outside request is ClinicalTrials.gov for an NCT number.
+ * «Create from a document» (docs/screens/admin-create-from-document.md): a PDF of the media library — or a web page's
+ * link with its text pasted by a person — + the answer of the team's own AI → a draft material whose every quoted value
+ * was looked for in that text; a person confirms what the site could not. The site calls no AI and does not fetch the
+ * page; the only outside request is ClinicalTrials.gov for an NCT number.
  */
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -10,7 +11,7 @@ import { db, media, materials, products, MATERIAL_KINDS, type DocumentCheck, typ
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { isRegion } from "@/lib/regions";
-import { checkGroups, checkQuoted, documentBlocks, mergePassport, parseAnswer, type CheckItem, type FullTextMode } from "@/lib/document-import";
+import { checkGroups, checkQuoted, documentBlocks, mergePassport, parseAnswer, type CheckItem, type DocSource, type FullTextMode } from "@/lib/document-import";
 import { fetchRegistry, registryUrl } from "@/lib/clinicaltrials";
 import { getResource } from "./resources";
 import { saveWithWorkflow } from "./workflow";
@@ -19,22 +20,41 @@ export type CreateState = { error: string } | null;
 
 const MODES: FullTextMode[] = ["copy", "embed", "link"];
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
+const HTTPS = /^https:\/\/[^\s/]+\.[^\s]+$/;
+/** the pasted text of a page: control characters out (tabs, line and page breaks stay), at most 200 000 characters */
+const PAGE_TEXT_MIN = 200;
+const pageText = (s: string) => s.replace(/\r\n?/g, "\n").replace(/[\u0000-\u0008\u000b\u000e-\u001f\u007f]/g, "").slice(0, 200_000).trim();
 
 export async function createFromDocument(_prev: CreateState, fd: FormData): Promise<CreateState> {
   const user = await requireUser();
   const res = getResource("materials")!;
 
-  const pdf = await db.query.media.findFirst({ where: eq(media.id, Number(str(fd, "mediaId")) || 0) });
-  if (!pdf || pdf.mime !== "application/pdf") return { error: "Choose a PDF from the media library." };
+  const src: DocSource = str(fd, "source") === "page" ? "page" : "pdf";
   const kind = str(fd, "kind") as MaterialKind;
   if (!MATERIAL_KINDS.includes(kind)) return { error: "Choose what kind of material this is." };
-  const mode = (MODES.includes(str(fd, "mode") as FullTextMode) ? str(fd, "mode") : "embed") as FullTextMode;
+  let pdf: { id: number; url: string; filename: string; text: string } | null = null;
+  let text: string;
+  let file: string;
+  if (src === "pdf") {
+    const row = await db.query.media.findFirst({ where: eq(media.id, Number(str(fd, "mediaId")) || 0) });
+    if (!row || row.mime !== "application/pdf") return { error: "Choose a PDF from the media library." };
+    pdf = { id: row.id, url: row.url, filename: row.filename, text: row.text ?? "" };
+    text = pdf.text;
+    file = row.filename;
+  } else {
+    if (kind === "document") return { error: "A document (IFU) is always a PDF — upload it in step 1." };
+    if (!HTTPS.test(str(fd, "url"))) return { error: "Paste the link to the page — it starts with https://" };
+    text = pageText(String(fd.get("pageText") ?? ""));
+    if (text.length < PAGE_TEXT_MIN) return { error: "Paste the whole text of the page — from the headline to the end." };
+    file = str(fd, "url").replace(/^https:\/\//, "").slice(0, 200);
+  }
+  const mode = (MODES.includes(str(fd, "mode") as FullTextMode) ? str(fd, "mode") : src === "page" ? "copy" : "embed") as FullTextMode;
   const regions = fd.getAll("regions").map(String).filter(isRegion) as Region[];
   const productId = Number(str(fd, "productId")) || null;
   const product = productId ? await db.query.products.findFirst({ where: eq(products.id, productId) }) : null;
   if (productId && !product) return { error: "That product is not in the list." };
   const original = str(fd, "url");
-  if (original && !/^https:\/\/[^\s/]+\.[^\s]+$/.test(original)) return { error: "The link to the original must start with https://" };
+  if (original && !HTTPS.test(original)) return { error: "The link to the original must start with https://" };
   const nct = str(fd, "nct").toUpperCase();
   if (nct && !/^NCT\d{8}$/.test(nct)) return { error: "An NCT number is NCT and 8 digits, e.g. NCT04518670." };
   const day = str(fd, "publishedOn");
@@ -47,10 +67,9 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
   const title = answer?.title ?? str(fd, "title");
   if (!title) return { error: "Give the document a title." };
 
-  const text = pdf.text ?? "";
   const items: CheckItem[] = [
-    ...(answer?.figures ?? []).map((f, i) => checkQuoted(text, "figures", i, f)),
-    ...(answer?.passport ?? []).map((p, i) => checkQuoted(text, "passport", i, p)),
+    ...(answer?.figures ?? []).map((f, i) => checkQuoted(text, "figures", i, f, src)),
+    ...(answer?.passport ?? []).map((p, i) => checkQuoted(text, "passport", i, p, src)),
   ];
   // the registry fills what the document does not say; where they differ the document's value stays, a person checks
   const registry = nct && kind === "study" ? await fetchRegistry(nct) : null;
@@ -63,11 +82,11 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     ? { label: registry?.ok ? `${title} and ClinicalTrials.gov ${nct}` : title, href: registry?.ok ? registryUrl(nct) : null }
     : null;
 
-  const blocks = documentBlocks({ kind, title, product: product?.name ?? null, answer, passport: merged.rows, passportSource, pdf: { url: pdf.url, text }, original: original || null, mode });
-  if (answer) items.push(...checkGroups(text, answer, blocks));
+  const blocks = documentBlocks({ kind, title, product: product?.name ?? null, answer, passport: merged.rows, passportSource, pdf: pdf ? { url: pdf.url, text } : null, text, original: original || null, mode });
+  if (answer) items.push(...checkGroups(text, answer, blocks, src));
   const documentCheck: DocumentCheck = {
-    mediaId: pdf.id,
-    file: pdf.filename,
+    mediaId: pdf?.id ?? null,
+    file,
     nct: nct || null,
     registry: registry ? (registry.ok ? { ok: true } : { ok: false, error: registry.error }) : null,
     items,
@@ -76,7 +95,7 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     res,
     null,
     {
-      kind, title, publishedOn, productId, regions, url: original || null, pdfUrl: pdf.url, excerpt: answer?.conclusion ?? "",
+      kind, title, publishedOn, productId, regions, url: original || null, pdfUrl: pdf?.url ?? null, excerpt: answer?.conclusion ?? "",
       showInEvidence: fd.get("showInEvidence") === "on", showInNews: fd.get("showInNews") === "on",
       // a highlight: on top of News, and featured on Evidence in every region it is shown in
       featured: fd.get("featured") === "on" && fd.get("showInNews") === "on",
@@ -85,7 +104,7 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     },
     user,
   );
-  await audit(user, "save", { resource: "materials", recordId: saved.id, label: title, meta: { fromDocument: pdf.filename, checks: items.length, toCheck: items.filter((x) => x.status === "check").length } });
+  await audit(user, "save", { resource: "materials", recordId: saved.id, label: title, meta: { fromDocument: file, checks: items.length, toCheck: items.filter((x) => x.status === "check").length } });
   redirect(`/admin/materials/${saved.id}?created=document`);
 }
 
