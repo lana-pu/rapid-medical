@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { replaceEverywhere, setMediaAlt, type ReplaceResult } from "@/admin/media-actions";
 import { DEMO, editorHref, withBase } from "@/lib/demo";
@@ -182,6 +182,9 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
   const [values, setValues] = useState<Record<number, string>>({});
   const [err, setErr] = useState<Record<number, string>>({});
   const refs = useRef<Record<number, HTMLInputElement | null>>({});
+  // where the cursor goes after a save, and which saved item the server refresh must drop before the job is done:
+  // the refresh can land before or after the save returns, so the focus is put back after every render until it has
+  const pending = useRef<{ focus: number; saved: number } | null>(null);
   const left = items.filter((m) => !done[m.id]);
   // the first open field takes the focus when it appears: on opening the queue, and again if saving refreshes the page
   // from the server and the list is drawn anew (the explicit focus below then lands on a field that is gone)
@@ -194,8 +197,17 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
     if ("error" in r) return setErr({ ...err, [m.id]: r.error });
     setDone((d) => ({ ...d, [m.id]: v }));
     const nextItem = items.slice(i + 1).find((x) => !done[x.id]);
+    pending.current = nextItem ? { focus: nextItem.id, saved: m.id } : null;
     if (nextItem) refs.current[nextItem.id]?.focus();
   };
+
+  useEffect(() => {
+    const p = pending.current;
+    if (!p) return;
+    const el = refs.current[p.focus];
+    if (el && document.activeElement !== el && (document.activeElement === document.body || document.activeElement === null)) el.focus();
+    if (!items.some((x) => x.id === p.saved)) pending.current = null; // the refreshed list no longer has it: done
+  });
 
   if (!items.length) return <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm">Every picture has a description.</p>;
   return (
