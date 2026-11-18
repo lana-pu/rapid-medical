@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { count } from "drizzle-orm";
+import { count, sql } from "drizzle-orm";
 import { contactSubmissions, db, solutions } from "@/db";
 import { requireUser } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
@@ -11,7 +11,7 @@ import { DEMO, editorHref, withBase } from "@/lib/demo";
 import { getResource } from "@/admin/resources";
 import { getSettingsGroup, mayEditGroup } from "@/admin/settings";
 import { listEditorPages, type PageCard } from "@/admin/pages-index";
-import { sectionOf, SECTIONS } from "@/admin/site-sections";
+import { listHref, listNewHref, sectionOf, SECTIONS } from "@/admin/site-sections";
 import { LinkButton, PageHeader } from "@/components/admin/ui";
 
 /** A section of the site: its pages, the lists they show, the settings they use (docs/screens/admin-sections.md). */
@@ -69,8 +69,9 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
   const counts = new Map<string, number>();
   for (const l of s.lists ?? []) {
     const table = l.resource === "submissions" ? contactSubmissions : getResource(l.resource)?.table;
+    const only = l.only ? sql`${sql.identifier(l.only === "showInEvidence" ? "show_in_evidence" : "show_in_news")} = true` : undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (table) counts.set(l.resource, ((await db.select({ n: count() }).from(table as any)) as { n: number }[])[0].n);
+    if (table) counts.set(listHref(l), ((await db.select({ n: count() }).from(table as any).where(only)) as { n: number }[])[0].n);
   }
 
   const sitePageCards = cards.filter((c) => c.r === "site-pages" && !!c.siteKey && !!s.sitePages?.includes(c.siteKey));
@@ -175,13 +176,13 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
         <Box title="Lists on these pages">
           <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
             {s.lists.map((l) => (
-              <li key={l.resource} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
+              <li key={listHref(l)} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="min-w-0 flex-1">
-                  <Link href={`/admin/${l.resource}`} className="font-medium underline">{l.label}</Link>
-                  <span className="ml-2 text-neutral-500">{counts.get(l.resource) ?? 0}</span>
+                  <Link href={listHref(l)} className="font-medium underline">{l.label}</Link>
+                  <span className="ml-2 text-neutral-500">{counts.get(listHref(l)) ?? 0}</span>
                   <span className="block text-xs text-neutral-500">Shown on: {l.where}</span>
                 </span>
-                {l.newLabel && !DEMO && <LinkButton href={`/admin/${l.resource}/new`}>+ New {l.newLabel.toLowerCase()}</LinkButton>}
+                {l.newLabel && !DEMO && <LinkButton href={listNewHref(l)}>+ New {l.newLabel.toLowerCase()}</LinkButton>}
               </li>
             ))}
           </ul>

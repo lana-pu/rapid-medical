@@ -386,6 +386,64 @@ export const newsItems = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/*  Materials (ADR-009, step 1 — 2026-11-18, docs/briefs/materials.md)  */
+/*  Publications, news, studies, cases and documents in one table. The   */
+/*  old publications / news_items tables stay for rollback; nothing     */
+/*  reads them.                                                          */
+/* ------------------------------------------------------------------ */
+
+export const materialKindEnum = pgEnum("material_kind", ["study", "publication", "news", "case", "document"]);
+export const MATERIAL_KINDS = materialKindEnum.enumValues;
+export type MaterialKind = (typeof MATERIAL_KINDS)[number];
+
+export const materials = pgTable(
+  "materials",
+  {
+    id: serial("id").primaryKey(),
+    kind: materialKindEnum("kind").notNull().default("publication"),
+    title: text("title").notNull(),
+    /** The day (news) or the first day of the month (publications; the day is ignored in UI) */
+    publishedOn: timestamp("published_on", { withTimezone: false, mode: "date" }).notNull(),
+    productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
+    /** Regions where it is shown; empty = all. With its own `slug`: one region → /{region}/{slug}, none → /{slug}. */
+    regions: jsonb("regions").$type<Region[]>().notNull().default([]),
+    // where it came from
+    authors: text("authors").notNull().default(""),
+    journal: text("journal").notNull().default(""),
+    source: text("source").notNull().default(""), // BusinessWire, NeuroNews…
+    url: text("url"), // the original: DOI / journal / press release
+    doi: text("doi"),
+    pdfUrl: text("pdf_url"),
+    pdfLicense: text("pdf_license").notNull().default(""),
+    pdfSource: text("pdf_source"),
+    abstract: text("abstract").notNull().default(""),
+    abstractSource: text("abstract_source").notNull().default(""),
+    excerpt: text("excerpt").notNull().default(""),
+    imageUrl: text("image_url"),
+    // where it appears (ADR-009 §8)
+    showInEvidence: boolean("show_in_evidence").notNull().default(false),
+    showInNews: boolean("show_in_news").notNull().default(false),
+    /** Highlights: home, top of News & Events, featured on Evidence */
+    featured: boolean("featured").notNull().default(false),
+    // its own page
+    /** A kept address (moved pages, e.g. success-study-final-results); null = /…/{id}-{title slug} */
+    slug: text("slug"),
+    bodyHtml: text("body_html").notNull().default(""),
+    blocks: jsonb("blocks").$type<StoredBlock[] | null>(),
+    metaTitle: text("meta_title").notNull().default(""),
+    metaDescription: text("meta_description").notNull().default(""),
+    shareImageUrl: text("share_image_url"),
+    noindex: boolean("noindex").notNull().default(false),
+    /** Where the row was moved from on 2026-11-18: publications:12, news_items:5, pages:6 */
+    legacyRef: text("legacy_ref"),
+    status: statusEnum("status").notNull().default("published"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("materials_date").on(t.publishedOn), index("materials_slug").on(t.slug), uniqueIndex("materials_legacy").on(t.legacyRef)],
+);
+
+/* ------------------------------------------------------------------ */
 /*  Events (decision 2026-11-10, docs/screens/events.md)                */
 /*  Upcoming / past is derived from the dates — nobody archives by hand */
 /* ------------------------------------------------------------------ */
@@ -704,7 +762,11 @@ export const auditLog = pgTable(
 export const productsRelations = relations(products, ({ many }) => ({
   solutions: many(solutions),
   publications: many(publications),
+  materials: many(materials),
   webinars: many(webinars),
+}));
+export const materialsRelations = relations(materials, ({ one }) => ({
+  product: one(products, { fields: [materials.productId], references: [products.id] }),
 }));
 export const solutionsRelations = relations(solutions, ({ one }) => ({
   product: one(products, { fields: [solutions.productId], references: [products.id] }),
@@ -724,8 +786,10 @@ export type Media = typeof media.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Solution = typeof solutions.$inferSelect;
 export type NewSolution = typeof solutions.$inferInsert;
-export type Publication = typeof publications.$inferSelect;
-export type NewsItem = typeof newsItems.$inferSelect;
+export type Material = typeof materials.$inferSelect;
+/** Readers' names for a material by the place it shows in (ADR-009): same row, same fields. */
+export type Publication = Material;
+export type NewsItem = Material;
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
 export type Webinar = typeof webinars.$inferSelect;

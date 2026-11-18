@@ -27,7 +27,8 @@ export function therapyPageBlocks(s: SolutionForBlocks, ctx: { region: Region; o
   return resolveBlocks(s.blocks, { region: ctx.region, product: s.product?.slug, versions }, { r: "solutions", id: s.id });
 }
 
-export function textPageBlocks(p: Page) {
-  if (!p.blocks?.length) return pageToBlocks(p, p.region ? REGION_LABELS[p.region] : undefined);
-  return resolveBlocks(p.blocks, { region: p.region }, { r: "pages", id: p.id });
+/** A text page or a material at its kept address (`resource`: which record the editor binds to; default pages). */
+export function textPageBlocks(p: Page & { resource?: "pages" | "materials" }) {
+  if (!p.blocks?.length) return pageToBlocks(p, p.region ? REGION_LABELS[p.region] : undefined, p.resource);
+  return resolveBlocks(p.blocks, { region: p.region }, { r: p.resource ?? "pages", id: p.id });
 }

@@ -16,7 +16,7 @@ export type MediaRow = typeof media.$inferSelect;
 export type Group = { key: string; label: string; section: "site" | "lists" | "settings"; count: number; other?: boolean; child?: boolean };
 export type LibraryItem = MediaRow & { used: string | null; usedCount: number };
 
-const PAGE_RECORDS = ["site-pages", "solutions", "pages"];
+const PAGE_RECORDS = ["site-pages", "solutions", "pages", "materials"];
 /** Where a page sits in the site, for the order of the column. */
 const ORDER = ["/", "/therapies", "/evidence", "/webinars", "/news-events", "/about-us", "/careers", "/contact-us"];
 const orderOf = (key: string) => {

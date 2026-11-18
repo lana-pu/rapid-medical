@@ -1,7 +1,8 @@
+import { movedAdminPath } from "@/admin/legacy";
 import { requireUser } from "@/lib/auth";
 import Link from "next/link";
 import { isPast, type EventDates } from "@/lib/events";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { db, products, REGIONS, type Region } from "@/db";
 import { getResource } from "@/admin/resources";
 import { crumbsFor } from "@/admin/site-sections";
@@ -13,18 +14,21 @@ import { ListFilters, type ListFilter } from "@/components/admin/ListFilters";
 import { thumbsFor } from "@/admin/page-screen";
 import { safeLocalPath } from "@/lib/safe-path";
 import { BulkBar } from "@/components/admin/BulkBar";
+import { MATERIAL_KIND_LABELS } from "@/lib/material";
 
-type SP = { q?: string; bulk?: string; n?: string; live?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
+type SP = { q?: string; bulk?: string; n?: string; live?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string; kind?: string; showInEvidence?: string; showInNews?: string };
 
 export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
   await requireUser(); // the layout checks too; a page never relies on it alone
   const { resource } = await params;
   const sp = await searchParams;
+  const moved = await movedAdminPath(resource, "list");
+  if (moved) redirect(moved);
   const res = getResource(resource);
   if (!res) notFound();
 
   const filters: Record<string, string> = {};
-  for (const k of ["status", "region", "productId", "regions", "featured"] as const) if (sp[k]) filters[k] = sp[k]!;
+  for (const k of ["status", "region", "productId", "regions", "featured", "kind", "showInEvidence", "showInNews"] as const) if (sp[k]) filters[k] = sp[k]!;
 
   const [{ rows, total, page, per }, prods] = await Promise.all([
     listRows(res, { search: sp.q, filters, sort: sp.sort, dir: sp.dir, page: Math.floor(Number(sp.page)) || 1 }),
@@ -68,6 +72,9 @@ export default async function ResourceList({ params, searchParams }: { params: P
         active={!!sp.q || Object.keys(filters).length > 0}
         keep={Object.fromEntries(Object.entries({ sort: sp.sort, dir: sp.dir }).filter(([, v]) => v)) as Record<string, string>}
         filters={[
+          ...(has("kind") ? [{ name: "kind", value: sp.kind ?? "", label: "Kind", options: [{ value: "", label: "Any kind" }, ...Object.entries(MATERIAL_KIND_LABELS).map(([value, label]) => ({ value, label }))] }] : []),
+          ...(has("kind") ? [{ name: "showInEvidence", value: sp.showInEvidence ?? "", label: "In Evidence", options: [{ value: "", label: "In Evidence or not" }, { value: "true", label: "In Evidence" }, { value: "false", label: "Not in Evidence" }] }] : []),
+          ...(has("kind") ? [{ name: "showInNews", value: sp.showInNews ?? "", label: "In News", options: [{ value: "", label: "In News or not" }, { value: "true", label: "In News" }, { value: "false", label: "Not in News" }] }] : []),
           ...(has("status") ? [{ name: "status", value: sp.status ?? "", label: "Status", options: [{ value: "", label: "Any status" }, { value: "published", label: "On the site" }, { value: "draft", label: "Draft" }] }] : []),
           ...(has("region") ? [{ name: "region", value: sp.region ?? "", label: "Region", options: [{ value: "", label: "Any region" }, ...REGIONS.map((r) => ({ value: r, label: regionName(r) })), { value: "__null", label: "All regions (global)" }] }] : []),
           ...(has("regions") ? [{ name: "regions", value: sp.regions ?? "", label: "Shown in", options: [{ value: "", label: "Any region" }, ...REGIONS.map((r) => ({ value: r, label: `Shown in ${regionName(r)}` }))] }] : []),
@@ -112,6 +119,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
                       case "regions": cell = Array.isArray(v) && v.length ? (v as Region[]).map(regionName).join(", ") : <span className="text-neutral-400">All regions</span>; break;
                       case "product": cell = productName(v); break;
                       case "boolean": cell = v ? "✓" : ""; break;
+                      case "materialKind": cell = MATERIAL_KIND_LABELS[String(v)] ?? String(v ?? ""); break;
                       case "eventWhen": cell = isPast(row as unknown as EventDates) ? <span className="text-neutral-400">Past</span> : "Upcoming"; break;
                       default: cell = String(v ?? "");
                     }

@@ -119,7 +119,7 @@ async function main() {
   // --recheck: check the abstracts already written against PubMed's titles again
   const recheck = process.argv.includes("--recheck");
   const rows = await sql<Row[]>`
-    select id, title, url, doi, extract(year from published_on)::int as year, authors, journal from publications where ${recheck ? sql`abstract <> ''` : sql`abstract = ''`} order by id`;
+    select id, title, url, doi, extract(year from published_on)::int as year, authors, journal from materials where kind = 'publication' and ${recheck ? sql`abstract <> ''` : sql`abstract = ''`} order by id`;
   const found: { id: number; title: string; abstract: string; source: string }[] = [];
   const missed: string[] = [];
   for (const r of rows) {
@@ -143,14 +143,14 @@ async function main() {
     // not in PubMed (conference abstracts, some journals): OpenAlex, then Crossref — the same title check
     if (!got && !recheck) got = (await fromOpenAlex(doi, r.title, r)) ?? (await fromCrossref(doi, r.title));
     if (!got) {
-      if (recheck && !(await sql`select abstract_source from publications where id = ${r.id}`)[0]?.abstract_source?.startsWith("PubMed")) continue;
-      if (recheck) await sql`update publications set abstract = '', abstract_source = '' where id = ${r.id}`;
+      if (recheck && !(await sql`select abstract_source from materials where id = ${r.id}`)[0]?.abstract_source?.startsWith("PubMed")) continue;
+      if (recheck) await sql`update materials set abstract = '', abstract_source = '' where id = ${r.id}`;
       missed.push(`${r.id}${pmid ? ` (PubMed ${pmid}: no agreeing abstract)` : " (nowhere)"}: ${r.title.slice(0, 70)}`);
       continue;
     }
     const { abstract, source } = got;
     if (recheck) continue; // already written and confirmed
-    await sql`update publications set abstract = ${abstract}, abstract_source = ${source} where id = ${r.id}`;
+    await sql`update materials set abstract = ${abstract}, abstract_source = ${source} where id = ${r.id}`;
     found.push({ id: r.id, title: r.title, abstract, source });
   }
   console.log(`abstracts: ${found.length} written, ${missed.length} without`);

@@ -1,6 +1,6 @@
 import "server-only";
 import { and, count, desc, eq, gte, inArray, isNotNull, isNull, like, max, notInArray, sql } from "drizzle-orm";
-import { auditLog, comments, contactSubmissions, db, events, media, newsItems, notFoundLog, pages, publications, users } from "@/db";
+import { auditLog, comments, contactSubmissions, db, events, materials, media, notFoundLog, pages, users } from "@/db";
 import { day, today } from "@/lib/events";
 import { REGION_CHOICES } from "@/lib/regions";
 import { whereTo } from "@/lib/subscribers";
@@ -217,13 +217,16 @@ export type Health = { key: string; text: string; ok: boolean; action?: string; 
 const STALE_DAYS = 60;
 
 export async function health(user: { role: string }): Promise<Health[]> {
-  const [[{ n: noAlt }], [{ n: noDescription }], people, [news], [studies]] = await Promise.all([
+  const [[{ n: noAlt }], [{ n: noPageDescription }], [{ n: noMaterialDescription }], people, [news], [studies]] = await Promise.all([
     db.select({ n: count() }).from(media).where(and(like(media.mime, "image/%"), eq(media.alt, ""))),
     db.select({ n: count() }).from(pages).where(and(eq(pages.status, "published"), eq(pages.metaDescription, ""))),
+    // materials kept at their own address are pages too (moved study pages, ADR-009)
+    db.select({ n: count() }).from(materials).where(and(eq(materials.status, "published"), isNotNull(materials.slug), eq(materials.metaDescription, ""))),
     db.select({ totp: users.totpEnabledAt }).from(users).where(eq(users.active, true)),
-    db.select({ last: max(newsItems.publishedOn) }).from(newsItems).where(eq(newsItems.status, "published")),
-    db.select({ last: max(publications.publishedOn) }).from(publications).where(eq(publications.status, "published")),
+    db.select({ last: max(materials.publishedOn) }).from(materials).where(and(eq(materials.status, "published"), eq(materials.showInNews, true))),
+    db.select({ last: max(materials.publishedOn) }).from(materials).where(and(eq(materials.status, "published"), eq(materials.showInEvidence, true))),
   ]);
+  const noDescription = noPageDescription + noMaterialDescription;
   const out: Health[] = [];
   if (noAlt) out.push({ key: "alt", ok: false, text: `${noAlt} picture${noAlt > 1 ? "s" : ""} without a description`, action: "Describe pictures", href: "/admin/media?describe=1" });
   if (noDescription) out.push({ key: "seo", ok: false, text: `${noDescription} page${noDescription > 1 ? "s" : ""} without a description for Google`, action: "Open pages", href: "/admin/pages" });
@@ -235,7 +238,7 @@ export async function health(user: { role: string }): Promise<Health[]> {
     if (n == null) return;
     out.push({ key, ok: n <= STALE_DAYS, text: `Last ${what}: ${n === 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`}`, action: n > STALE_DAYS ? "Add one" : undefined, href });
   };
-  fresh("news", "news item", news?.last ?? null, "/admin/news/new");
-  fresh("studies", "study on Evidence", studies?.last ?? null, "/admin/publications/new");
+  fresh("news", "news item", news?.last ?? null, "/admin/materials/new?kind=news&showInNews=true");
+  fresh("studies", "study on Evidence", studies?.last ?? null, "/admin/materials/new?kind=publication&showInEvidence=true");
   return out;
 }

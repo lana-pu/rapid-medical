@@ -11,6 +11,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
+import { MATERIAL_PAGES } from "../src/lib/material";
 import { markdownToHtml } from "../src/lib/html";
 import { SOLUTIONS } from "../content/seed/solutions";
 import { groupForSlug } from "../src/lib/therapy-groups";
@@ -28,10 +29,10 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is not set");
   const client = postgres(url, { max: 1 });
   const db = drizzle(client, { schema });
-  const { products, solutions, publications, newsItems, teamMembers, pages, siteSettings, redirects, users, webinars, events } = schema;
+  const { products, solutions, materials, teamMembers, pages, siteSettings, redirects, users, webinars, events } = schema;
 
   if (RESET) {
-    await db.execute(sql`TRUNCATE solutions, publications, news_items, webinars, team_members, jobs, pages, site_pages, redirects RESTART IDENTITY CASCADE`);
+    await db.execute(sql`TRUNCATE solutions, materials, publications, news_items, webinars, team_members, jobs, pages, site_pages, redirects RESTART IDENTITY CASCADE`);
     console.log("content tables truncated");
   }
 
@@ -64,10 +65,12 @@ async function main() {
 
   /* publications */
   type PubSeed = { title: string; authors: string; journal: string; doi: string | null; url: string | null; pdfUrl: string | null; pdfLicense?: string; pdfSource?: string; abstract?: string; abstractSource?: string; publishedOn: string; product: string; variant: string | null; regions: schema.Region[]; featured: boolean; imageUrl: string | null };
+  // ADR-009: publications, news and material pages are one table (materials); publications first, so their ids are 1…N
   const pubs = await json<PubSeed[]>("publications");
-  if (!RESET) await db.delete(publications);
-  await db.insert(publications).values(
+  if (!RESET) await db.execute(sql`TRUNCATE materials RESTART IDENTITY`);
+  await db.insert(materials).values(
     pubs.map((p) => ({
+      kind: "publication" as const, showInEvidence: true,
       title: p.title, authors: p.authors, journal: p.journal, doi: p.doi, url: p.url, pdfUrl: p.pdfUrl, pdfLicense: p.pdfLicense ?? "", pdfSource: p.pdfSource || null, abstract: p.abstract ?? "", abstractSource: p.abstractSource ?? "",
       publishedOn: new Date(p.publishedOn), productId: prodId(p.product), regions: p.regions, featured: p.featured, imageUrl: p.imageUrl, status: "published" as const,
     })),
@@ -76,8 +79,7 @@ async function main() {
   /* news */
   type NewsSeed = { title: string; publishedOn: string; url: string; source: string; imageUrl: string | null; featured: boolean };
   const news = await json<NewsSeed[]>("news");
-  if (!RESET) await db.delete(newsItems);
-  await db.insert(newsItems).values(news.map((n) => ({ ...n, publishedOn: new Date(n.publishedOn), status: "published" as const })));
+  await db.insert(materials).values(news.map((n) => ({ ...n, kind: "news" as const, showInNews: true, publishedOn: new Date(n.publishedOn), status: "published" as const })));
 
   /* team */
   type TeamSeed = { slug: string; name: string; title: string; longTitle: string; bioMd: string; photoUrl: string | null; sortOrder: number };
@@ -90,6 +92,13 @@ async function main() {
   /* pages */
   type PageSeed = { slug: string; region: schema.Region | null; title: string; metaTitle: string; metaDescription: string; noindex: boolean; bodyMd: string; status?: "draft" | "published" };
   for (const p of await json<PageSeed[]>("pages")) {
+    const kind = MATERIAL_PAGES[p.slug];
+    if (kind) {
+      // a material kept at its old address (study, case, document); its blocks come from scripts/migrate-blocks.ts
+      const { bodyMd, region, ...page } = p;
+      await db.insert(materials).values({ ...page, kind, regions: region ? [region] : [], bodyHtml: markdownToHtml(bodyMd), publishedOn: new Date(), status: page.status ?? "published" });
+      continue;
+    }
     const existing = await db.query.pages.findFirst({ where: p.region ? sql`${pages.slug} = ${p.slug} AND ${pages.region} = ${p.region}` : sql`${pages.slug} = ${p.slug} AND ${pages.region} IS NULL` });
     const { bodyMd, ...page } = p;
     const pp = { ...page, bodyHtml: markdownToHtml(bodyMd) };

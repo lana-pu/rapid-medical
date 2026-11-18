@@ -10,8 +10,8 @@ import type { Office } from "./offices-map";
  * Specs: docs/screens/pages.md, about-us.md, contact-us.md.
  */
 
-export function pageToBlocks(page: Page, regionLabel?: string): Block[] {
-  const edit = { r: "pages", id: page.id, map: { title: "title", html: "bodyHtml" } };
+export function pageToBlocks(page: Page, regionLabel?: string, resource: "pages" | "materials" = "pages"): Block[] {
+  const edit = { r: resource, id: page.id, map: { title: "title", html: "bodyHtml" } };
   return [
     { type: "hero", variant: "page", data: { eyebrow: regionLabel, title: page.title }, edit },
     { type: "richText", variant: "default", data: { html: page.bodyHtml }, edit },

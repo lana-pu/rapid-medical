@@ -2,8 +2,7 @@ import type { PgTable } from "drizzle-orm/pg-core";
 import {
   products,
   solutions,
-  publications,
-  newsItems,
+  materials,
   webinars,
   teamMembers,
   jobs,
@@ -16,6 +15,7 @@ import { events } from "@/db/schema";
 import { templateBlocks } from "@/blocks/templates";
 import { sitePagePath } from "@/blocks/site-pages";
 import { sitePages } from "@/db/schema";
+import { MATERIAL_KIND_LABELS, materialHref } from "@/lib/material";
 
 /** The page's sections (ADR-007): edited on the page; the fields marked `onPage` moved into them. */
 const blocksField: FieldDef = { name: "blocks", label: "Page sections", type: "blocks", onPage: true };
@@ -209,16 +209,19 @@ export const RESOURCES: Resource[] = [
 
   /* ------------------------------------------------------------- */
   {
-    slug: "publications",
+    // ADR-009 step 1 (2026-11-18, docs/briefs/materials.md): publications, news, studies, cases and documents — one list.
+    slug: "materials",
     listThumb: "imageUrl",
-    title: "Publications",
-    titleSingular: "Publication",
-    table: publications,
+    title: "Publications & news",
+    titleSingular: "Material",
+    table: materials,
     labelField: "title",
     sortBy: "publishedOn",
-    revalidate: ["/us/evidence", "/ous/evidence"],
+    revalidate: ["/", "/news-events", "/us/evidence", "/ous/evidence", "/apac/evidence"],
+    previewUrl: (r) => materialHref(r as Parameters<typeof materialHref>[0]),
     listColumns: [
       { name: "title", label: "Title" },
+      { name: "kind", label: "Kind", kind: "materialKind" },
       { name: "publishedOn", label: "Date", kind: "date" },
       { name: "productId", label: "Product", kind: "product" },
       { name: "regions", label: "Regions", kind: "regions" },
@@ -226,22 +229,38 @@ export const RESOURCES: Resource[] = [
       { name: "status", label: "Status", kind: "status" },
     ],
     fields: [
-      { name: "title", label: "Title", type: "text", required: true },
-      { name: "authors", label: "Authors", type: "textarea", rows: 2 },
-      { name: "journal", label: "Journal / citation", type: "text" },
-      { name: "publishedOn", label: "Published", type: "month", required: true, half: true, help: "Month and year" },
-      { name: "productId", label: "Product", type: "product", half: true },
-      { name: "url", label: "Link (DOI / journal)", type: "url", half: true },
-      { name: "pdfUrl", label: "PDF", type: "url", half: true },
-      { name: "pdfLicense", label: "PDF licence", type: "text", half: true, help: "For a PDF copied from an open-access source, e.g. CC BY 4.0. Shown under the PDF." },
-      { name: "pdfSource", label: "PDF source", type: "url", half: true, help: "Where the open-access PDF was taken from." },
-      { name: "abstract", label: "Abstract", type: "textarea", rows: 8, help: "Quoted as published. Shown when the full text is not on the page. Sections as «Background: …», a blank line between." },
-      { name: "abstractSource", label: "Abstract source", type: "text", half: true, help: "e.g. PubMed 33284987" },
-      { name: "doi", label: "DOI", type: "text", half: true },
-      { name: "regions", label: "Show in regions", type: "regions", half: true, help: "Leave empty for all." },
-      { name: "featured", label: "Featured on Evidence page", type: "boolean", half: true },
-      { name: "imageUrl", label: "Image (for featured)", type: "image" },
-      statusField,
+      { name: "title", label: "Title", type: "text", required: true, section: "Material" },
+      {
+        name: "kind", label: "Kind", type: "select", required: true, half: true, section: "Material",
+        options: Object.entries(MATERIAL_KIND_LABELS).map(([value, label]) => ({ value, label })),
+        help: "Study, publication, news, clinical case or document (IFU, brochure). The page's design follows the kind.",
+      },
+      { name: "publishedOn", label: "Date", type: "date", required: true, half: true, section: "Material", help: "YYYY-MM-DD. For a publication, the first day of its month." },
+      { name: "productId", label: "Product", type: "product", half: true, section: "Material" },
+      { name: "regions", label: "Show in regions", type: "regions", half: true, section: "Material", help: "Leave empty for all." },
+      { name: "showInEvidence", label: "Show on Evidence", type: "boolean", half: true, section: "Where it appears", help: "In the region's Evidence list and its own page there." },
+      { name: "showInNews", label: "Show in News & Events", type: "boolean", half: true, section: "Where it appears", help: "In the news feed, newest first." },
+      { name: "featured", label: "Highlight", type: "boolean", half: true, section: "Where it appears", help: "Home (news), top of News & Events, featured on Evidence." },
+      { name: "imageUrl", label: "Image", type: "image", section: "Where it appears", help: "Shown on cards and highlights." },
+      { name: "authors", label: "Authors", type: "textarea", rows: 2, section: "Source" },
+      { name: "journal", label: "Journal / citation", type: "text", half: true, section: "Source" },
+      { name: "source", label: "Source (news)", type: "text", half: true, section: "Source", placeholder: "BusinessWire" },
+      { name: "url", label: "Link to the original", type: "url", half: true, section: "Source", help: "DOI / journal / press release." },
+      { name: "doi", label: "DOI", type: "text", half: true, section: "Source" },
+      { name: "pdfUrl", label: "PDF", type: "url", half: true, section: "Source" },
+      { name: "pdfLicense", label: "PDF licence", type: "text", half: true, section: "Source", help: "For a PDF copied from an open-access source, e.g. CC BY 4.0. Shown under the PDF." },
+      { name: "pdfSource", label: "PDF source", type: "url", half: true, section: "Source", help: "Where the open-access PDF was taken from." },
+      { name: "abstract", label: "Abstract", type: "textarea", rows: 8, section: "Source", help: "Quoted as published. Shown when the full text is not on the page. Sections as «Background: …», a blank line between." },
+      { name: "abstractSource", label: "Abstract source", type: "text", half: true, section: "Source", help: "e.g. PubMed 33284987" },
+      { name: "excerpt", label: "Excerpt", type: "textarea", rows: 2, section: "Source" },
+      { name: "slug", label: "Own address", type: "text", half: true, section: "Its own page", help: "Only for pages kept at an old address (e.g. success-study-final-results). Empty — the address is made from the title." },
+      { name: "noindex", label: "Hide from search engines", type: "boolean", half: true, section: "Its own page" },
+      { onPage: true, name: "bodyHtml", label: "Body ", type: "markdown", rows: 20 },
+      blocksField,
+      { name: "metaTitle", label: "Title in Google", type: "text", section: "Google and sharing", half: true, help: "Up to 60 characters. Empty — the title." },
+      { name: "metaDescription", label: "Description in Google", type: "textarea", section: "Google and sharing", rows: 2, help: "Up to 155 characters. Empty — Google picks text from the page." },
+      { name: "shareImageUrl", label: "Picture for links (LinkedIn and others)", type: "image", section: "Google and sharing", help: "Empty — the image above." },
+      { ...statusField, section: "Google and sharing" },
     ],
   },
 
@@ -293,35 +312,6 @@ export const RESOURCES: Resource[] = [
       { name: "registrationClosesOn", label: "Registration closes after", type: "date", half: true, section: "Registration", help: "Empty = the first day of the event." },
       { name: "recapHtml", label: "Recap (after the event)", type: "markdown", rows: 6, section: "After the event", help: "Shown instead of the description once the event has taken place. Optional." },
       { name: "recapPhotos", label: "Photos (after the event)", type: "stringList", section: "After the event", help: "One image URL per line, from Media." },
-    ],
-  },
-
-  /* ------------------------------------------------------------- */
-  {
-    slug: "news",
-    listThumb: "imageUrl",
-    title: "News",
-    titleSingular: "News item",
-    table: newsItems,
-    labelField: "title",
-    sortBy: "publishedOn",
-    revalidate: ["/", "/news-events"],
-    listColumns: [
-      { name: "title", label: "Title" },
-      { name: "publishedOn", label: "Date", kind: "date" },
-      { name: "source", label: "Source" },
-      { name: "featured", label: "Featured", kind: "boolean" },
-      { name: "status", label: "Status", kind: "status" },
-    ],
-    fields: [
-      { name: "title", label: "Title", type: "text", required: true },
-      { name: "publishedOn", label: "Date", type: "date", required: true, half: true },
-      { name: "source", label: "Source", type: "text", half: true, placeholder: "BusinessWire" },
-      { name: "url", label: "External link", type: "url", required: true },
-      { name: "excerpt", label: "Excerpt", type: "textarea", rows: 2 },
-      { name: "imageUrl", label: "Image", type: "image" },
-      { name: "featured", label: "Featured on home / top of News", type: "boolean", half: true },
-      statusField,
     ],
   },
 
