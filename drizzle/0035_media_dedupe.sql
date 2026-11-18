@@ -83,13 +83,17 @@ BEGIN
     ('/uploads/duda/Meirovitch_T25_first-case-009920.pdf', '/uploads/duda/Meirovitch_T25_first-case-4655bd.pdf'),
     ('/uploads/duda/Solich_T13_case-28d16c.pdf', '/uploads/duda/Solich_T13_case-398e29.pdf'),
     ('/uploads/duda/Brauner_T13_case-084f72.pdf', '/uploads/duda/Brauner_T13_case-fee002.pdf');
+  -- only the tables that hold content (as scripts/migrate-media.ts TARGETS), drafts, revisions (a restored version keeps
+  -- working) and settings; the audit log, accounts, sessions and the rest keep what they recorded (security review)
   FOR c IN
     SELECT table_name, column_name, data_type FROM information_schema.columns
-    WHERE table_schema = 'public' AND data_type IN ('text', 'jsonb') AND table_name NOT IN ('media', '__drizzle_migrations')
+    WHERE table_schema = 'public' AND data_type IN ('text', 'jsonb')
+      AND table_name IN ('solutions', 'materials', 'pages', 'site_pages', 'webinars', 'team_members', 'jobs', 'events',
+                         'site_settings', 'setting_drafts', 'drafts', 'revisions', 'publications', 'news_items')
   LOOP
     FOR m IN SELECT f, t FROM dedupe_map LOOP
-      EXECUTE format('UPDATE %I SET %I = replace(%I::text, %L, %L)::%s WHERE %I::text LIKE %L',
-        c.table_name, c.column_name, c.column_name, m.f, m.t, c.data_type, c.column_name, '%' || m.f || '%');
+      EXECUTE format('UPDATE %I SET %I = replace(%I::text, %L, %L)::%s WHERE position(%L in %I::text) > 0',
+        c.table_name, c.column_name, c.column_name, m.f, m.t, c.data_type, m.f, c.column_name);
     END LOOP;
   END LOOP;
   UPDATE media o SET alt = d.alt FROM dedupe_map x JOIN media d ON d.url = x.f WHERE o.url = x.t AND o.alt = '' AND d.alt <> '';
