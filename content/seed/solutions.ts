@@ -92,6 +92,16 @@ const TIGER_DIAGRAM = (site: string): AnnotatedImage => ({
     { x: 90, y: 64, label: "Handle" },
   ],
 });
+/**
+ * Both handles of TIGERTRIEVER, as on Duda's US LVO and OUS LVO / MVO (Fix List A.1; placed 2026-11-18): each region its
+ * own models (US: T13 · T17 · T17 ULTRA · T21 · T25 and T13 MICRO; OUS: T17 · T17 ULTRA · T21 · TXL · T25 and T13). The
+ * labels are in the picture itself — no markers. Asia & Pacific keeps the one-handle diagram, as on Duda.
+ */
+const TIGER_HANDLES = (region: "us" | "ous"): AnnotatedImage => ({
+  imageUrl: IMG(US, `opt/Rapid_Medical_${region === "us" ? "US" : "OUS"}_LVO_Both_Handles_Annotated-1920w.png`),
+  caption: "TIGERTRIEVER™ – both handles",
+  markers: [],
+});
 const COMANECI_DIAGRAM = (site: string, img: string): AnnotatedImage => ({
   imageUrl: IMG(site, img),
   caption: "COMANECI™ – device anatomy",
@@ -792,7 +802,7 @@ for (const s of SOLUTIONS) {
   if (s.product.startsWith("tigertriever")) {
     s.shareImageUrl = IMG(APAC, "opt/TT_Revised-Base_V4-1920w.png");
     s.overviewFeatures = TIGER_FEATURES;
-    s.annotatedImage = TIGER_DIAGRAM(site);
+    s.annotatedImage = s.region === "us" && s.slug === "lvo" ? TIGER_HANDLES("us") : s.region === "ous" ? TIGER_HANDLES("ous") : TIGER_DIAGRAM(site);
     s.specs = s.region === "us" ? TT_SPECS_US : s.slug === "mvo" ? TT_SPECS_MVO_OUS : TT_SPECS_OUS;
   } else if (s.product === "comaneci") {
     const vaso = s.slug === "vasospasm";
