@@ -88,17 +88,37 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
   redirect(`/admin/materials/${saved.id}?created=document`);
 }
 
-/** «Looks right»: a person looked at the quote in the PDF. Stored on the record (not a content change), with who and when. */
-export async function confirmCheck(fd: FormData) {
-  const user = await requireUser();
-  const id = Number(fd.get("id"));
-  const item = String(fd.get("item") ?? "");
+/** «Looks right» on one value: stored on the record (not a content change), with who and when; audited. */
+async function confirmItem(id: number, item: string, user: { name: string; email: string }): Promise<DocumentCheck | null> {
   const row = Number.isInteger(id) ? await db.query.materials.findFirst({ where: eq(materials.id, id) }) : null;
   const dc = row?.documentCheck;
-  if (!row || !dc || !dc.items.some((x) => x.id === item)) redirect(`/admin/materials/${id}?error=${encodeURIComponent("Nothing to confirm")}`);
+  if (!row || !dc || !dc.items.some((x) => x.id === item)) return null;
   const items = dc.items.map((x) => (x.id === item && x.status === "check" ? { ...x, status: "confirmed" as const, confirmedBy: user.name || user.email, confirmedAt: new Date().toISOString() } : x));
   await db.update(materials).set({ documentCheck: { ...dc, items } }).where(eq(materials.id, id));
   const it = items.find((x) => x.id === item)!;
-  await audit(user, "save", { resource: "materials", recordId: id, label: row.title, meta: { confirmed: `${it.label}: ${it.value}` } });
+  await audit(user as Parameters<typeof audit>[0], "save", { resource: "materials", recordId: id, label: row.title, meta: { confirmed: `${it.label}: ${it.value}` } });
+  return { ...dc, items };
+}
+
+/** «Looks right» from the record's card (a form). */
+export async function confirmCheck(fd: FormData) {
+  const user = await requireUser();
+  const id = Number(fd.get("id"));
+  const done = await confirmItem(id, String(fd.get("item") ?? ""), user);
+  if (!done) redirect(`/admin/materials/${id}?error=${encodeURIComponent("Nothing to confirm")}`);
   redirect(`/admin/materials/${id}?checked=1#checks`);
+}
+
+/** The checks of a page in the editor (docs/screens/on-page-editor.md → Проверка по PDF); null when it has none. */
+export async function pageChecks(ref: { r: string; id: number }): Promise<DocumentCheck | null> {
+  await requireUser();
+  if (ref.r !== "materials" || !Number.isInteger(ref.id)) return null;
+  const row = await db.query.materials.findFirst({ columns: { documentCheck: true }, where: eq(materials.id, ref.id) });
+  return row?.documentCheck ?? null;
+}
+
+/** «Looks right» from the editor: the updated checks back, no navigation. */
+export async function confirmCheckInline(id: number, item: string): Promise<DocumentCheck | { error: string }> {
+  const user = await requireUser();
+  return (await confirmItem(id, String(item), user)) ?? { error: "Nothing to confirm" };
 }

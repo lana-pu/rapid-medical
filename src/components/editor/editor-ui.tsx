@@ -123,7 +123,7 @@ export function TopBar(props: {
 export const RAIL_W = 48;
 /** width of a rail tool's panel (w-80) */
 export const TOOL_W = 320;
-export type ToolKey = "add" | "sections" | "pages" | "history" | "comments" | "regions";
+export type ToolKey = "add" | "sections" | "pages" | "history" | "comments" | "regions" | "checks";
 
 export function ToolRail(props: {
   top: number;
@@ -132,6 +132,8 @@ export function ToolRail(props: {
   hasPage: boolean;
   demo: boolean;
   comments: number | null;
+  /** a material built from a document: values still to check against its PDF (null — not such a page) */
+  checks?: number | null;
   settingsHref: string | null;
   onTool: (t: ToolKey) => void;
   onPreview: () => void;
@@ -159,6 +161,7 @@ export function ToolRail(props: {
       {item("history", "🕘", "History", props.hasPage && !props.demo)}
       {item("comments", "💬", "Comments", props.hasPage && !props.demo, props.comments)}
       {item("regions", "⇄", "Regions", props.hasPage && !props.demo)}
+      {props.checks != null && item("checks", "✓", "Checked against the PDF", true, props.checks)}
       <span className="flex-1" />
       <button type="button" aria-label="Preview" title="Preview — as visitors will see it" onClick={props.onPreview} className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>👁</span></button>
       {props.settingsHref && <a href={props.settingsHref} aria-label="Page settings" title="Page settings (SEO, address)" className="flex h-10 w-10 items-center justify-center rounded text-lg text-neutral-200 hover:bg-neutral-800"><span aria-hidden>⚙</span></a>}

@@ -200,6 +200,14 @@
    Кнопки Publish now / Keep editing / Discard all changes (с подтверждением).
 2. После Publish → окно «Live now»: адрес страницы, «Open live page ↗», «Keep editing».
 
+## Проверка по PDF (материал из документа, 2026-11-18)
+Материал, собранный «Create from a document» (`docs/screens/admin-create-from-document.md`), проверяется и в редакторе:
+- в рейке — инструмент «Checked against the PDF» (✓) с числом непроверенных; панель — те же строки, что в карточке записи:
+  значение, подпись, «Found in the PDF» / «Confirmed by …» / «Check: причина», цитата, «Looks right»;
+- на странице цифры и строки паспорта с «Check» обведены жёлтым и подписаны «Check» (правка текста на месте не мешается);
+- «Review changes»: пока есть «Check» — строка «Check N values against the PDF first» и «Publish now» выключена; сервер
+  отказывает так же.
+
 ## История
 Панель справа: версии страницы новые сверху — «Published», «Saved», «Restored», кто, когда. «Restore this version» кладёт
 версию на страницу черновиком: видно сразу на странице, на сайт — после Publish, отменяется Discard или Undo.

@@ -5,6 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import * as live from "@/admin/inline";
 import * as pageLive from "@/admin/page-editor";
 import * as commentsLive from "@/admin/comments";
+import * as docChecks from "@/admin/document-actions";
+import type { DocumentCheck } from "@/db/schema";
 import type { CommentView } from "@/admin/comments";
 import type { PendingItem, InlineKind } from "@/admin/inline";
 import type { PageInfo, HistoryItem } from "@/admin/page-editor";
@@ -53,6 +55,7 @@ type Tool =
   | { k: "history"; items: HistoryItem[] | null }
   | { k: "comments"; focus?: string | null; compose: string | null }
   | { k: "regions" }
+  | { k: "checks" }
   | null;
 type Modal = { k: "review"; items: string[]; others: string[]; confirmDiscard: boolean } | { k: "live"; path: string } | { k: "conflict"; message: string } | null;
 type Legacy = { items: PendingItem[]; user: { name: string; role: string } };
@@ -69,6 +72,8 @@ const STYLE = (top: number, preview: boolean, layout: boolean, left: number) =>
 [data-e]{cursor:text;border-radius:2px;transition:outline-color .12s,background-color .12s}
 ${layout ? `[data-e]{outline:1px dashed rgba(37,99,235,.55);outline-offset:3px}` : ""}
 [data-e]:hover{outline:${layout ? "2px solid #2563eb" : "1px solid rgba(37,99,235,.45)"};outline-offset:3px;background:rgba(37,99,235,.08)}
+[data-rm-check]{outline:2px solid #f59e0b !important;outline-offset:3px;position:relative}
+[data-rm-check]::after{content:"Check";position:absolute;top:-10px;right:-6px;background:#f59e0b;color:#111;font:700 10px/1 system-ui;padding:3px 5px;border-radius:3px}
 [data-e][contenteditable]{outline:2px solid #f59e0b;background:#fff;color:#111;cursor:text;min-width:2ch;white-space:pre-wrap}
 .rm-e-media{position:relative;display:block;cursor:pointer}
 .rm-e-media:hover::after{content:"Replace";position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font:600 11px/1 system-ui;padding:6px 8px;border-radius:4px;pointer-events:none}
@@ -202,6 +207,9 @@ export default function EditorOverlay() {
   const [redoCount, setRedoCount] = useState(0);
   const redo = useRef<Undo[]>([]);
   const [comments, setComments] = useState<CommentView[]>([]);
+  // a material built from a document: its values checked against the PDF (docs/screens/on-page-editor.md → Проверка по PDF)
+  const [checks, setChecks] = useState<DocumentCheck | null>(null);
+  const openChecks = checks ? checks.items.filter((x) => x.status === "check").length : 0;
   const [picking, setPicking] = useState(false);
   const pickingRef = useRef(false);
   useEffect(() => {
@@ -262,6 +270,16 @@ export default function EditorOverlay() {
     if (!("error" in r)) setComments(r.items);
   }, []);
 
+  const loadChecks = useCallback(async () => {
+    const ref = readPageRef();
+    if (!ref || ref.r !== "materials" || DEMO) return setChecks(null);
+    try {
+      setChecks(await docChecks.pageChecks(ref));
+    } catch {
+      setChecks(null);
+    }
+  }, []);
+
   const loadLegacy = useCallback(async () => {
     try {
       setLegacy(await api.pendingFor(targetsOnPage()));
@@ -291,10 +309,26 @@ export default function EditorOverlay() {
       void loadInfo();
       void loadLegacy();
       void loadComments();
+      void loadChecks();
       remeasure();
     }, 50);
     return () => clearTimeout(t);
-  }, [pathname, loadInfo, loadLegacy, loadComments, remeasure]);
+  }, [pathname, loadInfo, loadLegacy, loadComments, loadChecks, remeasure]);
+
+  /* ---- values still to check against the PDF: outlined on the page ---- */
+  useEffect(() => {
+    document.querySelectorAll("[data-rm-check]").forEach((el) => el.removeAttribute("data-rm-check"));
+    if (!checks || !page || off || preview) return;
+    const open = new Set(checks.items.filter((x) => x.status === "check").map((x) => x.id));
+    document.querySelectorAll("[data-e]").forEach((el) => {
+      const t = parse(el);
+      if (!t || t.r !== "materials" || t.id !== page.id) return;
+      const fig = /\.items\.(\d+)\.value$/.exec(t.f);
+      const row = /\.rows\.(\d+)\.value$/.exec(t.f);
+      const id = fig ? `figures-${fig[1]}` : row ? `passport-${row[1]}` : null;
+      if (id && open.has(id)) el.setAttribute("data-rm-check", "");
+    });
+  }, [checks, page, off, preview, pathname]);
 
   /* ---- after a server refresh: new marks, maybe a section to select ---- */
   useEffect(() => {
@@ -816,6 +850,7 @@ export default function EditorOverlay() {
           hasPage={!!info}
           demo={DEMO}
           comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
+          checks={checks ? openChecks : null}
           settingsHref={info && !DEMO ? info.adminHref : null}
           onPreview={() => { setPreview(true); setSelected(null); setPanel(null); setTool(null); }}
           onTool={(k: ToolKey) => {
@@ -1102,6 +1137,49 @@ export default function EditorOverlay() {
           </div>
         </ToolPanel>
       )}
+      {tool?.k === "checks" && checks && (
+        <ToolPanel title="Checked against the PDF" top={top} onClose={() => setTool(null)}>
+          <div className="space-y-3 p-4 text-sm">
+            <p className={openChecks ? "font-medium text-amber-800" : "text-green-800"}>
+              {checks.items.length - openChecks} of {checks.items.length} checked{openChecks ? " — Publish waits for the rest" : ""}
+            </p>
+            <p className="text-xs text-neutral-500">Built from {checks.file}. Values marked «Check» are outlined on the page.</p>
+            <ul className="divide-y divide-neutral-100">
+              {checks.items.map((x) => (
+                <li key={x.id} className="py-3">
+                  <div><b>{x.value}</b> <span className="text-neutral-700">{x.label}</span></div>
+                  {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in the PDF</p>}
+                  {x.status === "confirmed" && <p className="mt-1 text-xs text-green-800">✓ Confirmed by {x.confirmedBy}</p>}
+                  {x.status === "check" && (
+                    <div className="mt-1">
+                      <p className="text-xs font-medium text-amber-800">Check: {x.reason}</p>
+                      <blockquote className="mt-1 border-l-2 border-neutral-200 pl-3 text-xs text-neutral-600">«{x.quote}»</blockquote>
+                      <button
+                        type="button"
+                        className={`${buttons.secondary} mt-2`}
+                        disabled={busy || !page}
+                        onClick={async () => {
+                          if (!page) return;
+                          setBusy(true);
+                          try {
+                            const r = await docChecks.confirmCheckInline(page.id, x.id);
+                            if ("error" in r) say(r.error, true);
+                            else setChecks(r);
+                          } finally {
+                            setBusy(false);
+                          }
+                        }}
+                      >
+                        Looks right
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </ToolPanel>
+      )}
       {picker && (
         <MediaPicker
           kind={picker.kind}
@@ -1127,9 +1205,15 @@ export default function EditorOverlay() {
               {modal.others.map((x) => <li key={x}>{x} (shown on this page)</li>)}
             </ul>
           )}
+          {openChecks > 0 && (
+            <p role="status" className="mb-4 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              Check {openChecks} value{openChecks > 1 ? "s" : ""} against the PDF first —{" "}
+              <button type="button" className="underline" onClick={() => { setModal(null); setTool({ k: "checks" }); }}>open the checks</button>
+            </p>
+          )}
           {info?.changedBy && <p className="mb-4 text-xs text-neutral-500">Last change by {info.changedBy}{info.changedAt ? `, ${new Date(info.changedAt).toLocaleString()}` : ""}.</p>}
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" className={buttons.primary} disabled={busy || modal.items.length + modal.others.length === 0} onClick={publishNow}>Publish now</button>
+            <button type="button" className={buttons.primary} disabled={busy || openChecks > 0 || modal.items.length + modal.others.length === 0} onClick={publishNow}>Publish now</button>
             <button type="button" className={buttons.secondary} onClick={() => setModal(null)}>Keep editing</button>
             <span className="flex-1" />
             <button type="button" className={`${buttons.secondary} text-red-700`} disabled={busy} onClick={() => (modal.confirmDiscard ? discardAll() : setModal({ ...modal, confirmDiscard: true }))}>

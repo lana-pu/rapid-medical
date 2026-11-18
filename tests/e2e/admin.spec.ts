@@ -961,6 +961,16 @@ test("create from a document: kind from the file, the team's AI answer checked a
     await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
     // the server refuses too, whatever the button says
     expect(sql(`select document_check->'items'->1->>'status' from materials where id=${id}`)).toBe("check");
+    // in the editor on the page: the value to check is outlined, the checks are in the rail, Publish now waits
+    await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(`/us/evidence/${id}`)}`);
+    await expect(page.locator("[data-rm-check]")).toHaveCount(1);
+    await page.getByRole("button", { name: "Checked against the PDF" }).click();
+    await expect(page.getByRole("complementary", { name: "Checked against the PDF" })).toContainText("1 of 2 checked");
+    await page.getByRole("button", { name: "Publish", exact: true }).click();
+    await expect(page.getByText(/Check 1 value against the PDF first/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Publish now" })).toBeDisabled();
+    await page.getByRole("button", { name: "Keep editing" }).click();
+    await page.goto(`/admin/materials/${id}`);
     await checks.getByRole("button", { name: "Looks right" }).click();
     await expect(checks).toContainText("2 of 2 checked");
     await expect(checks).toContainText(/Confirmed by/);
