@@ -58,12 +58,12 @@ const LABEL = { us: 'Americas', ous: 'Europe, Middle East, Latin America & Austr
 const NOTICE = { us: '', ous: 'Not all products are available in all countries. Refer to the Instructions for Use for the indications approved in your region.', apac: '*Not all products are available in all countries.' };
 style.textContent += '.w-row.rmh-mob{display:none}@container frame (max-width: 719px){.rmh-desk{display:none!important}.w-row.rmh-mob{display:flex}.rmh-pad{padding-inline:18px!important}}.rmh-grp{padding:6px 12px 2px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--wf-muted)}';
 WF.register('rm-header', {
-  group: 'Project', doc: 'Site header (src/components/site/Header.tsx): contact strip with the region switcher, logo, main menu — Therapies opens the region’s therapies grouped by therapy group with “All therapies”, Contact Us. Without a region (country unknown) the switcher reads “Choose location” and Therapies leads to the chooser. On a phone the menu becomes a row of links.',
-  props: { region: { type: 'us | ous | apac | (none)', doc: 'current region; none = the IP country is unknown' }, menuOpen: { type: 'bool', doc: 'show the Therapies dropdown' }, switcherOpen: { type: 'bool', doc: 'show the region list of the switcher' }, focus: { type: '{part: menu | switcher | contact, style, cursor}', doc: 'highlight a part' } },
+  group: 'Project', doc: 'Site header (src/components/site/Header.tsx): contact strip with the region switcher, logo, main menu — Therapies opens the region’s therapies grouped by therapy group with “All therapies”, Contact Us. The switcher opens the «Choose your location» window (screen overlay: modal with rm-regionChooser). Without a region (country unknown) the switcher reads “Choose location” and Therapies / Evidence open that window. On a phone the menu becomes a row of links.',
+  props: { region: { type: 'us | ous | apac | (none)', doc: 'current region; none = the IP country is unknown' }, menuOpen: { type: 'bool', doc: 'show the Therapies dropdown' }, focus: { type: '{part: menu | switcher | contact, style, cursor}', doc: 'highlight a part' } },
   render: n => {
     const r = n.region;
     const drop = n.menuOpen && r ? `<div class="w-pop" style="min-width:230px"><div class="w-menu">${NAV[r].map(([g, items]) => `<div class="rmh-grp">${esc(g)}</div>${items.map(x => `<div class="mi"><span>${esc(x)}</span></div>`).join('')}`).join('')}<div class="mi" style="border-top:1px solid var(--wf-line);margin-top:4px"><span>All therapies →</span></div></div></div>` : '';
-    const sw = n.switcherOpen && r ? `<div class="w-pop" style="min-width:200px;right:0;left:auto"><div class="w-menu">${['us', 'apac', 'ous'].map(x => `<div class="mi"><span>${x === r ? `<b>${esc(CHOICE[x])}</b> ✓` : esc(CHOICE[x])}</span></div>`).join('')}</div></div>` : '';
+    const sw = '';
     return focus(`<header style="border-bottom:1px solid var(--wf-line);background:var(--wf-paper)">
       <div class="w-row j-between rmh-pad" style="padding:6px 40px;background:var(--wf-surface);font-size:12px;color:var(--wf-muted);border-bottom:1px solid var(--wf-line)">
         <span class="w-row g-l"><b style="color:var(--wf-ink)">Get in touch</b><span>HQ: ${CONTACT.phoneHq}</span><span class="rmh-desk">US: ${CONTACT.phoneUs}</span><span class="rmh-desk">${CONTACT.email}</span></span>
@@ -73,7 +73,7 @@ WF.register('rm-header', {
         <span class="w-btn primary s" data-part="contact">Contact Us</span></div>
       <nav class="rmh-mob w-row g-l rmh-pad" style="padding:8px 40px;border-top:1px solid var(--wf-line);font-size:13px;overflow:hidden"><span>Therapies</span><span>Evidence</span><span>News</span><span>About</span><span>Careers</span></nav></header>`, n.focus);
   },
-  examples: [{ c: 'rm-header', region: 'us', menuOpen: true }, { c: 'rm-header', region: 'ous', switcherOpen: true }, { c: 'rm-header' }],
+  examples: [{ c: 'rm-header', region: 'us', menuOpen: true }, { c: 'rm-header', region: 'ous' }, { c: 'rm-header' }],
 });
 WF.register('rm-footer', {
   group: 'Project', doc: 'Site footer: contacts, social links, legal pages, the regional notice, copyright.',

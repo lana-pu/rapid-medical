@@ -1,12 +1,20 @@
 {
- "snapshot": "2026-11-11",
+ "snapshot": "2026-11-18",
  "pages": {
   "OUS · Large vessel stroke": [
    {
     "type": "hero",
     "variant": "video",
     "data": {
+     "cta": {
+      "href": "/contact-us?region=ous&topic=demo",
+      "label": "Request a demo"
+     },
+     "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+     "title": "A patient-centric approach to AIS",
      "eyebrow": "Therapies / Large vessel stroke",
+     "imageUrl": null,
+     "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
      "eyebrowLinks": [
       {
        "label": "Americas version",
@@ -17,26 +25,18 @@
        "href": "/apac/therapies/lvo"
       }
      ],
-     "title": "A patient-centric approach to AIS",
-     "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-     "cta": {
-      "href": "/contact-us?region=ous&topic=demo",
-      "label": "Request a demo"
-     },
-     "imageUrl": null,
-     "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+     "eyebrowHref": "/ous/therapies"
     },
     "edit": {
      "r": "solutions",
      "id": 4,
+     "prefix": "blocks.0.data.",
      "map": {
-      "title": "heroTitle",
-      "body": "heroBody",
-      "cta": "heroCta",
-      "imageUrl": "heroImageUrl",
-      "videoUrl": "heroVideoUrl"
+      "eyebrowLinks": null,
+      "eyebrowHref": null
      }
-    }
+    },
+    "uid": "2efb511567"
    },
    {
     "type": "textMedia",
@@ -51,9 +51,9 @@
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {},
-     "prefix": "benefits.0."
-    }
+     "prefix": "blocks.1.data."
+    },
+    "uid": "452cb888b8"
    },
    {
     "type": "textMedia",
@@ -68,9 +68,9 @@
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {},
-     "prefix": "benefits.1."
-    }
+     "prefix": "blocks.2.data."
+    },
+    "uid": "b9d95d0ec7"
    },
    {
     "type": "textMedia",
@@ -95,15 +95,14 @@
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {},
-     "prefix": "benefits.2."
-    }
+     "prefix": "blocks.3.data."
+    },
+    "uid": "f08d94a691"
    },
    {
     "type": "productDetails",
     "variant": "pills",
     "data": {
-     "anchor": "overview",
      "hint": "Click on a tab below to learn more.",
      "tabs": [
       {
@@ -112,22 +111,19 @@
        "title": "Product overview",
        "blocks": [
         {
-         "type": "text",
-         "variant": "default",
          "data": {
           "body": "The world's first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures."
          },
+         "type": "text",
+         "variant": "default",
          "edit": {
           "r": "solutions",
           "id": 4,
-          "map": {
-           "body": "overviewBody"
-          }
-         }
+          "prefix": "blocks.4.data.tabs.0.blocks.0.data."
+         },
+         "uid": "3d2b371c68/0/0"
         },
         {
-         "type": "columns",
-         "variant": "features",
          "data": {
           "items": [
            {
@@ -153,21 +149,19 @@
           ],
           "legacyImageUrl": "/uploads/duda/OUS-LVO-Product-Overview-7f2534.jpg"
          },
+         "type": "columns",
+         "variant": "features",
          "edit": {
           "r": "solutions",
           "id": 4,
-          "map": {
-           "items": "overviewFeatures",
-           "legacyImageUrl": "overviewImageUrl"
-          }
-         }
+          "prefix": "blocks.4.data.tabs.0.blocks.1.data."
+         },
+         "uid": "3d2b371c68/0/1"
         },
         {
          "group": "Specifications",
          "blocks": [
           {
-           "type": "deviceDiagram",
-           "variant": "default",
            "data": {
             "caption": "TIGERTRIEVER™ – device anatomy",
             "markers": [
@@ -209,18 +203,18 @@
             ],
             "imageUrl": "/uploads/duda/Specifications-Resized-98a228.jpg"
            },
+           "type": "deviceDiagram",
+           "variant": "default",
            "edit": {
             "r": "solutions",
             "id": 4,
-            "map": {
-             "markers": "annotatedImage.markers"
-            }
-           }
+            "prefix": "blocks.4.data.tabs.0.blocks.2.blocks.0.data."
+           },
+           "uid": "3d2b371c68/0/2/0"
           },
           {
-           "type": "specTable",
-           "variant": "table",
            "data": {
+            "note": "Not all products are available in all countries.",
             "table": {
              "note": "Not all products are available in all countries.",
              "rows": [
@@ -273,9 +267,16 @@
               "Minimum microcatheter compatibility ID (in)",
               "Total length excluding handle (cm)"
              ]
-            },
-            "note": "Not all products are available in all countries."
-           }
+            }
+           },
+           "type": "specTable",
+           "variant": "table",
+           "edit": {
+            "r": "solutions",
+            "id": 4,
+            "prefix": "blocks.4.data.tabs.0.blocks.2.blocks.1.data."
+           },
+           "uid": "3d2b371c68/0/2/1"
           }
          ]
         }
@@ -287,8 +288,6 @@
        "title": "How it works",
        "blocks": [
         {
-         "type": "columns",
-         "variant": "steps",
          "data": {
           "items": [
            {
@@ -308,13 +307,14 @@
            }
           ]
          },
+         "type": "columns",
+         "variant": "steps",
          "edit": {
           "r": "solutions",
           "id": 4,
-          "map": {
-           "items": "howItWorks"
-          }
-         }
+          "prefix": "blocks.4.data.tabs.1.blocks.0.data."
+         },
+         "uid": "3d2b371c68/1/0"
         }
        ]
       },
@@ -324,22 +324,26 @@
        "title": "In practice",
        "blocks": [
         {
-         "type": "cta",
-         "variant": "panel",
          "data": {
-          "title": "Webinars",
           "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+          "title": "Webinars",
           "buttons": [
            {
-            "label": "Request to view",
-            "href": "/ous/webinars"
+            "href": "/ous/webinars?product=tigertriever",
+            "label": "Request to view"
            }
           ]
-         }
+         },
+         "type": "cta",
+         "variant": "panel",
+         "edit": {
+          "r": "solutions",
+          "id": 4,
+          "prefix": "blocks.4.data.tabs.2.blocks.0.data."
+         },
+         "uid": "3d2b371c68/2/0"
         },
         {
-         "type": "people",
-         "variant": "physicians",
          "data": {
           "items": [
            {
@@ -364,80 +368,84 @@
            }
           ]
          },
+         "type": "people",
+         "variant": "physicians",
          "edit": {
           "r": "solutions",
           "id": 4,
-          "map": {
-           "items": "inPractice"
-          }
-         }
+          "prefix": "blocks.4.data.tabs.2.blocks.1.data."
+         },
+         "uid": "3d2b371c68/2/1"
         }
        ]
       },
       {
        "id": "evidence",
-       "label": "Clinical evidence",
        "href": "/ous/evidence#tigertriever",
+       "label": "Clinical evidence",
        "blocks": []
       }
-     ]
-    }
+     ],
+     "anchor": "overview"
+    },
+    "edit": {
+     "r": "solutions",
+     "id": 4,
+     "prefix": "blocks.4.data."
+    },
+    "uid": "3d2b371c68"
    },
    {
     "type": "video",
     "variant": "band",
     "data": {
-     "title": "Active thrombectomy tailors the procedure to the patient.",
-     "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+     "url": "https://www.youtube.com/embed/ja2bTvMJRLs",
+     "title": "Active thrombectomy tailors the procedure to the patient."
     },
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {
-      "title": "closingTitle"
-     }
-    }
+     "prefix": "blocks.5.data."
+    },
+    "uid": "e5e2c667eb"
    },
    {
     "type": "cta",
     "variant": "band",
     "data": {
-     "title": "Questions?",
      "body": "Reach out to learn more about our company and devices.",
+     "title": "Questions?",
      "buttons": [
       {
        "href": "/contact-us?region=ous&topic=demo",
        "label": "Request a demo"
       },
       {
-       "label": "Customer support",
-       "href": "/contact-us?region=ous"
+       "href": "/contact-us?region=ous&topic=support",
+       "label": "Customer support"
       }
      ]
     },
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {
-      "body": "closingBody"
-     }
-    }
+     "prefix": "blocks.6.data."
+    },
+    "uid": "356a837e3a"
    },
    {
     "type": "indications",
     "variant": "default",
     "data": {
-     "indicationsHtml": "",
-     "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+     "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n",
+     "indicationsHtml": ""
     },
     "edit": {
      "r": "solutions",
      "id": 4,
-     "map": {
-      "indicationsHtml": "regulatoryHtml",
-      "referencesHtml": "referencesHtml"
-     }
-    }
+     "prefix": "blocks.7.data."
+    },
+    "uid": "8d0430ae98"
    }
   ],
   "APAC · Large vessel stroke": [
@@ -445,7 +453,15 @@
     "type": "hero",
     "variant": "image",
     "data": {
+     "cta": {
+      "href": "/contact-us?region=apac&topic=demo",
+      "label": "Request a demo"
+     },
+     "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+     "title": "A patient-centric approach to AIS",
      "eyebrow": "Therapies / Large vessel stroke",
+     "imageUrl": "/uploads/duda/3666-TT13-Expand---Compress-Dynamic-V3_HIGHRES-e31360.gif",
+     "videoUrl": null,
      "eyebrowLinks": [
       {
        "label": "Americas version",
@@ -456,46 +472,34 @@
        "href": "/ous/therapies/lvo"
       }
      ],
-     "title": "A patient-centric approach to AIS",
-     "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-     "cta": {
-      "href": "/contact-us?region=apac&topic=demo",
-      "label": "Request a demo"
-     },
-     "imageUrl": "/uploads/duda/3666-TT13-Expand---Compress-Dynamic-V3_HIGHRES-e31360.gif",
-     "videoUrl": null
+     "eyebrowHref": "/apac/therapies"
     },
     "edit": {
      "r": "solutions",
      "id": 9,
+     "prefix": "blocks.0.data.",
      "map": {
-      "title": "heroTitle",
-      "body": "heroBody",
-      "cta": "heroCta",
-      "imageUrl": "heroImageUrl",
-      "videoUrl": "heroVideoUrl"
+      "eyebrowLinks": null,
+      "eyebrowHref": null
      }
-    }
+    },
+    "uid": "6664da3742"
    },
    {
     "type": "text",
     "variant": "lead",
     "data": {
-     "title": null,
      "body": null,
+     "title": null,
      "imageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
      "videoUrl": null
     },
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {
-      "title": "introTitle",
-      "body": "introBody",
-      "imageUrl": "introImageUrl",
-      "videoUrl": "introVideoUrl"
-     }
-    }
+     "prefix": "blocks.1.data."
+    },
+    "uid": "46a0e29427"
    },
    {
     "type": "textMedia",
@@ -510,9 +514,9 @@
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {},
-     "prefix": "benefits.0."
-    }
+     "prefix": "blocks.2.data."
+    },
+    "uid": "f01c4b276f"
    },
    {
     "type": "textMedia",
@@ -527,9 +531,9 @@
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {},
-     "prefix": "benefits.1."
-    }
+     "prefix": "blocks.3.data."
+    },
+    "uid": "c8b21a57a8"
    },
    {
     "type": "textMedia",
@@ -554,15 +558,14 @@
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {},
-     "prefix": "benefits.2."
-    }
+     "prefix": "blocks.4.data."
+    },
+    "uid": "428bcbdd34"
    },
    {
     "type": "productDetails",
     "variant": "pills",
     "data": {
-     "anchor": "overview",
      "hint": "Click on a tab below to learn more.",
      "tabs": [
       {
@@ -571,22 +574,19 @@
        "title": "Product overview",
        "blocks": [
         {
-         "type": "text",
-         "variant": "default",
          "data": {
           "body": "The world's first and only adjustable stent retriever, TIGERTRIEVER™ is designed with active, responsive technology for patient-specific procedures."
          },
+         "type": "text",
+         "variant": "default",
          "edit": {
           "r": "solutions",
           "id": 9,
-          "map": {
-           "body": "overviewBody"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.0.blocks.0.data."
+         },
+         "uid": "05939c1f1e/0/0"
         },
         {
-         "type": "columns",
-         "variant": "features",
          "data": {
           "items": [
            {
@@ -612,21 +612,19 @@
           ],
           "legacyImageUrl": "/uploads/duda/Product-Overview-US-d35cbf.jpg"
          },
+         "type": "columns",
+         "variant": "features",
          "edit": {
           "r": "solutions",
           "id": 9,
-          "map": {
-           "items": "overviewFeatures",
-           "legacyImageUrl": "overviewImageUrl"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.0.blocks.1.data."
+         },
+         "uid": "05939c1f1e/0/1"
         },
         {
          "group": "Specifications",
          "blocks": [
           {
-           "type": "deviceDiagram",
-           "variant": "default",
            "data": {
             "caption": "TIGERTRIEVER™ – device anatomy",
             "markers": [
@@ -668,18 +666,18 @@
             ],
             "imageUrl": "/uploads/duda/Specifications-Resized-d26b18.jpg"
            },
+           "type": "deviceDiagram",
+           "variant": "default",
            "edit": {
             "r": "solutions",
             "id": 9,
-            "map": {
-             "markers": "annotatedImage.markers"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.0.data."
+           },
+           "uid": "05939c1f1e/0/2/0"
           },
           {
-           "type": "specTable",
-           "variant": "table",
            "data": {
+            "note": "Not all products are available in all countries.",
             "table": {
              "note": "Not all products are available in all countries.",
              "rows": [
@@ -732,9 +730,16 @@
               "Minimum microcatheter compatibility ID (in)",
               "Total length excluding handle (cm)"
              ]
-            },
-            "note": "Not all products are available in all countries."
-           }
+            }
+           },
+           "type": "specTable",
+           "variant": "table",
+           "edit": {
+            "r": "solutions",
+            "id": 9,
+            "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.1.data."
+           },
+           "uid": "05939c1f1e/0/2/1"
           }
          ]
         }
@@ -746,8 +751,6 @@
        "title": "How it works",
        "blocks": [
         {
-         "type": "columns",
-         "variant": "steps",
          "data": {
           "items": [
            {
@@ -767,13 +770,14 @@
            }
           ]
          },
+         "type": "columns",
+         "variant": "steps",
          "edit": {
           "r": "solutions",
           "id": 9,
-          "map": {
-           "items": "howItWorks"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.1.blocks.0.data."
+         },
+         "uid": "05939c1f1e/1/0"
         }
        ]
       },
@@ -783,22 +787,26 @@
        "title": "In practice",
        "blocks": [
         {
-         "type": "cta",
-         "variant": "panel",
          "data": {
-          "title": "Webinars",
           "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+          "title": "Webinars",
           "buttons": [
            {
-            "label": "Request to view",
-            "href": "/apac/webinars"
+            "href": "/apac/webinars?product=tigertriever",
+            "label": "Request to view"
            }
           ]
-         }
+         },
+         "type": "cta",
+         "variant": "panel",
+         "edit": {
+          "r": "solutions",
+          "id": 9,
+          "prefix": "blocks.5.data.tabs.2.blocks.0.data."
+         },
+         "uid": "05939c1f1e/2/0"
         },
         {
-         "type": "people",
-         "variant": "physicians",
          "data": {
           "items": [
            {
@@ -823,80 +831,84 @@
            }
           ]
          },
+         "type": "people",
+         "variant": "physicians",
          "edit": {
           "r": "solutions",
           "id": 9,
-          "map": {
-           "items": "inPractice"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.2.blocks.1.data."
+         },
+         "uid": "05939c1f1e/2/1"
         }
        ]
       },
       {
        "id": "evidence",
-       "label": "Clinical evidence",
        "href": "/apac/evidence#tigertriever",
+       "label": "Clinical evidence",
        "blocks": []
       }
-     ]
-    }
+     ],
+     "anchor": "overview"
+    },
+    "edit": {
+     "r": "solutions",
+     "id": 9,
+     "prefix": "blocks.5.data."
+    },
+    "uid": "05939c1f1e"
    },
    {
     "type": "video",
     "variant": "band",
     "data": {
-     "title": "Active thrombectomy tailors the procedure to the patient.",
-     "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+     "url": "https://www.youtube.com/embed/ja2bTvMJRLs",
+     "title": "Active thrombectomy tailors the procedure to the patient."
     },
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {
-      "title": "closingTitle"
-     }
-    }
+     "prefix": "blocks.6.data."
+    },
+    "uid": "72266cefb6"
    },
    {
     "type": "cta",
     "variant": "band",
     "data": {
-     "title": "Questions?",
      "body": "Reach out to learn more about our company and stroke solutions.",
+     "title": "Questions?",
      "buttons": [
       {
        "href": "/contact-us?region=apac&topic=demo",
        "label": "Request a demo"
       },
       {
-       "label": "Customer support",
-       "href": "/contact-us?region=apac"
+       "href": "/contact-us?region=apac&topic=support",
+       "label": "Customer support"
       }
      ]
     },
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {
-      "body": "closingBody"
-     }
-    }
+     "prefix": "blocks.7.data."
+    },
+    "uid": "b47f7b4a7e"
    },
    {
     "type": "indications",
     "variant": "default",
     "data": {
-     "indicationsHtml": "",
-     "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+     "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n",
+     "indicationsHtml": ""
     },
     "edit": {
      "r": "solutions",
      "id": 9,
-     "map": {
-      "indicationsHtml": "regulatoryHtml",
-      "referencesHtml": "referencesHtml"
-     }
-    }
+     "prefix": "blocks.8.data."
+    },
+    "uid": "a9f3daa309"
    }
   ],
   "US · Aneurysm": [
@@ -904,7 +916,15 @@
     "type": "hero",
     "variant": "image",
     "data": {
+     "cta": {
+      "href": "/contact-us?region=us&topic=demo",
+      "label": "Request a demo"
+     },
+     "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+     "title": "Bridging the gap in assist devices",
      "eyebrow": "Therapies / Aneurysm",
+     "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+     "videoUrl": null,
      "eyebrowLinks": [
       {
        "label": "Europe & Middle East version",
@@ -915,46 +935,34 @@
        "href": "/apac/therapies/aneurysm"
       }
      ],
-     "title": "Bridging the gap in assist devices",
-     "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
-     "cta": {
-      "href": "/contact-us?region=us&topic=demo",
-      "label": "Request a demo"
-     },
-     "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
-     "videoUrl": null
+     "eyebrowHref": "/us/therapies"
     },
     "edit": {
      "r": "solutions",
      "id": 2,
+     "prefix": "blocks.0.data.",
      "map": {
-      "title": "heroTitle",
-      "body": "heroBody",
-      "cta": "heroCta",
-      "imageUrl": "heroImageUrl",
-      "videoUrl": "heroVideoUrl"
+      "eyebrowLinks": null,
+      "eyebrowHref": null
      }
-    }
+    },
+    "uid": "111c1b76fc"
    },
    {
     "type": "text",
     "variant": "lead",
     "data": {
-     "title": null,
      "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents.",
+     "title": null,
      "imageUrl": null,
      "videoUrl": null
     },
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {
-      "title": "introTitle",
-      "body": "introBody",
-      "imageUrl": "introImageUrl",
-      "videoUrl": "introVideoUrl"
-     }
-    }
+     "prefix": "blocks.1.data."
+    },
+    "uid": "fe55636797"
    },
    {
     "type": "textMedia",
@@ -969,9 +977,9 @@
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {},
-     "prefix": "benefits.0."
-    }
+     "prefix": "blocks.2.data."
+    },
+    "uid": "5a248fc5c6"
    },
    {
     "type": "textMedia",
@@ -989,9 +997,9 @@
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {},
-     "prefix": "benefits.1."
-    }
+     "prefix": "blocks.3.data."
+    },
+    "uid": "91d4968a7f"
    },
    {
     "type": "textMedia",
@@ -1059,15 +1067,14 @@
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {},
-     "prefix": "benefits.2."
-    }
+     "prefix": "blocks.4.data."
+    },
+    "uid": "1d063457e5"
    },
    {
     "type": "productDetails",
     "variant": "pills",
     "data": {
-     "anchor": "overview",
      "hint": "Click on a tab below to learn more.",
      "tabs": [
       {
@@ -1076,22 +1083,19 @@
        "title": "Product overview",
        "blocks": [
         {
-         "type": "text",
-         "variant": "default",
          "data": {
           "body": "COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures."
          },
+         "type": "text",
+         "variant": "default",
          "edit": {
           "r": "solutions",
           "id": 2,
-          "map": {
-           "body": "overviewBody"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.0.blocks.0.data."
+         },
+         "uid": "5fb41f112a/0/0"
         },
         {
-         "type": "columns",
-         "variant": "features",
          "data": {
           "items": [
            {
@@ -1117,21 +1121,19 @@
           ],
           "legacyImageUrl": "/uploads/duda/OUS-Aneurysm-Product-Overview-b1ffd9.jpg"
          },
+         "type": "columns",
+         "variant": "features",
          "edit": {
           "r": "solutions",
           "id": 2,
-          "map": {
-           "items": "overviewFeatures",
-           "legacyImageUrl": "overviewImageUrl"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.0.blocks.1.data."
+         },
+         "uid": "5fb41f112a/0/1"
         },
         {
          "group": "Specifications",
          "blocks": [
           {
-           "type": "deviceDiagram",
-           "variant": "default",
            "data": {
             "caption": "COMANECI™ – device anatomy",
             "markers": [
@@ -1178,18 +1180,18 @@
             ],
             "imageUrl": "/uploads/duda/OUS-Aneurysm-Specifications-c4065c.jpg"
            },
+           "type": "deviceDiagram",
+           "variant": "default",
            "edit": {
             "r": "solutions",
             "id": 2,
-            "map": {
-             "markers": "annotatedImage.markers"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.0.data."
+           },
+           "uid": "5fb41f112a/0/2/0"
           },
           {
-           "type": "specTable",
-           "variant": "table",
            "data": {
+            "note": "Not all products are available in all countries.",
             "table": {
              "rows": [
               [
@@ -1229,9 +1231,16 @@
               "Minimum microcatheter ID compatibility (in)",
               "Total length excluding handle (cm)"
              ]
-            },
-            "note": "Not all products are available in all countries."
-           }
+            }
+           },
+           "type": "specTable",
+           "variant": "table",
+           "edit": {
+            "r": "solutions",
+            "id": 2,
+            "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.1.data."
+           },
+           "uid": "5fb41f112a/0/2/1"
           }
          ]
         }
@@ -1243,8 +1252,6 @@
        "title": "How it works",
        "blocks": [
         {
-         "type": "columns",
-         "variant": "steps",
          "data": {
           "items": [
            {
@@ -1264,13 +1271,14 @@
            }
           ]
          },
+         "type": "columns",
+         "variant": "steps",
          "edit": {
           "r": "solutions",
           "id": 2,
-          "map": {
-           "items": "howItWorks"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.1.blocks.0.data."
+         },
+         "uid": "5fb41f112a/1/0"
         }
        ]
       },
@@ -1280,22 +1288,26 @@
        "title": "In practice",
        "blocks": [
         {
-         "type": "cta",
-         "variant": "panel",
          "data": {
-          "title": "Webinars",
           "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+          "title": "Webinars",
           "buttons": [
            {
-            "label": "Request to view",
-            "href": "/us/webinars"
+            "href": "/us/webinars?product=comaneci",
+            "label": "Request to view"
            }
           ]
-         }
+         },
+         "type": "cta",
+         "variant": "panel",
+         "edit": {
+          "r": "solutions",
+          "id": 2,
+          "prefix": "blocks.5.data.tabs.2.blocks.0.data."
+         },
+         "uid": "5fb41f112a/2/0"
         },
         {
-         "type": "people",
-         "variant": "physicians",
          "data": {
           "items": [
            {
@@ -1319,65 +1331,70 @@
            }
           ]
          },
+         "type": "people",
+         "variant": "physicians",
          "edit": {
           "r": "solutions",
           "id": 2,
-          "map": {
-           "items": "inPractice"
-          }
-         }
+          "prefix": "blocks.5.data.tabs.2.blocks.1.data."
+         },
+         "uid": "5fb41f112a/2/1"
         }
        ]
       },
       {
        "id": "evidence",
-       "label": "Clinical evidence",
        "href": "/us/evidence#comaneci",
+       "label": "Clinical evidence",
        "blocks": []
       }
-     ]
-    }
+     ],
+     "anchor": "overview"
+    },
+    "edit": {
+     "r": "solutions",
+     "id": 2,
+     "prefix": "blocks.5.data."
+    },
+    "uid": "5fb41f112a"
    },
    {
     "type": "cta",
     "variant": "band",
     "data": {
-     "title": "Questions?",
      "body": "Reach out to learn more about our company and devices.",
+     "title": "Questions?",
      "buttons": [
       {
        "href": "/contact-us?region=us&topic=demo",
        "label": "Request a demo"
       },
       {
-       "label": "Customer support",
-       "href": "/contact-us?region=us"
+       "href": "/contact-us?region=us&topic=support",
+       "label": "Customer support"
       }
      ]
     },
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {
-      "body": "closingBody"
-     }
-    }
+     "prefix": "blocks.6.data."
+    },
+    "uid": "dcd93fc5db"
    },
    {
     "type": "indications",
     "variant": "default",
     "data": {
-     "indicationsHtml": "",
-     "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n"
+     "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n",
+     "indicationsHtml": ""
     },
     "edit": {
      "r": "solutions",
      "id": 2,
-     "map": {
-      "indicationsHtml": "regulatoryHtml",
-      "referencesHtml": "referencesHtml"
-     }
-    }
+     "prefix": "blocks.7.data."
+    },
+    "uid": "2a06035ab1"
    }
   ],
   "Home": [
@@ -1385,34 +1402,27 @@
     "type": "hero",
     "variant": "banner",
     "data": {
+     "cta": {
+      "href": "/us/therapies",
+      "label": "Explore Therapies"
+     },
+     "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
      "title": "EXPAND",
      "title2": "WHAT’S POSSIBLE",
      "subtitle": "in neurovascular therapy",
-     "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
-     "cta": {
-      "label": "Explore Therapies",
-      "href": "/us/therapies"
-     },
      "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
     },
-    "edit": {
-     "r": "settings:home",
-     "map": {
-      "title": "heroLine1",
-      "title2": "heroLine2",
-      "subtitle": "heroSub",
-      "body": "heroBody",
-      "cta.label": "heroCtaLabel",
-      "cta.href": "heroCtaHref"
-     }
-    }
+    "uid": "a4b39f8cb3"
    },
    {
     "type": "textMedia",
     "variant": "statement",
     "data": {
-     "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
-     "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4",
+     "body": "Our solution? Tools that adapt to each patient's anatomy.",
+     "link": {
+      "href": "/contact-us?region=us&topic=demo",
+      "label": "Request a demo"
+     },
      "stats": [
       {
        "label": "patients treated",
@@ -1430,48 +1440,34 @@
        "iconUrl": "/icons/stat-publications.svg"
       }
      ],
-     "body": "Our solution? Tools that adapt to each patient's anatomy.",
-     "link": {
-      "label": "Request a demo",
-      "href": "/contact-us?region=us&topic=demo"
-     }
+     "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
+     "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4"
     },
-    "edit": {
-     "r": "settings:home",
-     "map": {
-      "title": "problemTitle",
-      "videoUrl": "problemVideoUrl",
-      "stats": "stats",
-      "body": "solutionLine"
-     }
-    }
+    "uid": "1236134453"
    },
    {
     "type": "text",
     "variant": "dark",
     "data": {
-     "title": "Engineered for precise control at every step.",
      "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
+     "title": "Engineered for precise control at every step.",
      "imageUrl": ""
     },
-    "edit": {
-     "r": "settings:home",
-     "map": {
-      "title": "engineeredTitle",
-      "body": "engineeredBody"
-     }
-    }
+    "uid": "caf610cf3f"
    },
    {
     "type": "news",
     "variant": "cards",
     "data": {
      "title": "At the forefront of advancing stroke intervention",
+     "allHref": "/news-events",
+     "allLabel": "View all news ›",
      "items": [
       {
        "id": 1,
        "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
        "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+       "href": "/news-events/1-rapid-medical-announces-fda-clearance-of-drivewire-35-and-first-stroke-cases",
        "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
        "publishedOn": "2026-07-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -1485,6 +1481,7 @@
        "id": 2,
        "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
        "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+       "href": "/news-events/2-rapid-medical-s-tigertriever-13-demonstrates-promising-90-day-outcomes-in",
        "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
        "publishedOn": "2026-05-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -1498,6 +1495,7 @@
        "id": 3,
        "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
        "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+       "href": "/news-events/3-rapid-medical-announces-fda-clearance-of-tigertriever-25-and-first-clinical",
        "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
        "publishedOn": "2026-04-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -1511,6 +1509,7 @@
        "id": 4,
        "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
        "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+       "href": "/news-events/4-rapid-medical-s-distals-trial-overwhelmingly-positive-demonstrating-superior",
        "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
        "publishedOn": "2026-02-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -1520,16 +1519,9 @@
         "prefix": ""
        }
       }
-     ],
-     "allHref": "/news-events",
-     "allLabel": "View all news ›"
+     ]
     },
-    "edit": {
-     "r": "settings:home",
-     "map": {
-      "title": "newsTitle"
-     }
-    }
+    "uid": "e66defa064"
    }
   ],
   "About": [
@@ -1538,45 +1530,39 @@
     "variant": "page",
     "data": {
      "title": "About Us"
-    }
+    },
+    "uid": "6fba03fba8"
    },
    {
     "type": "text",
-    "variant": "large",
+    "variant": "facts",
     "data": {
      "body": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy.",
-     "imageUrl": ""
+     "body2": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke.",
+     "title2": "What we do",
+     "imageUrl": "",
+     "countries": "30+",
+     "headquarters": "Yokneam, Israel",
+     "facts": [
+      {
+       "label": "Clinical publications",
+       "value": "102"
+      },
+      {
+       "label": "Offices",
+       "value": "Israel · USA · Germany"
+      }
+     ]
     },
-    "edit": {
-     "r": "settings:about",
-     "map": {
-      "body": "intro",
-      "imageUrl": "heroImageUrl"
-     }
-    }
-   },
-   {
-    "type": "text",
-    "variant": "surface",
-    "data": {
-     "title": "What we do",
-     "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
-    },
-    "edit": {
-     "r": "settings:about",
-     "map": {
-      "title": "whatWeDoTitle",
-      "body": "whatWeDoBody"
-     }
-    }
+    "uid": "6515a6f761"
    },
    {
     "type": "people",
     "variant": "team",
     "data": {
-     "anchor": "leadership",
-     "title": "Leadership Team",
      "intro": "Our leadership team combines several decades of global MedTech experience to advance neurovascular technologies, for optimized stroke procedures and better patient outcomes.",
+     "title": "Leadership Team",
+     "anchor": "leadership",
      "members": [
       {
        "name": "RONEN ECKHOUSE",
@@ -1664,19 +1650,14 @@
       }
      ]
     },
-    "edit": {
-     "r": "settings:about",
-     "map": {
-      "intro": "leadershipIntro"
-     }
-    }
+    "uid": "62fe9e6655"
    },
    {
     "type": "officesMap",
     "variant": "offices",
     "data": {
-     "anchor": "offices",
      "title": "Global Offices",
+     "anchor": "offices",
      "offices": [
       {
        "fax": "+972-72-250-3332",
@@ -1715,15 +1696,31 @@
      "map": {
       "offices": "offices"
      }
-    }
+    },
+    "uid": "6c16c74994"
    },
    {
     "type": "officesMap",
     "variant": "map",
     "data": {
-     "anchor": "map",
      "title": "Our global footprint provides access to patient-specific stroke treatment to over 30 countries & counting.",
+     "anchor": "map",
+     "button": {
+      "href": "/contact-us",
+      "label": "Contact us"
+     },
      "subtitle": "Select a region to get in touch with a local representative.",
+     "closingLine": "Have a question? We’d love to hear from you.",
+     "regionLinks": {
+      "usa": "/contact-us?region=us",
+      "asia": "/contact-us?region=apac",
+      "latam": "/contact-us?region=ous",
+      "canada": "/contact-us?region=us",
+      "europe": "/contact-us?region=ous",
+      "australia": "/contact-us?region=ous",
+      "middleeast": "/contact-us?region=apac"
+     },
+     "fallbackImageUrl": "/uploads/duda/Map-Directory-d214ab.png",
      "offices": [
       {
        "fax": "+972-72-250-3332",
@@ -1755,31 +1752,9 @@
        "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
        "ordersEmail": "ordersgmbh@rapid-medical.com"
       }
-     ],
-     "regionLinks": {
-      "usa": "/contact-us?region=us",
-      "canada": "/contact-us?region=us",
-      "latam": "/contact-us?region=ous",
-      "europe": "/contact-us?region=ous",
-      "australia": "/contact-us?region=ous",
-      "middleeast": "/contact-us?region=apac",
-      "asia": "/contact-us?region=apac"
-     },
-     "fallbackImageUrl": "/uploads/duda/Map-Directory-d214ab.png",
-     "closingLine": "Have a question? We’d love to hear from you.",
-     "button": {
-      "label": "Contact us",
-      "href": "/contact-us"
-     }
+     ]
     },
-    "edit": {
-     "r": "settings:about",
-     "map": {
-      "title": "mapTitle",
-      "subtitle": "mapSub",
-      "closingLine": "closingLine"
-     }
-    }
+    "uid": "da2990520c"
    }
   ],
   "Careers": [
@@ -1787,24 +1762,17 @@
     "type": "hero",
     "variant": "bannerCompact",
     "data": {
-     "title": "Unlock your potential",
-     "subtitle": "Our greatest strength is our team.",
      "body": "From an inclusive, passionate culture to comprehensive benefits and professional development opportunities, your career-building potential is limitless at Rapid Medical. We are committed to expanding our fast-growing team with the best talent to fuel the future of neurovascular innovation.",
-     "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
+     "title": "Unlock your potential",
      "imageUrl": "/uploads/duda/Leaderboard-f3522d.jpg",
+     "subtitle": "Our greatest strength is our team.",
+     "videoUrl": "/uploads/duda/4h5iqwySQaYrZQwPg7NQ_Web---Careers-banner-v-1dbdc8.mp4",
      "cta": {
-      "label": "View open positions",
-      "href": "/open-positions"
+      "label": "Send us your details ↓",
+      "href": "#general-interest"
      }
     },
-    "edit": {
-     "r": "settings:careers",
-     "map": {
-      "title": "heroTitle",
-      "subtitle": "heroSub",
-      "body": "heroBody"
-     }
-    }
+    "uid": "805566c4dd"
    },
    {
     "type": "gallery",
@@ -1823,20 +1791,13 @@
       }
      ]
     },
-    "edit": {
-     "r": "settings:careers",
-     "map": {
-      "items": "quotes"
-     }
-    }
+    "uid": "fa0a74dfee"
    },
    {
     "type": "columns",
     "variant": "principles",
     "data": {
-     "title": "Our guiding principles",
      "intro": "What we at Rapid Medical believe in above all else.",
-     "imageUrl": "/uploads/duda/We-are-Rapid-Graphic-Resized-60cfae.svg",
      "items": [
       {
        "body": "We champion team collaboration to cultivate continuous learning.",
@@ -1858,38 +1819,39 @@
        "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
        "title": "Daring"
       }
-     ]
+     ],
+     "title": "Our guiding principles",
+     "imageUrl": "/uploads/duda/We-are-Rapid-Graphic-Resized-60cfae.svg"
     },
-    "edit": {
-     "r": "settings:careers",
-     "map": {
-      "title": "principlesTitle",
-      "intro": "principlesBody",
-      "imageUrl": "principlesImageUrl",
-      "items": "principles"
-     }
-    }
+    "uid": "9fd27988f6"
+   },
+   {
+    "type": "jobs",
+    "variant": "roles",
+    "data": {
+     "note": "Applications go through Spark Hire.",
+     "title": "Open positions",
+     "anchor": "open-positions",
+     "generalHref": "#general-interest",
+     "items": []
+    },
+    "uid": "008b8caf00"
    },
    {
     "type": "form",
-    "variant": "section",
+    "variant": "split",
     "data": {
-     "anchor": "general-interest",
-     "title": "Submit general interest",
-     "note": "Rapid Medical is an equal opportunity employer and prohibits discrimination and harassment of any kind. We are committed to the principle of equal employment opportunity for all employees and to providing employees with a work environment free of discrimination and harassment. All employment decisions at Rapid Medical are based on business needs, job requirements, and individual qualifications, without regard to race, color, religion or belief, national, social or ethnic origin, sex (including pregnancy), age, disability, sexual orientation, gender identity and/or expression, marital or domestic partnership status, military service, or any other status protected by the laws or regulations in the locations where we operate. Rapid Medical will not tolerate discrimination or harassment based on any of these characteristics.",
      "form": "careers",
+     "note": "Rapid Medical is an equal opportunity employer and prohibits discrimination and harassment of any kind. We are committed to the principle of equal employment opportunity for all employees and to providing employees with a work environment free of discrimination and harassment. All employment decisions at Rapid Medical are based on business needs, job requirements, and individual qualifications, without regard to race, color, religion or belief, national, social or ethnic origin, sex (including pregnancy), age, disability, sexual orientation, gender identity and/or expression, marital or domestic partnership status, military service, or any other status protected by the laws or regulations in the locations where we operate. Rapid Medical will not tolerate discrimination or harassment based on any of these characteristics.",
+     "title": "Submit general interest",
+     "anchor": "general-interest",
      "topics": [
       "General interest",
       "Internship",
       "Other"
      ]
     },
-    "edit": {
-     "r": "settings:careers",
-     "map": {
-      "note": "eeoStatement"
-     }
-    }
+    "uid": "6f14e94171"
    }
   ],
   "US · Evidence": [
@@ -1897,29 +1859,24 @@
     "type": "hero",
     "variant": "bannerCompact",
     "data": {
-     "eyebrow": "Americas",
-     "title": "Evidence",
      "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
-     "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4"
+     "title": "Evidence",
+     "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4",
+     "eyebrow": "Americas"
     },
-    "edit": {
-     "r": "settings:evidence",
-     "map": {
-      "title": "title",
-      "body": "intro"
-     }
-    }
+    "uid": "85c001c046"
    },
    {
     "type": "publications",
-    "variant": "spotlight",
+    "variant": "overview",
     "data": {
+     "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
      "stat": {
-      "value": "85+",
       "label": "clinical publications",
+      "value": "85+",
       "iconUrl": "/icons/stat-publications.svg"
      },
-     "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
+     "region": "us",
      "items": [
       {
        "id": 1,
@@ -1969,86 +1926,7 @@
         "prefix": ""
        }
       }
-     ]
-    },
-    "edit": {
-     "r": "settings:evidence",
-     "map": {
-      "stat.value": "statValue",
-      "stat.label": "statLabel",
-      "line": "forefrontText"
-     }
-    }
-   },
-   {
-    "type": "publications",
-    "variant": "cards",
-    "data": {
-     "title": "Featured publications",
-     "items": [
-      {
-       "id": 1,
-       "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
-       "journal": "",
-       "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
-       "publishedOn": "2026-09-01T00:00:00.000Z",
-       "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
-       "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
-       "pdfUrl": null,
-       "doi": null,
-       "edit": {
-        "r": "publications",
-        "id": 1,
-        "prefix": ""
-       }
-      },
-      {
-       "id": 2,
-       "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
-       "journal": "",
-       "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
-       "publishedOn": "2026-07-01T00:00:00.000Z",
-       "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
-       "url": null,
-       "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
-       "doi": null,
-       "edit": {
-        "r": "publications",
-        "id": 2,
-        "prefix": ""
-       }
-      },
-      {
-       "id": 3,
-       "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
-       "journal": "",
-       "authors": "",
-       "publishedOn": "2026-04-01T00:00:00.000Z",
-       "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
-       "url": "https://doi.org/10.1007/s00062-026-01659-z",
-       "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
-       "doi": "10.1007/s00062-026-01659-z",
-       "edit": {
-        "r": "publications",
-        "id": 3,
-        "prefix": ""
-       }
-      }
-     ]
-    },
-    "edit": {
-     "r": "settings:evidence",
-     "map": {
-      "title": "featuredTitle"
-     }
-    }
-   },
-   {
-    "type": "publications",
-    "variant": "byProduct",
-    "data": {
-     "anchor": "browse-by-product",
-     "title": "Browse by product",
+     ],
      "groups": [
       {
        "id": "tigertriever",
@@ -2240,7 +2118,7 @@
          "publishedOn": "2021-07-01T00:00:00.000Z",
          "imageUrl": null,
          "url": "https://doi.org/10.3390/life11070658",
-         "pdfUrl": null,
+         "pdfUrl": "/uploads/oa/life-11-658.pdf",
          "doi": "10.3390/life11070658",
          "edit": {
           "r": "publications",
@@ -2288,7 +2166,7 @@
          "publishedOn": "2020-12-01T00:00:00.000Z",
          "imageUrl": null,
          "url": "https://doi.org/10.3389/fneur.2020.603679",
-         "pdfUrl": null,
+         "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf",
          "doi": "10.3389/fneur.2020.603679",
          "edit": {
           "r": "publications",
@@ -2376,8 +2254,8 @@
          "publishedOn": "2026-02-01T00:00:00.000Z",
          "imageUrl": null,
          "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
-         "pdfUrl": null,
-         "doi": null,
+         "pdfUrl": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+         "doi": "10.1227/ons.0000000000001932",
          "edit": {
           "r": "publications",
           "id": 5,
@@ -2391,9 +2269,9 @@
          "authors": "Jason M Davies et al.",
          "publishedOn": "2025-11-01T00:00:00.000Z",
          "imageUrl": null,
-         "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
-         "pdfUrl": "https://jnis.bmj.com/content/neurintsurg/early/2025/11/19/jnis-2025-024136.full.pdf",
-         "doi": null,
+         "url": "https://doi.org/10.1136/jnis-2025-024136",
+         "pdfUrl": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+         "doi": "10.1136/jnis-2025-024136",
          "edit": {
           "r": "publications",
           "id": 6,
@@ -2536,7 +2414,603 @@
          "publishedOn": "2020-10-01T00:00:00.000Z",
          "imageUrl": null,
          "url": "https://doi.org/10.1186/s12883-020-01963-2",
+         "pdfUrl": "/uploads/oa/bmcneurol-2020-01963.pdf",
+         "doi": "10.1186/s12883-020-01963-2",
+         "edit": {
+          "r": "publications",
+          "id": 67,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 69,
+         "title": "E-182 The Primary Experience of Using a Comaneci Embolization Assist Device During Embolization of Intracranial Aneurysms with Detachable Microcoils",
+         "journal": "",
+         "authors": "K Orlov et al.",
+         "publishedOn": "2020-08-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/neurintsurg-2020-SNIS.213",
          "pdfUrl": null,
+         "doi": "10.1136/neurintsurg-2020-SNIS.213",
+         "edit": {
+          "r": "publications",
+          "id": 69,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "id": "drivewire",
+       "label": "DRIVEWIRE™",
+       "sublabel": "Steerable Guidewire",
+       "fullName": "DRIVEWIRE™ Steerable Guidewire",
+       "items": [
+        {
+         "id": 1,
+         "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+         "journal": "",
+         "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+         "publishedOn": "2026-09-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+         "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+         "pdfUrl": null,
+         "doi": null,
+         "edit": {
+          "r": "publications",
+          "id": 1,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 8,
+         "title": "Early Experience with the Drivewire 24: A Newly FDA-approved Steerable Microwire",
+         "journal": "",
+         "authors": "Eric Alexander Grin, Vera Sharashidze,2 Charlotte Chung, Jacob F. Baranoski, Caleb Rutledge, Howard A. Riina, Maksim Shapiro, Eytan Raz, Erez Nossek. J NeuroIntervent Surg: first published as 10.1136/jnis-2025-023730 on 20 June 2025. Downloaded from http://jnis.bmj.com/ on June 24, 2025, at New York University, Serials",
+         "publishedOn": "2025-06-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://jnis.bmj.com/content/18/4/1133",
+         "pdfUrl": "/uploads/duda/NYU--JNIS-DW24-f4e61a.pdf",
+         "doi": "10.1136/jnis-2025-023730",
+         "edit": {
+          "r": "publications",
+          "id": 8,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 44,
+         "title": "Applications of the Columbus Steerable Guidewire",
+         "journal": "Journal of NeuroInterventional Surgery Published Online First: 24 November 2021.",
+         "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Lutz Lehmann, Justus Erasmus Roos, Grzegorz Karwacki",
+         "publishedOn": "2021-11-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/neurintsurg-2021-018120",
+         "pdfUrl": null,
+         "doi": "10.1136/neurintsurg-2021-018120",
+         "edit": {
+          "r": "publications",
+          "id": 44,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 57,
+         "title": "The Columbus Steerable Guidewire in Neurointerventions: Early Clinical Experience and Applications",
+         "journal": "",
+         "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Grzegorz Karwacki, Justus E. Roos",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/neurintsurg-2021-017296",
+         "pdfUrl": null,
+         "doi": "10.1136/neurintsurg-2021-017296",
+         "edit": {
+          "r": "publications",
+          "id": 57,
+          "prefix": ""
+         }
+        }
+       ]
+      }
+     ]
+    },
+    "uid": "f07c060cd0"
+   },
+   {
+    "type": "publications",
+    "variant": "library",
+    "data": {
+     "title": "Browse by product",
+     "anchor": "browse-by-product",
+     "region": "us",
+     "groups": [
+      {
+       "id": "tigertriever",
+       "label": "TIGERTRIEVER™",
+       "sublabel": "Revascularization Device",
+       "fullName": "TIGERTRIEVER™ Revascularization Device",
+       "items": [
+        {
+         "id": 2,
+         "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+         "journal": "",
+         "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+         "publishedOn": "2026-07-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+         "url": null,
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": null,
+         "edit": {
+          "r": "publications",
+          "id": 2,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 3,
+         "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-04-01T00:00:00.000Z",
+         "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+         "url": "https://doi.org/10.1007/s00062-026-01659-z",
+         "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+         "doi": "10.1007/s00062-026-01659-z",
+         "edit": {
+          "r": "publications",
+          "id": 3,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 4,
+         "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+         "journal": "",
+         "authors": "",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+         "pdfUrl": null,
+         "doi": null,
+         "edit": {
+          "r": "publications",
+          "id": 4,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 10,
+         "title": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke: A single-center Experience",
+         "journal": "Neurologia medico-chirurgica Advance Publication,",
+         "authors": "Koichiro SHINDO, Kazutaka UCHIDA, Manabu SHIRAKAWA, Shoichiro TSUJI, Shuntaro KUWAHARA, Yoji KURAMOTO and Shinichi YOSHIMURA",
+         "publishedOn": "2025-03-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.2176/jns-nmc.2024-0297",
+         "pdfUrl": "/uploads/duda/3-25-advpub_2024-0297-2224b4.pdf",
+         "doi": "10.2176/jns-nmc.2024-0297",
+         "edit": {
+          "r": "publications",
+          "id": 10,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 16,
+         "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
+         "journal": "",
+         "authors": "Brian Jankowit et al.",
+         "publishedOn": "2024-09-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1177/15910199241272743",
+         "pdfUrl": null,
+         "doi": "10.1177/15910199241272743",
+         "edit": {
+          "r": "publications",
+          "id": 16,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 17,
+         "title": "The Effect of Actuation Frequency on Clot Integration with the Tigertriever Device: A Preliminary in Vitro Study",
+         "journal": "",
+         "authors": "Chander Sadasivan et al.",
+         "publishedOn": "2024-04-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://pubmed.ncbi.nlm.nih.gov/38629263/",
+         "pdfUrl": null,
+         "doi": "10.1177/159101992412478",
+         "edit": {
+          "r": "publications",
+          "id": 17,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 20,
+         "title": "Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute Ischemic Stroke: Improved First-pass Effect with Rapid-inflation Deflation Technique",
+         "journal": "",
+         "authors": "Sanjeev Sreenivasan et al.",
+         "publishedOn": "2024-01-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1177/15910199231222667",
+         "pdfUrl": null,
+         "doi": "10.1177/15910199231222667",
+         "edit": {
+          "r": "publications",
+          "id": 20,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 21,
+         "title": "Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease",
+         "journal": "",
+         "authors": "Diego J Ojeda et al.",
+         "publishedOn": "2023-09-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/jnis-2023-020796",
+         "pdfUrl": "/uploads/duda/9-23-jnis-2023-020796.full-2--7d9d29.pdf",
+         "doi": "10.1136/jnis-2023-020796",
+         "edit": {
+          "r": "publications",
+          "id": 21,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 23,
+         "title": "E-272 Novel Use of a Triple Stent Retriever ‘bouquet’ Deployment with Zoom 88 Large-bore Aspiration and Walrus Balloon-guide Catheter Flow Arrest for Definitive Thrombectomy of a Carotid Free Floating Thrombus",
+         "journal": "Journal of NeuroInterventional Surgery 2023;15:A240-A241.",
+         "authors": "B Meyer et al.",
+         "publishedOn": "2023-07-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://jnis.bmj.com/content/15/Suppl_1/A240.2",
+         "pdfUrl": null,
+         "doi": null,
+         "edit": {
+          "r": "publications",
+          "id": 23,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 27,
+         "title": "Bailout Endovascular Techniques Applied in a Complicated Basilar Thrombectomy Case",
+         "journal": "",
+         "authors": "Aryan Ali et al.",
+         "publishedOn": "2023-05-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/jnis-2022-019687",
+         "pdfUrl": null,
+         "doi": "10.1136/jnis-2022-019687",
+         "edit": {
+          "r": "publications",
+          "id": 27,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 28,
+         "title": "Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis",
+         "journal": "",
+         "authors": "Piotr Piasecki et al.",
+         "publishedOn": "2023-01-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.3389/fneur.2022.1032307",
+         "pdfUrl": "/uploads/duda/1-23-fneur-13-1032307-2634fe.pdf",
+         "doi": "10.3389/fneur.2022.1032307",
+         "edit": {
+          "r": "publications",
+          "id": 28,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 53,
+         "title": "Inadvertent Detachment of Stent Retrievers during Mechanical Thrombectomy—A Clinical and Biomechanical Perspective",
+         "journal": "",
+         "authors": "Piotr Piasecki et al.",
+         "publishedOn": "2021-07-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.3390/life11070658",
+         "pdfUrl": "/uploads/oa/life-11-658.pdf",
+         "doi": "10.3390/life11070658",
+         "edit": {
+          "r": "publications",
+          "id": 53,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 52,
+         "title": "Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial",
+         "journal": "",
+         "authors": "RishiGupta, Jeffrey L.Saver",
+         "publishedOn": "2021-07-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1016/j.wneu.2021.05.039",
+         "pdfUrl": null,
+         "doi": "10.1016/j.wneu.2021.05.039",
+         "edit": {
+          "r": "publications",
+          "id": 52,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 59,
+         "title": "A New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter Tiger Trial",
+         "journal": "",
+         "authors": "Rishi Gupta et al.",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1161/STROKEAHA.121.034436",
+         "pdfUrl": null,
+         "doi": "10.1161/STROKEAHA.121.034436",
+         "edit": {
+          "r": "publications",
+          "id": 59,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 65,
+         "title": "Safety and Efficacy of Mechanical Thrombectomy using Tigertriever as a Rescue Device After Failed Aspiration– Single Center Experience.",
+         "journal": "",
+         "authors": "Piotr Piasecki et al.",
+         "publishedOn": "2020-12-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.3389/fneur.2020.603679",
+         "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf",
+         "doi": "10.3389/fneur.2020.603679",
+         "edit": {
+          "r": "publications",
+          "id": 65,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 71,
+         "title": "Mechanical Thrombectomy Using the New Tigertriever in Acute Ischemic Stroke Patients – A Swiss Prospective Multicenter Study",
+         "journal": "",
+         "authors": "Philipp Gruber et al.",
+         "publishedOn": "2020-07-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1177/1591019920946499",
+         "pdfUrl": null,
+         "doi": "10.1177/1591019920946499",
+         "edit": {
+          "r": "publications",
+          "id": 71,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 78,
+         "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
+         "journal": "",
+         "authors": "L. Will et al.",
+         "publishedOn": "2020-06-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1007/s00062-020-00919-w",
+         "pdfUrl": null,
+         "doi": "10.1007/s00062-020-00919-w",
+         "edit": {
+          "r": "publications",
+          "id": 78,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 91,
+         "title": "Single-center Experience with the Tigertriever Device for the Recanalization of Large Vessel Occlusions in Acute Ischemic Stroke",
+         "journal": "",
+         "authors": "Batuhan Kara et al.",
+         "publishedOn": "2018-09-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/neurintsurg-2018-014196",
+         "pdfUrl": null,
+         "doi": "10.1136/neurintsurg-2018-014196",
+         "edit": {
+          "r": "publications",
+          "id": 91,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 100,
+         "title": "Revascularization of Acute Basilar Artery Occlusion Using the Tigertriever Adjustable Clot Retriever",
+         "journal": "",
+         "authors": "Kara B et al.",
+         "publishedOn": "2016-08-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1007/s00062-016-0532-1",
+         "pdfUrl": null,
+         "doi": "10.1007/s00062-016-0532-1",
+         "edit": {
+          "r": "publications",
+          "id": 100,
+          "prefix": ""
+         }
+        }
+       ]
+      },
+      {
+       "id": "comaneci",
+       "label": "COMANECI™",
+       "sublabel": "Embolization Assist Device",
+       "fullName": "COMANECI™ Embolization Assist Device",
+       "items": [
+        {
+         "id": 5,
+         "title": "Long-term outcomes of temporary stent-assisted coil embolization for the treatment of intracranial aneurysms using Comaneci remodeling device",
+         "journal": "",
+         "authors": "Jakub Onikijuk, MD et al.",
+         "publishedOn": "2026-02-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+         "pdfUrl": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+         "doi": "10.1227/ons.0000000000001932",
+         "edit": {
+          "r": "publications",
+          "id": 5,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 6,
+         "title": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study",
+         "journal": "",
+         "authors": "Jason M Davies et al.",
+         "publishedOn": "2025-11-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1136/jnis-2025-024136",
+         "pdfUrl": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+         "doi": "10.1136/jnis-2025-024136",
+         "edit": {
+          "r": "publications",
+          "id": 6,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 11,
+         "title": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent",
+         "journal": "",
+         "authors": "Sergey M Karasev, Ilya A Zuev, Rakhmonzhon R Rustamov",
+         "publishedOn": "2024-10-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1016/j.radcr.2024.06.056",
+         "pdfUrl": null,
+         "doi": "10.1016/j.radcr.2024.06.056",
+         "edit": {
+          "r": "publications",
+          "id": 11,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 18,
+         "title": "Y-Stent Technique Using Dual Comaneci Embolization Assist Devices for Coil Embolization of a Ruptured Wide-Necked Anterior Communicating Artery Aneurysm: A Technical Case Report",
+         "journal": "",
+         "authors": "Kristine Ravina, Ira J Finch, Biraj Patel, Benjamin Yim",
+         "publishedOn": "2024-04-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1227/ons.0000000000001143",
+         "pdfUrl": null,
+         "doi": "10.1227/ons.0000000000001143",
+         "edit": {
+          "r": "publications",
+          "id": 18,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 24,
+         "title": "Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques",
+         "journal": "",
+         "authors": "Jaims Lim et al.",
+         "publishedOn": "2023-07-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1016/j.wneu.2023.05.008",
+         "pdfUrl": null,
+         "doi": "10.1016/j.wneu.2023.05.008",
+         "edit": {
+          "r": "publications",
+          "id": 24,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 32,
+         "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
+         "journal": "",
+         "authors": "Gabriele Vinacci et al.",
+         "publishedOn": "2022-11-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": null,
+         "pdfUrl": "/uploads/duda/jcm-1899801-cb8809.pdf",
+         "doi": null,
+         "edit": {
+          "r": "publications",
+          "id": 32,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 42,
+         "title": "Comaneci Plus Balloon-assisted Embolization of Ruptured Wide-necked Cerebral Aneurysms",
+         "journal": "",
+         "authors": "A. Sirakov et al.",
+         "publishedOn": "2022-01-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1007/s00062-021-01115-0",
+         "pdfUrl": null,
+         "doi": "10.1007/s00062-021-01115-0",
+         "edit": {
+          "r": "publications",
+          "id": 42,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 56,
+         "title": "Early Experience with Comaneci, a Newly FDA-Approved Controllable Assist Device for Wide-Necked Intracranial Aneurysm Coiling",
+         "journal": "",
+         "authors": "Taqi M.A. et al.",
+         "publishedOn": "2021-05-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1159/000514371",
+         "pdfUrl": null,
+         "doi": "10.1159/000514371",
+         "edit": {
+          "r": "publications",
+          "id": 56,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 60,
+         "title": "Combination of Temporary Bridging Device (Comaneci) and Permanent Stenting in the Treatment of Unruptured Wide Neck Bifurcation Aneurysms",
+         "journal": "",
+         "authors": "Batuhan Kara et al.",
+         "publishedOn": "2021-03-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1007/s00234-021-02677-z",
+         "pdfUrl": null,
+         "doi": "10.1007/s00234-021-02677-z",
+         "edit": {
+          "r": "publications",
+          "id": 60,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 62,
+         "title": "Comaneci Device for Temporary Coiling Assistance for Treatment of Wide-Necked Aneurysms: Initial Case Series and Systematic Literature Review",
+         "journal": "",
+         "authors": "Jaims Lim et al.",
+         "publishedOn": "2021-02-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1016/j.wneu.2021.02.080",
+         "pdfUrl": null,
+         "doi": "10.1016/j.wneu.2021.02.080",
+         "edit": {
+          "r": "publications",
+          "id": 62,
+          "prefix": ""
+         }
+        },
+        {
+         "id": 67,
+         "title": "Comaneci Device-assisted Embolization of Wide-necked Carotid Aneurysms with an Unfavorable Ratio",
+         "journal": "",
+         "authors": "Juan David Molina-Nuevo et al.",
+         "publishedOn": "2020-10-01T00:00:00.000Z",
+         "imageUrl": null,
+         "url": "https://doi.org/10.1186/s12883-020-01963-2",
+         "pdfUrl": "/uploads/oa/bmcneurol-2020-01963.pdf",
          "doi": "10.1186/s12883-020-01963-2",
          "edit": {
           "r": "publications",
@@ -2641,12 +3115,7 @@
       "drivewire"
      ]
     },
-    "edit": {
-     "r": "settings:evidence",
-     "map": {
-      "title": "browseTitle"
-     }
-    }
+    "uid": "982216651a"
    }
   ],
   "US · Therapies": [
@@ -2654,107 +3123,89 @@
     "type": "hero",
     "variant": "bannerCompact",
     "data": {
-     "eyebrow": "Americas",
-     "title": "Therapies",
      "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
      "note": "",
-     "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4"
+     "title": "Therapies",
+     "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+     "eyebrow": "Americas"
     },
-    "edit": {
-     "r": "settings:therapies:us",
-     "map": {
-      "title": "title",
-      "body": "intro",
-      "note": "note"
-     }
-    }
+    "uid": "f328ca53c4"
    },
    {
     "type": "columns",
     "variant": "cards",
     "data": {
-     "title": "Ischemic stroke",
+     "title": null,
      "items": [
       {
-       "eyebrow": "TIGERTRIEVER™",
+       "eyebrow": "Ischemic stroke · TIGERTRIEVER™",
        "title": "Large vessel stroke",
        "body": "A patient-centric approach to AIS",
-       "href": "/us/therapies/lvo"
-      }
-     ]
-    }
-   },
-   {
-    "type": "columns",
-    "variant": "cards",
-    "data": {
-     "title": "Hemorrhagic stroke",
-     "items": [
+       "href": "/us/therapies/lvo",
+       "more": {
+        "label": "19 publications →",
+        "href": "/us/evidence#tigertriever"
+       }
+      },
       {
-       "eyebrow": "COMANECI™",
+       "eyebrow": "Hemorrhagic stroke · COMANECI™",
        "title": "Aneurysm",
        "body": "Bridging the gap in assist devices",
-       "href": "/us/therapies/aneurysm"
-      }
-     ]
-    }
-   },
-   {
-    "type": "columns",
-    "variant": "cards",
-    "data": {
-     "title": "Access",
-     "items": [
+       "href": "/us/therapies/aneurysm",
+       "more": {
+        "label": "12 publications →",
+        "href": "/us/evidence#comaneci"
+       }
+      },
       {
-       "eyebrow": "DRIVEWIRE™",
+       "eyebrow": "Access · DRIVEWIRE™",
        "title": "Access",
        "body": "Active access",
-       "href": "/us/therapies/drivewire"
+       "href": "/us/therapies/drivewire",
+       "more": {
+        "label": "4 publications →",
+        "href": "/us/evidence#drivewire"
+       }
       }
      ]
-    }
+    },
+    "uid": "340be315b8"
    },
    {
     "type": "cta",
     "variant": "light",
     "data": {
-     "title": "Questions?",
      "body": "Reach out to learn more about our company and devices.",
+     "title": "Questions?",
      "buttons": [
       {
-       "label": "Contact us",
-       "href": "/contact-us?region=us"
+       "href": "/contact-us?region=us",
+       "label": "Contact us"
       }
      ]
     },
-    "edit": {
-     "r": "settings:therapies:us",
-     "map": {
-      "title": "closingTitle",
-      "body": "closingBody"
-     }
-    }
+    "uid": "780fee1cc7"
    }
   ],
   "News & Events": [
    {
     "type": "hero",
-    "variant": "title",
+    "variant": "page",
     "data": {
-     "title": "News &",
-     "title2": "Events"
+     "title": "News & Events"
     }
    },
    {
     "type": "news",
-    "variant": "carousel",
+    "variant": "highlights",
     "data": {
-     "title": "Latest news",
+     "anchor": "highlights",
      "items": [
       {
        "id": 1,
        "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
        "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
+       "href": "/news-events/1-rapid-medical-announces-fda-clearance-of-drivewire-35-and-first-stroke-cases",
        "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
        "publishedOn": "2026-07-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2768,6 +3219,7 @@
        "id": 2,
        "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
        "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
+       "href": "/news-events/2-rapid-medical-s-tigertriever-13-demonstrates-promising-90-day-outcomes-in",
        "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
        "publishedOn": "2026-05-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2781,6 +3233,7 @@
        "id": 3,
        "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
        "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
+       "href": "/news-events/3-rapid-medical-announces-fda-clearance-of-tigertriever-25-and-first-clinical",
        "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
        "publishedOn": "2026-04-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2794,6 +3247,7 @@
        "id": 4,
        "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
        "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+       "href": "/news-events/4-rapid-medical-s-distals-trial-overwhelmingly-positive-demonstrating-superior",
        "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
        "publishedOn": "2026-02-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2803,73 +3257,31 @@
         "prefix": ""
        }
       }
-     ],
-     "allHref": "#all-news",
-     "allLabel": "View all news ↓"
+     ]
+    }
+   },
+   {
+    "type": "events",
+    "variant": "next",
+    "data": {
+     "title": "Upcoming events",
+     "anchor": "upcoming-events",
+     "items": [],
+     "emptyHref": "#past-events"
     }
    },
    {
     "type": "news",
-    "variant": "timeline",
+    "variant": "feed",
     "data": {
+     "title": "All news",
      "anchor": "all-news",
      "items": [
-      {
-       "id": 1,
-       "title": "Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases",
-       "url": "https://www.businesswire.com/news/home/20260721807284/en/Rapid-Medical-Announces-FDA-Clearance-of-DRIVEWIRE-35-and-First-Stroke-Cases",
-       "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00-582ace.jpeg",
-       "publishedOn": "2026-07-01T00:00:00.000Z",
-       "source": "BusinessWire",
-       "edit": {
-        "r": "news",
-        "id": 1,
-        "prefix": ""
-       }
-      },
-      {
-       "id": 2,
-       "title": "Rapid Medical™’s TIGERTRIEVER™ 13 Demonstrates Promising 90-Day Outcomes in DISTALS Trial, Reinforcing Pivotal Safety and Efficacy Findings",
-       "url": "https://www.businesswire.com/news/home/20260507719402/en/Rapid-Medicals-TIGERTRIEVER-13-Demonstrates-Promising-90-Day-Outcomes-in-DISTALS-Trial-Reinforcing-Pivotal-Safety-and-Efficacy-Findings",
-       "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
-       "publishedOn": "2026-05-01T00:00:00.000Z",
-       "source": "BusinessWire",
-       "edit": {
-        "r": "news",
-        "id": 2,
-        "prefix": ""
-       }
-      },
-      {
-       "id": 3,
-       "title": "Rapid Medical™ Announces FDA Clearance of TIGERTRIEVER™ 25 and First Clinical Cases",
-       "url": "https://www.businesswire.com/news/home/20260416270938/en/Rapid-Medical-Announces-FDA-Clearance-of-TIGERTRIEVER-25-and-First-Clinical-Cases",
-       "imageUrl": "/uploads/duda/WhatsApp-Video-2026-04-16-at-19.11.14_1-ab2c70e2-5db348.gif",
-       "publishedOn": "2026-04-01T00:00:00.000Z",
-       "source": "BusinessWire",
-       "edit": {
-        "r": "news",
-        "id": 3,
-        "prefix": ""
-       }
-      },
-      {
-       "id": 4,
-       "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
-       "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
-       "imageUrl": "/uploads/duda/RM_Distals_Logo-c9f5cc66-27777642-d33380.png",
-       "publishedOn": "2026-02-01T00:00:00.000Z",
-       "source": "BusinessWire",
-       "edit": {
-        "r": "news",
-        "id": 4,
-        "prefix": ""
-       }
-      },
       {
        "id": 6,
        "title": "Rapid Medical™ Completes Enrollment in DISTALS Trial Evaluating TIGERTRIEVER 13™ for Distal Vessel Occlusions",
        "url": "https://www.businesswire.com/news/home/20251209893485/en/Rapid-Medical-Completes-Enrollment-in-DISTALS-Trial-Evaluating-TIGERTRIEVER-13-for-Distal-Vessel-Occlusions",
+       "href": "/news-events/6-rapid-medical-completes-enrollment-in-distals-trial-evaluating-tigertriever-13",
        "imageUrl": null,
        "publishedOn": "2025-12-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2883,6 +3295,7 @@
        "id": 5,
        "title": "Comaneci-­ assisted embolization of wide-­ neckedaneurysms: results from the SUCCESS postmarketUS study",
        "url": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+       "href": "/news-events/5-comaneci-assisted-embolization-of-wide-neckedaneurysms-results-from-the-success",
        "imageUrl": "/uploads/duda/Screenshot-2025-12-17-at-23.00.17-a3c91a.png",
        "publishedOn": "2025-12-01T00:00:00.000Z",
        "source": "Rapid Medical",
@@ -2896,6 +3309,7 @@
        "id": 8,
        "title": "Rapid Medical™ Appoints Industry Veteran Nir Nimrodi to Its Board of Directors",
        "url": "https://www.businesswire.com/news/home/20250925205449/en/Rapid-Medical-Appoints-Industry-Veteran-Nir-Nimrodi-to-Its-Board-of-Directors",
+       "href": "/news-events/8-rapid-medical-appoints-industry-veteran-nir-nimrodi-to-its-board-of-directors",
        "imageUrl": null,
        "publishedOn": "2025-09-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2909,6 +3323,7 @@
        "id": 7,
        "title": "Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe With MDR Approval",
        "url": "https://www.businesswire.com/news/home/20250903530140/en/Rapid-Medical-Surpasses-1000-Cases-With-DRIVEWIRE-24-in-North-America-and-Expands-Into-Europe-With-MDR-Approval",
+       "href": "/news-events/7-rapid-medical-surpasses-1-000-cases-with-drivewire-24-in-north-america-and",
        "imageUrl": "/uploads/duda/3719-Rapid-Medical-DW24-2025---Short---Stages---Hands-V2-1--8d3de3.png",
        "publishedOn": "2025-09-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2922,6 +3337,7 @@
        "id": 10,
        "title": "Rapid Medical Announces Enrolment in “First-Ever” Study on Cognitive Benefits of Thrombectomy Device",
        "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+       "href": "/news-events/10-rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of",
        "imageUrl": null,
        "publishedOn": "2025-01-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -2935,6 +3351,7 @@
        "id": 9,
        "title": "Rapid Medical announces enrollment in “first-ever” study on cognitive benefits of thrombectomy device",
        "url": "https://neuronewsinternational.com/rapid-medical-announces-enrolment-in-first-ever-study-on-cognitive-benefits-of-thrombectomy-device/",
+       "href": "/news-events/9-rapid-medical-announces-enrollment-in-first-ever-study-on-cognitive-benefits-of",
        "imageUrl": "/uploads/duda/Cognitive-Logo-Resized-7b6cec2c-48cfed.jpg",
        "publishedOn": "2025-01-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -2948,6 +3365,7 @@
        "id": 11,
        "title": "Rapid Completes Interim Safety Analysis of DISTALS Study Evaluating Tigertriever 13 Device",
        "url": "https://neuronewsinternational.com/rapid-medical-interim-safety-analysis-distals-study-tigertriever-13-device/",
+       "href": "/news-events/11-rapid-completes-interim-safety-analysis-of-distals-study-evaluating-tigertriever",
        "imageUrl": null,
        "publishedOn": "2024-09-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -2961,6 +3379,7 @@
        "id": 12,
        "title": "Rapid Medical™ Completes Initial Neurovascular Cases in the USA Following FDA Clearance of Its Active Access Solution",
        "url": "https://www.businesswire.com/news/home/20240722355520/en/Rapid-Medical-Completes-Initial-Neurovascular-Cases-in-the-USA-Following-FDA-Clearance-of-Its-Active-Access-Solution",
+       "href": "/news-events/12-rapid-medical-completes-initial-neurovascular-cases-in-the-usa-following-fda",
        "imageUrl": null,
        "publishedOn": "2024-07-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2974,6 +3393,7 @@
        "id": 13,
        "title": "Rapid Medical™ Completes Successful Ischemic Stroke Procedures with the World’s First Robotic Thrombectomy Device",
        "url": "https://www.businesswire.com/news/home/20240513456936/en/5650977/Rapid-Medical%E2%84%A2-Completes-Successful-Ischemic-Stroke-Procedures-with-the-World%E2%80%99s-First-Robotic-Thrombectomy-Device",
+       "href": "/news-events/13-rapid-medical-completes-successful-ischemic-stroke-procedures-with-the-world-s",
        "imageUrl": null,
        "publishedOn": "2024-05-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -2987,6 +3407,7 @@
        "id": 14,
        "title": "Rapid Announces Japanese Approval and Exclusive Partnership With Kaneka for Tigertriever",
        "url": "https://www.businesswire.com/news/home/20231213398321/en/Rapid-Medical%E2%84%A2-Announces-Japanese-Approval-and-Exclusive-Partnership-With-Kaneka-for-TIGERTRIEVER%E2%80%93The-World%E2%80%99s-Only-Adjustable-Thrombectomy-Device",
+       "href": "/news-events/14-rapid-announces-japanese-approval-and-exclusive-partnership-with-kaneka-for",
        "imageUrl": null,
        "publishedOn": "2023-12-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3000,6 +3421,7 @@
        "id": 15,
        "title": "Rapid Medical's TIGERTRIEVER™ Delivers First-Pass Success in Challenging Ischemic Stroke Patients with ICAD",
        "url": "https://www.businesswire.com/news/home/20231116284748/en/Rapid-Medicals-TIGERTRIEVER%E2%84%A2-Delivers-First-Pass-Success-in-Challenging-Ischemic-Stroke-Patients-with-ICAD",
+       "href": "/news-events/15-rapid-medical-s-tigertriever-delivers-first-pass-success-in-challenging-ischemic",
        "imageUrl": null,
        "publishedOn": "2023-11-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3013,6 +3435,7 @@
        "id": 16,
        "title": "Rapid Medical’s Tigertriever Thrombectomy Device Gains Approval in China",
        "url": "https://evtoday.com/news/rapid-medicals-tigertriever-thrombectomy-device-gains-approval-in-china",
+       "href": "/news-events/16-rapid-medical-s-tigertriever-thrombectomy-device-gains-approval-in-china",
        "imageUrl": null,
        "publishedOn": "2023-08-01T00:00:00.000Z",
        "source": "Endovascular Today",
@@ -3026,6 +3449,7 @@
        "id": 17,
        "title": "New Data Shows Advantages of Rapid Medical’s COMANECI™ Embolization Assist Device",
        "url": "https://www.businesswire.com/news/home/20230719475474/en/New-Data-Shows-Advantages-of-Rapid-Medical%E2%80%99s-COMANECI%E2%84%A2-Embolization-Assist-Device?_gl=1*fv1sl8*_ga*MjcyNTk5MTcuMTYxNjE2MDQxMg..*_ga_ZQWF70T3FK*MTY4OTc3NTYxMi4xMS4xLjE2ODk3ODczNDguNjAuMC4w",
+       "href": "/news-events/17-new-data-shows-advantages-of-rapid-medical-s-comaneci-embolization-assist-device",
        "imageUrl": null,
        "publishedOn": "2023-07-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3039,6 +3463,7 @@
        "id": 18,
        "title": "Rapid Medical Gains FDA Clearance for the Smallest & Only Adjustable Thrombectomy Device",
        "url": "https://www.businesswire.com/news/home/20220726006092/en/Rapid-Medical-Gains-FDA-Clearance-for-the-Smallest-Only-Adjustable-Thrombectomy-Device",
+       "href": "/news-events/18-rapid-medical-gains-fda-clearance-for-the-smallest-only-adjustable-thrombectomy",
        "imageUrl": null,
        "publishedOn": "2022-07-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3052,6 +3477,7 @@
        "id": 20,
        "title": "Rapid Medical Marks First Procedures with Numen™ Coil from MicroPort Scientific",
        "url": "https://www.businesswire.com/news/home/20220628005724/en/Rapid-Medical-Marks-First-Procedures-with-Numen%E2%84%A2-Coil-from-MicroPort-Scientific",
+       "href": "/news-events/20-rapid-medical-marks-first-procedures-with-numen-coil-from-microport-scientific",
        "imageUrl": null,
        "publishedOn": "2022-06-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3065,6 +3491,7 @@
        "id": 19,
        "title": "Rapid Medical Enrolls the First Patient in the DISTALS Stroke Trial–Offering Treatment to New Ischemic Stroke Patient Population",
        "url": "https://www.businesswire.com/news/home/20220602005497/en/Rapid-Medical-Enrolls-the-First-Patient-in-the-DISTALS-Stroke-Trial%E2%80%93Offering-Treatment-to-New-Ischemic-Stroke-Patient-Population",
+       "href": "/news-events/19-rapid-medical-enrolls-the-first-patient-in-the-distals-stroke-trial-offering",
        "imageUrl": null,
        "publishedOn": "2022-06-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3078,6 +3505,7 @@
        "id": 21,
        "title": "SVIN’s The Cutting Edge: Precise Intravascular Navigation With the World’s First Steerable Neurovascular Guidewire by Mohammad El-Ghanem",
        "url": "https://view.flipdocs.com/?ID=10004296_631356",
+       "href": "/news-events/21-svin-s-the-cutting-edge-precise-intravascular-navigation-with-the-world-s-first",
        "imageUrl": null,
        "publishedOn": "2022-04-01T00:00:00.000Z",
        "source": "view.flipdocs.com",
@@ -3091,6 +3519,7 @@
        "id": 22,
        "title": "NeuroNews: Rapid Medical Receives FDA Breakthrough Device Designation for Vasospasm Treatment",
        "url": "https://neuronewsinternational.com/rapid-medical-receives-fda-breakthrough-device-designation-for-vasospasm-treatment/",
+       "href": "/news-events/22-neuronews-rapid-medical-receives-fda-breakthrough-device-designation-for",
        "imageUrl": null,
        "publishedOn": "2022-03-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -3104,6 +3533,7 @@
        "id": 23,
        "title": "Rapid Medical to Initiate the First-Ever Trial to Evaluate Mechanical Thrombectomy in Distal Regions of the Brain",
        "url": "https://evtoday.com/news/rapid-medical-commences-distals-ide-trial-of-tigertriever-13-thrombectomy-device-in-distal-stroke",
+       "href": "/news-events/23-rapid-medical-to-initiate-the-first-ever-trial-to-evaluate-mechanical",
        "imageUrl": null,
        "publishedOn": "2021-11-01T00:00:00.000Z",
        "source": "Endovascular Today",
@@ -3117,6 +3547,7 @@
        "id": 24,
        "title": "St. Mary's Medical Center Uses New Stent Tool to Help Stroke Recovery",
        "url": "https://www.palmbeachpost.com/story/news/local/westpb/2021/07/26/new-tigertriever-tool-prevent-strokes-debuts-st-marys/8072722002/",
+       "href": "/news-events/24-st-mary-s-medical-center-uses-new-stent-tool-to-help-stroke-recovery",
        "imageUrl": null,
        "publishedOn": "2021-07-01T00:00:00.000Z",
        "source": "palmbeachpost.com",
@@ -3130,6 +3561,7 @@
        "id": 27,
        "title": "Wellstar First In Country To Use Blood Clot-Clearing Device",
        "url": "https://cobbcountycourier.com/2021/05/wellstar-blood-clot-device/",
+       "href": "/news-events/27-wellstar-first-in-country-to-use-blood-clot-clearing-device",
        "imageUrl": null,
        "publishedOn": "2021-05-01T00:00:00.000Z",
        "source": "cobbcountycourier.com",
@@ -3143,6 +3575,7 @@
        "id": 26,
        "title": "Rapid Medical Announces Closing of $50m Series D Financing",
        "url": "https://www.businesswire.com/news/home/20210525005608/en/Rapid-Medical-Announces-Closing-of-50m-Series-D-Financing",
+       "href": "/news-events/26-rapid-medical-announces-closing-of-50m-series-d-financing",
        "imageUrl": null,
        "publishedOn": "2021-05-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3156,6 +3589,7 @@
        "id": 25,
        "title": "First US Ischemic Stroke Patients Treated with Rapid Medical’s Novel Clot Retriever",
        "url": "https://www.businesswire.com/news/home/20210505005846/en/First-US-Ischemic-Stroke-Patients-Treated-with-Rapid-Medical%E2%80%99s-Novel-Clot-Retriever",
+       "href": "/news-events/25-first-us-ischemic-stroke-patients-treated-with-rapid-medical-s-novel-clot",
        "imageUrl": null,
        "publishedOn": "2021-05-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3169,6 +3603,7 @@
        "id": 29,
        "title": "St. Vincenz-Radiologie setzt kleinsten Stent-Retriever der Welt ein",
        "url": "https://www.vincenz.de/aktuelles-termine/aktuelles-presse/pressemeldung/st-vincenz-radiologie-setzt-kleinsten-stent-retriever-der-welt-ein.html",
+       "href": "/news-events/29-st-vincenz-radiologie-setzt-kleinsten-stent-retriever-der-welt-ein",
        "imageUrl": null,
        "publishedOn": "2021-04-01T00:00:00.000Z",
        "source": "vincenz.de",
@@ -3182,6 +3617,7 @@
        "id": 28,
        "title": "NeuroNews: New Thrombectomy Device Offers Promising Results",
        "url": "https://neuronewsinternational.com/new-thrombectomy-device-offers-promising-results/",
+       "href": "/news-events/28-neuronews-new-thrombectomy-device-offers-promising-results",
        "imageUrl": null,
        "publishedOn": "2021-04-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -3195,6 +3631,7 @@
        "id": 32,
        "title": "Rapid Medical Receives FDA Clearance for the First Adjustable Stent Retriever for Use in Ischemic Stroke Treatment",
        "url": "https://www.businesswire.com/news/home/20210324005703/en/TIGER-Trial-Demonstrates-High-Safety-and-Efficacy-for-World%E2%80%99s-First-Adjustable-Thrombectomy-Device",
+       "href": "/news-events/32-rapid-medical-receives-fda-clearance-for-the-first-adjustable-stent-retriever",
        "imageUrl": null,
        "publishedOn": "2021-03-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3208,6 +3645,7 @@
        "id": 31,
        "title": "TIGER Trial Demonstrates High Safety and Efficacy for World’s First Adjustable Thrombectomy Device",
        "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+       "href": "/news-events/31-tiger-trial-demonstrates-high-safety-and-efficacy-for-world-s-first-adjustable",
        "imageUrl": null,
        "publishedOn": "2021-03-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3221,6 +3659,7 @@
        "id": 30,
        "title": "Medscape: Radially Adjustable 'Tigertriever' Safe, Effective in Stroke",
        "url": "https://www.medscape.com/viewarticle/948158",
+       "href": "/news-events/30-medscape-radially-adjustable-tigertriever-safe-effective-in-stroke",
        "imageUrl": null,
        "publishedOn": "2021-03-01T00:00:00.000Z",
        "source": "Medscape",
@@ -3234,6 +3673,7 @@
        "id": 33,
        "title": "Rapid Medical Receives FDA Clearance for the World’s First Steerable Neurovascular Guidewire",
        "url": "https://www.businesswire.com/news/home/20201222005101/en/Rapid-Medical-Receives-FDA-Clearance-for-the-World%E2%80%99s-First-Steerable-Neurovascular-Guidewire",
+       "href": "/news-events/33-rapid-medical-receives-fda-clearance-for-the-world-s-first-steerable",
        "imageUrl": null,
        "publishedOn": "2020-12-01T00:00:00.000Z",
        "source": "BusinessWire",
@@ -3247,6 +3687,7 @@
        "id": 34,
        "title": "Rapid Medical Expands Comaneci™ CE Mark Indication to Include Vasospasm Treatment",
        "url": "https://www.prnewswire.co.uk/news-releases/rapid-medical-expands-comaneci-tm-ce-mark-indication-to-include-vasospasm-treatment-882969481.html",
+       "href": "/news-events/34-rapid-medical-expands-comaneci-ce-mark-indication-to-include-vasospasm-treatment",
        "imageUrl": null,
        "publishedOn": "2020-11-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3260,6 +3701,7 @@
        "id": 36,
        "title": "NBC News: UVA Neurosurgeon First in Virginia to Use New Device Which Could Treat Brain Aneurysms More Safely",
        "url": "https://www.nbc12.com/2020/10/30/uva-neurosurgeon-first-virginia-use-new-device-which-could-treat-brain-aneurysms-more-safely/",
+       "href": "/news-events/36-nbc-news-uva-neurosurgeon-first-in-virginia-to-use-new-device-which-could-treat",
        "imageUrl": null,
        "publishedOn": "2020-10-01T00:00:00.000Z",
        "source": "nbc12.com",
@@ -3273,6 +3715,7 @@
        "id": 35,
        "title": "SVIN’s The Cutting Edge: Technology Updates on the Novel Comaneci device by Mohammad El-Ghanem",
        "url": "http://pages.svin.org/2020/09/18/the-cutting-edge-technology-updates/",
+       "href": "/news-events/35-svin-s-the-cutting-edge-technology-updates-on-the-novel-comaneci-device-by",
        "imageUrl": null,
        "publishedOn": "2020-10-01T00:00:00.000Z",
        "source": "pages.svin.org",
@@ -3286,6 +3729,7 @@
        "id": 37,
        "title": "Rapid Medical Receives CE Mark for TIGERTRIEVER™ XL",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-for-tigertriever-xl-301100032.html",
+       "href": "/news-events/37-rapid-medical-receives-ce-mark-for-tigertriever-xl",
        "imageUrl": null,
        "publishedOn": "2020-07-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3299,6 +3743,7 @@
        "id": 38,
        "title": "Tigertriever® Revascularization Device Produced by Rapid Medical Ltd., an Affiliate Company of MicroPort® NeuroTech, Enters",
        "url": "https://www.microport.com/en/news/tigertriever-revascularization-device-produced-rapid-medical-ltd-affiliate-company-microport-neurotech-enters",
+       "href": "/news-events/38-tigertriever-revascularization-device-produced-by-rapid-medical-ltd-an-affiliate",
        "imageUrl": null,
        "publishedOn": "2020-06-01T00:00:00.000Z",
        "source": "microport.com",
@@ -3312,6 +3757,7 @@
        "id": 39,
        "title": "Rapid Medical Announces Ahead of Schedule Completion of Patient Enrollment for the TIGER Clinical Study for TIGERTRIEVER Thrombectomy Device",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-ahead-of-schedule-completion-of-patient-enrollment-for-the-tiger-clinical-study-for-tigertriever-thrombectomy-device-301036466.html",
+       "href": "/news-events/39-rapid-medical-announces-ahead-of-schedule-completion-of-patient-enrollment-for",
        "imageUrl": null,
        "publishedOn": "2020-04-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3325,6 +3771,7 @@
        "id": 41,
        "title": "Los Robles Hospital Treats Stroke With New Device",
        "url": "https://www.toacorn.com/articles/los-robles-hospital-treats-stroke-with-new-device/",
+       "href": "/news-events/41-los-robles-hospital-treats-stroke-with-new-device",
        "imageUrl": null,
        "publishedOn": "2019-12-01T00:00:00.000Z",
        "source": "toacorn.com",
@@ -3338,6 +3785,7 @@
        "id": 40,
        "title": "USA Health Neurologist First in the State to Perform New Aneurysm Procedure",
        "url": "https://www.fox10tv.com/news/mobile_county/usa-health-neurologist-first-in-the-state-to-perform-new/article_9960a398-211c-11ea-b6a8-334a3590d01d.html",
+       "href": "/news-events/40-usa-health-neurologist-first-in-the-state-to-perform-new-aneurysm-procedure",
        "imageUrl": null,
        "publishedOn": "2019-12-01T00:00:00.000Z",
        "source": "fox10tv.com",
@@ -3351,6 +3799,7 @@
        "id": 43,
        "title": "UMass Doctors Pilot First New England Use of Israeli Aneurysm Device",
        "url": "https://www.wbjournal.com/article/umass-doctors-pilot-first-new-england-use-of-israeli-aneurysm-device",
+       "href": "/news-events/43-umass-doctors-pilot-first-new-england-use-of-israeli-aneurysm-device",
        "imageUrl": null,
        "publishedOn": "2019-08-01T00:00:00.000Z",
        "source": "wbjournal.com",
@@ -3364,6 +3813,7 @@
        "id": 42,
        "title": "The 1st International Distal Thrombectomy Summit Called for a Need to “Define Indications for Distal Thrombectomy and Invest in Registries”",
        "url": "https://neuronewsinternational.com/1st-international-distal-thrombectomy-summit/",
+       "href": "/news-events/42-the-1st-international-distal-thrombectomy-summit-called-for-a-need-to-define",
        "imageUrl": null,
        "publishedOn": "2019-08-01T00:00:00.000Z",
        "source": "NeuroNews",
@@ -3377,6 +3827,7 @@
        "id": 44,
        "title": "Life-Threatening Brain Aneurysm Treated With First-in-U.S. Device at Los Robles",
        "url": "https://www.vcstar.com/story/news/local/2019/07/26/brain-aneurysm-treated-comaneci-device-first-time-u-s/1832108001/",
+       "href": "/news-events/44-life-threatening-brain-aneurysm-treated-with-first-in-u-s-device-at-los-robles",
        "imageUrl": null,
        "publishedOn": "2019-07-01T00:00:00.000Z",
        "source": "vcstar.com",
@@ -3390,6 +3841,7 @@
        "id": 45,
        "title": "Mechanical Thrombectomy in Distal MCA Occlusion Using Tiger 13",
        "url": "https://www.linnc.com/Course-programs/LINNC-2019/Mechanical-Thrombectomy-in-distal-MCA-occlusion-using-Tiger-13",
+       "href": "/news-events/45-mechanical-thrombectomy-in-distal-mca-occlusion-using-tiger-13",
        "imageUrl": null,
        "publishedOn": "2019-06-01T00:00:00.000Z",
        "source": "linnc.com",
@@ -3403,6 +3855,7 @@
        "id": 46,
        "title": "Rapid Medical Announces FDA Approval of Novel Temporary Aneurysm Embolization Assist Device",
        "url": "https://www.prnewswire.com/il/news-releases/rapid-medical-announces-fda-approval-of-novel-temporary-aneurysm-embolization-assist-device-300844039.html",
+       "href": "/news-events/46-rapid-medical-announces-fda-approval-of-novel-temporary-aneurysm-embolization",
        "imageUrl": null,
        "publishedOn": "2019-05-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3416,6 +3869,7 @@
        "id": 47,
        "title": "Rapid Medical Raises $20 Million in New Funding to Support Clinical and Commercialization of First-in-class Stroke Treatment Products",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-raises-20-million-in-new-funding-to-support-clinical-and-commercialization-of-first-in-class-stroke-treatment-products-300835469.html",
+       "href": "/news-events/47-rapid-medical-raises-20-million-in-new-funding-to-support-clinical-and",
        "imageUrl": null,
        "publishedOn": "2019-04-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3429,6 +3883,7 @@
        "id": 48,
        "title": "Rapid Medical Receives CE Mark Approval for TIGERTRIEVER 13",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-receives-ce-mark-approval-for-tigertriever-13-300689172.html",
+       "href": "/news-events/48-rapid-medical-receives-ce-mark-approval-for-tigertriever-13",
        "imageUrl": null,
        "publishedOn": "2018-07-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3442,6 +3897,7 @@
        "id": 49,
        "title": "Rapid Medical First Patient Enrolled to the TIGER Pivotal Clinical Study",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tiger-pivotal-clinical-study-682789031.html",
+       "href": "/news-events/49-rapid-medical-first-patient-enrolled-to-the-tiger-pivotal-clinical-study",
        "imageUrl": null,
        "publishedOn": "2018-05-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3455,6 +3911,7 @@
        "id": 50,
        "title": "Rapid Medical: First Patient Enrolled to the TIGERTRIEVER Acute Ischemic Stroke Registry",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-first-patient-enrolled-to-the-tigertriever-acute-ischemic-stroke-registry-645690163.html",
+       "href": "/news-events/50-rapid-medical-first-patient-enrolled-to-the-tigertriever-acute-ischemic-stroke",
        "imageUrl": null,
        "publishedOn": "2017-09-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3468,6 +3925,7 @@
        "id": 51,
        "title": "Rapid Medical Announces $9M in New Funding to Advance Commercialization of First-In-Class Stroke Treatment Products",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-9m-in-new-funding-to-advance-commercialization-of-first-in-class-stroke-treatment-products-634938533.html",
+       "href": "/news-events/51-rapid-medical-announces-9m-in-new-funding-to-advance-commercialization-of-first",
        "imageUrl": null,
        "publishedOn": "2017-07-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3481,6 +3939,7 @@
        "id": 52,
        "title": "Rapid Medical's Comaneci Adjustable Remodeling Mesh Exceeds 500 Successful Aneurysm Treatments",
        "url": "https://www.prnewswire.com/news-releases/rapid-medicals-comaneci-adjustable-remodeling-mesh-exceeds-500-successful-aneurysm-treatments-592723241.html",
+       "href": "/news-events/52-rapid-medical-s-comaneci-adjustable-remodeling-mesh-exceeds-500-successful",
        "imageUrl": null,
        "publishedOn": "2016-09-01T00:00:00.000Z",
        "source": "PR Newswire",
@@ -3494,12 +3953,113 @@
        "id": 53,
        "title": "Rapid Medical Announces First Stroke Patient Treated With TIGERTRIEVER",
        "url": "https://www.prnewswire.com/news-releases/rapid-medical-announces-first-stroke-patient-treated-with-tigertriever-565743841.html",
+       "href": "/news-events/53-rapid-medical-announces-first-stroke-patient-treated-with-tigertriever",
        "imageUrl": null,
        "publishedOn": "2016-01-01T00:00:00.000Z",
        "source": "PR Newswire",
        "edit": {
         "r": "news",
         "id": 53,
+        "prefix": ""
+       }
+      }
+     ]
+    }
+   },
+   {
+    "type": "events",
+    "variant": "past",
+    "data": {
+     "title": "Past events",
+     "anchor": "past-events",
+     "items": [
+      {
+       "id": 1,
+       "title": "From Physics to Practice",
+       "href": "/events/from-physics-to-practice-busan-2026",
+       "dates": "12 October 2026",
+       "year": 2026,
+       "place": "Park Hyatt Busan, Busan",
+       "time": null,
+       "city": "Busan",
+       "venue": "Park Hyatt Busan",
+       "congress": null,
+       "registrationOpen": false,
+       "edit": {
+        "r": "events",
+        "id": 1,
+        "prefix": ""
+       }
+      },
+      {
+       "id": 3,
+       "title": "TIGERTRIEVER™ Workshop in partnership with Kaneka",
+       "href": "/events/tigertriever-workshop-kaneka-2026",
+       "dates": "15–16 September 2026",
+       "year": 2026,
+       "place": null,
+       "time": null,
+       "city": null,
+       "venue": null,
+       "congress": null,
+       "registrationOpen": false,
+       "edit": {
+        "r": "events",
+        "id": 3,
+        "prefix": ""
+       }
+      },
+      {
+       "id": 2,
+       "title": "DRIVEWIRE™ 24 in Clinical Practice",
+       "href": "/events/drivewire-24-in-clinical-practice-esmint-2026",
+       "dates": "3 September 2026",
+       "year": 2026,
+       "place": "Marseille",
+       "time": "12:45 PM",
+       "city": "Marseille",
+       "venue": null,
+       "congress": "ESMINT",
+       "registrationOpen": false,
+       "edit": {
+        "r": "events",
+        "id": 2,
+        "prefix": ""
+       }
+      },
+      {
+       "id": 4,
+       "title": "More than Conventional",
+       "href": "/events/more-than-conventional-linnc-paris-2026",
+       "dates": "1 June 2026",
+       "year": 2026,
+       "place": "Hôtel Regina Louvre, Paris",
+       "time": "19:30",
+       "city": "Paris",
+       "venue": "Hôtel Regina Louvre",
+       "congress": "LINNC",
+       "registrationOpen": false,
+       "edit": {
+        "r": "events",
+        "id": 4,
+        "prefix": ""
+       }
+      },
+      {
+       "id": 5,
+       "title": "Meet The Experts Dinner event at DGNR 2025",
+       "href": "/events/meet-the-experts-dinner-dgnr-2025",
+       "dates": "22 October 2025",
+       "year": 2025,
+       "place": null,
+       "time": null,
+       "city": null,
+       "venue": null,
+       "congress": "DGNR",
+       "registrationOpen": false,
+       "edit": {
+        "r": "events",
+        "id": 5,
         "prefix": ""
        }
       }
@@ -3616,7 +4176,7 @@
    },
    {
     "type": "form",
-    "variant": "default",
+    "variant": "split",
     "data": {
      "topics": [
       "Request a demo",
@@ -3628,7 +4188,24 @@
       "Other"
      ],
      "defaultTopic": "Request a demo",
-     "defaultRegion": "Americas"
+     "defaultRegion": "Americas",
+     "defaultCountry": "US",
+     "contacts": [
+      {
+       "label": "Call Americas",
+       "value": "+1-469-991-7712",
+       "href": "tel:+14699917712"
+      },
+      {
+       "label": "Orders",
+       "value": "orders.inc@rapid-medical.com",
+       "href": "mailto:orders.inc@rapid-medical.com"
+      }
+     ],
+     "contactsLink": {
+      "label": "All offices and addresses →",
+      "href": "/about-us#offices"
+     }
     }
    }
   ],
@@ -3654,21 +4231,72 @@
     "data": {
      "options": [
       {
+       "region": "us",
        "label": "Americas",
-       "href": "/us/therapies",
+       "href": "/api/region?to=us&back=%2Fus%2Ftherapies",
        "suggested": false
       },
       {
+       "region": "apac",
        "label": "Asia & Pacific",
-       "href": "/apac/therapies",
+       "href": "/api/region?to=apac&back=%2Fapac%2Ftherapies",
        "suggested": false
       },
       {
+       "region": "ous",
        "label": "Europe & Middle East",
-       "href": "/ous/therapies",
+       "href": "/api/region?to=ous&back=%2Fous%2Ftherapies",
        "suggested": false
       }
-     ]
+     ],
+     "current": null
+    }
+   }
+  ],
+  "Choose location · from the header": [
+   {
+    "type": "hero",
+    "variant": "page",
+    "data": {
+     "title": "Choose your location.",
+     "body": "Product availability and regulatory information differ by region."
+    },
+    "edit": {
+     "r": "settings:regional",
+     "map": {
+      "title": "chooserTitle",
+      "body": "chooserNote"
+     }
+    }
+   },
+   {
+    "type": "regionChooser",
+    "variant": "default",
+    "data": {
+     "options": [
+      {
+       "region": "us",
+       "label": "Americas",
+       "href": "/api/region?to=us&back=%2Fous%2Ftherapies%2Flvo",
+       "suggested": false
+      },
+      {
+       "region": "apac",
+       "label": "Asia & Pacific",
+       "href": "/api/region?to=apac&back=%2Fous%2Ftherapies%2Flvo",
+       "suggested": false
+      },
+      {
+       "region": "ous",
+       "label": "Europe & Middle East",
+       "href": "/api/region?to=ous&back=%2Fous%2Ftherapies%2Flvo",
+       "suggested": false
+      }
+     ],
+     "current": {
+      "label": "Europe & Middle East",
+      "source": "chosen"
+     }
     }
    }
   ],
@@ -3875,6 +4503,11 @@
      "id": "dark",
      "label": "Dark band",
      "description": "Centred text over a background image or video"
+    },
+    {
+     "id": "facts",
+     "label": "Beside facts",
+     "description": "Company facts on the left, the text and a second paragraph on the right (About)"
     }
    ],
    "fields": [
@@ -3897,6 +4530,27 @@
      "key": "videoUrl",
      "label": "Video (lead, dark)",
      "kind": "media"
+    },
+    {
+     "key": "title2",
+     "label": "Second title (facts)",
+     "kind": "text"
+    },
+    {
+     "key": "body2",
+     "label": "Second text (facts)",
+     "kind": "longText"
+    },
+    {
+     "key": "countries",
+     "label": "Countries (facts)",
+     "kind": "text",
+     "note": "e.g. 30+"
+    },
+    {
+     "key": "headquarters",
+     "label": "Headquarters (facts)",
+     "kind": "text"
     }
    ],
    "nestable": true,
@@ -3912,6 +4566,11 @@
      "id": "default",
      "label": "Default",
      "description": "Headings, paragraphs, lists, links, images"
+    },
+    {
+     "id": "document",
+     "label": "Document",
+     "description": "Long document: date, «On this page» and the section's documents on the left"
     }
    ],
    "fields": [
@@ -3952,7 +4611,7 @@
     {
      "id": "statement",
      "label": "Statement",
-     "description": "Large line and video, then key numbers, a closing line and a button"
+     "description": "Large line and a video or picture, then key numbers, a closing line and a button"
     }
    ],
    "fields": [
@@ -4088,6 +4747,11 @@
      "id": "badge",
      "label": "Badge",
      "description": "One number in a frame"
+    },
+    {
+     "id": "figures",
+     "label": "Key figures",
+     "description": "2–4 large numbers with a label and the quote they come from (study and news pages)"
     }
    ],
    "fields": [
@@ -4104,6 +4768,33 @@
     }
    ],
    "nestable": true,
+   "pinned": false
+  },
+  {
+   "type": "passport",
+   "name": "Study at a glance",
+   "description": "A study's passport: design, patients, centres, dates — only values from the approved document, with the source named.",
+   "category": "content",
+   "variants": [
+    {
+     "id": "default",
+     "label": "Default",
+     "description": "Shared line: the name on the left, key — value rows and the source on the right"
+    }
+   ],
+   "fields": [
+    {
+     "key": "title",
+     "label": "Title",
+     "kind": "text"
+    },
+    {
+     "key": "rows",
+     "label": "Rows (label — value)",
+     "kind": "items"
+    }
+   ],
+   "nestable": false,
    "pinned": false
   },
   {
@@ -4433,6 +5124,16 @@
      "id": "timeline",
      "label": "By year",
      "description": "Grey band, grouped by year, “Show more”"
+    },
+    {
+     "id": "highlights",
+     "label": "Highlights",
+     "description": "The first one large with its picture, the next three beside it (News & Events)"
+    },
+    {
+     "id": "feed",
+     "label": "Rows",
+     "description": "Shared line: the name on the left; date, title and source in rows, “Show more” (News & Events)"
     }
    ],
    "fields": [
@@ -4471,6 +5172,16 @@
      "id": "archive",
      "label": "Archive",
      "description": "Past events by year, newest first"
+    },
+    {
+     "id": "next",
+     "label": "Upcoming, shared line",
+     "description": "The nearest as a card with Register, the rest as rows; nothing coming — a line and a link to the archive (News & Events)"
+    },
+    {
+     "id": "past",
+     "label": "Past, shared line",
+     "description": "Past events as rows by year, like the news rows (News & Events)"
     }
    ],
    "fields": [
@@ -4509,6 +5220,16 @@
      "id": "byProduct",
      "label": "By product",
      "description": "Tabs by product, a list in each"
+    },
+    {
+     "id": "overview",
+     "label": "Overview",
+     "description": "Publications counted from the records (per product) beside a line, then the featured ones as cards (Evidence)"
+    },
+    {
+     "id": "library",
+     "label": "Archive",
+     "description": "Shared line: search, product filter with counts, sort, rows with the first author, Read / PDF, Show more (Evidence)"
     }
    ],
    "fields": [
@@ -4570,9 +5291,24 @@
      "id": "list",
      "label": "List",
      "description": "Title, department and city"
+    },
+    {
+     "id": "roles",
+     "label": "Open positions",
+     "description": "Heading and count on the left; filters by department and city, the first six roles and «Show all» on the right (Careers)"
     }
    ],
    "fields": [
+    {
+     "key": "title",
+     "label": "Title (open positions)",
+     "kind": "text"
+    },
+    {
+     "key": "note",
+     "label": "Line under the list (open positions)",
+     "kind": "text"
+    },
     {
      "key": "items",
      "label": "Positions",
@@ -4603,6 +5339,11 @@
      "id": "section",
      "label": "Section",
      "description": "Compact form in its own section, with a heading and a note"
+    },
+    {
+     "id": "split",
+     "label": "Shared line",
+     "description": "A hairline; heading, note or contacts on the left, the form on the right (Contact Us, Careers)"
     }
    ],
    "fields": [
@@ -4635,8 +5376,8 @@
    "variants": [
     {
      "id": "offices",
-     "label": "Office list",
-     "description": "Grey band, address and phones of each office"
+     "label": "Office cards",
+     "description": "Grey band, a card per office: address, phones, orders email, directions"
     },
     {
      "id": "map",
@@ -4673,13 +5414,13 @@
   {
    "type": "regionChooser",
    "name": "Region chooser",
-   "description": "Three regions to choose from; the region suggested for the visitor is highlighted.",
+   "description": "Three regions with their countries and a country search; the region suggested for the visitor is highlighted.",
    "category": "system",
    "variants": [
     {
      "id": "default",
      "label": "Default",
-     "description": "Three cards"
+     "description": "Country search and three region cards"
     }
    ],
    "fields": [

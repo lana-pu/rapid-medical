@@ -381,7 +381,7 @@ const R = {
   columns(v, d, c) {
     const items = d.items || [];
     if (v === 'principles') return A.section('surface', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.intro ? A.text('muted', d.intro, 'intro') : ''}${d.imageUrl ? `<div style="max-width:420px;width:100%" class="mx">${A.media('image', fileLabel(d.imageUrl), '16/9', 'imageUrl')}</div>` : ''}<div class="g5 top" data-part="items">${items.map(p => `<div class="stack s8 center">${A.h(3, p.title, '', 'first-letter')}${A.text('small', p.body)}</div>`).join('')}</div></div>`);
-    if (v === 'cards') return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="${items.length > 2 ? 'g3' : 'g2'} top" data-part="items">${items.map(it => A.card(`${it.imageUrl ? A.media('image', fileLabel(it.imageUrl), '16/9') : ''}${it.eyebrow ? A.eyebrow(it.eyebrow) : ''}${A.h(3, it.title)}${it.body ? A.text('small muted', it.body) : ''}${it.note ? `<b class="small">${esc(it.note)}</b>` : ''}`)).join('')}</div></div>`);
+    if (v === 'cards') return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="${items.length > 2 ? 'g3' : 'g2'} top" data-part="items">${items.map(it => A.card(`${it.imageUrl ? A.media('image', fileLabel(it.imageUrl), '16/9') : ''}${it.eyebrow ? A.eyebrow(it.eyebrow) : ''}${A.h(3, it.title)}${it.body ? A.text('small muted', it.body) : ''}${it.note ? `<b class="small">${esc(it.note)}</b>` : ''}${it.href || it.more ? `<div class="row">${it.href ? A.button('link', 'Explore →') : ''}${it.more ? A.button('link', it.more.label) : ''}</div>` : ''}`)).join('')}</div></div>`);
     let inner;
     if (v === 'steps') inner = `<div class="g3 top" data-part="items">${items.map((s, i) => `<div class="stack s8">${A.text('small', `${i + 1}. ${s.title}${s.body ? ' ' + s.body : ''}`)}${s.videoUrl || s.imageUrl ? A.media(s.videoUrl ? 'video' : 'image', fileLabel(s.videoUrl || s.imageUrl), '16/9') : ''}</div>`).join('')}</div>`;
     else inner = items.length ? `<div class="g2 top" data-part="items">${items.map(f => `<div class="row top" style="flex-wrap:nowrap;align-items:flex-start">${f.iconUrl ? `<div style="width:56px;flex:none">${A.media('icon', '', '1/1', '', 'tiny')}</div>` : ''}<div class="stack s8">${A.h(4, f.title)}${f.body ? A.text('small', f.body) : ''}</div></div>`).join('')}</div>`
@@ -439,6 +439,14 @@ const R = {
     const compact = v !== 'default';
     const f = `<div class="stack" data-part="topics" style="max-width:640px">${A.field('select', 'Topic*')}<div class="g2" style="gap:12px">${A.field('input', 'First Name*')}${A.field('input', 'Last Name*')}</div>${A.field('input', 'Organization')}<div class="g2" style="gap:12px">${A.field('input', 'Email*')}${A.field('input', 'Phone')}</div>${A.field('select', 'Region')}${compact ? '' : `<div class="g2" style="gap:12px">${A.field('input', 'Country')}${A.field('input', 'State / Province')}</div>`}${A.field('area', 'Message')}${A.field('check', 'Sign me up! I agree to receive news and updates.')}<div>${A.button('primary', 'Submit')}</div></div>`;
     if (v === 'section') return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${d.note ? A.text('small', d.note, 'note') : ''}${f}</div>`);
+    // split (Contact Us): the region's contacts on the left; topics as chips, Country (State only for the US and Canada) on the right
+    if (v === 'split') {
+      const topics = d.topics || []; const shown = topics.slice(0, 3);
+      const chip = (l, active) => `<span class="a-btn ${active ? 'primary' : 'secondary'}" style="border-radius:99px;padding:6px 12px">${esc(l)}</span>`;
+      const left = `<div class="stack s8" data-part="contacts">${(d.contacts || []).map(k => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:8px">${A.text('small muted', k.label)}<u class="small">${esc(k.value)}</u></div>`).join('')}${d.contactsLink ? `<div>${A.button('link', d.contactsLink.label)}</div>` : ''}</div>`;
+      const right = `<div class="stack">${A.text('small', 'How can we help? Select a topic.*')}<div class="row" style="gap:6px" data-part="topics">${shown.map(t => chip(t, t === d.defaultTopic)).join('')}${topics.length > 3 ? chip('Other topic ▾', false) : ''}</div><div class="g2" style="gap:12px">${A.field('input', 'First Name*')}${A.field('input', 'Last Name*')}${A.field('input', 'Email*')}${A.field('input', 'Phone')}${A.field('input', 'Organization')}${A.field('select', 'Country*' + (d.defaultCountry ? ' · ' + d.defaultCountry : ''))}</div>${A.field('area', 'Message')}${A.field('check', 'Sign me up! I would like to receive Rapid Medical news and updates.')}<div data-part="submit">${A.button('primary', 'Submit')}</div></div>`;
+      return A.section('', `<div class="g2 top" style="grid-template-columns:1fr 1.6fr">${left}${right}</div>`);
+    }
     return c.nested ? f : A.section('', f);
   },
   officesMap(v, d) {
@@ -472,12 +480,27 @@ const R = {
       return A.section('', `<div class="stack s24"><div class="stack center">${d.stat ? A.stat('badge', d.stat, 'stat') : ''}${d.line ? A.text('italic', d.line, 'line') : ''}</div>${p ? `<div style="position:relative" data-part="items">${A.card(`<div class="g2">${A.media('image', fileLabel(p.imageUrl), '16/9')}<div class="stack">${A.eyebrow([p.journal, dt(p.publishedOn)].filter(Boolean).join(' · '))}${A.h(3, p.title)}${p.authors ? A.text('small', p.authors) : ''}<div>${A.button('primary', 'Read article')}</div></div></div>`, '', '')}${A.arrows()}</div>${A.dots(items.length)}` : ''}</div>`);
     }
     if (v === 'cards') return A.section('surface', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}<div class="g3 top" data-part="items">${items.slice(0, 3).map(p => A.card(`${A.media('image', fileLabel(p.imageUrl), '16/9')}${A.eyebrow(dt(p.publishedOn))}${A.h(4, p.title)}<div>${A.button('link', 'Read ›')}</div>`)).join('')}</div></div>`);
+    const yr = s => s ? String(new Date(s).getFullYear()) : '';
+    const links = p => `<div class="row">${p.url ? A.button('link', p.doi ? 'doi:' + p.doi + ' ↗' : 'Read ↗') : ''}${p.pdfUrl ? A.button('link', 'Download PDF') : ''}</div>`;
+    // overview: the region's numbers beside the line (total + per product, each a link to its tab), featured publications as cards
+    if (v === 'overview') {
+      const groups = d.groups || []; const total = groups.reduce((n, g) => n + (g.count ?? (g.items || []).length), 0);
+      const nums = `<div class="stack s8" data-part="stat">${[[d.stat ? d.stat.label.replace(/^./, c => c.toUpperCase()) : 'Clinical publications', total, false], ...groups.map(g => [g.label, g.count ?? (g.items || []).length, true])].map(([l, n, link]) => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:6px">${A.text('small', l)}${link ? `<u class="small">${n}</u>` : `<b class="small">${n}</b>`}</div>`).join('')}</div>`;
+      return A.section('', `<div class="stack s40"><div class="g2 top">${nums}${d.line ? A.text('lead', d.line, 'line') : ''}</div><div class="stack s24">${A.h(2, 'Featured publications')}<div class="g3 top" data-part="items">${items.slice(0, 3).map(p => A.card(`${A.media('image', fileLabel(p.imageUrl), '16/10')}${A.text('small', yr(p.publishedOn))}${A.h(4, p.title)}${links(p)}`)).join('')}</div></div></div>`);
+    }
+    // library: search, sort, product chips (a #<product> link opens its chip — activeTab, wireframes only), the list
+    if (v === 'library') {
+      const groups = d.groups || []; const all = groups.flatMap(g => (g.items || []).map(p => Object.assign({ product: g.label }, p)));
+      const on = groups.findIndex(g => g.id === d.activeTab); const list = on < 0 ? all : all.filter(p => p.product === groups[on].label);
+      const chip = (l, n, active) => `<span class="a-btn ${active ? 'primary' : 'secondary'}" style="border-radius:99px;padding:4px 12px;font-size:12px">${esc(l)} ${n}</span>`;
+      return A.section('', `<div class="g2 top" style="grid-template-columns:1fr 2fr"><div>${d.title ? A.h(2, d.title, 'title') : ''}</div><div class="stack s8"><div class="g2" style="grid-template-columns:3fr 1fr;gap:10px">${A.field('input', 'Search title, author, journal')}${A.field('select', 'Newest first')}</div><div class="row" style="gap:6px" data-part="groups">${chip('All', all.length, on < 0)}${groups.map((g, i) => chip(g.label, (g.items || []).length, i === on)).join('')}</div>${A.text('small', `Showing ${Math.min(list.length, 12)} of ${list.length}`)}<div data-part="items">${list.slice(0, 5).map(p => `<div class="pub-row">${A.text('small', yr(p.publishedOn))}<div class="stack s8">${A.h(4, p.title)}${p.authors ? A.text('small', p.authors.split(',')[0].replace(/\s*et al\.?$/, '') + ' et al.') : ''}<div class="row">${A.text('small', '[' + p.product + ']')}${links(p)}</div></div></div>`).join('')}${list.length > 5 ? `<div class="more">… ещё ${list.length - 5}</div>` : ''}</div></div></div>`);
+    }
     // activeTab (wireframes only): the tab opened by a #<product> link, as on the site
     const gid = 'tg' + (++UID); const groups = d.groups || []; const on = Math.max(0, groups.findIndex(g => g.id === d.activeTab));
     return A.section('', `<div class="stack s24">${d.title ? A.h(2, d.title, 'title') : ''}${A.tabs('pills', groups.map(g => ({ label: g.label, sublabel: g.sublabel })), on, gid, 'groups')}${groups.map((g, i) => `<div class="stack s8" data-panel="${gid}" data-i="${i}" ${i !== on ? 'hidden' : ''}>${A.h(4, g.fullName)}<div data-part="items">${g.items.map(p => `<div class="pub-row">${A.text('small', dt(p.publishedOn))}<div class="stack s8">${A.h(4, p.title)}${p.authors || p.journal ? A.text('small', [p.authors, p.journal].filter(Boolean).join(' · ')) : ''}<div class="row">${p.url ? A.button('link', p.doi ? 'doi:' + p.doi : 'Read') : ''}${p.pdfUrl ? A.button('link', 'Download PDF') : ''}</div></div></div>`).join('')}</div></div>`).join('')}</div>`);
   },
   webinars(v, d, c) {
-    const inner = `<div class="g3 top" data-part="items">${(d.items || []).map(w => A.card(`${A.media('image', fileLabel(w.imageUrl), '16/9')}${A.h(4, w.title)}${A.text('small', [w.speaker, w.event].filter(Boolean).join(' · '))}${w.productName ? A.eyebrow(w.productName) : ''}`)).join('')}</div>`;
+    const inner = `<div class="g3 top" data-part="items">${(d.items || []).map(w => A.card(`${A.media('image', fileLabel(w.imageUrl), '16/9')}${A.h(4, w.title)}${A.text('small', [w.speaker, w.event].filter(Boolean).join(' · '))}${w.productName ? A.eyebrow(w.productName) : ''}<div>${A.button('link', 'Request this recording')}</div>`)).join('')}</div>`;
     return c.nested ? inner : A.section('', inner);
   },
   jobs(v, d, c) {
@@ -486,8 +509,12 @@ const R = {
       : A.text('muted', 'There are no open positions right now. You can still submit general interest.', 'items');
     return c.nested ? inner : A.section('', inner);
   },
+  // Choose your location (src/components/site/RegionPicker.tsx): current region and where it came from, country search, three cards
+  // with their countries. The country lists live in code (src/lib/countries), not in the block — sample text below, 2026-11-18.
   regionChooser(v, d, c) {
-    const inner = `<div class="g3" data-part="options">${(d.options || []).map(o => `<div class="region-card ${o.suggested ? 'on' : ''}">${esc(o.label)} →${o.suggested ? `<div class="a-t small" style="font-weight:400">Suggested for your location</div>` : ''}</div>`).join('')}</div>`;
+    const C = { us: ['28 countries', 'United States, Canada, Mexico, Brazil, Argentina, Chile, Colombia… and 19 more'], apac: ['47 countries', 'China, Japan, South Korea, India, Singapore, Malaysia… and 38 more'], ous: ['all others', 'Europe, Australia, New Zealand, Africa and all other countries'] };
+    const cur = d.current ? `<div class="row" style="justify-content:space-between;border-block:1px solid var(--line);padding:8px 0" data-part="current"><div>${A.text('small muted', 'Current region')}${A.text('', d.current.label)}</div>${d.current.source ? A.text('small', d.current.source === 'location' ? '(From your location)' : '(Your choice)') : ''}</div>` : '';
+    const inner = `<div class="stack">${cur}<div data-part="search">${A.field('input', 'Find your country · Start typing, e.g. Brazil')}</div><div class="g3 top" data-part="options">${(d.options || []).map(o => A.card(`<div class="row" style="justify-content:space-between">${A.h(4, o.label)}${A.text('small muted', (C[o.region] || [''])[0])}</div>${A.text('small muted', (C[o.region] || ['', ''])[1])}${o.suggested ? A.text('small', 'Suggested for your location') : ''}<div>${A.button('secondary', 'Go to ' + o.label + ' →')}</div>`, '', o.suggested ? 'on' : '')).join('')}</div></div>`;
     return c.nested ? inner : A.section('', inner);
   },
 };

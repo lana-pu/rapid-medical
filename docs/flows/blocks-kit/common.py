@@ -31,7 +31,7 @@ def load():
     def trim(b, nested):
         d = b['data']
         if b['type'] == 'news' and b['variant'] == 'timeline': d['items'] = d['items'][:14]
-        if b['type'] == 'publications' and b['variant'] == 'byProduct':
+        if b['type'] == 'publications' and b['variant'] in ('byProduct', 'library'):
             for g in d['groups']: g['items'] = g['items'][:5]
     for v in pages.values(): walk(v, trim)
 
@@ -42,7 +42,8 @@ def load():
     def first(t, v=None):
         return next((i for i in inst.get(t, []) if v is None or i['variant'] == v), None)
     tm_stats = next(i for i in inst['textMedia'] if i['data'].get('stats'))
-    home_stat, ev_spot, pd, spec = first('textMedia', 'statement'), first('publications', 'spotlight'), first('productDetails', 'pills'), first('specTable', 'table')
+    home_stat, pd, spec = first('textMedia', 'statement'), first('productDetails', 'pills'), first('specTable', 'table')
+    ev_spot = first('publications', 'spotlight') or first('publications', 'overview')  # Evidence after the redesign: overview
     heroes = [next(b for b in pages[p] if b['type'] == 'hero') for p in ('OUS · Large vessel stroke', 'US · Aneurysm')]
     built = 'Из данных сайта: '
     poster = re.search(r'src="([^"]+)"', next(b for b in pages['US · SUCCESS study'] if b['type'] == 'richText')['data']['html']).group(1)

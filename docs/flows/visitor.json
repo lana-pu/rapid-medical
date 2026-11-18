@@ -1,7 +1,7 @@
 {
  "title": "Physician on the website — from the home page to a demo request",
  "project": "Rapid Medical",
- "description": "Врач-нейроинтервенционалист из США впервые на сайте: находит терапию аневризм (COMANECI™), смотрит исследования, просит запись вебинара или демо. Регион определяется по IP сразу (решение 2026-11-10). Все страницы — реальные составы из блоков сайта (снимок в rm-pages.json). Заметки «по коду» — как сайт работает сейчас; остальные — вопросы и предложения.",
+ "description": "Врач-нейроинтервенционалист из США впервые на сайте: находит терапию аневризм (COMANECI™), смотрит исследования, просит запись вебинара или демо. Регион определяется по IP сразу (решение 2026-11-10). Все страницы — реальные составы из блоков сайта после редизайна (снимок 2026-11-18, rm-pages.json). Заметки «по коду» — как сайт работает сейчас; остальные — вопросы и предложения.",
  "start": "home",
  "groups": [
   {
@@ -92,17 +92,17 @@
       {
        "c": "rm-hero",
        "v": "banner",
+       "cta": {
+        "href": "/us/therapies",
+        "label": "Explore Therapies"
+       },
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
        "title": "EXPAND",
        "title2": "WHAT’S POSSIBLE",
        "subtitle": "in neurovascular therapy",
-       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
-       "cta": {
-        "label": "Explore Therapies",
-        "href": "/us/therapies"
-       },
        "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
        "to": "therapies",
-       "label": "Explore Our Therapies",
+       "label": "Explore Therapies",
        "focus": {
         "part": "cta",
         "style": "hover"
@@ -112,8 +112,11 @@
       {
        "c": "rm-textMedia",
        "v": "statement",
-       "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
-       "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4",
+       "body": "Our solution? Tools that adapt to each patient's anatomy.",
+       "link": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
        "stats": [
         {
          "label": "patients treated",
@@ -131,17 +134,14 @@
          "iconUrl": "/icons/stat-publications.svg"
         }
        ],
-       "body": "Our solution? Tools that adapt to each patient's anatomy.",
-       "link": {
-        "label": "Request a demo",
-        "href": "/contact-us?region=us&topic=demo"
-       }
+       "title": "Like fingerprints, no two strokes are the same. Yet, conventional therapy options are limited and can compromise patient safety.",
+       "videoUrl": "/uploads/duda/nIyRh0PITsqiIot7omkk_Fingerprint-video-v-37c06e.mp4"
       },
       {
        "c": "rm-text",
        "v": "dark",
-       "title": "Engineered for precise control at every step.",
        "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
+       "title": "Engineered for precise control at every step.",
        "imageUrl": ""
       }
      ]
@@ -160,7 +160,7 @@
      "menuOpen": true,
      "to": "aneurysm",
      "label": "Aneurysm",
-     "annotation": "По коду: терапии региона по направлениям — Ischemic stroke / Hemorrhagic stroke / Access, внизу «All therapies». Направление — поле терапии в админке."
+     "annotation": "По коду: терапии региона по направлениям — Ischemic stroke / Hemorrhagic stroke / Access, внизу «All therapies». Направление — поле терапии в админке; меню правится в Settings → Menu and footer."
     },
     {
      "c": "rm-page",
@@ -168,14 +168,14 @@
       {
        "c": "rm-hero",
        "v": "banner",
+       "cta": {
+        "href": "/us/therapies",
+        "label": "Explore Therapies"
+       },
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
        "title": "EXPAND",
        "title2": "WHAT’S POSSIBLE",
        "subtitle": "in neurovascular therapy",
-       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
-       "cta": {
-        "label": "Explore Therapies",
-        "href": "/us/therapies"
-       },
        "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
       }
      ]
@@ -197,68 +197,66 @@
       {
        "c": "rm-hero",
        "v": "bannerCompact",
-       "eyebrow": "Americas",
-       "title": "Therapies",
        "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
        "note": "",
-       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4"
+       "title": "Therapies",
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+       "eyebrow": "Americas"
       },
       {
        "c": "rm-columns",
        "v": "cards",
-       "title": "Ischemic stroke",
+       "title": null,
        "items": [
         {
-         "eyebrow": "TIGERTRIEVER™",
+         "eyebrow": "Ischemic stroke · TIGERTRIEVER™",
          "title": "Large vessel stroke",
          "body": "A patient-centric approach to AIS",
-         "href": "/us/therapies/lvo"
-        }
-       ]
-      },
-      {
-       "c": "rm-columns",
-       "v": "cards",
-       "title": "Hemorrhagic stroke",
-       "items": [
+         "href": "/us/therapies/lvo",
+         "more": {
+          "label": "19 publications →",
+          "href": "/us/evidence#tigertriever"
+         }
+        },
         {
-         "eyebrow": "COMANECI™",
+         "eyebrow": "Hemorrhagic stroke · COMANECI™",
          "title": "Aneurysm",
          "body": "Bridging the gap in assist devices",
-         "href": "/us/therapies/aneurysm"
+         "href": "/us/therapies/aneurysm",
+         "more": {
+          "label": "12 publications →",
+          "href": "/us/evidence#comaneci"
+         }
+        },
+        {
+         "eyebrow": "Access · DRIVEWIRE™",
+         "title": "Access",
+         "body": "Active access",
+         "href": "/us/therapies/drivewire",
+         "more": {
+          "label": "4 publications →",
+          "href": "/us/evidence#drivewire"
+         }
         }
        ],
        "to": "aneurysm",
-       "label": "COMANECI™",
+       "label": "Aneurysm · Explore →",
        "focus": {
         "part": "items",
         "style": "hover",
         "cursor": true
        },
-       "annotation": "По коду: обзор собирается из записей терапий — группа на направление, карточка: продукт, название, подзаголовок. Строка-доказательство на карточке появится после MLR (поле proofPoint пустое)."
-      },
-      {
-       "c": "rm-columns",
-       "v": "cards",
-       "title": "Access",
-       "items": [
-        {
-         "eyebrow": "DRIVEWIRE™",
-         "title": "Access",
-         "body": "Active access",
-         "href": "/us/therapies/drivewire"
-        }
-       ]
+       "annotation": "По коду: одна сетка карточек из записей терапий региона. Над названием — направление и продукт («Hemorrhagic stroke · COMANECI™»), внизу две ссылки: «Explore →» на страницу терапии и «N publications →» сразу в Evidence на этот продукт."
       },
       {
        "c": "rm-cta",
        "v": "light",
-       "title": "Questions?",
        "body": "Reach out to learn more about our company and devices.",
+       "title": "Questions?",
        "buttons": [
         {
-         "label": "Contact us",
-         "href": "/contact-us?region=us"
+         "href": "/contact-us?region=us",
+         "label": "Contact us"
         }
        ]
       }
@@ -274,13 +272,13 @@
     {
      "c": "rm-header",
      "to": "choose",
-     "label": "Therapies ▾",
+     "label": "Evidence",
      "focus": {
       "part": "menu",
       "style": "hover",
       "cursor": true
      },
-     "annotation": "По коду: если страна не определилась (VPN, нет заголовка), в шапке «🌐 Choose location», а Therapies и Evidence ведут на выбор региона. Это единственный случай, когда врач видит выбор."
+     "annotation": "По коду: если страна не определилась (VPN, нет заголовка), в шапке «🌐 Choose location». При входе ничего не всплывает: окно выбора открывается, только когда врач идёт в региональный раздел (Therapies, Evidence) или жмёт переключатель."
     },
     {
      "c": "rm-page",
@@ -288,14 +286,14 @@
       {
        "c": "rm-hero",
        "v": "banner",
+       "cta": {
+        "href": "/us/therapies",
+        "label": "Explore Therapies"
+       },
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
        "title": "EXPAND",
        "title2": "WHAT’S POSSIBLE",
        "subtitle": "in neurovascular therapy",
-       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
-       "cta": {
-        "label": "Explore Therapies",
-        "href": "/us/therapies"
-       },
        "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
       }
      ]
@@ -304,9 +302,8 @@
   },
   {
    "id": "choose",
-   "title": "Choose your location",
-   "url": "rapid-medical.com/choose-your-location",
-   "height": 560,
+   "title": "Choose your location (window)",
+   "url": "rapid-medical.com",
    "body": [
     {
      "c": "rm-header"
@@ -316,37 +313,62 @@
      "items": [
       {
        "c": "rm-hero",
-       "v": "page",
-       "title": "Choose your location.",
-       "body": "Product availability and regulatory information differ by region."
-      },
-      {
-       "c": "rm-regionChooser",
-       "v": "default",
-       "options": [
-        {
-         "label": "Americas",
-         "href": "/us/therapies",
-         "suggested": false
-        },
-        {
-         "label": "Asia & Pacific",
-         "href": "/apac/therapies",
-         "suggested": false
-        },
-        {
-         "label": "Europe & Middle East",
-         "href": "/ous/therapies",
-         "suggested": false
-        }
-       ],
-       "to": "therapies",
-       "label": "Americas",
-       "annotation": "Выбор запоминается и больше не перебивается IP. Когда регион известен, этот адрес сразу уводит в регион и не индексируется."
+       "v": "banner",
+       "cta": {
+        "href": "/us/therapies",
+        "label": "Explore Therapies"
+       },
+       "body": "Discover the power of active technology for ischemic and hemorrhagic stroke.",
+       "title": "EXPAND",
+       "title2": "WHAT’S POSSIBLE",
+       "subtitle": "in neurovascular therapy",
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
       }
      ]
     }
-   ]
+   ],
+   "overlay": {
+    "c": "modal",
+    "title": "Choose your location",
+    "items": [
+     {
+      "c": "text",
+      "v": "muted",
+      "text": "Product availability and regulatory information differ by region. Pick the region you practice in."
+     },
+     {
+      "c": "rm-regionChooser",
+      "v": "default",
+      "options": [
+       {
+        "region": "us",
+        "label": "Americas",
+        "href": "/api/region?to=us&back=%2Fus%2Ftherapies",
+        "suggested": false
+       },
+       {
+        "region": "apac",
+        "label": "Asia & Pacific",
+        "href": "/api/region?to=apac&back=%2Fapac%2Ftherapies",
+        "suggested": false
+       },
+       {
+        "region": "ous",
+        "label": "Europe & Middle East",
+        "href": "/api/region?to=ous&back=%2Fous%2Ftherapies",
+        "suggested": false
+       }
+      ],
+      "current": null,
+      "_ctx": {
+       "nested": true
+      },
+      "to": "evidence",
+      "label": "Go to Americas →"
+     }
+    ],
+    "annotation": "По коду: окно поверх страницы, не отдельный адрес. Поиск страны подсвечивает её регион («Brazil is here»); у каждого региона — список стран. После выбора врач попадает туда, куда шёл (Evidence региона), и выбор больше не перебивается IP. Без JavaScript — та же панель отдельной страницей /choose-your-location (не индексируется)."
+   }
   },
   {
    "id": "shared-link",
@@ -377,7 +399,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to AIS",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -388,14 +418,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to AIS",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -412,17 +435,12 @@
   },
   {
    "id": "switcher",
-   "title": "Region switcher",
+   "title": "Region switcher (window)",
    "url": "rapid-medical.com/ous/therapies/lvo",
-   "height": 520,
    "body": [
     {
      "c": "rm-header",
-     "region": "ous",
-     "switcherOpen": true,
-     "to": "therapies",
-     "label": "Americas",
-     "annotation": "По коду: выбор запоминается, плашка гаснет, открывается та же страница в другом регионе; если её там нет — обзор терапий. Названия здесь короткие («Europe & Middle East»), а в плашке и на Evidence — длинные («Europe, Middle East, Latin America & Australia»): вопрос к Emily."
+     "region": "ous"
     },
     {
      "c": "rm-page",
@@ -430,7 +448,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to AIS",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -441,18 +467,56 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to AIS",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       }
      ]
     }
-   ]
+   ],
+   "overlay": {
+    "c": "modal",
+    "title": "Choose your location",
+    "items": [
+     {
+      "c": "text",
+      "v": "muted",
+      "text": "Product availability and regulatory information differ by region. Pick the region you practice in."
+     },
+     {
+      "c": "rm-regionChooser",
+      "v": "default",
+      "options": [
+       {
+        "region": "us",
+        "label": "Americas",
+        "href": "/api/region?to=us&back=%2Fous%2Ftherapies%2Flvo",
+        "suggested": false
+       },
+       {
+        "region": "apac",
+        "label": "Asia & Pacific",
+        "href": "/api/region?to=apac&back=%2Fous%2Ftherapies%2Flvo",
+        "suggested": false
+       },
+       {
+        "region": "ous",
+        "label": "Europe & Middle East",
+        "href": "/api/region?to=ous&back=%2Fous%2Ftherapies%2Flvo",
+        "suggested": false
+       }
+      ],
+      "current": {
+       "label": "Europe & Middle East",
+       "source": "chosen"
+      },
+      "_ctx": {
+       "nested": true
+      },
+      "to": "therapies",
+      "label": "Go to Americas →"
+     }
+    ],
+    "annotation": "По коду: то же окно, что и при неизвестном регионе, плюс строка «Current region» с источником — «From your location» или «Your choice». Выбор открывает ту же страницу в другом регионе (вместе с открытой вкладкой); если её там нет — обзор терапий. Названия здесь короткие («Europe & Middle East»), а в плашке и на Evidence — длинные («Europe, Middle East, Latin America & Australia»): вопрос к Emily."
+   }
   },
   {
    "id": "aneurysm",
@@ -469,7 +533,15 @@
       {
        "c": "rm-hero",
        "v": "image",
+       "cta": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+       "title": "Bridging the gap in assist devices",
        "eyebrow": "Therapies / Aneurysm",
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "videoUrl": null,
        "eyebrowLinks": [
         {
          "label": "Europe & Middle East version",
@@ -480,14 +552,7 @@
          "href": "/apac/therapies/aneurysm"
         }
        ],
-       "title": "Bridging the gap in assist devices",
-       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
-       "cta": {
-        "href": "/contact-us?region=us&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
-       "videoUrl": null,
+       "eyebrowHref": "/us/therapies",
        "focus": {
         "part": "eyebrow",
         "style": "hover"
@@ -497,8 +562,8 @@
       {
        "c": "rm-text",
        "v": "lead",
-       "title": null,
        "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents.",
+       "title": null,
        "imageUrl": null,
        "videoUrl": null
       },
@@ -538,7 +603,6 @@
       {
        "c": "rm-productDetails",
        "v": "pills",
-       "anchor": "overview",
        "hint": "Click on a tab below to learn more.",
        "tabs": [
         {
@@ -547,22 +611,19 @@
          "title": "Product overview",
          "blocks": [
           {
-           "type": "text",
-           "variant": "default",
            "data": {
             "body": "COMANECI™ is designed with active, responsive technology to enable non-occlusive coil embolization procedures."
            },
+           "type": "text",
+           "variant": "default",
            "edit": {
             "r": "solutions",
             "id": 2,
-            "map": {
-             "body": "overviewBody"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.0.blocks.0.data."
+           },
+           "uid": "5fb41f112a/0/0"
           },
           {
-           "type": "columns",
-           "variant": "features",
            "data": {
             "items": [
              {
@@ -588,21 +649,19 @@
             ],
             "legacyImageUrl": "/uploads/duda/OUS-Aneurysm-Product-Overview-b1ffd9.jpg"
            },
+           "type": "columns",
+           "variant": "features",
            "edit": {
             "r": "solutions",
             "id": 2,
-            "map": {
-             "items": "overviewFeatures",
-             "legacyImageUrl": "overviewImageUrl"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.0.blocks.1.data."
+           },
+           "uid": "5fb41f112a/0/1"
           },
           {
            "group": "Specifications",
            "blocks": [
             {
-             "type": "deviceDiagram",
-             "variant": "default",
              "data": {
               "caption": "COMANECI™ – device anatomy",
               "markers": [
@@ -649,18 +708,18 @@
               ],
               "imageUrl": "/uploads/duda/OUS-Aneurysm-Specifications-c4065c.jpg"
              },
+             "type": "deviceDiagram",
+             "variant": "default",
              "edit": {
               "r": "solutions",
               "id": 2,
-              "map": {
-               "markers": "annotatedImage.markers"
-              }
-             }
+              "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.0.data."
+             },
+             "uid": "5fb41f112a/0/2/0"
             },
             {
-             "type": "specTable",
-             "variant": "table",
              "data": {
+              "note": "Not all products are available in all countries.",
               "table": {
                "rows": [
                 [
@@ -700,9 +759,16 @@
                 "Minimum microcatheter ID compatibility (in)",
                 "Total length excluding handle (cm)"
                ]
-              },
-              "note": "Not all products are available in all countries."
-             }
+              }
+             },
+             "type": "specTable",
+             "variant": "table",
+             "edit": {
+              "r": "solutions",
+              "id": 2,
+              "prefix": "blocks.5.data.tabs.0.blocks.2.blocks.1.data."
+             },
+             "uid": "5fb41f112a/0/2/1"
             }
            ]
           }
@@ -714,8 +780,6 @@
          "title": "How it works",
          "blocks": [
           {
-           "type": "columns",
-           "variant": "steps",
            "data": {
             "items": [
              {
@@ -735,13 +799,14 @@
              }
             ]
            },
+           "type": "columns",
+           "variant": "steps",
            "edit": {
             "r": "solutions",
             "id": 2,
-            "map": {
-             "items": "howItWorks"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.1.blocks.0.data."
+           },
+           "uid": "5fb41f112a/1/0"
           }
          ]
         },
@@ -751,22 +816,26 @@
          "title": "In practice",
          "blocks": [
           {
-           "type": "cta",
-           "variant": "panel",
            "data": {
-            "title": "Webinars",
             "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+            "title": "Webinars",
             "buttons": [
              {
-              "label": "Request to view",
-              "href": "/us/webinars"
+              "href": "/us/webinars?product=comaneci",
+              "label": "Request to view"
              }
             ]
-           }
+           },
+           "type": "cta",
+           "variant": "panel",
+           "edit": {
+            "r": "solutions",
+            "id": 2,
+            "prefix": "blocks.5.data.tabs.2.blocks.0.data."
+           },
+           "uid": "5fb41f112a/2/0"
           },
           {
-           "type": "people",
-           "variant": "physicians",
            "data": {
             "items": [
              {
@@ -790,23 +859,25 @@
              }
             ]
            },
+           "type": "people",
+           "variant": "physicians",
            "edit": {
             "r": "solutions",
             "id": 2,
-            "map": {
-             "items": "inPractice"
-            }
-           }
+            "prefix": "blocks.5.data.tabs.2.blocks.1.data."
+           },
+           "uid": "5fb41f112a/2/1"
           }
          ]
         },
         {
          "id": "evidence",
-         "label": "Clinical evidence",
          "href": "/us/evidence#comaneci",
+         "label": "Clinical evidence",
          "blocks": []
         }
        ],
+       "anchor": "overview",
        "to": "evidence",
        "label": "Clinical evidence ↗",
        "focus": {
@@ -814,21 +885,21 @@
         "style": "hover",
         "cursor": true
        },
-       "annotation": "Вкладка «Clinical evidence» уводит на Evidence (↗) и открывает там вкладку продукта. Вопрос: оставить ссылкой или показать 3 последних исследования прямо во вкладке."
+       "annotation": "Вкладка «Clinical evidence» уводит на Evidence (↗) и открывает там продукт (/us/evidence#comaneci). Вопрос: оставить ссылкой или показать 3 последних исследования прямо во вкладке."
       },
       {
        "c": "rm-cta",
        "v": "band",
-       "title": "Questions?",
        "body": "Reach out to learn more about our company and devices.",
+       "title": "Questions?",
        "buttons": [
         {
          "href": "/contact-us?region=us&topic=demo",
          "label": "Request a demo"
         },
         {
-         "label": "Customer support",
-         "href": "/contact-us?region=us"
+         "href": "/contact-us?region=us&topic=support",
+         "label": "Customer support"
         }
        ],
        "to": "contact",
@@ -838,8 +909,8 @@
       {
        "c": "rm-indications",
        "v": "default",
-       "indicationsHtml": "",
        "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n",
+       "indicationsHtml": "",
        "annotation": "Показания и источники — закреплённый блок в конце, свой в каждом регионе."
       }
      ]
@@ -865,20 +936,21 @@
       {
        "c": "rm-hero",
        "v": "bannerCompact",
-       "eyebrow": "Americas",
-       "title": "Evidence",
        "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
-       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4"
+       "title": "Evidence",
+       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4",
+       "eyebrow": "Americas"
       },
       {
        "c": "rm-publications",
-       "v": "spotlight",
+       "v": "overview",
+       "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
        "stat": {
-        "value": "85+",
         "label": "clinical publications",
+        "value": "85+",
         "iconUrl": "/icons/stat-publications.svg"
        },
-       "line": "We remain at the forefront of bold initiatives that target underserved areas of research.",
+       "region": "us",
        "items": [
         {
          "id": 1,
@@ -928,13 +1000,7 @@
           "prefix": ""
          }
         }
-       ]
-      },
-      {
-       "c": "rm-publications",
-       "v": "byProduct",
-       "anchor": "browse-by-product",
-       "title": "Browse by product",
+       ],
        "groups": [
         {
          "id": "tigertriever",
@@ -1126,7 +1192,7 @@
            "publishedOn": "2021-07-01T00:00:00.000Z",
            "imageUrl": null,
            "url": "https://doi.org/10.3390/life11070658",
-           "pdfUrl": null,
+           "pdfUrl": "/uploads/oa/life-11-658.pdf",
            "doi": "10.3390/life11070658",
            "edit": {
             "r": "publications",
@@ -1174,7 +1240,7 @@
            "publishedOn": "2020-12-01T00:00:00.000Z",
            "imageUrl": null,
            "url": "https://doi.org/10.3389/fneur.2020.603679",
-           "pdfUrl": null,
+           "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf",
            "doi": "10.3389/fneur.2020.603679",
            "edit": {
             "r": "publications",
@@ -1262,8 +1328,8 @@
            "publishedOn": "2026-02-01T00:00:00.000Z",
            "imageUrl": null,
            "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
-           "pdfUrl": null,
-           "doi": null,
+           "pdfUrl": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+           "doi": "10.1227/ons.0000000000001932",
            "edit": {
             "r": "publications",
             "id": 5,
@@ -1277,9 +1343,9 @@
            "authors": "Jason M Davies et al.",
            "publishedOn": "2025-11-01T00:00:00.000Z",
            "imageUrl": null,
-           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
-           "pdfUrl": "https://jnis.bmj.com/content/neurintsurg/early/2025/11/19/jnis-2025-024136.full.pdf",
-           "doi": null,
+           "url": "https://doi.org/10.1136/jnis-2025-024136",
+           "pdfUrl": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+           "doi": "10.1136/jnis-2025-024136",
            "edit": {
             "r": "publications",
             "id": 6,
@@ -1422,7 +1488,601 @@
            "publishedOn": "2020-10-01T00:00:00.000Z",
            "imageUrl": null,
            "url": "https://doi.org/10.1186/s12883-020-01963-2",
+           "pdfUrl": "/uploads/oa/bmcneurol-2020-01963.pdf",
+           "doi": "10.1186/s12883-020-01963-2",
+           "edit": {
+            "r": "publications",
+            "id": 67,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 69,
+           "title": "E-182 The Primary Experience of Using a Comaneci Embolization Assist Device During Embolization of Intracranial Aneurysms with Detachable Microcoils",
+           "journal": "",
+           "authors": "K Orlov et al.",
+           "publishedOn": "2020-08-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/neurintsurg-2020-SNIS.213",
            "pdfUrl": null,
+           "doi": "10.1136/neurintsurg-2020-SNIS.213",
+           "edit": {
+            "r": "publications",
+            "id": 69,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "drivewire",
+         "label": "DRIVEWIRE™",
+         "sublabel": "Steerable Guidewire",
+         "fullName": "DRIVEWIRE™ Steerable Guidewire",
+         "items": [
+          {
+           "id": 1,
+           "title": "Use of Drivewire 24 guidewire in neurointervention: initial clinical experience and technical advancements",
+           "journal": "",
+           "authors": "Singfer U, Goodluck Tyndall R, Sousa JA, Chung E, Andrade H, Radovanovic I, et al.",
+           "publishedOn": "2026-09-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/WhatsApp-Image-2026-07-21-at-10.30.00--281-29-8107162e-311505.png?jxl&v=jxl",
+           "url": "https://jnisadvances.bmj.com/content/1/1/e000006",
+           "pdfUrl": null,
+           "doi": null,
+           "edit": {
+            "r": "publications",
+            "id": 1,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 8,
+           "title": "Early Experience with the Drivewire 24: A Newly FDA-approved Steerable Microwire",
+           "journal": "",
+           "authors": "Eric Alexander Grin, Vera Sharashidze,2 Charlotte Chung, Jacob F. Baranoski, Caleb Rutledge, Howard A. Riina, Maksim Shapiro, Eytan Raz, Erez Nossek. J NeuroIntervent Surg: first published as 10.1136/jnis-2025-023730 on 20 June 2025. Downloaded from http://jnis.bmj.com/ on June 24, 2025, at New York University, Serials",
+           "publishedOn": "2025-06-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://jnis.bmj.com/content/18/4/1133",
+           "pdfUrl": "/uploads/duda/NYU--JNIS-DW24-f4e61a.pdf",
+           "doi": "10.1136/jnis-2025-023730",
+           "edit": {
+            "r": "publications",
+            "id": 8,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 44,
+           "title": "Applications of the Columbus Steerable Guidewire",
+           "journal": "Journal of NeuroInterventional Surgery Published Online First: 24 November 2021.",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Lutz Lehmann, Justus Erasmus Roos, Grzegorz Karwacki",
+           "publishedOn": "2021-11-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/neurintsurg-2021-018120",
+           "pdfUrl": null,
+           "doi": "10.1136/neurintsurg-2021-018120",
+           "edit": {
+            "r": "publications",
+            "id": 44,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 57,
+           "title": "The Columbus Steerable Guidewire in Neurointerventions: Early Clinical Experience and Applications",
+           "journal": "",
+           "authors": "Alexander von Hessling, Tomás Reyes del Castillo, Grzegorz Karwacki, Justus E. Roos",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/neurintsurg-2021-017296",
+           "pdfUrl": null,
+           "doi": "10.1136/neurintsurg-2021-017296",
+           "edit": {
+            "r": "publications",
+            "id": 57,
+            "prefix": ""
+           }
+          }
+         ]
+        }
+       ],
+       "annotation": "По коду: слева цифры региона — всего публикаций и по каждому продукту, справа — строка о направлении исследований. Ниже — «Featured publications» карточками (отмеченные в админке)."
+      },
+      {
+       "c": "rm-publications",
+       "v": "library",
+       "title": "Browse by product",
+       "anchor": "browse-by-product",
+       "region": "us",
+       "groups": [
+        {
+         "id": "tigertriever",
+         "label": "TIGERTRIEVER™",
+         "sublabel": "Revascularization Device",
+         "fullName": "TIGERTRIEVER™ Revascularization Device",
+         "items": [
+          {
+           "id": 2,
+           "title": "Radially adjustable Tigertriever demonstrates higher reperfusion compared to self-expanding stent-retrievers during mechanical thrombectomy of large vessel occlusions: a systematic review and meta-analysis",
+           "journal": "",
+           "authors": "Zain Tariq 1, Faizan Shahzad 2, Noor E. Jannat 2, Tallal Mushtaq Hashmi 2, Sonesh Amin 3, Mohammad AlMajali 4, Qasim Bashir 5, Jeffrey L. Saver 6, Besher Shami 7 and Amit Chaudhari 1,3*",
+           "publishedOn": "2026-07-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Untitled-1-e3fb2907-3a5ce0.png?jxl&v=jxl",
+           "url": null,
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "doi": null,
+           "edit": {
+            "r": "publications",
+            "id": 2,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 3,
+           "title": "Distal Thrombectomy Reconsidered: Lessons from DISTALS and ORIENTAL-MEVO",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-04-01T00:00:00.000Z",
+           "imageUrl": "/uploads/duda/Screenshot-2025-11-23-at-02.04.57-365dad50-6e9556.png?jxl&v=jxl",
+           "url": "https://doi.org/10.1007/s00062-026-01659-z",
+           "pdfUrl": "/uploads/duda/fneur-17-1839128-85212d.pdf",
+           "doi": "10.1007/s00062-026-01659-z",
+           "edit": {
+            "r": "publications",
+            "id": 3,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 4,
+           "title": "Rapid Medical™’s DISTALS Trial Overwhelmingly Positive, Demonstrating Superior Reperfusion with TIGERTRIEVER™ 13 in Medium Vessel Stroke",
+           "journal": "",
+           "authors": "",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://www.businesswire.com/news/home/20260206703211/en/Rapid-Medicals-DISTALS-Trial-Overwhelmingly-Positive-Demonstrating-Superior-Reperfusion-with-TIGERTRIEVER-13-in-Medium-Vessel-Stroke",
+           "pdfUrl": null,
+           "doi": null,
+           "edit": {
+            "r": "publications",
+            "id": 4,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 10,
+           "title": "Comparison of the Tigertriever and Self-expanding Stent Retrievers for Mechanical Thrombectomy of Acute Ischemic Stroke: A single-center Experience",
+           "journal": "Neurologia medico-chirurgica Advance Publication,",
+           "authors": "Koichiro SHINDO, Kazutaka UCHIDA, Manabu SHIRAKAWA, Shoichiro TSUJI, Shuntaro KUWAHARA, Yoji KURAMOTO and Shinichi YOSHIMURA",
+           "publishedOn": "2025-03-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.2176/jns-nmc.2024-0297",
+           "pdfUrl": "/uploads/duda/3-25-advpub_2024-0297-2224b4.pdf",
+           "doi": "10.2176/jns-nmc.2024-0297",
+           "edit": {
+            "r": "publications",
+            "id": 10,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 16,
+           "title": "Optimizing Tigertriever Adjustable Stentriever Technique: Operators’ Experience",
+           "journal": "",
+           "authors": "Brian Jankowit et al.",
+           "publishedOn": "2024-09-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1177/15910199241272743",
+           "pdfUrl": null,
+           "doi": "10.1177/15910199241272743",
+           "edit": {
+            "r": "publications",
+            "id": 16,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 17,
+           "title": "The Effect of Actuation Frequency on Clot Integration with the Tigertriever Device: A Preliminary in Vitro Study",
+           "journal": "",
+           "authors": "Chander Sadasivan et al.",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://pubmed.ncbi.nlm.nih.gov/38629263/",
+           "pdfUrl": null,
+           "doi": "10.1177/159101992412478",
+           "edit": {
+            "r": "publications",
+            "id": 17,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 20,
+           "title": "Radially Adjustable Stent Retriever for Mechanical Thrombectomy in Acute Ischemic Stroke: Improved First-pass Effect with Rapid-inflation Deflation Technique",
+           "journal": "",
+           "authors": "Sanjeev Sreenivasan et al.",
+           "publishedOn": "2024-01-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1177/15910199231222667",
+           "pdfUrl": null,
+           "doi": "10.1177/15910199231222667",
+           "edit": {
+            "r": "publications",
+            "id": 20,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 21,
+           "title": "Tigertriever in the Treatment of Acute Ischemic Stroke with Underlying Intracranial Atherosclerotic Disease",
+           "journal": "",
+           "authors": "Diego J Ojeda et al.",
+           "publishedOn": "2023-09-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/jnis-2023-020796",
+           "pdfUrl": "/uploads/duda/9-23-jnis-2023-020796.full-2--7d9d29.pdf",
+           "doi": "10.1136/jnis-2023-020796",
+           "edit": {
+            "r": "publications",
+            "id": 21,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 23,
+           "title": "E-272 Novel Use of a Triple Stent Retriever ‘bouquet’ Deployment with Zoom 88 Large-bore Aspiration and Walrus Balloon-guide Catheter Flow Arrest for Definitive Thrombectomy of a Carotid Free Floating Thrombus",
+           "journal": "Journal of NeuroInterventional Surgery 2023;15:A240-A241.",
+           "authors": "B Meyer et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://jnis.bmj.com/content/15/Suppl_1/A240.2",
+           "pdfUrl": null,
+           "doi": null,
+           "edit": {
+            "r": "publications",
+            "id": 23,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 27,
+           "title": "Bailout Endovascular Techniques Applied in a Complicated Basilar Thrombectomy Case",
+           "journal": "",
+           "authors": "Aryan Ali et al.",
+           "publishedOn": "2023-05-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/jnis-2022-019687",
+           "pdfUrl": null,
+           "doi": "10.1136/jnis-2022-019687",
+           "edit": {
+            "r": "publications",
+            "id": 27,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 28,
+           "title": "Mechanical Thrombectomy of Large Vessel Occlusion Using Adjustable vs. Self-expanding Stent-retriever Comparison of Tigertriever Device with Stent-like Stent-retrievers: A Propensity Score Analysis",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2023-01-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.3389/fneur.2022.1032307",
+           "pdfUrl": "/uploads/duda/1-23-fneur-13-1032307-2634fe.pdf",
+           "doi": "10.3389/fneur.2022.1032307",
+           "edit": {
+            "r": "publications",
+            "id": 28,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 53,
+           "title": "Inadvertent Detachment of Stent Retrievers during Mechanical Thrombectomy—A Clinical and Biomechanical Perspective",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.3390/life11070658",
+           "pdfUrl": "/uploads/oa/life-11-658.pdf",
+           "doi": "10.3390/life11070658",
+           "edit": {
+            "r": "publications",
+            "id": 53,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 52,
+           "title": "Perspective on New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Insights from the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "RishiGupta, Jeffrey L.Saver",
+           "publishedOn": "2021-07-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1016/j.wneu.2021.05.039",
+           "pdfUrl": null,
+           "doi": "10.1016/j.wneu.2021.05.039",
+           "edit": {
+            "r": "publications",
+            "id": 52,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 59,
+           "title": "A New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter Tiger Trial",
+           "journal": "",
+           "authors": "Rishi Gupta et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1161/STROKEAHA.121.034436",
+           "pdfUrl": null,
+           "doi": "10.1161/STROKEAHA.121.034436",
+           "edit": {
+            "r": "publications",
+            "id": 59,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 65,
+           "title": "Safety and Efficacy of Mechanical Thrombectomy using Tigertriever as a Rescue Device After Failed Aspiration– Single Center Experience.",
+           "journal": "",
+           "authors": "Piotr Piasecki et al.",
+           "publishedOn": "2020-12-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.3389/fneur.2020.603679",
+           "pdfUrl": "/uploads/oa/fneur-2020-603679.pdf",
+           "doi": "10.3389/fneur.2020.603679",
+           "edit": {
+            "r": "publications",
+            "id": 65,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 71,
+           "title": "Mechanical Thrombectomy Using the New Tigertriever in Acute Ischemic Stroke Patients – A Swiss Prospective Multicenter Study",
+           "journal": "",
+           "authors": "Philipp Gruber et al.",
+           "publishedOn": "2020-07-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1177/1591019920946499",
+           "pdfUrl": null,
+           "doi": "10.1177/1591019920946499",
+           "edit": {
+            "r": "publications",
+            "id": 71,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 78,
+           "title": "Mechanical Thrombectomy in Acute Ischemic Stroke Using a Manually Expandable Stent Retriever (Tigertriever)",
+           "journal": "",
+           "authors": "L. Will et al.",
+           "publishedOn": "2020-06-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1007/s00062-020-00919-w",
+           "pdfUrl": null,
+           "doi": "10.1007/s00062-020-00919-w",
+           "edit": {
+            "r": "publications",
+            "id": 78,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 91,
+           "title": "Single-center Experience with the Tigertriever Device for the Recanalization of Large Vessel Occlusions in Acute Ischemic Stroke",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2018-09-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/neurintsurg-2018-014196",
+           "pdfUrl": null,
+           "doi": "10.1136/neurintsurg-2018-014196",
+           "edit": {
+            "r": "publications",
+            "id": 91,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 100,
+           "title": "Revascularization of Acute Basilar Artery Occlusion Using the Tigertriever Adjustable Clot Retriever",
+           "journal": "",
+           "authors": "Kara B et al.",
+           "publishedOn": "2016-08-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1007/s00062-016-0532-1",
+           "pdfUrl": null,
+           "doi": "10.1007/s00062-016-0532-1",
+           "edit": {
+            "r": "publications",
+            "id": 100,
+            "prefix": ""
+           }
+          }
+         ]
+        },
+        {
+         "id": "comaneci",
+         "label": "COMANECI™",
+         "sublabel": "Embolization Assist Device",
+         "fullName": "COMANECI™ Embolization Assist Device",
+         "items": [
+          {
+           "id": 5,
+           "title": "Long-term outcomes of temporary stent-assisted coil embolization for the treatment of intracranial aneurysms using Comaneci remodeling device",
+           "journal": "",
+           "authors": "Jakub Onikijuk, MD et al.",
+           "publishedOn": "2026-02-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://journals.lww.com/onsonline/fulltext/9900/long_term_outcomes_of_temporary_stent_assisted.1879.aspx",
+           "pdfUrl": "/uploads/duda/long_term_outcomes_of_temporary_stent_assisted.1879-b5ad13.pdf",
+           "doi": "10.1227/ons.0000000000001932",
+           "edit": {
+            "r": "publications",
+            "id": 5,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 6,
+           "title": "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS post market US study",
+           "journal": "",
+           "authors": "Jason M Davies et al.",
+           "publishedOn": "2025-11-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1136/jnis-2025-024136",
+           "pdfUrl": "/uploads/duda/Comaneci-SUCCESS-jnis-2025-cc289e.pdf",
+           "doi": "10.1136/jnis-2025-024136",
+           "edit": {
+            "r": "publications",
+            "id": 6,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 11,
+           "title": "Using The Comaneci Temporary Assist Device to Expand a Partially Expanded Flow Diverting Stent",
+           "journal": "",
+           "authors": "Sergey M Karasev, Ilya A Zuev, Rakhmonzhon R Rustamov",
+           "publishedOn": "2024-10-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1016/j.radcr.2024.06.056",
+           "pdfUrl": null,
+           "doi": "10.1016/j.radcr.2024.06.056",
+           "edit": {
+            "r": "publications",
+            "id": 11,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 18,
+           "title": "Y-Stent Technique Using Dual Comaneci Embolization Assist Devices for Coil Embolization of a Ruptured Wide-Necked Anterior Communicating Artery Aneurysm: A Technical Case Report",
+           "journal": "",
+           "authors": "Kristine Ravina, Ira J Finch, Biraj Patel, Benjamin Yim",
+           "publishedOn": "2024-04-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1227/ons.0000000000001143",
+           "pdfUrl": null,
+           "doi": "10.1227/ons.0000000000001143",
+           "edit": {
+            "r": "publications",
+            "id": 18,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 24,
+           "title": "Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2023-07-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1016/j.wneu.2023.05.008",
+           "pdfUrl": null,
+           "doi": "10.1016/j.wneu.2023.05.008",
+           "edit": {
+            "r": "publications",
+            "id": 24,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 32,
+           "title": "Comaneci-assisted Coiling of Wide-necked Intracranial Aneu-rysm: A Single Center Preliminary Experience",
+           "journal": "",
+           "authors": "Gabriele Vinacci et al.",
+           "publishedOn": "2022-11-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": null,
+           "pdfUrl": "/uploads/duda/jcm-1899801-cb8809.pdf",
+           "doi": null,
+           "edit": {
+            "r": "publications",
+            "id": 32,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 42,
+           "title": "Comaneci Plus Balloon-assisted Embolization of Ruptured Wide-necked Cerebral Aneurysms",
+           "journal": "",
+           "authors": "A. Sirakov et al.",
+           "publishedOn": "2022-01-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1007/s00062-021-01115-0",
+           "pdfUrl": null,
+           "doi": "10.1007/s00062-021-01115-0",
+           "edit": {
+            "r": "publications",
+            "id": 42,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 56,
+           "title": "Early Experience with Comaneci, a Newly FDA-Approved Controllable Assist Device for Wide-Necked Intracranial Aneurysm Coiling",
+           "journal": "",
+           "authors": "Taqi M.A. et al.",
+           "publishedOn": "2021-05-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1159/000514371",
+           "pdfUrl": null,
+           "doi": "10.1159/000514371",
+           "edit": {
+            "r": "publications",
+            "id": 56,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 60,
+           "title": "Combination of Temporary Bridging Device (Comaneci) and Permanent Stenting in the Treatment of Unruptured Wide Neck Bifurcation Aneurysms",
+           "journal": "",
+           "authors": "Batuhan Kara et al.",
+           "publishedOn": "2021-03-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1007/s00234-021-02677-z",
+           "pdfUrl": null,
+           "doi": "10.1007/s00234-021-02677-z",
+           "edit": {
+            "r": "publications",
+            "id": 60,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 62,
+           "title": "Comaneci Device for Temporary Coiling Assistance for Treatment of Wide-Necked Aneurysms: Initial Case Series and Systematic Literature Review",
+           "journal": "",
+           "authors": "Jaims Lim et al.",
+           "publishedOn": "2021-02-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1016/j.wneu.2021.02.080",
+           "pdfUrl": null,
+           "doi": "10.1016/j.wneu.2021.02.080",
+           "edit": {
+            "r": "publications",
+            "id": 62,
+            "prefix": ""
+           }
+          },
+          {
+           "id": 67,
+           "title": "Comaneci Device-assisted Embolization of Wide-necked Carotid Aneurysms with an Unfavorable Ratio",
+           "journal": "",
+           "authors": "Juan David Molina-Nuevo et al.",
+           "publishedOn": "2020-10-01T00:00:00.000Z",
+           "imageUrl": null,
+           "url": "https://doi.org/10.1186/s12883-020-01963-2",
+           "pdfUrl": "/uploads/oa/bmcneurol-2020-01963.pdf",
            "doi": "10.1186/s12883-020-01963-2",
            "edit": {
             "r": "publications",
@@ -1527,7 +2187,11 @@
         "drivewire"
        ],
        "activeTab": "comaneci",
-       "annotation": "По коду: ссылка #comaneci прокручивает к вкладкам и открывает вкладку COMANECI™ (исправлено 2026-11-11)."
+       "focus": {
+        "part": "groups",
+        "style": "hover"
+       },
+       "annotation": "По коду: ссылка #comaneci прокручивает к «Browse by product» и включает фильтр COMANECI™. В списке — поиск по названию, автору и журналу, сортировка; у статьи — год, авторы, продукт, DOI и «Download PDF», где файл наш."
       }
      ]
     }
@@ -1620,7 +2284,8 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "annotation": "По коду: «Request this recording» на карточке выбирает этот вебинар в форме ниже и прокручивает к ней."
       },
       {
        "c": "rm-form",
@@ -1742,6 +2407,7 @@
        "tone": "surface",
        "pad": "m",
        "border": true,
+       "annotation": "По коду: тот же текст, что у контактной формы (своё сообщение есть только у регистрации на событие и у Careers). Врач не знает, когда и как придёт запись. Предложение: «We will email you a link to the recording within 2 working days» — срок за клиентом.",
        "items": [
         {
          "c": "text",
@@ -1753,8 +2419,7 @@
          "v": "small",
          "text": "We will get back to you as soon as possible."
         }
-       ],
-       "annotation": "По коду: тот же текст, что у контактной формы. Врач не знает, когда и как придёт запись. Предложение: «We will email you a link to the recording within 2 working days» — срок за клиентом."
+       ]
       }
      ]
     }
@@ -1781,7 +2446,7 @@
       },
       {
        "c": "rm-form",
-       "v": "default",
+       "v": "split",
        "topics": [
         "Request a demo",
         "Product question / Support",
@@ -1793,9 +2458,30 @@
        ],
        "defaultTopic": "Request a demo",
        "defaultRegion": "Americas",
+       "defaultCountry": "US",
+       "contacts": [
+        {
+         "label": "Call Americas",
+         "value": "+1-469-991-7712",
+         "href": "tel:+14699917712"
+        },
+        {
+         "label": "Orders",
+         "value": "orders.inc@rapid-medical.com",
+         "href": "mailto:orders.inc@rapid-medical.com"
+        }
+       ],
+       "contactsLink": {
+        "label": "All offices and addresses →",
+        "href": "/about-us#offices"
+       },
        "to": "contact-sent",
        "label": "Submit",
-       "annotation": "Тема «Request a demo» и регион Americas выбраны по адресу (?region=us&topic=demo). Неизвестные значения в адресе игнорируются."
+       "focus": {
+        "part": "topics",
+        "style": "hover"
+       },
+       "annotation": "По коду: тема «Request a demo» выбрана по адресу (?topic=demo), три частые темы — кнопками, остальные — в «Other topic». Слева — телефон и почта заказов региона из адреса (?region=us). Вместо региона — страна, подставлена по IP; поле штата появляется только для США и Канады."
       }
      ]
     }
@@ -1830,6 +2516,7 @@
        "tone": "surface",
        "pad": "m",
        "border": true,
+       "annotation": "Почта форм ещё не настроена (BACKLOG): без SMTP заявка видна только в админке, раздел Requests.",
        "items": [
         {
          "c": "text",
@@ -1841,8 +2528,7 @@
          "v": "small",
          "text": "We will get back to you as soon as possible."
         }
-       ],
-       "annotation": "Почта форм ещё не настроена (BACKLOG): без SMTP заявка видна только в админке, раздел Requests."
+       ]
       }
      ]
     }
@@ -1863,7 +2549,15 @@
       {
        "c": "rm-hero",
        "v": "image",
+       "cta": {
+        "href": "/contact-us?region=us&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
+       "title": "Bridging the gap in assist devices",
        "eyebrow": "Therapies / Aneurysm",
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "videoUrl": null,
        "eyebrowLinks": [
         {
          "label": "Europe & Middle East version",
@@ -1874,20 +2568,13 @@
          "href": "/apac/therapies/aneurysm"
         }
        ],
-       "title": "Bridging the gap in assist devices",
-       "body": "COMANECI™ is the only non-occlusive and temporary device for wide-neck aneurysm treatment.",
-       "cta": {
-        "href": "/contact-us?region=us&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
-       "videoUrl": null
+       "eyebrowHref": "/us/therapies"
       },
       {
        "c": "rm-text",
        "v": "lead",
-       "title": null,
        "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents.",
+       "title": null,
        "imageUrl": null,
        "videoUrl": null
       },
@@ -1939,7 +2626,7 @@
       },
       {
        "c": "rm-form",
-       "v": "default",
+       "v": "split",
        "topics": [
         "Request a demo",
         "Product question / Support",
@@ -1950,13 +2637,30 @@
         "Other"
        ],
        "defaultTopic": "Request a demo",
-       "defaultRegion": "Americas"
+       "defaultRegion": "Americas",
+       "defaultCountry": "US",
+       "contacts": [
+        {
+         "label": "Call Americas",
+         "value": "+1-469-991-7712",
+         "href": "tel:+14699917712"
+        },
+        {
+         "label": "Orders",
+         "value": "orders.inc@rapid-medical.com",
+         "href": "mailto:orders.inc@rapid-medical.com"
+        }
+       ],
+       "contactsLink": {
+        "label": "All offices and addresses →",
+        "href": "/about-us#offices"
+       }
       }
      ]
     }
    ],
    "notes": [
-    "12 полей на телефоне. Вопрос: убрать Country и State/Province из контактной формы, как в компактной (вебинары, карьера)."
+    "7 полей вместо 12 до редизайна: страна вместо региона, штат — только для США и Канады (решение 2026-11-14)."
    ]
   }
  ]

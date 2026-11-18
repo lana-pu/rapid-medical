@@ -7,7 +7,8 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 OUT = HERE / 'site-pages.json'
-RM = json.load(open(HERE / 'rm-pages.json', encoding='utf8'))['pages']
+# "As is" = the pages before the redesign (snapshot 2026-11-11); the current site snapshot is rm-pages.json (visitor flow).
+RM = json.load(open(HERE / 'rm-pages-2026-11-11.json', encoding='utf8'))['pages']
 
 
 def rm(page, i, **extra):
