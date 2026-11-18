@@ -49,7 +49,7 @@
     "drizzle-orm": "^0.45.4",
     "jose": "^6.2.13",
     "marked": "^18.1.2",
-    "next": "16.4.3",
+    "next": "^16.4.6",
     "nodemailer": "^10.2.1",
     "otplib": "^13.6.0",
     "pdfjs-dist": "^6.5.438",
@@ -79,10 +79,10 @@
     "cheerio": "^1.2.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
-    "eslint-config-next": "16.4.3",
+    "eslint-config-next": "^16.4.6",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.12"
   }
 }

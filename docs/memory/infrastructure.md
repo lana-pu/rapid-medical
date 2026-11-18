@@ -42,6 +42,7 @@
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | `scripts/seed.ts` — первый admin (bootstrap запускает seed только при пустых `solutions` или `users`) | при первом запуске |
 | `CRON_SECRET` | `/api/cron/publish` (если пусто — эндпоинт открыт) | рекомендуется |
 | `STORAGE_DRIVER` | `local` (дефолт) / `s3` | нет |
+| `ALLOW_DB_RESET` | `1` — разрешить `seed --reset` и подготовку e2e на не локальной базе (по умолчанию отказ: аудит 2026-11-17, N.2) | никогда в проде |
 | `TRUSTED_PROXY_HOPS` | не на Vercel: сколько прокси перед сайтом (1 — один nginx / балансировщик); без неё сайт не верит `X-Forwarded-For`, лимиты форм — в общей корзине (`src/lib/client-ip.ts`, 2026-11-16) | при своём хостинге с прокси — да |
 | `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL` | `src/lib/storage.ts`, `src/lib/media.ts` | при `s3` |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `MAIL_TO` | `src/lib/mail.ts` (без `SMTP_HOST` — лог в консоль) | для писем |
@@ -99,3 +100,12 @@ Playwright chromium → `npm run test:e2e`; при падении — артеф
 ## Duda
 Сырой краул `content/raw/` (8 МБ) в git не входит: пересоздаётся `npm run duda:scrape`. Краулер читает sitemap всех хостов.
 Обновить инвентарь: `npx tsx scripts/audit-duda.ts > content/audit.md`.
+
+## Зависимости и уязвимости (2026-11-17)
+- CI: `npm audit --omit=dev --audit-level=moderate` — продовые зависимости должны быть чистыми, иначе CI красный.
+- Next.js 16.4.6, vitest 4.1.12. Продовые зависимости — 0 уязвимостей.
+- Принятые (только разработка, не эксплуатируются): **esbuild ≤ 0.24.2** (CORS dev-сервера esbuild) — тянет drizzle-kit
+  0.31.11 (последний) через `@esbuild-kit`, сервер esbuild он не запускает; `npm audit` «чинит» откатом drizzle-kit на
+  0.18.1 — не берём. **picomatch ≤ 4.0.7** (ReDoS на extglob) — линтер и vite / vitest; шаблоны задаём мы сами, не
+  посетители; исправленной версии picomatch ещё нет. Пересмотреть при следующем обновлении зависимостей.
+

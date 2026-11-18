@@ -446,6 +446,17 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   Попутно найдены потери при переносе (APAC Aneurysm «Leave nothing behind», график в «Accelerate thrombectomy» на LVO,
   слайдер Evidence, Featured по регионам) — в BACKLOG, ждут решения владелицы. Ничего не удалено.
 
+## 2026-11-18 — зависимости и аудит влиты в `main` (PR #3)
+- Next.js 16.4.6, vitest 4.1.12, безопасные обновления вложенных; в проде 0 уязвимостей, в CI — `npm audit --omit=dev`.
+  Принятые dev-исключения (esbuild через drizzle-kit, picomatch) — `infrastructure.md`.
+- Аудит 2026-11-17: 🔴 0; N.2 (сброс базы только тестовой — `assertResettable`) и J.2 (секрет cron — `timingSafeEqual`)
+  исправлены.
+- CI: `package-lock` пересобран npm 10 (npm 11 и `audit fix` дали несогласованный lock — «Missing: esbuild@0.28.2»);
+  `apt` убран из CI (дважды завис на Ubuntu 26), браузер тестов без `--with-deps`; таймаут задачи 30 мин.
+- Очередь описаний картинок: курсор возвращается после каждой перерисовки, пока не придёт обновление с сервера (CI ловил
+  потерю фокуса дважды).
+- Основная папка снова на `main`. Порт 3100 на Маке занят чужим next 16.2.7 — локальный e2e на 3110 (`BACKLOG`).
+
 ## 2026-11-18 — материалы, Create from a document, медиатека (ветка `materials`)
 - `publications` + `news_items` + страницы-материалы → `materials`; админка — Publications & news; Create from a document
   (PDF + свой ИИ, проверка цитат и реестра, Publish закрыт до проверки); возвращено потерянное с Duda; Featured по
