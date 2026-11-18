@@ -133,20 +133,20 @@ on-page editor (`data-e`), поэтому правка на странице п�
 | Таблица | Admin slug | Ключевые поля | `status` по умолчанию | Особенности |
 |---|---|---|---|---|
 | `solutions` | `solutions` (Therapies) | `slug`+`region` (unique), `productId`, `therapyGroup` (ischemic / hemorrhagic / access / пусто), `proofPoint`, hero/intro, `benefits[]`, overview, `overviewFeatures[]`, `annotatedImage`, `specs` (таблица) / `specImageUrls` (legacy), `howItWorks[]`, `inPractice[]`, `actionLinks[]`, closing, `regulatoryHtml`, `referencesHtml`, SEO (`metaTitle` — полный заголовок без шаблона, `metaDescription`, `shareImageUrl` → og:image, иначе hero) | `draft` | Одна строка на (терапия, регион) — регуляторика разная. «Copy to {REGION}» в админке |
-| `publications` | `publications` (Evidence) | `title`, `authors`, `journal`, `publishedOn` (месяц), `url`/`pdfUrl`/`doi`, `productId`, `regions[]` (пусто = все), `featured`, `imageUrl` | `published` | |
-| `news_items` | `news` | `title`, `publishedOn`, `url` (внешняя), `source`, `excerpt`, `featured` | `published` | Только внешние ссылки |
+| `materials` (ADR-009, 2026-11-18) | `materials` (**Publications & news**) | `kind` (study / publication / news / case / document), `title`, `publishedOn`, `productId`, `regions[]` (пусто = все); источник: `authors`, `journal`, `source`, `url` (оригинал), `doi`, `pdfUrl` + `pdfLicense`/`pdfSource`, `abstract` + `abstractSource`, `excerpt`, `imageUrl`; где появляется: `showInEvidence`, `showInNews` (простой флаг, решение 2026-11-18), `featured` (хайлайты: главная, верх News, featured Evidence); своя страница: `slug` (прежний адрес, иначе `{id}-{slug}`), `blocks` (ADR-007), `bodyHtml`, SEO, `noindex`; `legacyRef` — откуда перенесена (`publications:12`, `news_items:5`, `pages:6`) | `published` | Один список с фильтром по виду, виден в разделах Evidence и News. Перенос 2026-11-18 один в один: 102 публикации (id сохранены), 53 новости, 11 строк `pages` (исследования, случаи, документ). Старые `publications`, `news_items` оставлены для отката, код их не читает |
 | `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос |
 | `events` (решение 2026-11-10, сделано) | `events` | `slug`, `title`, `subtitle`, `startsOn` (первый день), `startTime` (текст), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
-| `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `blocks` (ADR-007; `bodyHtml` — до переноса), SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги |
+| `pages` | `pages` | `slug`+`region` (unique; `region` null = глобальная), `blocks` (ADR-007; `bodyHtml` — до переноса), SEO, `noindex` | `draft` | Юр. страницы, кампанийные лендинги. Исследования, случаи и документы с 2026-11-18 — в `materials` |
 | `site_pages` (ADR-007, 2026-11-12) | `site-pages` | `key` (home / about / careers / evidence / therapies) + `region` (unique; null = глобальная), `title`, `blocks` | `published` | Страницы-синглтоны, раньше — тексты в `site_settings` (`home`, `about`, `careers`, `evidence`, `therapies:*`; строки настроек оставлены для отката). Правятся только в редакторе страницы; создать, снять с публикации или удалить нельзя (`alwaysLive`). Списки (новости, команда, офисы, публикации, карточки терапий, число вакансий, факты About — число публикаций и страны офисов) подставляются при показе |
 | `products` | `products` | `slug`, `name`, `fullName`, `family`, `regions[]` (вкладка Evidence), `aliases` (напр. APAC → COLUMBUS™) | — | **Без workflow**: сохранение сразу live |
 | `redirects` | `redirects` | `from` (host+path или path), `to`, `permanent`, `hits` | — | **Без workflow** |
 
-**Решение 2026-11-14 (ADR-009), в коде нет:** `publications` и `news_items` (и страницы исследований из `pages`) → одна
-сущность с видом (исследование / публикация / новость), своя страница по желанию, шаблон «Страница из документа»
-(DESIGN.md). Детали — после вайрфреймов News & Events и пробы на PDF.
+**ADR-009, шаг 1 (2026-11-18, бриф `docs/briefs/materials.md`):** `publications`, `news_items` и страницы-материалы из
+`pages` → `materials`. Сайт читает только её: Evidence — `showInEvidence` и регион; News & Events — `showInNews`;
+главная и верх News — `featured` среди `showInNews`; страница материала — по `{id}-{slug}` или по прежнему `slug`.
+Следующий шаг — «Create from a document» (BACKLOG п. 8) поверх неё.
 
 JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (bar/stackedBar), `Feature`,
 `AnnotatedImage`, `Benefit`, `Step`, `InPracticeItem` — типы в начале `schema.ts`.
