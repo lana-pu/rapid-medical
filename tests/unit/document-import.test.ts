@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked } from "@/lib/document-import";
+import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked, comparisonUnit } from "@/lib/document-import";
 import { registryRows } from "@/lib/clinicaltrials";
 
 // Short excerpts of the real texts (media.text of the PDFs on the site, 2026-11-18)
@@ -145,9 +145,32 @@ describe("groups compared and patients as dots (DESIGN.md → Набор инф�
     expect(blocks.map((b) => b.type)).toEqual(["hero", "comparison", "dotMatrix", "richText"]);
     const items = checkGroups(DISTALS, r.answer, blocks);
     expect(items.map((x) => [x.id, x.status, x.block === blocks[1].id || x.block === blocks[2].id])).toEqual([
-      ["comparison-0-0", "ok", true], ["comparison-0-1", "check", true], ["matrix-0-0", "ok", true],
+      ["comparison-0-0", "ok", true], ["comparison-0-0-n", "ok", true],
+      ["comparison-0-1", "check", true], ["comparison-0-1-n", "ok", true],
+      ["comparison-0-p", "check", true], ["matrix-0-0", "ok", true],
     ]);
-    expect(items[1].reason).toBe("The number is not in the quote"); // 25 vs «15% … (n=36)»
+    expect(items[0].value).toBe("45%");
+    expect(items[2].reason).toBe("The number is not in the quote"); // 25 vs «15% … (n=36)»
+    expect(items[4].reason).toBe("No quote for the p-value — look at the PDF");
+  });
+  it("every number shown is checked: n, the p-value with its quote, the «%» the bar adds", () => {
+    const text = "Reperfusion was 45 of the treated patients (n=29). The difference was significant (p < 0.05). Control: 15% (n=36).";
+    const r = parseAnswer(JSON.stringify({ ...raw, matrices: [], comparisons: [{ ...raw.comparisons[0], pQuote: "The difference was significant (p < 0.05).", groups: [
+      { label: "Treatment", value: "45", n: "30", quote: "Reperfusion was 45 of the treated patients (n=29)." },
+      { label: "Control", value: "15", n: "36", quote: "Control: 15% (n=36)." },
+    ] }] }));
+    if (!r.ok) throw new Error(r.error);
+    const blocks = documentBlocks({ kind: "study", title: "x", answer: r.answer, passport: [], passportSource: null, pdf: { url: "/u/d.pdf", text }, mode: "embed" });
+    const items = checkGroups(text, r.answer, blocks);
+    expect(Object.fromEntries(items.map((x) => [x.id, x.reason ?? x.status]))).toEqual({
+      "comparison-0-0": "The quote does not give it in %", "comparison-0-0-n": "The number is not in the quote",
+      "comparison-0-1": "ok", "comparison-0-1-n": "ok", "comparison-0-p": "ok",
+    });
+  });
+  it("with no unit in the answer the scale is % only when every value says «%»", () => {
+    const c = raw.comparisons[0];
+    expect(comparisonUnit({ ...c, unit: undefined })).toBe("");
+    expect(comparisonUnit({ ...c, unit: undefined, groups: c.groups.map((g) => ({ ...g, value: `${g.value}%` })) })).toBe("%");
   });
   it("a comparison needs two groups; the instructions offer them only to studies and publications", () => {
     expect(parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] })).ok).toBe(false);

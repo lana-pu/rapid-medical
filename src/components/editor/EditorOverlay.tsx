@@ -328,9 +328,11 @@ export default function EditorOverlay() {
       if (!t || t.r !== "materials" || t.id !== page.id) return;
       const fig = /\.items\.(\d+)\.value$/.exec(t.f);
       const row = /\.rows\.(\d+)\.value$/.exec(t.f);
-      const grp = /^blocks\.(\d+)\.data\.groups\.(\d+)\.(value|count)$/.exec(t.f);
+      const grp = /^blocks\.(\d+)\.data\.(?:groups\.(\d+)\.(value|count|total|n)|pValue)$/.exec(t.f);
       const id = fig ? `figures-${fig[1]}` : row ? `passport-${row[1]}` : null;
-      const inGroup = grp && openItems.some((x) => x.block && x.block === blockAt.get(Number(grp[1])) && x.id.endsWith(`-${grp[2]}`));
+      // the item for this field: «…-j» (value, count, total), «…-j-n», «…-p»
+      const tail = grp ? (grp[2] === undefined ? "-p" : grp[3] === "n" ? `-${grp[2]}-n` : `-${grp[2]}`) : "";
+      const inGroup = grp && openItems.some((x) => x.block && x.block === blockAt.get(Number(grp[1])) && x.id.endsWith(tail));
       if ((id && open.has(id)) || inGroup) el.setAttribute("data-rm-check", "");
     });
   }, [checks, page, info, off, preview, pathname]);

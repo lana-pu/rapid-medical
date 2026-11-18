@@ -62,6 +62,8 @@ const comparisonSchema = z.object({
   endpoint: opt(300),
   unit: opt(5),
   pValue: opt(30),
+  /** the sentence of the PDF with the p-value — without it the p-value waits for a person */
+  pQuote: opt(600),
   groups: z.array(z.object({ label: text(80), value: text(20), n: opt(20), quote: text(600) })).min(2).max(4),
 });
 const matrixSchema = z.object({
@@ -111,7 +113,7 @@ export function instructionsFor(kind: MaterialKind): string {
       : `- "passport": [] (leave empty for this kind).\n`;
   const groups =
     kind === "study" || kind === "publication"
-      ? `- "comparisons" (optional, only if the document compares groups, e.g. treatment vs control): up to 2, each { "title", "endpoint" (what is measured), "unit" ("%" or ""), "pValue", "groups": [{ "label", "value", "n", "quote" }] }.
+      ? `- "comparisons" (optional, only if the document compares groups, e.g. treatment vs control): up to 2, each { "title", "endpoint" (what is measured), "unit" ("%" or ""), "pValue", "pQuote" (the sentence with the p-value), "groups": [{ "label", "value", "n", "quote" }] }. The group's quote must contain its value and its n.
 - "matrices" (optional, for "N of M patients" results): up to 2, each { "title", "caption" (what one dot means), "groups": [{ "label", "count", "total", "quote" }] }.
 `
       : `- "comparisons": [] and "matrices": [] (leave empty for this kind).
@@ -169,14 +171,37 @@ export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[])
   const comps = blocks.filter((b) => b.type === "comparison");
   const mats = blocks.filter((b) => b.type === "dotMatrix");
   return [
-    // the value is checked; n is shown with it (a slide often gives n apart from the result)
-    ...answer.comparisons.flatMap((c, i) => c.groups.map((g, j) => {
-      const it = checkQuoted(text, "comparison", j, { label: `${c.title} — ${g.label}`, value: g.value, quote: g.quote });
-      return { ...it, value: g.n ? `${g.value} (n ${g.n})` : g.value, id: `comparison-${i}-${j}`, block: comps[i]?.id };
-    })),
+    // every number the block shows is a check of its own: the value (with its «%»), n, the p-value
+    ...answer.comparisons.flatMap((c, i) => {
+      const block = comps[i]?.id;
+      const pct = comparisonUnit(c) === "%";
+      const items: CheckItem[] = c.groups.flatMap((g, j) => {
+        const label = `${c.title} — ${g.label}`;
+        let v = checkQuoted(text, "comparison", j, { label, value: g.value, quote: g.quote });
+        if (v.status === "ok" && pct && !g.value.includes("%") && !percentInQuote(g.value, g.quote)) v = { ...v, status: "check", reason: "The quote does not give it in %" };
+        const out = [{ ...v, value: pct && !g.value.includes("%") ? `${g.value}%` : g.value, id: `comparison-${i}-${j}`, block }];
+        if (g.n) out.push({ ...checkQuoted(text, "comparison", j, { label: `${label} — n`, value: g.n, quote: g.quote }), id: `comparison-${i}-${j}-n`, block });
+        return out;
+      });
+      if (c.pValue) {
+        const p = c.pQuote
+          ? checkQuoted(text, "comparison", 0, { label: `${c.title} — p-value`, value: c.pValue, quote: c.pQuote })
+          : { id: "", part: "comparison" as const, label: `${c.title} — p-value`, value: c.pValue, quote: "", status: "check" as const, reason: "No quote for the p-value — look at the PDF" };
+        items.push({ ...p, id: `comparison-${i}-p`, block });
+      }
+      return items;
+    }),
     ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) => ({ ...checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }), id: `matrix-${i}-${j}`, block: mats[i]?.id }))),
   ];
 }
+
+/** «45» on a % scale: the quote says «45%» (the number itself, not part of a bigger one). */
+function percentInQuote(value: string, quote: string): boolean {
+  return numbers(value).every((n) => new RegExp(`(^|[^\\d.,])${n.replace(".", "[.,]")}\\s*%`).test(quote));
+}
+
+/** The scale of a comparison: as the answer says; when it says nothing — % only if every value is written with «%». */
+export const comparisonUnit = (c: Answer["comparisons"][number]) => c.unit ?? (c.groups.every((g) => g.value.includes("%")) ? "%" : "");
 
 export const unchecked = (items: CheckItem[] | null | undefined) => (items ?? []).filter((c) => c.status === "check");
 
@@ -261,7 +286,7 @@ export function documentBlocks(o: {
   const out: StoredBlock[] = [{ id: blockId(), type: "hero", variant: "page", data: { eyebrow, title: o.title, body: o.answer?.conclusion ?? "" } }];
   if (o.answer?.figures.length) out.push({ id: blockId(), type: "keyNumbers", variant: "figures", data: { items: o.answer.figures.map((f) => ({ value: f.value, label: f.label, note: f.quote })) } });
   for (const c of o.answer?.comparisons ?? [])
-    out.push({ id: blockId(), type: "comparison", variant: "default", data: { title: c.title, endpoint: c.endpoint ?? null, unit: c.unit ?? "%", pValue: c.pValue ?? null, groups: c.groups } });
+    out.push({ id: blockId(), type: "comparison", variant: "default", data: { title: c.title, endpoint: c.endpoint ?? null, unit: comparisonUnit(c), pValue: c.pValue ?? null, groups: c.groups.map(({ label, value, n, quote }) => ({ label, value, n, quote })) } });
   for (const m of o.answer?.matrices ?? [])
     out.push({ id: blockId(), type: "dotMatrix", variant: "default", data: { title: m.title, caption: m.caption ?? null, groups: m.groups } });
   if (o.passport.length) out.push({ id: blockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: o.passport, source: o.passportSource } });
