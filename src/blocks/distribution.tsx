@@ -15,6 +15,7 @@ export type DistributionData = {
   series: { label: string; points: { label: string; n?: string | null; values: string[]; quote?: string | null }[] }[];
 };
 
+const pct = (v: string) => (v.includes("%") ? v : `${v}%`);
 const num = (v: string) => Number(String(v).replace(",", ".").replace(/[^\d.]/g, "")) || 0;
 /** shades of --accent by the step of the scale: the first category full, then lighter (DESIGN.md) */
 const SHADES = ["bg-accent", "bg-accent/80", "bg-accent/65", "bg-accent/50", "bg-accent/35", "bg-accent/25", "bg-accent/15"];
@@ -22,7 +23,8 @@ const shade = (k: number, of: number) => SHADES[Math.min(SHADES.length - 1, Math
 
 function Distribution({ data: d, edit: e, nested }: BlockProps<"distribution">) {
   const scale = d.scale ?? [];
-  const series = (d.series ?? []).filter((s) => s.points?.length);
+  // the stored positions survive the filter: field paths (edits, PDF checks) point at the stored data
+  const series = (d.series ?? []).map((s, si) => ({ ...s, si })).filter((s) => s.points?.length);
   if (scale.length < 2 || !series.length) return null;
   const inner = (
     <SharedLine title={<F e={e} k="title">{d.title || "Distribution"}</F>} className="mt-16">
@@ -35,20 +37,28 @@ function Distribution({ data: d, edit: e, nested }: BlockProps<"distribution">) 
         ))}
       </ul>
       <SeriesSwitch labels={series.map((s) => s.label)}>
-        {series.map((s, si) => (
+        {series.map(({ si, points }) => (
           <ul key={si} className="mt-5 space-y-4">
-            {s.points.map((p, pi) => (
+            {points.map((p, pi) => (
               <li key={pi} className="grid grid-cols-[minmax(0,8rem)_minmax(0,1fr)] items-center gap-4">
                 <div className="text-sm">
                   <div className="font-medium"><F e={e} k={`series.${si}.points.${pi}.label`}>{p.label}</F></div>
                   {p.n && <div className="text-xs text-muted">n = <F e={e} k={`series.${si}.points.${pi}.n`}>{p.n}</F></div>}
                 </div>
-                <div className="flex h-7 overflow-hidden rounded" role="img" aria-label={scale.map((c, k) => `${c}: ${p.values[k] ?? "—"}`).join(", ")}>
-                  {p.values.map((v, k) => (
-                    <div key={k} className={`flex items-center justify-center text-xs tabular-nums ${shade(k, scale.length)} ${k * 2 < scale.length ? "text-accent-foreground" : "text-foreground"}`} style={{ width: `${Math.min(100, num(v))}%` }}>
-                      {num(v) >= 8 && <F e={e} k={`series.${si}.points.${pi}.values.${k}`}>{v.includes("%") ? v : `${v}%`}</F>}
-                    </div>
-                  ))}
+                <div>
+                  <div className="flex h-7 overflow-hidden rounded" role="img" aria-label={scale.map((c, k) => `${c}: ${p.values[k] ?? "—"}`).join(", ")}>
+                    {p.values.map((v, k) => (
+                      <div key={k} className={`flex items-center justify-center text-xs tabular-nums ${shade(k, scale.length)} ${k * 2 < scale.length ? "text-accent-foreground" : "text-foreground"}`} style={{ width: `${Math.min(100, num(v))}%` }}>
+                        {num(v) >= 8 && <F e={e} k={`series.${si}.points.${pi}.values.${k}`}>{pct(v)}</F>}
+                      </div>
+                    ))}
+                  </div>
+                  {/* a share too narrow for its label: named under the bar, so every value stays visible and checkable */}
+                  {p.values.some((v) => num(v) < 8) && (
+                    <p className="mt-1 text-xs text-muted">
+                      {p.values.map((v, k) => (num(v) < 8 ? <span key={k} className="mr-3">{scale[k]} <F e={e} k={`series.${si}.points.${pi}.values.${k}`}>{pct(v)}</F></span> : null))}
+                    </p>
+                  )}
                 </div>
               </li>
             ))}

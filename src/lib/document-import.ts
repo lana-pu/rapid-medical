@@ -105,7 +105,8 @@ const tableSchema = z
     rows: z.array(z.object({ label: text(120), cells: z.array(z.string().trim().max(40)), quote: text(600) })).min(1).max(12),
   })
   .refine((t) => t.rows.every((r) => r.cells.length === t.columns.length), { message: "every row needs one cell per column", path: ["rows"] });
-const centreSchema = z.object({ name: text(160), city: opt(80), country: text(60) });
+const place = (max: number) => z.string().trim().min(1).max(max).regex(/^[\p{L}\p{M} .,'()-]+$/u, "letters, spaces and . , ' ( ) - only");
+const centreSchema = z.object({ name: text(160), city: place(80).optional(), country: place(60) });
 
 export const AnswerSchema = z.object({
   title: text(200),
@@ -273,13 +274,27 @@ export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[],
         at(checkQuoted(text, "table", j, { label: `${t.title} — ${r.label}`, value: r.cells.join(" "), quote: r.quote }, src), `table-${i}-row-${j}`, block, r.cells.map((_, k) => `rows.${j}.cells.${k}`), r.cells.join(" · ")));
       return [...cols, ...rows];
     }),
-    // a centre: its name is in the document (no quote: a list of centres has no sentence)
-    ...answer.centres.map((c, j): CheckItem => {
-      const found = compact(c.name).length >= 4 && compact(text).includes(compact(c.name));
+    // a centre (no quote: a list of centres has no sentence): its name as whole words in the document, and its city or
+    // country there too — what the map shows is checked as well
+    ...answer.centres.flatMap((c, j): CheckItem[] => {
       const where = [c.city, c.country].filter(Boolean).join(", ");
-      return { id: `centres-${j}`, part: "centres", label: where || "Centre", value: c.name, quote: "", status: found ? "ok" : "check", ...(found ? {} : { reason: `The name is not in ${sourceName(src)}` }), block: maps[0]?.id, fields: [`centres.${j}.name`] };
+      const named = wordsIn(text, c.name, 6);
+      const placed = (!!c.city && wordsIn(text, c.city, 3)) || wordsIn(text, c.country, 3);
+      const item = (id: string, value: string, ok: boolean, reason: string, fields: string[]): CheckItem =>
+        ({ id, part: "centres", label: `${c.name} — ${where}`, value, quote: "", status: ok ? "ok" : "check", ...(ok ? {} : { reason }), block: maps[0]?.id, fields });
+      return [
+        item(`centres-${j}`, c.name, named, `The name is not in ${sourceName(src)}`, [`centres.${j}.name`]),
+        item(`centres-${j}-place`, where, placed, `Neither the city nor the country is in ${sourceName(src)}`, [`centres.${j}.name`]),
+      ];
     }),
   ];
+}
+
+/** The words are in the text as whole words (case, accents and punctuation aside); shorter than `min` letters — no. */
+function wordsIn(text: string, words: string, min: number): boolean {
+  const norm = (s: string) => ` ${s.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()} `;
+  const w = norm(words);
+  return w.trim().replace(/ /g, "").length >= min && norm(text).includes(w);
 }
 
 /** «45» on a % scale: the quote says «45%» (the number itself, not part of a bigger one). */

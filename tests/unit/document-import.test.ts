@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked, comparisonUnit, suggestFromUrl, sourceName } from "@/lib/document-import";
 import { registryRows } from "@/lib/clinicaltrials";
+import { mapCountry } from "@/lib/map-countries";
 
 // Short excerpts of the real texts (media.text of the PDFs on the site, 2026-11-18)
 const SUCCESS = `Davies JM, et al. J NeuroIntervent Surg 2025;0:1–7. doi:10.1136/jnis-2025-024136
@@ -237,7 +238,8 @@ Centres: Sample University Hospital, Boston; Example Clinic, Munich.`;
       "distribution-0-0-0": "ok", "distribution-0-0-0-n": "ok",
       "distribution-0-0-1": "The shares add up to 103%, not 100%", "distribution-0-0-1-n": "ok",
       "table-0-col-0": "ok", "table-0-col-1": "No quote for this n — look at the PDF", "table-0-row-0": "ok",
-      "centres-0": "ok", "centres-1": "The name is not in the PDF",
+      "centres-0": "ok", "centres-0-place": "ok",
+      "centres-1": "The name is not in the PDF", "centres-1-place": "Neither the city nor the country is in the PDF",
     });
     const first = items[0];
     expect(first.block).toBe(blocks[1].id);
@@ -259,5 +261,23 @@ Centres: Sample University Hospital, Boston; Example Clinic, Munich.`;
     expect(instructionsFor("publication")).toMatch(/"centres": \[\]/);
     expect(instructionsFor("publication")).toMatch(/"distributions" \(optional/);
     expect(instructionsFor("news")).toMatch(/"distributions": \[\] and "tables": \[\]/);
+  });
+});
+
+describe("centres: whole words, the place checked too, safe country names", () => {
+  const T = "Patients were enrolled at Sample University Hospital (Boston, USA).";
+  const ans = (centres: unknown[]) => parseAnswer(JSON.stringify({ title: "x", conclusion: "y", centres }));
+  it("a name found only inside a longer word is not found; a short name is never «found»", () => {
+    const r = ans([{ name: "Sample University Hospitals", country: "USA" }, { name: "Sam", country: "USA" }, { name: "University Hospital", city: "Paris", country: "France" }]);
+    if (!r.ok) throw new Error(r.error);
+    const items = checkGroups(T, r.answer, []);
+    expect(Object.fromEntries(items.map((x) => [x.id, x.status]))).toEqual({
+      "centres-0": "check", "centres-0-place": "ok", "centres-1": "check", "centres-1-place": "ok", "centres-2": "ok", "centres-2-place": "check",
+    });
+  });
+  it("country names: letters only in the answer; a Map, no prototype lookups", () => {
+    expect(ans([{ name: "Sample University Hospital", country: "USA|France" }]).ok).toBe(false);
+    expect(mapCountry("constructor")).toBe("constructor");
+    expect(mapCountry(" USA ")).toBe("United States of America");
   });
 });

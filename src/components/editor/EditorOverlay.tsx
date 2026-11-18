@@ -332,7 +332,7 @@ export default function EditorOverlay() {
       // an infographic: the check names its block and the fields of the block's data it covers
       const blk = /^blocks\.(\d+)\.data\.(.+)$/.exec(t.f);
       const id = fig ? `figures-${fig[1]}` : row ? `passport-${row[1]}` : null;
-      const inGroup = blk && openItems.some((x) => x.block && x.block === blockAt.get(Number(blk[1])) && x.fields?.includes(blk[2]));
+      const inGroup = blk && openItems.some((x) => x.block && x.block === blockAt.get(Number(blk[1])) && (x.fields ? x.fields.includes(blk[2]) : true)); // no fields (an older check): the whole block
       if ((id && open.has(id)) || inGroup) el.setAttribute("data-rm-check", "");
     });
   }, [checks, page, info, off, preview, pathname]);

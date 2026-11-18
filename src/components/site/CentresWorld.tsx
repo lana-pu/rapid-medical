@@ -16,10 +16,10 @@ const W = 1200, H = 560;
  */
 export function CentresWorld({ countries }: { countries: string[] }) {
   const [paths, setPaths] = useState<{ land: string; on: string } | null>(null);
-  const key = countries.join("|");
+  const key = JSON.stringify(countries);
   useEffect(() => {
     let cancelled = false;
-    const want = new Set(key.split("|").map((c) => mapCountry(c).toLowerCase()));
+    const want = new Set((JSON.parse(key) as string[]).map((c) => mapCountry(c).toLowerCase()));
     fetch(withBase("/map/countries-50m.json"))
       .then((r) => r.json())
       .then((topo: Topology<{ countries: GeometryCollection }>) => {

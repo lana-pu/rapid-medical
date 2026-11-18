@@ -14,7 +14,8 @@ export type DataTableData = {
 
 function DataTable({ data: d, edit: e, nested }: BlockProps<"dataTable">) {
   const cols = d.columns ?? [];
-  const rows = (d.rows ?? []).filter((r) => r.label);
+  // the stored positions survive the filter: field paths (edits, PDF checks) point at the stored data
+  const rows = (d.rows ?? []).map((r, ri) => ({ ...r, ri })).filter((r) => r.label);
   if (!cols.length || !rows.length) return null;
   const inner = (
     <SharedLine title={<F e={e} k="title">{d.title || "Results"}</F>} className="mt-16">
@@ -32,10 +33,10 @@ function DataTable({ data: d, edit: e, nested }: BlockProps<"dataTable">) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
-              <tr key={i} className="border-b border-border">
-                <th scope="row" className="py-2 pr-4 text-left font-normal"><F e={e} k={`rows.${i}.label`}>{r.label}</F></th>
-                {cols.map((_, j) => <td key={j} className="px-3 py-2 text-right tabular-nums"><F e={e} k={`rows.${i}.cells.${j}`}>{r.cells?.[j] ?? ""}</F></td>)}
+            {rows.map((r) => (
+              <tr key={r.ri} className="border-b border-border">
+                <th scope="row" className="py-2 pr-4 text-left font-normal"><F e={e} k={`rows.${r.ri}.label`}>{r.label}</F></th>
+                {cols.map((_, j) => <td key={j} className="px-3 py-2 text-right tabular-nums"><F e={e} k={`rows.${r.ri}.cells.${j}`}>{r.cells?.[j] ?? ""}</F></td>)}
               </tr>
             ))}
           </tbody>
