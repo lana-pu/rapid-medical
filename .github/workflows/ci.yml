@@ -8,6 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # a stuck step (an apt mirror hung for 17+ minutes on PR #3) fails the run instead of holding it for 6 hours
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16-alpine
@@ -27,7 +29,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg postgresql-client
+      # ffmpeg: video posters; psql is no longer used (the tests reach the database through the site's driver)
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+        timeout-minutes: 8
       - run: npm ci
       # dependencies that reach the site must audit clean; dev-only advisories are reviewed by hand (docs/memory/infrastructure.md)
       - run: npm audit --omit=dev --audit-level=moderate
