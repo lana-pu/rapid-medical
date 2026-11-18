@@ -516,3 +516,16 @@ export const RESOURCES: Resource[] = [
 export function getResource(slug: string): Resource | undefined {
   return RESOURCES.find((r) => r.slug === slug);
 }
+
+/**
+ * The form's fields for one record (or a new one starting with `row`). Materials (ADR-009): a publication's date is a
+ * month, as before the move; sections edited on the page only for a material that is a page (its own address).
+ */
+export function fieldsFor(res: Resource, row: Record<string, unknown> | null): FieldDef[] {
+  if (res.slug !== "materials") return res.fields;
+  const isPage = !!row?.slug;
+  const month = (row?.kind ?? "publication") === "publication";
+  return res.fields
+    .filter((f) => isPage || !f.onPage)
+    .map((f) => (f.name === "publishedOn" && month ? { ...f, type: "month" as const, help: "Month and year" } : f));
+}

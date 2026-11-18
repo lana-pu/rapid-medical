@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db, products, solutions } from "@/db";
 import { requireUser } from "@/lib/auth";
-import { getResource } from "@/admin/resources";
+import { fieldsFor, getResource } from "@/admin/resources";
 import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
@@ -43,7 +43,7 @@ export default async function EditResource({ params, searchParams }: { params: P
   // «Edit on page» only where the page is made of sections: not a material shown by its own template (publication, news)
   const onPage = res.slug !== "materials" || isPageRecord(res.slug, row);
   const editHref = previewPath && onPage ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
-  const fields = onPage ? res.fields : res.fields.filter((f) => !f.onPage);
+  const fields = fieldsFor(res, row);
   // a therapy page in a region it is not in yet: create that region's version (not a copy over an existing one)
   const taken = res.slug === "solutions" ? (await db.select({ region: solutions.region }).from(solutions).where(eq(solutions.slug, String(row.slug ?? "")))).map((x) => x.region) : [];
   const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => !taken.includes(r)) : [];

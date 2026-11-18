@@ -1,7 +1,7 @@
 import { movedAdminPath } from "@/admin/legacy";
 import { notFound, redirect } from "next/navigation";
 import { db, products, MATERIAL_KINDS } from "@/db";
-import { getResource } from "@/admin/resources";
+import { fieldsFor, getResource } from "@/admin/resources";
 import { crumbsFor } from "@/admin/site-sections";
 import { hasWorkflow } from "@/admin/workflow";
 import { PageHeader } from "@/components/admin/ui";
@@ -25,11 +25,13 @@ export default async function NewResource({ params, searchParams }: { params: Pr
   const res = getResource(resource);
   if (!res || res.alwaysLive) notFound();
   const prods = await db.select().from(products).orderBy(products.sortOrder);
+  // a new material is a publication unless it was started from a slice (News: a news item)
+  const start = res.slug === "materials" ? { kind: "publication", ...materialStart(sp) } : null;
 
   return (
     <>
       <PageHeader crumbs={crumbsFor(res.slug, res.title)} title={`New ${res.titleSingular.toLowerCase()}`} actions={<BackButton fallback={`/admin/${res.slug}`} />} />
-      <ResourceForm resourceSlug={res.slug} fields={res.slug === "materials" ? res.fields.filter((f) => !f.onPage) : res.fields} row={res.slug === "materials" ? materialStart(sp) : null} products={prods} workflow={hasWorkflow(res)} contentHref={null} />
+      <ResourceForm resourceSlug={res.slug} fields={fieldsFor(res, start)} row={start} products={prods} workflow={hasWorkflow(res)} contentHref={null} />
     </>
   );
 }

@@ -19,8 +19,8 @@
 ## Данные
 | Источник | Что |
 |---|---|
-| `publications` | `getPublications(region)`: опубликованные, `regions` пусто или содержит регион; по дате ↓ |
-| `publications` featured | `getFeaturedPublications(region, 6)`: то же + `featured = true` |
+| `materials` (`showInEvidence`, с 2026-11-18) | `getPublications(region)`: опубликованные, `regions` пусто или содержит регион; по дате ↓ |
+| `materials` featured | `getFeaturedPublications(region, 6)`: то же + `featured = true` |
 | `products` | `getProductsForRegion(region)`: `regions` пусто или содержит регион; `name`/`fullName` заменяются `aliases[region]` |
 | `site_settings.evidence` | `title`, `heroVideoUrl`, `intro`, `statValue`, `statLabel`, `statIconUrl`, `forefrontText`, `featuredTitle`, `browseTitle` |
 

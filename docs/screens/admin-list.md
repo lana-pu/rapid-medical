@@ -20,7 +20,7 @@
 | Ресурс | Колонки |
 |---|---|
 | `solutions` (Therapies) | Name · Slug · Region · Product · Status |
-| `publications` | Title · Date · Product · Regions · Featured · Status |
+| `materials` (Publications & news, 2026-11-18) | Title · Kind · Date · Product · Regions · Featured · Status; фильтры Kind, In Evidence, In News; срезы Evidence / News — `?showInEvidence=true` / `?showInNews=true`; `/admin/publications` и `/admin/news` ведут сюда |
 | `events` | Title · Date · City · When · Status |
 | `news` | Title · Date · Source · Featured · Status |
 | `webinars` | Title · Speaker · Product · Regions · Status |

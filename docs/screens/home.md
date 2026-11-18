@@ -19,7 +19,7 @@
 | Источник | Что |
 |---|---|
 | `site_settings.home` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, `heroCtaLabel`, `heroCtaHref`, `heroVideoUrl`, `problemTitle`, `problemVideoUrl`, `problemImageUrl`, `stats[] {value,label,iconUrl}`, `solutionLine`, `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`, `newsTitle` |
-| `news_items` | `getFeaturedNews(4)`: опубликованные с `featured = true` по дате; если таких нет — 4 последних опубликованных |
+| `materials` (`showInNews`, с 2026-11-18) | `getFeaturedNews(4)`: опубликованные с `featured = true` по дате; если таких нет — 4 последних опубликованных |
 | cookie `rm_region` | Куда ведут CTA (регион последнего визита) |
 
 ## Структура и состояния

@@ -86,6 +86,14 @@ export async function pageScreen(key: string) {
     node: hit.node,
     trail: hit.trail,
     cards: cards.filter((c) => pageKey(c.path) === key),
-    collections: COLLECTION_PAGES.filter((c) => c.under === key).map((c) => ({ ...c, count: counts[c.res] ?? 0, newLabel: getResource(c.res)?.titleSingular ?? "item" })),
+    collections: COLLECTION_PAGES.filter((c) => c.under === key).map((c) => ({
+      ...c,
+      key: c.key ?? c.res,
+      count: counts[c.key ?? c.res] ?? 0,
+      // a slice of materials: its own name for «+ New» and its own lists (ADR-009)
+      newLabel: c.only === "showInEvidence" ? "Publication" : c.only === "showInNews" ? "News item" : (getResource(c.res)?.titleSingular ?? "item"),
+      href: `/admin/${c.res}${c.only ? `?${c.only}=true` : ""}`,
+      newHref: `/admin/${c.res}/new${c.only === "showInEvidence" ? "?kind=publication&showInEvidence=true" : c.only === "showInNews" ? "?kind=news&showInNews=true" : ""}`,
+    })),
   };
 }

@@ -115,8 +115,8 @@ test("new publication: mistakes listed on top with links, month and year, Israel
   await summary.getByRole("link", { name: "Title" }).click();
   await expect(page).toHaveURL(/#title$/);
   // an existing publication: the schedule says which time zone it uses
-  const id = sql("select id from publications order by id limit 1");
-  await page.goto(`/admin/publications/${id}`);
+  const id = sql("select id from materials where kind='publication' order by id limit 1");
+  await page.goto(`/admin/materials/${id}`);
   await expect(page.getByText(/Time zone: Israel \(UTC\+[23]\)/)).toBeVisible();
   await expect(page.locator("input[name=publishedOn]")).toHaveValue(/^\d{4}-\d{2}$/);
 });
@@ -230,7 +230,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
 
   // a collection opens its records
   await tree.getByRole("link", { name: /Publications/ }).click();
-  await expect(page).toHaveURL(/\/admin\/publications$/);
+  await expect(page).toHaveURL(/\/admin\/materials\?showInEvidence=true$/);
   await page.goto("/admin/page/news-events");
   await expect(page.getByRole("region", { name: "Collections on this page" })).toContainText("News");
 
@@ -249,18 +249,18 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
   test.setTimeout(120_000);
   addUser("editor@e2e.test", "editor");
   addUser("designer@e2e.test", "designer");
-  const id = sql("select id from news_items where status='published' order by id limit 1");
-  sql(`update news_items set status='draft' where id=${id}`);
+  const id = sql("select id from materials where show_in_news and status='published' order by id limit 1");
+  sql(`update materials set status='draft' where id=${id}`);
   try {
     const ed = await (await browser.newContext()).newPage();
     await login(ed, "editor@e2e.test", ADMIN.password);
     // no approval step: the status field publishes an unpublished record
-    await ed.goto(`/admin/news/${id}`);
+    await ed.goto(`/admin/materials/${id}`);
     await expect(ed.getByText("Submit for review")).toHaveCount(0);
     await expect(ed.getByTestId("record-status")).toHaveText("Draft · not on the site");
     await ed.click('button[name=__intent][value=publish]');
     await ed.waitForURL(/published=1/);
-    expect(sql(`select status from news_items where id=${id}`)).toBe("published");
+    expect(sql(`select status from materials where id=${id}`)).toBe("published");
     // Site settings without Branding, Integrations and Workflow
     await ed.goto("/admin/settings?group=integrations");
     await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
@@ -300,47 +300,47 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await de.mouse.click((de.viewportSize()?.width ?? 1280) - 12, 300);
     await expect(de.locator('#rm-section-toolbar select[aria-label="Layout"]')).toBeVisible();
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='published' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='published' where id=${id}`);
   }
 });
 
 test("unpublish keeps the pending changes in the record and cancels the schedule", async ({ page }) => {
   await login(page);
-  const id = sql("select id from news_items where status='published' order by id desc limit 1");
-  const title = sql(`select title from news_items where id=${id}`);
+  const id = sql("select id from materials where show_in_news and status='published' order by id desc limit 1");
+  const title = sql(`select title from materials where id=${id}`);
   try {
-    await page.goto(`/admin/news/${id}`);
+    await page.goto(`/admin/materials/${id}`);
     await page.fill("input[name=title]", "E2E pending title");
     await page.locator("input[name=title]").blur();
     await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
     await page.reload();
-    sql(`update drafts set publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
+    sql(`update drafts set publish_at=now() + interval '1 day' where resource='materials' and record_id=${id}`);
     await page.click('button:has-text("Unpublish")');
     await page.waitForURL(/unpublished=1/);
-    expect(sql(`select status || '|' || title from news_items where id=${id}`)).toBe("draft|E2E pending title");
-    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
+    expect(sql(`select status || '|' || title from materials where id=${id}`)).toBe("draft|E2E pending title");
+    expect(sql(`select count(*) from drafts where resource='materials' and record_id=${id}`)).toBe("0");
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
   }
 });
 
 test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete keeps what is on the site, counts are real, Home and About have no New or Delete", async ({ page }) => {
   await login(page);
   // a draft and a live news item ticked together: the draft goes with its schedule, the live one stays and the message says so
-  const live = sql("select id from news_items where status = 'published' order by id desc limit 1");
-  const draft = sql("insert into news_items(title, url, published_on, status) values ('E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
-  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${draft},null,now() + interval '1 day','Admin')`);
-  await page.goto("/admin/news?sort=id&dir=desc"); // both on the first page: the newest rows
+  const live = sql("select id from materials where show_in_news and status = 'published' order by id desc limit 1");
+  const draft = sql("insert into materials(kind, show_in_news, title, url, published_on, status) values ('news', true, 'E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('materials',${draft},null,now() + interval '1 day','Admin')`);
+  await page.goto("/admin/materials?showInNews=true&sort=id&dir=desc"); // both on the first page: the newest rows
   await page.check(`input[name=ids][value="${draft}"]`);
   await page.check(`input[name=ids][value="${live}"]`);
   page.once("dialog", (d) => d.accept());
   await page.click("button[value=delete]");
   await page.waitForURL(/bulk=delete/);
-  expect(sql(`select count(*) from news_items where id=${draft}`)).toBe("0");
-  expect(sql(`select count(*) from drafts where resource='news' and record_id=${draft}`)).toBe("0");
-  expect(sql(`select status from news_items where id=${live}`)).toBe("published");
+  expect(sql(`select count(*) from materials where id=${draft}`)).toBe("0");
+  expect(sql(`select count(*) from drafts where resource='materials' and record_id=${draft}`)).toBe("0");
+  expect(sql(`select status from materials where id=${live}`)).toBe("published");
   await expect(page.getByText("Deleted 1 item(s).")).toBeVisible();
   await expect(page.getByText("1 on the site was not deleted: unpublish it first.")).toBeVisible();
 
@@ -365,21 +365,21 @@ test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete k
 
 test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ page }) => {
   await login(page);
-  await page.goto("/admin/news");
+  await page.goto("/admin/materials?showInNews=true");
   const id = await page.locator('input[name=ids]').first().getAttribute("value");
-  const was = sql(`select status from news_items where id=${id}`);
-  sql(`update news_items set status='published' where id=${id}`);
-  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${id},null,now() + interval '1 day','Admin') on conflict (resource,record_id) do update set publish_at=now() + interval '1 day'`);
+  const was = sql(`select status from materials where id=${id}`);
+  sql(`update materials set status='published' where id=${id}`);
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('materials',${id},null,now() + interval '1 day','Admin') on conflict (resource,record_id) do update set publish_at=now() + interval '1 day'`);
   try {
     await page.reload();
     await page.check(`input[name=ids][value="${id}"]`);
     await page.click('button[value=unpublish]');
     await page.waitForURL(/bulk=unpublish/);
-    expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
-    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
+    expect(sql(`select status from materials where id=${id}`)).toBe("draft");
+    expect(sql(`select count(*) from drafts where resource='materials' and record_id=${id}`)).toBe("0");
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='${was}' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='${was}' where id=${id}`);
   }
 });
 
@@ -608,21 +608,21 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
 
 test("user walk 2026-11-14: a draft is deleted from its own page; a request names the page before the form", async ({ page }) => {
   await login(page);
-  await page.goto("/admin/news/new");
-  await page.getByLabel(/^Title/).fill("E2E draft to delete");
+  await page.goto("/admin/materials/new?kind=news&showInNews=true");
+  await page.locator("input[name=title]").fill("E2E draft to delete");
   await page.getByLabel(/^Date/).fill("2026-11-14");
-  await page.getByLabel(/^External link/).fill("https://example.com/e2e");
+  await page.getByLabel(/^Link to the original/).fill("https://example.com/e2e");
   await page.getByRole("button", { name: "Create draft" }).click();
-  await page.waitForURL(/\/admin\/news\/\d+/);
+  await page.waitForURL(/\/admin\/materials\/\d+/);
   await expect(page.getByText("Status", { exact: true })).toBeVisible();
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Delete draft" }).click();
-  await page.waitForURL(/\/admin\/news\?bulk=delete&n=1/);
-  expect(sql("select count(*) from news_items where title = 'E2E draft to delete'")).toBe("0");
+  await page.waitForURL(/\/admin\/materials\?bulk=delete&n=1/);
+  expect(sql("select count(*) from materials where title = 'E2E draft to delete'")).toBe("0");
 
   // a published item has no Delete draft: Unpublish first
-  const live = sql("select id from news_items where status = 'published' order by id limit 1");
-  await page.goto(`/admin/news/${live}`);
+  const live = sql("select id from materials where show_in_news and status = 'published' order by id limit 1");
+  await page.goto(`/admin/materials/${live}`);
   await expect(page.getByRole("button", { name: "Delete draft" })).toHaveCount(0);
 
   // the therapy whose «Request a demo» led to the form is in the request
@@ -758,7 +758,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   await page.goto("/admin/page/evidence");
   // the page screen → + New publication → Back: to the page screen, not the collection's list
   await page.getByRole("listitem", { name: "Publications" }).getByRole("link", { name: "+ New publication" }).click();
-  await expect(page).toHaveURL(/\/admin\/publications\/new$/);
+  await expect(page).toHaveURL(/\/admin\/materials\/new\?kind=publication&showInEvidence=true$/);
   await page.getByRole("link", { name: "← Back" }).click();
   await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
   // the header arrow is Back too
@@ -775,7 +775,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   const fresh = await page.context().newPage();
   await fresh.goto("/admin/publications/new");
   await fresh.getByRole("link", { name: "← Back" }).click();
-  await expect(fresh).toHaveURL(/\/admin\/publications$/);
+  await expect(fresh).toHaveURL(/\/admin\/materials$/);
   await fresh.close();
 });
 
