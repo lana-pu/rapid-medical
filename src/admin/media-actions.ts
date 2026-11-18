@@ -8,7 +8,7 @@ import { getLiveSetting, getSettingDraft, setSetting, setSettingDraft, deleteSet
 import { findMediaUsage, swapUrl, urlPattern, type MediaUsage } from "@/lib/media-usage";
 import { getSettingsGroup } from "./settings";
 import { getResource } from "./resources";
-import { getEditable, publish, saveWithWorkflow } from "./workflow";
+import { ChecksPending, getEditable, publish, saveWithWorkflow } from "./workflow";
 import { requireEditor } from "./page-core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -60,8 +60,12 @@ export async function replaceEverywhere(oldId: number, newId: number, mode: "dra
       const saved = await saveWithWorkflow(res, u.id, { ...data, status: e.live.status }, user);
       let live = !saved.pending && e.live.status === "published";
       if (mode === "publish" && saved.pending) {
-        await publish(res, u.id, user);
-        live = true;
+        try {
+          await publish(res, u.id, user);
+          live = true;
+        } catch (e) {
+          if (!(e instanceof ChecksPending)) throw e; // stays a draft until its checks are done
+        }
       }
       if (live) {
         for (const p of res.revalidate) revalidatePath(p, "layout");

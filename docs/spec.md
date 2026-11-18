@@ -146,7 +146,7 @@ on-page editor (`data-e`), поэтому правка на странице п�
 **ADR-009, шаг 1 (2026-11-18, бриф `docs/briefs/materials.md`):** `publications`, `news_items` и страницы-материалы из
 `pages` → `materials`. Сайт читает только её: Evidence — `showInEvidence` и регион; News & Events — `showInNews`;
 главная и верх News — `featured` среди `showInNews`; страница материала — по `{id}-{slug}` или по прежнему `slug`.
-Следующий шаг — «Create from a document» (BACKLOG п. 8) поверх неё.
+Поверх неё — «Create from a document» (2026-11-18, `docs/briefs/create-from-document.md`): поле `documentCheck`, миграция 0033; материал с секциями показывает на своей странице секции.
 
 JSON-формы внутри jsonb: `ActionLink`, `SpecTable`, `Stat`, `Chart` (bar/stackedBar), `Feature`,
 `AnnotatedImage`, `Benefit`, `Step`, `InPracticeItem` — типы в начале `schema.ts`.
@@ -464,6 +464,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/admin/website` | Дашборд проекта Website: дела, быстрые действия, «продолжить», что впереди, неделя в цифрах, здоровье сайта, действия команды; шапка проекта со стрелкой назад | [admin-home](screens/admin-home.md) |
 | `/admin/{resource}` | Список: поиск, фильтры, сортировка, пагинация, bulk publish/unpublish/delete | [admin-list](screens/admin-list.md) |
 | `/admin/{resource}/new` | Создание записи | [admin-record-edit](screens/admin-record-edit.md) |
+| `/admin/create-from-document`, `…/{mediaId}` | Материал из PDF: вид по файлу, сводка своим ИИ, проверка цитат по тексту PDF, паспорт из ClinicalTrials.gov; Publish закрыт до проверки (2026-11-18) | [admin-create-from-document](screens/admin-create-from-document.md) |
 | `/admin/{resource}/{id}` | Форма записи + панель workflow | [admin-record-edit](screens/admin-record-edit.md) |
 | `/admin/{resource}/{id}/history` | Сравнение и восстановление ревизий | [admin-history](screens/admin-history.md) |
 | `/admin/settings?group=` | Site settings по группам (Menu and footer и Branding — дизайнер и админ, Integrations — админ; Menu and footer — `screens/menu-footer.md`) | [admin-settings](screens/admin-settings.md) |

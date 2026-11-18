@@ -392,6 +392,16 @@ export const newsItems = pgTable(
 /*  reads them.                                                          */
 /* ------------------------------------------------------------------ */
 
+/** «Create from a document» (docs/screens/admin-create-from-document.md): what was checked, and by whom. */
+export type DocumentCheck = {
+  mediaId: number;
+  file: string;
+  nct: string | null;
+  /** the registry's rows were added; or why they could not be (the draft is built without them) */
+  registry: { ok: true } | { ok: false; error: string } | null;
+  items: { id: string; part: "figures" | "passport"; label: string; value: string; quote: string; status: "ok" | "check" | "confirmed"; reason?: string; confirmedBy?: string; confirmedAt?: string }[];
+};
+
 export const materialKindEnum = pgEnum("material_kind", ["study", "publication", "news", "case", "document"]);
 export const MATERIAL_KINDS = materialKindEnum.enumValues;
 export type MaterialKind = (typeof MATERIAL_KINDS)[number];
@@ -436,6 +446,8 @@ export const materials = pgTable(
     noindex: boolean("noindex").notNull().default(false),
     /** Where the row was moved from on 2026-11-18: publications:12, news_items:5, pages:6 */
     legacyRef: text("legacy_ref"),
+    /** Built by «Create from a document»: the PDF, the registry and every quoted value checked against the PDF */
+    documentCheck: jsonb("document_check").$type<DocumentCheck | null>(),
     status: statusEnum("status").notNull().default("published"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

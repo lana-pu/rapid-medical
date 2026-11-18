@@ -7,6 +7,7 @@ import { isExternalHref, safeHref } from "@/lib/safe-path";
 import { newsOrigin } from "@/blocks/news";
 import { Section, H1, Eyebrow, KeyValue, Btn, Img, formatMonth } from "@/components/site/primitives";
 import { ShareLinks } from "@/components/site/ShareLinks";
+import { MaterialSections } from "@/components/site/MaterialSections";
 
 type Params = Promise<{ item: string }>;
 
@@ -38,6 +39,7 @@ export default async function NewsItemPage({ params }: { params: Params }) {
   }
   const canonical = newsHref(n);
   if (canonical !== `/news-events/${item}`) permanentRedirect(canonical);
+  if (n.blocks?.length) return <MaterialSections id={n.id} blocks={n.blocks} region={null} />;
 
   const original = safeHref(n.url);
   const origin = newsOrigin({ source: n.source, url: n.url ?? "" }) ?? "the original site";

@@ -523,7 +523,7 @@ export function getResource(slug: string): Resource | undefined {
  */
 export function fieldsFor(res: Resource, row: Record<string, unknown> | null): FieldDef[] {
   if (res.slug !== "materials") return res.fields;
-  const isPage = !!row?.slug;
+  const isPage = !!row?.slug || (Array.isArray(row?.blocks) && row.blocks.length > 0);
   const month = (row?.kind ?? "publication") === "publication";
   return res.fields
     .filter((f) => isPage || !f.onPage)

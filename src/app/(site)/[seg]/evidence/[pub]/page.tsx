@@ -10,6 +10,7 @@ import { REGION_LABELS } from "@/lib/regions";
 import { Section, H1, Eyebrow, KeyValue, Btn, formatMonth } from "@/components/site/primitives";
 import { ShareLinks } from "@/components/site/ShareLinks";
 import { DocumentPages, isLocalPdf } from "@/components/site/DocumentPages";
+import { MaterialSections } from "@/components/site/MaterialSections";
 
 type Params = Promise<{ seg: string; pub: string }>;
 
@@ -63,6 +64,8 @@ export default async function PublicationPage({ params }: { params: Params }) {
   if (!p) notFound();
   const canonical = publicationHref(region, p);
   if (canonical !== `/${region}/evidence/${pub}`) permanentRedirect(canonical);
+  // built from a document (or edited into sections): its own page of sections, edited on the page (ADR-009)
+  if (p.blocks?.length) return <MaterialSections id={p.id} blocks={p.blocks} region={region} />;
 
   // the same product groups as the Evidence archive (a family lists its sub-products without their own tab)
   const [all, products] = await Promise.all([getPublications(region), getProductsForRegion(region)]);

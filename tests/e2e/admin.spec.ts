@@ -925,3 +925,54 @@ test("My account: re-typing the password is limited like sign-in — 8 wrong in 
     sql("delete from login_attempts where key like 'pw:%'");
   }
 });
+
+test("create from a document: kind from the file, the team's AI answer checked against the PDF, Publish closed until a person looks", async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  const pdf = sql("select id from media where filename like 'Comaneci-SUCCESS-jnis%' order by id limit 1");
+  await page.goto("/admin/materials");
+  await page.getByRole("link", { name: "Create from a document" }).click();
+  await expect(page).toHaveURL(/\/admin\/create-from-document$/);
+  await page.goto(`/admin/create-from-document/${pdf}`);
+  // suggested before any AI, from the file itself: the DOI says it is a journal article
+  await expect(page.getByText(/Suggested from the file · It has a DOI/)).toBeVisible();
+  await expect(page.getByLabel(/^Publication/)).toBeChecked();
+  // a broken answer: said in words, what was pasted stays
+  await page.locator("textarea[name=answer]").fill("I could not open the file");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await expect(page.getByTestId("import-error")).toContainText("No JSON found");
+  await expect(page.locator("textarea[name=answer]")).toHaveValue("I could not open the file");
+  const answer = {
+    title: "E2E SUCCESS from a document",
+    conclusion: "High rates of successful aneurysm occlusion with Comaneci-assisted coiling.",
+    figures: [
+      { value: "85.6%", label: "Occlusion after the procedure", quote: "successful occlusion (Raymond-Roy I/II) achieved in 85.6% of cases immediately post-procedure" },
+      { value: "99%", label: "Occlusion at one year", quote: "Successful occlusion was 99% at one year" },
+    ],
+  };
+  await page.locator("textarea[name=answer]").fill("```json\n" + JSON.stringify(answer) + "\n```");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await page.waitForURL(/\/admin\/materials\/\d+\?created=document/);
+  const id = page.url().match(/materials\/(\d+)/)![1];
+  try {
+    const checks = page.getByRole("region", { name: "Checked against the PDF" });
+    await expect(checks).toContainText("1 of 2 checked");
+    await expect(checks).toContainText("Check: The quote is not in the PDF");
+    await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
+    // the server refuses too, whatever the button says
+    expect(sql(`select document_check->'items'->1->>'status' from materials where id=${id}`)).toBe("check");
+    await checks.getByRole("button", { name: "Looks right" }).click();
+    await expect(checks).toContainText("2 of 2 checked");
+    await expect(checks).toContainText(/Confirmed by/);
+    await page.getByRole("button", { name: /^Publish/ }).click();
+    await page.waitForURL(/published=1/);
+    // its own page is made of the sections: the conclusion, the figures with their quotes, the document
+    await page.goto(`/us/evidence/${id}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E SUCCESS from a document");
+    await expect(page.getByText("Occlusion after the procedure")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open the original ↗" })).toHaveCount(0);
+  } finally {
+    sql(`delete from revisions where resource='materials' and record_id=${id}`);
+    sql(`delete from materials where id=${id}`);
+  }
+});

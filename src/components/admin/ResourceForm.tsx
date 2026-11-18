@@ -18,6 +18,8 @@ type Props = {
   resourceSlug: string;
   fields: FieldDef[];
   row: Record<string, unknown> | null;
+  /** Publish is closed, and why (a material from a document with values to check) */
+  publishBlocked?: string | null;
   products: Product[];
   /** Goes through draft → Publish (has a status): autosave and a Publish button instead of Save */
   workflow?: boolean;
@@ -34,7 +36,7 @@ function toDateInput(v: unknown): string {
   return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
-export function ResourceForm({ resourceSlug, fields, row, products, workflow = false, liveStatus, pending: hasPending = false, contentHref }: Props) {
+export function ResourceForm({ resourceSlug, fields, row, products, workflow = false, liveStatus, pending: hasPending = false, contentHref, publishBlocked }: Props) {
   const [state, action, submitting] = useActionState<SaveState, FormData>(saveResource, null);
   const formRef = useRef<HTMLFormElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
@@ -109,10 +111,11 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
         ) : isNew ? (
           <Button type="submit" disabled={submitting}>{submitting ? "Creating…" : "Create draft"}</Button>
         ) : (
-          <Button type="submit" name="__intent" value="publish" disabled={submitting || auto.busy || (liveStatus === "published" && !hasPending && !auto.saved && !auto.touched)} title={liveStatus === "published" && !hasPending && !auto.saved && !auto.touched ? "No changes to publish" : undefined}>
+          <Button type="submit" name="__intent" value="publish" disabled={!!publishBlocked || submitting || auto.busy || (liveStatus === "published" && !hasPending && !auto.saved && !auto.touched)} title={publishBlocked ?? (liveStatus === "published" && !hasPending && !auto.saved && !auto.touched ? "No changes to publish" : undefined)}>
             {submitting ? "Publishing…" : liveStatus === "published" ? "Publish changes" : "Publish"}
           </Button>
         )}
+        {workflow && publishBlocked && <a href="#checks" className="text-xs text-amber-800 underline">{publishBlocked}</a>}
         {workflow && (
           <span className="text-sm font-medium" data-testid="record-status">
             {isNew || liveStatus !== "published" ? "Draft · not on the site" : hasPending || auto.saved ? "Live, with unpublished changes" : "Live"}

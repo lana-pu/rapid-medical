@@ -15,6 +15,7 @@ import { thumbsFor } from "@/admin/page-screen";
 import { safeLocalPath } from "@/lib/safe-path";
 import { BulkBar } from "@/components/admin/BulkBar";
 import { MATERIAL_KIND_LABELS } from "@/lib/material";
+import { DEMO } from "@/lib/demo";
 
 type SP = { q?: string; bulk?: string; n?: string; live?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string; kind?: string; showInEvidence?: string; showInNews?: string };
 
@@ -63,7 +64,12 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
   return (
     <>
-      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={`${total} items`} actions={res.alwaysLive ? undefined : <LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
+      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={`${total} items`} actions={res.alwaysLive ? undefined : (
+        <>
+          {res.slug === "materials" && !DEMO && <LinkButton href="/admin/create-from-document">Create from a document</LinkButton>}
+          <LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>
+        </>
+      )} />
       {/* Home, About… cannot be created: no «+ New» that leads to a 404 (docs/screens/admin-list.md, 2026-11-16) */}
       {sp.bulk && <Notice kind="success">{sp.bulk === "delete" ? "Deleted" : sp.bulk === "publish" ? "Published" : "Unpublished"} {sp.n} item(s).</Notice>}
       {sp.bulk === "delete" && Number(sp.live) > 0 && <Notice kind="error">{sp.live} on the site {Number(sp.live) === 1 ? "was" : "were"} not deleted: unpublish {Number(sp.live) === 1 ? "it" : "them"} first.</Notice>}
