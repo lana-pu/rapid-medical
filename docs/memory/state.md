@@ -445,3 +445,9 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 - 73 неиспользуемых файла медиатеки разобраны (`findings/unused-media-2026-11-18.md`): 59 можно удалить, 14 — нет.
   Попутно найдены потери при переносе (APAC Aneurysm «Leave nothing behind», график в «Accelerate thrombectomy» на LVO,
   слайдер Evidence, Featured по регионам) — в BACKLOG, ждут решения владелицы. Ничего не удалено.
+
+## 2026-11-18 — материалы, Create from a document, медиатека (ветка `materials`)
+- `publications` + `news_items` + страницы-материалы → `materials`; админка — Publications & news; Create from a document
+  (PDF + свой ИИ, проверка цитат и реестра, Publish закрыт до проверки); возвращено потерянное с Duda; Featured по
+  регионам; медиатека 246 → 171 файл. Миграции 0032–0035. Сессия: `sessions/2026-11-18-materials-and-media.md`.
+- **Текущий шаг:** PR ветки `materials` → CI → влить; дальше — по выбору владелицы.

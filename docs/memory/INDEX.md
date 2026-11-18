@@ -34,12 +34,15 @@
 - [publication-duplicates-2026-11-16](findings/publication-duplicates-2026-11-16.md) — дубли публикаций: 27 групп, уникальных статей 74 из 102 (проверено); пары делят регионы, посетитель дублей не видит, но число на главной считает записи (2026-11-16)
 - [design-references](findings/design-references.md) — референсы визуала: решено — тёмная тема; v3 — 12 сайтов с сильной арт-дирекцией, рецепт для Rapid Medical (2026-11-11)
 - [site-ux-pass-2026-11-13](findings/site-ux-pass-2026-11-13.md) — юзабилити публичного сайта глазами нового посетителя (2026-11-13)
+- [unused-media-2026-11-18](findings/unused-media-2026-11-18.md) — 73 «Not used»: что копия, что заменено данными, что потеряно при переносе (2026-11-18)
+- [media-dedupe-2026-11-18](findings/media-dedupe-2026-11-18.md) — одна копия каждого файла: 246 → 171, что слито и что региональные версии (2026-11-18)
 - [evidence-benchmark-2026-11-14](findings/evidence-benchmark-2026-11-14.md) — как конкуренты и смежные компании показывают клинические данные; практики и анти-паттерны (2026-11-14)
 
 ## Сессии — `sessions/`
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-18 | Материалы (ADR-009), Create from a document, возврат потерянного с Duda, Featured по регионам, одна копия каждого файла | [2026-11-18-materials-and-media.md](sessions/2026-11-18-materials-and-media.md) |
 | 2026-11-15 | Админка глазами пользователя: дашборд, Inbox как Gmail, экран страницы, Settings блоками, Google-тексты, медиатека по группам | [2026-11-15-admin-ux.md](sessions/2026-11-15-admin-ux.md) |
 | 2026-11-15 | Закрытые страницы сайта в коде (ветка `site-redesign`): Contact, Legal, About, Careers, обзор терапий, окно региона | [2026-11-15-site-redesign-code.md](sessions/2026-11-15-site-redesign-code.md) |
 | 2026-11-14 | Страницы сайта на вайрфреймах по одной: 7 закрыто, страница из документа, ADR-009, Evidence-ресёрч | [2026-11-14-site-pages-wireframes.md](sessions/2026-11-14-site-pages-wireframes.md) |
