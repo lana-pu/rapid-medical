@@ -131,6 +131,9 @@ function hitTest(boxes: Box[], x: number, y: number): Box | undefined {
     .sort((a, b) => a.width * a.height - b.width * b.height)[0];
 }
 
+/** said while a clicked field waits for the page update to come in */
+const UPDATING = "Updating the page — one moment…";
+
 export default function EditorOverlay() {
   const router = useRouter();
   // ← returns to the admin page the editor was opened from, even after moving between the site's pages here
@@ -219,6 +222,14 @@ export default function EditorOverlay() {
   const version = useRef("");
   const undo = useRef<Undo[]>([]);
   const editing = useRef<{ el: HTMLElement; tag: Tag; original: string } | null>(null);
+  /*
+   * The page is re-read from the server after every change. Re-rendering a field someone is typing in wipes what they
+   * typed (e2e «history», 2026-11-18), so the two never overlap: a field clicked while the page updates opens once the
+   * update is in; an update asked for while a field is open waits until it is closed.
+   */
+  const refreshingRef = useRef(false);
+  const pendingEdit = useRef<string | null>(null);
+  const pendingRefresh = useRef(false);
   const selectAfter = useRef<string | null>(null);
   const boxesRef = useRef<Box[]>([]); // for event handlers
   useEffect(() => {
@@ -383,6 +394,10 @@ export default function EditorOverlay() {
   }, [remeasure]);
 
   const refresh = useCallback(() => {
+    if (editing.current) {
+      pendingRefresh.current = true;
+      return;
+    }
     if (DEMO) {
       applyDemoState();
       remeasure();
@@ -515,6 +530,13 @@ export default function EditorOverlay() {
   }, [doUndo, doRedo, busy]);
 
   /* ---- inline plain text ---- */
+  /** an update that waited for the field to close */
+  const flushRefresh = useCallback(() => {
+    if (!pendingRefresh.current) return;
+    pendingRefresh.current = false;
+    refresh();
+  }, [refresh]);
+
   const commitText = useCallback(async () => {
     const cur = editing.current;
     if (!cur) return;
@@ -522,10 +544,10 @@ export default function EditorOverlay() {
     const { el, tag, original } = cur;
     el.removeAttribute("contenteditable");
     const value = el.innerText;
-    if (value === original) return;
+    if (value === original) return flushRefresh(); // a save refreshes anyway
     const ok = await save(tag, "text", value, { value: original, label: "text change" });
     if (!ok) el.innerText = original;
-  }, [save]);
+  }, [save, flushRefresh]);
 
   const startText = useCallback(
     (el: HTMLElement, tag: Tag) => {
@@ -542,6 +564,7 @@ export default function EditorOverlay() {
           editing.current = null;
           el.removeAttribute("contenteditable");
           cleanup();
+          flushRefresh();
         } else if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           el.blur();
@@ -558,8 +581,20 @@ export default function EditorOverlay() {
       el.addEventListener("keydown", onKey);
       el.addEventListener("blur", onBlur);
     },
-    [commitText],
+    [commitText, flushRefresh],
   );
+
+  // a field clicked while the page was updating opens now — found again by its address (the update may have replaced it)
+  useEffect(() => {
+    refreshingRef.current = refreshing;
+    if (refreshing || !pendingEdit.current) return;
+    const key = pendingEdit.current;
+    pendingEdit.current = null;
+    const el = document.querySelector<HTMLElement>(`[data-e="${CSS.escape(key)}"]`);
+    const tag = el ? parse(el) : null;
+    setMsg((m) => (m === UPDATING ? null : m));
+    if (el && tag?.k === "text") startText(el, tag);
+  }, [refreshing, startText]);
 
   /* ---- clicks: a field, else the section under the pointer ---- */
   useEffect(() => {
@@ -582,8 +617,12 @@ export default function EditorOverlay() {
         if (el.isContentEditable) return; // already editing this one
         e.preventDefault();
         e.stopPropagation();
-        if (tag.k === "text") startText(el, tag);
-        else if (tag.k === "rich") {
+        if (tag.k === "text") {
+          if (refreshingRef.current) {
+            pendingEdit.current = el.getAttribute("data-e");
+            say(UPDATING, true);
+          } else startText(el, tag);
+        } else if (tag.k === "rich") {
           void (async () => {
             const { value, label } = await api.readField(tag);
             setPanel({ k: "rich", tag, value: String(value ?? ""), label });
@@ -625,7 +664,7 @@ export default function EditorOverlay() {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener("keydown", onKey);
     };
-  }, [startText, preview, off, remeasure]);
+  }, [startText, preview, off, remeasure, say]);
 
   /* ---- dragging a section from the catalogue onto the page: a line shows where it lands ---- */
   useEffect(() => {

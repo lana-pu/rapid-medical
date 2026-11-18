@@ -579,6 +579,7 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
 
   // restore via the editor
   await page.locator("h1 [data-e]").click();
+  await expect(page.locator("h1 [data-e]")).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("A patient-centric approach to AIS");
   await page.keyboard.press("Enter");
@@ -590,6 +591,7 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
   await expect(page.getByRole("status")).toHaveText("Live", { timeout: 20_000 }); // the page info loads after the page
   const stat = page.locator('[data-e*="stats.0.value"]');
   await stat.click();
+  await expect(stat).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
