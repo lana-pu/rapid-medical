@@ -4,6 +4,8 @@ import { text } from "./text";
 import { textMedia } from "./text-media";
 import { keyNumbers } from "./key-numbers";
 import { passport } from "./passport";
+import { comparison } from "./comparison";
+import { dotMatrix } from "./dot-matrix";
 import { columns } from "./columns";
 import { video } from "./video";
 import { cta } from "./call-to-action";
@@ -37,6 +39,8 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   media,
   keyNumbers,
   passport,
+  comparison,
+  dotMatrix,
   columns,
   video,
   cta,

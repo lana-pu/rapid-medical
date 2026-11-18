@@ -10,7 +10,7 @@ import { db, media, materials, products, MATERIAL_KINDS, type DocumentCheck, typ
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { isRegion } from "@/lib/regions";
-import { checkQuoted, documentBlocks, mergePassport, parseAnswer, type CheckItem, type FullTextMode } from "@/lib/document-import";
+import { checkGroups, checkQuoted, documentBlocks, mergePassport, parseAnswer, type CheckItem, type FullTextMode } from "@/lib/document-import";
 import { fetchRegistry, registryUrl } from "@/lib/clinicaltrials";
 import { getResource } from "./resources";
 import { saveWithWorkflow } from "./workflow";
@@ -64,6 +64,7 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     : null;
 
   const blocks = documentBlocks({ kind, title, product: product?.name ?? null, answer, passport: merged.rows, passportSource, pdf: { url: pdf.url, text }, original: original || null, mode });
+  if (answer) items.push(...checkGroups(text, answer, blocks));
   const documentCheck: DocumentCheck = {
     mediaId: pdf.id,
     file: pdf.filename,

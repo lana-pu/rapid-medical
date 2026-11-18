@@ -319,16 +319,21 @@ export default function EditorOverlay() {
   useEffect(() => {
     document.querySelectorAll("[data-rm-check]").forEach((el) => el.removeAttribute("data-rm-check"));
     if (!checks || !page || off || preview) return;
-    const open = new Set(checks.items.filter((x) => x.status === "check").map((x) => x.id));
+    const openItems = checks.items.filter((x) => x.status === "check");
+    const open = new Set(openItems.map((x) => x.id));
+    // comparisons and matrices: the block's id from its position on the page, the group from the field
+    const blockAt = new Map((info?.sections ?? []).filter((s) => s.list === "").map((s) => [s.at, s.id]));
     document.querySelectorAll("[data-e]").forEach((el) => {
       const t = parse(el);
       if (!t || t.r !== "materials" || t.id !== page.id) return;
       const fig = /\.items\.(\d+)\.value$/.exec(t.f);
       const row = /\.rows\.(\d+)\.value$/.exec(t.f);
+      const grp = /^blocks\.(\d+)\.data\.groups\.(\d+)\.(value|count)$/.exec(t.f);
       const id = fig ? `figures-${fig[1]}` : row ? `passport-${row[1]}` : null;
-      if (id && open.has(id)) el.setAttribute("data-rm-check", "");
+      const inGroup = grp && openItems.some((x) => x.block && x.block === blockAt.get(Number(grp[1])) && x.id.endsWith(`-${grp[2]}`));
+      if ((id && open.has(id)) || inGroup) el.setAttribute("data-rm-check", "");
     });
-  }, [checks, page, off, preview, pathname]);
+  }, [checks, page, info, off, preview, pathname]);
 
   /* ---- after a server refresh: new marks, maybe a section to select ---- */
   useEffect(() => {

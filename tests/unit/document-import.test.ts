@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked } from "@/lib/document-import";
+import { suggestKind, findNct, quoteFound, valueInQuote, parseAnswer, checkQuoted, checkGroups, mergePassport, documentBlocks, textToHtml, instructionsFor, unchecked } from "@/lib/document-import";
 import { registryRows } from "@/lib/clinicaltrials";
 
 // Short excerpts of the real texts (media.text of the PDFs on the site, 2026-11-18)
@@ -36,6 +36,7 @@ describe("a quote is checked against the PDF's text", () => {
     expect(quoteFound(SUCCESS, "Wide-necked aneurysms were treated")).toBe(true); // «Wide- necked»
     expect(quoteFound(SUCCESS, "Successful occlusion was 99% at one year")).toBe(false);
     expect(quoteFound(SUCCESS, "95%")).toBe(false);
+    expect(checkQuoted(SUCCESS, "figures", 0, { value: "95%", label: "x", quote: "95% at 6m" }).reason).toMatch(/too short to check/);
   });
   it("the value's numbers must be in the quote", () => {
     expect(valueInQuote("95%", "86% at the end of the procedure and 95% at the 6-month follow-up")).toBe(true);
@@ -106,7 +107,7 @@ describe("passport: the document first, the registry fills gaps", () => {
 
 describe("the page", () => {
   const pdf = { url: "/uploads/x/success.pdf", text: "Line one of a para-\ngraph\ncontinues.\n\nSecond <b>para</b>.\fPage two." };
-  const answer = { title: "SUCCESS", conclusion: "High occlusion.", figures: [{ value: "95%", label: "Occlusion", quote: "q" }], passport: [] };
+  const answer = { title: "SUCCESS", conclusion: "High occlusion.", figures: [{ value: "95%", label: "Occlusion", quote: "q" }], passport: [], comparisons: [], matrices: [] };
   it("conclusion under the title, figures with their quotes, passport, the document", () => {
     const b = documentBlocks({ kind: "study", title: "SUCCESS", product: "COMANECI™", answer, passport: [{ label: "Patients", value: "90" }], passportSource: { label: "The study PDF" }, pdf, original: "https://doi.org/10.1136/x", mode: "embed" });
     expect(b.map((x) => `${x.type}/${x.variant}`)).toEqual(["hero/page", "keyNumbers/figures", "passport/default", "richText/document"]);
@@ -123,5 +124,34 @@ describe("the page", () => {
     expect(ifu.map((x) => x.type)).toEqual(["hero", "richText"]);
     expect(ifu[1].data.pdf).toMatchObject({ href: pdf.url });
     expect(textToHtml("a\n\n\nb")).toBe("<p>a</p>\n<p>b</p>");
+  });
+});
+
+describe("groups compared and patients as dots (DESIGN.md → Набор инфографики)", () => {
+  const DISTALS = "Successful reperfusion at 24 hours was 45% with treatment (n=29) and 15% with control (n=36). Excellent outcome: 4 of 10 patients with treatment and 3 of 10 with control.";
+  const raw = {
+    title: "DISTALS", conclusion: "More blood flow restored.",
+    comparisons: [{ title: "Successful reperfusion at 24 h", unit: "%", pValue: "< 0.05", groups: [
+      { label: "Treatment", value: "45", n: "29", quote: "45% with treatment (n=29)" },
+      { label: "Control", value: "25", n: "36", quote: "15% with control (n=36)" },
+    ] }],
+    matrices: [{ title: "Excellent outcome", caption: "One dot — one patient in ten", groups: [{ label: "Treatment", count: "4", total: "10", quote: "4 of 10 patients with treatment" }] }],
+  };
+  it("are read from the answer (optional), become their blocks after the key figures, each value checked and tied to its block", () => {
+    const r = parseAnswer(JSON.stringify(raw));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const blocks = documentBlocks({ kind: "study", title: "DISTALS", answer: r.answer, passport: [], passportSource: null, pdf: { url: "/u/d.pdf", text: DISTALS }, mode: "embed" });
+    expect(blocks.map((b) => b.type)).toEqual(["hero", "comparison", "dotMatrix", "richText"]);
+    const items = checkGroups(DISTALS, r.answer, blocks);
+    expect(items.map((x) => [x.id, x.status, x.block === blocks[1].id || x.block === blocks[2].id])).toEqual([
+      ["comparison-0-0", "ok", true], ["comparison-0-1", "check", true], ["matrix-0-0", "ok", true],
+    ]);
+    expect(items[1].reason).toBe("The number is not in the quote"); // 25 vs «15% … (n=36)»
+  });
+  it("a comparison needs two groups; the instructions offer them only to studies and publications", () => {
+    expect(parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] })).ok).toBe(false);
+    expect(instructionsFor("study")).toMatch(/"comparisons" \(optional/);
+    expect(instructionsFor("news")).toMatch(/"comparisons": \[\] and "matrices": \[\]/);
   });
 });

@@ -5,6 +5,8 @@ import type { TextData, TextVariant } from "./text";
 import type { TextMediaData, TextMediaVariant } from "./text-media";
 import type { KeyNumbersData, KeyNumbersVariant } from "./key-numbers";
 import type { PassportData, PassportVariant } from "./passport";
+import type { ComparisonData, ComparisonVariant } from "./comparison";
+import type { DotMatrixData, DotMatrixVariant } from "./dot-matrix";
 import type { ColumnsData, ColumnsVariant } from "./columns";
 import type { DeviceDiagramData, DeviceDiagramVariant } from "./device-diagram";
 import type { SpecTableData, SpecTableVariant } from "./spec-table";
@@ -37,6 +39,8 @@ export type BlockMap = {
   textMedia: { variant: TextMediaVariant; data: TextMediaData };
   keyNumbers: { variant: KeyNumbersVariant; data: KeyNumbersData };
   passport: { variant: PassportVariant; data: PassportData };
+  comparison: { variant: ComparisonVariant; data: ComparisonData };
+  dotMatrix: { variant: DotMatrixVariant; data: DotMatrixData };
   columns: { variant: ColumnsVariant; data: ColumnsData };
   deviceDiagram: { variant: DeviceDiagramVariant; data: DeviceDiagramData };
   specTable: { variant: SpecTableVariant; data: SpecTableData };

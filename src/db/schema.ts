@@ -399,7 +399,7 @@ export type DocumentCheck = {
   nct: string | null;
   /** the registry's rows were added; or why they could not be (the draft is built without them) */
   registry: { ok: true } | { ok: false; error: string } | null;
-  items: { id: string; part: "figures" | "passport"; label: string; value: string; quote: string; status: "ok" | "check" | "confirmed"; reason?: string; confirmedBy?: string; confirmedAt?: string }[];
+  items: { id: string; part: "figures" | "passport" | "comparison" | "matrix"; block?: string; label: string; value: string; quote: string; status: "ok" | "check" | "confirmed"; reason?: string; confirmedBy?: string; confirmedAt?: string }[];
 };
 
 export const materialKindEnum = pgEnum("material_kind", ["study", "publication", "news", "case", "document"]);

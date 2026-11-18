@@ -25,6 +25,10 @@ Publications & news → «Create from a document» (кнопка в шапке �
 5. **Summary with your own AI** (нет у документа; у него — Title): «Copy instructions for AI» (кнопка копирует текст,
    под ней — «Copied»; текст виден в раскрывашке) → «In your AI chat: attach the PDF and paste the instructions» →
    «Paste the answer here» (поле).
+   У исследования и публикации ответ может нести **сравнение групп** (`comparisons`: группы со значением, n, p-value,
+   конечная точка) и **матрицу точек** (`matrices`: N из M) — блоки набора инфографики (DESIGN.md, 2026-11-18). Каждое
+   значение — со своей цитатой и проверяется так же; n показывается рядом, но проверяется само значение. Цитата короче
+   12 знаков — «Check: the quote is too short to check».
 6. «Build the draft» → материал-черновик → его карточка с «Built from {file}».
 Ошибка (нет JSON, не тот формат, не тот номер NCT…) — сообщение над кнопкой словами; всё введённое остаётся.
 

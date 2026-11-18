@@ -56,11 +56,28 @@ export function valueInQuote(value: string, quote: string): boolean {
 const text = (max: number) => z.string().trim().min(1).max(max);
 const quoted = z.object({ value: text(80), label: text(160), quote: text(600) });
 
+const opt = (max: number) => z.string().trim().max(max).optional();
+const comparisonSchema = z.object({
+  title: text(160),
+  endpoint: opt(300),
+  unit: opt(5),
+  pValue: opt(30),
+  groups: z.array(z.object({ label: text(80), value: text(20), n: opt(20), quote: text(600) })).min(2).max(4),
+});
+const matrixSchema = z.object({
+  title: text(160),
+  caption: opt(200),
+  groups: z.array(z.object({ label: text(80), count: text(10), total: text(10), quote: text(600) })).min(1).max(3),
+});
+
 export const AnswerSchema = z.object({
   title: text(200),
   conclusion: text(400),
   figures: z.array(quoted).max(6).default([]),
   passport: z.array(quoted).max(12).default([]),
+  /** DESIGN.md → Набор инфографики: groups compared (bars) and patients as dots — only when the document compares groups */
+  comparisons: z.array(comparisonSchema).max(2).default([]),
+  matrices: z.array(matrixSchema).max(2).default([]),
 });
 export type Answer = z.infer<typeof AnswerSchema>;
 
@@ -92,6 +109,13 @@ export function instructionsFor(kind: MaterialKind): string {
     kind === "study"
       ? `- "passport": up to 8 rows about the study: Design, Regulation, Patients, Centers, Enrollment period, Assessment (who evaluated the results), Registry (NCT number). Only rows the document states.\n`
       : `- "passport": [] (leave empty for this kind).\n`;
+  const groups =
+    kind === "study" || kind === "publication"
+      ? `- "comparisons" (optional, only if the document compares groups, e.g. treatment vs control): up to 2, each { "title", "endpoint" (what is measured), "unit" ("%" or ""), "pValue", "groups": [{ "label", "value", "n", "quote" }] }.
+- "matrices" (optional, for "N of M patients" results): up to 2, each { "title", "caption" (what one dot means), "groups": [{ "label", "count", "total", "quote" }] }.
+`
+      : `- "comparisons": [] and "matrices": [] (leave empty for this kind).
+`;
   return `You help publish a ${kind === "news" ? "press release" : kind === "case" ? "clinical case" : kind === "study" ? "clinical study" : "journal publication"} from the attached PDF on a medical device company's website. Every fact must be checkable against the PDF.
 
 Reply with JSON only, no other text:
@@ -99,13 +123,15 @@ Reply with JSON only, no other text:
   "title": "...",
   "conclusion": "...",
   "figures": [{ "value": "...", "label": "...", "quote": "..." }],
-  "passport": [{ "label": "...", "value": "...", "quote": "..." }]
+  "passport": [{ "label": "...", "value": "...", "quote": "..." }],
+  "comparisons": [],
+  "matrices": []
 }
 
 - "title": the document's own title, shortened only if longer than 120 characters.
 - "conclusion": the main finding in one sentence, in the document's own words where possible.
 - "figures": 3 or 4 key results, most important first. "value" is the number as written (e.g. "95%", "0", "149"); "label" says what it measures in a few words.
-${passport}- "quote" (in every figure and passport row): one sentence copied exactly from the PDF, character for character, that contains the value. Do not paraphrase, shorten or fix it.
+${passport}${groups}- "quote" (in every figure, passport row and group): one sentence copied exactly from the PDF, character for character, that contains the value. Do not paraphrase, shorten or fix it.
 - Use only what the PDF says. If something is not in the PDF, leave it out. Never estimate, round or combine numbers.`;
 }
 
@@ -116,7 +142,9 @@ ${passport}- "quote" (in every figure and passport row): one sentence copied exa
 export type CheckItem = {
   id: string;
   /** which list of the page it belongs to */
-  part: "figures" | "passport";
+  part: "figures" | "passport" | "comparison" | "matrix";
+  /** the page block it is in (comparison, matrix) — the editor outlines it there */
+  block?: string;
   label: string;
   value: string;
   quote: string;
@@ -130,9 +158,24 @@ export type CheckItem = {
 /** One quoted value checked against the document. */
 export function checkQuoted(text: string, part: CheckItem["part"], i: number, x: { label: string; value: string; quote: string }): CheckItem {
   const base = { id: `${part}-${i}`, part, label: x.label, value: x.value, quote: x.quote };
+  if (compact(x.quote).length < 12) return { ...base, status: "check", reason: "The quote is too short to check — look at the PDF" };
   if (!quoteFound(text, x.quote)) return { ...base, status: "check", reason: "The quote is not in the PDF" };
   if (!valueInQuote(x.value, x.quote)) return { ...base, status: "check", reason: "The number is not in the quote" };
   return { ...base, status: "ok" };
+}
+
+/** The groups of the page's comparisons and matrices checked against the document, each tied to its block. */
+export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[]): CheckItem[] {
+  const comps = blocks.filter((b) => b.type === "comparison");
+  const mats = blocks.filter((b) => b.type === "dotMatrix");
+  return [
+    // the value is checked; n is shown with it (a slide often gives n apart from the result)
+    ...answer.comparisons.flatMap((c, i) => c.groups.map((g, j) => {
+      const it = checkQuoted(text, "comparison", j, { label: `${c.title} — ${g.label}`, value: g.value, quote: g.quote });
+      return { ...it, value: g.n ? `${g.value} (n ${g.n})` : g.value, id: `comparison-${i}-${j}`, block: comps[i]?.id };
+    })),
+    ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) => ({ ...checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }), id: `matrix-${i}-${j}`, block: mats[i]?.id }))),
+  ];
 }
 
 export const unchecked = (items: CheckItem[] | null | undefined) => (items ?? []).filter((c) => c.status === "check");
@@ -217,6 +260,10 @@ export function documentBlocks(o: {
   const eyebrow = [KIND_EYEBROW[o.kind], o.product].filter(Boolean).join(" · ");
   const out: StoredBlock[] = [{ id: blockId(), type: "hero", variant: "page", data: { eyebrow, title: o.title, body: o.answer?.conclusion ?? "" } }];
   if (o.answer?.figures.length) out.push({ id: blockId(), type: "keyNumbers", variant: "figures", data: { items: o.answer.figures.map((f) => ({ value: f.value, label: f.label, note: f.quote })) } });
+  for (const c of o.answer?.comparisons ?? [])
+    out.push({ id: blockId(), type: "comparison", variant: "default", data: { title: c.title, endpoint: c.endpoint ?? null, unit: c.unit ?? "%", pValue: c.pValue ?? null, groups: c.groups } });
+  for (const m of o.answer?.matrices ?? [])
+    out.push({ id: blockId(), type: "dotMatrix", variant: "default", data: { title: m.title, caption: m.caption ?? null, groups: m.groups } });
   if (o.passport.length) out.push({ id: blockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: o.passport, source: o.passportSource } });
   const mode: FullTextMode = o.kind === "document" ? "embed" : o.mode;
   const links = [
