@@ -143,10 +143,11 @@ export async function getPublication(region: Region, id: number) {
 
 export async function getFeaturedPublications(region: Region, limit = 3) {
   const rows = await db.query.materials.findMany({
-    where: and(await visible(materials.status), eq(materials.featured, true), regionFilter(materials, region)),
+    where: and(await visible(materials.status), sql`${materials.featuredRegions} @> ${JSON.stringify([region])}::jsonb`, regionFilter(materials, region)),
     orderBy: [desc(materials.publishedOn), desc(materials.id)],
   });
-  return (await overlay(M, rows)).filter((m) => inEvidence(m) && m.featured).slice(0, limit);
+  // each region its own set (decision 2026-11-18); a pending draft's choice counts in preview
+  return (await overlay(M, rows)).filter((m) => inEvidence(m) && (m.featuredRegions ?? []).includes(region)).slice(0, limit);
 }
 
 export async function getNews(limit?: number) {

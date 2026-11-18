@@ -20,7 +20,7 @@
 | Источник | Что |
 |---|---|
 | `materials` (`showInEvidence`, с 2026-11-18) | `getPublications(region)`: опубликованные, `regions` пусто или содержит регион; по дате ↓ |
-| `materials` featured | `getFeaturedPublications(region, 6)`: то же + `featured = true` |
+| `materials` featured | `getFeaturedPublications(region, 6)`: то же + регион в `featuredRegions` — свой набор у каждого региона (решение 2026-11-18; с Duda: US — Radially, Long-term outcomes, SUCCESS US; Europe — Radially, Long-term outcomes, Challenging the limits; Asia & Pacific — DW24 early experience, Advancing beyond… T13, Anch'Or Harpoon) |
 | `products` | `getProductsForRegion(region)`: `regions` пусто или содержит регион; `name`/`fullName` заменяются `aliases[region]` |
 | `site_settings.evidence` | `title`, `heroVideoUrl`, `intro`, `statValue`, `statLabel`, `statIconUrl`, `forefrontText`, `featuredTitle`, `browseTitle` |
 

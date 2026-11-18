@@ -433,8 +433,10 @@ export const materials = pgTable(
     // where it appears (ADR-009 §8)
     showInEvidence: boolean("show_in_evidence").notNull().default(false),
     showInNews: boolean("show_in_news").notNull().default(false),
-    /** Highlights: home, top of News & Events, featured on Evidence */
+    /** Highlights: home and the top of News & Events */
     featured: boolean("featured").notNull().default(false),
+    /** Featured on Evidence: each region has its own set (as on Duda; decision 2026-11-18). Empty = not featured. */
+    featuredRegions: jsonb("featured_regions").$type<Region[]>().notNull().default([]),
     // its own page
     /** A kept address (moved pages, e.g. success-study-final-results); null = /…/{id}-{title slug} */
     slug: text("slug"),

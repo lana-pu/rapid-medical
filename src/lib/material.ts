@@ -114,3 +114,20 @@ export function materialAsPage<T extends { regions: string[] | null }>(m: T): Om
   const { regions, ...rest } = m;
   return { ...rest, region: regions && regions.length === 1 ? (regions[0] as "us" | "ous" | "apac") : null };
 }
+
+/**
+ * Featured on Evidence per region, as on Duda (crawl 2026-11-05; decision 2026-11-18): the beginning of each title. The
+ * same list is in drizzle/0034_material_featured_regions.sql; the seed applies it. A material featured in a region is
+ * also shown there.
+ */
+export const FEATURED_ON_DUDA: { region: "us" | "ous" | "apac"; title: string }[] = [
+  { region: "us", title: "Radially adjustable Tigertriever demonstrates higher reperfusion" },
+  { region: "us", title: "Long-term outcomes of temporary stent-assisted coil embolization" },
+  { region: "us", title: "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS" },
+  { region: "ous", title: "Radially adjustable Tigertriever demonstrates higher reperfusion" },
+  { region: "ous", title: "Long-term outcomes of temporary stent-assisted coil embolization" },
+  { region: "ous", title: "Challenging the limits of angioplasty" },
+  { region: "apac", title: "Early experience with the Drivewire 24" },
+  { region: "apac", title: "Advancing beyond recent randomized controlled trials" },
+  { region: "apac", title: "The Anch'Or Harpoon Technique" },
+];

@@ -76,7 +76,10 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     null,
     {
       kind, title, publishedOn, productId, regions, url: original || null, pdfUrl: pdf.url, excerpt: answer?.conclusion ?? "",
-      showInEvidence: fd.get("showInEvidence") === "on", showInNews: fd.get("showInNews") === "on", featured: fd.get("featured") === "on",
+      showInEvidence: fd.get("showInEvidence") === "on", showInNews: fd.get("showInNews") === "on",
+      // a highlight: on top of News, and featured on Evidence in every region it is shown in
+      featured: fd.get("featured") === "on" && fd.get("showInNews") === "on",
+      featuredRegions: fd.get("featured") === "on" && fd.get("showInEvidence") === "on" ? (regions.length ? regions : (["us", "ous", "apac"] as Region[])) : [],
       blocks, documentCheck, status: "draft",
     },
     user,

@@ -11,7 +11,24 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
-import { MATERIAL_PAGES } from "../src/lib/material";
+import { FEATURED_ON_DUDA, MATERIAL_PAGES } from "../src/lib/material";
+
+/**
+ * Featured on Evidence per region as on Duda (decision 2026-11-18): in each region, the first record with that title that
+ * is shown there (duplicates of an article share the regions), else the first one — which is then shown there too.
+ * The same rule as drizzle/0034_material_featured_regions.sql.
+ */
+function featuredOnDuda<T extends { title: string; regions: schema.Region[] }>(pubs: T[]): { featuredRegions: schema.Region[]; regions: schema.Region[] }[] {
+  const out = pubs.map((p) => ({ featuredRegions: [] as schema.Region[], regions: [...p.regions] }));
+  for (const f of FEATURED_ON_DUDA) {
+    const match = pubs.map((p, i) => ({ p, i })).filter(({ p }) => p.title.toLowerCase().startsWith(f.title.toLowerCase()));
+    const pick = match.find(({ i }) => !out[i].regions.length || out[i].regions.includes(f.region)) ?? match[0];
+    if (!pick) continue;
+    out[pick.i].featuredRegions.push(f.region);
+    if (out[pick.i].regions.length && !out[pick.i].regions.includes(f.region)) out[pick.i].regions.push(f.region);
+  }
+  return out;
+}
 import { markdownToHtml } from "../src/lib/html";
 import { SOLUTIONS } from "../content/seed/solutions";
 import { groupForSlug } from "../src/lib/therapy-groups";
@@ -68,11 +85,13 @@ async function main() {
   // ADR-009: publications, news and material pages are one table (materials); publications first, so their ids are 1…N
   const pubs = await json<PubSeed[]>("publications");
   if (!RESET) await db.execute(sql`TRUNCATE materials RESTART IDENTITY`);
+  const featured = featuredOnDuda(pubs);
   await db.insert(materials).values(
-    pubs.map((p) => ({
+    pubs.map((p, i) => ({
       kind: "publication" as const, showInEvidence: true,
       title: p.title, authors: p.authors, journal: p.journal, doi: p.doi, url: p.url, pdfUrl: p.pdfUrl, pdfLicense: p.pdfLicense ?? "", pdfSource: p.pdfSource || null, abstract: p.abstract ?? "", abstractSource: p.abstractSource ?? "",
-      publishedOn: new Date(p.publishedOn), productId: prodId(p.product), regions: p.regions, featured: p.featured, imageUrl: p.imageUrl, status: "published" as const,
+      publishedOn: new Date(p.publishedOn), productId: prodId(p.product), imageUrl: p.imageUrl, status: "published" as const,
+      ...featured[i],
     })),
   );
 
