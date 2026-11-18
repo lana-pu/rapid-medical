@@ -162,8 +162,9 @@
   «OUS» только в имени файла; про APAC не сказано — вероятно, то же самое.
 - ~~Опечатка `info@rapidmedical.com` (без дефиса)~~ — проверено 2026-11-16: только в отчёте краула, в базе и в `content/seed` её нет.
 - ~~2 новых видео (Comaneci Blood Flow) без постеров~~ — сделано 2026-11-16 в `site-redesign` (ffmpeg из imageio-ffmpeg во временном окружении).
-- **Потеряно при переносе (найдено 2026-11-18 по неиспользуемым файлам, `findings/unused-media-2026-11-18.md`)** —
-  вернуть на страницы, решение владелицы: секция «Leave nothing behind» на APAC Aneurysm (цитата Ajit S. Puri + видео);
+- **Потеряно при переносе (найдено 2026-11-18, `findings/unused-media-2026-11-18.md`)** — **вернуто 2026-11-18 в ветке
+  `materials`:** графики LVO, «Leave nothing behind» на APAC, тексты карточек In-Practice (Aneurysm, три региона). Ждёт
+  решения владелицы — слайдер Evidence и Featured по регионам. Было: секция «Leave nothing behind» на APAC Aneurysm (цитата Ajit S. Puri + видео);
   график времени процедуры в «Accelerate thrombectomy» на LVO (у нас там Stair graph из «Gain active control»);
   слайдер баннеров на Evidence (файлы прописаны в настройках, страница их не выводит); Featured по регионам (на APAC
   нет вовсе). Спецификации APAC Aneurysm (номера ANPP71xx) — сверить с Fix List A.8.
