@@ -32,7 +32,11 @@ Publications & news → «Create from a document» (кнопка в шапке �
    значение — со своей цитатой и проверяется так же. Каждая цифра, которую покажет блок, — отдельная проверка: значение,
    его n (в той же цитате), p-value (по своей цитате `pQuote`; нет цитаты — «Check»), а у шкалы в % — что цитата даёт
    именно проценты (ревью безопасности 2026-11-18: «%» не дописывается без сверки). Шкала без `unit` в ответе — % только
-   если все значения записаны с «%». Цитата короче 12 знаков — «Check: the quote is too short to check». Название,
+   если все значения записаны с «%». Ещё три блока набора (2026-11-18): **распределение** (`distributions`: шкала
+   категорий, серии, точки времени с n и долями — доли одной точки в одной цитате, в сумме 100 ± 1,5 %, иначе «Check»),
+   **таблица** (`tables`: столбцы с n и цитатой, строки с ячейками и цитатой — все числа строки в её цитате) и **карта
+   центров** (`centres`, только у исследования: название, город, страна — название ищется в тексте документа). Цитата
+   короче 12 знаков — «Check: the quote is too short to check». Название,
    подписи и формулировка конечной точки — текст, его, как и вывод, проверяет человек при чтении черновика.
 6. «Build the draft» → материал-черновик → его карточка с «Built from {file}».
 Ошибка (нет JSON, не тот формат, не тот номер NCT…) — сообщение над кнопкой словами; всё введённое остаётся.
@@ -70,5 +74,6 @@ check N values below»; сервер отказывает в публикаци�
 
 ## Данные
 `materials.documentCheck` (миграция 0033): `mediaId` (у страницы — null), `file` (имя PDF или адрес страницы без https://), `nct`, `registry` (`{ok}` / `{ok:false, error}`), `items[]`
-(`id`, `part` figures/passport, `label`, `value`, `quote`, `status` ok/check/confirmed, `reason`, `confirmedBy`,
+(`id`, `part` figures/passport/comparison/distribution/matrix/table/centres, `block` и `fields` — блок и поля, которые
+редактор обводит, `label`, `value`, `quote`, `status` ok/check/confirmed, `reason`, `confirmedBy`,
 `confirmedAt`). Код: `src/lib/document-import.ts`, `src/lib/clinicaltrials.ts`, `src/admin/document-actions.ts`.

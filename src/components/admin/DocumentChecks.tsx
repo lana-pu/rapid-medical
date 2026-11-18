@@ -28,7 +28,7 @@ export function DocumentChecks({ id, check, demo }: { id: number; check: Documen
             <div className="flex flex-wrap items-baseline gap-x-3">
               <b>{x.value}</b>
               <span className="text-neutral-700">{x.label}</span>
-              <span className="text-xs text-neutral-400">{{ figures: "Key figure", passport: "Passport", comparison: "Comparison", matrix: "Dot matrix" }[x.part]}</span>
+              <span className="text-xs text-neutral-400">{{ figures: "Key figure", passport: "Passport", comparison: "Comparison", matrix: "Dot matrix", distribution: "Distribution", table: "Table", centres: "Centre" }[x.part]}</span>
             </div>
             {x.status === "ok" && <p className="mt-1 text-xs text-green-800">✓ Found in {doc}</p>}
             {x.status === "confirmed" && <p className="mt-1 text-xs text-green-800">✓ Confirmed by {x.confirmedBy}{x.confirmedAt ? `, ${new Date(x.confirmedAt).toLocaleString("en-GB", { timeZone: "Asia/Jerusalem", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}{x.reason ? ` · was: ${x.reason}` : ""}</p>}

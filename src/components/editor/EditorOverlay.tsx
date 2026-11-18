@@ -329,11 +329,10 @@ export default function EditorOverlay() {
       if (!t || t.r !== "materials" || t.id !== page.id) return;
       const fig = /\.items\.(\d+)\.value$/.exec(t.f);
       const row = /\.rows\.(\d+)\.value$/.exec(t.f);
-      const grp = /^blocks\.(\d+)\.data\.(?:groups\.(\d+)\.(value|count|total|n)|pValue)$/.exec(t.f);
+      // an infographic: the check names its block and the fields of the block's data it covers
+      const blk = /^blocks\.(\d+)\.data\.(.+)$/.exec(t.f);
       const id = fig ? `figures-${fig[1]}` : row ? `passport-${row[1]}` : null;
-      // the item for this field: «…-j» (value, count, total), «…-j-n», «…-p»
-      const tail = grp ? (grp[2] === undefined ? "-p" : grp[3] === "n" ? `-${grp[2]}-n` : `-${grp[2]}`) : "";
-      const inGroup = grp && openItems.some((x) => x.block && x.block === blockAt.get(Number(grp[1])) && x.id.endsWith(tail));
+      const inGroup = blk && openItems.some((x) => x.block && x.block === blockAt.get(Number(blk[1])) && x.fields?.includes(blk[2]));
       if ((id && open.has(id)) || inGroup) el.setAttribute("data-rm-check", "");
     });
   }, [checks, page, info, off, preview, pathname]);

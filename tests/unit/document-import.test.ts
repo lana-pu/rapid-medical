@@ -107,7 +107,7 @@ describe("passport: the document first, the registry fills gaps", () => {
 
 describe("the page", () => {
   const pdf = { url: "/uploads/x/success.pdf", text: "Line one of a para-\ngraph\ncontinues.\n\nSecond <b>para</b>.\fPage two." };
-  const answer = { title: "SUCCESS", conclusion: "High occlusion.", figures: [{ value: "95%", label: "Occlusion", quote: "q" }], passport: [], comparisons: [], matrices: [] };
+  const answer = { title: "SUCCESS", conclusion: "High occlusion.", figures: [{ value: "95%", label: "Occlusion", quote: "q" }], passport: [], comparisons: [], matrices: [], distributions: [], tables: [], centres: [] };
   it("conclusion under the title, figures with their quotes, passport, the document", () => {
     const b = documentBlocks({ kind: "study", title: "SUCCESS", product: "COMANECI™", answer, passport: [{ label: "Patients", value: "90" }], passportSource: { label: "The study PDF" }, pdf, original: "https://doi.org/10.1136/x", mode: "embed" });
     expect(b.map((x) => `${x.type}/${x.variant}`)).toEqual(["hero/page", "keyNumbers/figures", "passport/default", "richText/document"]);
@@ -175,7 +175,7 @@ describe("groups compared and patients as dots (DESIGN.md → Набор инф�
   it("a comparison needs two groups; the instructions offer them only to studies and publications", () => {
     expect(parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] })).ok).toBe(false);
     expect(instructionsFor("study")).toMatch(/"comparisons" \(optional/);
-    expect(instructionsFor("news")).toMatch(/"comparisons": \[\] and "matrices": \[\]/);
+    expect(instructionsFor("news")).toMatch(/"comparisons": \[\], "matrices": \[\]/);
   });
 });
 
@@ -199,7 +199,7 @@ describe("a web page: its link and the text a person pasted (the site does not f
     expect(ins).not.toMatch(/PDF/);
   });
   it("a page has no PDF: its text is copied onto the page (or linked), never «Show the PDF»", () => {
-    const answer = { title: "First 50 patients", conclusion: "The first 50 patients were treated.", figures: [], passport: [], comparisons: [], matrices: [] };
+    const answer = { title: "First 50 patients", conclusion: "The first 50 patients were treated.", figures: [], passport: [], comparisons: [], matrices: [], distributions: [], tables: [], centres: [] };
     const blocks = documentBlocks({ kind: "news", title: "First 50 patients", answer, passport: [], passportSource: null, pdf: null, text: RELEASE, original: "https://www.prnewswire.com/x.html", mode: "embed" });
     const doc = blocks.at(-1)!.data as { html: string; pdf: unknown; links: { label: string }[] };
     expect(doc.pdf).toBeNull();
@@ -207,5 +207,57 @@ describe("a web page: its link and the text a person pasted (the site does not f
     expect(doc.links.map((l) => l.label)).toEqual(["Open the original ↗"]);
     const linked = documentBlocks({ kind: "publication", title: "x", answer, passport: [], passportSource: null, pdf: null, text: RELEASE, original: "https://doi.org/10.1/x", mode: "link" });
     expect((linked.at(-1)!.data as { html: string }).html).toBe("");
+  });
+});
+
+describe("distribution, table and centres (DESIGN.md → Набор инфографики, 2026-11-18)", () => {
+  const TEXT = `Raymond-Roy occlusion after the procedure: RR I 60%, RR II 26%, RR III 14% (n=90).
+At 12 months: RR I 80%, RR II 15%, RR III 8% (n=80).
+Treatment arm (n=29) and control arm (n=36) were compared.
+Symptomatic haemorrhage 3.4 versus 5.6 in the two arms.
+Centres: Sample University Hospital, Boston; Example Clinic, Munich.`;
+  const raw = {
+    title: "SUCCESS", conclusion: "Occlusion improved.",
+    distributions: [{ title: "Occlusion over follow-up", scale: ["RR I", "RR II", "RR III"], series: [{ label: "All patients", points: [
+      { label: "After the procedure", n: "90", values: ["60", "26", "14"], quote: "Raymond-Roy occlusion after the procedure: RR I 60%, RR II 26%, RR III 14% (n=90)." },
+      { label: "12 months", n: "80", values: ["80", "15", "8"], quote: "At 12 months: RR I 80%, RR II 15%, RR III 8% (n=80)." },
+    ] }] }],
+    tables: [{ title: "Safety", columns: [{ label: "Treatment", n: "29", quote: "Treatment arm (n=29) and control arm (n=36) were compared." }, { label: "Control", n: "36" }], rows: [
+      { label: "Symptomatic haemorrhage", cells: ["3.4", "5.6"], quote: "Symptomatic haemorrhage 3.4 versus 5.6 in the two arms." },
+    ] }],
+    centres: [{ name: "Sample University Hospital", city: "Boston", country: "USA" }, { name: "Imaginary Institute", country: "France" }],
+  };
+  it("become their blocks; every number a check tied to the fields it covers", () => {
+    const r = parseAnswer(JSON.stringify(raw));
+    if (!r.ok) throw new Error(r.error);
+    const blocks = documentBlocks({ kind: "study", title: "SUCCESS", answer: r.answer, passport: [], passportSource: null, pdf: { url: "/u/s.pdf", text: TEXT }, mode: "embed" });
+    expect(blocks.map((b) => b.type)).toEqual(["hero", "distribution", "dataTable", "centresMap", "richText"]);
+    const items = checkGroups(TEXT, r.answer, blocks);
+    expect(Object.fromEntries(items.map((x) => [x.id, x.reason ?? x.status]))).toEqual({
+      "distribution-0-0-0": "ok", "distribution-0-0-0-n": "ok",
+      "distribution-0-0-1": "The shares add up to 103%, not 100%", "distribution-0-0-1-n": "ok",
+      "table-0-col-0": "ok", "table-0-col-1": "No quote for this n — look at the PDF", "table-0-row-0": "ok",
+      "centres-0": "ok", "centres-1": "The name is not in the PDF",
+    });
+    const first = items[0];
+    expect(first.block).toBe(blocks[1].id);
+    expect(first.fields).toEqual(["series.0.points.0.values.0", "series.0.points.0.values.1", "series.0.points.0.values.2"]);
+    expect(first.value).toBe("60% · 26% · 14%");
+    expect(items.find((x) => x.id === "table-0-row-0")!.fields).toEqual(["rows.0.cells.0", "rows.0.cells.1"]);
+    expect(items.find((x) => x.id === "centres-1")!.block).toBe(blocks[3].id);
+  });
+  it("a point needs a value per category, a row a cell per column — said in words", () => {
+    const bad = { ...raw, distributions: [{ ...raw.distributions[0], series: [{ label: "x", points: [{ ...raw.distributions[0].series[0].points[0], values: ["60", "40"] }] }] }] };
+    const r = parseAnswer(JSON.stringify(bad));
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatch(/one value per scale category/);
+    const badT = parseAnswer(JSON.stringify({ ...raw, tables: [{ ...raw.tables[0], rows: [{ label: "x", cells: ["1"], quote: "q" }] }] }));
+    expect(!badT.ok && badT.error).toMatch(/one cell per column/);
+  });
+  it("centres are asked only of a study; tables and distributions of studies and publications", () => {
+    expect(instructionsFor("study")).toMatch(/"centres" \(optional\)/);
+    expect(instructionsFor("publication")).toMatch(/"centres": \[\]/);
+    expect(instructionsFor("publication")).toMatch(/"distributions" \(optional/);
+    expect(instructionsFor("news")).toMatch(/"distributions": \[\] and "tables": \[\]/);
   });
 });

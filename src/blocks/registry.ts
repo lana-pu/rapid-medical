@@ -6,6 +6,9 @@ import { keyNumbers } from "./key-numbers";
 import { passport } from "./passport";
 import { comparison } from "./comparison";
 import { dotMatrix } from "./dot-matrix";
+import { distribution } from "./distribution";
+import { dataTable } from "./data-table";
+import { centresMap } from "./centres-map";
 import { columns } from "./columns";
 import { video } from "./video";
 import { cta } from "./call-to-action";
@@ -41,6 +44,9 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   passport,
   comparison,
   dotMatrix,
+  distribution,
+  dataTable,
+  centresMap,
   columns,
   video,
   cta,

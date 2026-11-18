@@ -89,6 +89,23 @@ const matrixSchema = z.object({
   caption: opt(200),
   groups: z.array(z.object({ label: text(80), count: text(10), total: text(10), quote: text(600) })).min(1).max(3),
 });
+const distributionSchema = z
+  .object({
+    title: text(160),
+    caption: opt(200),
+    scale: z.array(text(40)).min(2).max(7),
+    series: z.array(z.object({ label: text(80), points: z.array(z.object({ label: text(60), n: opt(20), values: z.array(text(12)).min(2).max(7), quote: text(600) })).min(1).max(6) })).min(1).max(3),
+  })
+  .refine((d) => d.series.every((s) => s.points.every((p) => p.values.length === d.scale.length)), { message: "every point needs one value per scale category", path: ["series"] });
+const tableSchema = z
+  .object({
+    title: text(160),
+    caption: opt(200),
+    columns: z.array(z.object({ label: text(60), n: opt(20), quote: opt(600) })).min(1).max(6),
+    rows: z.array(z.object({ label: text(120), cells: z.array(z.string().trim().max(40)), quote: text(600) })).min(1).max(12),
+  })
+  .refine((t) => t.rows.every((r) => r.cells.length === t.columns.length), { message: "every row needs one cell per column", path: ["rows"] });
+const centreSchema = z.object({ name: text(160), city: opt(80), country: text(60) });
 
 export const AnswerSchema = z.object({
   title: text(200),
@@ -98,6 +115,10 @@ export const AnswerSchema = z.object({
   /** DESIGN.md → Набор инфографики: groups compared (bars) and patients as dots — only when the document compares groups */
   comparisons: z.array(comparisonSchema).max(2).default([]),
   matrices: z.array(matrixSchema).max(2).default([]),
+  /** shares over time (mRS, occlusion grades), tables as in the document, the study's centres */
+  distributions: z.array(distributionSchema).max(2).default([]),
+  tables: z.array(tableSchema).max(2).default([]),
+  centres: z.array(centreSchema).max(120).default([]),
 });
 export type Answer = z.infer<typeof AnswerSchema>;
 
@@ -134,9 +155,15 @@ export function instructionsFor(kind: MaterialKind, source: DocSource = "pdf"): 
     kind === "study" || kind === "publication"
       ? `- "comparisons" (optional, only if the document compares groups, e.g. treatment vs control): up to 2, each { "title", "endpoint" (what is measured), "unit" ("%" or ""), "pValue", "pQuote" (the sentence with the p-value), "groups": [{ "label", "value", "n", "quote" }] }. The group's quote must contain its value and its n.
 - "matrices" (optional, for "N of M patients" results): up to 2, each { "title", "caption" (what one dot means), "groups": [{ "label", "count", "total", "quote" }] }.
+- "distributions" (optional, for shares on a scale at time points, e.g. mRS 0–6 at 90 days or occlusion grades over follow-up): up to 2, each { "title", "caption" (what the scale is), "scale": ["category", ...], "series": [{ "label" (e.g. "All patients" or a group), "points": [{ "label" (time point), "n", "values": ["% for each scale category, in the scale's order"], "quote" }] }] }. One point's values and its n must be in its quote.
+- "tables" (optional, a results table as in the document): up to 2, each { "title", "caption", "columns": [{ "label", "n", "quote" (the sentence or header with that n) }], "rows": [{ "label", "cells": ["one per column"], "quote" (the row as it is in the document) }] }.
 `
-      : `- "comparisons": [] and "matrices": [] (leave empty for this kind).
+      : `- "comparisons": [], "matrices": [], "distributions": [] and "tables": [] (leave empty for this kind).
 `;
+  const centres =
+    kind === "study"
+      ? `- "centres" (optional): the study's centres as the document lists them, each { "name", "city", "country" }. Only centres named in the document.\n`
+      : `- "centres": [] (leave empty for this kind).\n`;
   return `You help publish a ${kind === "news" ? "press release" : kind === "case" ? "clinical case" : kind === "study" ? "clinical study" : "journal publication"} ${source === "pdf" ? "from the attached PDF" : "from the text pasted after these instructions"} on a medical device company's website. Every fact must be checkable against ${D}.
 
 Reply with JSON only, no other text:
@@ -146,13 +173,16 @@ Reply with JSON only, no other text:
   "figures": [{ "value": "...", "label": "...", "quote": "..." }],
   "passport": [{ "label": "...", "value": "...", "quote": "..." }],
   "comparisons": [],
-  "matrices": []
+  "matrices": [],
+  "distributions": [],
+  "tables": [],
+  "centres": []
 }
 
 - "title": the document's own title, shortened only if longer than 120 characters.
 - "conclusion": the main finding in one sentence, in the document's own words where possible.
 - "figures": 3 or 4 key results, most important first. "value" is the number as written (e.g. "95%", "0", "149"); "label" says what it measures in a few words.
-${passport}${groups}- "quote" (in every figure, passport row and group): one sentence copied exactly from ${D}, character for character, that contains the value. Do not paraphrase, shorten or fix it.
+${passport}${groups}${centres}- "quote" (in every figure, passport row, group, point and row): one sentence copied exactly from ${D}, character for character, that contains the value. Do not paraphrase, shorten or fix it.
 - Use only what ${D} says. If something is not in ${D}, leave it out. Never estimate, round or combine numbers.`;
 }
 
@@ -163,9 +193,10 @@ ${passport}${groups}- "quote" (in every figure, passport row and group): one sen
 export type CheckItem = {
   id: string;
   /** which list of the page it belongs to */
-  part: "figures" | "passport" | "comparison" | "matrix";
-  /** the page block it is in (comparison, matrix) — the editor outlines it there */
+  part: "figures" | "passport" | "comparison" | "matrix" | "distribution" | "table" | "centres";
+  /** the page block it is in (an infographic) and the fields of its data it covers — the editor outlines those */
   block?: string;
+  fields?: string[];
   label: string;
   value: string;
   quote: string;
@@ -185,12 +216,17 @@ export function checkQuoted(text: string, part: CheckItem["part"], i: number, x:
   return { ...base, status: "ok" };
 }
 
-/** The groups of the page's comparisons and matrices checked against the document, each tied to its block. */
+/**
+ * The infographics of the page checked against the document: every number a block shows is a check of its own, tied to
+ * its block and to the fields it covers (the editor outlines exactly those).
+ */
 export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[], src: DocSource = "pdf"): CheckItem[] {
-  const comps = blocks.filter((b) => b.type === "comparison");
-  const mats = blocks.filter((b) => b.type === "dotMatrix");
+  const of = (type: string) => blocks.filter((b) => b.type === type);
+  const [comps, mats, dists, tabs, maps] = [of("comparison"), of("dotMatrix"), of("distribution"), of("dataTable"), of("centresMap")];
+  const at = (it: CheckItem, id: string, block: string | undefined, fields: string[], value = it.value): CheckItem => ({ ...it, id, block, fields, value });
+  const noQuote = (part: CheckItem["part"], label: string, value: string, what: string): CheckItem => ({ id: "", part, label, value, quote: "", status: "check", reason: `No quote for ${what} — look at ${sourceName(src)}` });
   return [
-    // every number the block shows is a check of its own: the value (with its «%»), n, the p-value
+    // the value (with its «%»), n, the p-value
     ...answer.comparisons.flatMap((c, i) => {
       const block = comps[i]?.id;
       const pct = comparisonUnit(c) === "%";
@@ -198,19 +234,51 @@ export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[],
         const label = `${c.title} — ${g.label}`;
         let v = checkQuoted(text, "comparison", j, { label, value: g.value, quote: g.quote }, src);
         if (v.status === "ok" && pct && !g.value.includes("%") && !percentInQuote(g.value, g.quote)) v = { ...v, status: "check", reason: "The quote does not give it in %" };
-        const out = [{ ...v, value: pct && !g.value.includes("%") ? `${g.value}%` : g.value, id: `comparison-${i}-${j}`, block }];
-        if (g.n) out.push({ ...checkQuoted(text, "comparison", j, { label: `${label} — n`, value: g.n, quote: g.quote }, src), id: `comparison-${i}-${j}-n`, block });
+        const out = [at(v, `comparison-${i}-${j}`, block, [`groups.${j}.value`], pct && !g.value.includes("%") ? `${g.value}%` : g.value)];
+        if (g.n) out.push(at(checkQuoted(text, "comparison", j, { label: `${label} — n`, value: g.n, quote: g.quote }, src), `comparison-${i}-${j}-n`, block, [`groups.${j}.n`]));
         return out;
       });
       if (c.pValue) {
-        const p = c.pQuote
-          ? checkQuoted(text, "comparison", 0, { label: `${c.title} — p-value`, value: c.pValue, quote: c.pQuote }, src)
-          : { id: "", part: "comparison" as const, label: `${c.title} — p-value`, value: c.pValue, quote: "", status: "check" as const, reason: `No quote for the p-value — look at ${sourceName(src)}` };
-        items.push({ ...p, id: `comparison-${i}-p`, block });
+        const label = `${c.title} — p-value`;
+        const p = c.pQuote ? checkQuoted(text, "comparison", 0, { label, value: c.pValue, quote: c.pQuote }, src) : noQuote("comparison", label, c.pValue, "the p-value");
+        items.push(at(p, `comparison-${i}-p`, block, ["pValue"]));
       }
       return items;
     }),
-    ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) => ({ ...checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }, src), id: `matrix-${i}-${j}`, block: mats[i]?.id }))),
+    ...answer.matrices.flatMap((m, i) => m.groups.map((g, j) =>
+      at(checkQuoted(text, "matrix", j, { label: `${m.title} — ${g.label}`, value: `${g.count} of ${g.total}`, quote: g.quote }, src), `matrix-${i}-${j}`, mats[i]?.id, [`groups.${j}.count`, `groups.${j}.total`]))),
+    // a point: its shares in one quote, given in %, adding up to 100; its n
+    ...answer.distributions.flatMap((d, i) => d.series.flatMap((s, si) => s.points.flatMap((pt, pi) => {
+      const block = dists[i]?.id;
+      const base = `series.${si}.points.${pi}`;
+      const label = `${d.title} — ${s.label}, ${pt.label}`;
+      const shown = pt.values.map((v) => (v.includes("%") ? v : `${v}%`)).join(" · ");
+      let v = checkQuoted(text, "distribution", pi, { label, value: pt.values.join(" "), quote: pt.quote }, src);
+      const sum = pt.values.reduce((a, x) => a + (Number(x.replace(",", ".").replace(/[^\d.]/g, "")) || 0), 0);
+      if (v.status === "ok" && pt.values.some((x) => !x.includes("%") && !percentInQuote(x, pt.quote))) v = { ...v, status: "check", reason: "The quote does not give them in %" };
+      if (v.status === "ok" && Math.abs(sum - 100) > 1.5) v = { ...v, status: "check", reason: `The shares add up to ${Math.round(sum * 10) / 10}%, not 100%` };
+      const out = [at(v, `distribution-${i}-${si}-${pi}`, block, pt.values.map((_, k) => `${base}.values.${k}`), shown)];
+      if (pt.n) out.push(at(checkQuoted(text, "distribution", pi, { label: `${label} — n`, value: pt.n, quote: pt.quote }, src), `distribution-${i}-${si}-${pi}-n`, block, [`${base}.n`]));
+      return out;
+    }))),
+    // a row: every number of its cells in its quote; a column's n in the column's quote
+    ...answer.tables.flatMap((t, i) => {
+      const block = tabs[i]?.id;
+      const cols = t.columns.flatMap((c, j) => {
+        if (!c.n) return [];
+        const label = `${t.title} — ${c.label}, n`;
+        return [at(c.quote ? checkQuoted(text, "table", j, { label, value: c.n, quote: c.quote }, src) : noQuote("table", label, c.n, "this n"), `table-${i}-col-${j}`, block, [`columns.${j}.n`])];
+      });
+      const rows = t.rows.map((r, j) =>
+        at(checkQuoted(text, "table", j, { label: `${t.title} — ${r.label}`, value: r.cells.join(" "), quote: r.quote }, src), `table-${i}-row-${j}`, block, r.cells.map((_, k) => `rows.${j}.cells.${k}`), r.cells.join(" · ")));
+      return [...cols, ...rows];
+    }),
+    // a centre: its name is in the document (no quote: a list of centres has no sentence)
+    ...answer.centres.map((c, j): CheckItem => {
+      const found = compact(c.name).length >= 4 && compact(text).includes(compact(c.name));
+      const where = [c.city, c.country].filter(Boolean).join(", ");
+      return { id: `centres-${j}`, part: "centres", label: where || "Centre", value: c.name, quote: "", status: found ? "ok" : "check", ...(found ? {} : { reason: `The name is not in ${sourceName(src)}` }), block: maps[0]?.id, fields: [`centres.${j}.name`] };
+    }),
   ];
 }
 
@@ -309,9 +377,14 @@ export function documentBlocks(o: {
   if (o.answer?.figures.length) out.push({ id: blockId(), type: "keyNumbers", variant: "figures", data: { items: o.answer.figures.map((f) => ({ value: f.value, label: f.label, note: f.quote })) } });
   for (const c of o.answer?.comparisons ?? [])
     out.push({ id: blockId(), type: "comparison", variant: "default", data: { title: c.title, endpoint: c.endpoint ?? null, unit: comparisonUnit(c), pValue: c.pValue ?? null, groups: c.groups.map(({ label, value, n, quote }) => ({ label, value, n, quote })) } });
+  for (const d of o.answer?.distributions ?? [])
+    out.push({ id: blockId(), type: "distribution", variant: "default", data: { title: d.title, caption: d.caption ?? null, scale: d.scale, series: d.series } });
   for (const m of o.answer?.matrices ?? [])
     out.push({ id: blockId(), type: "dotMatrix", variant: "default", data: { title: m.title, caption: m.caption ?? null, groups: m.groups } });
+  for (const t of o.answer?.tables ?? [])
+    out.push({ id: blockId(), type: "dataTable", variant: "default", data: { title: t.title, caption: t.caption ?? null, columns: t.columns.map(({ label, n }) => ({ label, n: n ?? null })), rows: t.rows.map(({ label, cells }) => ({ label, cells })) } });
   if (o.passport.length) out.push({ id: blockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: o.passport, source: o.passportSource } });
+  if (o.answer?.centres.length) out.push({ id: blockId(), type: "centresMap", variant: "default", data: { title: "Where the study ran", caption: null, centres: o.answer.centres.map(({ name, city, country }) => ({ name, city: city ?? null, country })) } });
   // a page has no PDF to show: its text is copied or it is linked
   const mode: FullTextMode = !o.pdf ? (o.mode === "link" ? "link" : "copy") : o.kind === "document" ? "embed" : o.mode;
   const links = [

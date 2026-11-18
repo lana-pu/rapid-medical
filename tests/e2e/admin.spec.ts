@@ -1013,6 +1013,8 @@ test("create from a page: the link and the pasted text, the AI's numbers checked
       { value: "96%", label: "Reached on the first attempt", quote: "The device reached the target vessel in 96% of cases on the first attempt." },
       { value: "60", label: "Patients treated", quote: "the first 60 patients were treated in the E2E registry" },
     ],
+    // an infographic whose quote is not in the text: its three shares are outlined in the editor
+    distributions: [{ title: "E2E shares", scale: ["Good", "Fair", "Poor"], series: [{ label: "All", points: [{ label: "Day 1", values: ["50", "30", "20"], quote: "Good 50%, fair 30%, poor 20% on day one." }] }] }],
   };
   await page.locator("textarea[name=answer]").fill(JSON.stringify(answer));
   await page.getByRole("button", { name: "Build the draft" }).click();
@@ -1020,11 +1022,16 @@ test("create from a page: the link and the pasted text, the AI's numbers checked
   const id = page.url().match(/materials\/(\d+)/)![1];
   try {
     const checks = page.getByRole("region", { name: "Checked against the page text" });
-    await expect(checks).toContainText("1 of 2 checked");
+    await expect(checks).toContainText("1 of 3 checked");
     await expect(checks).toContainText("Built from www.prnewswire.com/news-releases/e2e-release.html");
     await expect(checks).toContainText("Check: The quote is not in the page text");
     await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
     expect(sql(`select coalesce(pdf_url, '-') || ' ' || (document_check->>'mediaId' is null) from materials where id=${id}`)).toBe("- true");
+    // in the editor: the figure and the three shares of the distribution are outlined — exactly the fields of the check
+    await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(`/news-events/${id}`)}`);
+    await expect(page.locator("[data-rm-check]")).toHaveCount(4);
+    await page.getByRole("button", { name: "Checked against the page text" }).click();
+    await expect(page.getByRole("complementary", { name: "Checked against the page text" })).toContainText("50% · 30% · 20%");
   } finally {
     sql(`delete from revisions where resource='materials' and record_id=${id}`);
     sql(`delete from drafts where resource='materials' and record_id=${id}`);
