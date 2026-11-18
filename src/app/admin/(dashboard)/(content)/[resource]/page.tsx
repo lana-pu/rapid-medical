@@ -29,6 +29,8 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
   const filters: Record<string, string> = {};
   for (const k of ["status", "region", "productId", "regions", "featured", "kind", "showInEvidence", "showInNews"] as const) if (sp[k]) filters[k] = sp[k]!;
+  // an enum column: only a known kind reaches the query (an unknown one would be a database error, not an empty list)
+  if (filters.kind && !Object.hasOwn(MATERIAL_KIND_LABELS, filters.kind)) delete filters.kind;
 
   const [{ rows, total, page, per }, prods] = await Promise.all([
     listRows(res, { search: sp.q, filters, sort: sp.sort, dir: sp.dir, page: Math.floor(Number(sp.page)) || 1 }),
