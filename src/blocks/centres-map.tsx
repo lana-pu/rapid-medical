@@ -10,28 +10,32 @@ export type CentresMapVariant = "default";
 export type CentresMapData = {
   title?: string | null;
   caption?: string | null;
-  centres: { name: string; city?: string | null; country: string }[];
+  centres: { name: string; city?: string | null; country?: string | null }[];
 };
 
 function CentresMap({ data: d, edit: e, nested }: BlockProps<"centresMap">) {
-  const centres = (d.centres ?? []).map((c, i) => ({ ...c, i })).filter((c) => c.name && c.country);
+  const centres = (d.centres ?? []).map((c, i) => ({ ...c, i })).filter((c) => c.name);
   if (!centres.length) return null;
   // by country (as the map names it), the biggest first
   const byCountry = new Map<string, typeof centres>();
-  for (const c of centres) byCountry.set(mapCountry(c.country), [...(byCountry.get(mapCountry(c.country)) ?? []), c]);
-  const groups = [...byCountry.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
-  const n = centres.length, m = groups.length;
+  // a centre whose country the document does not give: listed last, not on the map, not counted as a country
+  for (const c of centres) {
+    const k = c.country ? mapCountry(c.country) : "";
+    byCountry.set(k, [...(byCountry.get(k) ?? []), c]);
+  }
+  const groups = [...byCountry.entries()].sort((a, b) => Number(!a[0]) - Number(!b[0]) || b[1].length - a[1].length || a[0].localeCompare(b[0]));
+  const n = centres.length, m = groups.filter(([k]) => k).length;
   const inner = (
     <SharedLine
       title={<F e={e} k="title">{d.title || "Centres"}</F>}
-      aside={<span className="text-base font-semibold text-foreground">{n} centre{n > 1 ? "s" : ""} in {m} countr{m > 1 ? "ies" : "y"}</span>}
+      aside={<span className="text-base font-semibold text-foreground">{n} centre{n > 1 ? "s" : ""}{m ? ` in ${m} countr${m > 1 ? "ies" : "y"}` : ""}</span>}
       className="mt-16"
     >
-      <CentresWorld countries={groups.map(([c]) => c)} />
+      <CentresWorld countries={groups.map(([c]) => c).filter(Boolean)} />
       <ul className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
         {groups.map(([country, list]) => (
           <li key={country}>
-            <div className="font-medium">{list[0].country} <span className="text-muted">({list.length})</span></div>
+            <div className="font-medium">{country ? list[0].country : "Country not given"} <span className="text-muted">({list.length})</span></div>
             <div className="text-muted">
               {list.map((c, k) => (
                 <span key={c.i}>{k > 0 && ", "}<F e={e} k={`centres.${c.i}.name`}>{c.name}</F>{c.city ? ` (${c.city})` : ""}</span>

@@ -89,6 +89,7 @@ export async function createFromDocument(_prev: CreateState, fd: FormData): Prom
     file,
     nct: nct || null,
     registry: registry ? (registry.ok ? { ok: true } : { ok: false, error: registry.error }) : null,
+    skipped: parsed?.ok ? parsed.skipped : [],
     items,
   };
   const saved = await saveWithWorkflow(

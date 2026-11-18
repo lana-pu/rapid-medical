@@ -60,10 +60,13 @@ export function quoteFound(text: string, quote: string): boolean {
 }
 
 const numbers = (s: string) => (s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", "."));
+/** «seven patients… six of them» — articles write small counts in words (T13, 2026-11-18) */
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];
+const numberWords = (s: string) => (s.toLowerCase().match(/\b[a-z]+\b/g) ?? []).map((w) => WORDS.indexOf(w)).filter((i) => i >= 0).map(String);
 
 /** Every number of the value is in the quote (95% → «… 95% at 6 month follow up»). A value with no number passes. */
 export function valueInQuote(value: string, quote: string): boolean {
-  const inQuote = new Set(numbers(quote));
+  const inQuote = new Set([...numbers(quote), ...numberWords(quote)]);
   return numbers(value).every((n) => inQuote.has(n));
 }
 
@@ -87,7 +90,7 @@ const comparisonSchema = z.object({
 const matrixSchema = z.object({
   title: text(160),
   caption: opt(200),
-  groups: z.array(z.object({ label: text(80), count: text(10), total: text(10), quote: text(600) })).min(1).max(3),
+  groups: z.array(z.object({ label: text(80), count: text(10), total: text(10), quote: text(600) })).min(1).max(6),
 });
 const distributionSchema = z
   .object({
@@ -100,26 +103,31 @@ const distributionSchema = z
 const tableSchema = z
   .object({
     title: text(160),
-    caption: opt(200),
-    columns: z.array(z.object({ label: text(60), n: opt(20), quote: opt(600) })).min(1).max(6),
-    rows: z.array(z.object({ label: text(120), cells: z.array(z.string().trim().max(40)), quote: text(600) })).min(1).max(12),
+    caption: opt(400),
+    columns: z.array(z.object({ label: text(80), n: opt(20), quote: opt(600) })).min(1).max(8),
+    rows: z.array(z.object({ label: text(160), cells: z.array(z.string().trim().max(60)), quote: text(600) })).min(1).max(30),
   })
   .refine((t) => t.rows.every((r) => r.cells.length === t.columns.length), { message: "every row needs one cell per column", path: ["rows"] });
-const place = (max: number) => z.string().trim().min(1).max(max).regex(/^[\p{L}\p{M} .,'()-]+$/u, "letters, spaces and . , ' ( ) - only");
-const centreSchema = z.object({ name: text(160), city: place(80).optional(), country: place(60) });
+const place = (max: number) => z.string().trim().min(1).max(max).regex(/^[\p{L}\p{M} .,'()&/-]+$/u, "letters, spaces and . , ' ( ) & / - only");
+const centreSchema = z.object({ name: text(160), city: place(80).optional(), country: place(60).optional() });
 
+/** Every part of the answer: its item schema, how many are kept, its name in a message. */
+const PARTS = {
+  figures: { item: quoted, max: 6, name: "Key figure" },
+  passport: { item: quoted, max: 12, name: "Passport row" },
+  /** DESIGN.md → Набор инфографики: groups compared (bars) and patients as dots — only when the document compares groups */
+  comparisons: { item: comparisonSchema, max: 2, name: "Comparison" },
+  matrices: { item: matrixSchema, max: 2, name: "Dot matrix" },
+  /** shares over time (mRS, occlusion grades), tables as in the document, the study's centres */
+  distributions: { item: distributionSchema, max: 2, name: "Distribution" },
+  tables: { item: tableSchema, max: 3, name: "Table" },
+  centres: { item: centreSchema, max: 200, name: "Centre" },
+} as const;
+type Parts = typeof PARTS;
 export const AnswerSchema = z.object({
   title: text(200),
   conclusion: text(400),
-  figures: z.array(quoted).max(6).default([]),
-  passport: z.array(quoted).max(12).default([]),
-  /** DESIGN.md → Набор инфографики: groups compared (bars) and patients as dots — only when the document compares groups */
-  comparisons: z.array(comparisonSchema).max(2).default([]),
-  matrices: z.array(matrixSchema).max(2).default([]),
-  /** shares over time (mRS, occlusion grades), tables as in the document, the study's centres */
-  distributions: z.array(distributionSchema).max(2).default([]),
-  tables: z.array(tableSchema).max(2).default([]),
-  centres: z.array(centreSchema).max(120).default([]),
+  ...(Object.fromEntries(Object.entries(PARTS).map(([k, p]) => [k, z.array(p.item).max(p.max).default([])])) as { [K in keyof Parts]: z.ZodDefault<z.ZodArray<Parts[K]["item"]>> }),
 });
 export type Answer = z.infer<typeof AnswerSchema>;
 
@@ -127,7 +135,21 @@ export type Answer = z.infer<typeof AnswerSchema>;
  * The pasted answer → its data, or what is wrong in words. The JSON may come wrapped in a chat's code fence or with a
  * sentence around it: everything from the first «{» to the last «}» is read.
  */
-export function parseAnswer(raw: string): { ok: true; answer: Answer } | { ok: false; error: string } {
+/** numbers → text, null → not given, "" in a field → not given (an empty table cell stays a cell) */
+function tidy(v: unknown): unknown {
+  if (typeof v === "number") return String(v);
+  if (v === null) return undefined;
+  if (Array.isArray(v)) return v.map((x) => (x === null ? "" : tidy(x)));
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, typeof x === "string" && !x.trim() ? undefined : tidy(x)]));
+  return v;
+}
+const itemName = (x: unknown) => {
+  const o = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
+  const n = [o.title, o.label, o.name].find((v) => typeof v === "string" && v.trim());
+  return n ? String(n).slice(0, 60) : "";
+};
+
+export function parseAnswer(raw: string): { ok: true; answer: Answer; skipped: string[] } | { ok: false; error: string } {
   const a = raw.indexOf("{");
   const b = raw.lastIndexOf("}");
   if (a < 0 || b <= a) return { ok: false, error: "No JSON found in the answer. Paste the whole reply of your AI, starting with «{»." };
@@ -137,12 +159,32 @@ export function parseAnswer(raw: string): { ok: true; answer: Answer } | { ok: f
   } catch {
     return { ok: false, error: "The answer is not valid JSON. Ask your AI to reply with the JSON only, then paste it again." };
   }
-  const r = AnswerSchema.safeParse(data);
-  if (!r.success) {
-    const first = r.error.issues.slice(0, 3).map((i) => `${i.path.join(".") || "answer"}: ${i.message}`);
+  // what chat AIs do all the time (real answers, 2026-11-18): numbers without quotes, "" or null for «not given»
+  const d = tidy(data) as Record<string, unknown> | undefined;
+  const core = z.object({ title: text(200), conclusion: text(400) }).safeParse(d ?? {});
+  if (!core.success) {
+    const first = core.error.issues.slice(0, 2).map((i) => `${i.path.join(".") || "answer"}: ${i.message}`);
     return { ok: false, error: `The answer is missing something — ${first.join("; ")}.` };
   }
-  return { ok: true, answer: r.data };
+  // one part that does not fit (a table too long, a centre with a stray character) is left out with its reason,
+  // not the whole answer: dropping a part never puts an unchecked value on the page
+  const skipped: string[] = [];
+  const parts = {} as { [K in keyof Parts]: z.infer<Parts[K]["item"]>[] };
+  for (const [key, p] of Object.entries(PARTS) as [keyof Parts, Parts[keyof Parts]][]) {
+    const raw = d?.[key];
+    if (raw !== undefined && !Array.isArray(raw)) skipped.push(`${p.name}s: not a list`);
+    const list: unknown[] = Array.isArray(raw) ? raw : [];
+    const kept: unknown[] = [];
+    list.forEach((x, i) => {
+      const r = p.item.safeParse(x);
+      const name = `${p.name} ${i + 1}${itemName(x) ? ` «${itemName(x)}»` : ""}`;
+      if (!r.success) skipped.push(`${name}: ${r.error.issues.slice(0, 2).map((e) => `${e.path.join(".") || "it"} — ${e.message}`).join("; ")}`);
+      else if (kept.length >= p.max) skipped.push(`${name}: only ${p.max} kept`);
+      else kept.push(r.data);
+    });
+    (parts as Record<string, unknown[]>)[key] = kept;
+  }
+  return { ok: true, answer: { ...core.data, ...parts }, skipped };
 }
 
 /** The instructions the team pastes into its own AI chat, with the PDF attached. */
@@ -278,13 +320,14 @@ export function checkGroups(text: string, answer: Answer, blocks: StoredBlock[],
     // country there too — what the map shows is checked as well
     ...answer.centres.flatMap((c, j): CheckItem[] => {
       const where = [c.city, c.country].filter(Boolean).join(", ");
-      const named = wordsIn(text, c.name, 6);
-      const placed = (!!c.city && wordsIn(text, c.city, 3)) || wordsIn(text, c.country, 3);
+      const short = c.name.normalize("NFKD").replace(/[^A-Za-z0-9]/g, "").length < 6;
+      const named = !short && wordsIn(text, c.name, 6);
+      const placed = (!!c.city && wordsIn(text, c.city, 3)) || (!!c.country && wordsIn(text, c.country, 3));
       const item = (id: string, value: string, ok: boolean, reason: string, fields: string[]): CheckItem =>
         ({ id, part: "centres", label: `${c.name} — ${where}`, value, quote: "", status: ok ? "ok" : "check", ...(ok ? {} : { reason }), block: maps[0]?.id, fields });
       return [
-        item(`centres-${j}`, c.name, named, `The name is not in ${sourceName(src)}`, [`centres.${j}.name`]),
-        item(`centres-${j}-place`, where, placed, `Neither the city nor the country is in ${sourceName(src)}`, [`centres.${j}.name`]),
+        item(`centres-${j}`, c.name, named, short ? `The name is too short to check — look at ${sourceName(src)}` : `The name is not in ${sourceName(src)}`, [`centres.${j}.name`]),
+        item(`centres-${j}-place`, where || "—", placed, where ? `Neither the city nor the country is in ${sourceName(src)}` : "No city or country given", [`centres.${j}.name`]),
       ];
     }),
   ];
@@ -399,7 +442,7 @@ export function documentBlocks(o: {
   for (const t of o.answer?.tables ?? [])
     out.push({ id: blockId(), type: "dataTable", variant: "default", data: { title: t.title, caption: t.caption ?? null, columns: t.columns.map(({ label, n }) => ({ label, n: n ?? null })), rows: t.rows.map(({ label, cells }) => ({ label, cells })) } });
   if (o.passport.length) out.push({ id: blockId(), type: "passport", variant: "default", data: { title: "Study at a glance", rows: o.passport, source: o.passportSource } });
-  if (o.answer?.centres.length) out.push({ id: blockId(), type: "centresMap", variant: "default", data: { title: "Where the study ran", caption: null, centres: o.answer.centres.map(({ name, city, country }) => ({ name, city: city ?? null, country })) } });
+  if (o.answer?.centres.length) out.push({ id: blockId(), type: "centresMap", variant: "default", data: { title: "Where the study ran", caption: null, centres: o.answer.centres.map(({ name, city, country }) => ({ name, city: city ?? null, country: country ?? null })) } });
   // a page has no PDF to show: its text is copied or it is linked
   const mode: FullTextMode = !o.pdf ? (o.mode === "link" ? "link" : "copy") : o.kind === "document" ? "embed" : o.mode;
   const links = [

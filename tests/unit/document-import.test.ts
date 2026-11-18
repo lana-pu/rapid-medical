@@ -174,7 +174,9 @@ describe("groups compared and patients as dots (DESIGN.md → Набор инф�
     expect(comparisonUnit({ ...c, unit: undefined, groups: c.groups.map((g) => ({ ...g, value: `${g.value}%` })) })).toBe("%");
   });
   it("a comparison needs two groups; the instructions offer them only to studies and publications", () => {
-    expect(parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] })).ok).toBe(false);
+    const one = parseAnswer(JSON.stringify({ ...raw, comparisons: [{ title: "x", groups: [raw.comparisons[0].groups[0]] }] }));
+    expect(one.ok && one.answer.comparisons).toEqual([]);
+    expect(one.ok && one.skipped[0]).toMatch(/^Comparison 1 «x»: groups/);
     expect(instructionsFor("study")).toMatch(/"comparisons" \(optional/);
     expect(instructionsFor("news")).toMatch(/"comparisons": \[\], "matrices": \[\]/);
   });
@@ -251,10 +253,12 @@ Centres: Sample University Hospital, Boston; Example Clinic, Munich.`;
   it("a point needs a value per category, a row a cell per column — said in words", () => {
     const bad = { ...raw, distributions: [{ ...raw.distributions[0], series: [{ label: "x", points: [{ ...raw.distributions[0].series[0].points[0], values: ["60", "40"] }] }] }] };
     const r = parseAnswer(JSON.stringify(bad));
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toMatch(/one value per scale category/);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.answer.distributions).toEqual([]);
+    expect(r.skipped.join()).toMatch(/one value per scale category/);
+    expect(r.answer.tables).toHaveLength(1); // the rest of the answer stays
     const badT = parseAnswer(JSON.stringify({ ...raw, tables: [{ ...raw.tables[0], rows: [{ label: "x", cells: ["1"], quote: "q" }] }] }));
-    expect(!badT.ok && badT.error).toMatch(/one cell per column/);
+    expect(badT.ok && badT.skipped.join()).toMatch(/one cell per column/);
   });
   it("centres are asked only of a study; tables and distributions of studies and publications", () => {
     expect(instructionsFor("study")).toMatch(/"centres" \(optional\)/);
@@ -276,8 +280,43 @@ describe("centres: whole words, the place checked too, safe country names", () =
     });
   });
   it("country names: letters only in the answer; a Map, no prototype lookups", () => {
-    expect(ans([{ name: "Sample University Hospital", country: "USA|France" }]).ok).toBe(false);
+    const r = ans([{ name: "Sample University Hospital", country: "USA|France" }]);
+    expect(r.ok && r.answer.centres).toEqual([]);
     expect(mapCountry("constructor")).toBe("constructor");
     expect(mapCountry(" USA ")).toBe("United States of America");
+  });
+});
+
+describe("real answers of chat AIs (SUCCESS, T13, DISTALS — 2026-11-18)", () => {
+  it("numbers without quotes and empty fields are taken; a part that does not fit is left out with its reason, not the whole answer", () => {
+    const r = parseAnswer(JSON.stringify({
+      title: "T", conclusion: "C",
+      matrices: [{ title: "Thromboembolic events", groups: [{ label: "All", count: 5, total: 90, quote: "five of 90" }] }],
+      centres: [{ name: "Sample University Hospital", city: "", country: "" }, { name: "Bad | name", city: "x|y", country: "USA" }],
+      tables: [{ title: "Too wide", columns: [{ label: "A" }], rows: [{ label: "r", cells: ["1", "2"], quote: "q" }] }],
+    }));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.answer.matrices[0].groups[0]).toMatchObject({ count: "5", total: "90" });
+    expect(r.answer.centres).toEqual([{ name: "Sample University Hospital" }]);
+    expect(r.answer.tables).toEqual([]);
+    expect(r.skipped).toEqual([
+      "Table 1 «Too wide»: rows — every row needs one cell per column",
+      "Centre 2 «Bad | name»: city — letters, spaces and . , ' ( ) & / - only",
+    ]);
+  });
+  it("a whole answer fails only without its title or conclusion", () => {
+    const r = parseAnswer(JSON.stringify({ title: "", conclusion: "C" }));
+    expect(r.ok).toBe(false);
+  });
+  it("small counts written in words are numbers of the quote", () => {
+    expect(valueInQuote("6 of 7", "Of the seven patients in group 3, successful recanalization was achieved in six of them (85%).")).toBe(true);
+    expect(valueInQuote("8 of 7", "Of the seven patients in group 3, six of them")).toBe(false);
+  });
+  it("a centre's name too short to look for says so — not «not in the PDF»", () => {
+    const r = parseAnswer(JSON.stringify({ title: "T", conclusion: "C", centres: [{ name: "UBNS", city: "Buffalo, NY" }] }));
+    if (!r.ok) throw new Error(r.error);
+    const items = checkGroups("Investigators: UBNS, Buffalo, NY.", r.answer, []);
+    expect(items[0].reason).toBe("The name is too short to check — look at the PDF");
+    expect(items[1].status).toBe("ok");
   });
 });

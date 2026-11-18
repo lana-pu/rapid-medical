@@ -20,6 +20,13 @@ export function DocumentChecks({ id, check, demo }: { id: number; check: Documen
         Built from {check.file}.{" "}
         {check.registry?.ok ? `ClinicalTrials.gov ${check.nct} added to the passport where ${doc} says nothing.` : check.registry ? `ClinicalTrials.gov not used: ${check.registry.error}.` : ""}
       </p>
+      {!!check.skipped?.length && (
+        <div className="mt-3 rounded border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs text-neutral-700">
+          <p className="font-medium">Left out of the draft — the rest of the AI answer is used:</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-4">{check.skipped.map((s, i) => <li key={i}>{s}</li>)}</ul>
+          <p className="mt-1 text-neutral-500">To have them, ask your AI to fix these parts and build the draft again.</p>
+        </div>
+      )}
       {open > 0 && <p role="status" className="mt-3 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">Publish is closed: check {open} value{open > 1 ? "s" : ""} below against {doc}.</p>}
       {check.items.length === 0 && <p className="mt-3 text-neutral-600">{check.mediaId == null ? "No quoted values." : "No quoted values: the page shows the PDF."}</p>}
       <ul className="mt-3 divide-y divide-neutral-100">

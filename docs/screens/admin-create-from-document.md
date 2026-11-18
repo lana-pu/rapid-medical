@@ -40,7 +40,11 @@ Publications & news → «Create from a document» (кнопка в шапке �
    короче 12 знаков — «Check: the quote is too short to check». Название,
    подписи и формулировка конечной точки — текст, его, как и вывод, проверяет человек при чтении черновика.
 6. «Build the draft» → материал-черновик → его карточка с «Built from {file}».
-Ошибка (нет JSON, не тот формат, не тот номер NCT…) — сообщение над кнопкой словами; всё введённое остаётся.
+Ошибка (нет JSON, нет заголовка или вывода, не тот номер NCT…) — сообщение над кнопкой словами; всё введённое остаётся.
+Ответ ИИ читается терпимо (проверка на настоящих документах 2026-11-18): числа без кавычек — как текст, пустое поле —
+«не указано». Часть, которая не подходит (таблица шире столбцов, лишняя группа), **откладывается** с причиной, остальное
+идёт в черновик; в карточке — «Left out of the draft — the rest of the AI answer is used» со списком и подсказкой
+попросить ИИ поправить эти части.
 
 ## Шаг 2 для страницы (`/admin/create-from-document/link`)
 Та же форма, что для PDF, с отличиями:
@@ -74,7 +78,7 @@ check N values below»; сервер отказывает в публикаци�
 `/news-events/{id}-{slug}`), правится на странице. Без секций — прежний шаблон публикации или новости.
 
 ## Данные
-`materials.documentCheck` (миграция 0033): `mediaId` (у страницы — null), `file` (имя PDF или адрес страницы без https://), `nct`, `registry` (`{ok}` / `{ok:false, error}`), `items[]`
+`materials.documentCheck` (миграция 0033): `skipped` (отложенные части ответа с причиной), `mediaId` (у страницы — null), `file` (имя PDF или адрес страницы без https://), `nct`, `registry` (`{ok}` / `{ok:false, error}`), `items[]`
 (`id`, `part` figures/passport/comparison/distribution/matrix/table/centres, `block` и `fields` — блок и поля, которые
 редактор обводит, `label`, `value`, `quote`, `status` ok/check/confirmed, `reason`, `confirmedBy`,
 `confirmedAt`). Код: `src/lib/document-import.ts`, `src/lib/clinicaltrials.ts`, `src/admin/document-actions.ts`.

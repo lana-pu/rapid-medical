@@ -949,6 +949,8 @@ test("create from a document: kind from the file, the team's AI answer checked a
       { value: "85.6%", label: "Occlusion after the procedure", quote: "successful occlusion (Raymond-Roy I/II) achieved in 85.6% of cases immediately post-procedure" },
       { value: "99%", label: "Occlusion at one year", quote: "Successful occlusion was 99% at one year" },
     ],
+    // a part that does not fit is left out with its reason — the rest of the answer is used
+    tables: [{ title: "Too wide", columns: [{ label: "A" }], rows: [{ label: "r", cells: ["1", "2"], quote: "a row" }] }],
   };
   await page.locator("textarea[name=answer]").fill("```json\n" + JSON.stringify(answer) + "\n```");
   await page.getByRole("button", { name: "Build the draft" }).click();
@@ -958,6 +960,8 @@ test("create from a document: kind from the file, the team's AI answer checked a
     const checks = page.getByRole("region", { name: "Checked against the PDF" });
     await expect(checks).toContainText("1 of 2 checked");
     await expect(checks).toContainText("Check: The quote is not in the PDF");
+    await expect(checks).toContainText("Left out of the draft");
+    await expect(checks).toContainText("Table 1 «Too wide»: rows — every row needs one cell per column");
     await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
     // the server refuses too, whatever the button says
     expect(sql(`select document_check->'items'->1->>'status' from materials where id=${id}`)).toBe("check");

@@ -401,6 +401,8 @@ export type DocumentCheck = {
   nct: string | null;
   /** the registry's rows were added; or why they could not be (the draft is built without them) */
   registry: { ok: true } | { ok: false; error: string } | null;
+  /** parts of the AI answer left out of the draft, each with its reason (the rest of the answer is used) */
+  skipped?: string[];
   items: { id: string; part: "figures" | "passport" | "comparison" | "matrix" | "distribution" | "table" | "centres"; block?: string; fields?: string[]; label: string; value: string; quote: string; status: "ok" | "check" | "confirmed"; reason?: string; confirmedBy?: string; confirmedAt?: string }[];
 };
 
