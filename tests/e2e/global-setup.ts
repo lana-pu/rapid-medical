@@ -2,9 +2,13 @@ import { execSync } from "node:child_process";
 import { existsSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
+import { assertResettable } from "../../scripts/local-db";
 
 /** Fresh seed + known admin password before the suite. */
 export default async function globalSetup() {
+  // the setup wipes content and creates an admin whose password and two-step key are in this repo: test databases only
+  if (!process.env.DATABASE_URL) process.loadEnvFile(".env");
+  assertResettable(process.env.DATABASE_URL, "The e2e setup");
   const env = { ...process.env, ADMIN_EMAIL: "e2e@rapid-medical.com", ADMIN_PASSWORD: "e2e-password-123456" };
   execSync("npx tsx --env-file=.env scripts/migrate.ts", { stdio: "inherit", env });
   execSync("npx tsx --env-file=.env scripts/seed.ts --reset", { stdio: "inherit", env });
