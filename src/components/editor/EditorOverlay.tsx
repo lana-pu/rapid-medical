@@ -394,6 +394,8 @@ export default function EditorOverlay() {
   }, [remeasure]);
 
   const refresh = useCallback(() => {
+    // a field that left the page (another page opened) is not being typed in: it must not hold updates back forever
+    if (editing.current && !editing.current.el.isConnected) editing.current = null;
     if (editing.current) {
       pendingRefresh.current = true;
       return;
@@ -536,6 +538,13 @@ export default function EditorOverlay() {
     pendingRefresh.current = false;
     refresh();
   }, [refresh]);
+
+  // another page: no field of the old one is open, nothing waits for it
+  useEffect(() => {
+    editing.current = null;
+    pendingEdit.current = null;
+    flushRefresh();
+  }, [pathname, flushRefresh]);
 
   const commitText = useCallback(async () => {
     const cur = editing.current;
