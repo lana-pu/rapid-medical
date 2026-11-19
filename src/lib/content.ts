@@ -1,5 +1,5 @@
 import "server-only";
-import { materialPaths } from "./material";
+import { materialPaths, studyCardOf } from "./material";
 import { draftMode } from "next/headers";
 import { and, asc, desc, eq, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
@@ -115,6 +115,28 @@ function regionFilter(table: { regions: PgColumn }, region: Region) {
 const M = "materials";
 const inEvidence = (m: { showInEvidence: boolean }) => m.showInEvidence;
 const inNews = (m: { showInNews: boolean }) => m.showInNews;
+
+/**
+ * A therapy page's materials of its product (docs/screens/therapy.md, 2026-11-19): the studies as cards, the clinical cases
+ * that have their own page, the IFU (a document), and the product's publications in this region (the Evidence tab's count).
+ */
+export async function getProductMaterials(region: Region, productId: number | null) {
+  if (!productId) return null;
+  const rows = await db.query.materials.findMany({
+    where: and(eq(materials.productId, productId), inArray(materials.kind, ["study", "case", "document"]), await visible(materials.status), regionFilter(materials, region)),
+    orderBy: [desc(materials.publishedOn), desc(materials.id)],
+  });
+  const own = (await overlay(M, rows)).filter((m) => m.slug);
+  const href = (m: (typeof own)[number]) => materialPaths(m)[0];
+  const pubs = (await getPublications(region)).filter((p) => p.productId === productId).length;
+  const ifu = own.find((m) => m.kind === "document");
+  return {
+    studies: own.filter((m) => m.kind === "study").map((m) => ({ title: m.title, href: href(m), ...studyCardOf(m) })),
+    cases: own.filter((m) => m.kind === "case" && (m.blocks ?? []).some((b) => b.type !== "hero" && JSON.stringify(b.data).replace(/<[^>]+>|\s/g, "").length > 40)).map((m) => ({ title: m.title, href: href(m), meta: "Clinical case" })),
+    ifu: ifu ? { label: "Instructions for Use (IFU) →", href: href(ifu) } : null,
+    publications: pubs,
+  };
+}
 
 /** All published Evidence materials, every region — the company-wide figure (About, Home). */
 export async function getPublicationCount() {

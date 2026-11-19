@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import * as schema from "../src/db/schema";
-import { FEATURED_ON_DUDA, MATERIAL_PAGES } from "../src/lib/material";
+import { FEATURED_ON_DUDA, MATERIAL_PAGES, MATERIAL_PRODUCTS } from "../src/lib/material";
 
 /**
  * Featured on Evidence per region as on Duda (decision 2026-11-18): in each region, the first record with that title that
@@ -117,7 +117,9 @@ async function main() {
     if (kind) {
       // a material kept at its old address (study, case, document); its blocks come from scripts/migrate-blocks.ts
       const { bodyMd, region, ...page } = p;
-      await db.insert(materials).values({ ...page, kind, regions: region ? [region] : [], bodyHtml: markdownToHtml(bodyMd), publishedOn: new Date(), status: page.status ?? "published" });
+      const productSlug = MATERIAL_PRODUCTS[p.slug];
+      const productId = productSlug ? (await db.query.products.findFirst({ where: eq(schema.products.slug, productSlug) }))?.id ?? null : null;
+      await db.insert(materials).values({ ...page, kind, productId, regions: region ? [region] : [], bodyHtml: markdownToHtml(bodyMd), publishedOn: new Date(), status: page.status ?? "published" });
       continue;
     }
     const existing = await db.query.pages.findFirst({ where: p.region ? sql`${pages.slug} = ${p.slug} AND ${pages.region} = ${p.region}` : sql`${pages.slug} = ${p.slug} AND ${pages.region} IS NULL` });

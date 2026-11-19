@@ -109,6 +109,20 @@ export const MATERIAL_PAGES: Record<string, "study" | "publication" | "case" | "
   "ifu-tigertriever-canada": "document",
 };
 
+/**
+ * The product of a material kept at its old address — the old pages had none, and a therapy page lists its product's
+ * studies, cases and IFU (docs/screens/therapy.md, 2026-11-19). By the title of each: DISTALS is the TIGERTRIEVER 13 trial,
+ * SUCCESS and the Patankar case are COMANECI, the DW24 poster DRIVEWIRE, the IFU TIGERTRIEVER. «See the comparison» pages
+ * are empty: no product. Same mapping in drizzle/0036.
+ */
+export const MATERIAL_PRODUCTS: Record<string, string> = {
+  "success-study-final-results": "comaneci",
+  "distals-results": "tigertriever-13",
+  "dw24-svin-poster": "drivewire",
+  "comaneci-spinal-case-patankar": "comaneci",
+  "ifu-tigertriever-canada": "tigertriever",
+};
+
 /** A material kept at its own address in the shape of a text page (one region → that region, else global). */
 export function materialAsPage<T extends { regions: string[] | null }>(m: T): Omit<T, "regions"> & { region: "us" | "ous" | "apac" | null } {
   const { regions, ...rest } = m;
@@ -131,3 +145,17 @@ export const FEATURED_ON_DUDA: { region: "us" | "ous" | "apac"; title: string }[
   { region: "apac", title: "Advancing beyond recent randomized controlled trials" },
   { region: "apac", title: "The Anch'Or Harpoon Technique" },
 ];
+
+/**
+ * A study's card on its product's therapy page (docs/screens/therapy.md, 2026-11-19): «design · N» from its passport, its
+ * main figure from its key figures — what the study page itself shows; nothing typed for the card.
+ */
+export function studyCardOf(m: { title: string; blocks?: { type: string; data: Record<string, unknown> }[] | null }) {
+  const blocks = m.blocks ?? [];
+  const rows = (blocks.find((b) => b.type === "passport")?.data.rows ?? []) as { label: string; value: string }[];
+  const row = (re: RegExp) => rows.find((r) => re.test(r.label))?.value?.trim() || null;
+  const short = (v: string | null) => (v && v.length > 40 ? null : v);
+  const meta = [short(row(/design/i)), short(row(/patients|enrol|subjects/i))].filter(Boolean).join(" · ") || null;
+  const fig = ((blocks.find((b) => b.type === "keyNumbers")?.data.items ?? []) as { value?: string; label?: string }[])[0];
+  return { meta, figure: fig?.value ? { value: fig.value, label: fig.label ?? "" } : null };
+}

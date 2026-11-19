@@ -11,7 +11,7 @@ import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/db/schema";
-import { solutionToStored, pageToStored } from "../src/blocks/convert";
+import { solutionToStored, pageToStored, therapyLayout2026 } from "../src/blocks/convert";
 import { studyPageBlocks } from "../src/blocks/studies";
 import { materialAsPage } from "../src/lib/material";
 import { SITE_PAGES, homeToStored, homeLayout2026, aboutToStored, careersToStored, evidenceToStored, therapiesToStored } from "../src/blocks/site-pages";
@@ -82,6 +82,15 @@ async function main() {
       k++;
     }
   }
+  // therapy pages in their 2026-11 layout (section navigation, the link to the indications) — the page and its draft
+  let t = 0;
+  for (const s of await db.select({ id: solutions.id, blocks: solutions.blocks }).from(solutions)) {
+    const next = therapyLayout2026(s.blocks);
+    if (next) { await db.update(solutions).set({ blocks: next }).where(eq(solutions.id, s.id)); t++; }
+    const [d] = await db.select().from(drafts).where(and(eq(drafts.resource, "solutions"), eq(drafts.recordId, s.id)));
+    const dn = d?.data && therapyLayout2026((d.data as { blocks?: schema.StoredBlock[] }).blocks);
+    if (d && dn) { await db.update(drafts).set({ data: { ...d.data, blocks: dn } }).where(eq(drafts.id, d.id)); t++; }
+  }
   // Home in its 2026-11 order (DESIGN.md → Home) — the page and an unpublished draft of it, each only if still in the old order
   let h = 0;
   for (const p of await db.select().from(sitePages).where(eq(sitePages.key, "home"))) {
@@ -91,7 +100,7 @@ async function main() {
     const dn = d?.data && homeLayout2026((d.data as { blocks?: schema.StoredBlock[] }).blocks);
     if (d && dn) { await db.update(drafts).set({ data: { ...d.data, blocks: dn } }).where(eq(drafts.id, d.id)); h++; }
   }
-  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${st} study pages, ${k} site pages created, ${h} home layouts`);
+  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${st} study pages, ${k} site pages created, ${h} home layouts, ${t} therapy layouts`);
   await client.end();
 }
 main().catch((e) => {

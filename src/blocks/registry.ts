@@ -9,6 +9,7 @@ import { dotMatrix } from "./dot-matrix";
 import { distribution } from "./distribution";
 import { dataTable } from "./data-table";
 import { centresMap } from "./centres-map";
+import { sectionNav } from "./section-nav";
 import { columns } from "./columns";
 import { video } from "./video";
 import { cta } from "./call-to-action";
@@ -47,6 +48,7 @@ export const BLOCKS: { [T in BlockType]: BlockDef<T> } = {
   distribution,
   dataTable,
   centresMap,
+  sectionNav,
   columns,
   video,
   cta,

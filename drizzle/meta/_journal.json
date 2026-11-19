@@ -253,6 +253,13 @@
       "when": 1794969858292,
       "tag": "0035_media_dedupe",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1795084189626,
+      "tag": "0036_material_products",
+      "breakpoints": true
     }
   ]
 }

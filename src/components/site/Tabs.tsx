@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { withBase } from "@/lib/demo";
 
 export type Tab = { id: string; label: string; sublabel?: string; content: ReactNode; href?: string };
@@ -13,27 +13,36 @@ export type Tab = { id: string; label: string; sublabel?: string; content: React
  */
 export function Tabs({ tabs, hint, variant = "pills" }: { tabs: Tab[]; hint?: string; variant?: "pills" | "underline" }) {
   const [active, setActive] = useState(tabs[0]?.id);
+  const root = useRef<HTMLDivElement>(null);
   const pill = variant === "pills";
   // Tab ids are plain slugs, so the hash is compared as is (no decoding: a malformed "%" must not throw).
   const openable = tabs.filter((t) => !t.href).map((t) => t.id).join("\n");
   useEffect(() => {
     const ids = openable.split("\n");
-    const openFromHash = () => {
+    // `#<tab id>` opens that tab; `#<id of something inside a tab>` (the section nav's «Specs») opens the tab that holds it
+    const openFromHash = (scroll: boolean) => {
       const id = window.location.hash.slice(1);
-      if (id && ids.includes(id)) setActive(id);
+      if (!id) return;
+      const inner = ids.includes(id) ? null : document.getElementById(id);
+      const panel = inner?.closest<HTMLElement>("[role=tabpanel]");
+      const tab = ids.includes(id) ? id : panel && root.current?.contains(panel) ? panel.id.replace(/^panel-/, "") : null;
+      if (!tab || !ids.includes(tab)) return;
+      setActive(tab);
+      if (scroll) requestAnimationFrame(() => (inner ?? root.current)?.scrollIntoView({ block: "start" }));
     };
-    openFromHash();
-    window.addEventListener("hashchange", openFromHash);
-    return () => window.removeEventListener("hashchange", openFromHash);
+    openFromHash(false);
+    const onHash = () => openFromHash(true);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, [openable]);
   return (
-    <div>
+    <div ref={root} className="scroll-mt-20">
       {hint && <p className="mb-4 text-center text-lg">{hint}</p>}
       {/* desktop / tablet: tab bar */}
       <div role="tablist" className={`hidden md:flex ${pill ? "rounded-full border border-accent p-1" : "flex-wrap gap-2 border-b border-border"}`}>
         {tabs.map((t) =>
           t.href ? (
-            <a key={t.id} href={withBase(t.href)} className={pill ? "flex-1 rounded-full px-4 py-2 text-center text-sm font-medium hover:bg-surface" : "-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted hover:text-foreground"}>
+            <a key={t.id} href={withBase(t.href)} data-tab-link={t.id} className={pill ? "flex-1 rounded-full px-4 py-2 text-center text-sm font-medium hover:bg-surface" : "-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted hover:text-foreground"}>
               {t.label} ↗
             </a>
           ) : (

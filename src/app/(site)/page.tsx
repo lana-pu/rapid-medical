@@ -1,5 +1,5 @@
 import { getSetting } from "@/lib/settings";
-import { getFeaturedNews, getProductsForRegion, getPublications, getSitePage, getSolutionsNav } from "@/lib/content";
+import { getFeaturedNews, getProductsForRegion, getPublicationCount, getPublications, getSitePage, getSolutionsNav } from "@/lib/content";
 import { REGIONS, type Region } from "@/lib/regions";
 import { publicationCounts } from "@/blocks/from-settings";
 import { getRememberedRegion } from "@/lib/region-cookie";
@@ -68,8 +68,8 @@ async function homeLists(region: Region | null) {
     const [therapies, all, products] = await Promise.all([getSolutionsNav(region), getPublications(region), getProductsForRegion(region)]);
     return { therapies, publicationCounts: publicationCounts({ all, products, featured: [] }), publicationCount: all.length };
   }
-  const per = await Promise.all(REGIONS.map(async (r) => ({ therapies: await getSolutionsNav(r), pubs: await getPublications(r) })));
+  const [per, publicationCount] = await Promise.all([Promise.all(REGIONS.map((r) => getSolutionsNav(r))), getPublicationCount()]);
   const seen = new Set<string>();
-  const therapies = per.flatMap((x) => x.therapies).filter((t) => (seen.has(t.slug) ? false : (seen.add(t.slug), true)));
-  return { therapies, publicationCount: new Set(per.flatMap((x) => x.pubs.map((p) => p.id))).size };
+  const therapies = per.flat().filter((t) => (seen.has(t.slug) ? false : (seen.add(t.slug), true)));
+  return { therapies, publicationCount }; // the company-wide figure, as About shows it
 }

@@ -10,6 +10,7 @@ import type { DotMatrixData, DotMatrixVariant } from "./dot-matrix";
 import type { DistributionData, DistributionVariant } from "./distribution";
 import type { DataTableData, DataTableVariant } from "./data-table";
 import type { CentresMapData, CentresMapVariant } from "./centres-map";
+import type { SectionNavData, SectionNavVariant } from "./section-nav";
 import type { ColumnsData, ColumnsVariant } from "./columns";
 import type { DeviceDiagramData, DeviceDiagramVariant } from "./device-diagram";
 import type { SpecTableData, SpecTableVariant } from "./spec-table";
@@ -47,6 +48,7 @@ export type BlockMap = {
   distribution: { variant: DistributionVariant; data: DistributionData };
   dataTable: { variant: DataTableVariant; data: DataTableData };
   centresMap: { variant: CentresMapVariant; data: CentresMapData };
+  sectionNav: { variant: SectionNavVariant; data: SectionNavData };
   columns: { variant: ColumnsVariant; data: ColumnsData };
   deviceDiagram: { variant: DeviceDiagramVariant; data: DeviceDiagramData };
   specTable: { variant: SpecTableVariant; data: SpecTableData };
