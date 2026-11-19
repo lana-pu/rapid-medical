@@ -39,7 +39,11 @@ export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_prog
 export type ActionLink = { label: string; href: string };
 export type SpecTable = { caption?: string; columns: string[]; rows: string[][]; note?: string };
 /** Big number + caption (home counters, evidence badge, "47% FPE" circles). */
-export type Stat = { value: string; label: string; note?: string; iconUrl?: string };
+export type Stat = {
+  value: string; label: string; note?: string; iconUrl?: string;
+  /** the value is counted from the records, not typed (Home → evidence: the publications, the same number as Evidence) */
+  from?: "publications";
+};
 /** Structured chart rendered as SVG (replaces chart screenshots). */
 export type Chart = {
   kind: "bar" | "stackedBar";

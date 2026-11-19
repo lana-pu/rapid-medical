@@ -5,12 +5,24 @@
 ## Блоки
 Страница — список блоков, собирает `homeToBlocks()` (`src/blocks/from-settings.ts`).
 
-| Порядок | Блок · вариант | Из полей |
+**Порядок с 2026-11-19 (DESIGN.md → Home; предварительно, до подтверждения Emily — ветка `therapy-home`, не влита):**
+hero (обещание) → проблема и наш ответ → наши терапии → как устроено → доказательства → новости. Всё прежнее содержимое
+на месте: цифры переехали из блока проблемы в блок доказательств, новости — в формат News & Events.
+
+| Порядок | Блок · вариант | Что |
 |---|---|---|
 | 1 | Hero · `banner` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, кнопка, `heroVideoUrl` |
-| 2 | Text and media · `statement` | `problemTitle`, `problemVideoUrl` / `problemImageUrl`, `stats[]`, `solutionLine`, кнопка «Request a demo» |
-| 3 | Text · `dark` | `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`; есть заголовок или текст |
-| 4 | News · `cards` | `newsTitle`, 4 новости, кнопка «View all news» |
+| 2 | Text and media · `statement` | `problemTitle`, `problemVideoUrl` / `problemImageUrl`, `solutionLine`, кнопка «Request a demo» (без цифр) |
+| 3 | Columns · `cards` (источник `homeTherapies`) | «Our therapies»: те же карточки, что в обзоре терапий региона; регион не выбран — терапии всех регионов, ссылка ведёт через выбор региона |
+| 4 | Text · `dark` | `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`; есть заголовок или текст |
+| 5 | Key numbers · `evidence` (источник `publicationCount`) | «Backed by clinical evidence»: прежние цифры (50K+, 100+, публикации) с иконками; число публикаций — из базы, то же, что на Evidence региона (регион не выбран — все); «Explore the evidence →» → `/{region}/evidence` |
+| 6 | News · `highlights` (источник `featuredNews`) | `newsTitle`, главная новость крупно + 3 рядом (как на News & Events), своя страница новости, «View all news» |
+
+Не сделано (по желанию, решение владелицы): полоса над шапкой с главной новостью (выключена по умолчанию — пока её
+нет совсем); Key studies на главной — после разметки публикаций (Evidence).
+
+Существующая база переводится один раз при сборке (`homeLayout2026`, `scripts/migrate-blocks.ts`): только если на
+странице ещё старый порядок (цифры внутри блока проблемы и нет блока доказательств); черновик Home — так же.
 
 ## Доступ
 Публичный. В preview / editor-режиме поверх live-настроек накладывается `setting_drafts.home`.
@@ -20,6 +32,8 @@
 |---|---|
 | `site_settings.home` | `heroLine1`, `heroLine2`, `heroSub`, `heroBody`, `heroCtaLabel`, `heroCtaHref`, `heroVideoUrl`, `problemTitle`, `problemVideoUrl`, `problemImageUrl`, `stats[] {value,label,iconUrl}`, `solutionLine`, `engineeredTitle`, `engineeredBody`, `engineeredImageUrl`, `newsTitle` |
 | `materials` (`showInNews`, с 2026-11-18) | `getFeaturedNews(4)`: опубликованные с `featured = true` по дате; если таких нет — 4 последних опубликованных |
+| `materials` (`showInEvidence`) | число публикаций: `getPublications(region)`; без региона — все регионы без повторов |
+| `solutions` | терапии региона для карточек (`getSolutionsNav`), без региона — всех регионов без повторов по slug |
 | cookie `rm_region` | Куда ведут CTA (регион последнего визита) |
 
 ## Структура и состояния

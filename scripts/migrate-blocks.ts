@@ -14,7 +14,7 @@ import * as schema from "../src/db/schema";
 import { solutionToStored, pageToStored } from "../src/blocks/convert";
 import { studyPageBlocks } from "../src/blocks/studies";
 import { materialAsPage } from "../src/lib/material";
-import { SITE_PAGES, homeToStored, aboutToStored, careersToStored, evidenceToStored, therapiesToStored } from "../src/blocks/site-pages";
+import { SITE_PAGES, homeToStored, homeLayout2026, aboutToStored, careersToStored, evidenceToStored, therapiesToStored } from "../src/blocks/site-pages";
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -82,7 +82,16 @@ async function main() {
       k++;
     }
   }
-  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${st} study pages, ${k} site pages created`);
+  // Home in its 2026-11 order (DESIGN.md → Home) — the page and an unpublished draft of it, each only if still in the old order
+  let h = 0;
+  for (const p of await db.select().from(sitePages).where(eq(sitePages.key, "home"))) {
+    const next = homeLayout2026(p.blocks);
+    if (next) { await db.update(sitePages).set({ blocks: next }).where(eq(sitePages.id, p.id)); h++; }
+    const [d] = await db.select().from(drafts).where(and(eq(drafts.resource, "site-pages"), eq(drafts.recordId, p.id)));
+    const dn = d?.data && homeLayout2026((d.data as { blocks?: schema.StoredBlock[] }).blocks);
+    if (d && dn) { await db.update(drafts).set({ data: { ...d.data, blocks: dn } }).where(eq(drafts.id, d.id)); h++; }
+  }
+  console.log(`block lists: ${n} therapy pages, ${m} pages converted, ${st} study pages, ${k} site pages created, ${h} home layouts`);
   await client.end();
 }
 main().catch((e) => {

@@ -586,16 +586,17 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
   await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
   await publishFromEditor(page);
 
-  // Home is a site page (ADR-007): its numbers are in its block list, the change waits in drafts until Publish
+  // Home is a site page (ADR-007): its numbers are in its block list (the evidence block since 2026-11-19), the change
+  // waits in drafts until Publish
   await page.goto("/");
   await expect(page.getByRole("status")).toHaveText("Live", { timeout: 20_000 }); // the page info loads after the page
-  const stat = page.locator('[data-e*="stats.0.value"]');
+  const stat = page.locator('[data-e*="data.items.0.value"]').filter({ hasText: "50K+" });
   await stat.click();
   await expect(stat).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
-  const statIn = (table: string) => `select b->'data'->'stats'->0->>'value' from ${table}, jsonb_array_elements(blocks) b where b->>'type'='textMedia' and b->>'variant'='statement'`;
+  const statIn = (table: string) => `select b->'data'->'items'->0->>'value' from ${table}, jsonb_array_elements(blocks) b where b->>'type'='keyNumbers' and b->>'variant'='evidence'`;
   await expect.poll(() => sql(statIn("(select data->'blocks' as blocks from drafts where resource='site-pages') d"))).toBe("99K+");
   expect(sql(statIn("(select blocks from site_pages where key='home') s"))).toBe("50K+");
   await page.click('#rm-editor-ui button:has-text("Publish")');

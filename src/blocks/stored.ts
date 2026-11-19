@@ -56,6 +56,8 @@ export type SourceLists = {
   jobs?: JobRow[];
   /** About: figures counted from the records (publications, offices) */
   facts?: { label: string; value: string }[];
+  /** Home: publications counted the way Evidence counts them (the region's, or all when no region is known) */
+  publicationCount?: number;
 };
 
 const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -117,6 +119,18 @@ export const SOURCES: Record<string, Source> = {
     keys: ["groups", "anchors"],
     fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug), region: ctx.region ?? undefined }),
   },
+  /** Home: «Our therapies» — the overview's cards in one row; with no region known, every region's therapies through the chooser */
+  homeTherapies: {
+    keys: ["items"],
+    fill: (_d, ctx) => {
+      const list = ctx.lists?.therapies ?? [];
+      if (!list.length) return null;
+      const cards = overviewSections(list, ctx.region ?? "us", ctx.region ? ctx.lists?.publicationCounts : undefined).flatMap((g) => g.items);
+      return { items: ctx.region ? cards : cards.map((c) => ({ ...c, href: "/choose-your-location", more: null })) };
+    },
+  },
+  /** Home: the publications figure of the evidence block */
+  publicationCount: { keys: ["count"], fill: (_d, ctx) => ({ count: ctx.lists?.publicationCount ?? null }) },
   /** Therapies overview: the cards of one therapy group (`data.group`: ischemic / hemorrhagic / access / "" = the rest) */
   therapyGroup: {
     keys: ["title", "items"],

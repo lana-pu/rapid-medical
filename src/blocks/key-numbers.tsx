@@ -1,18 +1,37 @@
 import type { Stat } from "@/db/schema";
-import { Section } from "@/components/site/primitives";
+import { Section, SharedLine } from "@/components/site/primitives";
+import { siteHref } from "@/lib/safe-path";
 import { StatCircles, StatRow, StatBadge } from "@/components/site/blocks/Stats";
 import { F } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
-export type KeyNumbersVariant = "circles" | "row" | "badge" | "figures";
+export type KeyNumbersVariant = "circles" | "row" | "badge" | "figures" | "evidence";
 
-export type KeyNumbersData = { items: Stat[]; caption?: string | null };
+export type KeyNumbersData = {
+  items: Stat[];
+  caption?: string | null;
+  /** `evidence`: the title on the left and the link under it */
+  title?: string | null;
+  link?: { label: string; href: string } | null;
+  /** `evidence`: the publications counted from the records (filled by the page's source) */
+  count?: number | null;
+};
 
 function KeyNumbers({ variant, data: d, edit: e, nested }: BlockProps<"keyNumbers">) {
-  const items = d.items.filter((x) => x.value);
+  // a number counted from the records replaces the typed one (it is not edited on the page)
+  const items = d.items.map((x) => (x.from === "publications" && d.count ? { ...x, value: `${d.count}+` } : x)).filter((x) => x.value);
   if (!items.length) return null;
   const inner =
-    variant === "figures" ? (
+    variant === "evidence" ? (
+      // DESIGN.md → Home → Блок доказательств: shared line, the title and a link on the left, the numbers with icons right
+      <SharedLine
+        title={<F e={e} k="title">{d.title || "Backed by clinical evidence"}</F>}
+        aside={d.link?.href ? <a href={siteHref(d.link.href)} className="font-medium text-foreground underline underline-offset-4"><F e={e} k="link.label">{d.link.label}</F></a> : null}
+        className="mt-16"
+      >
+        <StatRow items={items} render={(s, j, part) => (items[j].from === "publications" && d.count ? s[part] : <F e={e} k={`items.${j}.${part}`}>{s[part]}</F>)} />
+      </SharedLine>
+    ) : variant === "figures" ? (
       // DESIGN.md → Набор инфографики → Ключевые цифры: 2–4 pairs, each with its quote from the document
       <ul className="mt-10 grid gap-x-10 gap-y-8 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((s, j) => (
@@ -48,6 +67,7 @@ export const keyNumbers: BlockDef<"keyNumbers"> = {
     { id: "row", label: "Row with icons", description: "Icon, number and label in a row" },
     { id: "badge", label: "Badge", description: "One number in a frame" },
     { id: "figures", label: "Key figures", description: "2–4 large numbers with a label and the quote they come from (study and news pages)" },
+    { id: "evidence", label: "Evidence", description: "Shared line: a title and a link on the left, numbers with icons on the right; the publications counted from the records (Home)" },
   ],
   fields: [
     { key: "items", label: "Numbers: value (required), label, note, icon", kind: "items", required: true },
@@ -66,6 +86,15 @@ export const keyNumbers: BlockDef<"keyNumbers"> = {
       items: [
         { value: "00%", label: "Sample outcome", note: "The sentence of the document this number comes from." },
         { value: "0", label: "Second outcome", note: "Its quote." },
+      ],
+    },
+    evidence: {
+      title: "Backed by clinical evidence",
+      link: { label: "Explore the evidence →", href: "/style-guide#keyNumbers" },
+      items: [
+        { value: "10+", label: "Sample counter", iconUrl: "/icons/stat-patients.svg" },
+        { value: "20+", label: "Sample counter", iconUrl: "/icons/stat-patents.svg" },
+        { value: "30+", label: "Sample publications", iconUrl: "/icons/stat-publications.svg", from: "publications" },
       ],
     },
     row: {

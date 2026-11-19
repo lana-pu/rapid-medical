@@ -39,10 +39,22 @@ const facts = [{ label: "Clinical publications", value: "102" }];
 const lists: SourceLists = { news, team, offices, jobCount: 4, evidence, therapies, facts };
 
 describe("singleton pages render like before", () => {
-  it("Home, with and without a known region", () => {
+  it("Home, with and without a known region: everything of the old page, in the 2026-11 order (DESIGN.md → Home)", () => {
     const stored = db(homeToStored(S.home));
+    type B = { type: string; variant: string; data: Record<string, unknown> & { stats?: { label: string }[]; items?: { label: string }[] } };
+    const by = (xs: B[], t: string) => xs.find((b) => b.type === t)!;
     for (const region of ["ous", null] as const) {
-      expect(plain(db(resolveBlocks(stored, { region, lists })))).toEqual(plain(db(homeToBlocks({ home: S.home, news, region }))));
+      const now = plain(db(resolveBlocks(stored, { region, lists }))) as B[];
+      const before = plain(db(homeToBlocks({ home: S.home, news, region }))) as B[];
+      expect(now.map((b) => b.type)).toEqual(["hero", "textMedia", "columns", "text", "keyNumbers", "news"]);
+      expect(by(now, "hero")).toEqual(by(before, "hero"));
+      expect(by(now, "text")).toEqual(by(before, "text"));
+      // the numbers moved from the problem block into the evidence block, nothing else changed there
+      const st = by(before, "textMedia");
+      expect(by(now, "textMedia")).toEqual({ ...st, data: { ...st.data, stats: [] } });
+      expect(by(now, "keyNumbers").data.items!.map((s) => s.label)).toEqual(st.data.stats!.map((s) => s.label));
+      // the same news, title and «View all news», in the News & Events layout
+      expect({ ...by(now, "news"), variant: "cards" }).toEqual(by(before, "news"));
     }
   });
   it("Careers (open positions counted)", () => {
