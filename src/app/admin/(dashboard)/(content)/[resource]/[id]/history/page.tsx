@@ -38,7 +38,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
   const [editable, revs] = await Promise.all([getEditable(res, recordId), listRevisions(res, recordId, 200)]);
   if (!editable) notFound();
   // a page of the site: the History tab of its page (docs/screens/admin-sections.md → «Экран страницы»)
-  const path = ["solutions", "pages", "site-pages"].includes(res.slug) ? (res.previewUrl?.(editable.live) ?? null) : null;
+  const path = ["solutions", "pages", "site-pages", "materials"].includes(res.slug) ? (res.previewUrl?.(editable.live) ?? null) : null;
   const pageOf = path ? pageKey(path) : null;
 
   // Default: compare the latest revision against the one before it; "live" = current live row

@@ -12,7 +12,9 @@ import { getRow } from "@/admin/engine";
  * shown with the revision's data instead of the live row. Only for a signed-in editor (2FA passed); the revision must be
  * one of a page record. `x-rm-version` comes from `?version=` through proxy.ts.
  */
-export const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
+export const PAGE_RESOURCES = ["solutions", "pages", "site-pages", "materials"];
+/** A record that is a page of the site tree: therapy, text and site pages, and a material kept at its own address. */
+export const isPageRecord = (resource: string, row: { slug?: unknown } | null | undefined) => PAGE_RESOURCES.includes(resource) && (resource !== "materials" || !!row?.slug);
 
 export const viewingVersion = cache(async (): Promise<{ rev: Revision; user: SessionUser; path: string } | null> => {
   try {

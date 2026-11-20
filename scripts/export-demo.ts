@@ -54,7 +54,7 @@ async function main() {
   if (!admin) throw new Error("no admin user in the database");
   const sid = crypto.randomBytes(32).toString("hex");
   await sql`insert into sessions (id, user_id, verified, expires_at) values (${sid}, ${admin.id}, true, now() + interval '1 hour')`;
-  const resources = ["site-pages", "solutions", "publications", "events", "news", "webinars", "team", "jobs", "pages", "products", "redirects"];
+  const resources = ["site-pages", "solutions", "materials", "events", "webinars", "team", "jobs", "pages", "products", "redirects"];
   const table: Record<string, string> = { news: "news_items", team: "team_members", "site-pages": "site_pages" };
   const ids: Record<string, number[]> = {};
   for (const r of resources) ids[r] = (await sql.unsafe<{ id: number }[]>(`select id from "${table[r] ?? r}" order by id`)).map((x) => x.id);
@@ -67,7 +67,8 @@ async function main() {
   if (real.n > 0) throw new Error(`the database has ${real.n} real form submissions — build the demo from a test database (npm run test:e2e seeds one)`);
   const submissionIds = (await sql<{ id: number }[]>`select id from contact_submissions order by id`).map((x) => x.id);
   const media = await sql<{ id: number; url: string; filename: string; mime: string; size: number; alt: string; createdAt: Date }[]>`select id, url, filename, mime, size, alt, created_at as "createdAt" from media where url like '/uploads/%' order by id desc`;
-  const hiddenPages = await sql<{ slug: string; region: string | null }[]>`select slug, region from pages where noindex and status = 'published'`;
+  const hiddenPages = await sql<{ slug: string; region: string | null }[]>`select slug, region from pages where noindex and status = 'published'
+    union all select slug, case when jsonb_array_length(regions) = 1 then regions->>0 end from materials where slug is not null and noindex and status = 'published'`;
   await sql.end();
 
   try {

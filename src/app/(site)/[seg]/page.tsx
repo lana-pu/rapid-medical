@@ -43,7 +43,7 @@ export default async function GlobalPage({ params }: { params: Promise<{ seg: st
       : b,
   );
   return <>
-      {page.blocks?.length ? <PageMark r="pages" id={page.id} /> : null}
+      {page.blocks?.length ? <PageMark r={page.resource} id={page.id} /> : null}
       <BlockList blocks={blocks} />
     </>;
 }

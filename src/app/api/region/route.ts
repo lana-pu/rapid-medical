@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { and, eq } from "drizzle-orm";
-import { db, solutions, pages } from "@/db";
+import { and, eq, sql } from "drizzle-orm";
+import { db, solutions, pages, materials } from "@/db";
 import { isRegion } from "@/lib/regions";
 import { safeLocalPath } from "@/lib/safe-path";
 
@@ -48,7 +48,10 @@ async function targetFor(to: string, back: string | null): Promise<string> {
   }
   const page = /^\/([a-zA-Z0-9_-]+)$/.exec(rest);
   if (page) {
-    const found = await db.query.pages.findFirst({ columns: { id: true }, where: and(eq(pages.region, to as "us"), eq(pages.slug, page[1]), eq(pages.status, "published")) });
+    const found =
+      (await db.query.pages.findFirst({ columns: { id: true }, where: and(eq(pages.region, to as "us"), eq(pages.slug, page[1]), eq(pages.status, "published")) })) ??
+      // a material kept at its old address in that region (moved study pages, ADR-009)
+      (await db.query.materials.findFirst({ columns: { id: true }, where: and(eq(materials.slug, page[1]), sql`${materials.regions} = ${JSON.stringify([to])}::jsonb`, eq(materials.status, "published")) }));
     return found ? `/${to}${rest}` : `/${to}/therapies`;
   }
   return `/${to}/therapies`;

@@ -18,6 +18,27 @@ export function titleSlug(title: string): string {
 export const publicationHref = (region: string, p: { id: number; title: string }) => `/${region}/evidence/${p.id}-${titleSlug(p.title)}`;
 export const newsHref = (n: { id: number; title: string }) => `/news-events/${n.id}-${titleSlug(n.title)}`;
 
+/** Kinds of material in words (ADR-009). */
+export const MATERIAL_KIND_LABELS: Record<string, string> = { study: "Study", publication: "Publication", news: "News", case: "Clinical case", document: "Document" };
+
+type Placed = { id: number; title: string; regions: string[] | null; slug: string | null; showInEvidence: boolean; showInNews: boolean };
+const ALL_REGIONS = ["us", "ous", "apac"];
+
+/**
+ * Every address of a material's own page (ADR-009): a kept slug (one region → /{region}/{slug}, none → /{slug}); else its
+ * Evidence page in each region that shows it; else its News page. A material shown nowhere has no page yet.
+ */
+export function materialPaths(m: Placed): string[] {
+  const regions = m.regions ?? [];
+  if (m.slug) return [regions.length === 1 ? `/${regions[0]}/${m.slug}` : `/${m.slug}`];
+  if (m.showInEvidence) return ALL_REGIONS.filter((r) => !regions.length || regions.includes(r)).map((r) => publicationHref(r, m));
+  if (m.showInNews) return [newsHref(m)];
+  return [];
+}
+
+/** The one address the admin opens for «View on the site» (the first of `materialPaths`). */
+export const materialHref = (m: Placed): string | null => materialPaths(m)[0] ?? null;
+
 /** «123-some-title» → 123; anything else → null. */
 export function idFromParam(param: string): number | null {
   const m = /^(\d{1,9})(?:-[a-z0-9-]*)?$/.exec(param);
@@ -72,3 +93,41 @@ export function sameArticleByTitle(
   const authorOk = !!surname && norm(record.authors ?? "").split(" ").includes(surname);
   return yearOk || authorOk;
 }
+
+/**
+ * Pages that are materials (ADR-009 step 1, 2026-11-18): the kind of each, by its kept address. The same list moved the
+ * rows in drizzle/0032_materials.sql; the seed puts these pages into materials. Legal pages and landings stay pages.
+ */
+export const MATERIAL_PAGES: Record<string, "study" | "publication" | "case" | "document"> = {
+  "success-study-final-results": "study",
+  "distals-results": "study",
+  "dw24-svin-poster": "study",
+  LongTerm_Outcomes: "publication",
+  "comaneci-spinal-case-patankar": "case",
+  "see-the-comparison": "case",
+  "comparison-video": "case",
+  "ifu-tigertriever-canada": "document",
+};
+
+/** A material kept at its own address in the shape of a text page (one region → that region, else global). */
+export function materialAsPage<T extends { regions: string[] | null }>(m: T): Omit<T, "regions"> & { region: "us" | "ous" | "apac" | null } {
+  const { regions, ...rest } = m;
+  return { ...rest, region: regions && regions.length === 1 ? (regions[0] as "us" | "ous" | "apac") : null };
+}
+
+/**
+ * Featured on Evidence per region, as on Duda (crawl 2026-11-05; decision 2026-11-18): the beginning of each title. The
+ * same list is in drizzle/0034_material_featured_regions.sql; the seed applies it. A material featured in a region is
+ * also shown there.
+ */
+export const FEATURED_ON_DUDA: { region: "us" | "ous" | "apac"; title: string }[] = [
+  { region: "us", title: "Radially adjustable Tigertriever demonstrates higher reperfusion" },
+  { region: "us", title: "Long-term outcomes of temporary stent-assisted coil embolization" },
+  { region: "us", title: "Comaneci-assisted embolization of wide-necked aneurysms: results from the SUCCESS" },
+  { region: "ous", title: "Radially adjustable Tigertriever demonstrates higher reperfusion" },
+  { region: "ous", title: "Long-term outcomes of temporary stent-assisted coil embolization" },
+  { region: "ous", title: "Challenging the limits of angioplasty" },
+  { region: "apac", title: "Early experience with the Drivewire 24" },
+  { region: "apac", title: "Advancing beyond recent randomized controlled trials" },
+  { region: "apac", title: "The Anch'Or Harpoon Technique" },
+];

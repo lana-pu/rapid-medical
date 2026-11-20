@@ -67,7 +67,7 @@ describe("evidenceToBlocks", () => {
     const bs = evidenceToBlocks({ region: "us", cfg: { forefrontText: "Line" }, all: [pub(1, "tt", null, "/a.jpg"), pub(2, "cm", null)], featured: [pub(1, "tt", null, "/a.jpg")], products });
     const o = bs[1] as BlockOf<"publications">;
     expect(o.data.groups!.map((g) => [g.label, g.items.length])).toEqual([["TT", 1], ["CM", 1]]);
-    expect(o.data.items![0].edit).toMatchObject({ r: "publications", id: 1 });
+    expect(o.data.items![0].edit).toMatchObject({ r: "materials", id: 1 });
     expect(fieldPath(o.edit, "line")).toBe("forefrontText");
     expect(bs.some((b) => b.type === "publications" && b.variant === "cards")).toBe(false);
   });

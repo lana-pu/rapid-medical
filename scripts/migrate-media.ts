@@ -5,7 +5,7 @@
  *
  *   npx tsx --env-file=.env scripts/migrate-media.ts
  */
-import { mkdir, writeFile, stat } from "node:fs/promises";
+import { mkdir, writeFile, stat, readFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import { sql } from "drizzle-orm";
@@ -21,6 +21,7 @@ const TARGETS: Record<string, string[]> = {
   solutions: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "share_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html"],
   publications: ["pdf_url", "image_url"],
   news_items: ["image_url", "url"],
+  materials: ["pdf_url", "image_url", "url", "body_html", "share_image_url"],
   webinars: ["image_url"],
   team_members: ["photo_url", "bio_html"],
   jobs: ["description_html"],
@@ -72,17 +73,35 @@ async function main() {
   }
   console.log(`${found.size} CDN assets referenced`);
 
-  // 2. download + register
+  // 2. download + register — one file per content (2026-11-18): an address known as another file's copy
+  // (content/seed/media-aliases.json) or a download whose bytes a file already has is that file, not a new one
   const map = new Map<string, string>();
   const existing = await db.select({ sourceUrl: schema.media.sourceUrl, url: schema.media.url }).from(schema.media);
   for (const e of existing) if (e.sourceUrl) map.set(e.sourceUrl, e.url);
+  const known = new Set(existing.map((e) => e.url));
+  try {
+    const aliases = JSON.parse(await readFile(path.join(process.cwd(), "content", "seed", "media-aliases.json"), "utf8")) as Record<string, string>;
+    for (const [src, to] of Object.entries(aliases)) if (!map.has(src) && known.has(to)) map.set(src, to);
+  } catch { /* no aliases file */ }
+  const byHash = new Map<string, string>();
+  for (const e of existing) {
+    try { byHash.set(crypto.createHash("sha1").update(await readFile(path.join(process.cwd(), "public", e.url.split("?")[0]))).digest("hex"), e.url); } catch { /* a file elsewhere (S3) */ }
+  }
 
   let n = 0;
   for (const src of found) {
     if (map.has(src)) continue;
     const d = await download(src);
     if (!d) { console.warn(`  ✗ ${src}`); continue; }
+    const hash = crypto.createHash("sha1").update(await readFile(path.join(OUT_DIR, d.file))).digest("hex");
+    const same = byHash.get(hash);
+    if (same) {
+      await unlink(path.join(OUT_DIR, d.file)); // the same bytes are already in the library
+      map.set(src, same);
+      continue;
+    }
     const publicUrl = `/uploads/duda/${d.file}`;
+    byHash.set(hash, publicUrl);
     await db.insert(schema.media).values({ url: publicUrl, filename: d.file, mime: d.mime || guessMime(d.file), size: d.size, sourceUrl: src });
     map.set(src, publicUrl);
     n++;

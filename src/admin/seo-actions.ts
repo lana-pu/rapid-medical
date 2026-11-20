@@ -16,7 +16,7 @@ import { SEO_SETTING_KEYS } from "./seo";
  */
 
 export type SeoSaved = { ok: true; pending: boolean } | { ok: false; error: string } | null;
-const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
+const PAGE_RESOURCES = ["solutions", "pages", "site-pages", "materials"];
 const clean = (v: FormDataEntryValue | null) => String(v ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, 300);
 
 export async function saveSeo(_prev: SeoSaved, fd: FormData): Promise<SeoSaved> {

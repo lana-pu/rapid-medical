@@ -20,11 +20,11 @@ export default async function EditorPages({ searchParams }: { searchParams: Prom
       demo={DEMO}
       startCreating={sp.new === "1" && !DEMO}
       lists={[
-        { label: "News", href: "/admin/news" },
+        { label: "News", href: "/admin/materials?showInNews=true" },
         { label: "Events", href: "/admin/events" },
         { label: "Webinars", href: "/admin/webinars" },
         { label: "Jobs", href: "/admin/jobs" },
-        { label: "Evidence", href: "/admin/publications" },
+        { label: "Evidence", href: "/admin/materials?showInEvidence=true" },
         { label: "Team", href: "/admin/team" },
         { label: "Contact details", href: "/admin/settings?group=contact" },
       ]}

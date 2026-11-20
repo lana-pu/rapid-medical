@@ -6,7 +6,7 @@
 
 ## Доступ
 Любая роль (`requireUser`: сессия + пройденная 2FA). `resource` не из `RESOURCES` или запись не найдена → 404.
-Ресурсы: `solutions`, `publications`, `news`, `webinars`, `team`, `jobs`, `pages`, `products`, `redirects`.
+Ресурсы: `solutions`, `materials` (Publications & news; у публикации дата — месяц, секции на странице — только у материала со своим адресом), `webinars`, `team`, `jobs`, `pages`, `products`, `redirects`.
 
 ## Данные
 `getEditable()` — live-строка с наложенным pending-черновиком; список продуктов (для селекта);

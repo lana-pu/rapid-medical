@@ -193,12 +193,24 @@
 неопубликованная → правка на месте. Каждое сохранение — ревизия.
 **Одновременная правка:** сохранение несёт версию страницы; если её поменял другой человек —
 «This page was changed by {имя}. Reload to see their changes» и кнопка Reload, правка не применяется.
+**Обновление страницы не стирает ввод (2026-11-18):** после каждого изменения страница перечитывается с сервера. Поле,
+по которому кликнули в это время, открывается, когда обновление пришло (в статусе — «Updating the page — one moment…»);
+обновление, которое пришло во время ввода, ждёт, пока поле закроют. Раньше быстрая правка сразу после сохранения или
+публикации могла пропасть (найдено нестабильным e2e «history»).
 
 ## Публикация
 1. Publish → окно «Review changes»: список изменений словами («Changed text in Hero», «Added section Key numbers»,
    «Removed section Video», «Moved section Text», «Changed image in Benefits 2», «Changed variant of Hero»), кто и когда.
    Кнопки Publish now / Keep editing / Discard all changes (с подтверждением).
 2. После Publish → окно «Live now»: адрес страницы, «Open live page ↗», «Keep editing».
+
+## Проверка по PDF (материал из документа, 2026-11-18)
+Материал, собранный «Create from a document» (`docs/screens/admin-create-from-document.md`), проверяется и в редакторе:
+- в рейке — инструмент «Checked against the PDF» (✓) с числом непроверенных; панель — те же строки, что в карточке записи:
+  значение, подпись, «Found in the PDF» / «Confirmed by …» / «Check: причина», цитата, «Looks right»;
+- на странице цифры и строки паспорта с «Check» обведены жёлтым и подписаны «Check» (правка текста на месте не мешается);
+- «Review changes»: пока есть «Check» — строка «Check N values against the PDF first» и «Publish now» выключена; сервер
+  отказывает так же.
 
 ## История
 Панель справа: версии страницы новые сверху — «Published», «Saved», «Restored», кто, когда. «Restore this version» кладёт

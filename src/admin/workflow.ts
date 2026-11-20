@@ -1,4 +1,6 @@
 import "server-only";
+import { unchecked } from "@/lib/document-import";
+import type { DocumentCheck } from "@/db/schema";
 import { and, desc, eq, inArray, lte, isNotNull, sql } from "drizzle-orm";
 import { db, drafts, redirects, revisions, type Draft, type Revision } from "@/db";
 import type { SessionUser } from "@/lib/auth";
@@ -114,11 +116,23 @@ export async function saveWithWorkflow(
   return { id, pending: true };
 }
 
+/** A material built from a document still has values nobody checked against the PDF: it cannot go live. */
+export class ChecksPending extends Error {
+  constructor(public count: number) {
+    super(`Check ${count} value${count > 1 ? "s" : ""} against the PDF first (Checked against the PDF, on the right)`);
+  }
+}
+
 /** Make the draft (or the unpublished row) live; the draft row goes, with its schedule. */
 export async function publish(res: Resource, id: number, user: SessionUser): Promise<void> {
   const draft = await getDraft(res, id);
   const live = await getRow(res, id);
   if (!live) throw new Error("Record not found");
+  // «Create from a document»: every «Check» is looked at by a person before the page goes out (decision 2026-11-14)
+  if (res.slug === "materials") {
+    const open = unchecked((live.documentCheck as DocumentCheck | null)?.items).length;
+    if (open) throw new ChecksPending(open);
+  }
   const before = live.status === "published" ? (res.previewUrl?.(live) ?? null) : null; // the address visitors know
   const next = { ...(draft?.data ?? {}), status: "published" };
   await saveRow(res, id, next);

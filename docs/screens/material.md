@@ -2,15 +2,16 @@
 
 Решение владелицы 2026-11-15: своя страница у **каждой** публикации и новости (ADR-009, «материал»); исследования —
 по шаблону «Страница из документа» с паспортом и ключевыми цифрами (`docs/DESIGN.md → Страница из документа`, «Набор
-инфографики»). Ветка `site-redesign`. Общая сущность «материал» и «Create from a document» (BACKLOG п. 8) — следующий
-шаг; до него страницы строятся из записей `publications` и `news_items` как есть.
+инфографики»). С 2026-11-18 все страницы строятся из одной таблицы `materials` (ADR-009, шаг 1); «Create from a
+document» (BACKLOG п. 8) — следующий шаг.
 
 ## Адреса
-- Публикация: `/{region}/evidence/{id}-{slug}` — регион как у Evidence; публикации нет в регионе → 404.
-- Новость: `/news-events/{id}-{slug}` — глобально, как News & Events.
+- Материал в Evidence (`showInEvidence`): `/{region}/evidence/{id}-{slug}` — регион как у Evidence; нет в регионе → 404.
+- Материал в новостях (`showInNews`, без Evidence): `/news-events/{id}-{slug}` — глобально, как News & Events.
 - Решает `id`; slug — из заголовка (≤ 80 символов, по границе слова, без ™/®); другой slug → 308 на правильный.
-  Код: `src/lib/material.ts`.
-- Исследования — прежние страницы `pages`: `/{region}/success-study-final-results`, `/distals-results`, `/LongTerm_Outcomes`.
+  Код: `src/lib/material.ts`. Старый адрес новости (id до переноса 2026-11-18) → 308 на новый по `legacyRef`.
+- Материал со своим `slug` (перенесённые страницы) — по прежнему адресу: `/{region}/success-study-final-results`,
+  `/distals-results`, `/LongTerm_Outcomes`.
 
 ## Страница публикации `src/app/(site)/[seg]/evidence/[pub]/page.tsx`
 «← Evidence» (на архив), надпись «Publication · {продукт}», H1 (размер `long`), линия; «общая линия»:

@@ -64,3 +64,20 @@
 Выборка: `mediaIndex()` + `usageIn()` из `src/lib/media-usage.ts` по всем строкам `media`, копии — по SHA-1 файла в
 `public/`. Где на Duda — поиск имени файла (`+` вместо пробелов) в `content/raw/<host>/<page>.html`. Номера id — из
 локальной базы `main` на 2026-11-18; после перезаливки сида id могут смениться — сверять по имени файла.
+
+## Восстановлено 2026-11-18 (решение владелицы — «вернуть потерянное»; ветка `materials`, `content/seed/solutions.ts`)
+- **LVO (US, OUS, APAC):** «Gain active control» — Stair graph, «Accelerate thrombectomy» — график времени процедуры
+  (US/APAC `j4Uo8…`, OUS `DDCX…`), как на Duda; раньше у нас видео были сдвинуты на секцию.
+- **APAC Aneurysm:** «Leave nothing behind with COMANECI™» — видео-полоса с Blood Flow после вкладок; цитата Ajit S. Puri
+  с фото — первым отзывом во вкладке In-Practice (**отличие от Duda:** там это отдельная секция; блока «цитата врача
+  после вкладок» в наборе нет — новый вариант блока только через DESIGN.md).
+- **In-Practice, Aneurysm US / OUS / APAC — найдено попутно:** у карточек были сокращённые названия без врача и города
+  («COMANECI case summary», «COMANECI in practice» → SUCCESS). Теперь тексты, врачи и города как на Duda; у OUS и APAC
+  четвёртая карточка — отчёт Sandner (PDF), у US третья — случай Dr. Sabih Effendi (скриншот случая докачан в медиатеку);
+  у APAC добавлены две недостающие карточки (на Duda они вели на битый `/watch-recording` — у нас на страницу случая и
+  PDF, как в OUS).
+- «Not used»: 73 → 69.
+
+**Ждёт решения владелицы:** слайдер баннеров под «We remain at the forefront…» на Evidence (не выводился и до редизайна:
+вернуть ли и в каком виде); Featured по регионам (на Duda свой набор у каждого региона, у нас флаг общий — нужна
+модель «featured в регионах»); спецификации APAC Aneurysm (ANPP71xx) — после ответа Emily (письмо, вопрос 1).

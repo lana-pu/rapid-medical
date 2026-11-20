@@ -1,14 +1,12 @@
 import "server-only";
-import { newsHref, publicationHref } from "./material";
-import { REGIONS } from "./regions";
+import { materialPaths } from "./material";
 import { draftMode } from "next/headers";
 import { and, asc, desc, eq, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import {
   db,
   solutions,
-  publications,
-  newsItems,
+  materials,
   events,
   webinars,
   teamMembers,
@@ -19,6 +17,7 @@ import {
   drafts,
   type Region,
   type SitePageKey,
+  type Page,
 } from "@/db";
 import { pageSummary } from "@/blocks/stored";
 import { asViewedVersion } from "./version";
@@ -111,60 +110,70 @@ function regionFilter(table: { regions: PgColumn }, region: Region) {
   return or(sql`jsonb_array_length(${table.regions}) = 0`, sql`${table.regions} @> ${JSON.stringify([region])}::jsonb`);
 }
 
-/** All published publications, every region — the company-wide figure (About, Home). */
+/*  Materials (ADR-009): one table; where a material shows is its flags, not its table. Drafts are layered before the
+ *  flags are checked, so a pending «show in Evidence» is seen in preview. */
+const M = "materials";
+const inEvidence = (m: { showInEvidence: boolean }) => m.showInEvidence;
+const inNews = (m: { showInNews: boolean }) => m.showInNews;
+
+/** All published Evidence materials, every region — the company-wide figure (About, Home). */
 export async function getPublicationCount() {
-  const rows = await db.query.publications.findMany({ columns: { id: true }, where: await visible(publications.status) });
+  const rows = await db.select({ id: materials.id }).from(materials).where(and(await visible(materials.status), eq(materials.showInEvidence, true)));
   return rows.length;
 }
 
 export async function getPublications(region: Region) {
-  const rows = await db.query.publications.findMany({
-    where: and(await visible(publications.status), regionFilter(publications, region)),
+  const rows = await db.query.materials.findMany({
+    where: and(await visible(materials.status), regionFilter(materials, region)),
     with: { product: true },
-    orderBy: [desc(publications.publishedOn), desc(publications.id)],
+    orderBy: [desc(materials.publishedOn), desc(materials.id)],
   });
-  return overlay("publications", rows);
+  return (await overlay(M, rows)).filter(inEvidence);
 }
 
-/** One publication on its own page, if it is shown in this region (the same rule as Evidence). */
+/** One Evidence material on its own page, if it is shown in this region (the same rule as Evidence). */
 export async function getPublication(region: Region, id: number) {
-  const row = await db.query.publications.findFirst({
-    where: and(eq(publications.id, id), await visible(publications.status), regionFilter(publications, region)),
+  const row = await db.query.materials.findFirst({
+    where: and(eq(materials.id, id), await visible(materials.status), regionFilter(materials, region)),
     with: { product: true },
   });
-  return one("publications", row);
+  const m = await one(M, row);
+  return m && inEvidence(m) ? m : null;
 }
 
 export async function getFeaturedPublications(region: Region, limit = 3) {
-  const rows = await db.query.publications.findMany({
-    where: and(await visible(publications.status), eq(publications.featured, true), regionFilter(publications, region)),
-    orderBy: [desc(publications.publishedOn)],
-    limit,
+  const rows = await db.query.materials.findMany({
+    where: and(await visible(materials.status), sql`${materials.featuredRegions} @> ${JSON.stringify([region])}::jsonb`, regionFilter(materials, region)),
+    orderBy: [desc(materials.publishedOn), desc(materials.id)],
   });
-  return overlay("publications", rows);
+  // each region its own set (decision 2026-11-18); a pending draft's choice counts in preview
+  return (await overlay(M, rows)).filter((m) => inEvidence(m) && (m.featuredRegions ?? []).includes(region)).slice(0, limit);
 }
 
 export async function getNews(limit?: number) {
-  const rows = await db.query.newsItems.findMany({
-    where: await visible(newsItems.status),
-    orderBy: [desc(newsItems.publishedOn), desc(newsItems.id)],
-    limit,
+  const rows = await db.query.materials.findMany({
+    where: await visible(materials.status),
+    orderBy: [desc(materials.publishedOn), desc(materials.id)],
   });
-  return overlay("news", rows);
+  const list = (await overlay(M, rows)).filter(inNews);
+  return limit ? list.slice(0, limit) : list;
 }
 
-/** One news item on its own page. */
+/** One news material on its own page. */
 export async function getNewsItem(id: number) {
-  return one("news", await db.query.newsItems.findFirst({ where: and(eq(newsItems.id, id), await visible(newsItems.status)) }));
+  const m = await one(M, await db.query.materials.findFirst({ where: and(eq(materials.id, id), await visible(materials.status)) }));
+  return m && inNews(m) ? m : null;
+}
+
+/** The new id of a news item moved on 2026-11-18 (its old address keeps working: 308 to the new one). */
+export async function getMovedNewsId(oldId: number): Promise<number | null> {
+  const row = await db.query.materials.findFirst({ columns: { id: true }, where: eq(materials.legacyRef, `news_items:${oldId}`) });
+  return row?.id ?? null;
 }
 
 export async function getFeaturedNews(limit = 4) {
-  const rows = await db.query.newsItems.findMany({
-    where: and(await visible(newsItems.status), eq(newsItems.featured, true)),
-    orderBy: [desc(newsItems.publishedOn)],
-    limit,
-  });
-  return rows.length ? overlay("news", rows) : getNews(limit);
+  const featured = (await getNews()).filter((m) => m.featured);
+  return featured.length ? featured.slice(0, limit) : getNews(limit);
 }
 
 export async function getWebinars(region: Region) {
@@ -203,13 +212,29 @@ export async function getJob(slug: string) {
   return one("jobs", await db.query.jobs.findFirst({ where: and(eq(jobs.slug, slug), await visible(jobs.status)) }));
 }
 
-export async function getPage(slug: string, region: Region | null) {
-  return one(
+/** A text page (Privacy, Terms, landings) or a material kept at its old address (a moved study page); `resource` says which. */
+export type SitePageRow = Page & { resource: "pages" | "materials" };
+
+export async function getPage(slug: string, region: Region | null): Promise<SitePageRow | null> {
+  const page = await one(
     "pages",
     await db.query.pages.findFirst({
       where: and(eq(pages.slug, slug), region ? eq(pages.region, region) : isNull(pages.region), await visible(pages.status)),
     }),
   );
+  if (page) return { ...page, resource: "pages" };
+  // a material with its own address: one region → /{region}/{slug}, none → /{slug} (docs/screens/material.md)
+  const m = await one(
+    M,
+    await db.query.materials.findFirst({
+      where: and(eq(materials.slug, slug), sql`${materials.regions} = ${JSON.stringify(region ? [region] : [])}::jsonb`, await visible(materials.status)),
+    }),
+  );
+  if (!m || !m.slug) return null;
+  return {
+    id: m.id, slug: m.slug, region, title: m.title, bodyHtml: m.bodyHtml, blocks: m.blocks, metaTitle: m.metaTitle, metaDescription: m.metaDescription,
+    shareImageUrl: m.shareImageUrl, noindex: m.noindex, status: m.status, createdAt: m.createdAt, updatedAt: m.updatedAt, resource: "materials",
+  };
 }
 
 /** Home, About, Careers, Evidence, Therapies overview as block lists (ADR-007). Always live; drafts layered in preview. */
@@ -218,13 +243,13 @@ export async function getSitePage(key: SitePageKey, region: Region | null) {
 }
 
 export async function getAllPublicPaths(): Promise<string[]> {
-  const [sols, pgs, jb, ev, pubs, nws] = await Promise.all([
+  const [sols, pgs, jb, ev, mats] = await Promise.all([
     db.select({ slug: solutions.slug, region: solutions.region }).from(solutions).where(eq(solutions.status, "published")),
     db.select({ slug: pages.slug, region: pages.region, noindex: pages.noindex }).from(pages).where(eq(pages.status, "published")),
     db.select({ slug: jobs.slug }).from(jobs).where(eq(jobs.status, "published")),
     db.select({ slug: events.slug }).from(events).where(eq(events.status, "published")),
-    db.select({ id: publications.id, title: publications.title, regions: publications.regions }).from(publications).where(eq(publications.status, "published")),
-    db.select({ id: newsItems.id, title: newsItems.title }).from(newsItems).where(eq(newsItems.status, "published")),
+    db.select({ id: materials.id, title: materials.title, regions: materials.regions, slug: materials.slug, noindex: materials.noindex, showInEvidence: materials.showInEvidence, showInNews: materials.showInNews })
+      .from(materials).where(eq(materials.status, "published")),
   ]);
   return [
     "/", "/news-events", "/about-us", "/careers", "/contact-us",
@@ -233,8 +258,7 @@ export async function getAllPublicPaths(): Promise<string[]> {
     ...pgs.filter((p) => !p.noindex).map((p) => (p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`)),
     ...jb.map((j) => `/open-positions/${j.slug}`),
     ...ev.map((e) => `/events/${e.slug}`),
-    // own pages of publications (in each region that shows them, like Evidence) and news (docs/screens/material.md)
-    ...pubs.flatMap((p) => REGIONS.filter((r) => !(p.regions as string[] | null)?.length || (p.regions as string[]).includes(r)).map((r) => publicationHref(r, p))),
-    ...nws.map((n) => newsHref(n)),
+    // own pages of materials (docs/screens/material.md): a kept address; else Evidence (in each region that shows it) or News
+    ...mats.filter((m) => !m.noindex).flatMap((m) => materialPaths(m)),
   ];
 }

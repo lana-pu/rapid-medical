@@ -38,7 +38,7 @@ export default async function RegionalPage({ params }: { params: Promise<{ seg: 
   }
 
   return <>
-      {page.blocks?.length ? <PageMark r="pages" id={page.id} /> : null}
+      {page.blocks?.length ? <PageMark r={page.resource} id={page.id} /> : null}
       <BlockList blocks={textPageBlocks(page)} />
     </>;
 }
