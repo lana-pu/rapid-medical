@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { sql } from "./helpers";
 
 const PUBLIC = ["/", "/choose-your-location", "/us/therapies", "/ous/therapies", "/apac/therapies", "/ous/therapies/lvo", "/apac/therapies/mvo", "/us/therapies/aneurysm", "/us/evidence", "/ous/evidence", "/apac/evidence", "/ous/webinars", "/news-events", "/about-us", "/team/ronen", "/careers", "/open-positions", "/contact-us", "/privacy-statement", "/distals-results", "/ous/comparison-video", "/sitemap.xml", "/robots.txt"];
 
@@ -324,4 +325,22 @@ test("publications, news and studies have their own pages (docs/screens/material
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(doc.getByText("Text of this document")).toBeVisible();
   await expect(page.getByRole("link", { name: "Open PDF" })).toHaveCount(0);
+});
+
+test("News bar: off by default; switched on, the newest highlight above the header of Home only (docs/screens/home.md)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("a", { has: page.locator("b", { hasText: /^News$/ }) })).toHaveCount(0);
+  sql(`insert into site_settings(key, value) values ('newsBar', '{"enabled": true}'::jsonb) on conflict (key) do update set value = excluded.value`);
+  try {
+    const newest = sql("select title from materials where show_in_news and featured and status='published' order by published_on desc, id desc limit 1");
+    await page.goto("/");
+    const bar = page.locator("a", { has: page.locator("b", { hasText: /^News$/ }) });
+    await expect(bar).toContainText(newest);
+    await bar.click();
+    await expect(page.locator("h1")).toHaveText(newest);
+    await page.goto("/us/therapies");
+    await expect(page.locator("a", { has: page.locator("b", { hasText: /^News$/ }) })).toHaveCount(0);
+  } finally {
+    sql("delete from site_settings where key='newsBar'");
+  }
 });

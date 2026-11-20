@@ -12,7 +12,9 @@ import { viewingVersion } from "@/lib/version";
 import { REGION_LABELS } from "@/lib/regions";
 import { cookies } from "next/headers";
 import { getAllSettings } from "@/lib/settings";
-import { getSolutionsNav } from "@/lib/content";
+import { getFeaturedNews, getSolutionsNav } from "@/lib/content";
+import { NewsBar } from "@/components/site/NewsBar";
+import { materialPaths } from "@/lib/material";
 import { draftMode } from "next/headers";
 import { PreviewBanner } from "@/components/site/PreviewBanner";
 import { EditorLoader } from "@/components/editor/EditorLoader";
@@ -30,6 +32,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const branding = (settings.branding ?? {}) as { logoUrl?: string };
   const integrations = (settings.integrations ?? {}) as { gaMeasurementId?: string; userwayAccount?: string };
   const navigation = navigationFrom(settings.navigation);
+  // Site settings → News bar: the newest highlight above the header of Home (loaded only when switched on)
+  const bar = (settings.newsBar as { enabled?: boolean } | undefined)?.enabled ? (await getFeaturedNews(1)).find((n) => n.featured) : undefined;
+  const barHref = bar ? materialPaths(bar)[0] ?? bar.url : null;
   const notice = region === "us" ? regional.usNotice : region === "apac" ? regional.apacNotice : region === "ous" ? regional.ousNotice : undefined;
 
   return (
@@ -37,6 +42,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <VersionBanner />
       {dm.isEnabled && !editing && !viewing && <PreviewBanner />}
       {showSuggestion && suggested && <RegionBanner suggested={suggested} label={REGION_LABELS[suggested]} href={`/${suggested}/therapies`} />}
+      {bar && barHref && <NewsBar title={bar.title} href={barHref} />}
       <Header region={region} solutionsNav={nav} contact={contact} logoUrl={branding.logoUrl} nav={navigation} />
       <div className="flex-1">{children}</div>
       <Footer contact={contact} social={social} region={region} regionalNotice={notice} nav={navigation} />
