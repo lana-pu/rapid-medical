@@ -53,10 +53,18 @@ export function findNct(text: string): string | null {
 /** Letters, digits and % only, lower case: spaces, line breaks, hyphenation, ligatures and punctuation do not matter. */
 export const compact = (s: string) => s.normalize("NFKC").toLowerCase().replace(/[^a-z0-9%]/g, "");
 
-/** The quote is in the document, word for word (ignoring spacing and punctuation). Short fragments prove nothing. */
+/**
+ * The quote is in the document, word for word (ignoring spacing and punctuation). A short one (6–11 characters, e.g. a
+ * table row «A1 1.6% (1) (0) 1» of a slide) counts only where it stands once in the whole document — then it is clear
+ * where it is; shorter fragments prove nothing.
+ */
 export function quoteFound(text: string, quote: string): boolean {
   const q = compact(quote);
-  return q.length >= 12 && compact(text).includes(q);
+  const t = compact(text);
+  if (q.length >= 12) return t.includes(q);
+  if (q.length < 6) return false;
+  const i = t.indexOf(q);
+  return i >= 0 && t.indexOf(q, i + 1) < 0;
 }
 
 const numbers = (s: string) => (s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", "."));
@@ -253,8 +261,12 @@ export type CheckItem = {
 /** One quoted value checked against the document. */
 export function checkQuoted(text: string, part: CheckItem["part"], i: number, x: { label: string; value: string; quote: string }, src: DocSource = "pdf"): CheckItem {
   const base = { id: `${part}-${i}`, part, label: x.label, value: x.value, quote: x.quote };
-  if (compact(x.quote).length < 12) return { ...base, status: "check", reason: `The quote is too short to check — look at ${sourceName(src)}` };
-  if (!quoteFound(text, x.quote)) return { ...base, status: "check", reason: `The quote is not in ${sourceName(src)}` };
+  const q = compact(x.quote);
+  if (q.length < 6) return { ...base, status: "check", reason: `The quote is too short to check — look at ${sourceName(src)}` };
+  if (!quoteFound(text, x.quote)) {
+    const many = q.length < 12 && compact(text).includes(q);
+    return { ...base, status: "check", reason: many ? `The quote is too short to tell where it stands — look at ${sourceName(src)}` : `The quote is not in ${sourceName(src)}` };
+  }
   if (!valueInQuote(x.value, x.quote)) return { ...base, status: "check", reason: "The number is not in the quote" };
   return { ...base, status: "ok" };
 }

@@ -37,7 +37,15 @@ describe("a quote is checked against the PDF's text", () => {
     expect(quoteFound(SUCCESS, "Wide-necked aneurysms were treated")).toBe(true); // «Wide- necked»
     expect(quoteFound(SUCCESS, "Successful occlusion was 99% at one year")).toBe(false);
     expect(quoteFound(SUCCESS, "95%")).toBe(false);
-    expect(checkQuoted(SUCCESS, "figures", 0, { value: "95%", label: "x", quote: "95% at 6m" }).reason).toMatch(/too short to check/);
+    expect(checkQuoted(SUCCESS, "figures", 0, { value: "95%", label: "x", quote: "95% at" }).reason).toMatch(/too short to check/);
+    expect(checkQuoted(SUCCESS, "figures", 0, { value: "95%", label: "x", quote: "95% at 6m" }).reason).toMatch(/not in the PDF/);
+  });
+  it("a short quote (6–11 characters) counts where it stands once in the document — a table row of a slide", () => {
+    const slide = "A1 1.6% (1) (0) 1\nA2 4.9% (3) 7.0% (4) 0.7\nTreatment n=51 Control n=47\nControl n=47";
+    expect(quoteFound(slide, "A1 1.6% (1) (0) 1")).toBe(true);
+    expect(checkQuoted(slide, "figures", 0, { value: "1.6%", label: "A1", quote: "A1 1.6% (1) (0) 1" }).status).toBe("ok");
+    expect(quoteFound(slide, "Control n=47")).toBe(false); // twice: it is not clear which
+    expect(checkQuoted(slide, "figures", 0, { value: "47", label: "n", quote: "Control n=47" }).reason).toMatch(/too short to tell where it stands/);
   });
   it("the value's numbers must be in the quote", () => {
     expect(valueInQuote("95%", "86% at the end of the procedure and 95% at the 6-month follow-up")).toBe(true);
