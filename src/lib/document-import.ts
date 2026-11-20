@@ -53,19 +53,26 @@ export function findNct(text: string): string | null {
 /** Letters, digits and % only, lower case: spaces, line breaks, hyphenation, ligatures and punctuation do not matter. */
 export const compact = (s: string) => s.normalize("NFKC").toLowerCase().replace(/[^a-z0-9%]/g, "");
 
+/** Words with their boundaries kept: « a1 1 6% 1 0 1 » — a short quote must line up with whole words of the document. */
+const words = (s: string) => ` ${s.normalize("NFKC").toLowerCase().replace(/(\w)-\s*\n\s*(\w)/g, "$1$2").replace(/[^a-z0-9%]+/g, " ").trim()} `;
+
 /**
  * The quote is in the document, word for word (ignoring spacing and punctuation). A short one (6–11 characters, e.g. a
- * table row «A1 1.6% (1) (0) 1» of a slide) counts only where it stands once in the whole document — then it is clear
- * where it is; shorter fragments prove nothing.
+ * table row «A1 1.6% (1) (0) 1» of a slide) counts only when it is whole words of the document (not a piece of a longer
+ * number or word), carries a word of its own besides the numbers (a label), and stands once in the whole document — then
+ * it is clear where it is (security review 2026-11-20). Shorter fragments prove nothing.
  */
 export function quoteFound(text: string, quote: string): boolean {
   const q = compact(quote);
-  const t = compact(text);
-  if (q.length >= 12) return t.includes(q);
-  if (q.length < 6) return false;
-  const i = t.indexOf(q);
-  return i >= 0 && t.indexOf(q, i + 1) < 0;
+  if (q.length >= 12) return compact(text).includes(q);
+  if (q.length < 6 || !shortQuoteHasLabel(quote)) return false;
+  const w = words(quote);
+  const t = words(text);
+  const i = t.indexOf(w);
+  return i >= 0 && t.indexOf(w, i + 1) < 0;
 }
+/** a short quote has to say what its numbers are: at least one word with a letter («A1», «Control», «P») */
+const shortQuoteHasLabel = (quote: string) => words(quote).trim().split(" ").some((w) => /[a-z]/.test(w));
 
 const numbers = (s: string) => (s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", "."));
 /** «seven patients… six of them» — articles write small counts in words (T13, 2026-11-18) */
@@ -264,8 +271,8 @@ export function checkQuoted(text: string, part: CheckItem["part"], i: number, x:
   const q = compact(x.quote);
   if (q.length < 6) return { ...base, status: "check", reason: `The quote is too short to check — look at ${sourceName(src)}` };
   if (!quoteFound(text, x.quote)) {
-    const many = q.length < 12 && compact(text).includes(q);
-    return { ...base, status: "check", reason: many ? `The quote is too short to tell where it stands — look at ${sourceName(src)}` : `The quote is not in ${sourceName(src)}` };
+    const short = q.length < 12 && compact(text).includes(q);
+    return { ...base, status: "check", reason: short ? `The quote is too short to tell where it stands — look at ${sourceName(src)}` : `The quote is not in ${sourceName(src)}` };
   }
   if (!valueInQuote(x.value, x.quote)) return { ...base, status: "check", reason: "The number is not in the quote" };
   return { ...base, status: "ok" };

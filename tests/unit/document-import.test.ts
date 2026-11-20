@@ -45,6 +45,11 @@ describe("a quote is checked against the PDF's text", () => {
     expect(quoteFound(slide, "A1 1.6% (1) (0) 1")).toBe(true);
     expect(checkQuoted(slide, "figures", 0, { value: "1.6%", label: "A1", quote: "A1 1.6% (1) (0) 1" }).status).toBe("ok");
     expect(quoteFound(slide, "Control n=47")).toBe(false); // twice: it is not clear which
+    // whole words only: «2 4.9% (3) 7» starts inside «A2»
+    expect(quoteFound(slide, "2 4.9% (3) 7.0%")).toBe(false);
+    expect(quoteFound("Rates were 11.6% (1) (0) 1 overall; A1 1.6% (1) (0) 1", "A1 1.6% (1) (0) 1")).toBe(true);
+    expect(quoteFound("Rate 51.6% (1) (0) 1", "1.6% (1) (0) 1")).toBe(false); // numbers only, and a piece of 51.6
+    expect(quoteFound("Rate 1.6% (1) (0) 1", "1.6% (1) (0) 1")).toBe(false); // numbers only: no label
     expect(checkQuoted(slide, "figures", 0, { value: "47", label: "n", quote: "Control n=47" }).reason).toMatch(/too short to tell where it stands/);
   });
   it("the value's numbers must be in the quote", () => {
