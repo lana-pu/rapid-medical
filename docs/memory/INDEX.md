@@ -40,6 +40,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-20 | Вайрфреймы рисуют настоящие блоки сайта: снимок через `BlockList`, серая тема токенов, «как было» — кодом до редизайна | [2026-11-20-wireframes-real-blocks.md](sessions/2026-11-20-wireframes-real-blocks.md) |
 | 2026-11-15 | Админка глазами пользователя: дашборд, Inbox как Gmail, экран страницы, Settings блоками, Google-тексты, медиатека по группам | [2026-11-15-admin-ux.md](sessions/2026-11-15-admin-ux.md) |
 | 2026-11-15 | Закрытые страницы сайта в коде (ветка `site-redesign`): Contact, Legal, About, Careers, обзор терапий, окно региона | [2026-11-15-site-redesign-code.md](sessions/2026-11-15-site-redesign-code.md) |
 | 2026-11-14 | Страницы сайта на вайрфреймах по одной: 7 закрыто, страница из документа, ADR-009, Evidence-ресёрч | [2026-11-14-site-pages-wireframes.md](sessions/2026-11-14-site-pages-wireframes.md) |
