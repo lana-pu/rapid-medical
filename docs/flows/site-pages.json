@@ -600,7 +600,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -609,7 +610,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Let’s connect",
-       "body": "Please provide a few contact details below."
+       "body": "Please provide a few contact details below.",
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -625,13 +627,16 @@
        ],
        "defaultTopic": "Request a demo",
        "defaultRegion": "Americas",
-       "annotation": "Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About."
+       "annotation": "Как есть (снимок сайта 2026-11-11): заголовок и одна форма из 12 полей. Тема — выпадающий список из 7 пунктов; Region — 4 варианта против 3 регионов сайта; телефонов и срока ответа нет — они только на About.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -643,7 +648,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -652,7 +658,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Let’s connect",
-       "body": "Please provide a few contact details below."
+       "body": "Please provide a few contact details below.",
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -667,13 +674,16 @@
         "Other"
        ],
        "defaultTopic": "Request a demo",
-       "defaultRegion": "Americas"
+       "defaultRegion": "Americas",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -1000,7 +1010,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -1234,7 +1245,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -1246,7 +1258,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -1482,7 +1495,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -1494,7 +1508,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -1640,7 +1655,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -1652,7 +1668,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -1833,7 +1850,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -1848,7 +1866,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -1856,19 +1875,23 @@
       {
        "c": "rm-hero",
        "v": "page",
-       "title": "Terms of Use"
+       "title": "Terms of Use",
+       "asis": true
       },
       {
        "c": "rm-richText",
        "v": "default",
        "html": "<h3>Last Revised: January 8, 2024</h3>\n<p>Rapid Medical Ltd. (“Rapid Medical”, “we”, “our” or “us”) welcomes you (the “User(s)”, or “you”) to our website at: <a href=\"https://rapid-medical.com/\">https://rapid-medical.com/</a> and its subdomains (collectively, the “Site”). Each of the Site’s Users may use the Site in accordance with the terms and conditions hereunder.</p>\n<h4>1. Acceptance of the Terms</h4>\n<p>By entering, connecting to, accessing or using the Site, you acknowledge that you have read and understood the following terms of use, including the terms of our Privacy Statement available at: <a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a> (the “Privacy Statement”) (collectively, the “Terms”) and you agree to be bound by them and to comply with all applicable laws and regulations regarding your use of the Site and you acknowledge that these Terms constitute a binding and enforceable legal contract between Rapid Medical and you. IF YOU DO NOT AGREE TO THESE TERMS, PLEASE DO NOT ENTER, CONNECT TO, ACCESS OR USE THE SITE IN ANY MANNER.</p>\n<p><a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a></p>\n<p>The Site is available only to individuals who (a) are at least sixteen (16) years old; and (b) possess the legal capacity to enter into these Terms (on behalf of themselves and their organization, as applicable) and to form a binding agreement under any applicable law. You hereby represent that you possess the legal authority to enter into these Terms on your and your organization&#39;s behalf and to form a binding agreement under any applicable law, to use the Site in accordance with these Terms, and to fully perform your obligations hereunder. For the avoidance of doubt, any act or omission performed by you in connection with the Site shall obligate your organization.</p>\n<h6>2. The Site</h6>\n<p>The Site provides comprehensive information regarding Rapid Medical, our products, and our activities and includes, inter-alia, an overview of, and news regarding Rapid Medical, our products, technology, clinical publications, blog, job opportunities, and so forth, including any other content related thereto such as contact information, videos, text, files, logos, button icons, images, data compilations, links, other specialized content, technical data, documentation, know-how, specifications materials, designs, data, the &quot;look and feel&quot; of the Site, algorithms, source and object code, interface, GUI, interactive features related graphics, illustrations, drawings, animations, and other features obtained from or through the Site (collectively, the “Content”).</p>\n<p>The Content does not bind us in any form, and in any case, where the Content contradicts or is inconsistent with any information supplied by us to you directly, such information shall prevail. For the avoidance of doubt, the Site serves only as an informative marketing tool, and engagements of any sort with us shall only be created via a separate agreement.</p>\n<p>ALL RIGHTS IN AND TO THE CONTENT AVAILABLE ON THE SITE ARE RESERVED TO RAPID MEDICAL OR ITS LICENSORS. TO THE EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT AVAILABLE THEREIN ARE PROVIDED ON AN “AS IS” BASIS. RAPID MEDICAL WILL NOT BE LIABLE FOR ANY DAMAGES OR LOSS INCURRED TO YOU OR ANY OTHER PERSON AS A RESULT OF OR IN CONNECTION WITH YOUR USE OF THE SITE AND/OR THE CONTENT AVAILABLE THEREIN.</p>\n<p>You hereby acknowledge and agree that you may be charged for Internet, maintenance of network connection and data usage charges made through use of the Site, according to the applicable rates charged by your respective third party Internet and data usage service provider as may be from time to time.</p>\n<h6>3. Use Restrictions</h6>\n<p>There are certain conducts which are strictly prohibited when using the Site. Please read the following restrictions carefully. Failure to comply with any of the provisions set forth herein may result (at Rapid Medical’s sole discretion) in the termination of your use of the Site and/or Content and may also expose you to civil and/or criminal liability.</p>\n<p>Unless otherwise explicitly permitted under these Terms or in writing by us, you may not (and you may not permit anyone to: (a) use the Site and/or the Content for any illegal, immoral, unlawful and/or unauthorized purposes; (b) use the Site and/or Content for non-personal or commercial purposes; (c) remove or disassociate, from the Content and/or the Site any restrictions and signs indicating proprietary rights of Rapid Medical or its licensors, including but not limited to any proprietary notices contained in such materials (such as ©,™, or ®); (d) interfere with or violate Users&#39; rights to privacy and other rights, or harvest or collect personally identifiable information about Users without their express consent, whether manually or with the use of any robot, spider, crawler, any search or retrieval application, or use other manual or automatic device, process or method to access the Site and retrieve, index and/or data-mine information; (e) interfere with or disrupt the operation of the Site or the servers or networks that host the Site, or disobey any laws, regulations, requirements, procedures, or policies of such servers or networks; (f) falsely state or otherwise misrepresent your affiliation with any person or entity, or express or imply that Rapid Medical endorses you, your site, your business or any statement you make, or present false or inaccurate information about the Site and/or the Content; (g) take any action that imposes, or may impose, an unreasonable or disproportionately large load on our Site infrastructure, as determined by us; (h) bypass any measures we may use to prevent or restrict access to the Site; (i) copy, modify, alter, adapt, make available, translate, port, reverse engineer, decompile, or disassemble any portion of the Content made accessible by Rapid Medical on or through the Site, or publicly display, reproduce, create derivative works from, perform, distribute, or otherwise use such Content; (j) copy, distribute, display, execute publicly, make available to the public, reduce to human readable form, decompile, disassemble, adapt, sublicense, make any commercial use, sell, rent, transfer, lend, process, compile, reverse engineer, combine with other software, translate, modify or create derivative works of any material that is subject to Rapid Medical&#39;s proprietary rights, including Rapid Medical&#39;s Intellectual Property (as such term is defined below), in any way or by any means; (k) make any use of the Content on any other site or networked computer environment for any purpose without Rapid Medical’s prior written consent; (l) create a browser or border environment around Rapid Medical Content (no frames or inline linking is allowed); (m) sell, license, or exploit for any commercial purposes any use of or access to the Site and/or the Content; (n) frame or mirror any part of the Site without Rapid Medical&#39;s prior express written authorization; (o) create a database by systematically downloading and storing all or any of the Content from the Site; (p) transmit or otherwise make available in connection with the Site any virus, worm, Trojan Horse, time bomb, web bug, spyware, or any other computer code, file, or program that may or is intended to damage or hijack the operation of any hardware, software, or telecommunications equipment, or any other actually or potentially harmful, disruptive, or invasive code or component; (q) use the Site and/or the Content for any purpose for which they are not intended; and/or (r) infringe and/or violate any of the Terms.</p>\n<h6>4. Privacy Statement</h6>\n<p>We respect your privacy and are committed to protecting the information you share with us. We believe that you have a right to know our practices regarding the information we collect when you connect to, access or use the Site. Our policy and practices and the type of information collected via the Site are described in detail in our Privacy Statement, which is incorporated herein by reference. You agree that we may use personal information that you provide or make available to us in accordance with the Privacy Statement. If you intend to access or use the Site, you must first read and agree to the Privacy Statement.</p>\n<h6>5. Intellectual Property Rights</h6>\n<p>The Site, the Content and Rapid Medical&#39;s proprietary assets and any and all intellectual property rights pertaining thereto, including, but not limited to, inventions, patents and patent applications, trademarks, trade names, service marks, copyrightable materials, domain names and trade secrets, whether or not registered or capable of being registered (collectively, “Intellectual Property”), are owned by and/or licensed to Rapid Medical and are protected by applicable patent, copyright and other intellectual property laws and international conventions and treaties. All rights not expressly granted to you hereunder are reserved by Rapid Medical and its licensors. The Terms do not convey to you an interest in or to Rapid Medical&#39;s Intellectual Property but only a limited revocable right of use in accordance with the Terms. Nothing in the Terms constitutes a waiver of Rapid Medical’s Intellectual Property under any law.</p>\n<p>To the extent you provide any feedback, comments or suggestions to Rapid Medical (“Feedback”), Rapid Medical shall have an exclusive, royalty-free, fully paid up, worldwide, perpetual and irrevocable license to incorporate the Feedback into any Rapid Medical current or future services and/or activities and use same for any purpose all without further compensation to you and without your approval. You agree that all such Feedback shall be deemed to be non-confidential. Further, you warrant that your Feedback is not subject to any license terms that would purport to require Rapid Medical to comply with any additional obligations with respect to any Rapid Medical current or future products, technologies or services that incorporate any Feedback.</p>\n<h6>6. Trademarks and Trade names</h6>\n<p>Rapid Medical’s marks and logos and all other proprietary identifiers used by Rapid Medical in connection with the Site (“Rapid Medical&#39;s Trademarks”) are all trademarks and/or trade names of Rapid Medical, whether or not registered. All other trademarks, service marks, trade names and logos which may appear on the Site belong to their respective owners (“Third Party Marks”). No right, license, or interest to Rapid Medical&#39;s Trademarks and the Third Party Marks is granted hereunder, and you agree that no such right, license, or interest may be asserted by you with respect thereto and therefore you will avoid using any of those marks, except as permitted herein.</p>\n<h3>7. Linking to our Site and links to Third Party Sites</h3>\n<p>We welcome links to any page on our Site. You are free to establish a hypertext link to the Site so long as the link does not state or imply any connection or approval of your website, products and/or services by Rapid Medical and does not portray Rapid Medical in a false or otherwise offensive manner. You may not link to our Site from a site that you do not own or have permission to use. If you link to the Site you represent that your site does not contain content that is unlawful, offensive or infringing third party rights. However, we do not permit framing or inline linking.</p>\n<p>Certain links provided herein permit our Users to leave this Site and enter non-Rapid Medical sites or services (such as LinkedIn). Those linked sites and services are provided solely as a convenience to you. These linked sites and services are not under the control of Rapid Medical and it is not responsible for the availability of such external sites or services, and does not endorse and is not responsible or liable for any content including but not limited to content advertising, products or other information on or available from such linked sites and services or any link contained in linked sites or service. In addition, Rapid Medical is not responsible or liable for such linked sites and services&#39; privacy practices and/or any other practices. Your access to, use of and reliance upon any such sites, services and content and your dealings with such third parties are at your sole risk and expense. Rapid Medical reserves the right to terminate any link at any time. You further acknowledge and agree that Rapid Medical shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused, by or in connection with use of or reliance on any services, content, products or other materials available on or through such linked sites or resource. Most of such linked sites and services provide legal documents, including terms of use and privacy policy, governing the use thereof. It is always advisable, and we encourage you to read such documents carefully before using those sites and services, inter alia, in order to know what kind of information about you is being collected.</p>\n<h3>8. Availability</h3>\n<p>The Site’s availability and functionality depend on various factors, such as communication networks. Rapid Medical does not warrant or guarantee that the Site will operate and/or be available at all times without disruption or interruption, or that it will be immune from unauthorized access or error-free.</p>\n<h3>9. Changes to The Site</h3>\n<p>Rapid Medical reserves the right to modify, correct, amend, enhance, improve, make any other changes to, or discontinue, temporarily or permanently this Site (or any part thereof, including but not limited to the Content) without notice, at any time. In addition, you hereby acknowledge that the Content provided under this Site may be changed, extended in terms of content and form or removed at any time without any notice to you. You agree that Rapid Medical shall not be liable to you or to any third party for any modification, suspension, or discontinuance of this Site or the Content included therein. You hereby agree that Rapid Medical is not responsible for any errors or malfunctions that may occur in connection with the performance of such changes.</p>\n<h3>10. Disclaimers and No Warranties</h3>\n<p>TO THE FULLEST EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT ARE PROVIDED ON AN “AS IS”, “WITH ALL FAULTS” AND “AS AVAILABLE” BASIS, AND RAPID MEDICAL, INCLUDING ITS VENDORS, OFFICERS, SHAREHOLDERS, SUB-CONTRACTORS, DIRECTORS, EMPLOYEES, AFFILIATES, SUBSIDIARIES, LICENSORS, AGENTS AND SUPPLIERS (COLLECTIVELY, &quot;RAPID MEDICAL&#39;S REPRESENTATIVES&quot;), DISCLAIM ALL WARRANTIES OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF TITLE OR NON-INFRINGEMENT OR IMPLIED WARRANTIES OF USE, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE AND THOSE ARISING FROM A COURSE OF DEALING OR USAGE OF TRADE. YOU MAY HAVE ADDITIONAL CONSUMER RIGHTS UNDER YOUR LOCAL LAWS THAT THIS AGREEMENT CANNOT CHANGE. RAPID MEDICAL AND RAPID MEDICAL&#39;S REPRESENTATIVES DISCLAIM ALL WARRANTIES AND CONDITIONS CONCERNING THE USE OF THE SITE, INCLUDING BUT NOT LIMITED TO THE AVAILABILITY, RELIABILITY OR QUALITY OF THE SITE, AND ARE NOT AND SHALL NOT BE RESPONSIBLE FOR ANY ERROR, FAULT OR MISTAKE RELATED TO ANY CONTENT AND/OR INFORMATION DISPLAYED WITHIN THE SITE.</p>\n<p>WE NOTE THAT THESE TERMS GOVERN SOLELY THE USE OF THE SITE. ALL DISCLAIMERS AND WARRANTIES REGARDING ANY PRODUCTS OR SERVICES OFFERED BY RAPID MEDICAL, SHALL BE GOVERNED BY THE TERMS OF SERVICES REFLECTED IN A SEPARATE AGREEMENT BETWEEN RAPID MEDICAL AND ITS PRODUCTS’ AND SERVICES’ USERS.</p>\n<p>WE DO NOT WARRANT (I) THAT THE USE AND OPERATION OF THE SITE AND/OR THE CONTENT IS OR WILL BE SECURE, TIMELY, ACCURATE, COMPLETE, UNINTERRUPTED, WITHOUT ERRORS, OR FREE OF VIRUSES, DEFECTS, WORMS, OTHER HARMFUL COMPONENTS OR OTHER PROGRAM LIMITATIONS, (II) THAT WE WILL CORRECT ANY ERRORS OR DEFECTS IN THE SITE, (III) AND/OR MAKE ANY REPRESENTATION REGARDING THE USE, INABILITY TO USE OR OPERATE, OR THE RESULTS OF THE USE OF THE SITE AND/OR CONTENT AVAILABLE THEREON OR THROUGH THE SITE (INCLUDING THAT THE RESULTS OF USING THE SITE WILL MEET YOUR REQUIREMENTS).</p>\n<p>YOU AGREE THAT THE USE OF THE SITE AND/OR THE CONTENT THEREIN IS ENTIRELY AT YOUR OWN RISK. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>11. Limitation of Liability</h3>\n<p>TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, IN NO EVENT SHALL RAPID MEDICAL, INCLUDING RAPID MEDICAL&#39;S REPRESENTATIVES BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL, PUNITIVE, EXEMPLARY, INCIDENTAL OR CONSEQUENTIAL DAMAGES OF ANY KIND, UNDER ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION, CONTRACT, NEGLIGENCE, TORT OR STRICT LIABILITY), INCLUDING, WITHOUT LIMITATION, LOSS OF GOODWILL, PROFITS OR DATA AND BUSINESS INTERRUPTION, ARISING HEREUNDER, RESULTING FROM OR ARISING OUT OF THE SITE AND/OR THE CONTENT ANY COMMUNICATIONS AND INTERACTIONS OR MEETINGS WITH USERS OF THE SITE OR OTHER PERSONS WITH WHOM YOU COMMUNICATE AS A RESULT OF YOUR USE OF THE SITE AND/OR THE CONTENT, YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT AND/OR THE FAILURE OF THE SITE TO PERFORM AS REPRESENTED OR EXPECTED, OR FROM ANY CONTENT, OR FROM THE PERFORMANCE OR FAILURE OF RAPID MEDICAL TO PERFORM UNDER THESE TERMS, ANY OTHER ACT OR OMISSION OF RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES BY ANY OTHER CAUSE WHATSOEVER; OR BASED UPON BREACH OF WARRANTY, GUARANTEE OR CONDITION, BREACH OF CONTRACT, NEGLIGENCE, STRICT LIABILITY, TORT, OR ANY OTHER LEGAL THEORY, REGARDLESS OF WHETHER RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>\n<p>IN ANY CASE, WITHOUT LIMITING THE GENERALITY OF THE FOREGOING AND TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, RAPID MEDICAL&#39;S AND RAPID MEDICAL&#39;S REPRESENTATIVES&#39; TOTAL AGGREGATE LIABILITY FOR ALL DAMAGES OR LOSSES WHATSOEVER ARISING HEREUNDER OR IN CONNECTION WITH YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT SHALL BE LIMITED TO THE AMOUNT ACTUALLY PAID BY YOU, IF ANY, TO RAPID MEDICAL FOR USE OF THE SITE OR $US 1.00, WHICHEVER IS GREATER. YOU WILL NOT, AND WAIVE ANY RIGHT TO, SEEK TO RECOVER ANY OTHER DAMAGES, INCLUDING CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL DAMAGES FROM US AND FROM RAPID MEDICAL’S REPRESENTATIVES. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>12. Indemnification</h3>\n<p>You agree to defend, indemnify and hold harmless Rapid Medical, including Rapid Medical&#39;s Representatives from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including but not limited to attorney&#39;s fees) arising from: (i) your use, misuse of, inability to use and/or activities in connection with the Site and/or Content; (ii) your violation of any of these Terms; (iii) your violation of any third party rights, including without limitation any intellectual property rights or privacy right of such third party, in connection with your use of the Site; and (iv) any damage of any sort, whether direct, indirect, special or consequential, you may cause to any third party with relation to the Site. It is hereby clarified that this defense and indemnification obligation will survive these Terms.</p>\n<p>Without derogating from the foregoing, we reserve the right to assume the exclusive defense and control of any matter which is subject to indemnification by you, which will not excuse your indemnity obligations hereunder and in which event you will fully cooperate with us in asserting any available defense. You agree not to settle any matter subject to an indemnification by you without first obtaining our prior express written approval.</p>\n<h3>13. Amendments to the Terms</h3>\n<p>Rapid Medical may, at its sole discretion, change the Terms from time to time, including any other policies incorporated thereto, so please re-visit this page frequently. In case of any material change, we will make reasonable efforts to post a clear notice on the Site and/or will send you an e-mail (to the extent that you provided us with such e-mail address) regarding such change. Such material changes will take effect seven (7) days after such notice was provided on our Site or sent to you via e-mail, whichever is earlier. Otherwise, all other changes to these Terms are effective as of the stated “Last Revised” date and your continued use of the Site on or after the Last Revised date will constitute acceptance of, and agreement to be bound by, those changes. In the event that the Terms should be amended to comply with any legal requirements, the amendments may take effect immediately, or as required by the law and without any prior notice.</p>\n<h3>14. Termination of these Terms and the Termination of the Site&#39;s operation</h3>\n<p>At any time, Rapid Medical may without notice discontinue your use of the Site, at its sole discretion, in addition to any other remedies that may be available to us under any applicable law. Additionally, we may at any time, at our sole discretion, cease the operation of the Site or any part thereof, temporarily or permanently, delete any information or Content from the Site or correct, modify, amend, enhance, improve and make any other changes thereto or discontinue displaying or providing any information, Content or features therein without giving any prior notice. You agree and acknowledge that Rapid Medical does not assume any responsibility with respect to, or in connection with the termination of the Site&#39;s operation and loss of any data. The provisions of these Terms that, by their nature and content, must survive the termination of these Terms in order to achieve the fundamental purposes of these Terms shall so survive. Without limiting the generality of the forgoing, the Intellectual Property, Disclaimers and No Warranties, Limitation of Liability, Indemnification, and General sections will survive the termination of the Terms.</p>\n<h3>15. General</h3>\n<p>(a) These Terms constitute the entire terms and conditions between you and Rapid Medical relating to the subject matter herein and supersedes any and all prior written or oral agreements or understandings between you and Rapid Medical, (b) any claim relating to the Site, the Content and/or the Terms or the use thereof will be governed by and interpreted in accordance with the laws of the State of Israel without reference to its conflict-of-laws principles and the United Nations Convention Relating to a Uniform Law on the International Sale of Goods may not be applied, (c) any dispute arising out of or related to the Site and/or the Content will be brought in, and you hereby consent to exclusive jurisdiction and venue in, the competent courts located in the city of Tel-Aviv, Israel. You agree to waive all defenses of lack of personal jurisdiction and forum non-convenience and agree that the process may be served in a manner authorized by applicable law or court rule. Notwithstanding the foregoing, we may seek injunctive relief in any court of competent jurisdiction, (d) these Terms do not, and shall not be construed to create any relationship, partnership, joint venture, employer-employee, agency, or franchisor-franchisee relationship between the parties hereto, (e) no waiver by either party of any breach or default hereunder will be deemed to be a waiver of any preceding or subsequent breach or default. Any heading, caption, or section title contained herein is inserted only as a matter of convenience, and in no way defines or explains any section or provision hereof, (f) YOU ACKNOWLEDGE AND AGREE THAT ANY CAUSE OF ACTION THAT YOU MAY HAVE ARISING OUT OF, OR RELATED TO, THE SITE MUST COMMENCE WITHIN ONE (1) YEAR AFTER THE CAUSE OF ACTION ACCRUES. OTHERWISE, SUCH CAUSE OF ACTION IS PERMANENTLY BARRED, (g) if any provision hereof is adjudged by any court of competent jurisdiction to be unenforceable, that provision shall be limited or eliminated to the minimum extent necessary so that these Terms shall otherwise remain in full force and effect while most nearly adhering to the intent expressed herein, (h) you may not assign or transfer these Terms (including all rights and obligations hereunder) without our prior written consent and any attempt to do so in violation of the foregoing shall be void. We may assign these Terms without restriction or notification, and (i) no amendment hereof will be binding unless in writing and signed by us.</p>\n<h3>16. Have any Questions?</h3>\n<p>If you have any questions (or comments) concerning these Terms, you are most welcome to send us an e-mail to the following address: <a href=\"mailto:info@rapid-medical.com\">info@rapid-medical.com</a>.</p>\n<hr>\n",
-       "annotation": "Как есть: заголовок и сплошной текст в одну колонку. Дата редакции — подзаголовком внутри текста; оглавления нет, а Terms и Privacy — длинные (десятки разделов). Между 4 юридическими страницами переход только через футер."
+       "annotation": "Как есть: заголовок и сплошной текст в одну колонку. Дата редакции — подзаголовком внутри текста; оглавления нет, а Terms и Privacy — длинные (десятки разделов). Между 4 юридическими страницами переход только через футер.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -1879,7 +1902,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -1888,19 +1912,23 @@
        "c": "rm-hero",
        "v": "page",
        "eyebrow": "Americas",
-       "title": "SUCCESS Study – Final Results"
+       "title": "SUCCESS Study – Final Results",
+       "asis": true
       },
       {
        "c": "rm-richText",
        "v": "default",
        "html": "<p><img src=\"/uploads/duda/Screenshot-2025-07-21-at-8.49.02-AM-602312.png?jxl&amp;v=jxl\" alt=\"\"></p>\n",
-       "annotation": "Как есть: страница исследования — одна картинка-скриншот (Screenshot-2025-07-21…png). Цифры и выводы не читаются поиском и экранными читалками, на телефоне мелко. Так же устроены DISTALS и Comaneci spinal case."
+       "annotation": "Как есть: страница исследования — одна картинка-скриншот (Screenshot-2025-07-21…png). Цифры и выводы не читаются поиском и экранными читалками, на телефоне мелко. Так же устроены DISTALS и Comaneci spinal case.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -1912,7 +1940,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -1920,18 +1949,22 @@
       {
        "c": "rm-hero",
        "v": "page",
-       "title": "Terms of Use"
+       "title": "Terms of Use",
+       "asis": true
       },
       {
        "c": "rm-richText",
        "v": "default",
-       "html": "<h3>Last Revised: January 8, 2024</h3>\n<p>Rapid Medical Ltd. (“Rapid Medical”, “we”, “our” or “us”) welcomes you (the “User(s)”, or “you”) to our website at: <a href=\"https://rapid-medical.com/\">https://rapid-medical.com/</a> and its subdomains (collectively, the “Site”). Each of the Site’s Users may use the Site in accordance with the terms and conditions hereunder.</p>\n<h4>1. Acceptance of the Terms</h4>\n<p>By entering, connecting to, accessing or using the Site, you acknowledge that you have read and understood the following terms of use, including the terms of our Privacy Statement available at: <a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a> (the “Privacy Statement”) (collectively, the “Terms”) and you agree to be bound by them and to comply with all applicable laws and regulations regarding your use of the Site and you acknowledge that these Terms constitute a binding and enforceable legal contract between Rapid Medical and you. IF YOU DO NOT AGREE TO THESE TERMS, PLEASE DO NOT ENTER, CONNECT TO, ACCESS OR USE THE SITE IN ANY MANNER.</p>\n<p><a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a></p>\n<p>The Site is available only to individuals who (a) are at least sixteen (16) years old; and (b) possess the legal capacity to enter into these Terms (on behalf of themselves and their organization, as applicable) and to form a binding agreement under any applicable law. You hereby represent that you possess the legal authority to enter into these Terms on your and your organization&#39;s behalf and to form a binding agreement under any applicable law, to use the Site in accordance with these Terms, and to fully perform your obligations hereunder. For the avoidance of doubt, any act or omission performed by you in connection with the Site shall obligate your organization.</p>\n<h6>2. The Site</h6>\n<p>The Site provides comprehensive information regarding Rapid Medical, our products, and our activities and includes, inter-alia, an overview of, and news regarding Rapid Medical, our products, technology, clinical publications, blog, job opportunities, and so forth, including any other content related thereto such as contact information, videos, text, files, logos, button icons, images, data compilations, links, other specialized content, technical data, documentation, know-how, specifications materials, designs, data, the &quot;look and feel&quot; of the Site, algorithms, source and object code, interface, GUI, interactive features related graphics, illustrations, drawings, animations, and other features obtained from or through the Site (collectively, the “Content”).</p>\n<p>The Content does not bind us in any form, and in any case, where the Content contradicts or is inconsistent with any information supplied by us to you directly, such information shall prevail. For the avoidance of doubt, the Site serves only as an informative marketing tool, and engagements of any sort with us shall only be created via a separate agreement.</p>\n<p>ALL RIGHTS IN AND TO THE CONTENT AVAILABLE ON THE SITE ARE RESERVED TO RAPID MEDICAL OR ITS LICENSORS. TO THE EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT AVAILABLE THEREIN ARE PROVIDED ON AN “AS IS” BASIS. RAPID MEDICAL WILL NOT BE LIABLE FOR ANY DAMAGES OR LOSS INCURRED TO YOU OR ANY OTHER PERSON AS A RESULT OF OR IN CONNECTION WITH YOUR USE OF THE SITE AND/OR THE CONTENT AVAILABLE THEREIN.</p>\n<p>You hereby acknowledge and agree that you may be charged for Internet, maintenance of network connection and data usage charges made through use of the Site, according to the applicable rates charged by your respective third party Internet and data usage service provider as may be from time to time.</p>\n<h6>3. Use Restrictions</h6>\n<p>There are certain conducts which are strictly prohibited when using the Site. Please read the following restrictions carefully. Failure to comply with any of the provisions set forth herein may result (at Rapid Medical’s sole discretion) in the termination of your use of the Site and/or Content and may also expose you to civil and/or criminal liability.</p>\n<p>Unless otherwise explicitly permitted under these Terms or in writing by us, you may not (and you may not permit anyone to: (a) use the Site and/or the Content for any illegal, immoral, unlawful and/or unauthorized purposes; (b) use the Site and/or Content for non-personal or commercial purposes; (c) remove or disassociate, from the Content and/or the Site any restrictions and signs indicating proprietary rights of Rapid Medical or its licensors, including but not limited to any proprietary notices contained in such materials (such as ©,™, or ®); (d) interfere with or violate Users&#39; rights to privacy and other rights, or harvest or collect personally identifiable information about Users without their express consent, whether manually or with the use of any robot, spider, crawler, any search or retrieval application, or use other manual or automatic device, process or method to access the Site and retrieve, index and/or data-mine information; (e) interfere with or disrupt the operation of the Site or the servers or networks that host the Site, or disobey any laws, regulations, requirements, procedures, or policies of such servers or networks; (f) falsely state or otherwise misrepresent your affiliation with any person or entity, or express or imply that Rapid Medical endorses you, your site, your business or any statement you make, or present false or inaccurate information about the Site and/or the Content; (g) take any action that imposes, or may impose, an unreasonable or disproportionately large load on our Site infrastructure, as determined by us; (h) bypass any measures we may use to prevent or restrict access to the Site; (i) copy, modify, alter, adapt, make available, translate, port, reverse engineer, decompile, or disassemble any portion of the Content made accessible by Rapid Medical on or through the Site, or publicly display, reproduce, create derivative works from, perform, distribute, or otherwise use such Content; (j) copy, distribute, display, execute publicly, make available to the public, reduce to human readable form, decompile, disassemble, adapt, sublicense, make any commercial use, sell, rent, transfer, lend, process, compile, reverse engineer, combine with other software, translate, modify or create derivative works of any material that is subject to Rapid Medical&#39;s proprietary rights, including Rapid Medical&#39;s Intellectual Property (as such term is defined below), in any way or by any means; (k) make any use of the Content on any other site or networked computer environment for any purpose without Rapid Medical’s prior written consent; (l) create a browser or border environment around Rapid Medical Content (no frames or inline linking is allowed); (m) sell, license, or exploit for any commercial purposes any use of or access to the Site and/or the Content; (n) frame or mirror any part of the Site without Rapid Medical&#39;s prior express written authorization; (o) create a database by systematically downloading and storing all or any of the Content from the Site; (p) transmit or otherwise make available in connection with the Site any virus, worm, Trojan Horse, time bomb, web bug, spyware, or any other computer code, file, or program that may or is intended to damage or hijack the operation of any hardware, software, or telecommunications equipment, or any other actually or potentially harmful, disruptive, or invasive code or component; (q) use the Site and/or the Content for any purpose for which they are not intended; and/or (r) infringe and/or violate any of the Terms.</p>\n<h6>4. Privacy Statement</h6>\n<p>We respect your privacy and are committed to protecting the information you share with us. We believe that you have a right to know our practices regarding the information we collect when you connect to, access or use the Site. Our policy and practices and the type of information collected via the Site are described in detail in our Privacy Statement, which is incorporated herein by reference. You agree that we may use personal information that you provide or make available to us in accordance with the Privacy Statement. If you intend to access or use the Site, you must first read and agree to the Privacy Statement.</p>\n<h6>5. Intellectual Property Rights</h6>\n<p>The Site, the Content and Rapid Medical&#39;s proprietary assets and any and all intellectual property rights pertaining thereto, including, but not limited to, inventions, patents and patent applications, trademarks, trade names, service marks, copyrightable materials, domain names and trade secrets, whether or not registered or capable of being registered (collectively, “Intellectual Property”), are owned by and/or licensed to Rapid Medical and are protected by applicable patent, copyright and other intellectual property laws and international conventions and treaties. All rights not expressly granted to you hereunder are reserved by Rapid Medical and its licensors. The Terms do not convey to you an interest in or to Rapid Medical&#39;s Intellectual Property but only a limited revocable right of use in accordance with the Terms. Nothing in the Terms constitutes a waiver of Rapid Medical’s Intellectual Property under any law.</p>\n<p>To the extent you provide any feedback, comments or suggestions to Rapid Medical (“Feedback”), Rapid Medical shall have an exclusive, royalty-free, fully paid up, worldwide, perpetual and irrevocable license to incorporate the Feedback into any Rapid Medical current or future services and/or activities and use same for any purpose all without further compensation to you and without your approval. You agree that all such Feedback shall be deemed to be non-confidential. Further, you warrant that your Feedback is not subject to any license terms that would purport to require Rapid Medical to comply with any additional obligations with respect to any Rapid Medical current or future products, technologies or services that incorporate any Feedback.</p>\n<h6>6. Trademarks and Trade names</h6>\n<p>Rapid Medical’s marks and logos and all other proprietary identifiers used by Rapid Medical in connection with the Site (“Rapid Medical&#39;s Trademarks”) are all trademarks and/or trade names of Rapid Medical, whether or not registered. All other trademarks, service marks, trade names and logos which may appear on the Site belong to their respective owners (“Third Party Marks”). No right, license, or interest to Rapid Medical&#39;s Trademarks and the Third Party Marks is granted hereunder, and you agree that no such right, license, or interest may be asserted by you with respect thereto and therefore you will avoid using any of those marks, except as permitted herein.</p>\n<h3>7. Linking to our Site and links to Third Party Sites</h3>\n<p>We welcome links to any page on our Site. You are free to establish a hypertext link to the Site so long as the link does not state or imply any connection or approval of your website, products and/or services by Rapid Medical and does not portray Rapid Medical in a false or otherwise offensive manner. You may not link to our Site from a site that you do not own or have permission to use. If you link to the Site you represent that your site does not contain content that is unlawful, offensive or infringing third party rights. However, we do not permit framing or inline linking.</p>\n<p>Certain links provided herein permit our Users to leave this Site and enter non-Rapid Medical sites or services (such as LinkedIn). Those linked sites and services are provided solely as a convenience to you. These linked sites and services are not under the control of Rapid Medical and it is not responsible for the availability of such external sites or services, and does not endorse and is not responsible or liable for any content including but not limited to content advertising, products or other information on or available from such linked sites and services or any link contained in linked sites or service. In addition, Rapid Medical is not responsible or liable for such linked sites and services&#39; privacy practices and/or any other practices. Your access to, use of and reliance upon any such sites, services and content and your dealings with such third parties are at your sole risk and expense. Rapid Medical reserves the right to terminate any link at any time. You further acknowledge and agree that Rapid Medical shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused, by or in connection with use of or reliance on any services, content, products or other materials available on or through such linked sites or resource. Most of such linked sites and services provide legal documents, including terms of use and privacy policy, governing the use thereof. It is always advisable, and we encourage you to read such documents carefully before using those sites and services, inter alia, in order to know what kind of information about you is being collected.</p>\n<h3>8. Availability</h3>\n<p>The Site’s availability and functionality depend on various factors, such as communication networks. Rapid Medical does not warrant or guarantee that the Site will operate and/or be available at all times without disruption or interruption, or that it will be immune from unauthorized access or error-free.</p>\n<h3>9. Changes to The Site</h3>\n<p>Rapid Medical reserves the right to modify, correct, amend, enhance, improve, make any other changes to, or discontinue, temporarily or permanently this Site (or any part thereof, including but not limited to the Content) without notice, at any time. In addition, you hereby acknowledge that the Content provided under this Site may be changed, extended in terms of content and form or removed at any time without any notice to you. You agree that Rapid Medical shall not be liable to you or to any third party for any modification, suspension, or discontinuance of this Site or the Content included therein. You hereby agree that Rapid Medical is not responsible for any errors or malfunctions that may occur in connection with the performance of such changes.</p>\n<h3>10. Disclaimers and No Warranties</h3>\n<p>TO THE FULLEST EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT ARE PROVIDED ON AN “AS IS”, “WITH ALL FAULTS” AND “AS AVAILABLE” BASIS, AND RAPID MEDICAL, INCLUDING ITS VENDORS, OFFICERS, SHAREHOLDERS, SUB-CONTRACTORS, DIRECTORS, EMPLOYEES, AFFILIATES, SUBSIDIARIES, LICENSORS, AGENTS AND SUPPLIERS (COLLECTIVELY, &quot;RAPID MEDICAL&#39;S REPRESENTATIVES&quot;), DISCLAIM ALL WARRANTIES OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF TITLE OR NON-INFRINGEMENT OR IMPLIED WARRANTIES OF USE, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE AND THOSE ARISING FROM A COURSE OF DEALING OR USAGE OF TRADE. YOU MAY HAVE ADDITIONAL CONSUMER RIGHTS UNDER YOUR LOCAL LAWS THAT THIS AGREEMENT CANNOT CHANGE. RAPID MEDICAL AND RAPID MEDICAL&#39;S REPRESENTATIVES DISCLAIM ALL WARRANTIES AND CONDITIONS CONCERNING THE USE OF THE SITE, INCLUDING BUT NOT LIMITED TO THE AVAILABILITY, RELIABILITY OR QUALITY OF THE SITE, AND ARE NOT AND SHALL NOT BE RESPONSIBLE FOR ANY ERROR, FAULT OR MISTAKE RELATED TO ANY CONTENT AND/OR INFORMATION DISPLAYED WITHIN THE SITE.</p>\n<p>WE NOTE THAT THESE TERMS GOVERN SOLELY THE USE OF THE SITE. ALL DISCLAIMERS AND WARRANTIES REGARDING ANY PRODUCTS OR SERVICES OFFERED BY RAPID MEDICAL, SHALL BE GOVERNED BY THE TERMS OF SERVICES REFLECTED IN A SEPARATE AGREEMENT BETWEEN RAPID MEDICAL AND ITS PRODUCTS’ AND SERVICES’ USERS.</p>\n<p>WE DO NOT WARRANT (I) THAT THE USE AND OPERATION OF THE SITE AND/OR THE CONTENT IS OR WILL BE SECURE, TIMELY, ACCURATE, COMPLETE, UNINTERRUPTED, WITHOUT ERRORS, OR FREE OF VIRUSES, DEFECTS, WORMS, OTHER HARMFUL COMPONENTS OR OTHER PROGRAM LIMITATIONS, (II) THAT WE WILL CORRECT ANY ERRORS OR DEFECTS IN THE SITE, (III) AND/OR MAKE ANY REPRESENTATION REGARDING THE USE, INABILITY TO USE OR OPERATE, OR THE RESULTS OF THE USE OF THE SITE AND/OR CONTENT AVAILABLE THEREON OR THROUGH THE SITE (INCLUDING THAT THE RESULTS OF USING THE SITE WILL MEET YOUR REQUIREMENTS).</p>\n<p>YOU AGREE THAT THE USE OF THE SITE AND/OR THE CONTENT THEREIN IS ENTIRELY AT YOUR OWN RISK. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>11. Limitation of Liability</h3>\n<p>TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, IN NO EVENT SHALL RAPID MEDICAL, INCLUDING RAPID MEDICAL&#39;S REPRESENTATIVES BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL, PUNITIVE, EXEMPLARY, INCIDENTAL OR CONSEQUENTIAL DAMAGES OF ANY KIND, UNDER ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION, CONTRACT, NEGLIGENCE, TORT OR STRICT LIABILITY), INCLUDING, WITHOUT LIMITATION, LOSS OF GOODWILL, PROFITS OR DATA AND BUSINESS INTERRUPTION, ARISING HEREUNDER, RESULTING FROM OR ARISING OUT OF THE SITE AND/OR THE CONTENT ANY COMMUNICATIONS AND INTERACTIONS OR MEETINGS WITH USERS OF THE SITE OR OTHER PERSONS WITH WHOM YOU COMMUNICATE AS A RESULT OF YOUR USE OF THE SITE AND/OR THE CONTENT, YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT AND/OR THE FAILURE OF THE SITE TO PERFORM AS REPRESENTED OR EXPECTED, OR FROM ANY CONTENT, OR FROM THE PERFORMANCE OR FAILURE OF RAPID MEDICAL TO PERFORM UNDER THESE TERMS, ANY OTHER ACT OR OMISSION OF RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES BY ANY OTHER CAUSE WHATSOEVER; OR BASED UPON BREACH OF WARRANTY, GUARANTEE OR CONDITION, BREACH OF CONTRACT, NEGLIGENCE, STRICT LIABILITY, TORT, OR ANY OTHER LEGAL THEORY, REGARDLESS OF WHETHER RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>\n<p>IN ANY CASE, WITHOUT LIMITING THE GENERALITY OF THE FOREGOING AND TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, RAPID MEDICAL&#39;S AND RAPID MEDICAL&#39;S REPRESENTATIVES&#39; TOTAL AGGREGATE LIABILITY FOR ALL DAMAGES OR LOSSES WHATSOEVER ARISING HEREUNDER OR IN CONNECTION WITH YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT SHALL BE LIMITED TO THE AMOUNT ACTUALLY PAID BY YOU, IF ANY, TO RAPID MEDICAL FOR USE OF THE SITE OR $US 1.00, WHICHEVER IS GREATER. YOU WILL NOT, AND WAIVE ANY RIGHT TO, SEEK TO RECOVER ANY OTHER DAMAGES, INCLUDING CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL DAMAGES FROM US AND FROM RAPID MEDICAL’S REPRESENTATIVES. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>12. Indemnification</h3>\n<p>You agree to defend, indemnify and hold harmless Rapid Medical, including Rapid Medical&#39;s Representatives from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including but not limited to attorney&#39;s fees) arising from: (i) your use, misuse of, inability to use and/or activities in connection with the Site and/or Content; (ii) your violation of any of these Terms; (iii) your violation of any third party rights, including without limitation any intellectual property rights or privacy right of such third party, in connection with your use of the Site; and (iv) any damage of any sort, whether direct, indirect, special or consequential, you may cause to any third party with relation to the Site. It is hereby clarified that this defense and indemnification obligation will survive these Terms.</p>\n<p>Without derogating from the foregoing, we reserve the right to assume the exclusive defense and control of any matter which is subject to indemnification by you, which will not excuse your indemnity obligations hereunder and in which event you will fully cooperate with us in asserting any available defense. You agree not to settle any matter subject to an indemnification by you without first obtaining our prior express written approval.</p>\n<h3>13. Amendments to the Terms</h3>\n<p>Rapid Medical may, at its sole discretion, change the Terms from time to time, including any other policies incorporated thereto, so please re-visit this page frequently. In case of any material change, we will make reasonable efforts to post a clear notice on the Site and/or will send you an e-mail (to the extent that you provided us with such e-mail address) regarding such change. Such material changes will take effect seven (7) days after such notice was provided on our Site or sent to you via e-mail, whichever is earlier. Otherwise, all other changes to these Terms are effective as of the stated “Last Revised” date and your continued use of the Site on or after the Last Revised date will constitute acceptance of, and agreement to be bound by, those changes. In the event that the Terms should be amended to comply with any legal requirements, the amendments may take effect immediately, or as required by the law and without any prior notice.</p>\n<h3>14. Termination of these Terms and the Termination of the Site&#39;s operation</h3>\n<p>At any time, Rapid Medical may without notice discontinue your use of the Site, at its sole discretion, in addition to any other remedies that may be available to us under any applicable law. Additionally, we may at any time, at our sole discretion, cease the operation of the Site or any part thereof, temporarily or permanently, delete any information or Content from the Site or correct, modify, amend, enhance, improve and make any other changes thereto or discontinue displaying or providing any information, Content or features therein without giving any prior notice. You agree and acknowledge that Rapid Medical does not assume any responsibility with respect to, or in connection with the termination of the Site&#39;s operation and loss of any data. The provisions of these Terms that, by their nature and content, must survive the termination of these Terms in order to achieve the fundamental purposes of these Terms shall so survive. Without limiting the generality of the forgoing, the Intellectual Property, Disclaimers and No Warranties, Limitation of Liability, Indemnification, and General sections will survive the termination of the Terms.</p>\n<h3>15. General</h3>\n<p>(a) These Terms constitute the entire terms and conditions between you and Rapid Medical relating to the subject matter herein and supersedes any and all prior written or oral agreements or understandings between you and Rapid Medical, (b) any claim relating to the Site, the Content and/or the Terms or the use thereof will be governed by and interpreted in accordance with the laws of the State of Israel without reference to its conflict-of-laws principles and the United Nations Convention Relating to a Uniform Law on the International Sale of Goods may not be applied, (c) any dispute arising out of or related to the Site and/or the Content will be brought in, and you hereby consent to exclusive jurisdiction and venue in, the competent courts located in the city of Tel-Aviv, Israel. You agree to waive all defenses of lack of personal jurisdiction and forum non-convenience and agree that the process may be served in a manner authorized by applicable law or court rule. Notwithstanding the foregoing, we may seek injunctive relief in any court of competent jurisdiction, (d) these Terms do not, and shall not be construed to create any relationship, partnership, joint venture, employer-employee, agency, or franchisor-franchisee relationship between the parties hereto, (e) no waiver by either party of any breach or default hereunder will be deemed to be a waiver of any preceding or subsequent breach or default. Any heading, caption, or section title contained herein is inserted only as a matter of convenience, and in no way defines or explains any section or provision hereof, (f) YOU ACKNOWLEDGE AND AGREE THAT ANY CAUSE OF ACTION THAT YOU MAY HAVE ARISING OUT OF, OR RELATED TO, THE SITE MUST COMMENCE WITHIN ONE (1) YEAR AFTER THE CAUSE OF ACTION ACCRUES. OTHERWISE, SUCH CAUSE OF ACTION IS PERMANENTLY BARRED, (g) if any provision hereof is adjudged by any court of competent jurisdiction to be unenforceable, that provision shall be limited or eliminated to the minimum extent necessary so that these Terms shall otherwise remain in full force and effect while most nearly adhering to the intent expressed herein, (h) you may not assign or transfer these Terms (including all rights and obligations hereunder) without our prior written consent and any attempt to do so in violation of the foregoing shall be void. We may assign these Terms without restriction or notification, and (i) no amendment hereof will be binding unless in writing and signed by us.</p>\n<h3>16. Have any Questions?</h3>\n<p>If you have any questions (or comments) concerning these Terms, you are most welcome to send us an e-mail to the following address: <a href=\"mailto:info@rapid-medical.com\">info@rapid-medical.com</a>.</p>\n<hr>\n"
+       "html": "<h3>Last Revised: January 8, 2024</h3>\n<p>Rapid Medical Ltd. (“Rapid Medical”, “we”, “our” or “us”) welcomes you (the “User(s)”, or “you”) to our website at: <a href=\"https://rapid-medical.com/\">https://rapid-medical.com/</a> and its subdomains (collectively, the “Site”). Each of the Site’s Users may use the Site in accordance with the terms and conditions hereunder.</p>\n<h4>1. Acceptance of the Terms</h4>\n<p>By entering, connecting to, accessing or using the Site, you acknowledge that you have read and understood the following terms of use, including the terms of our Privacy Statement available at: <a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a> (the “Privacy Statement”) (collectively, the “Terms”) and you agree to be bound by them and to comply with all applicable laws and regulations regarding your use of the Site and you acknowledge that these Terms constitute a binding and enforceable legal contract between Rapid Medical and you. IF YOU DO NOT AGREE TO THESE TERMS, PLEASE DO NOT ENTER, CONNECT TO, ACCESS OR USE THE SITE IN ANY MANNER.</p>\n<p><a href=\"https://www.rapid-medical.com/privacy-policy\">https://www.rapid-medical.com/privacy-policy</a></p>\n<p>The Site is available only to individuals who (a) are at least sixteen (16) years old; and (b) possess the legal capacity to enter into these Terms (on behalf of themselves and their organization, as applicable) and to form a binding agreement under any applicable law. You hereby represent that you possess the legal authority to enter into these Terms on your and your organization&#39;s behalf and to form a binding agreement under any applicable law, to use the Site in accordance with these Terms, and to fully perform your obligations hereunder. For the avoidance of doubt, any act or omission performed by you in connection with the Site shall obligate your organization.</p>\n<h6>2. The Site</h6>\n<p>The Site provides comprehensive information regarding Rapid Medical, our products, and our activities and includes, inter-alia, an overview of, and news regarding Rapid Medical, our products, technology, clinical publications, blog, job opportunities, and so forth, including any other content related thereto such as contact information, videos, text, files, logos, button icons, images, data compilations, links, other specialized content, technical data, documentation, know-how, specifications materials, designs, data, the &quot;look and feel&quot; of the Site, algorithms, source and object code, interface, GUI, interactive features related graphics, illustrations, drawings, animations, and other features obtained from or through the Site (collectively, the “Content”).</p>\n<p>The Content does not bind us in any form, and in any case, where the Content contradicts or is inconsistent with any information supplied by us to you directly, such information shall prevail. For the avoidance of doubt, the Site serves only as an informative marketing tool, and engagements of any sort with us shall only be created via a separate agreement.</p>\n<p>ALL RIGHTS IN AND TO THE CONTENT AVAILABLE ON THE SITE ARE RESERVED TO RAPID MEDICAL OR ITS LICENSORS. TO THE EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT AVAILABLE THEREIN ARE PROVIDED ON AN “AS IS” BASIS. RAPID MEDICAL WILL NOT BE LIABLE FOR ANY DAMAGES OR LOSS INCURRED TO YOU OR ANY OTHER PERSON AS A RESULT OF OR IN CONNECTION WITH YOUR USE OF THE SITE AND/OR THE CONTENT AVAILABLE THEREIN.</p>\n<p>You hereby acknowledge and agree that you may be charged for Internet, maintenance of network connection and data usage charges made through use of the Site, according to the applicable rates charged by your respective third party Internet and data usage service provider as may be from time to time.</p>\n<h6>3. Use Restrictions</h6>\n<p>There are certain conducts which are strictly prohibited when using the Site. Please read the following restrictions carefully. Failure to comply with any of the provisions set forth herein may result (at Rapid Medical’s sole discretion) in the termination of your use of the Site and/or Content and may also expose you to civil and/or criminal liability.</p>\n<p>Unless otherwise explicitly permitted under these Terms or in writing by us, you may not (and you may not permit anyone to: (a) use the Site and/or the Content for any illegal, immoral, unlawful and/or unauthorized purposes; (b) use the Site and/or Content for non-personal or commercial purposes; (c) remove or disassociate, from the Content and/or the Site any restrictions and signs indicating proprietary rights of Rapid Medical or its licensors, including but not limited to any proprietary notices contained in such materials (such as ©,™, or ®); (d) interfere with or violate Users&#39; rights to privacy and other rights, or harvest or collect personally identifiable information about Users without their express consent, whether manually or with the use of any robot, spider, crawler, any search or retrieval application, or use other manual or automatic device, process or method to access the Site and retrieve, index and/or data-mine information; (e) interfere with or disrupt the operation of the Site or the servers or networks that host the Site, or disobey any laws, regulations, requirements, procedures, or policies of such servers or networks; (f) falsely state or otherwise misrepresent your affiliation with any person or entity, or express or imply that Rapid Medical endorses you, your site, your business or any statement you make, or present false or inaccurate information about the Site and/or the Content; (g) take any action that imposes, or may impose, an unreasonable or disproportionately large load on our Site infrastructure, as determined by us; (h) bypass any measures we may use to prevent or restrict access to the Site; (i) copy, modify, alter, adapt, make available, translate, port, reverse engineer, decompile, or disassemble any portion of the Content made accessible by Rapid Medical on or through the Site, or publicly display, reproduce, create derivative works from, perform, distribute, or otherwise use such Content; (j) copy, distribute, display, execute publicly, make available to the public, reduce to human readable form, decompile, disassemble, adapt, sublicense, make any commercial use, sell, rent, transfer, lend, process, compile, reverse engineer, combine with other software, translate, modify or create derivative works of any material that is subject to Rapid Medical&#39;s proprietary rights, including Rapid Medical&#39;s Intellectual Property (as such term is defined below), in any way or by any means; (k) make any use of the Content on any other site or networked computer environment for any purpose without Rapid Medical’s prior written consent; (l) create a browser or border environment around Rapid Medical Content (no frames or inline linking is allowed); (m) sell, license, or exploit for any commercial purposes any use of or access to the Site and/or the Content; (n) frame or mirror any part of the Site without Rapid Medical&#39;s prior express written authorization; (o) create a database by systematically downloading and storing all or any of the Content from the Site; (p) transmit or otherwise make available in connection with the Site any virus, worm, Trojan Horse, time bomb, web bug, spyware, or any other computer code, file, or program that may or is intended to damage or hijack the operation of any hardware, software, or telecommunications equipment, or any other actually or potentially harmful, disruptive, or invasive code or component; (q) use the Site and/or the Content for any purpose for which they are not intended; and/or (r) infringe and/or violate any of the Terms.</p>\n<h6>4. Privacy Statement</h6>\n<p>We respect your privacy and are committed to protecting the information you share with us. We believe that you have a right to know our practices regarding the information we collect when you connect to, access or use the Site. Our policy and practices and the type of information collected via the Site are described in detail in our Privacy Statement, which is incorporated herein by reference. You agree that we may use personal information that you provide or make available to us in accordance with the Privacy Statement. If you intend to access or use the Site, you must first read and agree to the Privacy Statement.</p>\n<h6>5. Intellectual Property Rights</h6>\n<p>The Site, the Content and Rapid Medical&#39;s proprietary assets and any and all intellectual property rights pertaining thereto, including, but not limited to, inventions, patents and patent applications, trademarks, trade names, service marks, copyrightable materials, domain names and trade secrets, whether or not registered or capable of being registered (collectively, “Intellectual Property”), are owned by and/or licensed to Rapid Medical and are protected by applicable patent, copyright and other intellectual property laws and international conventions and treaties. All rights not expressly granted to you hereunder are reserved by Rapid Medical and its licensors. The Terms do not convey to you an interest in or to Rapid Medical&#39;s Intellectual Property but only a limited revocable right of use in accordance with the Terms. Nothing in the Terms constitutes a waiver of Rapid Medical’s Intellectual Property under any law.</p>\n<p>To the extent you provide any feedback, comments or suggestions to Rapid Medical (“Feedback”), Rapid Medical shall have an exclusive, royalty-free, fully paid up, worldwide, perpetual and irrevocable license to incorporate the Feedback into any Rapid Medical current or future services and/or activities and use same for any purpose all without further compensation to you and without your approval. You agree that all such Feedback shall be deemed to be non-confidential. Further, you warrant that your Feedback is not subject to any license terms that would purport to require Rapid Medical to comply with any additional obligations with respect to any Rapid Medical current or future products, technologies or services that incorporate any Feedback.</p>\n<h6>6. Trademarks and Trade names</h6>\n<p>Rapid Medical’s marks and logos and all other proprietary identifiers used by Rapid Medical in connection with the Site (“Rapid Medical&#39;s Trademarks”) are all trademarks and/or trade names of Rapid Medical, whether or not registered. All other trademarks, service marks, trade names and logos which may appear on the Site belong to their respective owners (“Third Party Marks”). No right, license, or interest to Rapid Medical&#39;s Trademarks and the Third Party Marks is granted hereunder, and you agree that no such right, license, or interest may be asserted by you with respect thereto and therefore you will avoid using any of those marks, except as permitted herein.</p>\n<h3>7. Linking to our Site and links to Third Party Sites</h3>\n<p>We welcome links to any page on our Site. You are free to establish a hypertext link to the Site so long as the link does not state or imply any connection or approval of your website, products and/or services by Rapid Medical and does not portray Rapid Medical in a false or otherwise offensive manner. You may not link to our Site from a site that you do not own or have permission to use. If you link to the Site you represent that your site does not contain content that is unlawful, offensive or infringing third party rights. However, we do not permit framing or inline linking.</p>\n<p>Certain links provided herein permit our Users to leave this Site and enter non-Rapid Medical sites or services (such as LinkedIn). Those linked sites and services are provided solely as a convenience to you. These linked sites and services are not under the control of Rapid Medical and it is not responsible for the availability of such external sites or services, and does not endorse and is not responsible or liable for any content including but not limited to content advertising, products or other information on or available from such linked sites and services or any link contained in linked sites or service. In addition, Rapid Medical is not responsible or liable for such linked sites and services&#39; privacy practices and/or any other practices. Your access to, use of and reliance upon any such sites, services and content and your dealings with such third parties are at your sole risk and expense. Rapid Medical reserves the right to terminate any link at any time. You further acknowledge and agree that Rapid Medical shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused, by or in connection with use of or reliance on any services, content, products or other materials available on or through such linked sites or resource. Most of such linked sites and services provide legal documents, including terms of use and privacy policy, governing the use thereof. It is always advisable, and we encourage you to read such documents carefully before using those sites and services, inter alia, in order to know what kind of information about you is being collected.</p>\n<h3>8. Availability</h3>\n<p>The Site’s availability and functionality depend on various factors, such as communication networks. Rapid Medical does not warrant or guarantee that the Site will operate and/or be available at all times without disruption or interruption, or that it will be immune from unauthorized access or error-free.</p>\n<h3>9. Changes to The Site</h3>\n<p>Rapid Medical reserves the right to modify, correct, amend, enhance, improve, make any other changes to, or discontinue, temporarily or permanently this Site (or any part thereof, including but not limited to the Content) without notice, at any time. In addition, you hereby acknowledge that the Content provided under this Site may be changed, extended in terms of content and form or removed at any time without any notice to you. You agree that Rapid Medical shall not be liable to you or to any third party for any modification, suspension, or discontinuance of this Site or the Content included therein. You hereby agree that Rapid Medical is not responsible for any errors or malfunctions that may occur in connection with the performance of such changes.</p>\n<h3>10. Disclaimers and No Warranties</h3>\n<p>TO THE FULLEST EXTENT LEGALLY PERMISSIBLE, THE SITE AND THE CONTENT ARE PROVIDED ON AN “AS IS”, “WITH ALL FAULTS” AND “AS AVAILABLE” BASIS, AND RAPID MEDICAL, INCLUDING ITS VENDORS, OFFICERS, SHAREHOLDERS, SUB-CONTRACTORS, DIRECTORS, EMPLOYEES, AFFILIATES, SUBSIDIARIES, LICENSORS, AGENTS AND SUPPLIERS (COLLECTIVELY, &quot;RAPID MEDICAL&#39;S REPRESENTATIVES&quot;), DISCLAIM ALL WARRANTIES OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF TITLE OR NON-INFRINGEMENT OR IMPLIED WARRANTIES OF USE, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE AND THOSE ARISING FROM A COURSE OF DEALING OR USAGE OF TRADE. YOU MAY HAVE ADDITIONAL CONSUMER RIGHTS UNDER YOUR LOCAL LAWS THAT THIS AGREEMENT CANNOT CHANGE. RAPID MEDICAL AND RAPID MEDICAL&#39;S REPRESENTATIVES DISCLAIM ALL WARRANTIES AND CONDITIONS CONCERNING THE USE OF THE SITE, INCLUDING BUT NOT LIMITED TO THE AVAILABILITY, RELIABILITY OR QUALITY OF THE SITE, AND ARE NOT AND SHALL NOT BE RESPONSIBLE FOR ANY ERROR, FAULT OR MISTAKE RELATED TO ANY CONTENT AND/OR INFORMATION DISPLAYED WITHIN THE SITE.</p>\n<p>WE NOTE THAT THESE TERMS GOVERN SOLELY THE USE OF THE SITE. ALL DISCLAIMERS AND WARRANTIES REGARDING ANY PRODUCTS OR SERVICES OFFERED BY RAPID MEDICAL, SHALL BE GOVERNED BY THE TERMS OF SERVICES REFLECTED IN A SEPARATE AGREEMENT BETWEEN RAPID MEDICAL AND ITS PRODUCTS’ AND SERVICES’ USERS.</p>\n<p>WE DO NOT WARRANT (I) THAT THE USE AND OPERATION OF THE SITE AND/OR THE CONTENT IS OR WILL BE SECURE, TIMELY, ACCURATE, COMPLETE, UNINTERRUPTED, WITHOUT ERRORS, OR FREE OF VIRUSES, DEFECTS, WORMS, OTHER HARMFUL COMPONENTS OR OTHER PROGRAM LIMITATIONS, (II) THAT WE WILL CORRECT ANY ERRORS OR DEFECTS IN THE SITE, (III) AND/OR MAKE ANY REPRESENTATION REGARDING THE USE, INABILITY TO USE OR OPERATE, OR THE RESULTS OF THE USE OF THE SITE AND/OR CONTENT AVAILABLE THEREON OR THROUGH THE SITE (INCLUDING THAT THE RESULTS OF USING THE SITE WILL MEET YOUR REQUIREMENTS).</p>\n<p>YOU AGREE THAT THE USE OF THE SITE AND/OR THE CONTENT THEREIN IS ENTIRELY AT YOUR OWN RISK. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>11. Limitation of Liability</h3>\n<p>TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, IN NO EVENT SHALL RAPID MEDICAL, INCLUDING RAPID MEDICAL&#39;S REPRESENTATIVES BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL, PUNITIVE, EXEMPLARY, INCIDENTAL OR CONSEQUENTIAL DAMAGES OF ANY KIND, UNDER ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION, CONTRACT, NEGLIGENCE, TORT OR STRICT LIABILITY), INCLUDING, WITHOUT LIMITATION, LOSS OF GOODWILL, PROFITS OR DATA AND BUSINESS INTERRUPTION, ARISING HEREUNDER, RESULTING FROM OR ARISING OUT OF THE SITE AND/OR THE CONTENT ANY COMMUNICATIONS AND INTERACTIONS OR MEETINGS WITH USERS OF THE SITE OR OTHER PERSONS WITH WHOM YOU COMMUNICATE AS A RESULT OF YOUR USE OF THE SITE AND/OR THE CONTENT, YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT AND/OR THE FAILURE OF THE SITE TO PERFORM AS REPRESENTED OR EXPECTED, OR FROM ANY CONTENT, OR FROM THE PERFORMANCE OR FAILURE OF RAPID MEDICAL TO PERFORM UNDER THESE TERMS, ANY OTHER ACT OR OMISSION OF RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES BY ANY OTHER CAUSE WHATSOEVER; OR BASED UPON BREACH OF WARRANTY, GUARANTEE OR CONDITION, BREACH OF CONTRACT, NEGLIGENCE, STRICT LIABILITY, TORT, OR ANY OTHER LEGAL THEORY, REGARDLESS OF WHETHER RAPID MEDICAL OR RAPID MEDICAL&#39;S REPRESENTATIVES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>\n<p>IN ANY CASE, WITHOUT LIMITING THE GENERALITY OF THE FOREGOING AND TO THE MAXIMUM EXTENT LEGALLY PERMISSIBLE, RAPID MEDICAL&#39;S AND RAPID MEDICAL&#39;S REPRESENTATIVES&#39; TOTAL AGGREGATE LIABILITY FOR ALL DAMAGES OR LOSSES WHATSOEVER ARISING HEREUNDER OR IN CONNECTION WITH YOUR USE OR INABILITY TO USE THE SITE AND/OR THE CONTENT SHALL BE LIMITED TO THE AMOUNT ACTUALLY PAID BY YOU, IF ANY, TO RAPID MEDICAL FOR USE OF THE SITE OR $US 1.00, WHICHEVER IS GREATER. YOU WILL NOT, AND WAIVE ANY RIGHT TO, SEEK TO RECOVER ANY OTHER DAMAGES, INCLUDING CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL DAMAGES FROM US AND FROM RAPID MEDICAL’S REPRESENTATIVES. INASMUCH AS SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSIONS OR LIMITATIONS AS SET FORTH HEREIN, THE FULL EXTENT OF THE ABOVE EXCLUSIONS AND LIMITATIONS MAY NOT APPLY.</p>\n<h3>12. Indemnification</h3>\n<p>You agree to defend, indemnify and hold harmless Rapid Medical, including Rapid Medical&#39;s Representatives from and against any and all claims, damages, obligations, losses, liabilities, costs, debts, and expenses (including but not limited to attorney&#39;s fees) arising from: (i) your use, misuse of, inability to use and/or activities in connection with the Site and/or Content; (ii) your violation of any of these Terms; (iii) your violation of any third party rights, including without limitation any intellectual property rights or privacy right of such third party, in connection with your use of the Site; and (iv) any damage of any sort, whether direct, indirect, special or consequential, you may cause to any third party with relation to the Site. It is hereby clarified that this defense and indemnification obligation will survive these Terms.</p>\n<p>Without derogating from the foregoing, we reserve the right to assume the exclusive defense and control of any matter which is subject to indemnification by you, which will not excuse your indemnity obligations hereunder and in which event you will fully cooperate with us in asserting any available defense. You agree not to settle any matter subject to an indemnification by you without first obtaining our prior express written approval.</p>\n<h3>13. Amendments to the Terms</h3>\n<p>Rapid Medical may, at its sole discretion, change the Terms from time to time, including any other policies incorporated thereto, so please re-visit this page frequently. In case of any material change, we will make reasonable efforts to post a clear notice on the Site and/or will send you an e-mail (to the extent that you provided us with such e-mail address) regarding such change. Such material changes will take effect seven (7) days after such notice was provided on our Site or sent to you via e-mail, whichever is earlier. Otherwise, all other changes to these Terms are effective as of the stated “Last Revised” date and your continued use of the Site on or after the Last Revised date will constitute acceptance of, and agreement to be bound by, those changes. In the event that the Terms should be amended to comply with any legal requirements, the amendments may take effect immediately, or as required by the law and without any prior notice.</p>\n<h3>14. Termination of these Terms and the Termination of the Site&#39;s operation</h3>\n<p>At any time, Rapid Medical may without notice discontinue your use of the Site, at its sole discretion, in addition to any other remedies that may be available to us under any applicable law. Additionally, we may at any time, at our sole discretion, cease the operation of the Site or any part thereof, temporarily or permanently, delete any information or Content from the Site or correct, modify, amend, enhance, improve and make any other changes thereto or discontinue displaying or providing any information, Content or features therein without giving any prior notice. You agree and acknowledge that Rapid Medical does not assume any responsibility with respect to, or in connection with the termination of the Site&#39;s operation and loss of any data. The provisions of these Terms that, by their nature and content, must survive the termination of these Terms in order to achieve the fundamental purposes of these Terms shall so survive. Without limiting the generality of the forgoing, the Intellectual Property, Disclaimers and No Warranties, Limitation of Liability, Indemnification, and General sections will survive the termination of the Terms.</p>\n<h3>15. General</h3>\n<p>(a) These Terms constitute the entire terms and conditions between you and Rapid Medical relating to the subject matter herein and supersedes any and all prior written or oral agreements or understandings between you and Rapid Medical, (b) any claim relating to the Site, the Content and/or the Terms or the use thereof will be governed by and interpreted in accordance with the laws of the State of Israel without reference to its conflict-of-laws principles and the United Nations Convention Relating to a Uniform Law on the International Sale of Goods may not be applied, (c) any dispute arising out of or related to the Site and/or the Content will be brought in, and you hereby consent to exclusive jurisdiction and venue in, the competent courts located in the city of Tel-Aviv, Israel. You agree to waive all defenses of lack of personal jurisdiction and forum non-convenience and agree that the process may be served in a manner authorized by applicable law or court rule. Notwithstanding the foregoing, we may seek injunctive relief in any court of competent jurisdiction, (d) these Terms do not, and shall not be construed to create any relationship, partnership, joint venture, employer-employee, agency, or franchisor-franchisee relationship between the parties hereto, (e) no waiver by either party of any breach or default hereunder will be deemed to be a waiver of any preceding or subsequent breach or default. Any heading, caption, or section title contained herein is inserted only as a matter of convenience, and in no way defines or explains any section or provision hereof, (f) YOU ACKNOWLEDGE AND AGREE THAT ANY CAUSE OF ACTION THAT YOU MAY HAVE ARISING OUT OF, OR RELATED TO, THE SITE MUST COMMENCE WITHIN ONE (1) YEAR AFTER THE CAUSE OF ACTION ACCRUES. OTHERWISE, SUCH CAUSE OF ACTION IS PERMANENTLY BARRED, (g) if any provision hereof is adjudged by any court of competent jurisdiction to be unenforceable, that provision shall be limited or eliminated to the minimum extent necessary so that these Terms shall otherwise remain in full force and effect while most nearly adhering to the intent expressed herein, (h) you may not assign or transfer these Terms (including all rights and obligations hereunder) without our prior written consent and any attempt to do so in violation of the foregoing shall be void. We may assign these Terms without restriction or notification, and (i) no amendment hereof will be binding unless in writing and signed by us.</p>\n<h3>16. Have any Questions?</h3>\n<p>If you have any questions (or comments) concerning these Terms, you are most welcome to send us an e-mail to the following address: <a href=\"mailto:info@rapid-medical.com\">info@rapid-medical.com</a>.</p>\n<hr>\n",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -2130,7 +2163,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -2306,7 +2340,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -2318,7 +2353,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -2370,7 +2406,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -2504,7 +2541,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -3181,7 +3219,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -3193,7 +3232,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -3460,7 +3500,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -3474,7 +3515,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -3812,7 +3854,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -4396,7 +4439,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -4858,7 +4902,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -4869,7 +4914,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -4878,7 +4924,8 @@
        "c": "rm-hero",
        "v": "title",
        "title": "News &",
-       "title2": "Events"
+       "title2": "Events",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -4940,7 +4987,8 @@
        ],
        "allHref": "#all-news",
        "allLabel": "View all news ↓",
-       "annotation": "Карусель: 5 отмеченных featured (или последних). Клик по новости — уход на BusinessWire / NeuroNews: своих страниц у новостей нет."
+       "annotation": "Карусель: 5 отмеченных featured (или последних). Клик по новости — уход на BusinessWire / NeuroNews: своих страниц у новостей нет.",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -5591,9 +5639,11 @@
          }
         }
        ],
-       "annotation": "Лента по годам начинается с тех же новостей, что в карусели (находка 15). Все 53 — внешние ссылки; исследования (SUCCESS, DISTALS) в ленте — только если заведены новостью."
+       "annotation": "Лента по годам начинается с тех же новостей, что в карусели (находка 15). Все 53 — внешние ссылки; исследования (SUCCESS, DISTALS) в ленте — только если заведены новостью.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "section",
@@ -5780,7 +5830,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -5792,7 +5843,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -5801,7 +5853,8 @@
        "c": "rm-hero",
        "v": "title",
        "title": "News &",
-       "title2": "Events"
+       "title2": "Events",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -5862,7 +5915,8 @@
         }
        ],
        "allHref": "#all-news",
-       "allLabel": "View all news ↓"
+       "allLabel": "View all news ↓",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -6512,9 +6566,11 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "section",
@@ -6700,7 +6756,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -6714,7 +6771,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -6765,7 +6823,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -6982,7 +7041,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -7615,7 +7675,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -7626,7 +7687,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -8295,7 +8357,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -8307,7 +8370,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -8910,7 +8974,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -8924,7 +8989,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -9182,7 +9248,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9193,7 +9260,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -9387,7 +9455,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9398,7 +9467,8 @@
    "height": 760,
    "body": [
     {
-     "c": "rm-header"
+     "c": "rm-header",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9407,7 +9477,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Choose your location.",
-       "body": "Product availability and regulatory information differ by region."
+       "body": "Product availability and regulatory information differ by region.",
+       "asis": true
       },
       {
        "c": "rm-regionChooser",
@@ -9429,13 +9500,16 @@
          "suggested": false
         }
        ],
-       "annotation": "Как есть: три кнопки — Americas · Asia & Pacific · Europe & Middle East — без стран. Под Europe & Middle East по коду (regionForCountry) живут ещё Австралия и Африка, а Ближний Восток и Турция по IP уходят в Asia & Pacific, Латинская Америка — в Americas. В подписях региона на сайте — «Europe, Middle East, Latin America & Australia». Врач из ОАЭ или Бразилии выбирает наугад. Карта «страна → регион» — вопрос к Emily (BACKLOG, решения №9)."
+       "annotation": "Как есть: три кнопки — Americas · Asia & Pacific · Europe & Middle East — без стран. Под Europe & Middle East по коду (regionForCountry) живут ещё Австралия и Африка, а Ближний Восток и Турция по IP уходят в Asia & Pacific, Латинская Америка — в Americas. В подписях региона на сайте — «Europe, Middle East, Latin America & Australia». Врач из ОАЭ или Бразилии выбирает наугад. Карта «страна → регион» — вопрос к Emily (BACKLOG, решения №9).",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9446,7 +9520,8 @@
    "url": "rapid-medical.com/choose-your-location",
    "body": [
     {
-     "c": "rm-header"
+     "c": "rm-header",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9455,7 +9530,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Choose your location.",
-       "body": "Product availability and regulatory information differ by region."
+       "body": "Product availability and regulatory information differ by region.",
+       "asis": true
       },
       {
        "c": "rm-regionChooser",
@@ -9476,13 +9552,16 @@
          "href": "/ous/therapies",
          "suggested": false
         }
-       ]
+       ],
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9496,7 +9575,8 @@
      "c": "rm-header",
      "region": "us",
      "switcherOpen": true,
-     "annotation": "Переключатель в шапке: тот же список из трёх названий, без стран. Видна только тем, кто уже на сайте; страницу выбора видят лишь те, чью страну не определили."
+     "annotation": "Переключатель в шапке: тот же список из трёх названий, без стран. Видна только тем, кто уже на сайте; страницу выбора видят лишь те, чью страну не определили.",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9512,13 +9592,16 @@
         "label": "Explore Therapies",
         "href": "/us/therapies"
        },
-       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9531,11 +9614,13 @@
     {
      "c": "rm-regionBanner",
      "suggested": "us",
-     "annotation": "Плашка, когда регион страницы и регион по IP разные (врач из США открыл ссылку коллеги из Европы): «It looks like you are in Americas…». Не перекидывает сама, скрывается на 30 дней."
+     "annotation": "Плашка, когда регион страницы и регион по IP разные (врач из США открыл ссылку коллеги из Европы): «It looks like you are in Americas…». Не перекидывает сама, скрывается на 30 дней.",
+     "asis": true
     },
     {
      "c": "rm-header",
-     "region": "ous"
+     "region": "ous",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9560,13 +9645,16 @@
         "href": "/contact-us?region=ous&topic=demo",
         "label": "Request a demo"
        },
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -9683,7 +9771,8 @@
    "height": 820,
    "body": [
     {
-     "c": "rm-header"
+     "c": "rm-header",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9705,7 +9794,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "overlay": {
@@ -9848,7 +9938,8 @@
    "height": 820,
    "body": [
     {
-     "c": "rm-header"
+     "c": "rm-header",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -9870,7 +9961,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "overlay": {
@@ -10020,7 +10112,8 @@
    "height": 900,
    "body": [
     {
-     "c": "rm-header"
+     "c": "rm-header",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -10042,7 +10135,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "overlay": {
@@ -10208,7 +10302,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "overlay": {
@@ -10378,7 +10473,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -10395,7 +10491,8 @@
         "label": "View open positions",
         "href": "/open-positions"
        },
-       "annotation": "Кнопка «View open positions» видна и при 0 вакансий и ведёт на пустую страницу (находка 5): первое действие — тупик."
+       "annotation": "Кнопка «View open positions» видна и при 0 вакансий и ведёт на пустую страницу (находка 5): первое действие — тупик.",
+       "asis": true
       },
       {
        "c": "rm-gallery",
@@ -10411,7 +10508,8 @@
          "author": "Morgan, Customer Service",
          "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -10441,7 +10539,8 @@
          "title": "Daring"
         }
        ],
-       "annotation": "5 принципов показаны дважды: картинкой «WE ARE RAPID» и текстом под ней."
+       "annotation": "5 принципов показаны дважды: картинкой «WE ARE RAPID» и текстом под ней.",
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -10455,13 +10554,16 @@
         "Internship",
         "Other"
        ],
-       "annotation": "Форма «Submit general interest» — та же, что для клиентов: Organization, тема, нет поля для CV или LinkedIn (находка 20). HR при этом ведёт кандидатов в Spark Hire (на Duda был его виджет на /open-positions) — на сайте ссылки туда нет."
+       "annotation": "Форма «Submit general interest» — та же, что для клиентов: Organization, тема, нет поля для CV или LinkedIn (находка 20). HR при этом ведёт кандидатов в Spark Hire (на Duda был его виджет на /open-positions) — на сайте ссылки туда нет.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -10473,7 +10575,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -10489,7 +10592,8 @@
        "cta": {
         "label": "View open positions",
         "href": "/open-positions"
-       }
+       },
+       "asis": true
       },
       {
        "c": "rm-gallery",
@@ -10505,7 +10609,8 @@
          "author": "Morgan, Customer Service",
          "imageUrl": "/uploads/duda/careers-2-02e22d.jpg"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -10534,7 +10639,8 @@
          "body": "We encourage a bold approach to thinking & problem-solving, and believe every idea is connected to a course of action.",
          "title": "Daring"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -10547,13 +10653,16 @@
         "General interest",
         "Internship",
         "Other"
-       ]
+       ],
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -10565,7 +10674,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -10573,20 +10683,24 @@
       {
        "c": "rm-hero",
        "v": "page",
-       "title": "Join us"
+       "title": "Join us",
+       "asis": true
       },
       {
        "c": "rm-jobs",
        "v": "list",
        "generalHref": "/careers#general-interest",
        "items": [],
-       "annotation": "Как есть: «Join us» и строка «There are no open positions right now» со ссылкой на общую заявку. Вакансии на новом сайте — своя таблица в админке (0 записей), а HR ведёт их в Spark Hire: на Duda здесь стоял его виджет (Comeet). Две системы — двойной ввод."
+       "annotation": "Как есть: «Join us» и строка «There are no open positions right now» со ссылкой на общую заявку. Вакансии на новом сайте — своя таблица в админке (0 записей), а HR ведёт их в Spark Hire: на Duda здесь стоял его виджет (Comeet). Две системы — двойной ввод.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -10753,7 +10867,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -11294,7 +11409,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -11308,7 +11424,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -11669,7 +11786,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -11681,7 +11799,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -12189,7 +12308,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -12200,7 +12320,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -12208,20 +12329,23 @@
       {
        "c": "rm-hero",
        "v": "page",
-       "title": "About Us"
+       "title": "About Us",
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "large",
        "body": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy.",
        "imageUrl": "",
-       "annotation": "Вводный текст и «What we do» — два коротких абзаца друг под другом; фактов о компании (страны, публикации, офисы) рядом нет. На странице две аудитории — врачи и инвесторы (письмо Emily 30.10)."
+       "annotation": "Вводный текст и «What we do» — два коротких абзаца друг под другом; фактов о компании (страны, публикации, офисы) рядом нет. На странице две аудитории — врачи и инвесторы (письмо Emily 30.10).",
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "surface",
        "title": "What we do",
-       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke.",
+       "asis": true
       },
       {
        "c": "rm-people",
@@ -12315,7 +12439,8 @@
          }
         }
        ],
-       "annotation": "Руководство: 6 карточек, имена и должности КАПСОМ (так в данных с Duda), биография — по «Read bio» на месте; у карточки якорь #{slug}."
+       "annotation": "Руководство: 6 карточек, имена и должности КАПСОМ (так в данных с Duda), биография — по «Read bio» на месте; у карточки якорь #{slug}.",
+       "asis": true
       },
       {
        "c": "rm-officesMap",
@@ -12354,7 +12479,8 @@
          "ordersEmail": "ordersgmbh@rapid-medical.com"
         }
        ],
-       "annotation": "Офисы показаны дважды: этим списком и пинами на карте ниже."
+       "annotation": "Офисы показаны дважды: этим списком и пинами на карте ниже.",
+       "asis": true
       },
       {
        "c": "rm-officesMap",
@@ -12409,13 +12535,16 @@
         "label": "Contact us",
         "href": "/contact-us"
        },
-       "annotation": "Карта: клик по региону → Contact Us со своей картой регионов: Латинская Америка → Europe, Ближний Восток → Asia & Pacific; а определение по IP шлёт Латинскую Америку в Americas. Третья карта регионов на сайте (вопрос №9)."
+       "annotation": "Карта: клик по региону → Contact Us со своей картой регионов: Латинская Америка → Europe, Ближний Восток → Asia & Pacific; а определение по IP шлёт Латинскую Америку в Americas. Третья карта регионов на сайте (вопрос №9).",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -12427,7 +12556,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -12435,19 +12565,22 @@
       {
        "c": "rm-hero",
        "v": "page",
-       "title": "About Us"
+       "title": "About Us",
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "large",
        "body": "We are a global community headquartered in Northern Israel focused on one unified goal – to pioneer solutions that expand what’s possible in neurovascular therapy.",
-       "imageUrl": ""
+       "imageUrl": "",
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "surface",
        "title": "What we do",
-       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke."
+       "body": "Utilizing proprietary manufacturing techniques, we develop the only responsive, remotely adjustable interventional tools to treat ischemic and hemorrhagic stroke.",
+       "asis": true
       },
       {
        "c": "rm-people",
@@ -12540,7 +12673,8 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-officesMap",
@@ -12578,7 +12712,8 @@
          "address": "Westendstrasse 21\n60325 Frankfurt\nGERMANY",
          "ordersEmail": "ordersgmbh@rapid-medical.com"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-officesMap",
@@ -12632,13 +12767,16 @@
        "button": {
         "label": "Contact us",
         "href": "/contact-us"
-       }
+       },
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -12798,7 +12936,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -13471,7 +13610,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -13483,7 +13623,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -14135,7 +14276,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -14146,7 +14288,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -14155,7 +14298,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Webinars",
-       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below."
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below.",
+       "asis": true
       },
       {
        "c": "rm-webinars",
@@ -14222,7 +14366,8 @@
          }
         }
        ],
-       "annotation": "Карточки: продукт, название, спикер, событие. В коде уже есть «Request this recording» на карточке — выбирает вебинар в форме и прокручивает к ней (параллельная сессия, 2026-11-13); снимок — до этого."
+       "annotation": "Карточки: продукт, название, спикер, событие. В коде уже есть «Request this recording» на карточке — выбирает вебинар в форме и прокручивает к ней (параллельная сессия, 2026-11-13); снимок — до этого.",
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -14236,13 +14381,16 @@
         "COLUMBUS 14 Guidewire: Mastering steerability"
        ],
        "defaultRegion": "Americas",
-       "annotation": "Форма внизу страницы, выбор вебинара — список «Which webinar?». Запись присылают вручную после заявки. Вебинаров нет в меню — попасть можно только со страниц терапий (site-ia, вопрос 4); в APAC вебинаров на Duda не было (№14)."
+       "annotation": "Форма внизу страницы, выбор вебинара — список «Which webinar?». Запись присылают вручную после заявки. Вебинаров нет в меню — попасть можно только со страниц терапий (site-ia, вопрос 4); в APAC вебинаров на Duda не было (№14).",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -14254,7 +14402,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -14263,7 +14412,8 @@
        "c": "rm-hero",
        "v": "page",
        "title": "Webinars",
-       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below."
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below.",
+       "asis": true
       },
       {
        "c": "rm-webinars",
@@ -14329,7 +14479,8 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-form",
@@ -14342,13 +14493,16 @@
         "COMANECI: Tips & Tricks from Buffalo",
         "COLUMBUS 14 Guidewire: Mastering steerability"
        ],
-       "defaultRegion": "Americas"
+       "defaultRegion": "Americas",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -14465,7 +14619,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -14477,7 +14632,8 @@
        "title": "Evidence",
        "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
        "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4",
-       "annotation": "Шапка с видео и абзацем «Clinical & scientific research play a pivotal role…» — первый экран без единого факта."
+       "annotation": "Шапка с видео и абзацем «Clinical & scientific research play a pivotal role…» — первый экран без единого факта.",
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -14534,7 +14690,8 @@
          }
         }
        ],
-       "annotation": "Счётчик «85+ clinical publications» (в базе 102) и карусель featured — до 6."
+       "annotation": "Счётчик «85+ clinical publications» (в базе 102) и карусель featured — до 6.",
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -14586,7 +14743,8 @@
          }
         }
        ],
-       "annotation": "«Featured publications» на деле — 3 последние с картинкой; показывает те же статьи, что карусель выше (находка 16)."
+       "annotation": "«Featured publications» на деле — 3 последние с картинкой; показывает те же статьи, что карусель выше (находка 16).",
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -15116,13 +15274,16 @@
         "comaneci",
         "drivewire"
        ],
-       "annotation": "Browse by product — вкладки по продуктам, внутри — строки: месяц, заголовок, ДЛИННЫЙ список авторов · журнал (часто пустой), «Read» / «Download PDF». 57 статей у COMANECI, 28 у TIGERTRIEVER — без поиска, фильтров, типа исследования и вывода. Чтобы понять, о чём статья, нужно уйти в журнал. Клиент на звонке: «в таком виде Evidence никто читать не будет»."
+       "annotation": "Browse by product — вкладки по продуктам, внутри — строки: месяц, заголовок, ДЛИННЫЙ список авторов · журнал (часто пустой), «Read» / «Download PDF». 57 статей у COMANECI, 28 у TIGERTRIEVER — без поиска, фильтров, типа исследования и вывода. Чтобы понять, о чём статья, нужно уйти в журнал. Клиент на звонке: «в таком виде Evidence никто читать не будет».",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -15134,7 +15295,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -15145,7 +15307,8 @@
        "eyebrow": "Americas",
        "title": "Evidence",
        "body": "Clinical & scientific research play a pivotal role in understanding the effectiveness, safety, and long-term impact that our technologies have on patient outcomes.",
-       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4"
+       "videoUrl": "/uploads/duda/3MxSd4f4R3ytbzaUxsbN_Evidence-v-70755e.mp4",
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -15201,7 +15364,8 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -15252,7 +15416,8 @@
           "prefix": ""
          }
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-publications",
@@ -15781,13 +15946,16 @@
         "tigertriever",
         "comaneci",
         "drivewire"
-       ]
+       ],
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -15975,7 +16143,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -16669,7 +16838,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -17321,7 +17491,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -17334,7 +17505,8 @@
        "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
        "note": "",
        "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
-       "annotation": "Шапка с видео и общим абзацем. Страница необязательная (решение 2026-11-10): обзор для тех, кто не знает линейку; врач, который знает, идёт через меню."
+       "annotation": "Шапка с видео и общим абзацем. Страница необязательная (решение 2026-11-10): обзор для тех, кто не знает линейку; врач, который знает, идёт через меню.",
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17348,7 +17520,8 @@
          "href": "/us/therapies/lvo"
         }
        ],
-       "annotation": "По секции на направление. В Americas 3 терапии — в каждой секции по одной карточке: продукт, название, подзаголовок героя терапии. Строки-доказательства нет (поле proofPoint пустое до MLR). Картинок нет — убраны 10.11: из видео в шапках карточки выходили разной высоты."
+       "annotation": "По секции на направление. В Americas 3 терапии — в каждой секции по одной карточке: продукт, название, подзаголовок героя терапии. Строки-доказательства нет (поле proofPoint пустое до MLR). Картинок нет — убраны 10.11: из видео в шапках карточки выходили разной высоты.",
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17361,7 +17534,8 @@
          "body": "Bridging the gap in assist devices",
          "href": "/us/therapies/aneurysm"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17374,7 +17548,8 @@
          "body": "Active access",
          "href": "/us/therapies/drivewire"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-cta",
@@ -17387,13 +17562,16 @@
          "href": "/contact-us?region=us"
         }
        ],
-       "annotation": "«Questions?» — Contact Us с регионом."
+       "annotation": "«Questions?» — Contact Us с регионом.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -17405,7 +17583,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -17417,7 +17596,8 @@
        "title": "Therapies",
        "body": "The only active devices that provide interventional physicians with greater treatment options and the ability to tailor endovascular procedures to every patient.",
        "note": "",
-       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4"
+       "videoUrl": "/uploads/duda/amPu695aTsE5DvMgsxon_Web---Our-Solutions-banner-v-f4ed9a.mp4",
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17430,7 +17610,8 @@
          "body": "A patient-centric approach to AIS",
          "href": "/us/therapies/lvo"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17443,7 +17624,8 @@
          "body": "Bridging the gap in assist devices",
          "href": "/us/therapies/aneurysm"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-columns",
@@ -17456,7 +17638,8 @@
          "body": "Active access",
          "href": "/us/therapies/drivewire"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-cta",
@@ -17468,13 +17651,16 @@
          "label": "Contact us",
          "href": "/contact-us?region=us"
         }
-       ]
+       ],
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -17591,7 +17777,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -17787,7 +17974,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -17801,7 +17989,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -18148,7 +18337,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -18159,7 +18349,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -18185,7 +18376,8 @@
         "label": "Request a demo"
        },
        "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
-       "annotation": "Hero: надпись «Therapies / Large vessel stroke» + ссылки на версии других регионов, заголовок, текст, «Request a demo», фоновое видео (tigerface)."
+       "annotation": "Hero: надпись «Therapies / Large vessel stroke» + ссылки на версии других регионов, заголовок, текст, «Request a demo», фоновое видео (tigerface).",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18195,7 +18387,8 @@
        "eyebrow": "Gain active",
        "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
        "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
-       "annotation": "Benefits — 3 ряда «текст + медиа»: видео, анимированный график, круги-цифры 47% FPE / 0% ENT. У рядов надзаголовок + заголовок читаются одной фразой («Gain active / control»)."
+       "annotation": "Benefits — 3 ряда «текст + медиа»: видео, анимированный график, круги-цифры 47% FPE / 0% ENT. У рядов надзаголовок + заголовок читаются одной фразой («Gain active / control»).",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18204,7 +18397,8 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18223,7 +18417,8 @@
        ],
        "title": "should be the last",
        "eyebrow": "The 1st pass",
-       "statsCaption": "In challenging ICAD cases⁵"
+       "statsCaption": "In challenging ICAD cases⁵",
+       "asis": true
       },
       {
        "c": "rm-productDetails",
@@ -18506,14 +18701,16 @@
          "blocks": []
         }
        ],
-       "annotation": "Product details — вкладки: Product overview (текст, особенности 2×2, диаграмма устройства с маркерами, таблица спецификаций), How it works (шаги), In-Practice (вебинары «Request to view», врачи и кейсы), Clinical evidence (ссылка в Evidence). На телефоне — аккордеон."
+       "annotation": "Product details — вкладки: Product overview (текст, особенности 2×2, диаграмма устройства с маркерами, таблица спецификаций), How it works (шаги), In-Practice (вебинары «Request to view», врачи и кейсы), Clinical evidence (ссылка в Evidence). На телефоне — аккордеон.",
+       "asis": true
       },
       {
        "c": "rm-video",
        "v": "band",
        "title": "Active thrombectomy tailors the procedure to the patient.",
        "url": "https://www.youtube.com/embed/ja2bTvMJRLs",
-       "annotation": "Closing — полоса с видео на всю ширину."
+       "annotation": "Closing — полоса с видео на всю ширину.",
+       "asis": true
       },
       {
        "c": "rm-cta",
@@ -18530,20 +18727,24 @@
          "href": "/contact-us?region=ous"
         }
        ],
-       "annotation": "«Questions?» — Request a demo + Customer support (решение 2026-11-10)."
+       "annotation": "«Questions?» — Request a demo + Customer support (решение 2026-11-10).",
+       "asis": true
       },
       {
        "c": "rm-indications",
        "v": "default",
        "indicationsHtml": "",
        "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n",
-       "annotation": "Indications and references — закреплён внизу (регуляторика своя у региона), не двигается и не удаляется."
+       "annotation": "Indications and references — закреплён внизу (регуляторика своя у региона), не двигается и не удаляется.",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -18554,7 +18755,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -18579,12 +18781,14 @@
         "href": "/contact-us?region=us&topic=demo",
         "label": "Request a demo"
        },
-       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif"
+       "imageUrl": "/uploads/duda/3670-Rapid-Medical-COMANECI-Expand---Compress-Dynamic-V1_HIGHRES_Transparent-a1944b.gif",
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "lead",
-       "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents."
+       "body": "Minimize the risk and disruption to patients' lives with lasting results. COMANECI™ is the first active assist device – its added user control overcomes the limitations of conventional balloons and stents.",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18593,7 +18797,8 @@
        "title": "require implants",
        "eyebrow": "Stability doesn't",
        "footnote": "Avoiding implants like stents is preferable to allow the brain to heal naturally and minimize long-term stroke risks and bleeding complications.",
-       "imageUrl": "/uploads/duda/2_COMANECI-Aneurism-Stability-a69863.gif"
+       "imageUrl": "/uploads/duda/2_COMANECI-Aneurism-Stability-a69863.gif",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18605,7 +18810,8 @@
        },
        "title": "blood supply",
        "eyebrow": "Continuous",
-       "videoUrl": "/uploads/duda/xTssjdbXR6QAyB451i8m_Comaneci-Blood-Flow-v-df9483.mp4"
+       "videoUrl": "/uploads/duda/xTssjdbXR6QAyB451i8m_Comaneci-Blood-Flow-v-df9483.mp4",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -18667,7 +18873,8 @@
         }
        ],
        "title": "except SUCCESS",
-       "eyebrow": "Leaves no trace —"
+       "eyebrow": "Leaves no trace —",
+       "asis": true
       },
       {
        "c": "rm-productDetails",
@@ -18940,7 +19147,8 @@
          "href": "/us/evidence#comaneci",
          "blocks": []
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-cta",
@@ -18956,19 +19164,23 @@
          "label": "Customer support",
          "href": "/contact-us?region=us"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-indications",
        "v": "default",
        "indicationsHtml": "",
-       "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n"
+       "referencesHtml": "<p>*90 consecutive patients in the U.S.</p>\n<ol>\n<li>Lim, Jaims et al. &quot;Coiling Variations for Treatment of Ruptured Intracranial Aneurysms: A Meta-Analytical Comparison of Comaneci-, Stent-, and Balloon-Coiling Assistance Techniques.&quot; World neurosurgery vol. 175 (2023): e1324-e1340. doi:10.1016/j.wneu.2023.05.008</li>\n<li>Jason M. Davies et al. Final Results of the SUCCESS Study presented at the ESMINT Congress; September 5, 2024; Marseille, France.</li>\n<li>Comparison with a Balt Eclipse 6x7 mm</li>\n</ol>\n",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -18980,7 +19192,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -19005,7 +19218,8 @@
         "href": "/contact-us?region=ous&topic=demo",
         "label": "Request a demo"
        },
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -19014,7 +19228,8 @@
        "title": "control",
        "eyebrow": "Gain active",
        "videoUrl": "/uploads/duda/i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v-9faafb.mp4",
-       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png"
+       "secondaryImageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -19023,7 +19238,8 @@
        "title": "thrombectomy",
        "eyebrow": "Accelerate",
        "footnote": "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4"
+       "videoUrl": "/uploads/duda/Ysj0VQoCRIS60VWmLvzj_Tiger-Stair-graph_animated-v-70bd14.mp4",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -19042,7 +19258,8 @@
        ],
        "title": "should be the last",
        "eyebrow": "The 1st pass",
-       "statsCaption": "In challenging ICAD cases⁵"
+       "statsCaption": "In challenging ICAD cases⁵",
+       "asis": true
       },
       {
        "c": "rm-productDetails",
@@ -19324,13 +19541,15 @@
          "href": "/ous/evidence#tigertriever",
          "blocks": []
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-video",
        "v": "band",
        "title": "Active thrombectomy tailors the procedure to the patient.",
-       "url": "https://www.youtube.com/embed/ja2bTvMJRLs"
+       "url": "https://www.youtube.com/embed/ja2bTvMJRLs",
+       "asis": true
       },
       {
        "c": "rm-cta",
@@ -19346,19 +19565,23 @@
          "label": "Customer support",
          "href": "/contact-us?region=ous"
         }
-       ]
+       ],
+       "asis": true
       },
       {
        "c": "rm-indications",
        "v": "default",
        "indicationsHtml": "",
-       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n"
+       "referencesHtml": "<ol>\n<li>Sadasivan C, Dashti N, Gopal M, Serna RJ, Fiorella D. The effect of actuation frequency on clot integration with the Tigertriever device: A preliminary in vitro study. Interv Neuroradiol. Published online April 17, 2024. doi:10.1177/15910199241247886</li>\n<li>Gupta, Rishi et al. &quot;New Class of Radially Adjustable Stentrievers for Acute Ischemic Stroke: Primary Results of the Multicenter TIGER Trial.&quot; Stroke vol. 52,5 (2021): 1534-1544. doi:10.1161/STROKEAHA.121.034436</li>\n<li>Turk AS, Siddiqui A, Fifi JT, et al. Aspiration thrombectomy versus stent retriever thrombectomy as first-line approach for large vessel occlusion (COMPASS): a multicentre, randomised, open label, blinded outcome, non-inferiority trial. Lancet. 2019;393:998-1008. doi:10.1016/S0140-6736(19)30297-1</li>\n<li>Lapergue B, Blanc R, Gory B, et al. Effect of Endovascular Contact Aspiration vs Stent Retriever on Revascularization in Patients With Acute Ischemic Stroke and Large Vessel Occlusion: The ASTER Randomized Clinical Trial. JAMA. 2017;318(5):443-452. doi:10.1001/jama.2017.9644</li>\n<li>Ojeda DJ, Ghannam M, Sanchez S, et al. Tigertriever in the treatment of acute ischemic stroke with underlying intracranial atherosclerotic disease. J Neurointerv Surg. 2024;16(11):1083-1087. doi:10.1136/jnis-2023-020796</li>\n<li>Yi HJ, Sung JH, Lee DH, Song SY. Effectiveness and Technical Considerations of Solitaire Platinum 4×40 mm Stent Retriever in Mechanical Thrombectomy with Solumbra Technique. J Korean Neurosurg Soc. 2021;64(1):30-38. doi:10.3340/jkns.2020.0046</li>\n<li>Kabbasch C, Mpotsaris A, Chang DH, et al. Mechanical thrombectomy with the Trevo ProVue device in ischemic stroke patients: does improved visibility translate into a clinical benefit? J Neurointerv Surg. 2016;8(8):778-782. doi:10.1136/neurintsurg-2015-011861</li>\n<li>Haussen DC, Al-Bayati AR, Grossberg JA, et al. Longer stent retrievers enhance thrombectomy performance in acute stroke. J Neurointerv Surg. 2019;11(1):6-8. doi:10.1136/neurintsurg-2018-013918</li>\n</ol>\n",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -19489,7 +19712,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -19506,7 +19730,8 @@
         "href": "/us/therapies"
        },
        "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
-       "annotation": "Hero: «EXPAND / WHAT’S POSSIBLE», «in neurovascular therapy», строка, «Explore Therapies» (регион последнего визита или выбор региона), фоновое видео."
+       "annotation": "Hero: «EXPAND / WHAT’S POSSIBLE», «in neurovascular therapy», строка, «Explore Therapies» (регион последнего визита или выбор региона), фоновое видео.",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -19535,7 +19760,8 @@
         "label": "Request a demo",
         "href": "/contact-us?region=us&topic=demo"
        },
-       "annotation": "Statement: фраза про «fingerprints», видео, цифры 50K+ patients · 100+ patents · 85+ publications (в Evidence их 102), «solution line», Request a demo."
+       "annotation": "Statement: фраза про «fingerprints», видео, цифры 50K+ patients · 100+ patents · 85+ publications (в Evidence их 102), «solution line», Request a demo.",
+       "asis": true
       },
       {
        "c": "rm-text",
@@ -19543,7 +19769,8 @@
        "title": "Engineered for precise control at every step.",
        "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
        "imageUrl": "",
-       "annotation": "«Engineered for precise control at every step» — тёмная полоса с текстом."
+       "annotation": "«Engineered for precise control at every step» — тёмная полоса с текстом.",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -19605,13 +19832,16 @@
        ],
        "allHref": "/news-events",
        "allLabel": "View all news ›",
-       "annotation": "Новости: 4 featured (или последние), «Continue reading» уводит на BusinessWire, «View all news»."
+       "annotation": "Новости: 4 featured (или последние), «Continue reading» уводит на BusinessWire, «View all news».",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -19623,7 +19853,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "rm-page",
@@ -19639,7 +19870,8 @@
         "label": "Explore Therapies",
         "href": "/us/therapies"
        },
-       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4"
+       "videoUrl": "/uploads/duda/sCAEMmxbSFuSL1kVU3JW_SNIS_TIGERTRIEVER-FINAL_no-audio-v-0c3d34.mp4",
+       "asis": true
       },
       {
        "c": "rm-textMedia",
@@ -19667,14 +19899,16 @@
        "link": {
         "label": "Request a demo",
         "href": "/contact-us?region=us&topic=demo"
-       }
+       },
+       "asis": true
       },
       {
        "c": "rm-text",
        "v": "dark",
        "title": "Engineered for precise control at every step.",
        "body": "Utilizing proprietary manufacturing techniques, our devices enable physicians to respond in real-time to the anatomy and tailor the procedure to every patient.",
-       "imageUrl": ""
+       "imageUrl": "",
+       "asis": true
       },
       {
        "c": "rm-news",
@@ -19735,13 +19969,16 @@
         }
        ],
        "allHref": "/news-events",
-       "allLabel": "View all news ›"
+       "allLabel": "View all news ›",
+       "asis": true
       }
-     ]
+     ],
+     "asis": true
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ]
   },
@@ -19865,7 +20102,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -19895,7 +20133,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [
@@ -19909,7 +20148,8 @@
    "body": [
     {
      "c": "rm-header",
-     "region": "us"
+     "region": "us",
+     "asis": true
     },
     {
      "c": "section",
@@ -19946,7 +20186,8 @@
     },
     {
      "c": "rm-footer",
-     "region": "us"
+     "region": "us",
+     "asis": true
     }
    ],
    "notes": [

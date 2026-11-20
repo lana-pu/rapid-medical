@@ -1392,6 +1392,19 @@ flow = {
 
 ORDER = [sid for g in flow['groups'] for sid in g['screens']]
 flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))
+
+
+def mark_asis(o):
+    """Screens "as is" show the site before the redesign: their blocks are drawn by that code (pack: rm-render-asis.json)."""
+    if isinstance(o, dict):
+        if str(o.get('c', '')).startswith('rm-'): o['asis'] = True
+        for v in o.values(): mark_asis(v)
+    elif isinstance(o, list):
+        for x in o: mark_asis(x)
+
+
+for s in flow['screens']:
+    if 'asis' in s['id']: mark_asis([s.get('body'), s.get('overlay')])
 if __name__ == '__main__':
     OUT.write_text(json.dumps(clean(flow), ensure_ascii=False, indent=1), encoding='utf8')
     print('ok:', OUT.name, len(flow['screens']), 'screens')

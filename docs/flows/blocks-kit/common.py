@@ -12,7 +12,7 @@ META = DATA['meta']
 
 
 def strip(o):
-    if isinstance(o, dict): return {k: strip(v) for k, v in o.items() if k not in ('edit', 'regionLinks', 'anchors', 'generalHref')}
+    if isinstance(o, dict): return {k: strip(v) for k, v in o.items() if k != 'edit'}  # the rest is the block's data: the real component needs it
     if isinstance(o, list): return [strip(x) for x in o]
     return o
 

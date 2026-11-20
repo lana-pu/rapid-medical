@@ -1,1 +1,3 @@
 __pycache__/
+.queue.json
+examples.json

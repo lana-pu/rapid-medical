@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
-"""Generates ../pack.js (the Rapid Medical pack for the /wireframes kit) from the same renderers as the blocks kit page.
+"""Generates ../pack.js (the Rapid Medical pack for the /wireframes kit): the site's blocks drawn by the site itself.
    python3 docs/flows/blocks-kit/make-pack.py
-Edit renderers in page.template.html, pack glue (registration, rm-page, header, footer) in pack.template.js."""
+Inputs: pack.template.js (registration, rm-page, header, footer), key.js (node → snapshot key, shared with render.cjs),
+wf-theme.css (grey tokens), ../rm-render.json and ../rm-render-asis.json (snapshots, render.sh), ../rm-pages.json (block
+metadata and real instances for the Library examples). Also writes examples.json — render.cjs snapshots them too."""
 import json
 from pathlib import Path
 from common import META, load
 
 HERE = Path(__file__).resolve().parent
-lines = (HERE / 'page.template.html').read_text(encoding='utf8').split('\n')
-start = next(i for i, l in enumerate(lines) if l.startswith('/* ---------- wireframe atoms'))
-end = next(i for i, l in enumerate(lines) if l.startswith('/* page composer */'))
-css = '\n'.join(lines[start + 1:end]).replace('.frame { font-family: var(--f-ui); font-size: 15px; line-height: 1.55 }\n', '')
-css = '.w-screen { container: frame / inline-size }\n' + css
-js_start = next(i for i, l in enumerate(lines) if l.startswith('const esc ='))
-js_end = next(i for i, l in enumerate(lines) if l.startswith('/* page = groups'))
-js = '\n'.join(lines[js_start:js_end])
+FLOWS = HERE.parent
 
 pages, inst = load()
 
@@ -40,13 +35,29 @@ def trim(t, data):
 examples = {}
 for m in META:
     for v in m['variants']:
-        i = next((x for x in inst.get(m['type'], []) if x['variant'] == v['id']), None) or (inst.get(m['type']) or [None])[0]
-        if i: examples.setdefault(m['type'], []).append(dict({'c': 'rm-' + m['type'], 'v': v['id']}, **trim(m['type'], i['data'])))
+        i = next((x for x in inst.get(m['type'], []) if x['variant'] == v['id']), None)
+        # a variant no page uses: the registry's sample data (render-page.tsx reads {"sample": true})
+        data = trim(m['type'], i['data']) if i else {'sample': True}
+        examples.setdefault(m['type'], []).append(dict({'c': 'rm-' + m['type'], 'v': v['id']}, **data))
+(HERE / 'examples.json').write_text(json.dumps(examples, ensure_ascii=False), encoding='utf8')
+
+
+def snapshot(name):
+    p = FLOWS / name
+    return json.loads(p.read_text(encoding='utf8')) if p.exists() else {'css': '', 'units': {}}
+
+
+now, asis = snapshot('rm-render.json'), snapshot('rm-render-asis.json')
+render = {'css': now['css'], 'units': now['units'], 'asis': asis['units']}
+render['css'] += '\n' + asis.get('css', '')  # the code before the redesign: its own CSS, scoped to .rmxa
+
 names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner'] + ['rm-' + m['type'] for m in META]
 pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
-        .replace('/*CSS*/""', json.dumps(css)).replace('/*JS*/', js)
+        .replace('/*RENDER*/{}', json.dumps(render, ensure_ascii=False).replace('</', '<\\/'))
+        .replace('/*KEY*/', (HERE / 'key.js').read_text(encoding='utf8'))
+        .replace('/*THEME*/""', json.dumps((HERE / 'wf-theme.css').read_text(encoding='utf8')))
         .replace('/*META*/[]', json.dumps([{k: m[k] for k in ('type', 'name', 'description', 'category', 'variants', 'fields')} for m in META], ensure_ascii=False))
         .replace('/*EXAMPLES*/{}', json.dumps(examples, ensure_ascii=False))
         .replace('/*NAMES*/', ' '.join(names)))
-(HERE.parent / 'pack.js').write_text(pack, encoding='utf8')
-print('ok: pack.js', len(pack), 'bytes,', len(names), 'components')
+(FLOWS / 'pack.js').write_text(pack, encoding='utf8')
+print(f"ok: pack.js {len(pack) // 1024} KB, {len(names)} components; snapshots: {len(now['units'])} now (from {now.get('snapshot', '—')}), {len(asis['units'])} as is")

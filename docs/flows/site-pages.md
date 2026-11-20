@@ -1,8 +1,10 @@
 # Страницы сайта на вайрфреймах — порядок и статус
 
 Флоу: `site-pages.py` → `site-pages.json` → артефакт (приватная ссылка): https://claude.ai/artifact/Dyud46HRkPumSyPiZXrMVA. Сборка:
-`python3 docs/flows/site-pages.py && python3 .claude/skills/wireframes/scripts/build.py docs/flows/site-pages.json <scratchpad>/site-pages.html --pack docs/flows/pack.js`,
-публиковать тем же путём файла.
+`docs/flows/blocks-kit/render.sh http://localhost:<порт dev-сервера>` (все флоу, снимок блоков сайта, `pack.js`;
+DESIGN.md → «Вайрфреймы»), затем
+`python3 .claude/skills/wireframes/scripts/build.py docs/flows/site-pages.json <scratchpad>/site-pages.html --pack docs/flows/pack.js`,
+публиковать тем же путём файла. Блоки на экранах — настоящие компоненты сайта; экраны «как было» — код до редизайна.
 
 **Кликабельный прототип сайта** со всеми решениями (Americas, desktop, 15 экранов): `site-prototype.py` → `site-prototype.json`,
 сборка с `--pack pack.js proto-pack.js`; приватная ссылка: https://claude.ai/artifact/QWbwYnfEghNLZAM1ykvd14. Экраны берутся из

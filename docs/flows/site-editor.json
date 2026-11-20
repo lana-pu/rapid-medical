@@ -386,7 +386,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to AIS",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -397,14 +405,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to AIS",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "eyebrowHref": "/ous/therapies",
        "to": "edit-text",
        "annotation": "Страница выглядит как на сайте. Пунктир при наведении показывает, что можно поменять. Клик — правка на месте.",
        "focus": {
@@ -532,7 +533,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -543,14 +552,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
+       "eyebrowHref": "/ous/therapies",
        "annotation": "Текст правится прямо в заголовке. Шрифт, цвет и размер редактору недоступны: дизайн заперт (ADR-006).",
        "focus": {
         "style": "selected",
@@ -704,7 +706,15 @@
           {
            "c": "rm-hero",
            "v": "video",
+           "cta": {
+            "href": "/contact-us?region=ous&topic=demo",
+            "label": "Request a demo"
+           },
+           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+           "title": "A patient-centric approach to acute ischemic stroke",
            "eyebrow": "Therapies / Large vessel stroke",
+           "imageUrl": null,
+           "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
            "eyebrowLinks": [
             {
              "label": "Americas version",
@@ -715,14 +725,7 @@
              "href": "/apac/therapies/lvo"
             }
            ],
-           "title": "A patient-centric approach to acute ischemic stroke",
-           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-           "cta": {
-            "href": "/contact-us?region=ous&topic=demo",
-            "label": "Request a demo"
-           },
-           "imageUrl": null,
-           "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+           "eyebrowHref": "/ous/therapies"
           },
           {
            "c": "rm-textMedia",
@@ -895,7 +898,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -906,14 +917,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -1123,7 +1127,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -1134,14 +1146,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -1155,8 +1160,8 @@
       {
        "c": "rm-cta",
        "v": "band",
-       "title": "Webinars",
        "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "title": "Webinars",
        "buttons": [
         {
          "label": "Request to view",
@@ -1352,7 +1357,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -1363,14 +1376,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -1384,8 +1390,8 @@
       {
        "c": "rm-cta",
        "v": "band",
-       "title": "Webinars",
        "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "title": "Webinars",
        "buttons": [
         {
          "label": "Request to view",
@@ -1509,7 +1515,15 @@
           {
            "c": "rm-hero",
            "v": "image",
+           "cta": {
+            "href": "/contact-us?region=apac&topic=demo",
+            "label": "Request a demo"
+           },
+           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+           "title": "A patient-centric approach to AIS",
            "eyebrow": "Therapies / Large vessel stroke",
+           "imageUrl": "/uploads/duda/3666-TT13-Expand---Compress-Dynamic-V3_HIGHRES-e31360.gif",
+           "videoUrl": null,
            "eyebrowLinks": [
             {
              "label": "Americas version",
@@ -1520,22 +1534,15 @@
              "href": "/ous/therapies/lvo"
             }
            ],
-           "title": "A patient-centric approach to AIS",
-           "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-           "cta": {
-            "href": "/contact-us?region=apac&topic=demo",
-            "label": "Request a demo"
-           },
-           "imageUrl": "/uploads/duda/3666-TT13-Expand---Compress-Dynamic-V3_HIGHRES-e31360.gif",
-           "videoUrl": null,
+           "eyebrowHref": "/apac/therapies",
            "selected": true,
            "annotation": "Отличие видно прямо на странице: рамка на блоке, который в этом регионе свой."
           },
           {
            "c": "rm-text",
            "v": "lead",
-           "title": null,
            "body": null,
+           "title": null,
            "imageUrl": "/uploads/duda/TT_Revised-Base_V4-51da50.png",
            "videoUrl": null,
            "selected": true
@@ -1699,7 +1706,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -1710,14 +1725,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -1932,7 +1940,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -1943,14 +1959,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",
@@ -1964,8 +1973,8 @@
       {
        "c": "rm-cta",
        "v": "band",
-       "title": "Webinars",
        "body": "Physician-led webinars are available to view on-demand. To watch a recording, please submit a request.",
+       "title": "Webinars",
        "buttons": [
         {
          "label": "Request to view",
@@ -2069,7 +2078,15 @@
       {
        "c": "rm-hero",
        "v": "video",
+       "cta": {
+        "href": "/contact-us?region=ous&topic=demo",
+        "label": "Request a demo"
+       },
+       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
+       "title": "A patient-centric approach to acute ischemic stroke",
        "eyebrow": "Therapies / Large vessel stroke",
+       "imageUrl": null,
+       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4",
        "eyebrowLinks": [
         {
          "label": "Americas version",
@@ -2080,14 +2097,7 @@
          "href": "/apac/therapies/lvo"
         }
        ],
-       "title": "A patient-centric approach to acute ischemic stroke",
-       "body": "TIGERTRIEVER™ is the only active thrombectomy device – it is engineered to adapt to patient anatomy. Accelerate clot integration and reduce stress on the brain during mechanical thrombectomy procedures.",
-       "cta": {
-        "href": "/contact-us?region=ous&topic=demo",
-        "label": "Request a demo"
-       },
-       "imageUrl": null,
-       "videoUrl": "/uploads/duda/636q06j9Tiq4QNRHY6i7_tigerface-wide-v-7c2906.mp4"
+       "eyebrowHref": "/ous/therapies"
       },
       {
        "c": "rm-textMedia",

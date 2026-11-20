@@ -36,7 +36,11 @@ const isFlow = (b: Block) => def(b).flow?.(b.variant as never) ?? false;
  * A page: blocks in order. Consecutive blocks of a type with `stack` share one band;
  * consecutive flow blocks (page title, text, form…) share one plain section.
  */
-export async function BlockList({ blocks: all }: { blocks: Block[] }) {
+export async function BlockList({ blocks: all, slot }: {
+  blocks: Block[];
+  /** Wraps each block where it stands in the page (the wireframe snapshot marks blocks this way, docs/flows/blocks-kit/render.cjs). The site passes none. */
+  slot?: (i: number, node: ReactNode) => ReactNode;
+}) {
   // visitors do not get hidden sections at all; the editor shows them folded (HiddenStrip)
   const blocks = (await isEditing()) ? all : all.filter((b) => !b.hidden);
   const out: ReactNode[] = [];
@@ -45,7 +49,7 @@ export async function BlockList({ blocks: all }: { blocks: Block[] }) {
   const marked = (b: Block, i: number, node: ReactNode, key: number) => (
     <Fragment key={key}>
       <Mark i={i} uid={b.uid} info={b.uid ? info(b, b.uid) : undefined} />
-      {node}
+      {slot ? slot(i, node) : node}
     </Fragment>
   );
   for (let i = 0; i < blocks.length; ) {

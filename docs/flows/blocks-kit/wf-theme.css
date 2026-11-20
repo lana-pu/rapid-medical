@@ -1,0 +1,24 @@
+/* Wireframe theme of the real blocks (docs/DESIGN.md → «Вайрфреймы»). The site's CSS arrives scoped to .rmx (the code before the redesign: .rmxa); here only
+   the site tokens (src/app/globals.css) are pointed at the kit's grey tokens, so the board stays grey and follows the
+   kit's light/dark theme. What the blocks hardcode (dark bands: neutral-900, black — DESIGN.md → «Отступления от
+   токенов») stays as it is: the wireframe shows it honestly. */
+.w-screen { container: frame / inline-size }
+.rmx, .rmxa {
+  --background: var(--wf-paper);
+  --foreground: var(--wf-ink);
+  --muted: var(--wf-muted);
+  --accent: var(--wf-btn);
+  --accent-foreground: var(--wf-btn-ink);
+  --surface: var(--wf-surface);
+  --border: var(--wf-line);
+  --danger: var(--redline, #c4320a);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--f-ui);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+/* the kit sets form controls to inherit their font outside any layer, which beats the site's utilities: give them back */
+.rmx :is(button, select, input, textarea), .rmxa :is(button, select, input, textarea) { font: revert-layer; color: revert-layer }
+/* pictures, videos, embeds and maps: a grey box with what is there (render.cjs) */
+:is(.rmx, .rmxa) [data-wf-media] { background: var(--wf-fill) }
