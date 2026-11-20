@@ -6,7 +6,7 @@ import { REGION_CHOICES } from "@/lib/regions";
 import { DEMO, withBase } from "@/lib/demo";
 import { RegionPicker, type RegionOption, type RegionSourceKind } from "./RegionPicker";
 
-const NEXT = /^[a-z-]+$/;
+const NEXT = /^[a-z-]+(\/[a-z0-9-]+)?$/; // «evidence», «therapies/lvo» — as CHOOSER_NEXT
 
 /** Where each region's button leads: back to the same page in that region, or on to the section asked for. */
 export function regionTargets({ next, back }: { next?: string | null; back?: string | null }): RegionOption[] {

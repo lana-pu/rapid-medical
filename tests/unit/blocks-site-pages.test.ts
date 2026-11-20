@@ -91,6 +91,10 @@ describe("offices are edited in Contact details", () => {
 describe("links when the region is not known", () => {
   it("regional pages go through the chooser, region parameters are dropped", () => {
     expect(fillHref("/{region}/therapies", { region: null })).toBe("/choose-your-location");
+    // the chooser leads on to the page asked for (UX pass 2026-11-20)
+    expect(fillHref("/{region}/evidence", { region: null })).toBe("/choose-your-location?next=evidence");
+    expect(fillHref("/{region}/therapies/lvo", { region: null })).toBe("/choose-your-location?next=therapies/lvo");
+    expect(fillHref("/{region}/evidence#{product}", { region: null })).toBe("/choose-your-location?next=evidence");
     expect(fillHref("/contact-us?region={region}&topic=demo", { region: null })).toBe("/contact-us?topic=demo");
     expect(fillHref("/contact-us?region={region}", { region: null })).toBe("/contact-us");
     expect(fillHref("/contact-us?topic=demo&region={region}", { region: null })).toBe("/contact-us?topic=demo");

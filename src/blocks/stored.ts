@@ -126,7 +126,8 @@ export const SOURCES: Record<string, Source> = {
       const list = ctx.lists?.therapies ?? [];
       if (!list.length) return null;
       const cards = overviewSections(list, ctx.region ?? "us", ctx.region ? ctx.lists?.publicationCounts : undefined).flatMap((g) => g.items);
-      return { items: ctx.region ? cards : cards.map((c) => ({ ...c, href: "/choose-your-location", more: null })) };
+      // no region: the card's own therapy through the chooser (fillHref adds `next`)
+      return { items: ctx.region ? cards : cards.map((c) => ({ ...c, href: c.href.replace(/^\/us\//, "/{region}/"), more: null })) };
     },
   },
   /** Home: the publications figure of the evidence block */
@@ -174,13 +175,21 @@ export function templateHref(href: string, region: Region | null, product?: stri
   return h;
 }
 
+/** A regional section the chooser may lead on to: «evidence», «therapies», «therapies/lvo». */
+export const CHOOSER_NEXT = /^[a-z-]+(\/[a-z0-9-]+)?$/;
+
 export function fillHref(href: string, ctx: RenderCtx): string {
   if (!href.includes("{")) return href;
   let h = href;
   if (!ctx.region) {
-    // region not known yet (Home before the visitor chose one): regional pages go through the chooser,
+    // region not known yet (Home before the visitor chose one): regional pages go through the chooser, which then leads
+    // on to the page asked for (`next`: «evidence», «therapies/lvo» — UX pass 2026-11-20: it used to land on the overview);
     // links that only preselect a region drop the parameter
-    h = h.replace(/^\/\{region\}(?=\/|$|[?#]).*$/, "/choose-your-location");
+    h = h.replace(/^\/\{region\}(\/[^?#]*)?(?:[?#].*)?$/, (_m, rest?: string) => {
+      const next = (rest ?? "").replace(/^\/|\/$/g, "");
+      // «therapies» is where the chooser leads anyway
+      return next !== "therapies" && CHOOSER_NEXT.test(next) ? `/choose-your-location?next=${next}` : "/choose-your-location";
+    });
     h = h.replace(/([?&])region=\{region\}(&|$)/, (_m, sep: string, next: string) => (next ? sep : "")).replace(/\?$/, "");
   }
   return h.replaceAll("{region}", ctx.region ?? "us").replaceAll("{product}", ctx.product || "browse-by-product");
