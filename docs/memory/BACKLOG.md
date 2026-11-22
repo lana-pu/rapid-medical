@@ -41,7 +41,8 @@
    Порядок и статус — `docs/flows/site-pages.md`, страница (приватная ссылка): https://claude.ai/artifact/Dyud46HRkPumSyPiZXrMVA.
    **Вайрфреймы на дизайн-системе (2026-11-20…22, DESIGN.md → «Вайрфреймы»):** блоки, шапка, футер, окно региона, страницы
    материалов и состояния форм рисует сайт (`blocks-kit/render.sh`); решения закрытых страниц и прототип — сам сайт.
-   Осталось: (а) переопубликовать артефакты флоу (site-pages, prototype, visitor, editor, admin) — собраны локально;
+   (а) ~~переопубликовать флоу~~ — 2026-11-22 по прежним ссылкам: site-pages, prototype, visitor (UsCAqb3b5fYKEatPjjAsFg),
+   editor (LkArx5FdPAWQQqCvsigRP8), admin (9mBBLfMDh1soj6rFuXaAPh), Library (9UHNuEdzXgzFdZRQ2jNN2H). Осталось:
    (б) ~~удалить ручные копии~~ — `proto-pack.js`, каталог `blocks-kit/build.py` + `page.template.html` удалены 2026-11-22
    с подтверждения владелицы (каталог — вкладка Library);
    (в) Home и страница терапии — на настоящие страницы после слияния `therapy-home`.
