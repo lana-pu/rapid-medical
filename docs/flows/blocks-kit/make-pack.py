@@ -39,6 +39,14 @@ for m in META:
         # a variant no page uses: the registry's sample data (render-page.tsx reads {"sample": true})
         data = trim(m['type'], i['data']) if i else {'sample': True}
         examples.setdefault(m['type'], []).append(dict({'c': 'rm-' + m['type'], 'v': v['id']}, **data))
+# the site's header, footer, banner and a whole page (pack: rm-header, rm-footer, rm-regionBanner, rm-route)
+# a page of blocks grouped as on the site
+examples['rm-page'] = [{'c': 'rm-page', 'items': [x for x in (examples.get('hero', [None] * 3)[2], *examples.get('textMedia', [])[:2], (examples.get('cta') or [None])[0]) if x]}]
+examples['rm-header'] = [{'c': 'rm-header', 'region': 'us', 'menuOpen': True}, {'c': 'rm-header', 'region': 'ous'}, {'c': 'rm-header'}]
+examples['rm-footer'] = [{'c': 'rm-footer', 'region': 'ous'}]
+examples['rm-regionBanner'] = [{'c': 'rm-regionBanner', 'suggested': 'us'}]
+examples['rm-regionModal'] = [{'c': 'rm-regionModal', 'next': '/us/evidence'}, {'c': 'rm-regionModal', 'region': 'us', 'source': 'location', 'back': '/us'}]
+examples['rm-route'] = [{'c': 'rm-route', 'path': '/us/success-study-final-results'}]
 (HERE / 'examples.json').write_text(json.dumps(examples, ensure_ascii=False), encoding='utf8')
 
 
@@ -51,7 +59,7 @@ now, asis = snapshot('rm-render.json'), snapshot('rm-render-asis.json')
 render = {'css': now['css'], 'units': now['units'], 'asis': asis['units']}
 render['css'] += '\n' + asis.get('css', '')  # the code before the redesign: its own CSS, scoped to .rmxa
 
-names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner'] + ['rm-' + m['type'] for m in META]
+names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner', 'rm-regionModal', 'rm-route', 'rm-hot'] + ['rm-' + m['type'] for m in META]
 pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
         .replace('/*RENDER*/{}', json.dumps(render, ensure_ascii=False).replace('</', '<\\/'))
         .replace('/*KEY*/', (HERE / 'key.js').read_text(encoding='utf8'))

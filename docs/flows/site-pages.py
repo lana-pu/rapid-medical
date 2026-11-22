@@ -1390,6 +1390,94 @@ flow = {
     ],
 }
 
+# ---------- Decisions in code: the real site (2026-11-20) ----------
+# A closed page is in the code: its decided screens show the site itself (snapshot of the blocks, pack.js), not the
+# sketch it was decided on. The sketch's notes (UX decisions and their sources) stay — as the screen's notes; the sketch
+# is in git history. States come from the site too: field errors and «sent» by filling the real form (act), the
+# country search by typing in it. Still sketches: what is not in the code (Home, therapy page, 404, the Evidence concept
+# and its admin, «Create from a document»), the Mobbin examples and the pages "as is" (the code before the redesign).
+RM_NOW = json.load(open(HERE / 'rm-pages.json', encoding='utf8'))['pages']  # the site after the redesign (snapshot.sh)
+
+
+def now(name, over=None, act=None):
+    """A page of today's site from its real block list; `over` / `act` by "type.variant": other data, browser steps."""
+    items = []
+    for b in RM_NOW[name]:
+        k = f"{b['type']}.{b['variant']}"
+        data = {x: y for x, y in b['data'].items() if x != 'edit'}
+        n = dict({'c': 'rm-' + b['type'], 'v': b['variant']}, **((over or {}).get(k, data)))
+        if act and k in act: n['act'] = act[k]
+        items.append(n)
+    return {'c': 'rm-page', 'items': items}
+
+
+def route(path, **kw): return dict({'c': 'rm-route', 'path': path}, **kw)
+def site(*body, region='us'): return [{'c': 'rm-header', 'region': region} if region else {'c': 'rm-header'}, *body, {'c': 'rm-footer', 'region': region}]
+
+
+def sketch_notes(o, out=None):
+    out = [] if out is None else out
+    if isinstance(o, dict):
+        if o.get('annotation'): out.append(o['annotation'])
+        for v in o.values(): sketch_notes(v, out)
+    elif isinstance(o, list):
+        for x in o: sketch_notes(x, out)
+    return out
+
+
+PERSON = [{'fill': ['First Name', 'Anna']}, {'fill': ['Last Name', 'Levi']}]
+FORM_ERROR = PERSON + [{'fill': ['Email', 'anna.levi@clinic']}, {'click': 'Submit'}, {'expect': 'Enter a valid email'}]
+FORM_SENT = PERSON + [{'fill': ['Email', 'anna.levi@clinic.org']}, {'honeypot': True}, {'click': 'Submit'}, {'expect': 'Thank you for contacting us.'}]
+PAST = next(b for b in RM_NOW['News & Events'] if b['variant'] == 'past')['data']
+NEXT = next(b for b in RM_NOW['News & Events'] if b['variant'] == 'next')['data']
+# the upcoming state: the first event of the archive as it looked while it was ahead (the sketch showed the same one)
+UPCOMING = dict({k: v for k, v in NEXT.items() if k != 'edit'}, items=[dict({k: v for k, v in PAST['items'][0].items() if k != 'edit'}, registrationOpen=True)])
+HOME_TOP = {'c': 'rm-page', 'items': now('Home')['items'][:1]}
+CHOOSER = 'Choose location'
+REAL = {
+    'contact-new': ('Contact Us · in code', site(dict(now('Contact'), links=[{'text': 'Submit', 'to': 'contact-sent'}]))),
+    'contact-error': ('Contact Us · in code, a field error from the server', site(now('Contact', act={'form.split': FORM_ERROR}))),
+    'contact-sent': ('Contact Us · in code, request sent', site(now('Contact', act={'form.split': FORM_SENT}))),
+    'contact-new-phone': ('Contact Us · in code, phone', site(now('Contact'))),
+    'text-new': ('Terms of Use · in code', site(now('Terms'))),
+    'text-new-phone': ('Terms of Use · in code, phone', site(now('Terms'))),
+    'study-success': ('Study page · SUCCESS, in code', site(route('/us/success-study-final-results'))),
+    'study-success-phone': ('Study page · SUCCESS, in code, phone', site(route('/us/success-study-final-results'))),
+    'study-distals': ('Study page · DISTALS, in code', site(route('/distals-results'))),
+    'study-full': ('Study page · the document on the page, in code', site(route('/us/evidence/6-comaneci-assisted-embolization-of-wide-necked-aneurysms-results-from-the-success'))),
+    'news-new': ('News & Events · in code', site(dict(now('News & Events'), links=[{'text': 'Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases', 'to': 'news-page'}, {'text': 'DRIVEWIRE™ 24 in Clinical Practice', 'to': 'event-past-new'}]))),
+    'news-new-upcoming': ('News & Events · in code, with an upcoming event', site(now('News & Events', over={'events.next': UPCOMING}))),
+    'news-new-phone': ('News & Events · in code, phone', site(now('News & Events'))),
+    'news-page': ('News page · in code', site(route('/news-events/1-rapid-medical-announces-fda-clearance-of-drivewire-35-and-first-stroke-cases'))),
+    'event-past-new': ('Past event · in code', site(route('/events/drivewire-24-in-clinical-practice-esmint-2026'))),
+    'region-new': ('Choose location · in code, the window', site(HOME_TOP, region=None), {'c': 'rm-regionModal', 'next': '/us/evidence'}),
+    'region-new-search': ('Choose location · in code, country search', site(HOME_TOP, region=None),
+                          {'c': 'rm-regionModal', 'next': '/us/evidence', 'act': [{'fill': ['Start typing', 'United Arab']}, {'expect': 'United Arab Emirates'}]}),
+    'region-new-phone': ('Choose location · in code, phone', site(HOME_TOP, region=None), {'c': 'rm-regionModal', 'next': '/us/evidence'}),
+    'region-switcher-new': ('Region from the header · in code, same window', site(HOME_TOP), {'c': 'rm-regionModal', 'region': 'us', 'source': 'location', 'back': '/'}),
+    'careers-new': ('Careers · in code, with open roles (sample roles from the style guide: no roles in the database now)', site(now('Careers', over={'jobs.roles': {'sample': True}}))),
+    'careers-new-empty': ('Careers · in code, no open roles', site(now('Careers'))),
+    'careers-new-phone': ('Careers · in code, phone', site(now('Careers', over={'jobs.roles': {'sample': True}}))),
+    'about-new': ('About · in code', site(now('About'))),
+    'about-new-phone': ('About · in code, phone', site(now('About'))),
+    'ther-new': ('Therapies overview · in code, Americas', site(now('US · Therapies'))),
+    'ther-new-ous': ('Therapies overview · in code, Europe & Middle East', site(route('/ous/therapies'), region='ous')),
+}
+for s in flow['screens']:
+    if s['id'] not in REAL: continue
+    title, body, *overlay = REAL[s['id']]
+    kept = sketch_notes([s.get('body'), s.get('overlay')])
+    s['title'], s['body'] = title, body
+    s.pop('overlay', None)
+    if overlay: s['overlay'] = overlay[0]
+    if kept: s['notes'] = s.get('notes', []) + ['Из эскиза решения: ' + a for a in kept]
+# Evidence: the first stage is in the code (2026-11-15); the concept draft above stays as the discussion it was
+flow['screens'] += [{'id': 'ev-new', 'title': 'Evidence · in code (first stage)', 'url': 'rapid-medical.com/us/evidence', 'body': site(now('US · Evidence'))},
+                    {'id': 'ev-new-phone', 'title': 'Evidence · in code, phone', 'device': 'mobile', 'url': 'rapid-medical.com/us/evidence', 'body': site(now('US · Evidence'))}]
+gi = next(i for i, g in enumerate(flow['groups']) if g['screens'][0] == 'ev-concept')
+flow['groups'].insert(gi + 1, {'title': '8 · Evidence — в коде (первый этап, 2026-11-15)', 'screens': ['ev-new', 'ev-new-phone']})
+flow['links'] = flow.get('links', []) + [{'from': 'ev-concept', 'to': 'ev-new', 'label': 'что из концепции в коде'}, {'from': 'ev-new', 'to': 'ev-new-phone', 'label': 'на телефоне'}]
+
 ORDER = [sid for g in flow['groups'] for sid in g['screens']]
 flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))
 

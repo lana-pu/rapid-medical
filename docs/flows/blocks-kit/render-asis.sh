@@ -15,7 +15,7 @@ cleanup() {
   [ -n "$PID" ] && kill "$PID" 2>/dev/null || true
   pkill -f "$OLD/node_modules/.bin/next" 2>/dev/null || true
   git -C "$ROOT" worktree remove --force "$OLD" 2>/dev/null || true
-  rm -f "$LOG"
+  [ -n "$KEEP_LOG" ] || rm -f "$LOG"
 }
 trap cleanup EXIT
 [ -d "$OLD" ] || git -C "$ROOT" worktree add --detach "$OLD" "$BASE" >/dev/null
@@ -32,6 +32,8 @@ PY
 # Turbopack refuses a symlinked node_modules; an APFS clone of today's is instant (the old code runs on it)
 [ -d "$OLD/node_modules" ] || cp -cR "$ROOT/node_modules" "$OLD/node_modules"
 cp "$ROOT/.env" "$OLD/.env"
+# header and footer data: today's helper (the old layout passed Header and Footer the same props)
+cp "$ROOT/src/components/site/chrome.ts" "$OLD/src/components/site/chrome.ts"
 (cd "$OLD" && exec npx next dev -p $PORT >"$LOG" 2>&1) & PID=$!
 for i in $(seq 1 60); do curl -s -o /dev/null --max-time 5 "http://localhost:$PORT/" && break; sleep 2; done
 node "$HERE/render.cjs" "http://localhost:$PORT" --asis --root "$OLD"

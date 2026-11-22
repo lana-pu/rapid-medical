@@ -4,10 +4,11 @@
 `docs/flows/blocks-kit/render.sh http://localhost:<порт dev-сервера>` (все флоу, снимок блоков сайта, `pack.js`;
 DESIGN.md → «Вайрфреймы»), затем
 `python3 .claude/skills/wireframes/scripts/build.py docs/flows/site-pages.json <scratchpad>/site-pages.html --pack docs/flows/pack.js`,
-публиковать тем же путём файла. Блоки на экранах — настоящие компоненты сайта; экраны «как было» — код до редизайна.
+публиковать тем же путём файла. Решения закрытых страниц — сам сайт (шапка, футер, блоки, страницы по адресу, состояния
+форм); экраны «как было» — код до редизайна; эскизами — только то, чего в коде нет (DESIGN.md → «Вайрфреймы»).
 
 **Кликабельный прототип сайта** со всеми решениями (Americas, desktop, 15 экранов): `site-prototype.py` → `site-prototype.json`,
-сборка с `--pack pack.js proto-pack.js`; приватная ссылка: https://claude.ai/artifact/QWbwYnfEghNLZAM1ykvd14. Экраны берутся из
+сборка с `--pack pack.js`; страницы, которые уже в коде, — сам сайт с горячими зонами на настоящих ссылках; приватная ссылка: https://claude.ai/artifact/QWbwYnfEghNLZAM1ykvd14. Экраны берутся из
 тех же функций `site-pages.py` — правка решения обновляет оба артефакта.
 
 ## Цикл на каждую страницу (решение владелицы 2026-11-13)

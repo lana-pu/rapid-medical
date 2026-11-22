@@ -22,22 +22,20 @@ def page(name, idx=None, extra=None):
     return {'c': 'rm-page', 'items': items}
 
 
-def region_window(snap, **extra):
-    """«Choose your location» as a window over the page (RegionModal → RegionPicker)."""
-    return {'c': 'modal', 'title': 'Choose your location', 'items': [
-        {'c': 'text', 'v': 'muted', 'text': 'Product availability and regulatory information differ by region. Pick the region you practice in.'},
-        rm(snap, 1, _ctx={'nested': True}, **extra)]}
+def region_window(go, to, **extra):
+    """«Choose your location»: the site's own window (RegionModal), opened as a click on a link opens it; `go` — its button."""
+    return dict({'c': 'rm-regionModal', 'links': [{'text': go, 'to': to}]}, **extra)
+
+
+PERSON = [{'fill': ['First Name', 'Anna']}, {'fill': ['Last Name', 'Levi']}, {'fill': ['Email', 'anna.levi@clinic.org']}]
+# «sent» the way the site gets there: the form filled and sent; the bot trap (honeypot) makes the server answer «sent»
+# and store nothing
+def sent(*extra): return PERSON + list(extra) + [{'honeypot': True}, {'click': 'Submit'}, {'expect': 'Thank you'}]
 
 
 HEADER = {'c': 'rm-header', 'region': 'us'}
 HEADER_NONE = {'c': 'rm-header'}
 FOOTER = {'c': 'rm-footer', 'region': 'us'}
-
-
-def thanks(annotation):
-    return {'c': 'box', 'pad': 'l', 'items': [{'c': 'box', 'tone': 'surface', 'pad': 'm', 'border': True, 'annotation': annotation, 'items': [
-        {'c': 'text', 'v': 'strong', 'text': 'Thank you for contacting us.'},
-        {'c': 'text', 'v': 'small', 'text': 'We will get back to you as soon as possible.'}]}]}
 
 
 flow = {
@@ -52,7 +50,7 @@ flow = {
         {'title': '3 · Вебинар или демо', 'screens': ['webinars', 'webinar-sent', 'contact', 'contact-sent']},
         {'title': '4 · Тот же путь на телефоне', 'screens': ['aneurysm-phone', 'contact-phone']},
     ],
-    'links': [{'from': 'evidence', 'to': 'webinars', 'label': 'меню → вебинары (через In-Practice)'}, {'from': 'aneurysm', 'to': 'aneurysm-phone', 'label': 'та же страница на телефоне'},
+    'links': [{'from': 'aneurysm', 'to': 'aneurysm-tabs', 'label': 'прокрутка к вкладкам продукта'}, {'from': 'evidence', 'to': 'webinars', 'label': 'меню → вебинары (через In-Practice)'}, {'from': 'aneurysm', 'to': 'aneurysm-phone', 'label': 'та же страница на телефоне'},
               {'from': 'home', 'to': 'home-unknown', 'label': 'страна не определилась (VPN)'}, {'from': 'home', 'to': 'shared-link', 'label': 'врач из США открыл ссылку коллеги из Европы'}],
     'screens': [
         {'id': 'home', 'title': 'Home page, first visit from the US', 'url': 'rapid-medical.com', 'body': [
@@ -73,7 +71,7 @@ flow = {
                  annotation='По коду: если страна не определилась (VPN, нет заголовка), в шапке «🌐 Choose location». При входе ничего не всплывает: окно выбора открывается, только когда врач идёт в региональный раздел (Therapies, Evidence) или жмёт переключатель.'),
             page('Home', [0])]},
         {'id': 'choose', 'title': 'Choose your location (window)', 'url': 'rapid-medical.com', 'body': [HEADER_NONE, page('Home', [0])],
-         'overlay': dict(region_window('Choose location', to='evidence', label='Go to Americas →'),
+         'overlay': dict(region_window('Go to Americas →', 'evidence', next='/us/evidence'),
                          annotation='По коду: окно поверх страницы, не отдельный адрес. Поиск страны подсвечивает её регион («Brazil is here»); у каждого региона — список стран. После выбора врач попадает туда, куда шёл (Evidence региона), и выбор больше не перебивается IP. Без JavaScript — та же панель отдельной страницей /choose-your-location (не индексируется).')},
         {'id': 'shared-link', 'title': 'A colleague’s link to the Europe page', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': [
             {'c': 'rm-regionBanner', 'suggested': 'us', 'to': 'therapies', 'label': 'Go to the Americas site',
@@ -81,11 +79,10 @@ flow = {
             dict(HEADER, region='ous', to='switcher', label='🌐 Europe & Middle East ▾', focus={'part': 'switcher', 'style': 'hover', 'cursor': True}),
             page('OUS · Large vessel stroke', [0, 1])]},
         {'id': 'switcher', 'title': 'Region switcher (window)', 'url': 'rapid-medical.com/ous/therapies/lvo', 'body': [dict(HEADER, region='ous'), page('OUS · Large vessel stroke', [0])],
-         'overlay': dict(region_window('Choose location · from the header', to='therapies', label='Go to Americas →'),
+         'overlay': dict(region_window('Go to Americas →', 'therapies', region='ous', source='chosen', back='/ous/therapies/lvo'),
                          annotation='По коду: то же окно, что и при неизвестном регионе, плюс строка «Current region» с источником — «From your location» или «Your choice». Выбор открывает ту же страницу в другом регионе (вместе с открытой вкладкой); если её там нет — обзор терапий. Названия здесь короткие («Europe & Middle East»), а в плашке и на Evidence — длинные («Europe, Middle East, Latin America & Australia»): вопрос к Emily.')},
         {'id': 'aneurysm', 'title': 'Aneurysm: top of the page', 'url': 'rapid-medical.com/us/therapies/aneurysm', 'body': [HEADER, page('US · Aneurysm', [0, 1, 2], {
-            0: {'focus': {'part': 'eyebrow', 'style': 'hover'}, 'annotation': 'Над заголовком — версии страницы в других регионах, названиями регионов.'}}),
-            {'c': 'box', 'pad': 's', 'items': [{'c': 'button', 'v': 'link', 'text': 'Scroll to the product details ↓', 'to': 'aneurysm-tabs'}]}]},
+            0: {'focus': {'part': 'eyebrow', 'style': 'hover'}, 'annotation': 'Над заголовком — версии страницы в других регионах, названиями регионов.'}})]},
         {'id': 'aneurysm-tabs', 'title': 'Aneurysm: product tabs, actions and safety text', 'url': 'rapid-medical.com/us/therapies/aneurysm#overview', 'body': [page('US · Aneurysm', [5, 6, 7], {
             5: {'to': 'evidence', 'label': 'Clinical evidence ↗', 'focus': {'part': 'tabs', 'style': 'hover', 'cursor': True},
                 'annotation': 'Вкладка «Clinical evidence» уводит на Evidence (↗) и открывает там продукт (/us/evidence#comaneci). Вопрос: оставить ссылкой или показать 3 последних исследования прямо во вкладке.'},
@@ -98,15 +95,12 @@ flow = {
         {'id': 'webinars', 'title': 'Webinars: request a recording', 'url': 'rapid-medical.com/us/webinars', 'body': [HEADER, page('US · Webinars', None, {
             1: {'annotation': 'По коду: «Request this recording» на карточке выбирает этот вебинар в форме ниже и прокручивает к ней.'},
             2: {'to': 'webinar-sent', 'label': 'Submit', 'annotation': 'Регион формы подставлен из адреса (Americas). Темы — названия вебинаров региона.'}})]},
-        {'id': 'webinar-sent', 'title': 'Webinar request sent', 'url': 'rapid-medical.com/us/webinars', 'body': [HEADER, page('US · Webinars', [0, 1]),
-            thanks('По коду: тот же текст, что у контактной формы (своё сообщение есть только у регистрации на событие и у Careers). Врач не знает, когда и как придёт запись. Предложение: «We will email you a link to the recording within 2 working days» — срок за клиентом.')]},
+        {'id': 'webinar-sent', 'title': 'Webinar request sent', 'url': 'rapid-medical.com/us/webinars', 'body': [HEADER, page('US · Webinars', None, {2: {'act': sent({'pick': 'topic'}), 'annotation': 'По коду: тот же текст, что у контактной формы (своё сообщение есть только у регистрации на событие и у Careers). Врач не знает, когда и как придёт запись. Предложение: «We will email you a link to the recording within 2 working days» — срок за клиентом.'}})]},
         {'id': 'contact', 'title': 'Contact: demo request', 'url': 'rapid-medical.com/contact-us?region=us&topic=demo', 'height': 900, 'body': [HEADER, page('Contact', None, {
             1: {'to': 'contact-sent', 'label': 'Submit', 'focus': {'part': 'topics', 'style': 'hover'},
                 'annotation': 'По коду: тема «Request a demo» выбрана по адресу (?topic=demo), три частые темы — кнопками, остальные — в «Other topic». Слева — телефон и почта заказов региона из адреса (?region=us). Вместо региона — страна, подставлена по IP; поле штата появляется только для США и Канады.'}})]},
-        {'id': 'contact-sent', 'title': 'Demo request sent', 'url': 'rapid-medical.com/contact-us?region=us&topic=demo', 'body': [HEADER, page('Contact', [0]),
-            thanks('Почта форм ещё не настроена (BACKLOG): без SMTP заявка видна только в админке, раздел Requests.')]},
-        {'id': 'aneurysm-phone', 'title': 'Aneurysm on a phone', 'device': 'mobile', 'body': [HEADER, page('US · Aneurysm', [0, 1, 2]),
-            {'c': 'box', 'pad': 's', 'items': [{'c': 'button', 'v': 'primary', 'text': 'Request a demo', 'to': 'contact-phone'}]}],
+        {'id': 'contact-sent', 'title': 'Demo request sent', 'url': 'rapid-medical.com/contact-us?region=us&topic=demo', 'body': [HEADER, page('Contact', None, {1: {'act': sent(), 'annotation': 'Почта форм ещё не настроена (BACKLOG): без SMTP заявка видна только в админке, раздел Requests.'}})]},
+        {'id': 'aneurysm-phone', 'title': 'Aneurysm on a phone', 'device': 'mobile', 'body': [HEADER, dict(page('US · Aneurysm', [0, 1, 2]), links=[{'text': 'Request a demo', 'to': 'contact-phone'}])],
          'notes': ['На телефоне вкладки продукта становятся аккордеоном (по коду). Кнопки демо — в блоке «Questions?» внизу страницы.']},
         {'id': 'contact-phone', 'title': 'Contact on a phone', 'device': 'mobile', 'body': [HEADER, page('Contact')],
          'notes': ['7 полей вместо 12 до редизайна: страна вместо региона, штат — только для США и Канады (решение 2026-11-14).']},

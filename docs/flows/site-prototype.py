@@ -1,8 +1,9 @@
 # Generates site-prototype.json next to this file. Run: python3 docs/flows/site-prototype.py
 # A clickable prototype of the public site (Americas, desktop) with every decision from site-pages.md applied.
 # Screens are built by the same functions as the wireframe series (site-pages.py); this file adds a clickable
-# header/footer (proto-pack.js), the two pages decided last (Home, therapy) and the links between screens.
-# Build: build.py docs/flows/site-prototype.json <out>.html --pack docs/flows/pack.js docs/flows/proto-pack.js
+# the two pages decided last (Home, therapy — sketches until they are in the code) and the links between screens.
+# Pages in the code are the real site (site-pages.py: now / route), with hotspots on their real links ("links").
+# Build: build.py docs/flows/site-prototype.json <out>.html --pack docs/flows/pack.js
 import copy
 import re
 import importlib.util
@@ -17,39 +18,24 @@ T, H, S, rm, page, stat = sp.T, sp.H, sp.S, sp.rm, sp.page, sp.stat
 OUT = HERE / 'site-prototype.json'
 
 
-# ---------- clickable header and footer ----------
-def item(text, to, on=False, v=None):
-    n = {'c': 'rm-navitem', 'text': text, 'to': to, 'quiet': True}
-    if on: n['on'] = True
-    if v: n['v'] = v
-    return n
+# ---------- the site's header and footer, clickable (hotspots on their real links) ----------
+def item(text, to, on=False):
+    """A tab of the therapy-page sketch (the page is not in the code yet)."""
+    return {'c': 'text', 'v': 'strong', 'text': text} if on else {'c': 'link', 'text': text, 'to': to, 'quiet': True}
 
 
-THERAPY_MENU = [('Ischemic stroke', [('Large vessel stroke', 'lvo')]), ('Hemorrhagic stroke', [('Aneurysm', 'aneurysm')]), ('Access', [('Access', None)])]
+HEADER_LINKS = [('Rapid Medical – home', 'home'), ('Welcome', 'home'), ('Therapies', 'menu'), ('Evidence', 'evidence'), ('News & Events', 'news'),
+                ('About Us', 'about'), ('Careers', 'careers'), ('Contact Us', 'contact-new'), ('🌐 Americas ▾', 'region')]
+MENU_LINKS = [('Large vessel stroke', 'lvo'), ('Aneurysm', 'aneurysm'), ('All therapies →', 'therapies')]
 
 
 def nav(active=None, menu_open=False):
-    menu = [('Welcome', 'home'), ('Therapies ▾', 'menu'), ('Evidence', 'evidence'), ('News & Events', 'news'), ('About Us', 'about'), ('Careers', 'careers')]
-    n = {'c': 'rm-nav', 'logo': item('Rapid Medical™', 'home'), 'strip': [item('🌐 Americas ▾', 'region')],
-         'items': [item(t, to, on=(to == active or (to == 'menu' and active == 'therapies'))) for t, to in menu], 'cta': item('Contact Us', 'contact-new', v='button')}
-    if menu_open:
-        dd = []
-        for g, items in THERAPY_MENU:
-            dd.append({'c': 'rm-navitem', 'v': 'group', 'text': g})
-            dd += [item(t, to, v='menu') if to else {'c': 'rm-navitem', 'v': 'menu', 'text': t} for t, to in items]
-        dd.append(item('All therapies →', 'therapies', on=True, v='menu'))
-        n['menu'] = dd
-    return n
+    """The site header (rm-header); `active` is gone: the site marks no current section."""
+    links = [{'text': t, 'to': to, 'quiet': True} for t, to in HEADER_LINKS + (MENU_LINKS if menu_open else [])]
+    return dict({'c': 'rm-header', 'region': 'us', 'links': links}, **({'menuOpen': True} if menu_open else {}))
 
 
-FOOT = {'c': 'rm-navfoot', 'legal': [item('Privacy Statement', 'terms'), item('Terms of Use', 'terms'), item('Compliance Statement', 'terms'), item('Patents', 'terms')]}
-
-
-def build(active, fn, *args):
-    sp.HEADER = nav(active)
-    sp.HEADER_NONE = nav(active)
-    sp.FOOTER = FOOT
-    return fn(*args)
+FOOT = {'c': 'rm-footer', 'region': 'us', 'links': [{'text': t, 'to': 'terms', 'quiet': True} for t in ('Privacy Statement', 'Terms of Use', 'Compliance Statement', 'Patents')]}
 
 
 # ---------- pages decided last ----------
@@ -123,61 +109,19 @@ LVO_STUDIES = [sp.key_study('TIGER', 'Prospective, multicenter', '[N · цент
                sp.key_study('Meta-analysis', 'Meta-analysis', '[N исследований / пациентов]', '[главная цифра]', 'reperfusion vs self-expanding stent retrievers', 'TIGERTRIEVER™ · LVO')]
 
 
-def study_page():
-    sp.HEADER = nav('evidence'); sp.FOOTER = FOOT
-    page_ = sp.success_desktop()
-    i = next(k for k, x in enumerate(page_) if isinstance(x, dict) and x.get('c') == 'section' and 'Download the poster (PDF)' in json.dumps(x, ensure_ascii=False))
-    return page_[:i] + [sp.full_text_band('copy')] + page_[i:]
 
 
-# ---------- screens ----------
-sp.LEAD = sp.RM['Contact'][0]['data']['body']  # client copy stays as on the site: "Please provide a few contact details below."
+# ---------- pages in the code: the real site (site-pages.py → now / route) ----------
+def real(body, *links):
+    return [nav()] + [dict(b, links=[{'text': t, 'to': to} for t, to in links]) if links and i == 0 else b for i, b in enumerate(body)] + [FOOT]
 
 
-def therapies_page():
-    page_ = build('therapies', sp.therapies_new, 'us')
-    page_ = [x for x in page_ if not (isinstance(x, dict) and 'not available' in json.dumps(x, ensure_ascii=False))]
-    for x in page_:
-        for box in (x.get('items') or [{}])[0].get('items', []) if isinstance(x, dict) and x.get('c') == 'section' else []:
-            t = json.dumps(box, ensure_ascii=False)
-            if '"Large vessel stroke"' in t: box['to'] = 'lvo'
-            if '"Aneurysm"' in t: box['to'] = 'aneurysm'
-    return page_
-
-
-def evidence_page():
-    page_ = build('evidence', sp.evidence_concept)
-    txt = json.dumps(page_, ensure_ascii=False)
-    def mark(o):
-        if isinstance(o, list): return [mark(x) for x in o]
-        if not isinstance(o, dict): return o
-        o = {k: mark(v) for k, v in o.items()}
-        if o.get('c') == 'box' and '"SUCCESS"' in json.dumps(o, ensure_ascii=False) and 'Study page' in json.dumps(o, ensure_ascii=False) and 'grid' not in json.dumps(o)[:20]:
-            o['to'] = 'study'
-        return o
-    return mark(page_)
-
-
-def news35_page():
-    t = json.dumps(build('news', sp.news_article), ensure_ascii=False)
-    A, B = 'Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe', 'Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases'
-    t = t.replace(B, '@@').replace(A, B).replace('@@', A).replace('Jul 2026', '@@').replace('Sep 2025', 'Jul 2026').replace('@@', 'Sep 2025')
-    t = t.replace('September 3, 2025', 'July 21, 2026')
-    page_ = json.loads(t)
-    def fix(o):
-        if isinstance(o, list): return [fix(x) for x in o if not (isinstance(x, dict) and 'cases with DRIVEWIRE' in json.dumps(x, ensure_ascii=False) and x.get('c') == 'grid')]
-        if not isinstance(o, dict): return o
-        o = {k: fix(v) for k, v in o.items()}
-        if o.get('c') == 'grid' and A in json.dumps(o, ensure_ascii=False) and len(json.dumps(o)) < 900: o['to'] = 'news-page'
-        return o
-    return fix(page_)
-
-
+NEWS_35, NEWS_24 = '/news-events/1-rapid-medical-announces-fda-clearance-of-drivewire-35-and-first-stroke-cases', '/news-events/7-rapid-medical-surpasses-1-000-cases-with-drivewire-24-in-north-america-and'
 screens = [
     ('home', 'Home', 'rapid-medical.com', home_page()),
     ('menu', 'Therapies menu (open)', 'rapid-medical.com', home_page(True)),
-    ('region', 'Choose your location (from the header)', 'rapid-medical.com', home_page(), sp.region_modal('empty', current='Americas')),
-    ('therapies', 'All therapies', 'rapid-medical.com/us/therapies', therapies_page()),
+    ('region', 'Choose your location (from the header)', 'rapid-medical.com', home_page(), {'c': 'rm-regionModal', 'region': 'us', 'source': 'location', 'back': '/', 'links': [{'text': 'Go to Americas →', 'to': 'home'}]}),
+    ('therapies', 'All therapies', 'rapid-medical.com/us/therapies', real([sp.now('US · Therapies')], ('Large vessel stroke', 'lvo'), ('Aneurysm', 'aneurysm'))),
     ('aneurysm', 'Aneurysm · Product overview', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'overview', ANEURYSM_STUDIES, '12 COMANECI™')),
     ('aneurysm-how', 'Aneurysm · How it works', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'how', ANEURYSM_STUDIES, '12 COMANECI™')),
     ('aneurysm-practice', 'Aneurysm · In-Practice', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'practice', ANEURYSM_STUDIES, '12 COMANECI™')),
@@ -186,18 +130,18 @@ screens = [
     ('lvo-how', 'Large vessel stroke · How it works', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'how', LVO_STUDIES, '19 TIGERTRIEVER™')),
     ('lvo-practice', 'Large vessel stroke · In-Practice', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'practice', LVO_STUDIES, '19 TIGERTRIEVER™')),
     ('lvo-evidence', 'Large vessel stroke · Clinical evidence', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'evidence', LVO_STUDIES, '19 TIGERTRIEVER™')),
-    ('study', 'SUCCESS study', 'rapid-medical.com/us/success-study-final-results', study_page()),
-    ('evidence', 'Evidence (draft concept)', 'rapid-medical.com/us/evidence', evidence_page()),
-    ('webinars', 'Webinars (as is — discussion parked)', 'rapid-medical.com/us/webinars', build(None, sp.webinars_asis)),
-    ('news', 'News & Events', 'rapid-medical.com/news-events', build('news', sp.news_events_new, 'none')),
-    ('news-35', 'News page · DRIVEWIRE™ 35 clearance', 'rapid-medical.com/news/drivewire-35-fda-clearance', news35_page()),
-    ('news-page', 'News page · DRIVEWIRE™ 24, 1,000 cases', 'rapid-medical.com/news/drivewire-24-1000-cases', build('news', sp.news_article)),
-    ('event-past-new', 'Past event', 'rapid-medical.com/events/drivewire-24-esmint-2026', build('news', sp.event_past_new)),
-    ('about', 'About Us', 'rapid-medical.com/about-us', build('about', sp.about_new)),
-    ('careers', 'Careers', 'rapid-medical.com/careers', build('careers', sp.careers_new, 'roles')),
-    ('contact-new', 'Contact Us', 'rapid-medical.com/contact-us?region=us&topic=demo', build(None, sp.contact_desktop, 'empty')),
-    ('contact-sent', 'Contact Us · request sent', 'rapid-medical.com/contact-us', build(None, sp.contact_desktop, 'sent')),
-    ('terms', 'Terms of Use', 'rapid-medical.com/terms-of-use', build(None, sp.text_desktop)),
+    ('study', 'SUCCESS study', 'rapid-medical.com/us/success-study-final-results', real([sp.route('/us/success-study-final-results')])),
+    ('evidence', 'Evidence', 'rapid-medical.com/us/evidence', real([sp.now('US · Evidence')])),
+    ('webinars', 'Webinars (discussion parked)', 'rapid-medical.com/us/webinars', real([sp.now('US · Webinars')])),
+    ('news', 'News & Events', 'rapid-medical.com/news-events', real([sp.now('News & Events')], ('Rapid Medical Announces FDA Clearance of DRIVEWIRE™ 35 and First Stroke Cases', 'news-35'), ('Rapid Medical™ Surpasses 1,000 Cases With DRIVEWIRE™ 24 in North America and Expands Into Europe With MDR Approval', 'news-page'), ('DRIVEWIRE™ 24 in Clinical Practice', 'event-past-new'))),
+    ('news-35', 'News page · DRIVEWIRE™ 35 clearance', 'rapid-medical.com' + NEWS_35, real([sp.route(NEWS_35)], ('← News & Events', 'news'))),
+    ('news-page', 'News page · DRIVEWIRE™ 24, 1,000 cases', 'rapid-medical.com' + NEWS_24, real([sp.route(NEWS_24)], ('← News & Events', 'news'))),
+    ('event-past-new', 'Past event', 'rapid-medical.com/events/drivewire-24-in-clinical-practice-esmint-2026', real([sp.route('/events/drivewire-24-in-clinical-practice-esmint-2026')], ('← News & Events', 'news'))),
+    ('about', 'About Us', 'rapid-medical.com/about-us', real([sp.now('About')], ('Contact us', 'contact-new'))),
+    ('careers', 'Careers (sample roles: none in the database now)', 'rapid-medical.com/careers', real([sp.now('Careers', over={'jobs.roles': {'sample': True}})])),
+    ('contact-new', 'Contact Us', 'rapid-medical.com/contact-us?region=us&topic=demo', real([sp.now('Contact')], ('All offices and addresses →', 'about'), ('Submit', 'contact-sent'))),
+    ('contact-sent', 'Contact Us · request sent', 'rapid-medical.com/contact-us', real([sp.now('Contact', act={'form.split': sp.FORM_SENT})])),
+    ('terms', 'Terms of Use', 'rapid-medical.com/terms-of-use', real([sp.now('Terms')])),
 ]
 IDS = {s[0] for s in screens}
 TEXT_LINKS = {'← News & Events': 'news', '← Past events': 'news', 'Discuss SUCCESS with our team': 'contact-new',
@@ -225,7 +169,8 @@ flow = {
     'project': 'Rapid Medical',
     'description': 'Кликабельный прототип сайта со всеми решениями серии вайрфреймов (docs/flows/site-pages.md). Серые экраны: '
                    'визуальный стиль решается отдельно. Меню, «Contact Us», регион в шапке и ссылки Legal в футере кликаются. '
-                   'Home и страница терапии — предварительно (ждут Emily), Evidence — черновик концепции, Webinars — как есть.',
+                   'Страницы, которые уже в коде, — сам сайт (снимок, pack.js); шапка и футер — тоже. Home и страница терапии — '
+                   'эскизы (предварительно, ждут Emily; в main их ещё нет), с настоящими шапкой и футером. Webinars — обсуждение отложено.',
     'start': 'home',
     'view': 'present',
     'groups': [

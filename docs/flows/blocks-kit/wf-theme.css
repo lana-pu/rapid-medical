@@ -22,3 +22,5 @@
 .rmx :is(button, select, input, textarea), .rmxa :is(button, select, input, textarea) { font: revert-layer; color: revert-layer }
 /* pictures, videos, embeds and maps: a grey box with what is there (render.cjs) */
 :is(.rmx, .rmxa) [data-wf-media] { background: var(--wf-fill) }
+/* the «Choose your location» window (rm-regionModal): in the frame of the screen's overlay, not the browser's top layer */
+:is(.rmx, .rmxa) dialog[open] { position: static; display: block; inset: auto; max-height: none; border: 0; box-shadow: 0 12px 40px -12px rgba(0, 0, 0, .35) }
