@@ -52,7 +52,8 @@ def check(flow, comps):
             if to:
                 if to not in idset: errors.append(f'{s["id"]}: "to" points to missing screen "{to}"')
                 reached.add(to)
-            for it in n.get('items') or []:
+            # items, and "links" — hotspots a project pack puts on its own markup ({text, to}, e.g. real links of a snapshot)
+            for it in (n.get('items') or []) + (n.get('links') if isinstance(n.get('links'), list) else []):
                 if isinstance(it, dict) and it.get('to'):
                     if it['to'] not in idset: errors.append(f'{s["id"]}: item "to" points to missing screen "{it["to"]}"')
                     reached.add(it['to'])
