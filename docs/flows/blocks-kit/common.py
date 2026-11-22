@@ -1,4 +1,4 @@
-"""Shared loading for the Rapid Medical blocks kit: real page compositions (../rm-pages.json) → instances of every block.
+"""Shared loading for the Rapid Medical pack (make-pack.py): real page compositions (../rm-pages.json) → instances of every block.
 
 Instances are every real occurrence of a block on the snapshot pages, plus a few built from real site data for the
 variants no page uses yet (marked built=True, with the source in `page`).
