@@ -40,6 +40,7 @@
 
 | Дата | Задача | Файл |
 |---|---|---|
+| 2026-11-23 | Home админки: разбор с Mobbin, три уровня иерархии, Site health с числами и шкалами, неделя графиками, подсказки | [2026-11-23-admin-home.md](sessions/2026-11-23-admin-home.md) |
 | 2026-11-23 | Адаптивная админка: вторая колонка за «☰» ниже 1024, полоска внизу на телефоне, таблицы не обрезаются; замер 70 экранов × 6 ширин 153 → 0 | [2026-11-23-admin-responsive.md](sessions/2026-11-23-admin-responsive.md) |
 | 2026-11-23 | Админка и редактор: регион «Europe & Middle East», модель прав editor / designer / admin в коде, Article — четвёртый шаблон | [2026-11-23-admin-rights.md](sessions/2026-11-23-admin-rights.md) |
 | 2026-11-23 | Ветки в вайрфреймах (снимок на ветку, `rm-dialog`); черновик Webinars в коде — ветка `webinars-draft` | [2026-11-23-webinars-draft.md](sessions/2026-11-23-webinars-draft.md) |
