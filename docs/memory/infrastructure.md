@@ -24,7 +24,9 @@
 прогоном e2e (global-setup: migrate + seed --reset). **Не держать базу во временной папке сессии**: в полночь система
 её чистит — так 2026-11-15 пропал прежний кластер (`/private/tmp/…/scratchpad/pgapp`), тестовые данные пересозданы.
 Демо редизайна — https://lana-pu.github.io/rapid-medical/redesign/ (папка `redesign/` в `gh-pages`, корень — старое
-демо): из worktree `DEMO_BASE_PATH=/rapid-medical/redesign DEMO_PORT=3400 npm run demo:export`, `out/` → `redesign/`.
+демо). **С 2026-11-23 собирается из `main`:** `DEMO_BASE_PATH=/rapid-medical/redesign DEMO_PORT=3400 npm run demo:export`,
+`out/` → `redesign/`. Скрипт не выпускает базу с заявками не на `@example.com` — тогда сборка из временной копии базы
+(`create database … template …`, лишние строки удалить в копии, копию после сборки удалить); общую базу не трогать.
 Ветка `site-redesign` (worktree `projects/rapid-medical-redesign`) работает со своей базой `rapid_medical_redesign` в
 том же кластере (копия через `pg_dump`, `.env` worktree); её e2e и миграции не трогают базу `main`. Dev ветки — порт 3300.
 
