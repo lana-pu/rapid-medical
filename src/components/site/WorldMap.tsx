@@ -98,26 +98,26 @@ export function WorldMap({ offices, links, fallbackImageUrl, className = "" }: W
       // eslint-disable-next-line @next/next/no-img-element
       <img src={fallbackImageUrl} alt="Rapid Medical regions" className={`w-full rounded-2xl ${className}`} />
     ) : (
-      <div className={`aspect-[1200/560] w-full rounded-2xl bg-neutral-900 ${className}`} />
+      <div className={`aspect-[1200/560] w-full rounded-2xl bg-inverse ${className}`} />
     );
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl ${className}`} style={{ background: "linear-gradient(180deg,#0b1420 0%,#121b29 100%)" }}>
+    <div className={`relative overflow-hidden rounded-2xl ${className}`} style={{ background: "linear-gradient(180deg,var(--map-sea) 0%,var(--map-sea-2) 100%)" }}>
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="block h-auto w-full select-none" onPointerLeave={() => setActive(null)}>
         <defs>
           <clipPath id="rm-clip-europe"><rect x={data.clip.x} y={data.clip.y} width={data.clip.w} height={data.clip.h} /></clipPath>
         </defs>
-        <path d={data.land} fill="#26354d" />
+        <path d={data.land} style={{ fill: "var(--map-land)" }} />
         <g>
           {data.regions.map((r) => (
-            <path key={r.key} d={r.d} fill="#289988" style={{ opacity: active === r.key ? 1 : 0, transition: "opacity .14s ease", pointerEvents: "none" }} clipPath={r.clip ? "url(#rm-clip-europe)" : undefined} />
+            <path key={r.key} d={r.d} style={{ fill: "var(--map-region)", opacity: active === r.key ? 1 : 0, transition: "opacity .14s ease", pointerEvents: "none" }} clipPath={r.clip ? "url(#rm-clip-europe)" : undefined} />
           ))}
         </g>
         <g>
           {data.regions.map((r) => (
             <a key={r.key} href={links[r.key]} aria-label={`Contact ${r.label}`} style={{ clipPath: r.clip ? "url(#rm-clip-europe)" : undefined }}>
-              <path d={r.d} fill="#fff" fillOpacity={0.001} style={{ cursor: "pointer" }} onPointerEnter={() => enter(r.key)} onPointerLeave={() => leave(r.key)} />
+              <path d={r.d} fill="transparent" pointerEvents="all" style={{ cursor: "pointer" }} onPointerEnter={() => enter(r.key)} onPointerLeave={() => leave(r.key)} />
               <path d={r.d} fill="none" stroke="rgba(0,0,0,0)" strokeWidth={26} style={{ pointerEvents: "stroke", cursor: "pointer" }} onPointerEnter={() => enter(r.key)} onPointerLeave={() => leave(r.key)} />
             </a>
           ))}
@@ -127,7 +127,7 @@ export function WorldMap({ offices, links, fallbackImageUrl, className = "" }: W
           {LABELS.map((l) => {
             const [x, y] = project(l.lat, l.lon);
             return (
-              <text key={l.text} x={x} y={y} textAnchor="middle" fill="#fff" fontWeight={700} fontSize={16} letterSpacing={0.5} opacity={l.faint ? 0.85 : l.small ? 0.9 : 1} style={{ textTransform: "uppercase" }}>
+              <text key={l.text} x={x} y={y} textAnchor="middle" style={{ fill: "var(--map-label)", textTransform: "uppercase" }} fontWeight={700} fontSize={16} letterSpacing={0.5} opacity={l.faint ? 0.85 : l.small ? 0.9 : 1}>
                 {l.text}
               </text>
             );
@@ -139,9 +139,9 @@ export function WorldMap({ offices, links, fallbackImageUrl, className = "" }: W
             return (
               <g key={i} transform={`translate(${x},${y})`}>
                 <title>{o.label}</title>
-                <circle r={32} fill="#2fd17b" opacity={0.1} />
-                <circle r={14} fill="#2fd17b" opacity={0.18} />
-                <circle r={2} fill="#fff" />
+                <circle r={32} style={{ fill: "var(--map-pin)" }} opacity={0.1} />
+                <circle r={14} style={{ fill: "var(--map-pin)" }} opacity={0.18} />
+                <circle r={2} style={{ fill: "var(--map-label)" }} />
               </g>
             );
           })}

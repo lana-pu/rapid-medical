@@ -458,7 +458,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/open-positions` (→ `/careers#open-positions`), `/open-positions/{slug}` | Вакансия с формой; список — секция Careers | [open-positions](screens/open-positions.md) |
 | `/{region}/evidence/{id}-{slug}`, `/news-events/{id}-{slug}` | Страницы публикаций и новостей; исследования — шаблон «из документа» | [material](screens/material.md) |
 | `/contact-us` | Контактная форма (`?region=&topic=`) | [contact-us](screens/contact-us.md) |
-| `/style-guide` | Витрина блоков: каждый блок во всех вариантах на примерных данных (не из БД). `noindex`, не в sitemap, без ссылок из меню | — |
+| `/style-guide` | UI-кит: основы (токены, шрифты, сетка), компоненты во всех состояниях, каждый блок во всех вариантах на примерных данных (не из БД). `noindex`, не в sitemap, без ссылок из меню | — |
 | `/sitemap.xml`, `/robots.txt` | SEO (disallow `/admin`, `/api`) | — |
 
 ### Админка

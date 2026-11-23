@@ -9,9 +9,15 @@
 - **Tailwind 4** (`@import "tailwindcss"`, плагин `@tailwindcss/turbopack`), конфиг-файла нет —
   токены объявлены в `src/app/globals.css` через `:root` + `@theme inline` → утилиты `bg-accent`,
   `text-muted`, `border-border`, `bg-surface` и т.д.
-- **Примитивы** — `src/components/site/primitives.tsx`; составные блоки — `src/components/site/blocks/`,
-  медиа — `src/components/site/Media.tsx`. Страницы собираются только из них (плюс Tailwind-утилиты
-  раскладки).
+- **Примитивы** — `src/components/site/primitives.tsx` (раскладка, заголовки, ссылка-кнопка `Btn`, картинка) и
+  `src/components/site/ui.tsx` (элементы управления: кнопка, чипы, метка, поля формы, окно, строки материалов; с
+  2026-11-23). Классы элементов — одна функция на элемент в `src/components/site/ui-classes.ts`: ими пользуются и
+  серверные, и клиентские компоненты, повторять строки классов в компонентах нельзя. Составные блоки —
+  `src/components/site/blocks/`, медиа — `src/components/site/Media.tsx`. Страницы собираются только из них (плюс
+  Tailwind-утилиты раскладки).
+- **UI-кит в коде — `/style-guide`** (с 2026-11-23): основы (токены с живыми значениями, шрифтовая шкала, сетка и
+  ритм), компоненты во всех состояниях (кнопки, чипы, метки, поля с ошибкой, окно, вкладки, строки, «общая линия»,
+  «ключ — значение»), затем все блоки во всех вариантах. Новый токен или элемент появляется там одновременно с кодом.
 - Тёмной темы нет. Админка стилизована отдельно, напрямую палитрой Tailwind `neutral-*` (токены не использует).
 
 ### Вайрфреймы (с 2026-11-20; всё на системе — с 2026-11-22)
@@ -68,6 +74,11 @@
 | Поверхность | `--surface` | `bg-surface` | `#f5f5f5` | |
 | Граница | `--border` | `border-border` | `#e5e5e5` | |
 | Ошибка | `--danger` | `text-danger`, `border-danger` | `#b42318` | решено 2026-11-14 (Contact Us), в коде с 2026-11-15 (`globals.css`, формы). Рамка и текст ошибки поля |
+| Тёмная полоса | `--inverse` | `bg-inverse` | `#171717` | 2026-11-23: полосы видео и призыва к действию, hero с видео, заглушка карты (было `bg-neutral-900`, `bg-black`) |
+| Текст на тёмной полосе | `--inverse-foreground` | `text-inverse-foreground` | `#ffffff` | 2026-11-23 (было `text-white`) |
+| Затемнение | `--scrim` | `bg-scrim/50`, `from-scrim/80` | `#000000` | 2026-11-23: поверх видео и фото, прозрачность — модификатором (было `bg-black/50`, `from-black/80`) |
+| Карта: фон | `--map-sea`, `--map-sea-2` | — | `#0b1420` → `#121b29` | 2026-11-23, карта офисов (`WorldMap`): градиент фона |
+| Карта: суша, регион, точка | `--map-land`, `--map-region`, `--map-pin`, `--map-label` | — | `#26354d`, `#289988`, `#2fd17b`, `#ffffff` | 2026-11-23 (были хексы в `WorldMap.tsx`) |
 | Шрифт | `--font-sans` | `font-sans` | `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | системный стек, веб-шрифтов нет |
 
 Типографика и отступы — дефолтная шкала Tailwind (собственных токенов нет). Контейнер `max-w-6xl px-4`,
@@ -84,6 +95,12 @@
 | `Btn` (`primary` / `secondary`, `onDark`) | primitives | primary — `bg-accent`; secondary — обводка `foreground`. `onDark` (на тёмной полосе): primary — фон `background`, текст `foreground`; secondary — обводка `background`. Внешние ссылки → `<a>` |
 | `MediaLightbox` | components/site | Ссылка на видео (`.mp4/.webm/.mov`) или картинку (`.jpg/.png/.webp/.gif`) открывает окно поверх страницы (`<dialog>`): фон `foreground` с прозрачностью, медиа по центру, кнопка «Close», Esc и клик по фону закрывают. Без JS — ссылка открывает файл. PDF открывается напрямую. Страницы `DocumentPages` не берёт — у них своё окно |
 | `DocumentPages` | components/site | Документ на странице (2026-11-16): страницы PDF картинками одна под другой, на ширину колонки, без рамок, теней и панели; между страницами — линия `border` и «Page N of M» (`text-xs text-muted`). Видны первые 2 (альбомные — 3), остальное — «Show all N pages» (кнопка secondary на всю ширину). Клик — окно `<dialog>` на весь экран со страницей в крупном варианте и своей прокруткой; Close, Esc, клик по фону. Ниже — `<details>` «Text of this document». Нет картинок — «Download PDF · размер». `screens/material.md` |
+| `Button` (`primary` / `secondary` / `onDark…`; размер `sm` / `md` / `lg`; `block` — на всю ширину) | ui | Кнопка-действие (`<button>`): Submit, «Show more», «Show all N roles». Те же классы, что у `Btn` (`buttonClass`). «Show more» везде одна: `secondary`, `lg`, `block` (2026-11-23; была своя в каждом списке) |
+| `Chip`, `FilterChips` | ui | Чип-переключатель: включён — залит `foreground`, выключен — линия `border`. `FilterChips` — «All n» и варианты со счётчиками (архив Evidence, Careers, Webinars); тема формы — те же чипы (`chipClass`) |
+| `Tag` | ui | Метка: продукт в строке, источник региона. Пилюля `border`, `text-xs` |
+| `Field`, `SelectField`, `TextAreaField`, `CheckboxField`, `inputClass` | ui | Поле формы: подпись над полем, рамка `border`, фокус — `foreground`; ошибка — рамка и текст `danger`, `aria-invalid` (DESIGN.md → Формы). Поиск страны и архива — тот же `inputClass` |
+| `Dialog` (`md` / `lg`) | ui | Окно поверх страницы (`<dialog>`): фон `foreground`/40, по центру, на телефоне во весь экран; Esc и клик по фону закрывают. Выбор региона, запрос записи вебинара. Окна медиа и документа — свои, во весь экран (`MediaLightbox`, `DocumentPages`) |
+| `Rows`, `Row` (`lead`: `date` 7rem · `year` 4rem · `media` 10rem) | ui | Строки материалов (DESIGN.md → «Строка материала»): тонкие линии между строками и сверху/снизу, левая колонка своей ширины. Новости, события, архив Evidence, вебинары |
 | `Img` | primitives | `srcset` WebP-вариантов, размеры, blur-плейсхолдер для файлов медиатеки; пустой `src` → серый блок |
 | `Prose` (+ `.prose-rm`, `.prose-rm-sm`) | primitives, globals.css | Вывод санитизированного rich text |
 | `Video`, `MediaBlock`, `Embed`, `VideoHero` | Media.tsx | Фон-видео с затемнением `bg-black/50`, YouTube-embed, автопостер |
@@ -389,10 +406,10 @@ solution line и Request a demo; тёмная полоса «Engineered…»; н
   его нет в коде.
 
 ## Отступления от токенов (хардкод, по коду)
-- Тёмные полосы и hero: `bg-neutral-900`, `bg-black`, `text-white`, оверлей `bg-black/50` — блоки Video,
-  Call to action (`src/blocks/`), `Banner`, `VideoHero`.
+- ~~Тёмные полосы и hero, оверлей; `WorldMap.tsx`~~ — на токенах с 2026-11-23 (`--inverse`, `--scrim`, `--map-*`).
+  Призыв к действию был `bg-black`, стал `--inverse` (`#171717`, как остальные полосы).
 - Ошибки формы: переведены на токен `--danger` (2026-11-15).
-- `WorldMap.tsx`: инлайн-хексы `#0b1420`, `#121b29`, `#26354d`, `#289988`, `#2fd17b`, `#fff`.
+- Плашки редактора поверх сайта (`VersionBanner`, `PreviewBanner`) — инструмент, не сайт: палитра `neutral-*`, как админка.
 - Редактор/админка: `amber`, `emerald`, `blue`, `green` из палитры Tailwind; `#a3a3a3`, `#2563eb`,
   `#e0ecff` в стилях Tiptap (`globals.css`).
 Это кандидаты на токены при редизайне (BACKLOG).

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { safeHref, siteHref } from "@/lib/safe-path";
+import { Button, FilterChips, Rows, Row, Tag } from "./ui";
+import { inputClass } from "./ui-classes";
 
 export type LibraryRow = {
   id: number;
@@ -68,25 +70,19 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
     return rows.filter((r) => (!product || r.product === product) && hit(r)).sort((a, b) => (sort === "new" ? b.date - a.date : a.date - b.date));
   }, [rows, q, product, sort]);
 
-  const chip = (on: boolean) => `rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"}`;
-  const input = "rounded border border-border bg-background px-3 py-2 text-sm focus:border-foreground focus:outline-none";
 
   return (
     <div>
       <div className="flex flex-wrap items-center gap-3">
-        <input type="search" value={q} onChange={(e) => { setQ(e.target.value); setShown(PAGE); }} placeholder="Search title, author, journal" aria-label="Search publications" className={`${input} min-w-0 flex-1 basis-64`} />
-        <select value={sort} onChange={(e) => setSort(e.target.value as "new" | "old")} aria-label="Sort" className={input}>
+        <input type="search" value={q} onChange={(e) => { setQ(e.target.value); setShown(PAGE); }} placeholder="Search title, author, journal" aria-label="Search publications" className={`${inputClass()} min-w-0 flex-1 basis-64`} />
+        <select value={sort} onChange={(e) => setSort(e.target.value as "new" | "old")} aria-label="Sort" className={`${inputClass()} w-auto`}>
           <option value="new">Newest first</option>
           <option value="old">Oldest first</option>
         </select>
       </div>
       {products.length > 1 && (
-        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Product">
-          {[{ id: "", label: "All", count: rows.length }, ...products].map((p) => (
-            <button key={p.id || "all"} type="button" aria-pressed={product === p.id} className={chip(product === p.id)} onClick={() => { setProduct(p.id); setShown(PAGE); }}>
-              {p.label} <span className="opacity-60">{p.count}</span>
-            </button>
-          ))}
+        <div className="mt-4">
+          <FilterChips options={products} total={rows.length} value={product} onChange={(id) => { setProduct(id); setShown(PAGE); }} />
         </div>
       )}
 
@@ -94,14 +90,12 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
         {list.length === 0 ? "Nothing found. Try fewer words or another product." : `Showing ${Math.min(shown, list.length)} of ${list.length}`}
       </p>
 
-      <ul className="mt-2 divide-y divide-border border-y border-border">
+      <Rows className="mt-2">
         {list.slice(0, shown).map((p) => {
           const short = firstAuthor(p.authors);
           const more = !!p.authors && short !== p.authors.trim();
           return (
-            <li key={p.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[4rem_minmax(0,1fr)]">
-              <span className="text-sm text-muted">{p.year}</span>
-              <div className="min-w-0">
+            <Row key={p.id} kind="year" lead={p.year}>
                 <div className="font-medium">{p.page ? <a href={siteHref(p.page)} className="hover:underline">{p.title}</a> : p.title}</div>
                 {(short || p.journal) && (
                   <div className="mt-1 text-sm text-muted">
@@ -116,20 +110,19 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
                   </div>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                  <span className="rounded-full border border-border px-2 py-0.5 text-xs">{p.productLabel}</span>
+                  <Tag>{p.productLabel}</Tag>
                   {p.url && <a href={safeHref(p.url)} target="_blank" rel="noopener noreferrer" className="underline">{p.doi ? `doi:${p.doi}` : "Read"} ↗</a>}
                   {p.pdfUrl && <a href={safeHref(p.pdfUrl)} target="_blank" rel="noopener noreferrer" className="underline">Download PDF</a>}
                 </div>
-              </div>
-            </li>
+            </Row>
           );
         })}
-      </ul>
+      </Rows>
 
       {shown < list.length && (
-        <button type="button" onClick={() => setShown((s) => s + PAGE)} className="mt-6 w-full rounded border border-border px-5 py-2.5 text-sm font-medium hover:border-foreground">
+        <Button variant="secondary" size="lg" block onClick={() => setShown((s) => s + PAGE)} className="mt-6">
           Show more
-        </button>
+        </Button>
       )}
     </div>
   );

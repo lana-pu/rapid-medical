@@ -47,9 +47,9 @@ export function Embed({ url, className = "" }: { url: string; className?: string
 /** Section with an optional background video and a dark overlay for legibility. */
 export function VideoHero({ videoUrl, poster, children, className = "" }: { videoUrl?: string | null; poster?: string | null; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`relative overflow-hidden ${videoUrl ? "bg-neutral-900 text-white" : "border-b border-border"} ${className}`}>
+    <section className={`relative overflow-hidden ${videoUrl ? "bg-inverse text-inverse-foreground" : "border-b border-border"} ${className}`}>
       <Video src={videoUrl} poster={poster} background />
-      {videoUrl && <div className="absolute inset-0 bg-black/50" aria-hidden />}
+      {videoUrl && <div className="absolute inset-0 bg-scrim/50" aria-hidden />}
       <div className="relative">{children}</div>
     </section>
   );

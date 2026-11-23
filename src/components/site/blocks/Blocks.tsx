@@ -81,9 +81,9 @@ export function PracticeList({ items, render }: { items: InPracticeItem[]; rende
 /** Full-width band with a background image/video, text and an optional button. */
 export function Banner({ imageUrl, videoUrl, title, body, cta, align = "center", children }: { imageUrl?: string | null; videoUrl?: string | null; title?: ReactNode; body?: ReactNode; cta?: { label: string; href: string }; align?: "center" | "left"; children?: ReactNode }) {
   return (
-    <section className="relative overflow-hidden bg-neutral-900 text-white">
+    <section className="relative overflow-hidden bg-inverse text-inverse-foreground">
       {videoUrl ? <Video src={videoUrl} poster={imageUrl} background /> : imageUrl ? <Img src={imageUrl} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" sizes="100vw" /> : null}
-      <div className="absolute inset-0 bg-black/50" aria-hidden />
+      <div className="absolute inset-0 bg-scrim/50" aria-hidden />
       <div className={`relative mx-auto max-w-6xl px-4 py-20 md:py-28 ${align === "center" ? "text-center" : ""}`}>
         {title && <h2 className="text-2xl font-semibold md:text-3xl">{title}</h2>}
         {body && <p className={`mt-4 text-lg opacity-90 ${align === "center" ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>{body}</p>}
@@ -102,7 +102,7 @@ export function Gallery({ items, render }: { items: { imageUrl?: string; quote?:
         <li key={i} className="group relative overflow-hidden rounded">
           <Img src={q.imageUrl} className="aspect-[4/3] w-full object-cover transition group-hover:scale-[1.02]" />
           {(q.quote || q.author) && (
-            <figcaption className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+            <figcaption className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-scrim/80 via-scrim/40 to-transparent p-6 text-inverse-foreground opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
               {q.quote && <blockquote className="text-lg">“{render ? render(i, "quote") : q.quote}”</blockquote>}
               {q.author && <div className="mt-2 text-sm opacity-90">– {render ? render(i, "author") : q.author}</div>}
             </figcaption>

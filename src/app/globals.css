@@ -13,6 +13,16 @@
   --surface: #f5f5f5;
   --border: #e5e5e5;
   --danger: #b42318; /* field errors (DESIGN.md → Токены, 2026-11-14) */
+  --inverse: #171717; /* dark bands: video, call to action, video hero */
+  --inverse-foreground: #ffffff;
+  --scrim: #000000; /* over video and photos; opacity by modifier: bg-scrim/50 */
+  /* the offices map (WorldMap) */
+  --map-sea: #0b1420;
+  --map-sea-2: #121b29;
+  --map-land: #26354d;
+  --map-region: #289988;
+  --map-pin: #2fd17b;
+  --map-label: #ffffff;
 }
 
 @theme inline {
@@ -24,6 +34,9 @@
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-danger: var(--danger);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-scrim: var(--scrim);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 

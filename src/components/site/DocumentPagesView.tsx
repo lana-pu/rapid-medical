@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import type { DocPage } from "@/db/schema";
 import { zoomWidth } from "@/lib/document-view";
+import { Button } from "./ui";
 
 /** The column is ~620 px from md up (7 of 12 columns), the full width below. */
 const SIZES = "(min-width: 768px) 620px, 100vw";
@@ -51,9 +52,9 @@ export function DocumentPagesView({ pages, first, title }: { pages: DocPage[]; f
         </Fragment>
       ))}
       {!all && (
-        <button type="button" onClick={() => setAll(true)} className="mt-7 w-full rounded border border-foreground px-4 py-3 text-sm font-medium hover:bg-surface">
+        <Button variant="secondary" size="lg" block onClick={() => setAll(true)} className="mt-7">
           Show all {n} pages
-        </button>
+        </Button>
       )}
       <dialog
         ref={dialog}

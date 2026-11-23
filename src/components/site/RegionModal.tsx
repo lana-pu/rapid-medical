@@ -5,6 +5,7 @@ import type { Region } from "@/db/schema";
 import { REGION_CHOICES } from "@/lib/regions";
 import { DEMO, withBase } from "@/lib/demo";
 import { RegionPicker, type RegionOption, type RegionSourceKind } from "./RegionPicker";
+import { Dialog } from "./ui";
 
 const NEXT = /^[a-z-]+$/;
 
@@ -50,13 +51,7 @@ export function RegionModal({ region, source }: { region: Region | null; source:
 
   const current = region && target?.back ? { label: REGION_CHOICES.find((c) => c.region === region)?.label ?? region, source } : null;
   return (
-    <dialog
-      ref={ref}
-      aria-labelledby="region-modal-title"
-      onClick={(e) => { if (e.target === ref.current) ref.current?.close(); }} // a click on the backdrop closes
-      onClose={() => setTarget(null)}
-      className="bg-background p-0 text-foreground backdrop:bg-foreground/40 max-md:m-0 max-md:h-full max-md:max-h-none max-md:w-full max-md:max-w-none md:m-auto md:w-full md:max-w-4xl md:rounded"
-    >
+    <Dialog ref={ref} labelledBy="region-modal-title" size="lg" onClose={() => setTarget(null)}>
       {target && (
         <div className="p-6 md:p-8">
           <div className="flex items-start justify-between gap-4">
@@ -68,6 +63,6 @@ export function RegionModal({ region, source }: { region: Region | null; source:
           </div>
         </div>
       )}
-    </dialog>
+    </Dialog>
   );
 }
