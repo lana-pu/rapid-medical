@@ -15,6 +15,7 @@ export function WorkflowPanel({
   editHref,
   alwaysLive = false,
   label = "",
+  canDelete = false,
 }: {
   resourceSlug: string;
   id: number;
@@ -27,6 +28,8 @@ export function WorkflowPanel({
   alwaysLive?: boolean;
   /** the record's name, for «Delete draft»'s question */
   label?: string;
+  /** «Delete draft» — admin only (ADR-006 → «Права») */
+  canDelete?: boolean;
 }) {
   const hidden = (
     <>
@@ -62,7 +65,7 @@ export function WorkflowPanel({
           {pending && (
             <form action={discardDraftAction}>{hidden}<Button type="submit" variant="danger">Discard changes</Button></form>
           )}
-          {liveStatus !== "published" && !alwaysLive && <DeleteDraftButton resourceSlug={resourceSlug} id={id} label={label} />}
+          {liveStatus !== "published" && !alwaysLive && canDelete && <DeleteDraftButton resourceSlug={resourceSlug} id={id} label={label} />}
         </div>
         {previewHref && (
           <div className="mt-3 text-xs">

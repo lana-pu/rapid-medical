@@ -61,7 +61,8 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
     const path = res.previewUrl?.(row) ?? null;
     out.push({ kind: "comment", key: `c${c.resource}${c.recordId}`, text: `${c.n} open comment${c.n > 1 ? "s" : ""} on ${String(row[res.labelField] ?? `#${c.recordId}`)}`, action: path ? "Open on page" : "Open", href: path ? `/api/editor?on=1&redirect=${encodeURIComponent(path)}` : `/admin/${res.slug}/${c.recordId}` });
   }
-  const [{ n: broken }] = await db.select({ n: count() }).from(notFoundLog).where(isNull(notFoundLog.resolvedAt));
+  // fixing old links is the admin's (ADR-006 → «Права»)
+  const [{ n: broken }] = user.role === "admin" ? await db.select({ n: count() }).from(notFoundLog).where(isNull(notFoundLog.resolvedAt)) : [{ n: 0 }];
   if (broken) out.push({ kind: "links", key: "links", text: `${broken} broken link${broken > 1 ? "s" : ""} visitors hit`, action: "Fix links", href: "/admin/not-found-log" });
   return out;
 }

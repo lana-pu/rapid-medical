@@ -3,19 +3,19 @@ import { desc, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db, notFoundLog, redirects } from "@/db";
-import { requireUser } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { OldLinksTabs } from "@/components/admin/OldLinksTabs";
 import { formatDate, inputCls, Button, Notice } from "@/components/admin/ui";
 
 export default async function NotFoundLogPage({ searchParams }: { searchParams: Promise<{ error?: string; from?: string }> }) {
-  await requireUser(); // the layout checks too; a page never relies on it alone
+  await requireAdmin(); // Old links are the admin's (ADR-006 → «Права»); the layout does not check it
   const sp = await searchParams;
   const rows = await db.select().from(notFoundLog).where(isNull(notFoundLog.resolvedAt)).orderBy(desc(notFoundLog.hits)).limit(200);
 
   async function createRedirect(fd: FormData) {
     "use server";
-    const user = await requireUser();
+    const user = await requireAdmin();
     const from = String(fd.get("from"));
     const to = String(fd.get("to") ?? "").trim();
     // a path on this site (not «//host», not «\») or a full https address
@@ -29,7 +29,7 @@ export default async function NotFoundLogPage({ searchParams }: { searchParams: 
 
   async function dismiss(fd: FormData) {
     "use server";
-    await requireUser();
+    await requireAdmin();
     await db.delete(notFoundLog).where(eq(notFoundLog.path, String(fd.get("from"))));
     redirect("/admin/not-found-log");
   }

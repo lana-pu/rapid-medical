@@ -59,6 +59,8 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
   const { section } = await params;
   const s = sectionOf(section);
   if (!s) notFound();
+  // Products is the admin's (ADR-006 → «Права»): no link that leads nowhere
+  const lists = (s.lists ?? []).filter((l) => me.role === "admin" || !getResource(l.resource)?.adminOnly);
 
   const needPages = !!s.sitePages || s.key === "therapies" || s.key === "other";
   const [cards, settings, sols] = await Promise.all([
@@ -67,7 +69,7 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
     s.key === "therapies" ? db.select({ id: solutions.id, slug: solutions.slug, region: solutions.region, group: solutions.therapyGroup, label: solutions.navLabel, sort: solutions.sortOrder }).from(solutions) : Promise.resolve([]),
   ]);
   const counts = new Map<string, number>();
-  for (const l of s.lists ?? []) {
+  for (const l of lists) {
     const table = l.resource === "submissions" ? contactSubmissions : getResource(l.resource)?.table;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (table) counts.set(l.resource, ((await db.select({ n: count() }).from(table as any)) as { n: number }[])[0].n);
@@ -171,10 +173,10 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
         </Box>
       )}
 
-      {s.lists && (
+      {lists.length > 0 && (
         <Box title="Lists on these pages">
           <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
-            {s.lists.map((l) => (
+            {lists.map((l) => (
               <li key={l.resource} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="min-w-0 flex-1">
                   <Link href={`/admin/${l.resource}`} className="font-medium underline">{l.label}</Link>

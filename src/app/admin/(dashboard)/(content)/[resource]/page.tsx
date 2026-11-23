@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { canDelete, requireAdmin, requireUser } from "@/lib/auth";
 import Link from "next/link";
 import { isPast, type EventDates } from "@/lib/events";
 import { notFound } from "next/navigation";
@@ -17,11 +17,12 @@ import { BulkBar } from "@/components/admin/BulkBar";
 type SP = { q?: string; bulk?: string; n?: string; live?: string; sort?: string; dir?: "asc" | "desc"; page?: string; status?: string; region?: string; productId?: string; regions?: string; featured?: string };
 
 export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
-  await requireUser(); // the layout checks too; a page never relies on it alone
+  const me = await requireUser(); // the layout checks too; a page never relies on it alone
   const { resource } = await params;
   const sp = await searchParams;
   const res = getResource(resource);
   if (!res) notFound();
+  if (res.adminOnly) await requireAdmin(); // Products, Redirects (ADR-006 → «Права»)
 
   const filters: Record<string, string> = {};
   for (const k of ["status", "region", "productId", "regions", "featured"] as const) if (sp[k]) filters[k] = sp[k]!;
@@ -78,7 +79,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
       <form action={bulkResource}>
         <input type="hidden" name="__resource" value={res.slug} />
-        <BulkBar hasStatus={has("status")} fixed={!!res.alwaysLive} />
+        <BulkBar hasStatus={has("status")} fixed={!!res.alwaysLive} canDelete={canDelete(me)} />
         <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">

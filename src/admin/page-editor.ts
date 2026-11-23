@@ -7,7 +7,7 @@ import { canDesign } from "@/lib/auth";
 import { REGION_CHOICES } from "@/lib/regions";
 import { BLOCKS } from "@/blocks/registry";
 import type { BlockDef, BlockType } from "@/blocks/types";
-import { applyOp, BlockOpError, isPinned, selectAfterOp, variantsFor, type BlockOp } from "@/blocks/ops";
+import { applyOp, BlockOpError, editorMayDo, isPinned, sameLayout, selectAfterOp, variantsFor, type BlockOp } from "@/blocks/ops";
 import { blockName, compareBlocks, describeBlockChanges, type RegionDiff } from "@/blocks/diff";
 import { PRESETS, TEMPLATES, templateBlocks, type Preset, type TemplateId } from "@/blocks/templates";
 import { and, eq, getTableColumns, isNull } from "drizzle-orm";
@@ -143,13 +143,17 @@ export async function pageInfo(ref: PageRef): Promise<PageInfo | Fail> {
 export async function editBlocks(ref: PageRef, op: BlockOp, base?: string): Promise<{ version: string; sections: SectionInfo[]; added?: string; undo: StoredBlock[] } | Fail> {
   try {
     const user = await requireEditor();
-    if (op.op === "variant" && !canDesign(user)) return { error: "Changing how a section looks is for designers" };
+    const designer = canDesign(user);
+    // editors change words and pictures; sections and tabs are the designer's (ADR-006 → «Права»)
+    if (!designer && op.op !== "set" && !editorMayDo(op)) return { error: op.op === "variant" ? "Changing how a section looks is for designers" : "Adding, moving and removing sections is for designers" };
     const res = pageResource(ref.r);
     await checkBase(res, ref.id, base, user);
     const e = await getEditable(res, ref.id);
     if (!e) return { error: "Page not found" };
     const current = (e.row.blocks as StoredBlock[] | null) ?? [];
     const next = applyOp(current, op, op.op === "set" ? await knownBlocks(res, ref.id) : []);
+    // Undo/Redo of an editor puts back words, pictures and hidden flags — never another set of sections
+    if (!designer && op.op === "set" && !sameLayout(current, next)) return { error: "Adding, moving and removing sections is for designers" };
     const { status, id: _id, ...data } = e.row;
     void _id;
     const result = await saveWithWorkflow(res, ref.id, { ...data, blocks: next, status }, user);

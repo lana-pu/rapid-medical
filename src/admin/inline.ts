@@ -153,6 +153,7 @@ function coerce(field: FieldDef, kind: InlineKind, raw: unknown): unknown {
 export async function saveField(t: Target, kind: InlineKind, raw: unknown, base?: string): Promise<{ pending: boolean; version?: string; conflict?: string }> {
   const user = await requireEditor();
   const r = resolve(t);
+  if (r.kind !== "settings" && r.res.adminOnly && user.role !== "admin") throw new Error("Only an admin can change this");
   if (r.kind !== "settings" && base) {
     try {
       await checkBase(r.res, r.id, base, user);

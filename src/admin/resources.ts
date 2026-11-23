@@ -39,6 +39,8 @@ export type Resource = {
   onCreate?: (data: Record<string, unknown>) => Record<string, unknown>;
   /** The site cannot do without these records (Home, About…): no create, unpublish or delete. */
   alwaysLive?: boolean;
+  /** Only an admin opens and changes these (ADR-006 → «Права»): Products, Redirects. */
+  adminOnly?: boolean;
   /** A picture field shown as a thumbnail next to the name in lists (docs/screens/admin-list.md). */
   listThumb?: string;
 };
@@ -479,6 +481,7 @@ export const RESOURCES: Resource[] = [
     title: "Products",
     titleSingular: "Product",
     table: products,
+    adminOnly: true,
     labelField: "name",
     sortBy: "sortOrder",
     revalidate: ["/us/evidence", "/ous/evidence", "/apac/evidence"],
@@ -506,6 +509,7 @@ export const RESOURCES: Resource[] = [
     title: "Redirects",
     titleSingular: "Redirect",
     table: redirects,
+    adminOnly: true,
     labelField: "from",
     sortBy: "id",
     revalidate: [],

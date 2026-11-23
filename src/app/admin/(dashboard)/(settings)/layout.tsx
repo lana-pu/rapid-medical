@@ -21,7 +21,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
             { href: "/admin/settings?group=social", label: "Social links" },
             { href: "/admin/settings?group=regional", label: "Regional notices" },
             { heading: "Search & sharing", href: "/admin/seo", label: "Google & sharing" },
-            { href: "/admin/not-found-log", label: "Old links", also: ["/admin/redirects"] },
+            ...(admin ? [{ href: "/admin/not-found-log", label: "Old links", also: ["/admin/redirects"] }] : []), // admin only (ADR-006 → «Права»)
             ...(canDesign(user) ? [{ heading: "Look", href: "/admin/settings?group=branding", label: "Branding" }] : []),
             ...(admin ? [{ heading: "Team", href: "/admin/users", label: "People and roles" }] : []),
             { ...(admin ? {} : { heading: "Team" }), href: "/admin/activity", label: "Activity log" },

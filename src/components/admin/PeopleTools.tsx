@@ -9,8 +9,8 @@ import { Button, inputCls } from "./ui";
 
 export const ROLE_TEXT: Record<string, { label: string; text: string }> = {
   editor: { label: "Editor", text: "changes text and pictures, builds pages from templates, publishes" },
-  designer: { label: "Designer", text: "the same, and changes how sections look" },
-  admin: { label: "Admin", text: "the same, and people, settings, integrations" },
+  designer: { label: "Designer", text: "the same, and adds, moves and removes sections, changes how they look, makes templates" },
+  admin: { label: "Admin", text: "the same, and deletes pages and records, products, old links, people, integrations" },
 };
 
 function LinkBox({ name, link }: { name: string; link: string }) {

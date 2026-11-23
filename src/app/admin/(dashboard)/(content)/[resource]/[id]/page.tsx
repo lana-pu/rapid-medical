@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db, products, solutions } from "@/db";
-import { requireUser } from "@/lib/auth";
+import { canDelete, requireAdmin, requireUser } from "@/lib/auth";
 import { getResource } from "@/admin/resources";
 import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
@@ -26,7 +26,8 @@ export default async function EditResource({ params, searchParams }: { params: P
   const sp = await searchParams;
   const res = getResource(resource);
   if (!res) notFound();
-  await requireUser();
+  const me = await requireUser();
+  if (res.adminOnly) await requireAdmin();
   const [editable, prods, revisions] = await Promise.all([
     getEditable(res, Number(id)),
     db.select().from(products).orderBy(products.sortOrder),
@@ -105,7 +106,7 @@ export default async function EditResource({ params, searchParams }: { params: P
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (
-          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} label={String(row[res.labelField] ?? "")} />
+          <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} label={String(row[res.labelField] ?? "")} canDelete={canDelete(me)} />
         )}
       </div>
     </>

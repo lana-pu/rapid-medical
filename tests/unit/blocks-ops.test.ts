@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import type { StoredBlock } from "../../src/db/schema";
-import { applyOp, selectAfterOp, variantsFor } from "../../src/blocks/ops";
+import { applyOp, editorMayDo, sameLayout, selectAfterOp, variantsFor } from "../../src/blocks/ops";
 import { describeBlockChanges, compareBlocks } from "../../src/blocks/diff";
 import { PRESETS, templateBlocks } from "../../src/blocks/templates";
 
@@ -236,5 +236,38 @@ describe("drag and drop: put a section at a position", () => {
     const next = applyOp(pd, { op: "moveTo", id: "p/0/2", to: 0 });
     expect((next[0].data as any).tabs[0].blocks.map((b: any) => b.data.body).join("")).toBe("cab");
     expect(selectAfterOp({ op: "moveTo", id: "p/0/2", to: 0 }, pd, next)).toBe("p/0/0");
+  });
+});
+
+describe("what an editor may do with sections (ADR-006 → «Права», 2026-11-23)", () => {
+  it("hide/show and renaming a tab are the editor's; adding, moving, copying, removing and layout are not", () => {
+    expect(editorMayDo({ op: "hide", id: "t", hidden: true })).toBe(true);
+    expect(editorMayDo({ op: "tab", id: "p", act: "rename", tab: 0, label: "Overview" })).toBe(true);
+    for (const op of [
+      { op: "add", at: 0, type: "text", variant: "default" },
+      { op: "move", id: "t", dir: 1 },
+      { op: "moveTo", id: "t", to: 0 },
+      { op: "duplicate", id: "t" },
+      { op: "remove", id: "t" },
+      { op: "variant", id: "h", variant: "page" },
+      { op: "tab", id: "p", act: "remove", tab: 0 },
+      { op: "tab", id: "p", act: "link", tab: 0, href: "/x" },
+    ] as const) expect(editorMayDo(op as any)).toBe(false);
+  });
+  it("undo keeps the layout when only words or hidden flags change, not when sections change", () => {
+    const words = page.map((b) => (b.id === "t" ? { ...b, data: { body: "Two" } } : b));
+    const hidden = page.map((b) => (b.id === "t" ? { ...b, hidden: true } : b));
+    expect(sameLayout(page, words)).toBe(true);
+    expect(sameLayout(page, hidden)).toBe(true);
+    expect(sameLayout(page, applyOp(page, { op: "move", id: "t", dir: -1 }))).toBe(false);
+    expect(sameLayout(page, applyOp(page, { op: "remove", id: "t" }))).toBe(false);
+    expect(sameLayout(page, page.map((b) => (b.id === "h" ? { ...b, variant: "page" } : b)))).toBe(false);
+  });
+  it("a tab's label is words; its address and its sections are layout", () => {
+    const pd = (tabs: unknown[]): StoredBlock[] => [{ id: "p", type: "productDetails", variant: "pills", data: { tabs } }];
+    const base = pd([{ label: "Overview", blocks: [{ type: "text", variant: "default", data: { body: "a" } }] }, { label: "Evidence", href: "/us/evidence" }]);
+    expect(sameLayout(base, pd([{ label: "Product", blocks: [{ type: "text", variant: "default", data: { body: "b" } }] }, { label: "Studies", href: "/us/evidence" }]))).toBe(true);
+    expect(sameLayout(base, pd([{ label: "Overview", blocks: [] }, { label: "Evidence", href: "/us/evidence" }]))).toBe(false);
+    expect(sameLayout(base, pd([{ label: "Overview", blocks: [{ type: "text", variant: "default", data: {} }] }, { label: "Evidence", href: "/ous/evidence" }]))).toBe(false);
   });
 });

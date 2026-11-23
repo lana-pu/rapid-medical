@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireAdmin, requireUser } from "@/lib/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { diffWords } from "diff";
@@ -34,6 +34,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
   const sp = await searchParams;
   const res = getResource(resource);
   if (!res) notFound();
+  if (res.adminOnly) await requireAdmin();
   const recordId = Number(id);
   const [editable, revs] = await Promise.all([getEditable(res, recordId), listRevisions(res, recordId, 200)]);
   if (!editable) notFound();
