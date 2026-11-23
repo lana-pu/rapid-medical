@@ -44,7 +44,7 @@ export function levels(sections: Section[]): Map<string, Level[]> {
     out.set(s.id, sec);
     s.cols.forEach((col, c) => {
       if (s.cols.length < 2) return walk(col, sec);
-      const cl: Level[] = [...sec, { kind: "column", key: colKey(s.id, c), s: i, c, label: `Колонка ${c + 1}` }];
+      const cl: Level[] = [...sec, { kind: "column", key: colKey(s.id, c), s: i, c, label: `Колонка ${c + 1}${c >= colCount(s.layout) ? " · скрыта" : ""}` }];
       out.set(colKey(s.id, c), cl);
       walk(col, cl);
     });
@@ -62,6 +62,11 @@ export const SECTION_OPTS: Opt[] = [
   { key: "space", label: "Отступы", values: [{ id: "normal", label: "Обычные" }, { id: "large", label: "Крупные" }] },
 ];
 export const colCount = (layout: string) => layout.split("-").length;
+/**
+ * Columns the layout shows. A section keeps the columns it had: switching 2 → 1 hides the second (muted in the panel and
+ * the structure, kept with its blocks), switching back to 2 shows it again where it was (owner, 2026-11-23).
+ */
+export const shownCols = (s: Section) => Math.min(colCount(s.layout), s.cols.length);
 
 const v = (...pairs: [string, string][]) => pairs.map(([id, label]) => ({ id, label }));
 const ALIGN: Opt = { key: "align", label: "Выравнивание", values: v(["left", "Слева"], ["center", "По центру"]) };

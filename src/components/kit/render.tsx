@@ -5,7 +5,7 @@ import { selectionColours } from "./contrast";
 import { Eyebrow, H1, H2, KeyValue } from "@/components/site/layout-primitives";
 import { buttonClass } from "@/components/site/ui-classes";
 import { withBase } from "@/lib/demo";
-import { BLOCK_DEFS, colKey, tabKey, type Block, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, colKey, shownCols, tabKey, type Block, type BlockType, type Section, type Tab } from "./model";
 
 /**
  * The sandbox's blocks (/lab/blocks), drawn with the site's primitives, classes and tokens — the same look the site has
@@ -32,11 +32,37 @@ export type Ctx = {
   onPick: (key: string) => void;
   onData: (id: string, patch: Record<string, unknown>) => void;
   activeTab: (tabsId: string) => number;
+  /** drag and drop: where the dragged thing would land now, and who may drag blocks */
+  drop: DropAt | null;
+  onDragAt: (d: DropAt | null) => void;
+  onDropHere: () => void;
+  canDragBlocks: boolean;
 };
 
+/* ---- drag and drop (HTML5, no library): what is being dragged and where it would land ---- */
+export type Drag =
+  | { t: "block"; id: string; type: BlockType }
+  | { t: "new"; type: BlockType }
+  | { t: "section"; id: string }
+  | { t: "ready"; key: string };
+/** «page»: between sections (index); «list»: into a column or a tab (its key) at a position. `at` — the element showing the line. */
+export type DropAt = { kind: "page"; index: number; at: string; side: "before" | "after" } | { kind: "list"; key: string; index: number; at: string; side: "before" | "after" | "inside" };
+let dragging: Drag | null = null;
+export const drag = { get: () => dragging, set: (d: Drag | null) => { dragging = d; } };
+const isTab = (list: string) => /:t\d+$/.test(list);
+/** A block may not go into itself, tabs not into a tab. */
+const fits = (d: Drag, list: string) => {
+  if (d.t === "section" || d.t === "ready") return false;
+  if (d.t === "block" && list.startsWith(`${d.id}:`)) return false;
+  return !(d.type === "tabs" && isTab(list));
+};
+/** What a frame accepts: as a section (its index on the page), as a block (its list and place), as a container (its list). */
+type Zone = { page?: number; item?: { list: string; index: number }; into?: { list: string; length: number } };
 /** The outline and name tag of a selectable element: solid when selected, dashed when it holds the selection, on hover a thin line. */
-function Frame({ k, name, c, children, className = "", inset = false }: { k: string; name: string; c: Pick<Ctx, "sel" | "trail" | "onPick" | "hover" | "onHover">; children: ReactNode; className?: string; inset?: boolean }) {
+type FrameCtx = Pick<Ctx, "sel" | "trail" | "onPick" | "hover" | "onHover" | "drop" | "onDragAt" | "onDropHere">;
+function Frame({ k, name, c, children, className = "", inset = false, zone, handle }: { k: string; name: string; c: FrameCtx; children: ReactNode; className?: string; inset?: boolean; zone?: Zone; /** what dragging its name tag moves */ handle?: Drag | null }) {
   const on = c.sel === k;
+  const target = c.drop?.at === k ? c.drop.side : null;
   const up = c.trail.has(k);
   const hot = !on && c.hover === k;
   const ref = useRef<HTMLDivElement>(null);
@@ -44,7 +70,7 @@ function Frame({ k, name, c, children, className = "", inset = false }: { k: str
   // while marked, so a changed section background or palette is picked up at once
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || !(on || hot || up)) return;
+    if (!el || !(on || hot || up || target)) return;
     const { line, text } = selectionColours(inset ? el : (el.parentElement ?? el));
     el.style.setProperty("--lab-line", line);
     el.style.setProperty("--lab-text", text);
@@ -52,11 +78,33 @@ function Frame({ k, name, c, children, className = "", inset = false }: { k: str
   const line = on ? "outline outline-2" : hot ? "outline outline-1" : up ? "outline outline-1 outline-dashed" : "";
   return (
     <div ref={ref} data-lab={k} onClick={(e) => { e.stopPropagation(); c.onPick(k); }} onMouseOver={(e) => { e.stopPropagation(); if (c.hover !== k) c.onHover(k); }}
+      onDragOver={(e) => {
+        const d = drag.get();
+        if (!d || !zone) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const before = e.clientY < r.top + r.height / 2;
+        const side = before ? "before" : "after";
+        let at: DropAt | null = null;
+        if (d.t === "section" || d.t === "ready") { if (zone.page !== undefined) at = { kind: "page", index: before ? zone.page : zone.page + 1, at: k, side }; }
+        else if (zone.item && fits(d, zone.item.list)) at = { kind: "list", key: zone.item.list, index: before ? zone.item.index : zone.item.index + 1, at: k, side };
+        else if (zone.into && fits(d, zone.into.list)) at = { kind: "list", key: zone.into.list, index: zone.into.length, at: k, side: "inside" };
+        if (!at) return; // the parent may take it
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = d.t === "new" || d.t === "ready" ? "copy" : "move";
+        if (c.drop?.at !== at.at || c.drop.side !== at.side || c.drop.index !== at.index) c.onDragAt(at);
+      }}
+      onDrop={(e) => { if (!drag.get() || c.drop?.at !== k) return; e.preventDefault(); e.stopPropagation(); c.onDropHere(); }}
       style={{ outlineColor: "var(--lab-line)" }}
-      className={`relative ${inset ? "-outline-offset-2" : "outline-offset-4"} ${line} ${className}`}>
+      className={`relative ${inset ? "-outline-offset-2" : "outline-offset-4"} ${target === "inside" ? "outline outline-2 outline-dashed" : line} ${className}`}>
+      {target && target !== "inside" && <span aria-hidden style={{ background: "var(--lab-line)" }} className={`pointer-events-none absolute inset-x-0 z-20 h-1 rounded-full ${target === "before" ? (inset ? "top-0" : "-top-3") : (inset ? "bottom-0" : "-bottom-3")}`} />}
       {(on || hot) && (
         <span style={{ background: "var(--lab-line)", color: "var(--lab-text)" }}
-          className={`pointer-events-none absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${inset ? "top-1" : "-top-5"} ${on ? (inset ? "left-1" : "left-0") : `${inset ? "right-1" : "right-0"} opacity-80`}`}>{name}</span>
+          draggable={on && !!handle}
+          onDragStart={(e) => { if (!handle) return; drag.set(handle); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", name); e.stopPropagation(); }}
+          onDragEnd={() => { drag.set(null); c.onDragAt(null); }}
+          title={on && handle ? "Перетащите, чтобы переставить" : undefined}
+          className={`absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${on && handle ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"} ${inset ? "top-1" : "-top-5"} ${on ? (inset ? "left-1" : "left-0") : `${inset ? "right-1" : "right-0"} opacity-80`}`}>{on && handle ? "⠿ " : ""}{name}</span>
       )}
       {children}
     </div>
@@ -322,9 +370,9 @@ function Tabs({ b, c }: { b: Block; c: Ctx }) {
         })}
       </div>
       {cur && (
-        <Frame k={tabKey(b.id, at)} name={`Вкладка «${cur.label}»`} c={c} className="mt-6 rounded-sm">
+        <Frame k={tabKey(b.id, at)} name={`Вкладка «${cur.label}»`} c={c} className="mt-6 rounded-sm" zone={{ into: { list: tabKey(b.id, at), length: cur.blocks.length } }}>
           <div className="flex min-h-16 flex-col gap-6 py-2">
-            {cur.blocks.length ? cur.blocks.map((x) => <BlockView key={x.id} b={x} c={c} />) : <p className={`text-sm ${muted(c.dark)}`}>Пустая вкладка: блоки в неё кладёт дизайнер.</p>}
+            {cur.blocks.length ? cur.blocks.map((x, i) => <BlockView key={x.id} b={x} c={c} list={tabKey(b.id, at)} index={i} />) : <p className={`text-sm ${muted(c.dark)}`}>Пустая вкладка: блоки в неё кладёт дизайнер.</p>}
           </div>
         </Frame>
       )}
@@ -334,9 +382,9 @@ function Tabs({ b, c }: { b: Block; c: Ctx }) {
 
 const VIEWS = { heading: Heading, text: Text, buttons: Buttons, media: Media, numbers: Numbers, cards: Cards, facts: Facts, quote: Quote, list: List } as const;
 
-export function BlockView({ b, c }: { b: Block; c: Ctx }) {
+export function BlockView({ b, c, list, index }: { b: Block; c: Ctx; list: string; index: number }) {
   const inner = b.type === "tabs" ? <Tabs b={b} c={c} /> : (() => { const V = VIEWS[b.type]; return <V b={b} c={c} />; })();
-  return <Frame k={b.id} name={BLOCK_DEFS[b.type].name} c={c} className="rounded-sm">{inner}</Frame>;
+  return <Frame k={b.id} name={BLOCK_DEFS[b.type].name} c={c} className="rounded-sm" zone={{ item: { list, index } }} handle={c.canDragBlocks ? { t: "block", id: b.id, type: b.type } : null}>{inner}</Frame>;
 }
 
 const BG: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse text-inverse-foreground", image: "relative overflow-hidden bg-inverse text-inverse-foreground" };
@@ -346,9 +394,11 @@ export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">;
   const dark = s.bg === "dark" || s.bg === "image";
   const ctx: Ctx = { ...c, dark };
   const pic = s.bg === "image" ? img(c.data, 0) : null;
-  const many = s.cols.length > 1;
+  const n = shownCols(s); // columns beyond the layout stay in the section, hidden
+  const many = n > 1;
   return (
-    <Frame k={s.id} name={`Секция ${index + 1}${s.name ? ` · ${s.name}` : ""}`} c={c} inset className={BG[s.bg] ?? ""}>
+    <Frame k={s.id} name={`Секция ${index + 1}${s.name ? ` · ${s.name}` : ""}`} c={c} inset className={BG[s.bg] ?? ""}
+      zone={{ page: index, ...(many ? {} : { into: { list: colKey(s.id, 0), length: s.cols[0]?.length ?? 0 } }) }} handle={{ t: "section", id: s.id }}>
       <section>
         {pic && (
           <>
@@ -359,13 +409,13 @@ export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">;
         )}
         <div className={`relative mx-auto w-full max-w-6xl px-4 ${s.space === "large" ? "py-20 md:py-28" : "py-12 md:py-16"}`}>
           <div className={`grid gap-10 ${GRID[s.layout] ?? ""} ${s.valign === "center" ? "items-center" : "items-start"}`}>
-            {s.cols.map((col, i) => {
+            {s.cols.slice(0, n).map((col, i) => {
               const body = (
                 <div className="flex min-w-0 flex-col gap-5">
-                  {col.length ? col.map((b) => <BlockView key={b.id} b={b} c={ctx} />) : <div className="rounded border border-dashed border-border p-6 text-center text-sm opacity-70">Пустая колонка</div>}
+                  {col.length ? col.map((b, j) => <BlockView key={b.id} b={b} c={ctx} list={colKey(s.id, i)} index={j} />) : <div className="rounded border border-dashed border-border p-6 text-center text-sm opacity-70">Пустая колонка</div>}
                 </div>
               );
-              return many ? <Frame key={i} k={colKey(s.id, i)} name={`Колонка ${i + 1}`} c={c} className="min-w-0 rounded-sm">{body}</Frame> : <div key={i} className="min-w-0">{body}</div>;
+              return many ? <Frame key={i} k={colKey(s.id, i)} name={`Колонка ${i + 1}`} c={c} className="min-w-0 rounded-sm" zone={{ into: { list: colKey(s.id, i), length: col.length } }}>{body}</Frame> : <div key={i} className="min-w-0">{body}</div>;
             })}
           </div>
         </div>

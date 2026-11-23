@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { withBase } from "@/lib/demo";
 import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
-import { SectionView, type LabData } from "./render";
+import { SectionView, drag, type DropAt, type LabData } from "./render";
 import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
@@ -47,13 +47,13 @@ const btn = "rounded border border-border bg-background px-2.5 py-1 text-xs hove
 
 type Kind = BlockType | "section" | "column" | "tab";
 /** What is inside the selected thing: a row per child with its icon; a click goes down a level. */
-function Inside({ items, onOpen }: { items: { key: string; label: string; hint?: string; kind: Kind }[]; onOpen: (key: string) => void }) {
+function Inside({ items, onOpen }: { items: { key: string; label: string; hint?: string; kind: Kind; muted?: boolean }[]; onOpen: (key: string) => void }) {
   if (!items.length) return <p className="text-sm text-muted">Пока пусто.</p>;
   return (
     <ul className="-mx-2 grid">
       {items.map((x) => (
         <li key={x.key}>
-          <button type="button" onClick={() => onOpen(x.key)} className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-surface">
+          <button type="button" onClick={() => onOpen(x.key)} className={`flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-surface ${x.muted ? "opacity-50" : ""}`}>
             <TypeIcon kind={x.kind} className="text-muted" />
             <span className="min-w-0 flex-1"><span className="block truncate text-sm">{x.label}</span>{x.hint && <span className="block truncate text-xs text-muted">{x.hint}</span>}</span>
             <span aria-hidden className="text-muted">›</span>
@@ -70,7 +70,9 @@ function AddBlock({ onAdd, nested }: { onAdd: (t: BlockType) => void; nested?: b
   return (
     <div className="grid grid-cols-3 gap-1.5">
       {types.map((t) => (
-        <button key={t} type="button" onClick={() => onAdd(t)} title={BLOCK_DEFS[t].hint} className="grid justify-items-center gap-1 rounded-md border border-border px-1 pb-1.5 pt-2 text-muted hover:border-foreground hover:text-foreground">
+        <button key={t} type="button" onClick={() => onAdd(t)} title={`${BLOCK_DEFS[t].hint}. Клик — в конец, или перетащите на страницу`}
+          draggable onDragStart={(e) => { drag.set({ t: "new", type: t }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", BLOCK_DEFS[t].name); }}
+          className="grid cursor-grab justify-items-center gap-1 rounded-md border border-border px-1 pb-1.5 pt-2 text-muted hover:border-foreground hover:text-foreground">
           <TypeIcon kind={t} /><span className="text-[11px] leading-tight">{BLOCK_DEFS[t].name}</span>
         </button>
       ))}
@@ -106,6 +108,7 @@ export function Builder({ data }: { data: LabData }) {
   const [tabs, setTabs] = useState<Record<string, number>>({});
   const [left, setLeft] = useState<"add" | "tree">("add");
   const [hover, setHover] = useState<string | null>(null);
+  const [dropAt, setDropAt] = useState<DropAt | null>(null);
   const [name, setName] = useState("");
   const [loaded, setLoaded] = useState(false);
   const designer = role === "designer";
@@ -151,13 +154,14 @@ export function Builder({ data }: { data: LabData }) {
   }, [map]);
 
   /* ---- changes ---- */
+  const sIndex = (key: string) => sections.findIndex((s) => s.id === key);
   const update = (fn: (d: Section[]) => void) => setStore((st) => { const d = clone(st.sections); fn(d); return { ...st, sections: d }; });
   const onData = (id: string, patch: Record<string, unknown>) => update((d) => { const l = locate(d, id); if (l) l.list[l.i].d = { ...l.list[l.i].d, ...patch }; });
   const setOpt = (id: string, key: string, value: string) => update((d) => { const l = locate(d, id); if (l) l.list[l.i].o = { ...l.list[l.i].o, [key]: value }; });
 
-  const addSection = (s: Section, nm?: string) => {
+  const addSection = (s: Section, nm?: string, index?: number) => {
     const f = fresh(s, nm);
-    const at = chain[0]?.kind === "section" ? chain[0].s + 1 : sections.length;
+    const at = index ?? (chain[0]?.kind === "section" ? chain[0].s + 1 : sections.length);
     update((d) => { d.splice(at, 0, f); });
     setSel(f.id);
   };
@@ -166,11 +170,10 @@ export function Builder({ data }: { data: LabData }) {
   const setSectionOpt = (i: number, key: string, value: string) => update((d) => {
     const s = d[i];
     if (key === "layout") {
+      // nothing moves and nothing is lost: columns beyond the layout are hidden, empty ones beyond it are dropped
       const n = colCount(value);
-      const cols = s.cols.slice(0, n);
-      if (s.cols.length > n) cols[n - 1] = [...cols[n - 1], ...s.cols.slice(n).flat()]; // nothing is lost: extra columns go into the last one
-      while (cols.length < n) cols.push([]);
-      s.cols = cols;
+      while (s.cols.length < n) s.cols.push([]);
+      while (s.cols.length > n && !s.cols[s.cols.length - 1].length) s.cols.pop();
     }
     (s as unknown as Record<string, string>)[key] = value;
   });
@@ -180,6 +183,56 @@ export function Builder({ data }: { data: LabData }) {
   const removeBlock = (id: string) => { update((d) => { const l = locate(d, id); if (l) l.list.splice(l.i, 1); }); up(); };
   const tabsOf = (d: Section[], id: string) => { const l = locate(d, id); return l ? (l.list[l.i].d.tabs as Tab[]) : null; };
   const editTabs = (id: string, fn: (t: Tab[]) => void) => update((d) => { const t = tabsOf(d, id); if (t) fn(t); });
+
+  /** A column («{section}:c{n}») or a tab («{tabs}:t{n}») by its key, in the draft being changed. */
+  const listByKey = (d: Section[], key: string): Block[] | null => {
+    const i = key.lastIndexOf(":");
+    const owner = key.slice(0, i), n = Number(key.slice(i + 2));
+    if (key[i + 1] === "c") { const s = d.find((x) => x.id === owner); if (!s) return null; while (s.cols.length <= n) s.cols.push([]); return s.cols[n]; }
+    return tabsOf(d, owner)?.[n]?.blocks ?? null;
+  };
+  /** The drop: move or add a section, move a block, add a new block — where the line showed. */
+  const commitDrop = () => {
+    const d = drag.get();
+    const at = dropAt;
+    drag.set(null);
+    setDropAt(null);
+    if (!d || !at) return;
+    if (at.kind === "page") {
+      if (d.t === "section") {
+        const from = sIndex(d.id);
+        const to = from < at.index ? at.index - 1 : at.index;
+        if (from < 0 || from === to) return;
+        update((x) => { const [m] = x.splice(from, 1); x.splice(to, 0, m); });
+        setSel(d.id);
+      } else if (d.t === "ready") {
+        const r = READY.find((x) => x.key === d.key);
+        const c = store.custom.find((x) => x.key === d.key);
+        if (r) addSection(r.make(), r.name, at.index);
+        else if (c) addSection(c.section, c.name, at.index);
+      }
+      return;
+    }
+    if (d.t === "new") {
+      const b = newBlock(d.type);
+      update((x) => { listByKey(x, at.key)?.splice(at.index, 0, clone(b)); });
+      pick(b.id);
+    } else if (d.t === "block") {
+      update((x) => {
+        const src = locate(x, d.id);
+        const to = listByKey(x, at.key);
+        if (!src || !to) return;
+        const [b] = src.list.splice(src.i, 1);
+        to.splice(to === src.list && src.i < at.index ? at.index - 1 : at.index, 0, b);
+      });
+      setSel(d.id);
+    }
+  };
+  useEffect(() => {
+    const end = () => { drag.set(null); setDropAt(null); };
+    window.addEventListener("dragend", end);
+    return () => window.removeEventListener("dragend", end);
+  }, []);
 
   const saveReady = (s: Section) => {
     if (!name.trim()) return;
@@ -257,7 +310,11 @@ export function Builder({ data }: { data: LabData }) {
         <>
           <Options block="section" opts={opts} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
           <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
-            <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => ({ key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: c.map((b) => BLOCK_DEFS[b.type].name).join(", ") || "пусто", kind: "column" as Kind })) : kids(s.cols[0] ?? [])} onOpen={pick} />
+            <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => {
+              const hidden = k >= colCount(s.layout);
+              const what = c.map((b) => BLOCK_DEFS[b.type].name).join(", ") || "пусто";
+              return { key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: hidden ? `скрыта: в раскладке её нет · ${what}` : what, kind: "column" as Kind, muted: hidden };
+            }) : kids(s.cols[0] ?? [])} onOpen={pick} />
           </Group>
           {designer && s.cols.length === 1 && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} /></Group>}
           {designer && (
@@ -275,9 +332,16 @@ export function Builder({ data }: { data: LabData }) {
       );
     }
     if (here.kind === "column") {
-      const col = sections[here.s]?.cols[here.c] ?? [];
+      const sec = sections[here.s];
+      const col = sec?.cols[here.c] ?? [];
+      const hidden = !!sec && here.c >= colCount(sec.layout);
       return (
         <>
+          {hidden && (
+            <div className="mx-4 mb-1 mt-4 rounded-md bg-surface p-3 text-xs text-muted">
+              Колонка скрыта: в раскладке «{SECTION_OPTS[1].values.find((v) => v.id === sec.layout)?.label}» её нет. Блоки сохранены — выберите раскладку с {here.c + 1} колонками, и она встанет на своё место.
+            </div>
+          )}
           <Group title="Внутри"><Inside items={kids(col)} onOpen={pick} /></Group>
           {designer && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[here.s].cols[here.c], t)} /></Group>}
         </>
@@ -331,8 +395,8 @@ export function Builder({ data }: { data: LabData }) {
 
   /* ---- the structure tree (Webflow's Navigator) ---- */
   const tree = (): ReactNode => {
-    const row = (key: string, label: string, depth: number, kids?: ReactNode) => (
-      <li key={key}>
+    const row = (key: string, label: string, depth: number, kids?: ReactNode, muted = false) => (
+      <li key={key} className={muted ? "opacity-50" : ""}>
         <button type="button" onClick={() => pick(key)} style={{ paddingLeft: 8 + depth * 14 }}
           className={`block w-full truncate rounded py-1 pr-2 text-left text-sm ${sel === key ? "bg-foreground text-background" : chain.some((l) => l.key === key) ? "font-semibold" : "hover:bg-surface"}`}>{label}</button>
         {kids && <ul>{kids}</ul>}
@@ -343,7 +407,7 @@ export function Builder({ data }: { data: LabData }) {
     return (
       <ul className="grid gap-0.5" aria-label="Структура страницы">
         {sections.map((s, i) => row(s.id, `Секция ${i + 1}${s.name ? ` · ${s.name}` : ""}`, 0,
-          s.cols.length > 1 ? s.cols.map((c, k) => row(colKey(s.id, k), `Колонка ${k + 1}`, 1, blocks(c, 2))) : blocks(s.cols[0] ?? [], 1)))}
+          s.cols.length > 1 ? s.cols.map((c, k) => row(colKey(s.id, k), `Колонка ${k + 1}${k >= colCount(s.layout) ? " · скрыта" : ""}`, 1, blocks(c, 2), k >= colCount(s.layout))) : blocks(s.cols[0] ?? [], 1)))}
       </ul>
     );
   };
@@ -375,18 +439,22 @@ export function Builder({ data }: { data: LabData }) {
           <div className="min-h-0 flex-1 overflow-auto p-4">
             {left === "tree" ? tree() : (
               <>
-                <p className="text-xs text-muted">Готовые секции. Клик — секция встаёт после выбранной.</p>
+                <p className="text-xs text-muted">Готовые секции. Клик — встаёт после выбранной; или перетащите на нужное место страницы.</p>
                 <ul className="mt-3 grid gap-1" aria-label="Готовые секции">
                   {READY.map((r) => (
                     <li key={r.key}>
-                      <button type="button" onClick={() => addSection(r.make(), r.name)} className="w-full rounded border border-border px-3 py-2 text-left hover:border-foreground">
+                      <button type="button" onClick={() => addSection(r.make(), r.name)} title="Клик — после выбранной секции, или перетащите на страницу"
+                        draggable onDragStart={(e) => { drag.set({ t: "ready", key: r.key }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", r.name); }}
+                        className="w-full cursor-grab rounded border border-border px-3 py-2 text-left hover:border-foreground">
                         <span className="block text-sm font-medium">{r.name}</span><span className="block text-xs text-muted">сейчас: {r.was}</span>
                       </button>
                     </li>
                   ))}
                   {store.custom.map((c) => (
                     <li key={c.key} className="flex gap-1">
-                      <button type="button" onClick={() => addSection(c.section, c.name)} className="flex-1 rounded border border-accent px-3 py-2 text-left hover:border-foreground">
+                      <button type="button" onClick={() => addSection(c.section, c.name)}
+                        draggable onDragStart={(e) => { drag.set({ t: "ready", key: c.key }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", c.name); }}
+                        className="flex-1 cursor-grab rounded border border-accent px-3 py-2 text-left hover:border-foreground">
                         <span className="block text-sm font-medium">{c.name}</span><span className="block text-xs text-muted">собрана дизайнером</span>
                       </button>
                       {designer && <button type="button" aria-label={`Удалить ${c.name}`} className={btn} onClick={() => setStore((st) => ({ ...st, custom: st.custom.filter((x) => x.key !== c.key) }))}>✕</button>}
@@ -410,10 +478,19 @@ export function Builder({ data }: { data: LabData }) {
               </span>
             ))}
           </nav>
-          <main className="min-h-0 flex-1 overflow-auto bg-surface p-4" onClick={() => setSel(null)} onMouseLeave={() => setHover(null)}>
+          <main className="min-h-0 flex-1 overflow-auto bg-surface p-4" onClick={() => setSel(null)} onMouseLeave={() => setHover(null)}
+            onDragOver={(e) => {
+              // below the last section: a section goes to the end of the page
+              const d = drag.get();
+              if (!d || (d.t !== "section" && d.t !== "ready") || e.target !== e.currentTarget || !sections.length) return;
+              e.preventDefault();
+              const last = sections[sections.length - 1].id;
+              if (dropAt?.at !== last || dropAt.side !== "after") setDropAt({ kind: "page", index: sections.length, at: last, side: "after" });
+            }}
+            onDrop={(e) => { if (!dropAt) return; e.preventDefault(); commitDrop(); }}>
             <div className="mx-auto max-w-[1280px] bg-background shadow-sm">
               {sections.map((s, i) => (
-                <SectionView key={s.id} s={s} index={i} c={{ data, sel, trail, hover, onHover: setHover, onPick: pick, onData, activeTab: (id) => tabs[id] ?? 0 }} />
+                <SectionView key={s.id} s={s} index={i} c={{ data, sel, trail, hover, onHover: setHover, onPick: pick, onData, activeTab: (id) => tabs[id] ?? 0, drop: dropAt, onDragAt: setDropAt, onDropHere: commitDrop, canDragBlocks: designer }} />
               ))}
               {!sections.length && <p className="p-16 text-center text-muted">Страница пуста. Добавьте готовую секцию слева.</p>}
             </div>
