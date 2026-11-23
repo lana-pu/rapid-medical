@@ -4,6 +4,7 @@ import { groupTherapies } from "@/lib/therapy-groups";
 import { RegionSwitcher } from "./RegionSwitcher";
 import { E } from "./editable";
 import { menuHref, type Navigation } from "@/lib/navigation";
+import { buttonClass } from "./ui-classes";
 
 /** Labels of the menu are edited right on the page (settings group `navigation`, docs/screens/menu-footer.md). */
 const NAV = "settings:navigation";
@@ -82,7 +83,7 @@ export function Header({
           )}
         </nav>
 
-        <Link href={region ? `/contact-us?region=${region}` : "/contact-us"} className="shrink-0 whitespace-nowrap rounded bg-accent px-3 py-1.5 text-sm text-accent-foreground">
+        <Link href={region ? `/contact-us?region=${region}` : "/contact-us"} className={`shrink-0 whitespace-nowrap ${buttonClass({ size: "sm" })}`}>
           <E r={NAV} f="contactLabel">{nav.contactLabel}</E>
         </Link>
       </div>

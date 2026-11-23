@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { lookupMedia } from "@/lib/media-lookup";
+import { buttonClass, type ButtonSize } from "./ui-classes";
 
 /* Layout primitives – intentionally plain. Visual design is a later pass. */
 
@@ -36,15 +37,9 @@ export function Lead({ children }: { children: ReactNode }) {
   return <p className="mt-4 max-w-2xl text-lg text-muted">{children}</p>;
 }
 
-export function Btn({ href, children, variant = "primary", external, onDark, track }: { href: string; children: ReactNode; variant?: "primary" | "secondary"; external?: boolean; /** On a dark band: inverted colours (DESIGN.md → Btn). */ onDark?: boolean; /** "out": a registration or application that leaves the site — counted for the Inbox (screens/admin-inbox.md). */ track?: "out" }) {
-  const base = "inline-flex items-center rounded px-4 py-2 text-sm font-medium";
-  const cls = onDark
-    ? variant === "primary"
-      ? `${base} bg-background text-foreground hover:opacity-90`
-      : `${base} border border-background hover:bg-background/10`
-    : variant === "primary"
-      ? `${base} bg-accent text-accent-foreground hover:opacity-90`
-      : `${base} border border-foreground hover:bg-surface`;
+/** A link that looks like a button (DESIGN.md → Btn); the action twin is `Button` (ui.tsx), same classes. */
+export function Btn({ href, children, variant = "primary", size = "md", external, onDark, track, className = "" }: { href: string; children: ReactNode; variant?: "primary" | "secondary"; size?: ButtonSize; external?: boolean; /** On a dark band: inverted colours (DESIGN.md → Btn). */ onDark?: boolean; /** "out": a registration or application that leaves the site — counted for the Inbox (screens/admin-inbox.md). */ track?: "out"; className?: string }) {
+  const cls = `${buttonClass({ variant, size, onDark })} ${className}`;
   if (external || href.startsWith("http") || href.startsWith("mailto:"))
     return (
       <a href={href} className={cls} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener" data-rm-out={track === "out" ? "" : undefined}>
