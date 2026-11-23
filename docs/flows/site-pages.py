@@ -1480,7 +1480,7 @@ flow['links'] = flow.get('links', []) + [{'from': 'ev-concept', 'to': 'ev-new', 
 
 # Home and the therapy page: in the code of branch therapy-home, not merged until Emily answers (BACKLOG №22) — drawn by
 # that branch (render-branch.sh: its last commit, a copy of the database with its migrations and build steps)
-def in_branch(path): return site(route(path, region='us', branch=True))
+def in_branch(path): return site(route(path, region='us', branch='therapy-home'))
 
 
 BRANCH = [('th-branch-aneurysm', 'Therapy · in code, branch therapy-home (preliminary) · Aneurysm', 'desktop', '/us/therapies/aneurysm'),
@@ -1496,6 +1496,82 @@ for first, title, ids in [('th-refs', '10 · Страница терапии —
 flow['links'] += [{'from': 'th-refs', 'to': 'th-branch-aneurysm', 'label': 'как это сделано'}, {'from': 'th-branch-aneurysm', 'to': 'th-branch-lvo', 'label': 'та же страница, LVO'},
                   {'from': 'th-branch-aneurysm', 'to': 'th-branch-phone', 'label': 'на телефоне'}, {'from': 'home-refs', 'to': 'home-branch', 'label': 'как это сделано'},
                   {'from': 'home-branch', 'to': 'home-branch-phone', 'label': 'на телефоне'}]
+
+# Webinars: the draft in branch webinars-draft (2026-11-23, the owner's answers to 1, 3, 4, 5), drawn by that branch's
+# code; question 2 (how the recording is given) waits for Emily — variant A in code, variant B a sketch of its one
+# different state
+WD = 'webinars-draft'
+WEB_URL = 'rapid-medical.com/us/webinars'
+SLUG = {'COMANECI™': 'comaneci', 'TIGERTRIEVER™': 'tigertriever', 'DRIVEWIRE™': 'drivewire'}
+WEB_NOW = [{k: v for k, v in w.items() if k != 'edit'} for w in next(b for b in RM_NOW['US · Webinars'] if b['type'] == 'webinars')['data']['items']]
+WHEN = [('2025-03-15', 45), ('2024-11-15', 30), ('2024-09-15', 60), ('2024-05-15', 40), ('2023-12-15', 35), ('2023-10-15', 50),
+        ('2023-06-15', 25), ('2023-03-15', 45), ('2022-11-15', 55), ('2022-09-15', 30), ('2022-05-15', 40), ('2022-02-15', 35)]
+SAMPLES = [('Sample webinar · COMANECI™ case review', 'COMANECI™'), ('Sample webinar · TIGERTRIEVER™ in distal occlusions', 'TIGERTRIEVER™'),
+           ('Sample webinar · DRIVEWIRE™ first cases', 'DRIVEWIRE™'), ('Sample webinar · COMANECI™ in bifurcation aneurysms', 'COMANECI™'),
+           ('Sample webinar · TIGERTRIEVER™ 13 technique', 'TIGERTRIEVER™'), ('Sample webinar · Live case discussion', 'COMANECI™'),
+           ('Sample webinar · Thrombectomy update', 'TIGERTRIEVER™')]
+FILLED = [dict(w, productSlug=SLUG.get(w.get('productName')), heldOn=WHEN[i][0], durationMin=WHEN[i][1]) for i, w in enumerate(WEB_NOW)] + \
+         [{'id': 100 + i, 'title': t, 'speaker': 'Dr. A. Example', 'event': 'Sample event', 'productName': pr, 'productSlug': SLUG[pr],
+           'heldOn': WHEN[len(WEB_NOW) + i][0], 'durationMin': WHEN[len(WEB_NOW) + i][1]} for i, (t, pr) in enumerate(SAMPLES)]
+HERO = next(b for b in RM_NOW['US · Webinars'] if b['type'] == 'hero')['data']
+HERO = dict(HERO, body='Physician-led webinars are available to view on-demand. To request a recording, choose a webinar below.')
+
+
+def web_draft(data):
+    return {'c': 'rm-page', 'branch': WD, 'items': [dict({'c': 'rm-hero', 'v': 'page'}, **HERO), dict({'c': 'rm-webinars', 'v': 'library'}, **data)]}
+
+
+REQ = [{'click': 'Request this recording'}]
+REQ_SENT = REQ + PERSON + [{'fill': ['Email', 'anna.levi@clinic.org']}, {'honeypot': True}, {'click': 'Submit'}, {'expect': 'Thank you — your request is in.'}]
+OPEN = [{'text': 'Request this recording', 'to': 'web-draft-window'}]
+flow['screens'] += [
+    {'id': 'web-draft', 'title': 'Webinars · draft in code (branch webinars-draft) · 5 webinars, as in the database', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD, links=OPEN)),
+     'notes': ['Решение владелицы 2026-11-23 (1): отдельная страница, но на «общей линии» и теми же строками, что архив Evidence и новости. Когда появится knowledge base, страница станет её срезом «вебинары», переделывать ничего не придётся.',
+               'Строка: картинка · дата · длительность · название · спикер · событие · продукт · одна кнопка «Request this recording» (3). Даты и длительности в базе пока нет: поле «Duration, min» новое, «Date» было, но не заполнено, поэтому строка выводит только то, что есть.',
+               'Формы внизу страницы больше нет: «Request this recording» открывает окно с этим вебинаром (вопрос 2, вариант А).',
+               'Из 5 вебинаров фильтра не видно: он появляется сам от 9 (4).',
+               'Текст шапки: «…fill in the form below» → «…choose a webinar below», потому что формы внизу нет. Тексты за клиентом.']},
+    {'id': 'web-draft-filled', 'title': 'Webinars · draft · 12 webinars with date and length: the filter shows itself', 'url': WEB_URL,
+     'body': site(web_draft({'items': FILLED, 'defaultRegion': 'Americas'})),
+     'notes': ['Пример данных: 5 настоящих вебинаров и 7 «Sample webinar», даты и длительности придуманы. Так страница выглядит, когда вебинаров 9 и больше и поля заполнены в админке.',
+               'Фильтр тот же, что в архиве Evidence (общий компонент FilterChips): «All n» и продукты со счётчиками.']},
+    {'id': 'web-draft-product', 'title': 'Webinars · draft · from a therapy page (?product=comaneci): filtered', 'url': WEB_URL + '?product=comaneci',
+     'body': site(route('/us/webinars?product=comaneci', region='us', branch=WD)),
+     'notes': ['«Request to view» на странице терапии ведёт сюда с ?product=. Список сразу отфильтрован по продукту, чипы видны всегда, даже при 5 вебинарах, чтобы можно было вернуться к «All». Раньше в форме внизу выбирался первый вебинар продукта.']},
+    {'id': 'web-draft-window', 'title': 'Webinars · draft · «Request this recording»: the window', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD)),
+     'overlay': {'c': 'rm-dialog', 'path': '/us/webinars', 'region': 'us', 'branch': WD, 'act': REQ, 'links': [{'text': 'Submit', 'to': 'web-draft-sent'}]},
+     'notes': ['Окно общее для обоих вариантов вопроса 2: название вебинара, спикер и дата, короткая форма. Вебинар уже выбран, поэтому поля «Which webinar?» нет. Регион выбран заранее.',
+               'Закрыть можно кнопкой «Close», клавишей Esc или кликом по фону. На телефоне окно занимает весь экран.']},
+    {'id': 'web-draft-sent', 'title': 'Webinars · draft · request sent (variant A: the recording comes by email)', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD)),
+     'overlay': {'c': 'rm-dialog', 'path': '/us/webinars', 'region': 'us', 'branch': WD, 'act': REQ_SENT},
+     'notes': ['Вариант А (вручную проверяют, что смотрит специалист): после отправки окно говорит, что запись придёт на этот адрес. Заявка попадает в Requests, как сейчас.']},
+    {'id': 'web-draft-b', 'title': 'Webinars · variant B (sketch: not in code until Emily answers) · the video right after the form', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD)),
+     'overlay': {'c': 'modal', 'title': 'COMANECI Experience: Increasing packing density', 'items': [
+         {'c': 'text', 'text': 'Dr. Mani Puthuran', 'v': 'muted'},
+         {'c': 'media', 'kind': 'video', 'label': 'The recording · plays here', 'ratio': '16/9', 'annotation': 'Вариант Б (форма только собирает контакты): после отправки та же форма сменяется видео, ссылка на запись приходит с сервера только после заявки. Заявка всё равно попадает в Requests. В коде этого нет, пока не ответит Emily.'},
+         {'c': 'text', 'text': 'We have also emailed you the link.', 'v': 'small'}], 'actions': [{'c': 'button', 'text': 'Close'}]}},
+    {'id': 'web-draft-empty', 'title': 'Webinars · draft · a region without webinars (Asia & Pacific)', 'url': 'rapid-medical.com/apac/webinars',
+     'body': [{'c': 'rm-header', 'region': 'apac'}, web_draft({'items': [], 'defaultRegion': 'Asia Pacific', 'emptyLine': 'No webinars for Asia & Pacific yet.'}),
+              {'c': 'rm-footer', 'region': 'apac', 'branch': WD}],
+     'notes': ['Решение (5): страницу не прячем, показываем пустое состояние, как «No upcoming events right now» у событий. Строка с названием региона и ссылка на Contact Us.',
+               'Сейчас вебинары без отмеченного региона показываются во всех регионах, поэтому /apac/webinars на деле не пустая. Отметить регионы у 5 вебинаров — за клиентом (№14).']},
+    {'id': 'web-draft-phone', 'title': 'Webinars · draft · phone', 'device': 'mobile', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD))},
+    {'id': 'web-draft-window-phone', 'title': 'Webinars · draft · the window, phone', 'device': 'mobile', 'url': WEB_URL,
+     'body': site(route('/us/webinars', region='us', branch=WD)),
+     'overlay': {'c': 'rm-dialog', 'path': '/us/webinars', 'region': 'us', 'branch': WD, 'act': REQ}},
+]
+gi = next(k for k, g in enumerate(flow['groups']) if 'web-mobbin' in g['screens'])
+flow['groups'].insert(gi + 1, {'title': '7 · Webinars — черновик в коде, ветка webinars-draft (к обсуждению, 2026-11-23)',
+                               'screens': ['web-draft', 'web-draft-filled', 'web-draft-product', 'web-draft-window', 'web-draft-sent', 'web-draft-b', 'web-draft-empty', 'web-draft-phone', 'web-draft-window-phone']})
+flow['links'] += [{'from': 'web-mobbin', 'to': 'web-draft', 'label': 'черновик'}, {'from': 'web-draft', 'to': 'web-draft-filled', 'label': 'когда вебинаров 9+'},
+                  {'from': 'web-draft', 'to': 'web-draft-product', 'label': 'со страницы терапии'}, {'from': 'web-draft-window', 'to': 'web-draft-sent', 'label': 'вариант А'},
+                  {'from': 'web-draft-window', 'to': 'web-draft-b', 'label': 'вариант Б'}, {'from': 'web-draft', 'to': 'web-draft-empty', 'label': 'регион без вебинаров'},
+                  {'from': 'web-draft', 'to': 'web-draft-phone', 'label': 'на телефоне'}, {'from': 'web-draft-phone', 'to': 'web-draft-window-phone', 'label': 'окно'}]
 
 ORDER = [sid for g in flow['groups'] for sid in g['screens']]
 flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))

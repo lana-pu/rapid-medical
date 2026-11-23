@@ -1,17 +1,18 @@
 #!/bin/sh
-# Snapshot of the nodes marked "branch" (pages written in a branch not yet in main: Home and the therapy page in
-# therapy-home, waiting for Emily) drawn by that branch's code → ../rm-render-branch.json.
-#   docs/flows/blocks-kit/render-branch.sh [branch, default therapy-home]
+# Snapshot of the nodes marked "branch": "<name>" (pages written in a branch not yet in main: Home and the therapy page in
+# therapy-home, waiting for Emily; the Webinars draft in webinars-draft) drawn by that branch's code →
+# ../rm-render-branch-<name>.json. One branch per run; every branch keeps its own snapshot.
+#   docs/flows/blocks-kit/render-branch.sh <branch>
 # Nothing of main or of the branch's own folder is touched: the branch's last commit is checked out next to the project
 # (git worktree), its migrations run on a copy of this project's database (<db>_wf_branch), its dev server runs on port
 # 3142; the worktree, the server and the copy are removed at the end. Re-run when the branch moves.
 set -e
-BRANCH=${1:-therapy-home}
+BRANCH=${1:?usage: render-branch.sh <branch>}
 PORT=3142
 PG=/Applications/Postgres.app/Contents/Versions/latest/bin
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
-OLD="$ROOT/../$(basename "$ROOT")-branch"
+OLD="$ROOT/../$(basename "$ROOT")-wf-$BRANCH"
 LOG="$OLD.dev.log"
 DBURL=$(grep '^DATABASE_URL=' "$ROOT/.env" | cut -d= -f2-)
 DB=${DBURL##*/}
@@ -52,5 +53,5 @@ sed "s#^DATABASE_URL=.*#DATABASE_URL=$SERVER/$COPY#" "$ROOT/.env" > "$OLD/.env"
 (cd "$OLD" && npx tsx --env-file=.env scripts/bootstrap.ts >/dev/null 2>&1)
 (cd "$OLD" && exec npx next dev -p $PORT >"$LOG" 2>&1) & PID=$!
 for i in $(seq 1 60); do curl -s -o /dev/null --max-time 5 "http://localhost:$PORT/" && break; sleep 2; done
-WF_COMMIT="$BRANCH@$COMMIT" node "$HERE/render.cjs" "http://localhost:$PORT" --branch --root "$OLD"
+WF_COMMIT="$BRANCH@$COMMIT" node "$HERE/render.cjs" "http://localhost:$PORT" --branch "$BRANCH" --root "$OLD"
 python3 "$HERE/make-pack.py"

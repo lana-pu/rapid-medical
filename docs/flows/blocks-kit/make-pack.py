@@ -55,12 +55,14 @@ def snapshot(name):
     return json.loads(p.read_text(encoding='utf8')) if p.exists() else {'css': '', 'units': {}}
 
 
-now, asis, branch = snapshot('rm-render.json'), snapshot('rm-render-asis.json'), snapshot('rm-render-branch.json')
-render = {'css': now['css'], 'units': now['units'], 'asis': asis['units'], 'branch': branch['units']}
-# the code before the redesign and a branch not yet in main: their own CSS, scoped to .rmxa and .rmxb
-render['css'] += '\n' + asis.get('css', '') + '\n' + branch.get('css', '')
+now, asis = snapshot('rm-render.json'), snapshot('rm-render-asis.json')
+# branches not yet in main, one snapshot each (render-branch.sh <name>)
+branches = {p.name[len('rm-render-branch-'):-len('.json')]: snapshot(p.name) for p in sorted(FLOWS.glob('rm-render-branch-*.json'))}
+render = {'css': now['css'], 'units': now['units'], 'asis': asis['units'], 'branch': {b: s['units'] for b, s in branches.items()}}
+# the code before the redesign and each branch: their own CSS, scoped to .rmxa and .rmxb-<name>
+render['css'] += '\n' + asis.get('css', '') + ''.join('\n' + s.get('css', '') for s in branches.values())
 
-names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner', 'rm-regionModal', 'rm-route', 'rm-hot'] + ['rm-' + m['type'] for m in META]
+names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner', 'rm-regionModal', 'rm-route', 'rm-dialog', 'rm-hot'] + ['rm-' + m['type'] for m in META]
 pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
         .replace('/*RENDER*/{}', json.dumps(render, ensure_ascii=False).replace('</', '<\\/'))
         .replace('/*KEY*/', (HERE / 'key.js').read_text(encoding='utf8'))
@@ -69,4 +71,5 @@ pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
         .replace('/*EXAMPLES*/{}', json.dumps(examples, ensure_ascii=False))
         .replace('/*NAMES*/', ' '.join(names)))
 (FLOWS / 'pack.js').write_text(pack, encoding='utf8')
-print(f"ok: pack.js {len(pack) // 1024} KB, {len(names)} components; snapshots: {len(now['units'])} now (from {now.get('snapshot', '—')}), {len(asis['units'])} as is, {len(branch['units'])} branch {branch.get('commit') or ''}")
+shown = ', '.join('%s %d (%s)' % (b, len(x['units']), x.get('commit') or '') for b, x in branches.items())
+print(f"ok: pack.js {len(pack) // 1024} KB, {len(names)} components; snapshots: {len(now['units'])} now (from {now.get('snapshot', '—')}), {len(asis['units'])} as is; branches: {shown or '—'}")
