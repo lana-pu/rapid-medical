@@ -13,7 +13,7 @@ import type { RegionDiff } from "@/blocks/diff";
 import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
-import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
+import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff, setDemoRole, type DemoRole } from "./demo-store";
 import { BAR_H, DRAG_PRESET, RAIL_W, TOOL_W, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SectionsList, SidePanel, TabsPanel, ToolPanel, ToolRail, TopBar, statusText, type ToolKey } from "./editor-ui";
 import { RegionsTable } from "./RegionsTable";
 import { PagesPanel, RecordPanel, type OpenRecord } from "./PagesPanel";
@@ -782,8 +782,31 @@ export default function EditorOverlay() {
       {/* the page moves aside for the open tool panel (like Webflow's canvas), so nothing on it is covered */}
       <style>{STYLE(top, preview, layout, RAIL_W + (tool && tool.k !== "regions" ? toolWidth : 0))}</style>
       {DEMO && (
-        <div className="fixed inset-x-0 top-0 z-[1001] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
-          Demo — edits are saved only in your browser (localStorage). No server, no database.
+        <div className="fixed inset-x-0 top-0 z-[1001] flex h-6 items-center justify-center gap-3 overflow-hidden whitespace-nowrap bg-amber-400 px-4 text-xs font-medium text-black">
+          <span className="truncate">Demo — edits are saved only in your browser (localStorage). No server, no database.</span>
+          {/* the demo shows both roles (ADR-006 → «Права»); the editor's view by default */}
+          <span role="group" aria-label="View the editor as" className="flex shrink-0 items-center gap-1">
+            <span>View as</span>
+            {(["editor", "designer"] as DemoRole[]).map((r) => {
+              const on = (info?.canDesign ? "designer" : "editor") === r;
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => {
+                    if (on) return;
+                    setDemoRole(r);
+                    if (r === "editor" && tool?.k === "add") setTool(null);
+                    void loadInfo();
+                  }}
+                  className={`rounded px-1.5 leading-4 ${on ? "bg-black text-amber-300" : "underline hover:bg-amber-300"}`}
+                >
+                  {r === "editor" ? "Editor" : "Designer"}
+                </button>
+              );
+            })}
+          </span>
         </div>
       )}
 
