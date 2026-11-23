@@ -25,7 +25,7 @@ export function SeoEditor({ v, back }: { v: SeoVersion; back: string }) {
   const shown = title || v.fallbackTitle;
 
   return (
-    <section aria-label={`Google texts — ${v.label}`} className="rounded-lg border border-neutral-200 bg-white">
+    <section id={`region-${v.region ?? "all"}`} aria-label={`Google texts — ${v.label}`} className="scroll-mt-28 rounded-lg border border-neutral-200 bg-white target:ring-2 target:ring-neutral-900">
       <div className="flex items-center justify-between gap-2 border-b border-neutral-100 px-5 py-3">
         <span className="font-semibold text-neutral-900">{v.label}</span>
         {v.pending && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-900">unpublished changes</span>}

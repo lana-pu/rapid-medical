@@ -36,6 +36,19 @@ export async function thumbsFor(urls: string[]): Promise<Record<string, string>>
   return Object.fromEntries(rows.flatMap((m) => (thumbOf(m) ? [[m.url, thumbOf(m)!]] : [])));
 }
 
+/** Page views, visits that started here and requests, per day for the last DAYS days (today last; Israel days). */
+function byDays(views: { at: Date; kind: string; visit: boolean }[], leads: { at: Date }[]) {
+  const key = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d); // YYYY-MM-DD
+  const days: string[] = [];
+  for (let i = DAYS - 1; i >= 0; i--) days.push(key(new Date(Date.now() - i * 86_400_000)));
+  const count = (xs: { at: Date }[]) => {
+    const m = new Map<string, number>();
+    for (const x of xs) m.set(key(x.at), (m.get(key(x.at)) ?? 0) + 1);
+    return days.map((day) => ({ day, value: m.get(day) ?? 0 }));
+  };
+  return { views: count(views.filter((v) => v.kind === "view")), landings: count(views.filter((v) => v.visit)), requests: count(leads) };
+}
+
 export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
   const since = new Date(Date.now() - DAYS * 86_400_000);
   const paths = [...new Set(versions.map((v) => v.path))];
@@ -48,9 +61,9 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
     recs.length ? db.select().from(drafts).where(or(...recs.map((x) => and(eq(drafts.resource, x.r), eq(drafts.recordId, x.id))))) : [],
     db.select().from(auditLog).where(and(forRecords, inArray(auditLog.action, ["save", "publish", "restore"]))).orderBy(desc(auditLog.createdAt)).limit(100),
     db.select().from(auditLog).where(forRecords).orderBy(desc(auditLog.createdAt)).limit(5),
-    paths.length ? db.select({ kind: pageViews.kind, visit: pageViews.visit, source: pageViews.source, file: pageViews.file, path: pageViews.path }).from(pageViews).where(and(gte(pageViews.at, since), inArray(pageViews.path, paths))) : [],
+    paths.length ? db.select({ at: pageViews.at, kind: pageViews.kind, visit: pageViews.visit, source: pageViews.source, file: pageViews.file, path: pageViews.path }).from(pageViews).where(and(gte(pageViews.at, since), inArray(pageViews.path, paths))) : [],
     paths.length
-      ? db.select({ id: contactSubmissions.id }).from(contactSubmissions).where(and(gte(contactSubmissions.createdAt, since), sql`${contactSubmissions.status} <> 'spam'`, or(inArray(sql`${contactSubmissions.meta}->>'previous_page'`, paths), inArray(sql`${contactSubmissions.meta}->>'form_page'`, paths))))
+      ? db.select({ id: contactSubmissions.id, at: contactSubmissions.createdAt }).from(contactSubmissions).where(and(gte(contactSubmissions.createdAt, since), sql`${contactSubmissions.status} <> 'spam'`, or(inArray(sql`${contactSubmissions.meta}->>'previous_page'`, paths), inArray(sql`${contactSubmissions.meta}->>'form_page'`, paths))))
       : [],
     recs.length ? db.select({ n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt), or(...recs.map((x) => and(eq(comments.resource, x.r), eq(comments.recordId, x.id)))))) : [{ n: 0 }],
     countingSince().catch(() => null),
@@ -79,6 +92,8 @@ export async function pageDetails(cards: PageCard[], versions: PageVersion[]) {
     landings: views.filter((v) => v.visit).length,
     requests: leads.length,
     sources: tally(views.filter((v) => v.visit).map((v) => v.source ?? "Direct")).slice(0, 4),
+    // the same 30 days as columns for the page screen's small charts (docs/screens/admin-sections.md → «Иерархия»)
+    byDay: byDays(views, leads),
     since: counting && counting > since ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: TZ }).format(counting) : null,
   };
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Region } from "@/db/schema";
 import { REGION_CHOICES, REGION_SHORT } from "@/lib/regions";
+import { Icon } from "./icons";
 
 /* Small, unstyled-ish primitives for the admin. Swap freely later. */
 
@@ -19,6 +20,38 @@ export function Tip({ tip, children, align = "center", focusable = false, classN
         {tip}
       </span>
     </span>
+  );
+}
+
+/** Underlined quietly: a link inside text or a block's way out. */
+export const quietLink = "underline decoration-neutral-300 underline-offset-[3px] hover:decoration-neutral-900";
+
+/**
+ * A block's head on the dashboards and the page screen (docs/screens/admin-home.md → «Иерархия»): the name in sentence
+ * case, a number beside it, an (i) with what the block is, the way into its space on the right.
+ */
+export function SectionHead({ title, count, tip, href, link }: { title: string; count?: ReactNode; tip?: string; href?: string; link?: string }) {
+  return (
+    <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <h2 className="text-[15px] font-semibold text-neutral-900">{title}</h2>
+      {count != null && <span className="text-xs tabular-nums text-neutral-500">{count}</span>}
+      {tip && (
+        <Tip tip={tip} focusable className="self-center text-neutral-400 hover:text-neutral-700">
+          <Icon name="info" className="h-3.5 w-3.5" />
+        </Tip>
+      )}
+      {href && link && <Link href={href} className={`ml-auto text-[13px] text-neutral-600 ${quietLink}`}>{link} →</Link>}
+    </div>
+  );
+}
+
+/** Good news or an empty state in one line, no card: it does not compete with what needs doing. */
+export function Calm({ children, check = true }: { children: ReactNode; check?: boolean }) {
+  return (
+    <p className="flex items-center gap-2 text-sm text-neutral-600">
+      {check && <Icon name="check" className="h-4 w-4 text-emerald-600" />}
+      {children}
+    </p>
   );
 }
 

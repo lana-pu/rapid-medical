@@ -1,12 +1,11 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { requireUser } from "@/lib/auth";
 import { attention, comingUp, health, lastPublished, myRecent, recentActivity, type Health } from "@/admin/home";
 import { unreadCount } from "@/admin/inbox";
 import { analyticsReport, countingSince } from "@/admin/analytics";
 import { countingStartedWithin } from "@/lib/analytics";
 import { DEMO, withBase } from "@/lib/demo";
-import { Notice, Tip, formatDate } from "@/components/admin/ui";
+import { Calm, Notice, SectionHead as Head, Tip, formatDate, quietLink as quiet } from "@/components/admin/ui";
 import { Icon, type IconName } from "@/components/admin/icons";
 import { MiniBars, Meter, ShareBar } from "@/components/admin/Charts";
 
@@ -29,34 +28,7 @@ const QUICK: { href: string; label: string; icon: IconName; tip: string }[] = [
 ];
 const HEALTH_ICON: Record<Health["key"], IconName> = { alt: "image", seo: "search", "2fa": "shield", news: "news", studies: "study" };
 const card = "rounded-xl border border-neutral-200 bg-white";
-const quiet = "underline decoration-neutral-300 underline-offset-[3px] hover:decoration-neutral-900";
 const tz = "Asia/Jerusalem";
-
-/** A block's head: the name, a number beside it, the way into its space on the right. */
-function Head({ title, count, tip, href, link }: { title: string; count?: ReactNode; tip?: string; href?: string; link?: string }) {
-  return (
-    <div className="mb-3 flex items-baseline gap-2">
-      <h2 className="text-[15px] font-semibold text-neutral-900">{title}</h2>
-      {count != null && <span className="text-xs tabular-nums text-neutral-500">{count}</span>}
-      {tip && (
-        <Tip tip={tip} focusable className="self-center text-neutral-400 hover:text-neutral-700">
-          <Icon name="info" className="h-3.5 w-3.5" />
-        </Tip>
-      )}
-      {href && link && <Link href={href} className={`ml-auto text-[13px] text-neutral-600 ${quiet}`}>{link} →</Link>}
-    </div>
-  );
-}
-
-/** Good news in one line, no card: it does not compete with the tasks. */
-function Calm({ children }: { children: ReactNode }) {
-  return (
-    <p className="flex items-center gap-2 text-sm text-neutral-600">
-      <Icon name="check" className="h-4 w-4 text-emerald-600" />
-      {children}
-    </p>
-  );
-}
 
 function Delta({ now, before, young, since }: { now: number; before: number; young?: boolean; since?: string | null }) {
   if (young) return <span className="mt-1 inline-block rounded bg-neutral-100 px-1.5 py-0.5 text-[11px] text-neutral-600">{since ? `counting since ${since}` : "not counted yet"}</span>;

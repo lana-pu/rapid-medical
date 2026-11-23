@@ -207,7 +207,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(regions.getByRole("listitem", { name: "Americas" }).getByRole("button", { name: /^Create from / })).toBeVisible();
   await expect(regions.getByRole("link", { name: "Edit on page" })).toHaveCount(2);
   await expect(regions.getByRole("listitem", { name: "Europe & Middle East" })).toContainText(/On the site|Changes not published yet|Not on the site yet/);
-  await expect(page.getByRole("region", { name: "Performance" })).toContainText(/page views|No visits counted here yet/);
+  await expect(page.getByRole("region", { name: "Performance" })).toContainText(/page views|No visits counted here yet/i);
   await expect(page.getByRole("region", { name: "Google" }).getByRole("link", { name: "Edit in Search & sharing" })).toHaveAttribute("href", /\/admin\/seo\?page=%2Ftherapies%2Fmvo$/);
   await expect(page.getByRole("complementary", { name: "Details" })).toContainText("/ous/therapies/mvo");
   await expect(page.getByRole("navigation", { name: "Page tabs" })).toHaveCount(0); // no tabs any more

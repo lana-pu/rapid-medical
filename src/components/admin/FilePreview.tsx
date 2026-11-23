@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { safeLocalPath } from "@/lib/safe-path";
 import type { PageFile } from "@/admin/page-screen";
+import { Icon, type IconName } from "./icons";
+import { Tip, quietLink } from "./ui";
 
 /**
  * Files of a page with previews (docs/screens/admin-sections.md → «Экран страницы» → Files): PDFs as rows with Preview,
@@ -56,45 +58,74 @@ export function FilesOnPage({ files }: { files: PageFile[] }) {
   const docs = files.filter((f) => f.kind === "PDF" || f.kind === "File");
   const pics = files.filter((f) => f.kind === "Picture" || f.kind === "Video");
   const shown = all ? pics : pics.slice(0, FIRST);
+  const n = (k: PageFile["kind"]) => files.filter((f) => f.kind === k).length;
+  const opens = docs.reduce((s, f) => s + f.opens, 0);
+  const summary: [number, string, string, IconName][] = [
+    [n("PDF"), "PDF", "PDFs", "file"],
+    [n("File"), "file", "files", "file"],
+    [n("Video"), "video", "videos", "video"],
+    [n("Picture"), "picture", "pictures", "image"],
+  ];
 
+  // compact (docs/screens/admin-sections.md → «Иерархия»): a summary, PDFs as short rows, small thumbnails
   return (
     <div className="space-y-3">
-      {docs.length > 0 && (
-        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
-          {docs.map((f) => (
-            <li key={f.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 text-sm">
-              <span aria-hidden className="flex h-10 w-8 shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-[9px] font-bold text-red-700">PDF</span>
-              <span className="min-w-0 flex-1 basis-40 truncate">{f.filename}</span>
-              {f.kind === "PDF" && <span className="shrink-0 text-xs text-neutral-500">opened {f.opens}× in 30 days</span>}
-              {f.kind === "PDF" && <button type="button" onClick={() => setOpen({ url: f.url, kind: "pdf", name: f.filename })} className="shrink-0 rounded border border-neutral-300 px-2 py-0.5 text-xs hover:bg-neutral-50">Preview</button>}
-              <Link href={`/admin/media?id=${f.id}`} className="shrink-0 text-xs underline">Open · Replace</Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      {pics.length > 0 && (
-        <div className="rounded-lg border border-neutral-200 bg-white p-3">
-          <ul aria-label="Pictures and videos" className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
-            {shown.map((f) => (
-              <li key={f.id} className="min-w-0">
-                <button type="button" onClick={() => setOpen({ url: f.url, kind: f.kind === "Video" ? "video" : "image", name: f.filename })} title={f.filename} className="group relative block aspect-[4/3] w-full overflow-hidden rounded border border-neutral-200 bg-neutral-100 hover:border-neutral-900">
-                  {f.thumb ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={f.thumb} alt="" loading="lazy" className="h-full w-full object-contain" />
-                  ) : (
-                    <span className="flex h-full items-center justify-center text-xs text-neutral-500">{f.kind}</span>
-                  )}
-                  {f.kind === "Video" && <span aria-hidden className="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 text-[10px] text-white">▶ video</span>}
-                </button>
-                <Link href={`/admin/media?id=${f.id}`} className="mt-1 block truncate text-[11px] text-neutral-600 underline decoration-neutral-300" title={`${f.filename} — open in the media library`}>{f.filename}</Link>
+      <ul aria-label="Files by kind" className="flex flex-wrap gap-2">
+        {summary.filter(([c]) => c > 0).map(([c, one, many, icon]) => (
+          <li key={many} className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-xs text-neutral-700">
+            <Icon name={icon} className="h-3.5 w-3.5 text-neutral-500" />
+            <b className="font-semibold tabular-nums">{c}</b> {c === 1 ? one : many}
+            {icon === "file" && one === "PDF" && <span className="text-neutral-500">· opened {opens}× in 30 days</span>}
+          </li>
+        ))}
+      </ul>
+      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+        {docs.length > 0 && (
+          <ul className="divide-y divide-neutral-100">
+            {docs.map((f) => (
+              <li key={f.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+                <span aria-hidden className="flex h-7 w-6 shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-[8px] font-bold text-red-700">{f.kind === "PDF" ? "PDF" : "FILE"}</span>
+                <span className="min-w-0 flex-1 truncate" title={f.filename}>{f.filename}</span>
+                {f.kind === "PDF" && (
+                  <Tip tip={`Opened ${f.opens}× in 30 days`}>
+                    <span className="shrink-0 text-xs tabular-nums text-neutral-400">{f.opens}×</span>
+                  </Tip>
+                )}
+                {f.kind === "PDF" && <button type="button" onClick={() => setOpen({ url: f.url, kind: "pdf", name: f.filename })} className="shrink-0 rounded-md border border-neutral-300 px-2 py-0.5 text-xs font-medium hover:bg-neutral-50">Preview</button>}
+                <Tip tip="Open · Replace in the media library" align="end">
+                  <Link href={`/admin/media?id=${f.id}`} aria-label={`Open · Replace ${f.filename}`} className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-neutral-200 text-neutral-600 hover:bg-neutral-50">
+                    <Icon name="open" className="h-3.5 w-3.5" />
+                  </Link>
+                </Tip>
               </li>
             ))}
           </ul>
-          {pics.length > FIRST && (
-            <button type="button" onClick={() => setAll((a) => !a)} className="mt-3 text-sm underline">{all ? "Show fewer" : `Show all (${pics.length})`}</button>
-          )}
-        </div>
-      )}
+        )}
+        {pics.length > 0 && (
+          <div className={`p-3 ${docs.length ? "border-t border-neutral-100" : ""}`}>
+            <ul aria-label="Pictures and videos" className="grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2">
+              {shown.map((f) => (
+                <li key={f.id} className="min-w-0">
+                  <Tip tip={`${f.filename} — click to see it large`} className="block w-full">
+                    <button type="button" onClick={() => setOpen({ url: f.url, kind: f.kind === "Video" ? "video" : "image", name: f.filename })} aria-label={f.filename} className="group relative block aspect-square w-full overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 hover:border-neutral-900">
+                      {f.thumb ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={f.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="flex h-full items-center justify-center text-[10px] text-neutral-500">{f.kind}</span>
+                      )}
+                      {f.kind === "Video" && <span aria-hidden className="absolute bottom-1 left-1 rounded bg-black/70 px-1 text-[9px] text-white">▶</span>}
+                    </button>
+                  </Tip>
+                </li>
+              ))}
+            </ul>
+            {pics.length > FIRST && (
+              <button type="button" onClick={() => setAll((a) => !a)} className={`mt-3 text-[13px] text-neutral-700 ${quietLink}`}>{all ? "Show fewer" : `Show all ${pics.length} pictures and videos`}</button>
+            )}
+          </div>
+        )}
+      </div>
       <PreviewModal file={open} onClose={() => setOpen(null)} />
     </div>
   );

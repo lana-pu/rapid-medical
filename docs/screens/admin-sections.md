@@ -68,32 +68,46 @@
   «unpublished changes» и **Publish** этого региона. Форматированный текст правится на странице — «Edit on page».
 
 
-Основная колонка:
-1. **Regions** — строка на регион: название, статус словами («On the site» · «Changes not published yet» · «Not on
-   the site yet»), кто и когда менял, «publishes {дата} (Israel time)», если запланировано. Действия: **Edit on page**;
-   **Publish** — у региона с неопубликованными правками; **Settings** — настройки страницы этого региона. Нет версии —
-   «No version — visitors there do not see this page» и **Create from {регион}** (копия черновиком, экран остаётся
-   здесь с подтверждением). Страница-список (Webinars, News & Events, Open positions, Contact) — «Its texts are
-   edited on the page, its items in the collections below».
-2. **Performance · last 30 days** — пока на странице ни одного просмотра и заявки, вместо трёх нулей одна строка «No
-   visits counted here yet» со ссылкой в Analytics (2026-11-15); просмотры, визиты, которые начались здесь, заявки, отправленные с этой страницы
-   или сразу после неё, главные источники, открытые PDF; всё по всем регионам страницы. Счётчик моложе 30 дней —
-   «Counted since {дата}». Ссылка в Analytics.
-3. **Google** — у **всех** страниц (2026-11-15): у страниц со своими полями (терапии, текстовые) — из полей записи; у
-   Evidence, Webinars, Contact — из Settings → Google titles & descriptions (по региону); у Home, About, Careers —
-   общий заголовок сайта. **Edit** ведёт туда, где поле живёт, и это подписано («Set in Settings → Google titles»).
-   Превью сниппета: заголовок (60), адрес, описание (155) со счётчиками; длиннее — жёлтым,
-   пусто — «Google will pick text from the page». **Edit** → Settings региона. У страниц без своих полей (Home,
-   About, Careers, Evidence…) — «Set in Settings → Google defaults» со ссылкой.
-4. **Files on this page** — файлы медиатеки на странице (по всем регионам), **с превью** (2026-11-15): PDF — строкой со
-   значком, сколько раз открывали за 30 дней, **Preview** открывает PDF в окне поверх экрана; картинки и видео — сеткой
-   миниатюр (уменьшенная копия, у видео — постер), первые 12 на виду, остальные — «Show all (N)»; клик — крупно в том
-   же окне. **Open · Replace** → файл в медиатеке.
-5. **Collections shown on this page** — как раньше: название, число, где, **Open**, **+ New**.
 
-Колонка справа **Details**: шаблон (вид страницы), адрес по регионам, **Recent changes** — 5 последних действий
-журнала по записям страницы и **All versions** (история региона), **Open notes** — число открытых заметок на странице и
-ссылка в редактор.
+### Иерархия (решение владелицы 2026-11-23; разбор с Mobbin — https://claude.ai/artifact/EoNmYGU46LoTY8GZsjCWuF)
+Как на Home (`screens/admin-home.md → «Иерархия»`): заголовки блоков обычным регистром со счётчиком и выходом справа,
+одна залитая кнопка, цвет — только у состояния, иконки и цифры с подсказками.
+
+**Шапка:** крошки; название и метка шаблона рядом; подпись — что здесь делают («To change texts and pictures, use Edit
+on page…»; у страницы-списка — «Its texts are edited on the page, its items in the collections below»). Справа Copy
+link for a post и View ↗ — обычные кнопки; **Edit on page** — единственная залитая: у страницы одной версии — ссылка в
+редактор, у нескольких регионов — «Edit on page ▾» со списком регионов (только тех, где версия есть).
+
+**Полоса состояния страницы** (под вкладками) — пилюли с подсказками, только из того, что уже известно: «On the site in
+{N} regions» (или «· all regions»), «{N} region(s) with unpublished changes», «Publishes {когда}», «No version in {N}
+region(s)», «No description for Google» / «Google title or description too long in {N} region(s)», «{N} open
+note(s)». Проблемы — жёлтые, в порядке — зелёная, справочное — серое.
+
+Основная колонка:
+1. **Collections on this page** — у страницы-списка (у неё есть коллекции: News & Events, Webinars, Careers,
+   Evidence…) **первым блоком**: карточки с крупным числом записей, названием, где показываются, **Open {коллекция}** и **+ New
+   {запись}**.
+2. **Regions** (у страницы одной версии — **The page**), в заголовке «{N} of {M} on the site» — строки-таблица:
+   регион и адрес; статус словами со значком («On the site» · «Changes not published yet» · «Not on the site yet»), у
+   запланированного — «publishes {дата} (Israel time)»; кто и когда менял; действия справа: **Publish** (жёлтая, у
+   региона с неопубликованными правками), **Edit on page** (обычная), **Settings** и **View ↗** — значками с
+   подсказкой. Нет версии — «No version — visitors there do not see this page» и **Create from {регион}**. На
+   телефоне строка складывается: регион и статус сверху, действия под ними.
+3. **Performance · last 30 days** — пока ни одного просмотра и заявки — одна строка «No visits counted here yet» со
+   ссылкой в Analytics; иначе три цифры (просмотры, визиты, которые начались здесь, заявки отсюда) со столбиками по
+   дням за 30 дней (подсказка «{день}: {N}») и полоса долей «Came from»; «Counted since {дата}», пока счётчик моложе.
+4. **How Google shows it** — превью сниппета; **регионы с одинаковым заголовком и описанием — одной карточкой** с
+   перечнем регионов и «same text» (только показ: тексты у каждого региона свои). В карточке — ссылка **Edit {регион}**
+   на каждый регион: Search & sharing сразу на форме этого региона (`/admin/seo?page=…#region-{us|ous|apac|all}`),
+   остальные регионы не меняются; стал текст другим — карточка сама делится. Под сниппетом — шкалы длины «Title
+   {n} / 60», «Description {n} / 155»; длиннее — жёлтая шкала и «Google cuts the end», пусто — «empty». В заголовке
+   блока — **Edit in Search & sharing →**.
+5. **Files on this page** — в заголовке число и **Media →**; сводка «{N} PDFs · {N} videos · {N} pictures»; PDF —
+   компактными строками (имя, сколько раз открывали за 30 дней, **Preview**, значок «Open · Replace» с подсказкой);
+   картинки и видео — сетка мелких миниатюр, первые 12, «Show all {N} pictures and videos»; клик — крупно в окне.
+
+Колонка справа: **Recent changes** (инициал, кто и что, когда), **All versions** (история региона), **Open notes** и
+**Details** (шаблон; адреса — в таблице регионов).
 
 **Copy link for a post** — окно: регион, название кампании → ссылка на страницу с `utm_source=linkedin&utm_medium=social
 &utm_campaign={кампания}` и кнопка Copy; так пост виден в Analytics → «LinkedIn posts and campaigns».
