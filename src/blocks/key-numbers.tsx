@@ -1,7 +1,7 @@
 import type { Stat } from "@/db/schema";
 import { Section } from "@/components/site/primitives";
 import { StatCircles, StatRow, StatBadge } from "@/components/site/blocks/Stats";
-import { F } from "./edit";
+import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
 export type KeyNumbersVariant = "circles" | "row" | "badge" | "figures";
@@ -24,9 +24,9 @@ function KeyNumbers({ variant, data: d, edit: e, nested }: BlockProps<"keyNumber
         ))}
       </ul>
     ) : variant === "row" ? (
-      <StatRow items={items} render={(s, j, part) => <F e={e} k={`items.${j}.${part}`}>{s[part]}</F>} />
+      <StatRow items={items} render={(s, j, part) => <F e={e} k={`items.${j}.${part}`}>{s[part]}</F>} icon={(img, j) => <FM e={e} k={`items.${j}.iconUrl`} className="flex-none">{img}</FM>} />
     ) : variant === "badge" ? (
-      <StatBadge stat={items[0]} render={(part) => <F e={e} k={`items.0.${part}`}>{items[0][part]}</F>} />
+      <StatBadge stat={items[0]} render={(part) => <F e={e} k={`items.0.${part}`}>{items[0][part]}</F>} icon={(img) => <FM e={e} k="items.0.iconUrl" className="flex-none">{img}</FM>} />
     ) : (
       <StatCircles
         items={items}

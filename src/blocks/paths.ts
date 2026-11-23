@@ -80,7 +80,10 @@ export function checkBlockPath(blocks: unknown, path: string[]): BlockPathCheck 
     if (!IDX.test(last) || Number(last) >= cur.length) return no("Field not found");
   } else if (isObj(cur)) {
     if (IDX.test(last)) return no("Bad field");
-    if (!Object.hasOwn(cur, last) && !(leaf.length === 1 && d.fields.some((f) => f.key === last)) && !(leaf.length === 2 && cur && Object.keys(cur).length === 0)) {
+    // a missing key may be written for a declared field, into an object created on the way, or — the address of a
+    // link whose text is there (a card's title, a source's or button's label) — as `href`
+    const linkText = typeof cur.label === "string" || typeof cur.title === "string";
+    if (!Object.hasOwn(cur, last) && !(leaf.length === 1 && d.fields.some((f) => f.key === last)) && !(leaf.length === 2 && cur && Object.keys(cur).length === 0) && !(last === "href" && leaf.length > 1 && linkText)) {
       return no("Field not found");
     }
   } else return no("Field not found");

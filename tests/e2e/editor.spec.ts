@@ -405,7 +405,8 @@ test("user walk 2026-11-14: the Statement media takes a picture or a video; the 
   await login(page);
   await open(page, "/");
   // the media slot of the Statement section names both fields: a picture goes to the picture, not into the video
-  const slot = page.locator(".rm-e-media", { has: page.locator("video") }).first();
+  // (not the hero's background video — editable too since 2026-11-23, it fills the band: `absolute!`)
+  const slot = page.locator('.rm-e-media:not([class~="absolute!"])', { has: page.locator("video") }).first();
   const tag = JSON.parse((await slot.getAttribute("data-e")) ?? "{}") as { f: string; fv?: string };
   expect(tag.f).toMatch(/imageUrl$/);
   expect(tag.fv).toMatch(/videoUrl$/);

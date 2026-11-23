@@ -19,7 +19,7 @@ function SpecTableBlock({ variant, data: d, edit: e, nested }: BlockProps<"specT
     if (!d.table || d.table.columns.length === 0) return null;
     inner = (
       <>
-        <SpecTableView t={d.table} />
+        <SpecTableView t={d.table} render={(v, at) => <F e={e} k={`table.${at}`}>{v}</F>} />
         {d.note && <p className="mt-2 text-xs italic text-muted">*<F e={e} k="note">{d.note}</F></p>}
       </>
     );

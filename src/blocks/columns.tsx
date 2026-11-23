@@ -35,36 +35,41 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
       <Section>
         {d.title && <H2><F e={e} k="title">{d.title}</F></H2>}
         <ul className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${d.title ? "mt-6" : ""}`}>
-          {d.items.map((c, i) => (
+          {d.items.map((c, i) => {
+            const k = (part: string) => `items.${i}.${part}`;
+            // the card's own link: its title is the label, `href` the address
+            const title = <F e={e} k={k("title")} kh={k("href")} kind="link">{c.title}</F>;
+            return (
             <li key={i}>
               {c.more ? (
                 // two links: the card's page and the publications about it (DESIGN.md → Обзор терапий)
                 <div className="flex h-full flex-col overflow-hidden rounded border border-border">
-                  {c.imageUrl && <Img src={c.imageUrl} className="aspect-[4/3] w-full object-cover" />}
+                  {c.imageUrl && <FM e={e} k={k("imageUrl")}><Img src={c.imageUrl} className="aspect-[4/3] w-full object-cover" /></FM>}
                   <div className="flex flex-1 flex-col p-6">
-                    {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>}
-                    <h3 className="mt-1 text-xl font-medium"><Link href={c.href ?? "#"} className="hover:underline">{c.title}</Link></h3>
-                    {c.body && <p className="mt-2 text-sm text-muted">{c.body}</p>}
-                    {c.note && <p className="mt-3 text-sm font-medium">{c.note}</p>}
+                    {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted"><F e={e} k={k("eyebrow")}>{c.eyebrow}</F></div>}
+                    <h3 className="mt-1 text-xl font-medium"><Link href={c.href ?? "#"} className="hover:underline">{title}</Link></h3>
+                    {c.body && <p className="mt-2 text-sm text-muted"><F e={e} k={k("body")}>{c.body}</F></p>}
+                    {c.note && <p className="mt-3 text-sm font-medium"><F e={e} k={k("note")}>{c.note}</F></p>}
                     <div className="mt-auto flex flex-wrap gap-x-6 gap-y-2 pt-6 text-sm">
                       <Link href={c.href ?? "#"} className="font-medium underline" aria-label={`Explore ${c.title}`}>Explore →</Link>
-                      <Link href={c.more.href} className="underline">{c.more.label}</Link>
+                      <Link href={c.more.href} className="underline"><F e={e} k={k("more.label")} kh={k("more.href")} kind="link">{c.more.label}</F></Link>
                     </div>
                   </div>
                 </div>
               ) : (
               <Link href={c.href ?? "#"} className="group block h-full overflow-hidden rounded border border-border hover:bg-surface">
-                {c.imageUrl && <Img src={c.imageUrl} className="aspect-video w-full object-cover" />}
+                {c.imageUrl && <FM e={e} k={k("imageUrl")}><Img src={c.imageUrl} className="aspect-video w-full object-cover" /></FM>}
                 <div className="p-6">
-                  {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted">{c.eyebrow}</div>}
-                  <h3 className="mt-1 text-xl font-medium group-hover:underline">{c.title}</h3>
-                  {c.body && <p className="mt-2 text-sm text-muted">{c.body}</p>}
-                  {c.note && <p className="mt-3 text-sm font-medium">{c.note}</p>}
+                  {c.eyebrow && <div className="text-xs font-semibold uppercase tracking-widest text-muted"><F e={e} k={k("eyebrow")}>{c.eyebrow}</F></div>}
+                  <h3 className="mt-1 text-xl font-medium group-hover:underline">{title}</h3>
+                  {c.body && <p className="mt-2 text-sm text-muted"><F e={e} k={k("body")}>{c.body}</F></p>}
+                  {c.note && <p className="mt-3 text-sm font-medium"><F e={e} k={k("note")}>{c.note}</F></p>}
                 </div>
               </Link>
               )}
             </li>
-          ))}
+            );
+          })}
         </ul>
       </Section>
     );
@@ -83,7 +88,15 @@ function Columns({ variant, data: d, edit: e, nested }: BlockProps<"columns">) {
     );
   } else if (d.items.length > 0) {
     const items = d.items.map((f) => ({ ...f, body: f.body ?? "" }));
-    inner = <div className="mt-8"><FeatureGrid items={items} render={(f, j, part) => <F e={e} k={`items.${j}.${part}`}>{d.items[j][part]}</F>} /></div>;
+    inner = (
+      <div className="mt-8">
+        <FeatureGrid
+          items={items}
+          render={(f, j, part) => <F e={e} k={`items.${j}.${part}`}>{d.items[j][part]}</F>}
+          icon={(img, j) => <FM e={e} k={`items.${j}.iconUrl`} className="flex-none">{img}</FM>}
+        />
+      </div>
+    );
   } else if (d.legacyImageUrl) {
     inner = <FM e={e} k="legacyImageUrl" className="mt-8"><Img src={d.legacyImageUrl} className="w-full rounded" /></FM>;
   } else {

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import type { ActionLink } from "@/db/schema";
 import { Container, Section, H1, Btn, Img, Eyebrow } from "@/components/site/primitives";
@@ -41,11 +41,13 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
     return nested ? inner : <Section>{inner}</Section>;
   }
   const links = d.eyebrowLinks ?? [];
+  // the background video (its poster is the picture): the editor's media slot over the band
+  const background = (bg: ReactNode) => <FM e={e} k="imageUrl" kv="videoUrl" cover>{bg}</FM>;
   const title = <H1><F e={e} k="title">{d.title}</F>{d.title2 && <><br /><F e={e} k="title2">{d.title2}</F></>}</H1>;
   if (variant === "banner" || variant === "bannerCompact") {
     const large = variant === "banner";
     return (
-      <VideoHero videoUrl={d.videoUrl} poster={d.imageUrl}>
+      <VideoHero videoUrl={d.videoUrl} poster={d.imageUrl} media={background}>
         <Container className={large ? "py-24 md:py-40" : "py-20 md:py-28"}>
           {(d.eyebrow || links.length > 0) && (
             <Eyebrow>
@@ -78,7 +80,7 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
     );
   }
   return (
-    <VideoHero videoUrl={video} poster={video ? d.imageUrl : null}>
+    <VideoHero videoUrl={video} poster={video ? d.imageUrl : null} media={background}>
       <Container className="grid items-center gap-8 py-16 md:grid-cols-2 md:py-24">
         <div>
           {(d.eyebrow || links.length > 0) && (

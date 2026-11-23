@@ -23,10 +23,12 @@ export type TextData = {
 function Text({ variant, data: d, edit: e, nested }: BlockProps<"text">) {
   if (variant === "facts") {
     // «Shared line» (DESIGN.md → About): facts about the company on the left, the text on the right; on a phone the text comes first
+    // the labels «Countries» and «Headquarters» are fixed; facts filled from records (source `companyFacts`) are not
+    // editable here — their binding maps `facts` to null, so <F> leaves them as they are
     const rows = [
-      ...(d.countries ? [{ label: "Countries", value: d.countries }] : []),
-      ...(d.facts ?? []),
-      ...(d.headquarters ? [{ label: "Headquarters", value: d.headquarters }] : []),
+      ...(d.countries ? [{ label: "Countries", value: <F e={e} k="countries">{d.countries}</F> }] : []),
+      ...(d.facts ?? []).map((f, i) => ({ label: <F e={e} k={`facts.${i}.label`}>{f.label}</F>, value: <F e={e} k={`facts.${i}.value`}>{f.value}</F> })),
+      ...(d.headquarters ? [{ label: "Headquarters", value: <F e={e} k="headquarters">{d.headquarters}</F> }] : []),
     ];
     const inner = (
       <div className="mt-8 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
@@ -59,7 +61,15 @@ function Text({ variant, data: d, edit: e, nested }: BlockProps<"text">) {
     );
   }
   if (variant === "dark") {
-    return <Banner imageUrl={d.imageUrl} videoUrl={d.videoUrl} title={d.title && <F e={e} k="title">{d.title}</F>} body={d.body && <F e={e} k="body">{d.body}</F>} />;
+    return (
+      <Banner
+        imageUrl={d.imageUrl}
+        videoUrl={d.videoUrl}
+        title={d.title && <F e={e} k="title">{d.title}</F>}
+        body={d.body && <F e={e} k="body">{d.body}</F>}
+        media={(bg) => <FM e={e} k="imageUrl" kv="videoUrl" cover>{bg}</FM>}
+      />
+    );
   }
   if (variant === "large") {
     const inner = (

@@ -1,6 +1,6 @@
 import { Section } from "@/components/site/primitives";
 import { Gallery as GalleryGrid } from "@/components/site/blocks/Blocks";
-import { F } from "./edit";
+import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
 export type GalleryVariant = "quotes";
@@ -12,7 +12,11 @@ export type GalleryData = { items: GalleryItem[] };
 function Gallery({ data: d, edit: e }: BlockProps<"gallery">) {
   return (
     <Section>
-      <GalleryGrid items={d.items} render={(i, part) => <F e={e} k={`items.${i}.${part}`}>{d.items[i][part]}</F>} />
+      <GalleryGrid
+        items={d.items}
+        render={(i, part) => <F e={e} k={`items.${i}.${part}`}>{d.items[i][part]}</F>}
+        media={(photo, i) => (d.items[i].imageUrl ? <FM e={e} k={`items.${i}.imageUrl`}>{photo}</FM> : photo)}
+      />
     </Section>
   );
 }

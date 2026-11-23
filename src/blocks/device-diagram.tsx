@@ -1,7 +1,7 @@
 import type { AnnotatedImage as AnnotatedImageT } from "@/db/schema";
 import { Section } from "@/components/site/primitives";
 import { AnnotatedImage } from "@/components/site/blocks/Blocks";
-import { F } from "./edit";
+import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
 export type DeviceDiagramVariant = "default";
@@ -10,7 +10,14 @@ export type DeviceDiagramData = AnnotatedImageT;
 
 function DeviceDiagram({ data: d, edit: e, nested }: BlockProps<"deviceDiagram">) {
   if (!d.imageUrl) return null;
-  const figure = <AnnotatedImage a={d} render={(j) => <F e={e} k={`markers.${j}.label`}>{d.markers[j].label}</F>} />;
+  const figure = (
+    <AnnotatedImage
+      a={d}
+      render={(j) => <F e={e} k={`markers.${j}.label`}>{d.markers[j].label}</F>}
+      caption={d.caption ? <F e={e} k="caption">{d.caption}</F> : undefined}
+      media={(img) => <FM e={e} k="imageUrl">{img}</FM>}
+    />
+  );
   return nested ? <div className="mt-4">{figure}</div> : <Section>{figure}</Section>;
 }
 

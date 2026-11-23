@@ -44,12 +44,20 @@ export function Embed({ url, className = "" }: { url: string; className?: string
   );
 }
 
-/** Section with an optional background video and a dark overlay for legibility. */
-export function VideoHero({ videoUrl, poster, children, className = "" }: { videoUrl?: string | null; poster?: string | null; children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`relative overflow-hidden ${videoUrl ? "bg-inverse text-inverse-foreground" : "border-b border-border"} ${className}`}>
+/**
+ * Section with an optional background video and a dark overlay for legibility.
+ * `media` wraps the background (video + overlay) when there is one — the on-page editor's media slot.
+ */
+export function VideoHero({ videoUrl, poster, children, className = "", media }: { videoUrl?: string | null; poster?: string | null; children: React.ReactNode; className?: string; media?: (background: React.ReactNode) => React.ReactNode }) {
+  const background = (
+    <>
       <Video src={videoUrl} poster={poster} background />
       {videoUrl && <div className="absolute inset-0 bg-scrim/50" aria-hidden />}
+    </>
+  );
+  return (
+    <section className={`relative overflow-hidden ${videoUrl ? "bg-inverse text-inverse-foreground" : "border-b border-border"} ${className}`}>
+      {videoUrl && media ? media(background) : background}
       <div className="relative">{children}</div>
     </section>
   );

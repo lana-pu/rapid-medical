@@ -19,12 +19,14 @@ export type PassportData = {
 function Passport({ data: d, edit: e, nested }: BlockProps<"passport">) {
   const rows = (d.rows ?? []).filter((r) => r.label && r.value);
   if (!rows.length) return null;
+  // the source's name and address (a document without an address can get one here)
+  const source = d.source?.label ? <F e={e} k="source.label" kh="source.href" kind="link">{d.source.label}</F> : null;
   const inner = (
     <SharedLine title={<F e={e} k="title">{d.title || "Study at a glance"}</F>} className="mt-16">
       <KeyValue rows={rows.map((r, i) => ({ label: <F e={e} k={`rows.${i}.label`}>{r.label}</F>, value: <F e={e} k={`rows.${i}.value`}>{r.value}</F> }))} />
       {d.source?.label && (
         <p className="mt-3 text-xs text-muted">
-          Source: {d.source.href ? <a href={safeHref(d.source.href)} target="_blank" rel="noopener noreferrer" className="underline">{d.source.label}</a> : d.source.label}
+          Source: {d.source.href ? <a href={safeHref(d.source.href)} target="_blank" rel="noopener noreferrer" className="underline">{source}</a> : source}
         </p>
       )}
     </SharedLine>

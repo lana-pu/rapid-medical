@@ -1,6 +1,6 @@
 import { Container } from "@/components/site/primitives";
 import { Embed, Video as VideoFile } from "@/components/site/Media";
-import { F } from "./edit";
+import { F, FM } from "./edit";
 import type { BlockDef, BlockProps } from "./types";
 
 export type VideoVariant = "band";
@@ -15,7 +15,8 @@ function VideoBand({ data: d, edit: e }: BlockProps<"video">) {
   const isFile = !!d.url && /\.mp4(\?|$)/i.test(d.url);
   return (
     <section className="relative overflow-hidden bg-inverse py-16 text-inverse-foreground md:py-24">
-      {isFile && <VideoFile src={d.url} background />}
+      {/* the file is the band's background: one field holds the clip, so the editor's slot offers it as the video */}
+      {isFile && <FM e={e} k="url" kv="url" cover><VideoFile src={d.url} background /></FM>}
       <Container className="relative text-center">
         {d.title && <h2 className="text-2xl font-medium md:text-3xl"><F e={e} k="title">{d.title}</F></h2>}
         {d.url && !isFile && <div className="mx-auto mt-10 max-w-3xl"><Embed url={d.url} /></div>}
