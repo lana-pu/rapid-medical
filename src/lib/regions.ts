@@ -8,7 +8,7 @@ export type { Region };
 
 export const REGION_LABELS: Record<Region, string> = {
   us: "Americas",
-  ous: "Europe, Middle East, Latin America & Australia",
+  ous: "Europe & Middle East",
   apac: "Asia & Pacific",
 };
 

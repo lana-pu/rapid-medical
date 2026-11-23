@@ -50,11 +50,11 @@ file. Feel free to answer inline, and to skip anything that is not yours to answ
 16. **Regions — which map is right, and what are they called?** Today the site has three different answers:
     - by IP, Israel (HQ), the UAE, Saudi Arabia, Turkey and Egypt go to *Asia & Pacific*;
     - the region button says "Europe & Middle East";
-    - Latin America goes to *Americas* by IP, but to *Europe* on the About map;
-    - the long label reads "Europe, Middle East, Latin America & Australia", the short one "Europe & Middle East".
+    - Latin America goes to *Americas* by IP, but to *Europe* on the About map.
 
-    Could you give us one table: country → region, and one name per region? We will use it everywhere (IP, region
-    choice, Contact Us, About map).
+    For now we keep the names and the map of the current site (Americas, Europe & Middle East, Asia & Pacific).
+    Could you give us one table: country → region, and tell us if any name should change? We will use it everywhere
+    (IP, region choice, Contact Us, About map).
 17. **Contact Us:** how fast do you reply? We would like to show "We reply within …".
 18. **Where requests go.** For orders and IFU per region, should we use the same mailboxes as the current mailto links?
     And which email tool does the team reply from (Outlook, Gmail, a shared inbox)?
