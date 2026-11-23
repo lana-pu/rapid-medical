@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { withBase } from "@/lib/demo";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
-import { SectionView, drag, type DropAt, type LabData } from "./render";
+import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
+import { SectionView, drag, fileOf, type DropAt, type LabData, type LabFile } from "./render";
+import { MediaLibrary, Preview } from "./Library";
 import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
@@ -91,7 +92,7 @@ function blockHint(b: Block): string {
     case "heading": return cut(d.title);
     case "text": return cut(d.body);
     case "buttons": return cut((d.items as string[]).slice(0, Number(b.o.count)).join(", "));
-    case "media": return optLabel(b, "kind");
+    case "media": return ({ image: "картинка", video: "видео", document: "документ" } as Record<string, string>)[b.o.kind] ?? "";
     case "numbers": return `${b.o.count} · ${optLabel(b, "style")}`;
     case "cards": return `${b.o.count} · ${optLabel(b, "style")}`;
     case "facts": return cut((d.rows as string[][]).slice(0, Number(b.o.rows)).map((r) => r[0]).join(", "));
@@ -109,6 +110,8 @@ export function Builder({ data }: { data: LabData }) {
   const [left, setLeft] = useState<"add" | "tree">("add");
   const [hover, setHover] = useState<string | null>(null);
   const [dropAt, setDropAt] = useState<DropAt | null>(null);
+  /** the media library, open for one slot: what kind it wants, what is there now, what to do with the choice */
+  const [lib, setLib] = useState<{ want?: LabFile["kind"]; current?: string; onPick: (f: LabFile) => void } | null>(null);
   const [name, setName] = useState("");
   const [loaded, setLoaded] = useState(false);
   const designer = role === "designer";
@@ -144,7 +147,7 @@ export function Builder({ data }: { data: LabData }) {
   // Esc: leave the text being typed, else one level up
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
+      if (e.key !== "Escape" || document.querySelector("[data-lab-modal]")) return;
       const a = document.activeElement as HTMLElement | null;
       if (a?.isContentEditable || a?.tagName === "INPUT") return a.blur();
       setSel((cur) => { const c = cur ? map.get(cur) : null; return c && c.length > 1 ? c[c.length - 2].key : null; });
@@ -298,6 +301,85 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
 
+  /** A file in a slot: its preview, name and size; «Заменить» opens the media library for that slot. */
+  function FileCard({ src, want, onPick }: { src: unknown; want?: LabFile["kind"]; onPick: (f: LabFile) => void }) {
+    const f = fileOf(data, src) ?? (typeof src === "number" ? data.library.find((x) => x.url === data.images[src % Math.max(1, data.images.length)]?.url) ?? null : null);
+    return (
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">{f ? <Preview f={f} /> : null}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm">{f?.filename ?? "Не выбран"}</div>
+          {f && <div className="truncate text-xs text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{(f.size / 1024 / 1024).toFixed(1)} МБ</div>}
+        </div>
+        <button type="button" onClick={() => setLib({ want, current: f?.url, onPick })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Заменить</button>
+      </div>
+    );
+  }
+
+  /** Media block: the file first — its kind decides the options below. */
+  const mediaFile = (b: Block): ReactNode => (
+    <Group title="Файл">
+      <FileCard src={b.d.src} onPick={(f) => {
+        if (f.kind === "other") return;
+        update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
+      }} />
+      <p className="text-xs text-muted">Картинка, видео или PDF из медиатеки — настройки ниже меняются под тип файла.</p>
+    </Group>
+  );
+
+  /** What only some kinds have: a description and a focal point for a picture, a poster for a video. */
+  const mediaExtras = (b: Block): ReactNode => {
+    const f = fileOf(data, b.d.src);
+    const d = b.d as { alt?: string; decorative?: boolean; focal?: string; poster?: string };
+    if (b.o.kind === "image") {
+      const alt = d.alt ?? f?.alt ?? "";
+      const missing = !d.decorative && !alt.trim();
+      const focus = b.o.fit !== "contain" && b.o.ratio !== "natural";
+      const [fx, fy] = (d.focal ?? "50% 50%").split(" ").map((x) => parseFloat(x));
+      return (
+        <>
+          <Group title="Описание картинки">
+            <textarea aria-label="Описание картинки" rows={2} disabled={!!d.decorative} value={d.decorative ? "" : alt} onChange={(e) => onData(b.id, { alt: e.target.value })}
+              placeholder="Что на картинке — для незрячих и для поиска" className={`rounded-md border px-2 py-1.5 text-sm disabled:opacity-40 ${missing ? "border-danger" : "border-border"}`} />
+            {missing && <p className="text-xs text-danger">Нет описания: опишите картинку или отметьте её декоративной.</p>}
+            {!missing && f && d.alt === undefined && alt && <p className="text-xs text-muted">Описание из медиатеки. Можно уточнить для этого места.</p>}
+            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная — без описания (узор, фон)</label>
+          </Group>
+          {focus && f && (
+            <Group title="Точка фокуса">
+              <p className="text-xs text-muted">Что остаётся в кадре при обрезке. Кликните по главному на картинке.</p>
+              <button type="button" aria-label="Поставить точку фокуса" className="relative overflow-hidden rounded-md bg-surface"
+                onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); onData(b.id, { focal: `${Math.round(((e.clientX - r.left) / r.width) * 100)}% ${Math.round(((e.clientY - r.top) / r.height) * 100)}%` }); }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={withBase(f.url)} alt="" className="block w-full" />
+                <span aria-hidden className="absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-foreground/40 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
+              </button>
+            </Group>
+          )}
+        </>
+      );
+    }
+    if (b.o.kind === "video") {
+      const poster = d.poster ?? f?.poster ?? null;
+      const pf = poster ? data.library.find((x) => x.url === poster) ?? null : null;
+      return (
+        <Group title="Обложка">
+          <p className="text-xs text-muted">{b.o.mode === "ambient" ? "Видна, пока видео загружается." : "Видна до нажатия «Play»."}</p>
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {poster ? (pf ? <Preview f={pf} /> : <img src={withBase(poster)} alt="" className="h-full w-full object-cover" />) : null}
+            </div>
+            <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет — будет чёрный прямоугольник"}</div>
+            <button type="button" onClick={() => setLib({ want: "image", current: d.poster, onPick: (x) => onData(b.id, { poster: x.url }) })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
+          </div>
+          {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
+        </Group>
+      );
+    }
+    return null;
+  };
+
   const panel = (): ReactNode => {
     if (!here)
       return <Group title="Секции страницы"><Inside items={sections.map((s, i) => ({ key: s.id, label: s.name || `Секция ${i + 1}`, hint: `Секция ${i + 1}`, kind: "section" as Kind }))} onOpen={pick} /></Group>;
@@ -309,6 +391,12 @@ export function Builder({ data }: { data: LabData }) {
       return (
         <>
           <Options block="section" opts={opts} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
+          {s.bg === "image" && (
+            <Group title="Картинка фона">
+              <FileCard src={s.bgSrc ?? data.images[0]?.url} want="image" onPick={(f) => update((d) => { d[i].bgSrc = f.url; })} />
+              <p className="text-xs text-muted">Поверх картинки — затемнение, чтобы текст читался.</p>
+            </Group>
+          )}
           <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
             <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => {
               const hidden = k >= colCount(s.layout);
@@ -366,18 +454,28 @@ export function Builder({ data }: { data: LabData }) {
     if (!b) return null;
     return (
       <>
-        <Options block={b.type} opts={BLOCK_DEFS[b.type].opts} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
-        {(b.type === "media" || b.type === "quote") && (
-          <Group title="Картинка">
+        {b.type === "media" && mediaFile(b)}
+        <Options block={b.type} opts={optsFor(b)} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
+        {b.type === "media" && mediaExtras(b)}
+        {b.type === "quote" && (
+          <Group title="Фото">
+            <FileCard src={b.d.src} want="image" onPick={(f) => onData(b.id, { src: f.url })} />
+          </Group>
+        )}
+        {b.type === "cards" && (b.o.style === "image" || b.o.style === "link") && (
+          <Group title="Картинки карточек">
             <div className="grid grid-cols-4 gap-1.5">
-              {data.images.slice(0, 12).map((im, k) => (
-                <button key={k} type="button" aria-label={im.alt || `Picture ${k + 1}`} aria-pressed={Number(b.d.src) === k} onClick={() => onData(b.id, { src: k })}
-                  className={`aspect-square overflow-hidden rounded-md ${Number(b.d.src) === k ? "ring-2 ring-foreground ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={withBase(im.url)} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
+              {((b.d.items as { title: string; img?: string }[]) ?? []).slice(0, Number(b.o.count)).map((it, k) => {
+                const f = fileOf(data, it.img);
+                return (
+                  <button key={k} type="button" title={`${it.title} — заменить картинку`} onClick={() => setLib({ want: "image", current: it.img, onPick: (x) => onData(b.id, { items: (b.d.items as object[]).map((y, j) => (j === k ? { ...y, img: x.url } : y)) }) })}
+                    className="aspect-square overflow-hidden rounded-md bg-surface hover:ring-2 hover:ring-foreground">
+                    {f ? <Preview f={f} /> : <span className="flex h-full items-center justify-center text-[11px] text-muted">{k + 1}</span>}
+                  </button>
+                );
+              })}
             </div>
+            <p className="text-xs text-muted">Клик по картинке — выбрать другую из медиатеки.</p>
           </Group>
         )}
         {b.type === "tabs" && (
@@ -416,6 +514,7 @@ export function Builder({ data }: { data: LabData }) {
 
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
+      {lib && <MediaLibrary files={data.library} want={lib.want} current={lib.current} onPick={(f) => { lib.onPick(f); setLib(null); }} onClose={() => setLib(null)} />}
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-inverse px-4 py-2 text-sm text-inverse-foreground">
         <strong>Песочница блоков</strong>
         <span className="opacity-70">предложение, не редактор: правки остаются в этом браузере</span>

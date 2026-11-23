@@ -12,8 +12,11 @@ import { BLOCK_DEFS, colKey, shownCols, tabKey, type Block, type BlockType, type
  * today, so a section built here can be compared with the page it stands for. Texts are edited in place.
  */
 
+export type LabFile = { id: number; url: string; filename: string; kind: "image" | "video" | "document" | "other"; mime: string; size: number; width: number | null; height: number | null; alt: string; thumb: string | null; poster: string | null; pages: number; firstPage: string | null; created: string };
 export type LabData = {
   images: { url: string; alt: string }[];
+  /** the whole media library (images, videos, PDFs) */
+  library: LabFile[];
   news: { title: string; date: string; source: string; image: string | null }[];
   publications: { title: string; journal: string; date: string }[];
   webinars: { title: string; speaker: string; image: string | null }[];
@@ -139,7 +142,12 @@ function E({ v, onSet, className = "", as = "span", style }: { v: string; onSet:
   );
 }
 
-const img = (data: LabData, i: unknown) => data.images.length ? data.images[Math.abs(Number(i) || 0) % data.images.length] : null;
+/** A picture: a library URL (chosen in the media library) or, in the starting samples, a position among the photos. */
+const img = (data: LabData, src: unknown): { url: string; alt: string } | null => {
+  if (typeof src === "string" && src) { const f = data.library.find((x) => x.url === src); return { url: src, alt: f?.alt ?? "" }; }
+  return data.images.length ? data.images[Math.abs(Number(src) || 0) % data.images.length] : null;
+};
+export const fileOf = (data: LabData, src: unknown) => (typeof src === "string" ? data.library.find((x) => x.url === src) ?? null : null);
 const RATIO: Record<string, string> = { wide: "aspect-video", photo: "aspect-[4/3]", square: "aspect-square", pano: "aspect-[21/9]" };
 const muted = (dark: boolean) => (dark ? "opacity-80" : "text-muted");
 const center = (o: Block["o"]) => o.align === "center";
@@ -178,32 +186,62 @@ function Buttons({ b, c }: { b: Block; c: Ctx }) {
 }
 
 function Media({ b, c }: { b: Block; c: Ctx }) {
-  const pic = img(c.data, b.d.src);
-  const ratio = RATIO[b.o.ratio] ?? "aspect-video";
-  const body =
-    b.o.kind === "document" ? (
+  const d = b.d as { src?: unknown; caption?: string; focal?: string; alt?: string; poster?: string; title?: string };
+  const file = fileOf(c.data, d.src);
+  const pic = img(c.data, d.src);
+  const ratio = b.o.ratio === "natural" ? "" : (RATIO[b.o.ratio] ?? "aspect-video");
+  let body: ReactNode;
+  if (b.o.kind === "document") {
+    const title = d.title || file?.filename.replace(/\.pdf$/i, "").replace(/[-_]+/g, " ") || "Instructions for use";
+    const pages = file?.pages ?? 0;
+    body = b.o.show === "pages" && file?.firstPage ? (
+      <div className="grid gap-3">
+        <div className="overflow-hidden rounded border border-border bg-background">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={withBase(file.firstPage)} alt={`${title}, page 1`} className="w-full" />
+        </div>
+        <div className={`text-center text-xs ${muted(c.dark)}`}>Page 1 of {pages || 1}</div>
+        {pages > 1 && <span className={buttonClass({ variant: "secondary", block: true, onDark: c.dark })}>Show all {pages} pages</span>}
+      </div>
+    ) : (
       <div className="flex items-center gap-5 rounded border border-border p-5">
         <div className="aspect-[3/4] w-20 flex-none overflow-hidden rounded bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {pic && <img src={withBase(pic.url)} alt="" className="h-full w-full object-cover opacity-60" />}
+          {(file?.thumb || pic) && <img src={withBase(file?.thumb ?? pic!.url)} alt="" className="h-full w-full object-cover" />}
         </div>
-        <div>
-          <div className="font-semibold">Instructions for use</div>
-          <div className={`text-sm ${muted(c.dark)}`}>PDF · 2.4 MB</div>
+        <div className="min-w-0">
+          <E v={title} onSet={(t) => c.onData(b.id, { title: t })} className="block font-semibold" />
+          <div className={`text-sm ${muted(c.dark)}`}>PDF{pages ? ` · ${pages} pages` : ""}{file ? ` · ${(file.size / 1024 / 1024).toFixed(1)} MB` : ""}</div>
           <span className={`mt-3 ${buttonClass({ variant: "secondary", size: "sm", onDark: c.dark })}`}>Download PDF</span>
         </div>
       </div>
-    ) : (
-      <div className={`relative w-full overflow-hidden rounded bg-surface ${ratio}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {pic && <img src={withBase(pic.url)} alt={pic.alt} className="h-full w-full object-cover" />}
-        {b.o.kind === "video" && <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-background/90 text-2xl text-foreground">▶</span>}
+    );
+  } else if (b.o.kind === "video") {
+    const poster = d.poster || file?.poster || undefined;
+    const ambient = b.o.mode === "ambient";
+    body = (
+      <div className={`relative w-full overflow-hidden rounded bg-inverse ${ratio || "aspect-video"}`}>
+        {file ? (
+          // a real clip from the library: a player with sound, or a silent loop behind nothing
+          <video key={`${file.url}:${ambient}`} src={withBase(file.url)} poster={poster ? withBase(poster) : undefined} className="h-full w-full object-cover"
+            {...(ambient ? { autoPlay: true, muted: true, loop: true, playsInline: true } : { controls: true, preload: "metadata" })} />
+        ) : <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-background/90 text-2xl text-foreground">▶</span>}
       </div>
     );
+  } else {
+    const alt = d.alt ?? pic?.alt ?? "";
+    body = (
+      <div className={`relative w-full overflow-hidden rounded ${b.o.fit === "contain" ? "bg-surface" : ""} ${ratio}`} title={b.o.zoom === "on" ? "Клик на сайте — увеличить" : undefined}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {pic && <img src={withBase(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />}
+        {b.o.zoom === "on" && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
+      </div>
+    );
+  }
   return (
     <figure>
       {body}
-      {b.o.caption === "on" && <figcaption className={`mt-2 text-sm ${muted(c.dark)}`}><E v={String(b.d.caption ?? "")} onSet={(t) => c.onData(b.id, { caption: t })} /></figcaption>}
+      {b.o.caption === "on" && <figcaption className={`mt-2 text-sm ${muted(c.dark)}`}><E v={String(d.caption ?? "")} onSet={(t) => c.onData(b.id, { caption: t })} /></figcaption>}
     </figure>
   );
 }
@@ -260,7 +298,7 @@ function Cards({ b, c }: { b: Block; c: Ctx }) {
   return (
     <div className={`grid gap-8 ${cols}`}>
       {items.map((it, i) => {
-        const pic = img(c.data, i + 2);
+        const pic = img(c.data, (it as Card & { img?: string }).img ?? i + 2);
         return (
           <div key={i} className={frame}>
             {b.o.style === "steps" && <div className="mb-3 text-5xl font-semibold leading-none text-accent">{i + 1}</div>}
@@ -395,7 +433,7 @@ const GRID: Record<string, string> = { "1": "", "1-1": "md:grid-cols-2", "2-1": 
 export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">; index: number }) {
   const dark = s.bg === "dark" || s.bg === "image";
   const ctx: Ctx = { ...c, dark };
-  const pic = s.bg === "image" ? img(c.data, 0) : null;
+  const pic = s.bg === "image" ? img(c.data, s.bgSrc ?? 0) : null;
   const n = shownCols(s); // columns beyond the layout stay in the section, hidden
   const many = n > 1;
   return (

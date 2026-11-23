@@ -8,7 +8,7 @@
 export type Opt = { key: string; label: string; values: { id: string; label: string }[] };
 export type Block = { id: string; type: BlockType; o: Record<string, string>; d: Record<string, unknown> };
 /** `name`: the ready section it was added from («Текст и картинка») — shown in the breadcrumbs and the structure. */
-export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][] };
+export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][]; /** the picture behind a section with bg «image» (a library URL) */ bgSrc?: string };
 export type Tab = { label: string; blocks: Block[] };
 
 /**
@@ -88,9 +88,10 @@ export const BLOCK_DEFS: Record<BlockType, { name: string; hint: string; opts: O
     make: () => ({ o: { count: "2", style: "button", align: "left" }, d: { items: ["Request a demo", "Customer support", "Clinical evidence"] } }),
   },
   media: {
-    name: "Медиа", hint: "картинка, видео или документ", nestable: true,
-    opts: [{ key: "kind", label: "Тип", values: v(["image", "Картинка"], ["video", "Видео"], ["document", "Документ"]) }, { key: "ratio", label: "Формат", values: v(["wide", "16:9"], ["photo", "4:3"], ["square", "1:1"], ["pano", "21:9"]) }, { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) }],
-    make: () => ({ o: { kind: "image", ratio: "wide", caption: "off" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model." } }),
+    name: "Медиа", hint: "картинка, видео или документ из медиатеки", nestable: true,
+    // the kind comes from the chosen file; each kind has its own options (mediaOpts)
+    opts: [],
+    make: () => ({ o: { kind: "image", ratio: "wide", fit: "cover", caption: "off", zoom: "off", mode: "player", show: "button" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model.", focal: "50% 50%" } }),
   },
   numbers: {
     name: "Цифры", hint: "ключевые цифры, инфографика", nestable: true,
@@ -128,6 +129,26 @@ export const BLOCK_DEFS: Record<BlockType, { name: string; hint: string; opts: O
     make: () => ({ o: { style: "pills" }, d: { tabs: [{ label: "Product overview", blocks: [] }, { label: "Specifications", blocks: [] }, { label: "Clinical evidence", blocks: [] }] } }),
   },
 };
+
+/** The media block's options by the kind of its file (owner, 2026-11-23: what pictures, videos, documents need). */
+const MEDIA_OPTS: Record<string, Opt[]> = {
+  image: [
+    { key: "ratio", label: "Формат", values: v(["wide", "16:9"], ["photo", "4:3"], ["square", "1:1"], ["pano", "21:9"], ["natural", "Как есть"]) },
+    { key: "fit", label: "Кадр", values: v(["cover", "Заполнить"], ["contain", "Целиком"]) },
+    { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
+    { key: "zoom", label: "Увеличение по клику", values: v(["off", "Нет"], ["on", "Есть"]) },
+  ],
+  video: [
+    { key: "mode", label: "Как играет", values: v(["player", "Плеер со звуком"], ["ambient", "Фон: без звука, по кругу"]) },
+    { key: "ratio", label: "Формат", values: v(["wide", "16:9"], ["photo", "4:3"], ["square", "1:1"], ["pano", "21:9"]) },
+    { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
+  ],
+  document: [
+    { key: "show", label: "Как показать", values: v(["button", "Кнопкой"], ["pages", "Страницами"]) },
+    { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
+  ],
+};
+export const optsFor = (b: Block): Opt[] => (b.type === "media" ? MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image : BLOCK_DEFS[b.type].opts);
 
 export function newBlock(type: BlockType, o: Record<string, string> = {}, d: Record<string, unknown> = {}): Block {
   const m = BLOCK_DEFS[type].make();

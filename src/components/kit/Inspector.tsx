@@ -42,6 +42,13 @@ const GLYPH: Record<string, () => ReactNode> = {
   "ratio:photo": () => <S>{R(10, 4, 24, 19)}</S>,
   "ratio:square": () => <S>{R(13, 4, 18, 18)}</S>,
   "ratio:pano": () => <S>{R(3, 9, 38, 11)}</S>,
+  "ratio:natural": () => <S>{R(12, 3, 16, 22)}<path d="M32 6v16M30 8l2-2 2 2M30 20l2 2 2-2" strokeWidth="1.2" /></S>,
+  "fit:cover": () => <S>{R(6, 4, 32, 20)}<path d="M6 18l9-8 7 6 5-4 11 9" /></S>,
+  "fit:contain": () => <S>{R(6, 4, 32, 20)}{R(13, 8, 18, 12, false, 1)}<path d="M13 17l5-4 4 3 3-2 6 5" strokeWidth="1.2" /></S>,
+  "mode:player": () => <S>{R(6, 4, 32, 18)}<path d="M19 9v8l6-4z" fill="currentColor" />{L(6, 25, 38, 1.2, 0.6)}{C(18, 25, 1.6)}</S>,
+  "mode:ambient": () => <S>{R(6, 4, 32, 20)}<path d="M14 18c3-6 6-6 8 0s5 6 8 0" /><path d="M33 8a3 3 0 1 1-3-3" strokeWidth="1.2" /></S>,
+  "show:button": () => <S>{R(6, 5, 10, 14)}{R(20, 9, 18, 7, true, 2)}</S>,
+  "show:pages": () => <S>{R(10, 2, 11, 15)}{R(23, 2, 11, 15)}{L(10, 22, 34, 1, 0.5)}{L(14, 26, 30, 1.2, 0.6)}</S>,
   "nstyle:big": () => <S><text x="4" y="18" fontSize="13" fontWeight="700" fill="currentColor" stroke="none">47%</text>{L(5, 23, 20, 1.2, 0.6)}</S>,
   "nstyle:circles": () => <S>{C(12, 14, 9)}{C(32, 14, 9)}</S>,
   "nstyle:line": () => <S>{L(4, 5, 18, 1.2)}{L(24, 5, 40, 1.2)}{L(4, 14, 14, 3.5)}{L(24, 14, 34, 3.5)}{L(4, 21, 16, 1.2, 0.6)}{L(24, 21, 36, 1.2, 0.6)}</S>,
@@ -79,9 +86,9 @@ const glyphKey = (block: string, key: string) => (key === "style" ? { numbers: "
 const SWATCH: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse", image: "bg-inverse" };
 
 /** How each option is shown and which group it goes in. */
-const TOGGLES = new Set(["eyebrow", "caption", "photo"]);
+const TOGGLES = new Set(["eyebrow", "caption", "photo", "zoom"]);
 const COUNTS = new Set(["count", "rows"]);
-const LOOK = new Set(["level", "style", "kind", "size", "bg", "frame", "rule", "ratio", "view", "source"]);
+const LOOK = new Set(["level", "style", "kind", "size", "bg", "frame", "rule", "ratio", "view", "source", "fit", "mode", "show"]);
 const GROUP_OF = (key: string) => (TOGGLES.has(key) ? "Показывать" : LOOK.has(key) ? "Вид" : "Расположение");
 const GROUP_ORDER = ["Вид", "Расположение", "Показывать"];
 
@@ -187,7 +194,7 @@ export function Options({ block, opts, values, onPick }: { block: string; opts: 
 /** A named group of the panel: a heading, a hairline above. */
 export function Section({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
   return (
-    <section className="grid gap-3 border-t border-border px-4 py-4">
+    <section className="grid min-w-0 gap-3 border-t border-border px-4 py-4 [&>*]:min-w-0">
       <div className="flex items-center justify-between"><h3 className="text-xs font-semibold text-foreground">{title}</h3>{aside}</div>
       {children}
     </section>
