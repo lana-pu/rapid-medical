@@ -174,7 +174,7 @@
    ]
   },
   {
-   "title": "7 · Webinars — черновик в коде, ветка webinars-draft (к обсуждению, 2026-11-23)",
+   "title": "7 · Webinars — закрыта 2026-11-23, в коде ветки webinars-draft (в main — после ответа Emily о выдаче записи)",
    "screens": [
     "web-draft",
     "web-draft-filled",
@@ -9890,7 +9890,7 @@
   },
   {
    "id": "web-draft",
-   "title": "Webinars · draft in code (branch webinars-draft) · 5 webinars, as in the database",
+   "title": "Webinars · decided, in code (branch webinars-draft) · 5 webinars, as in the database",
    "url": "rapid-medical.com/us/webinars",
    "body": [
     {

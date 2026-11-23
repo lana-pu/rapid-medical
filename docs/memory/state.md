@@ -501,4 +501,4 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   `FilterChips`, окно запроса записи, `durationMin` (миграция 0032). Вопрос 2 (выдача записи) ждёт Emily: А — в коде, Б — эскиз.
 - Вайрфреймы: снимок на каждую ветку (`render-branch.sh <ветка>` → `rm-render-branch-<ветка>.json`), узел `rm-dialog`.
   `site-pages` — группа «7 · Webinars — черновик в коде», 9 экранов; site-pages и прототип переопубликованы.
-- Страница не закрыта: DESIGN.md (Webinars) — после «закрываем».
+- **Закрыта тем же днём** (DESIGN.md → Webinars). Цикл страниц пройден; ветка `webinars-draft` — в main после ответа Emily.

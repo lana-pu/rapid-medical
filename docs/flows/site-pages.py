@@ -1525,7 +1525,7 @@ REQ = [{'click': 'Request this recording'}]
 REQ_SENT = REQ + PERSON + [{'fill': ['Email', 'anna.levi@clinic.org']}, {'honeypot': True}, {'click': 'Submit'}, {'expect': 'Thank you — your request is in.'}]
 OPEN = [{'text': 'Request this recording', 'to': 'web-draft-window'}]
 flow['screens'] += [
-    {'id': 'web-draft', 'title': 'Webinars · draft in code (branch webinars-draft) · 5 webinars, as in the database', 'url': WEB_URL,
+    {'id': 'web-draft', 'title': 'Webinars · decided, in code (branch webinars-draft) · 5 webinars, as in the database', 'url': WEB_URL,
      'body': site(route('/us/webinars', region='us', branch=WD, links=OPEN)),
      'notes': ['Решение владелицы 2026-11-23 (1): отдельная страница, но на «общей линии» и теми же строками, что архив Evidence и новости. Когда появится knowledge base, страница станет её срезом «вебинары», переделывать ничего не придётся.',
                'Строка: картинка · дата · длительность · название · спикер · событие · продукт · одна кнопка «Request this recording» (3). Даты и длительности в базе пока нет: поле «Duration, min» новое, «Date» было, но не заполнено, поэтому строка выводит только то, что есть.',
@@ -1566,7 +1566,7 @@ flow['screens'] += [
      'overlay': {'c': 'rm-dialog', 'path': '/us/webinars', 'region': 'us', 'branch': WD, 'act': REQ}},
 ]
 gi = next(k for k, g in enumerate(flow['groups']) if 'web-mobbin' in g['screens'])
-flow['groups'].insert(gi + 1, {'title': '7 · Webinars — черновик в коде, ветка webinars-draft (к обсуждению, 2026-11-23)',
+flow['groups'].insert(gi + 1, {'title': '7 · Webinars — закрыта 2026-11-23, в коде ветки webinars-draft (в main — после ответа Emily о выдаче записи)',
                                'screens': ['web-draft', 'web-draft-filled', 'web-draft-product', 'web-draft-window', 'web-draft-sent', 'web-draft-b', 'web-draft-empty', 'web-draft-phone', 'web-draft-window-phone']})
 flow['links'] += [{'from': 'web-mobbin', 'to': 'web-draft', 'label': 'черновик'}, {'from': 'web-draft', 'to': 'web-draft-filled', 'label': 'когда вебинаров 9+'},
                   {'from': 'web-draft', 'to': 'web-draft-product', 'label': 'со страницы терапии'}, {'from': 'web-draft-window', 'to': 'web-draft-sent', 'label': 'вариант А'},
