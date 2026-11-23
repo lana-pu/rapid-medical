@@ -47,7 +47,7 @@ export function StatusBadge({ status }: { status: string }) {
           : "bg-neutral-100 text-neutral-700";
   // words, not codes (docs/audits/admin-walkthrough-2026-11-15.md)
   const WORDS: Record<string, string> = { published: "On the site", draft: "Draft", new: "New", in_progress: "In progress", done: "Done", spam: "Spam" };
-  return <span className={`rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{WORDS[status] ?? status}</span>;
+  return <span className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{WORDS[status] ?? status}</span>;
 }
 
 export function RegionBadge({ region }: { region: Region | null | undefined }) {
@@ -74,13 +74,13 @@ export function Crumbs({ items }: { items: Crumb[] }) {
 
 export function PageHeader({ title, actions, subtitle, crumbs }: { title: string; subtitle?: string; actions?: ReactNode; crumbs?: Crumb[] }) {
   return (
-    <div className="mb-6 flex items-start justify-between gap-4">
-      <div>
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+      <div className="min-w-0 break-words">
         {crumbs && <Crumbs items={crumbs} />}
         <h1 className="text-2xl font-semibold text-neutral-900">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}
       </div>
-      {actions && <div className="flex gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
   );
 }

@@ -60,7 +60,7 @@ export default async function WebsiteHome({ searchParams }: { searchParams: Prom
           {QUICK.map((q) => <Link key={q.href} href={q.href} className="rounded-full border border-neutral-300 bg-white px-3 py-1.5 text-sm hover:border-neutral-900">{q.label}</Link>)}
         </nav>
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_340px]">
+        <div className="mt-10 grid gap-10 @4xl:grid-cols-[1fr_340px]">
           <div className="min-w-0 space-y-10">
             <section aria-label="Needs your attention">
               <h2 className={h2}>Needs your attention</h2>

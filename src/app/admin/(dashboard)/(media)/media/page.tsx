@@ -8,6 +8,8 @@ import { PageHeader, formatDate, inputCls, Notice } from "@/components/admin/ui"
 import { MediaGrid, type GridItem } from "@/components/admin/MediaGrid";
 import { AltField, DeleteFile, DescribeQueue, ReplaceButton } from "@/components/admin/MediaTools";
 import { editorHref } from "@/lib/demo";
+import { SpaceColumn } from "@/components/admin/SpaceColumn";
+import { MAIN_BLEED, MAIN_PAD } from "@/components/admin/chrome";
 
 /**
  * The media library in order (docs/screens/admin-media.md → «Порядок в медиатеке»): groups on the left built from where
@@ -58,9 +60,11 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
   const byId = new Map(shown.map((m) => [m.id, m]));
 
   return (
-    <div className="-m-8 flex min-h-[calc(100vh-3rem)]">
-      <Groups lib={lib} current={group?.key ?? show} missing={missing} />
-      <div className="min-w-0 flex-1 p-8">
+    <div className={`${MAIN_BLEED} flex min-h-[calc(100vh-3rem)] flex-col lg:flex-row`}>
+      <SpaceColumn label="Groups">
+        <Groups lib={lib} current={group?.key ?? show} missing={missing} />
+      </SpaceColumn>
+      <div className={`@container min-w-0 flex-1 ${MAIN_PAD}`}>
         <PageHeader
           title={title}
           subtitle={`${shown.length} file${shown.length === 1 ? "" : "s"}${group?.section === "site" ? " · every region of the page" : ""}`}
@@ -117,7 +121,7 @@ function Groups({ lib, current, missing }: { lib: Awaited<ReturnType<typeof medi
   const heading = (t: string) => <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">{t}</div>;
   const of = (section: Group["section"]) => lib.groups.filter((g) => g.section === section);
   return (
-    <nav aria-label="Media groups" className="w-64 shrink-0 overflow-y-auto border-r border-neutral-200 bg-white py-2">
+    <nav aria-label="Media groups" className="w-64 max-w-[calc(100vw-3rem)] shrink-0 overflow-y-auto border-r border-neutral-200 bg-white py-2">
       <ul>
         {row("/admin/media", "", "All files", lib.items.length)}
         {row("/admin/media?show=unused", "unused", "Not used", n(SHOW.unused.test))}
@@ -150,7 +154,7 @@ async function MediaDetail({ id }: { id: number }) {
           </>
         }
       />
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 @2xl:grid-cols-2">
         <div className="rounded border border-neutral-200 bg-white p-4">
           {m.mime.startsWith("image/") ? (
             // eslint-disable-next-line @next/next/no-img-element

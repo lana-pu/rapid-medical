@@ -77,7 +77,7 @@ export function PagesBrowser({ cards, templates, regions, lists, demo, startCrea
               {g.sec.title}
               <a href={withBase(`/admin/site/${g.sec.key}`)} className="text-xs font-normal normal-case tracking-normal underline">All of {g.sec.title}</a>
             </h2>
-            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid gap-4 @lg:grid-cols-2 @4xl:grid-cols-3">
               {g.cards.map((c) => (
             <li key={`${c.r}-${c.id}`} className="group relative overflow-hidden rounded-lg border border-neutral-200 bg-white hover:border-neutral-400">
               <a href={editHref(c.path)} className="block" aria-label={`Edit ${c.title} (${regionLabel(c.region)})`}>

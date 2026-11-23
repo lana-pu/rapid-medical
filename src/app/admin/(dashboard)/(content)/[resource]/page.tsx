@@ -54,6 +54,9 @@ export default async function ResourceList({ params, searchParams }: { params: P
     const str = u.toString();
     return `/admin/${res.slug}${str ? `?${str}` : ""}`;
   };
+  // which columns a narrow working area keeps (docs/admin-ia.md → «Адаптив»): the name and the status always, the date
+  // from 576 px, the rest from 768 px — they can still be filtered by; the picture and the labels by the name from 576 px
+  const fit = (c: { kind?: string }, i: number) => (i === 0 || c.kind === "status" ? "" : c.kind === "date" ? "hidden whitespace-nowrap @xl:table-cell" : "hidden @3xl:table-cell");
   const sortLink = (c: string) => qs({ sort: c, dir: sp.sort === c && (sp.dir ?? "asc") === "asc" ? "desc" : "asc", page: undefined });
 
   return (
@@ -80,13 +83,13 @@ export default async function ResourceList({ params, searchParams }: { params: P
       <form action={bulkResource}>
         <input type="hidden" name="__resource" value={res.slug} />
         <BulkBar hasStatus={has("status")} fixed={!!res.alwaysLive} canDelete={canDelete(me)} />
-        <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
+        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500">
               <tr>
                 <th className="w-8 px-3 py-2"><input type="checkbox" data-select-all aria-label="Select all" /></th>
                 {columns.map((c, i) => (
-                  <th key={`${c.name}-${i}`} className="px-3 py-2 font-medium">
+                  <th key={`${c.name}-${i}`} className={`px-3 py-2 font-medium ${fit(c, i)}`}>
                     <Link href={sortLink(c.name)} className="hover:text-neutral-900">
                       {c.label}{sp.sort === c.name ? (sp.dir === "desc" ? " ↓" : " ↑") : ""}
                     </Link>
@@ -117,17 +120,17 @@ export default async function ResourceList({ params, searchParams }: { params: P
                       default: cell = String(v ?? "");
                     }
                     return (
-                      <td key={c.name} className={`px-3 py-2 ${i === 0 ? "max-w-md font-medium" : "text-neutral-600"}`}>
+                      <td key={c.name} className={`px-3 py-2 ${fit(c, i)} ${i === 0 ? "max-w-40 font-medium @xl:max-w-56 @3xl:max-w-md" : "text-neutral-600"}`}>
                         {i === 0 ? (
                           <Link href={`/admin/${res.slug}/${row.id}`} className="flex items-center gap-3 hover:underline">
                             {res.listThumb && (
-                              <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-neutral-100">
+                              <span aria-hidden className="hidden h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-neutral-100 @xl:flex">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 {thumbOf(row[res.listThumb]) ? <img src={thumbOf(row[res.listThumb])!} alt="" loading="lazy" className="h-full w-full object-cover" /> : null}
                               </span>
                             )}
                             <span className="min-w-0 truncate">{cell}</span>
-                            {flags.filter((f) => (f.name === "permanent" ? !row[f.name] : row[f.name])).map((f) => <span key={f.name} className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-normal text-amber-900 no-underline">{FLAG[f.name] ?? f.label}</span>)}
+                            {flags.filter((f) => (f.name === "permanent" ? !row[f.name] : row[f.name])).map((f) => <span key={f.name} className="hidden shrink-0 rounded-full bg-amber-50 @xl:inline px-2 py-0.5 text-[11px] font-normal text-amber-900 no-underline">{FLAG[f.name] ?? f.label}</span>)}
                           </Link>
                         ) : cell}
                       </td>

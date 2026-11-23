@@ -72,7 +72,7 @@ export async function SettingsOverview({ user }: { user: SessionUser }) {
         {groups.map((g) => (
           <section key={g.title} aria-label={g.title}>
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">{g.title}</h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 @lg:grid-cols-2 @4xl:grid-cols-3">
               {g.blocks.map((b) => (
                 <Link key={b.href} href={b.href} className="group flex gap-3 rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-900">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 group-hover:bg-neutral-900 group-hover:text-white">{b.icon}</span>

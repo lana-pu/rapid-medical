@@ -54,7 +54,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
       {sp.msg && <Notice kind="success">{sp.msg}</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 @3xl:grid-cols-2">
         <section className="rounded-lg border border-neutral-200 bg-white p-5">
           <h2 className="font-semibold">Two-step sign-in</h2>
           <form action={setUpAgain} className="mt-3 space-y-2 text-sm">
@@ -74,12 +74,13 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
           </form>
         </section>
 
-        <section className="rounded-lg border border-neutral-200 bg-white p-5 md:col-span-2">
-          <div className="flex items-center justify-between">
+        <section className="rounded-lg border border-neutral-200 bg-white p-5 @3xl:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Active sessions</h2>
             <form action={signOutEverywhere}><Button type="submit" variant="secondary">Sign out other sessions</Button></form>
           </div>
-          <table className="mt-3 w-full text-sm">
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full whitespace-nowrap text-sm">
             <thead className="text-left text-xs uppercase text-neutral-500"><tr><th className="py-1">Device</th><th>IP</th><th>Signed in</th><th>Last seen</th><th></th></tr></thead>
             <tbody>
               {sessions.map((s) => (
@@ -93,6 +94,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       </div>
     </>

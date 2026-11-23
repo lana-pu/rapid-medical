@@ -114,7 +114,7 @@ export function Repeater({
                     <button type="button" onClick={() => remove(i)} className="text-red-600 hover:text-red-800">remove</button>
                   </div>
                   {!collapsed[it._key!] && (
-                    <div className="grid grid-cols-2 gap-3 border-t border-neutral-200 p-3">
+                    <div className="grid grid-cols-1 gap-3 border-t border-neutral-200 p-3 @xl:grid-cols-2">
                       {fields.map((f) => (
                         <SubField key={f.name} f={f} value={it[f.name]} onChange={(v) => update(i, f.name, v)} products={products} path={`${name}.${i}.${f.name}`} />
                       ))}
@@ -144,7 +144,7 @@ function SortableItem({ id, children }: { id: string; children: (handle: Record<
 
 /** One field inside a repeater item – controlled, no form name. */
 export function SubField({ f, value, onChange, products, path }: { f: FieldDef; value: unknown; onChange: (v: unknown) => void; products: Product[]; path: string }) {
-  const wrap = f.half ? "col-span-1" : "col-span-2";
+  const wrap = f.half ? "min-w-0" : "min-w-0 @xl:col-span-2"; // one column below 576 px of the working area (docs/admin-ia.md → «Адаптив»)
   const label = <label className="mb-1 block text-xs font-medium text-neutral-700">{f.label}{f.required && <span className="text-red-600"> *</span>}</label>;
   const help = f.help ? <p className="mt-1 text-[11px] text-neutral-500">{f.help}</p> : null;
   const s = value == null ? "" : String(value);
@@ -179,7 +179,7 @@ export function SubField({ f, value, onChange, products, path }: { f: FieldDef; 
       const v = (value && typeof value === "object" ? value : { label: "", href: "" }) as { label?: string; href?: string };
       return (
         <div className={wrap}>{label}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 @md:grid-cols-2">
             <input placeholder="Label" value={v.label ?? ""} onChange={(e) => onChange({ ...v, label: e.target.value })} className={inputCls} />
             <input placeholder="https://… , mailto:… or /path" value={v.href ?? ""} onChange={(e) => onChange({ ...v, href: e.target.value })} className={inputCls} />
           </div>

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { UNDER_HEADER } from "./chrome";
 
 /**
  * The second column of the Inbox and Settings spaces (docs/admin-ia.md): a short list of what is in the space.
@@ -20,7 +19,7 @@ export function SpaceNav({ title, items }: { title: string; items: NavItem[] }) 
     items.find((i) => !i.href.includes("?") && i.href !== "/admin/settings" && (path === i.href || path.startsWith(`${i.href}/`))) ??
     items.find((i) => i.also?.some((a) => path === a || path.startsWith(`${a}/`)));
   return (
-    <nav aria-label={title} className={`${UNDER_HEADER} flex w-60 flex-none flex-col border-r border-neutral-200 bg-white`}>
+    <nav aria-label={title} className="flex w-60 max-w-[calc(100vw-3rem)] flex-none flex-col border-r border-neutral-200 bg-white">
       <div className="px-4 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{title}</div>
       <ul className="flex-1 overflow-y-auto px-2 pb-4 text-sm">
         {items.map((i) => [

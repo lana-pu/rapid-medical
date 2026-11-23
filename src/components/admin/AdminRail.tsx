@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UNDER_HEADER } from "./chrome";
 
 /**
  * The project's spaces (docs/admin-ia.md → «проект отдельно»): Home, Content, Inbox, Analytics, Media, Settings — a
@@ -47,9 +46,10 @@ export function AdminRail(props: {
   ];
 
   return (
-    <nav aria-label="Admin spaces" className={`${UNDER_HEADER} flex w-16 flex-none flex-col items-center gap-1 bg-neutral-950 py-3 text-neutral-200`}>
+    // a phone: a bar at the bottom of the screen; from sm — the column on the left, as UNDER_HEADER (docs/admin-ia.md → «Адаптив»)
+    <nav aria-label="Admin spaces" className="fixed inset-x-0 bottom-0 z-40 flex h-14 flex-none items-center justify-around bg-neutral-950 pb-[env(safe-area-inset-bottom)] text-neutral-200 sm:sticky sm:bottom-auto sm:top-12 sm:z-auto sm:h-[calc(100vh-3rem)] sm:w-16 sm:flex-col sm:justify-start sm:gap-1 sm:py-3">
       {spaces.map((i) => (
-        <Link key={i.key} href={i.href} aria-label={i.label} title={i.label} aria-current={space === i.key ? "page" : undefined} className={`relative flex h-12 w-12 flex-col items-center justify-center rounded ${space === i.key ? "bg-white text-black" : "text-neutral-300 hover:bg-neutral-800 hover:text-white"}`}>
+        <Link key={i.key} href={i.href} aria-label={i.label} title={i.label} aria-current={space === i.key ? "page" : undefined} className={`relative flex h-12 w-12 flex-none flex-col items-center justify-center rounded ${space === i.key ? "bg-white text-black" : "text-neutral-300 hover:bg-neutral-800 hover:text-white"}`}>
           <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">{ICONS[i.key]}</svg>
           <span aria-hidden className="mt-0.5 text-[10px] leading-3">{i.label.split(" ")[0]}</span>
           {!!i.badge && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-amber-400 px-1 text-[10px] font-bold leading-4 text-black">{i.badge > 99 ? "99+" : i.badge}</span>}

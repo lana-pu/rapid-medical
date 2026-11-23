@@ -94,7 +94,7 @@ export default async function SitePage({ params, searchParams }: { params: Promi
   async function overview() {
     const [d, seo] = await Promise.all([pageDetails(cards, node.versions), seoPages().then((all) => all.find((p) => p.key === key))]);
     return (
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="grid gap-8 @4xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-8">
           <section aria-label="Regions">
             <h2 className={h2}>{regional ? "Regions" : "The page"}</h2>

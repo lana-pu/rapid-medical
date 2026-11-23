@@ -101,7 +101,7 @@ export default async function EditResource({ params, searchParams }: { params: P
       {sp.restored && <Notice kind="success">Revision restored{live.status === "published" ? " as pending changes" : ""}.</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 @4xl:grid-cols-[1fr_320px]">
         <div>
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} />
         </div>

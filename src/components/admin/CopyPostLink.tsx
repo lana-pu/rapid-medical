@@ -37,7 +37,7 @@ export function CopyPostLink({ versions }: { versions: { label: string; path: st
         Copy link for a post
       </button>
       {open && (
-        <div role="dialog" aria-label="Link for a post" className="absolute right-0 top-full z-30 mt-2 w-[26rem] space-y-3 rounded-lg border border-neutral-200 bg-white p-4 text-sm shadow-xl">
+        <div role="dialog" aria-label="Link for a post" className="absolute right-0 top-full z-30 mt-2 w-[26rem] max-sm:fixed max-sm:inset-x-4 max-sm:top-14 max-sm:w-auto space-y-3 rounded-lg border border-neutral-200 bg-white p-4 text-sm shadow-xl">
           <p className="text-neutral-600">A link for a LinkedIn post. Visits and requests from it appear in Analytics under the campaign name.</p>
           {versions.length > 1 && (
             <label className="block">

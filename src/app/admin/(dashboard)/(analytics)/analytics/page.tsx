@@ -29,8 +29,8 @@ export default async function Analytics({ searchParams }: { searchParams: Promis
         title="Analytics"
         subtitle="Visits counted by the site itself, without cookies, and the requests people sent. Your team's own visits are not counted."
         actions={
-          <div className="flex items-center gap-3">
-            <nav aria-label="Period" className="flex overflow-hidden rounded border border-neutral-300 text-sm">
+          <div className="flex flex-wrap items-center gap-3">
+            <nav aria-label="Period" className="flex shrink-0 overflow-hidden whitespace-nowrap rounded border border-neutral-300 text-sm">
               {PERIODS.map((d) => (
                 <Link key={d} href={`/admin/analytics?days=${d}`} aria-current={d === days ? "page" : undefined} className={`px-3 py-1.5 ${d === days ? "bg-neutral-900 text-white" : "bg-white hover:bg-neutral-100"}`}>
                   {d} days
@@ -45,7 +45,7 @@ export default async function Analytics({ searchParams }: { searchParams: Promis
       {r.truncated && <p className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">There were more visits than this screen reads at once; the oldest days of the period are left out. Choose a shorter period.</p>}
       {r.headline && <p className="mb-6 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-950">In the last {days} days, <b>{r.headline}</b>.</p>}
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid gap-4 @lg:grid-cols-2 @4xl:grid-cols-4">
         <Tile label="Visits" value={r.tiles.visits[0]} prev={r.tiles.visits[1]} days={days} />
         <Tile label="Pages viewed" value={r.tiles.views[0]} prev={r.tiles.views[1]} days={days} />
         <Tile label="Requests" value={r.tiles.leads[0]} prev={r.tiles.leads[1]} days={days} />
@@ -54,7 +54,7 @@ export default async function Analytics({ searchParams }: { searchParams: Promis
 
       <div className="mb-6">{box("Visits by day", r.tiles.visits[0] ? <DailyBars days={r.visitsByDay} label="Visits by day" /> : <p className="py-3 text-sm text-neutral-500">No visits recorded yet.</p>)}</div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 @4xl:grid-cols-2">
         {box("Where people come from", <BarList rows={r.sources} valueLabel="Visits" extraLabel="Requests" empty="No visits recorded yet." />, "Visits and requests by source. Links with UTM tags (e.g. in LinkedIn posts) are named by their source.")}
         {box("Pages that lead to requests", <BarList rows={r.leadPages} valueLabel="Requests" empty="No requests in this period." />, "The page a visitor was on just before the form.")}
         {box("Most visited pages", <BarList rows={r.topPages} valueLabel="Views" empty="No visits recorded yet." />)}

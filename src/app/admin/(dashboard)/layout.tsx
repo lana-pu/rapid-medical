@@ -25,7 +25,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         editHref={DEMO ? withBase("/") : "/api/editor?on=1&redirect=%2F"}
         user={{ name: user.name, email: user.email, role: ROLE[user.role] ?? user.role }}
       />
-      <div className="flex">
+      {/* on a phone the rail is a bar at the bottom: the page ends above it (docs/admin-ia.md → «Адаптив») */}
+      <div className="flex pb-14 sm:pb-0">
         <AdminRail unread={unread} />
         {children}
       </div>

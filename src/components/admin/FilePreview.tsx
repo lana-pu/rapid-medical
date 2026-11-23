@@ -62,9 +62,9 @@ export function FilesOnPage({ files }: { files: PageFile[] }) {
       {docs.length > 0 && (
         <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
           {docs.map((f) => (
-            <li key={f.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+            <li key={f.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 text-sm">
               <span aria-hidden className="flex h-10 w-8 shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-[9px] font-bold text-red-700">PDF</span>
-              <span className="min-w-0 flex-1 truncate">{f.filename}</span>
+              <span className="min-w-0 flex-1 basis-40 truncate">{f.filename}</span>
               {f.kind === "PDF" && <span className="shrink-0 text-xs text-neutral-500">opened {f.opens}× in 30 days</span>}
               {f.kind === "PDF" && <button type="button" onClick={() => setOpen({ url: f.url, kind: "pdf", name: f.filename })} className="shrink-0 rounded border border-neutral-300 px-2 py-0.5 text-xs hover:bg-neutral-50">Preview</button>}
               <Link href={`/admin/media?id=${f.id}`} className="shrink-0 text-xs underline">Open · Replace</Link>

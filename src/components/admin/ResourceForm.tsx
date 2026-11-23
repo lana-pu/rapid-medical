@@ -95,7 +95,7 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
       {sections.map((s) => (
         <fieldset key={s.name || "_"} className="rounded-lg border border-neutral-200 bg-white p-5">
           {s.name && <legend className="px-2 text-sm font-semibold uppercase tracking-wide text-neutral-500">{s.name}</legend>}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-5 @xl:grid-cols-2">
             {s.fields.map((f) => (
               <Field key={f.name} f={f} value={row?.[f.name]} error={errors[f.name]} products={products} />
             ))}
@@ -220,7 +220,7 @@ function Label({ f, error }: { f: FieldDef; error?: string }) {
 
 export function Field({ f, value, error, products, namePrefix = "" }: { f: FieldDef; value: unknown; error?: string; products: Product[]; namePrefix?: string }) {
   const name = namePrefix + f.name;
-  const wrap = f.half ? "col-span-1" : "col-span-2";
+  const wrap = f.half ? "min-w-0" : "min-w-0 @xl:col-span-2"; // one column below 576 px of the working area (docs/admin-ia.md → «Адаптив»)
   const help = f.help ? <p className="mt-1 text-xs text-neutral-500">{f.help}</p> : null;
   const str = value == null ? "" : String(value);
 
@@ -406,7 +406,7 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
 function LinkInput({ name, initial }: { name: string; initial: { label?: string; href?: string } | null }) {
   const [v, setV] = useState({ label: initial?.label ?? "", href: initial?.href ?? "" });
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2 @md:grid-cols-2">
       <input type="hidden" name={name} value={v.label || v.href ? JSON.stringify(v) : ""} readOnly />
       <input placeholder="Label" value={v.label} onChange={(e) => setV({ ...v, label: e.target.value })} className={inputCls} />
       <input placeholder="https://… , mailto:… or /path" value={v.href} onChange={(e) => setV({ ...v, href: e.target.value })} className={inputCls} />

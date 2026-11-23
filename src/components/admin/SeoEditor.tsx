@@ -30,7 +30,7 @@ export function SeoEditor({ v, back }: { v: SeoVersion; back: string }) {
         <span className="font-semibold text-neutral-900">{v.label}</span>
         {v.pending && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-900">unpublished changes</span>}
       </div>
-      <div className="grid gap-6 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-6 p-5 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <form action={action} className="space-y-4">
           {v.target.kind === "record" ? (
             <>

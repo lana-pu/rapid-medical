@@ -10,7 +10,7 @@ export function BarList({ rows, valueLabel, extraLabel, empty }: { rows: Count[]
   if (!rows.length) return <p className="py-3 text-sm text-neutral-500">{empty}</p>;
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
-    <table className="w-full text-sm">
+    <table className="w-full table-fixed text-sm">
       <thead className="sr-only">
         <tr><th>Name</th><th>{valueLabel}</th>{extraLabel && <th>{extraLabel}</th>}</tr>
       </thead>

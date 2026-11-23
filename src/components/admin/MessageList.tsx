@@ -66,13 +66,13 @@ export function MessageList({ messages, elsewhere = [], state, source, onState, 
   const subscribers = new Set(messages.filter((m) => m.optIn && m.status !== "spam").map((m) => (m.email ?? m.from).trim().toLowerCase())).size;
 
   return (
-    <nav aria-label="Inbox" className={wide ? "min-w-0 flex-1 bg-white" : "flex w-96 flex-none flex-col border-r border-neutral-200 bg-white"}>
-      <div className={`space-y-2 border-b border-neutral-200 bg-white pb-3 pt-4 ${wide ? "sticky top-12 z-10 px-6" : "px-3"}`}>
+    <nav aria-label="Inbox" className={wide ? "@container min-w-0 flex-1 bg-white" : "flex w-96 flex-none flex-col border-r border-neutral-200 bg-white"}>
+      <div className={`space-y-2 border-b border-neutral-200 bg-white pb-3 pt-4 ${wide ? "sticky top-12 z-10 px-4 @2xl:px-6" : "px-3"}`}>
         <div className="flex items-baseline justify-between gap-3 px-1">
           <h2 className="text-base font-semibold">Inbox</h2>
           <Link href="/admin/submissions" className="text-xs text-neutral-500 underline hover:text-neutral-900">All requests as a table · Export</Link>
         </div>
-        <div className={`flex gap-2 ${wide ? "flex-row items-center" : "flex-col"}`}>
+        <div className={`flex gap-2 ${wide ? "flex-col @2xl:flex-row @2xl:items-center" : "flex-col"}`}>
           <div role="tablist" aria-label="State" className="flex flex-wrap gap-1">
             {STATES.map((x) => {
               const n = x.count ? messages.filter((m) => x.test(m) && m.unread).length : 0;
@@ -84,7 +84,7 @@ export function MessageList({ messages, elsewhere = [], state, source, onState, 
               );
             })}
           </div>
-          <label className={`flex items-center gap-2 text-xs text-neutral-500 ${wide ? "ml-auto" : ""}`}>
+          <label className={`flex min-w-0 items-center gap-2 text-xs text-neutral-500 ${wide ? "@2xl:ml-auto" : ""}`}>
             From
             <select aria-label="Which form" value={source} onChange={(e) => onSource(e.target.value)} className="min-w-0 flex-1 rounded border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900">
               {SOURCES.map((x) => <option key={x.key} value={x.key}>{x.label} ({inState.filter(x.test).length})</option>)}
@@ -111,16 +111,17 @@ export function MessageList({ messages, elsewhere = [], state, source, onState, 
         ))}
         {shown.map((m) => {
           const here = path === m.href;
-          const cls = wide ? "flex items-center gap-4 px-6 py-2.5" : "block px-4 py-3";
+          // narrow list: who and when on one line, the subject under it; from 672 px — one line, as in mail
+          const cls = wide ? "flex flex-wrap items-center gap-x-4 gap-y-0.5 px-4 py-2.5 @2xl:flex-nowrap @2xl:px-6" : "block px-4 py-3";
           const body = wide ? (
             <>
               <span aria-label={m.unread ? "unread" : undefined} className={`h-2 w-2 shrink-0 rounded-full ${m.unread ? "bg-blue-600" : "bg-transparent"}`} />
-              <span className={`w-56 shrink-0 truncate text-sm ${m.unread ? "font-semibold text-neutral-900" : "text-neutral-700"}`}>{m.from}</span>
-              <span className="min-w-0 flex-1 truncate text-sm">
+              <span className={`min-w-0 flex-1 truncate text-sm @2xl:w-56 @2xl:flex-none ${m.unread ? "font-semibold text-neutral-900" : "text-neutral-700"}`}>{m.from}</span>
+              <span className="order-last min-w-0 basis-full truncate pl-6 text-sm @2xl:order-none @2xl:flex-1 @2xl:basis-auto @2xl:pl-0">
                 <span className={m.unread ? "font-medium text-neutral-900" : "text-neutral-700"}>{m.subject}</span>
                 {m.snippet && <span className="text-neutral-500"> — {m.snippet}</span>}
               </span>
-              {sourceOf(m) && <span className="shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-[11px] text-neutral-600">{sourceOf(m)}</span>}
+              {sourceOf(m) && <span className="hidden shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-[11px] text-neutral-600 @2xl:inline">{sourceOf(m)}</span>}
               <span className="w-16 shrink-0 text-right text-xs text-neutral-500">{when(m.at)}</span>
             </>
           ) : (

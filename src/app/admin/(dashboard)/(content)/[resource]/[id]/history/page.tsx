@@ -69,7 +69,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
       ) : (
         <PageHeader title={`History · ${editable.row[res.labelField]}`} subtitle={`${revs.length} revisions`} actions={<BackButton fallback={`/admin/${res.slug}/${recordId}`} />} />
       )}
-      <form className="mb-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 md:grid-cols-[1fr_1fr_auto]">
+      <form className="mb-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 @xl:grid-cols-[1fr_1fr_auto]">
         <label className="text-sm">From
           <select name="a" defaultValue={aId} className={inputCls}>
             <option value="live">Live (current)</option>
@@ -88,12 +88,12 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
       </form>
 
       <div className="rounded-lg border border-neutral-200 bg-white">
-        <div className="grid grid-cols-[180px_1fr] border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs uppercase text-neutral-500">
+        <div className="grid grid-cols-[minmax(0,7rem)_minmax(0,1fr)] gap-x-3 @xl:grid-cols-[180px_minmax(0,1fr)] border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs uppercase text-neutral-500">
           <div>Field</div><div>{label(aId)} → {label(bId)}</div>
         </div>
         {changed.length === 0 && <p className="px-4 py-8 text-center text-sm text-neutral-400">No differences.</p>}
         {changed.map((k) => (
-          <div key={k} className="grid grid-cols-[180px_1fr] border-b border-neutral-100 px-4 py-3 text-sm">
+          <div key={k} className="grid grid-cols-[minmax(0,7rem)_minmax(0,1fr)] gap-x-3 @xl:grid-cols-[180px_minmax(0,1fr)] border-b border-neutral-100 px-4 py-3 text-sm">
             <div className="font-medium text-neutral-700">{res.fields.find((f) => f.name === k)?.label ?? k}</div>
             <div className="whitespace-pre-wrap break-words leading-relaxed"><Diff a={asText(A[k])} b={asText(B[k])} /></div>
           </div>
@@ -101,7 +101,8 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
       </div>
 
       <h2 className="mt-10 mb-3 text-lg font-semibold">All revisions</h2>
-      <table className="w-full rounded-lg border border-neutral-200 bg-white text-sm">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+      <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500"><tr><th className="px-3 py-2">#</th><th className="px-3 py-2">Kind</th><th className="px-3 py-2">By</th><th className="px-3 py-2">When</th><th className="px-3 py-2">Note</th><th className="px-3 py-2"></th></tr></thead>
         <tbody>
           {revs.map((r) => (
@@ -123,6 +124,7 @@ export default async function HistoryPage({ params, searchParams }: { params: Pr
           ))}
         </tbody>
       </table>
+      </div>
     </>
   );
 }

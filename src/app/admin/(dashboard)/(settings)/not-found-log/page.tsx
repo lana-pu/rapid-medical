@@ -44,7 +44,7 @@ export default async function NotFoundLogPage({ searchParams }: { searchParams: 
       {rows.length === 0 ? (
         <p className="rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-600">✓ No broken links: every address visitors opened led somewhere.</p>
       ) : (
-      <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-xs uppercase text-neutral-500"><tr><th className="px-3 py-2">Address</th><th className="px-3 py-2">Opened</th><th className="px-3 py-2">Last time</th><th className="px-3 py-2">Came from</th><th className="px-3 py-2">Send to</th></tr></thead>
           <tbody>

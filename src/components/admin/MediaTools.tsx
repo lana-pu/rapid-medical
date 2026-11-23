@@ -217,7 +217,7 @@ export function DescribeQueue({ items }: { items: DescribeItem[] }) {
         {items.map((m, i) => {
           const suggestions = [...new Set([fromName(m.filename), ...m.places.map((p) => p.label)].filter((s) => s && s.length > 2))].slice(0, 4);
           return (
-            <li key={m.id} className={`grid gap-4 rounded-lg border bg-white p-3 sm:grid-cols-[160px_1fr] ${done[m.id] ? "border-emerald-200 opacity-60" : "border-neutral-200"}`}>
+            <li key={m.id} className={`grid gap-4 rounded-lg border bg-white p-3 @xl:grid-cols-[160px_1fr] ${done[m.id] ? "border-emerald-200 opacity-60" : "border-neutral-200"}`}>
               <Thumb m={m} className="h-28" />
               <div className="min-w-0 space-y-2 text-sm">
                 <div className="truncate font-medium" title={m.filename}>{m.filename}</div>

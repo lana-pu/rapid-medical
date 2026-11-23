@@ -11,6 +11,7 @@ import { getLiveSetting } from "@/lib/settings";
 import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
 import { formatEventDates } from "@/lib/events";
 import { replyHref } from "@/lib/reply-mail";
+import { MAIN_BLEED } from "@/components/admin/chrome";
 
 const when = (d: Date) => formatDate(d, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jerusalem" });
 
@@ -82,11 +83,11 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   );
 
   return (
-    <div className="-m-8 flex min-h-[calc(100vh-3rem)] bg-white">
+    <div className={`${MAIN_BLEED} flex min-h-[calc(100vh-3rem)] flex-col bg-white @3xl:flex-row`}>
       <MarkRead id={s.id} read={!!s.readAt} />
       <div className="min-w-0 flex-1">
         {/* actions: a thin bar on top of the message, as in mail */}
-        <div role="toolbar" aria-label="Request actions" className="flex flex-wrap items-center gap-2 border-b border-neutral-200 px-8 py-3">
+        <div role="toolbar" aria-label="Request actions" className="flex flex-wrap items-center gap-2 border-b border-neutral-200 px-4 py-3 sm:px-8">
           <ReplyButton id={s.id} href={reply} />
           {s.status === "done" ? statusButton("in_progress", "Reopen") : s.status !== "spam" && statusButton("done", "✓ Done")}
           {s.status === "spam" ? statusButton("new", "Not spam") : statusButton("spam", "Spam")}
@@ -94,7 +95,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           <span role="status" aria-label="Request state" className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-700">{state}</span>
         </div>
 
-        <div className="max-w-3xl px-8 py-6">
+        <div className="max-w-3xl px-4 py-6 sm:px-8">
           <h1 className="text-2xl font-semibold text-neutral-900">{s.topic || formLabel(s.form)}</h1>
 
           {/* the message as one piece: who, when, and what they wrote right under it */}
@@ -138,7 +139,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
       </div>
 
       {/* everything about the request, out of the way of the message */}
-      <aside aria-label="Details" className="w-72 shrink-0 space-y-6 border-l border-neutral-200 bg-neutral-50 px-5 py-5 text-sm">
+      <aside aria-label="Details" className="shrink-0 space-y-6 border-t border-neutral-200 @3xl:w-72 @3xl:border-l @3xl:border-t-0 bg-neutral-50 px-5 py-5 text-sm">
         <AssignSelect id={s.id} value={s.assignedToId} people={people} />
         <section aria-label="Request">
           <h2 className={h3}>Request</h2>

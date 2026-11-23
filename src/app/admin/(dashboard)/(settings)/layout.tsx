@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { canDesign, requireUser } from "@/lib/auth";
 import { SpaceNav } from "@/components/admin/SpaceNav";
 import { AdminMain } from "@/components/admin/AdminMain";
+import { SpaceColumn, SpaceColumns } from "@/components/admin/SpaceColumn";
 
 /**
  * Settings: the site and the team, rarely changed (docs/screens/admin-settings.md → «Обзор Settings»): an overview and
@@ -11,7 +12,8 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   const user = await requireUser();
   const admin = user.role === "admin";
   return (
-    <>
+    <SpaceColumns>
+      <SpaceColumn label="Settings">
       <Suspense>
         <SpaceNav
           title="Settings"
@@ -30,7 +32,8 @@ export default async function SettingsLayout({ children }: { children: React.Rea
           ]}
         />
       </Suspense>
+      </SpaceColumn>
       <AdminMain>{children}</AdminMain>
-    </>
+    </SpaceColumns>
   );
 }

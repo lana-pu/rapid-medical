@@ -13,7 +13,7 @@ export default async function ProjectsLayout({ children }: { children: React.Rea
     <div className="min-h-screen bg-neutral-50 text-neutral-900">
       <NavTracker />
       <ProjectBar user={{ name: user.name, email: user.email, role: ROLE[user.role] ?? user.role }} />
-      <main className="px-8 py-12">{children}</main>
+      <main className="px-4 py-8 sm:px-8 sm:py-12">{children}</main>
     </div>
   );
 }
