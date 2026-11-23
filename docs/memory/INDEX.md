@@ -41,6 +41,7 @@
 | Дата | Задача | Файл |
 |---|---|---|
 | 2026-11-23 | Админка и редактор: регион «Europe & Middle East», модель прав editor / designer / admin в коде, Article — четвёртый шаблон | [2026-11-23-admin-rights.md](sessions/2026-11-23-admin-rights.md) |
+| 2026-11-23 | Ветки в вайрфреймах (снимок на ветку, `rm-dialog`); черновик Webinars в коде — ветка `webinars-draft` | [2026-11-23-webinars-draft.md](sessions/2026-11-23-webinars-draft.md) |
 | 2026-11-22 | Всё в вайрфреймах на дизайн-системе: шапка, футер, окно региона, страницы по адресу, состояния форм, прототип | [2026-11-22-wireframes-all-on-system.md](sessions/2026-11-22-wireframes-all-on-system.md) |
 | 2026-11-20 | Вайрфреймы рисуют настоящие блоки сайта: снимок через `BlockList`, серая тема токенов, «как было» — кодом до редизайна | [2026-11-20-wireframes-real-blocks.md](sessions/2026-11-20-wireframes-real-blocks.md) |
 | 2026-11-15 | Админка глазами пользователя: дашборд, Inbox как Gmail, экран страницы, Settings блоками, Google-тексты, медиатека по группам | [2026-11-15-admin-ux.md](sessions/2026-11-15-admin-ux.md) |
