@@ -30,6 +30,14 @@
 Ветка `site-redesign` (worktree `projects/rapid-medical-redesign`) работает со своей базой `rapid_medical_redesign` в
 том же кластере (копия через `pg_dump`, `.env` worktree); её e2e и миграции не трогают базу `main`. Dev ветки — порт 3300.
 
+**Preview для владелицы (с 2026-11-23): весь сайт на дизайн-системе, включая невлитые ветки.** Ветка `preview` =
+`main` + `therapy-home` + `webinars-draft` (в `main` не вливается; миграция вебинаров в ней — 0037, после 0032–0036
+`therapy-home`). Worktree `projects/rapid-medical-preview`, своя база `rapid_medical_preview` (копия общей + миграции и
+шаги сборки веток через `scripts/bootstrap.ts`), production-сборка, **http://localhost:3500**. Поднять после перезагрузки:
+`cd ../rapid-medical-preview && npx next start -p 3500`. Обновить после изменений: в worktree `git merge main therapy-home
+webinars-draft`, `npx tsx --env-file=.env scripts/bootstrap.ts`, `npx next build`, перезапустить. Заявки с форм
+preview уходят в его базу, а не в общую.
+
 Домен: `www.rapid-medical.com` фигурирует как дефолт `NEXT_PUBLIC_SITE_URL` в коде; DNS на приложение
 **не переключён** (не подтверждено). Legacy-поддомены `us./ous./apac.` и `*-rapid-medical.juuced.co`
 обрабатываются proxy, если DNS будет направлен на приложение.

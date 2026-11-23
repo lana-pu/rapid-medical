@@ -502,3 +502,12 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
 - Вайрфреймы: снимок на каждую ветку (`render-branch.sh <ветка>` → `rm-render-branch-<ветка>.json`), узел `rm-dialog`.
   `site-pages` — группа «7 · Webinars — черновик в коде», 9 экранов; site-pages и прототип переопубликованы.
 - **Закрыта тем же днём** (DESIGN.md → Webinars). Цикл страниц пройден; ветка `webinars-draft` — в main после ответа Emily.
+
+## 2026-11-23 — дизайн-система в коде; preview всего сайта
+- Токены тёмной полосы, затемнения и карты (`--inverse`, `--scrim`, `--map-*`); примитивы `ui.tsx` (Button, Chip,
+  FilterChips, Tag, поля, Dialog, Rows/Row) и классы `ui-classes.ts` — повторы в формах, архиве, Careers, новостях,
+  событиях, окне региона, шапке убраны; «Show more» одна везде. `/style-guide` — UI-кит: основы, компоненты, блоки.
+- `webinars-draft` переведена на примитивы. Ветка `preview` (main + therapy-home + webinars-draft), база
+  `rapid_medical_preview`, http://localhost:3500 (`infrastructure.md`). tsc, lint, 265 тестов.
+- Готовый ответ на заявку вебинара берёт запись только опубликованного вебинара (замечание проверки безопасности).
+
