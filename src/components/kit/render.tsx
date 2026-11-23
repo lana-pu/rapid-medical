@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type ReactNode, type CSSProperties } from "react";
+import type { ReactNode, CSSProperties } from "react";
 import { Eyebrow, H1, H2, KeyValue } from "@/components/site/layout-primitives";
 import { buttonClass } from "@/components/site/ui-classes";
 import { withBase } from "@/lib/demo";
-import type { Block, Section } from "./model";
+import { BLOCK_DEFS, colKey, tabKey, type Block, type Section, type Tab } from "./model";
 
 /**
  * The sandbox's blocks (/lab/blocks), drawn with the site's primitives, classes and tokens — the same look the site has
@@ -19,7 +19,34 @@ export type LabData = {
   jobs: { title: string; department: string; location: string }[];
 };
 
-type Ctx = { data: LabData; dark: boolean; selected: string | null; onSelect: (id: string) => void; onData: (id: string, patch: Record<string, unknown>) => void };
+export type Ctx = {
+  data: LabData;
+  dark: boolean;
+  /** the selected element's key and the keys above it (drawn dashed) */
+  sel: string | null;
+  trail: Set<string>;
+  /** the innermost element under the pointer: only it gets the thin line and its name */
+  hover: string | null;
+  onHover: (key: string | null) => void;
+  onPick: (key: string) => void;
+  onData: (id: string, patch: Record<string, unknown>) => void;
+  activeTab: (tabsId: string) => number;
+};
+
+/** The outline and name tag of a selectable element: solid when selected, dashed when it holds the selection, on hover a thin line. */
+function Frame({ k, name, c, children, className = "", inset = false }: { k: string; name: string; c: Pick<Ctx, "sel" | "trail" | "onPick" | "hover" | "onHover">; children: ReactNode; className?: string; inset?: boolean }) {
+  const on = c.sel === k;
+  const up = c.trail.has(k);
+  const hot = !on && c.hover === k;
+  const line = on ? "outline outline-2 outline-accent" : hot ? "outline outline-1 outline-accent" : up ? "outline outline-1 outline-dashed outline-accent/50" : "";
+  return (
+    <div data-lab={k} onClick={(e) => { e.stopPropagation(); c.onPick(k); }} onMouseOver={(e) => { e.stopPropagation(); if (c.hover !== k) c.onHover(k); }}
+      className={`relative ${inset ? "-outline-offset-2" : "outline-offset-4"} ${line} ${className}`}>
+      {(on || hot) && <span className={`pointer-events-none absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${inset ? "top-1" : "-top-5"} ${on ? `${inset ? "left-1" : "left-0"} bg-accent text-accent-foreground` : `${inset ? "right-1" : "right-0"} bg-foreground/80 text-background`}`}>{name}</span>}
+      {children}
+    </div>
+  );
+}
 
 /** A text edited in place: click, type, leave the field. */
 function E({ v, onSet, className = "", as = "span", style }: { v: string; onSet: (t: string) => void; className?: string; as?: "span" | "div" | "p" | "h1" | "h2" | "h3" | "blockquote"; style?: CSSProperties }) {
@@ -262,10 +289,10 @@ function List({ b, c }: { b: Block; c: Ctx }) {
   return <div className={`grid gap-8 sm:grid-cols-2 ${n >= 3 ? "md:grid-cols-3" : ""}`}>{items.map((r, i) => card(r, i))}</div>;
 }
 
-function Tabs({ b, c, path }: { b: Block; c: Ctx; path: string }) {
-  const tabs = (b.d.tabs as { label: string; blocks: Block[] }[]) ?? [];
-  const [at, setAt] = useState(0);
-  const cur = tabs[Math.min(at, tabs.length - 1)];
+function Tabs({ b, c }: { b: Block; c: Ctx }) {
+  const tabs = (b.d.tabs as Tab[]) ?? [];
+  const at = Math.min(c.activeTab(b.id), Math.max(0, tabs.length - 1));
+  const cur = tabs[at];
   const pill = b.o.style === "pills";
   return (
     <div>
@@ -275,62 +302,59 @@ function Tabs({ b, c, path }: { b: Block; c: Ctx; path: string }) {
           const cls = pill
             ? `rounded-full border px-4 py-2 text-sm font-medium ${on ? (c.dark ? "border-inverse-foreground bg-inverse-foreground text-inverse" : "border-foreground bg-foreground text-background") : "border-border"}`
             : `-mb-px border-b-2 px-3 py-2 text-sm font-medium ${on ? (c.dark ? "border-inverse-foreground" : "border-foreground") : `border-transparent ${muted(c.dark)}`}`;
-          return (
-            <button key={i} role="tab" aria-selected={on} type="button" className={cls} onClick={() => setAt(i)}>
-              {on ? <E v={t.label} onSet={(label) => c.onData(b.id, { tabs: tabs.map((x, k) => (k === i ? { ...x, label } : x)) })} /> : t.label}
-            </button>
-          );
+          // a click on a tab opens it and selects it (its label and its blocks are edited there)
+          return <button key={i} role="tab" aria-selected={on} type="button" className={cls} onClick={(e) => { e.stopPropagation(); c.onPick(tabKey(b.id, i)); }}>{t.label}</button>;
         })}
       </div>
-      <div className="mt-8 flex flex-col gap-6">
-        {cur?.blocks.length ? cur.blocks.map((x) => <BlockView key={x.id} b={x} c={c} path={`${path}/${x.id}`} />) : <p className={`text-sm ${muted(c.dark)}`}>Empty tab: a designer adds blocks to it.</p>}
-      </div>
+      {cur && (
+        <Frame k={tabKey(b.id, at)} name={`Вкладка «${cur.label}»`} c={c} className="mt-6 rounded-sm">
+          <div className="flex min-h-16 flex-col gap-6 py-2">
+            {cur.blocks.length ? cur.blocks.map((x) => <BlockView key={x.id} b={x} c={c} />) : <p className={`text-sm ${muted(c.dark)}`}>Пустая вкладка: блоки в неё кладёт дизайнер.</p>}
+          </div>
+        </Frame>
+      )}
     </div>
   );
 }
 
 const VIEWS = { heading: Heading, text: Text, buttons: Buttons, media: Media, numbers: Numbers, cards: Cards, facts: Facts, quote: Quote, list: List } as const;
 
-export function BlockView({ b, c, path }: { b: Block; c: Ctx; path: string }) {
-  const sel = c.selected === b.id;
-  const inner = b.type === "tabs" ? <Tabs b={b} c={c} path={path} /> : (() => { const V = VIEWS[b.type]; return <V b={b} c={c} />; })();
-  return (
-    <div
-      data-lab-block={b.id}
-      onClick={(e) => { e.stopPropagation(); c.onSelect(b.id); }}
-      className={`relative rounded-sm outline-offset-4 ${sel ? "outline outline-2 outline-accent" : "hover:outline hover:outline-1 hover:outline-accent/50"}`}
-    >
-      {inner}
-    </div>
-  );
+export function BlockView({ b, c }: { b: Block; c: Ctx }) {
+  const inner = b.type === "tabs" ? <Tabs b={b} c={c} /> : (() => { const V = VIEWS[b.type]; return <V b={b} c={c} />; })();
+  return <Frame k={b.id} name={BLOCK_DEFS[b.type].name} c={c} className="rounded-sm">{inner}</Frame>;
 }
 
 const BG: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse text-inverse-foreground", image: "relative overflow-hidden bg-inverse text-inverse-foreground" };
 const GRID: Record<string, string> = { "1": "", "1-1": "md:grid-cols-2", "2-1": "md:grid-cols-[2fr_1fr]", "1-2": "md:grid-cols-[1fr_2fr]", "1-1-1": "md:grid-cols-3" };
 
-export function SectionView({ s, c, selected, onSelect, children }: { s: Section; c: Omit<Ctx, "dark">; selected: boolean; onSelect: () => void; children?: ReactNode }) {
+export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">; index: number }) {
   const dark = s.bg === "dark" || s.bg === "image";
   const ctx: Ctx = { ...c, dark };
   const pic = s.bg === "image" ? img(c.data, 0) : null;
+  const many = s.cols.length > 1;
   return (
-    <section data-lab-section={s.id} onClick={onSelect} className={`relative ${BG[s.bg] ?? ""} ${selected ? "ring-2 ring-inset ring-accent" : ""}`}>
-      {pic && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={withBase(pic.url)} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-scrim/50" />
-        </>
-      )}
-      <div className={`relative mx-auto w-full max-w-6xl px-4 ${s.space === "large" ? "py-20 md:py-28" : "py-12 md:py-16"}`}>
-        <div className={`grid gap-10 ${GRID[s.layout] ?? ""} ${s.valign === "center" ? "items-center" : "items-start"}`}>
-          {s.cols.map((col, i) => (
-            <div key={i} className="flex min-w-0 flex-col gap-5">
-              {col.length ? col.map((b) => <BlockView key={b.id} b={b} c={ctx} path={`${s.id}/${b.id}`} />) : <div className="rounded border border-dashed border-border p-6 text-center text-sm opacity-70">Empty column</div>}
-            </div>
-          ))}
+    <Frame k={s.id} name={`Секция ${index + 1}${s.name ? ` · ${s.name}` : ""}`} c={c} inset className={BG[s.bg] ?? ""}>
+      <section>
+        {pic && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={withBase(pic.url)} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-scrim/50" />
+          </>
+        )}
+        <div className={`relative mx-auto w-full max-w-6xl px-4 ${s.space === "large" ? "py-20 md:py-28" : "py-12 md:py-16"}`}>
+          <div className={`grid gap-10 ${GRID[s.layout] ?? ""} ${s.valign === "center" ? "items-center" : "items-start"}`}>
+            {s.cols.map((col, i) => {
+              const body = (
+                <div className="flex min-w-0 flex-col gap-5">
+                  {col.length ? col.map((b) => <BlockView key={b.id} b={b} c={ctx} />) : <div className="rounded border border-dashed border-border p-6 text-center text-sm opacity-70">Пустая колонка</div>}
+                </div>
+              );
+              return many ? <Frame key={i} k={colKey(s.id, i)} name={`Колонка ${i + 1}`} c={c} className="min-w-0 rounded-sm">{body}</Frame> : <div key={i} className="min-w-0">{body}</div>;
+            })}
+          </div>
         </div>
-      </div>
-      {children}
-    </section>
+      </section>
+    </Frame>
   );
 }

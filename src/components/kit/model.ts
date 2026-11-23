@@ -7,7 +7,50 @@
 
 export type Opt = { key: string; label: string; values: { id: string; label: string }[] };
 export type Block = { id: string; type: BlockType; o: Record<string, string>; d: Record<string, unknown> };
-export type Section = { id: string; bg: string; layout: string; valign: string; space: string; cols: Block[][] };
+/** `name`: the ready section it was added from («Текст и картинка») — shown in the breadcrumbs and the structure. */
+export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][] };
+export type Tab = { label: string; blocks: Block[] };
+
+/**
+ * What is selected, from the page down: section › column (only when there are several) › block › tab › block…
+ * Each level has a key: the section's or block's id, `{section}:c{n}` for a column, `{tabs block}:t{n}` for a tab.
+ */
+export type Level =
+  | { kind: "section"; key: string; s: number; label: string }
+  | { kind: "column"; key: string; s: number; c: number; label: string }
+  | { kind: "block"; key: string; id: string; label: string }
+  | { kind: "tab"; key: string; id: string; t: number; label: string };
+
+export const colKey = (sectionId: string, c: number) => `${sectionId}:c${c}`;
+export const tabKey = (tabsId: string, t: number) => `${tabsId}:t${t}`;
+
+/** Every selectable key → its chain of levels (the breadcrumbs). */
+export function levels(sections: Section[]): Map<string, Level[]> {
+  const out = new Map<string, Level[]>();
+  const walk = (list: Block[], up: Level[]) => {
+    for (const b of list) {
+      const me: Level[] = [...up, { kind: "block", key: b.id, id: b.id, label: BLOCK_DEFS[b.type].name }];
+      out.set(b.id, me);
+      if (b.type === "tabs")
+        (b.d.tabs as Tab[]).forEach((t, i) => {
+          const tab: Level[] = [...me, { kind: "tab", key: tabKey(b.id, i), id: b.id, t: i, label: `«${t.label}»` }];
+          out.set(tabKey(b.id, i), tab);
+          walk(t.blocks, tab);
+        });
+    }
+  };
+  sections.forEach((s, i) => {
+    const sec: Level[] = [{ kind: "section", key: s.id, s: i, label: `Секция ${i + 1}${s.name ? ` · ${s.name}` : ""}` }];
+    out.set(s.id, sec);
+    s.cols.forEach((col, c) => {
+      if (s.cols.length < 2) return walk(col, sec);
+      const cl: Level[] = [...sec, { kind: "column", key: colKey(s.id, c), s: i, c, label: `Колонка ${c + 1}` }];
+      out.set(colKey(s.id, c), cl);
+      walk(col, cl);
+    });
+  });
+  return out;
+}
 export type BlockType = "heading" | "text" | "buttons" | "media" | "numbers" | "cards" | "facts" | "quote" | "list" | "tabs";
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
