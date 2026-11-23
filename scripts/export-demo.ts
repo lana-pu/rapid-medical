@@ -102,7 +102,7 @@ async function main() {
   const sm = await (await fetch(`${ORIGIN}${BASE}/sitemap.xml`)).text();
   const paths = Array.from(sm.matchAll(/<loc>([^<]+)<\/loc>/g)).map((m) => new URL(m[1]).pathname.replace(new RegExp(`^${BASE}`), "") || "/");
   // noindex, so not in the sitemap: the style guide, and the location chooser (Pages has no IP region, so every page without one links to it)
-  for (const extra of ["/us", "/ous", "/apac", "/style-guide", "/choose-your-location", "/this-page-does-not-exist"]) paths.push(extra);
+  for (const extra of ["/us", "/ous", "/apac", "/style-guide", "/lab/blocks", "/choose-your-location", "/this-page-does-not-exist"]) paths.push(extra);
   for (const p of hiddenPages) paths.push(p.region ? `/${p.region}/${p.slug}` : `/${p.slug}`); // noindex pages are not in the sitemap
   let n = 0;
   for (const p of paths) {
