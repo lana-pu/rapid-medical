@@ -63,19 +63,20 @@ type FrameCtx = Pick<Ctx, "sel" | "trail" | "onPick" | "hover" | "onHover" | "dr
 function Frame({ k, name, c, children, className = "", inset = false, zone, handle }: { k: string; name: string; c: FrameCtx; children: ReactNode; className?: string; inset?: boolean; zone?: Zone; /** what dragging its name tag moves */ handle?: Drag | null }) {
   const on = c.sel === k;
   const target = c.drop?.at === k ? c.drop.side : null;
-  const up = c.trail.has(k);
   const hot = !on && c.hover === k;
   const ref = useRef<HTMLDivElement>(null);
   // the outline's colour is worked out from the background really behind it (contrast.ts); re-read on every render
   // while marked, so a changed section background or palette is picked up at once
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || !(on || hot || up || target)) return;
+    if (!el || !(on || hot || target)) return;
     const { line, text } = selectionColours(inset ? el : (el.parentElement ?? el));
     el.style.setProperty("--lab-line", line);
     el.style.setProperty("--lab-text", text);
   });
-  const line = on ? "outline outline-2" : hot ? "outline outline-1" : up ? "outline outline-1 outline-dashed" : "";
+  // like Webflow, Framer, Wix: a hairline hugging the element; hover is the same line, fainter; parents are not drawn
+  // (the breadcrumbs and the structure say where the element sits)
+  const line = on || hot ? "outline outline-1" : "";
   return (
     <div ref={ref} data-lab={k} onClick={(e) => { e.stopPropagation(); c.onPick(k); }} onMouseOver={(e) => { e.stopPropagation(); if (c.hover !== k) c.onHover(k); }}
       onDragOver={(e) => {
@@ -95,16 +96,17 @@ function Frame({ k, name, c, children, className = "", inset = false, zone, hand
         if (c.drop?.at !== at.at || c.drop.side !== at.side || c.drop.index !== at.index) c.onDragAt(at);
       }}
       onDrop={(e) => { if (!drag.get() || c.drop?.at !== k) return; e.preventDefault(); e.stopPropagation(); c.onDropHere(); }}
-      style={{ outlineColor: "var(--lab-line)" }}
-      className={`relative ${inset ? "-outline-offset-2" : "outline-offset-4"} ${target === "inside" ? "outline outline-2 outline-dashed" : line} ${className}`}>
-      {target && target !== "inside" && <span aria-hidden style={{ background: "var(--lab-line)" }} className={`pointer-events-none absolute inset-x-0 z-20 h-1 rounded-full ${target === "before" ? (inset ? "top-0" : "-top-3") : (inset ? "bottom-0" : "-bottom-3")}`} />}
-      {(on || hot) && (
+      style={{ outlineColor: hot ? "color-mix(in srgb, var(--lab-line) 55%, transparent)" : "var(--lab-line)" }}
+      className={`group/f relative ${inset ? "-outline-offset-1" : "outline-offset-0"} ${target === "inside" ? "outline outline-1 outline-dashed" : line} ${className}`}>
+      {target && target !== "inside" && <span aria-hidden style={{ background: "var(--lab-line)" }} className={`pointer-events-none absolute inset-x-0 z-20 h-0.5 ${target === "before" ? (inset ? "top-0" : "-top-2.5") : (inset ? "bottom-0" : "-bottom-2.5")}`} />}
+      {/* the name tag: only on the selected element, small, out of the way; hidden while its text is being typed */}
+      {on && (
         <span style={{ background: "var(--lab-line)", color: "var(--lab-text)" }}
-          draggable={on && !!handle}
+          draggable={!!handle}
           onDragStart={(e) => { if (!handle) return; drag.set(handle); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", name); e.stopPropagation(); }}
           onDragEnd={() => { drag.set(null); c.onDragAt(null); }}
-          title={on && handle ? "Перетащите, чтобы переставить" : undefined}
-          className={`absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${on && handle ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"} ${inset ? "top-1" : "-top-5"} ${on ? (inset ? "left-1" : "left-0") : `${inset ? "right-1" : "right-0"} opacity-80`}`}>{on && handle ? "⠿ " : ""}{name}</span>
+          title={handle ? "Перетащите, чтобы переставить" : undefined}
+          className={`absolute z-10 whitespace-nowrap rounded-t-sm px-1 py-px text-[10px] font-medium leading-tight transition-opacity group-focus-within/f:opacity-0 ${handle ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"} ${inset ? "left-0 top-0 rounded-b-sm rounded-t-none" : "-left-px bottom-full"}`}>{handle ? "⠿ " : ""}{name}</span>
       )}
       {children}
     </div>
@@ -119,7 +121,7 @@ function E({ v, onSet, className = "", as = "span", style }: { v: string; onSet:
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}
-      className={`rounded-sm outline-none focus:ring-2 focus:ring-accent/60 ${className}`}
+      className={`outline-none ${className}`}
       style={style}
       onBlur={(e) => {
         const t = (e.currentTarget as HTMLElement).innerText.trim();
