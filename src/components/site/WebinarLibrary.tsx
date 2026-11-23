@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ContactForm } from "./ContactForm";
-import { FilterChips } from "./FilterChips";
+import { Dialog, FilterChips, Row, Rows, Tag } from "./ui";
 
 export type WebinarRow = {
   id: number;
@@ -52,30 +52,21 @@ export function WebinarLibrary({ rows, initialProduct, defaultRegion, emptyLine,
   return (
     <div>
       {filter && <div className="mb-6"><FilterChips options={products} total={rows.length} value={product} onChange={setProduct} /></div>}
-      <ul className="divide-y divide-border border-y border-border">
+      <Rows>
         {list.map((w) => (
-          <li key={w.id} className="grid gap-x-6 gap-y-3 py-5 sm:grid-cols-[10rem_minmax(0,1fr)]">
-            <div>{w.image}</div>
-            <div className="min-w-0">
-              {w.when && <div className="text-xs uppercase tracking-wide text-muted">{w.when}</div>}
-              <h3 className="mt-1 font-medium">{w.title}</h3>
-              {w.by && <div className="mt-1 text-sm text-muted">{w.by}</div>}
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-                {w.productLabel && <span className="rounded-full border border-border px-2 py-0.5 text-xs">{w.productLabel}</span>}
-                <button type="button" className="font-medium underline" onClick={() => setChosen(w)}>Request this recording</button>
-              </div>
+          <Row key={w.id} kind="media" lead={w.image} className="gap-y-3">
+            {w.when && <div className="text-xs uppercase tracking-wide text-muted">{w.when}</div>}
+            <h3 className="mt-1 font-medium">{w.title}</h3>
+            {w.by && <div className="mt-1 text-sm text-muted">{w.by}</div>}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              {w.productLabel && <Tag>{w.productLabel}</Tag>}
+              <button type="button" className="font-medium underline" onClick={() => setChosen(w)}>Request this recording</button>
             </div>
-          </li>
+          </Row>
         ))}
-      </ul>
+      </Rows>
 
-      <dialog
-        ref={dialog}
-        aria-labelledby="webinar-request-title"
-        onClick={(e) => { if (e.target === dialog.current) dialog.current?.close(); }} // a click on the backdrop closes
-        onClose={() => setChosen(null)}
-        className="bg-background p-0 text-foreground backdrop:bg-foreground/40 max-md:m-0 max-md:h-full max-md:max-h-none max-md:w-full max-md:max-w-none md:m-auto md:w-full md:max-w-2xl md:rounded"
-      >
+      <Dialog ref={dialog} labelledBy="webinar-request-title" onClose={() => setChosen(null)}>
         {chosen && (
           <div className="p-6 md:p-8">
             <div className="flex items-start justify-between gap-6">
@@ -91,7 +82,7 @@ export function WebinarLibrary({ rows, initialProduct, defaultRegion, emptyLine,
             </div>
           </div>
         )}
-      </dialog>
+      </Dialog>
     </div>
   );
 }

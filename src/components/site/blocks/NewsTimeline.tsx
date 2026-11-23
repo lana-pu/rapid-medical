@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { Button } from "../ui";
 
 export type TimelineItem = { id: number; year: number; date: string; title: ReactNode; url: string };
 
@@ -28,7 +29,7 @@ export function NewsTimeline({ items, pageSize = 8 }: { items: TimelineItem[]; p
         })}
       </ol>
       {shown < items.length && (
-        <button type="button" onClick={() => setShown((s) => s + pageSize)} className="mt-4 rounded bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">Show more</button>
+        <Button variant="secondary" size="lg" block onClick={() => setShown((s) => s + pageSize)} className="mt-4">Show more</Button>
       )}
     </div>
   );

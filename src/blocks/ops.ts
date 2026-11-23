@@ -33,6 +33,25 @@ export type BlockOp =
 const def = (t: string) => (Object.hasOwn(BLOCKS, t) ? (BLOCKS[t as BlockType] as unknown as BlockDef<BlockType>) : null);
 export const isPinned = (b: StoredBlock) => !!def(b.type)?.pinned;
 
+/**
+ * The page's layout without its words: which sections, in what order, how they look, and the tabs of Product details
+ * (their address and their sections). Hidden flags and tab labels are not layout — an editor may change them.
+ */
+function layoutOf(list: StoredBlock[]): unknown {
+  const inner = (n: { type?: string; variant?: string; group?: string; blocks?: unknown[] }): unknown =>
+    "group" in n ? { g: n.group, b: (n.blocks ?? []).map((x) => inner(x as typeof n)) } : [n.type, n.variant];
+  return list.map((b) => {
+    const tabs = b.type === "productDetails" && !b.source ? ((b.data as { tabs?: { href?: string; blocks?: unknown[] }[] }).tabs ?? []) : null;
+    return [b.id, b.type, b.variant, b.source ?? null, tabs?.map((t) => [t.href ?? null, (t.blocks ?? []).map((x) => inner(x as never))]) ?? null];
+  });
+}
+
+/** Same sections in the same order with the same look — only words, pictures, hidden flags or tab labels differ. */
+export const sameLayout = (a: StoredBlock[], b: StoredBlock[]) => JSON.stringify(layoutOf(a)) === JSON.stringify(layoutOf(b));
+
+/** What an editor (not a designer) may do with sections (ADR-006 → «Права»): hide/show and rename a tab. */
+export const editorMayDo = (op: BlockOp) => op.op === "hide" || (op.op === "tab" && op.act === "rename");
+
 /** Pinned blocks go to the end, in their order; everything else keeps its order. */
 function pinnedLast(list: StoredBlock[]): StoredBlock[] {
   return [...list.filter((b) => !isPinned(b)), ...list.filter(isPinned)];

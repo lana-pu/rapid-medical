@@ -20,7 +20,7 @@ function Cta({ variant, data: d, edit: e, nested }: BlockProps<"cta">) {
   ));
   if (variant === "band") {
     return (
-      <section className="bg-black py-12 text-white">
+      <section className="bg-inverse py-12 text-inverse-foreground">
         <Container className="flex flex-wrap items-center gap-6 md:gap-12">
           {d.title && <h2 className="text-3xl font-light uppercase tracking-wide"><F e={e} k="title">{d.title}</F></h2>}
           {d.body != null && <p className="max-w-md flex-1 text-sm opacity-90"><F e={e} k="body">{d.body}</F></p>}
@@ -40,7 +40,7 @@ function Cta({ variant, data: d, edit: e, nested }: BlockProps<"cta">) {
   }
   const inner =
     variant === "panel" ? (
-      <div className="relative mb-6 overflow-hidden rounded bg-neutral-900 px-6 py-10 text-center text-white">
+      <div className="relative mb-6 overflow-hidden rounded bg-inverse px-6 py-10 text-center text-inverse-foreground">
         {d.title && <h3 className="text-xl font-semibold uppercase tracking-wide"><F e={e} k="title">{d.title}</F></h3>}
         {d.body && <p className="mx-auto mt-2 max-w-xl text-sm opacity-90"><F e={e} k="body">{d.body}</F></p>}
         {buttons.length > 0 && <div className="mt-5">{buttons}</div>}

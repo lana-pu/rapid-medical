@@ -130,6 +130,8 @@ export function ToolRail(props: {
   active: ToolKey | null;
   /** tools that need a page stored as sections (not catalogue pages) */
   hasPage: boolean;
+  /** ＋ Add — designer and admin (ADR-006 → «Права») */
+  canAdd: boolean;
   demo: boolean;
   comments: number | null;
   settingsHref: string | null;
@@ -153,7 +155,7 @@ export function ToolRail(props: {
   );
   return (
     <nav aria-label="Editor tools" className="fixed bottom-0 left-0 z-[1000] flex flex-col items-center gap-1 border-r border-neutral-800 bg-neutral-950 py-2" style={{ top: props.top, width: RAIL_W }}>
-      {item("add", "＋", "Add section", props.hasPage)}
+      {props.canAdd && item("add", "＋", "Add section", props.hasPage)}
       {item("sections", "☰", "Sections", props.hasPage)}
       {item("pages", "📄", "Pages")}
       {item("history", "🕘", "History", props.hasPage && !props.demo)}
@@ -179,19 +181,19 @@ export function ToolPanel({ title, children, onClose, top, wide = false, width =
   );
 }
 
-/** Sections of the page, like Webflow's Navigator: select, move, hide, copy, delete (on-page-editor.md). */
+/** Sections of the page, like Webflow's Navigator: select, move, hide, copy, delete (on-page-editor.md). Move, copy and delete only when given: designer and admin (ADR-006 → «Права»). */
 export function SectionsList(props: {
   sections: SectionInfo[];
   selected: string | null;
   busy: boolean;
   canDesign: boolean;
   onSelect: (id: string) => void;
-  onMove: (s: SectionInfo, d: -1 | 1) => void;
+  onMove?: (s: SectionInfo, d: -1 | 1) => void;
   /** drag and drop inside a list */
-  onMoveTo: (s: SectionInfo, to: number) => void;
+  onMoveTo?: (s: SectionInfo, to: number) => void;
   onHide: (s: SectionInfo) => void;
-  onCopy: (s: SectionInfo) => void;
-  onRemove: (s: SectionInfo) => void;
+  onCopy?: (s: SectionInfo) => void;
+  onRemove?: (s: SectionInfo) => void;
   onVariant: (s: SectionInfo, v: string) => void;
   onTabs: (s: SectionInfo) => void;
 }) {
@@ -214,7 +216,7 @@ export function SectionsList(props: {
       <li key={s.id}>
         <div
           data-section-row={s.id}
-          draggable={!s.pinned && !props.busy}
+          draggable={!!props.onMoveTo && !s.pinned && !props.busy}
           onDragStart={(e) => {
             setDrag(s);
             e.dataTransfer.effectAllowed = "move";
@@ -234,7 +236,7 @@ export function SectionsList(props: {
           onDrop={(e) => {
             e.preventDefault();
             const to = over && over.id === s.id ? target(s, over.below) : null;
-            if (drag && to !== null) props.onMoveTo(drag, to);
+            if (drag && to !== null) props.onMoveTo?.(drag, to);
             setDrag(null);
             setOver(null);
           }}
@@ -242,17 +244,17 @@ export function SectionsList(props: {
           style={{ paddingLeft: 8 + depth * 14 }}
         >
           {over?.id === s.id && <span aria-hidden className={`absolute inset-x-1 h-0.5 rounded bg-blue-600 ${over.below ? "-bottom-px" : "-top-px"}`} />}
-          <span aria-hidden title={s.pinned ? "Stays at the end of the page" : "Drag to move"} className={`select-none text-neutral-300 ${s.pinned ? "" : "cursor-grab group-hover:text-neutral-500"}`}>⠿</span>
+          {props.onMoveTo && <span aria-hidden title={s.pinned ? "Stays at the end of the page" : "Drag to move"} className={`select-none text-neutral-300 ${s.pinned ? "" : "cursor-grab group-hover:text-neutral-500"}`}>⠿</span>}
           <button type="button" onClick={() => props.onSelect(s.id)} className={`min-w-0 flex-1 truncate text-left text-sm ${s.hidden ? "text-neutral-400 line-through" : ""}`} title={s.name}>
             {s.name}
           </button>
           {s.hidden && <span className="text-[10px] text-neutral-500">hidden</span>}
           <span className="flex shrink-0 items-center opacity-60 group-hover:opacity-100">
-            <button type="button" className={t} disabled={props.busy || s.pinned || s.at === 0} onClick={() => props.onMove(s, -1)} aria-label={`Move ${s.name} up`}>↑</button>
-            <button type="button" className={t} disabled={props.busy || s.pinned || last} onClick={() => props.onMove(s, 1)} aria-label={`Move ${s.name} down`}>↓</button>
+            {props.onMove && <><button type="button" className={t} disabled={props.busy || s.pinned || s.at === 0} onClick={() => props.onMove?.(s, -1)} aria-label={`Move ${s.name} up`}>↑</button>
+            <button type="button" className={t} disabled={props.busy || s.pinned || last} onClick={() => props.onMove?.(s, 1)} aria-label={`Move ${s.name} down`}>↓</button></>}
             <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onHide(s)} aria-label={`${s.hidden ? "Show" : "Hide"} ${s.name}`} title={s.hidden ? "Show on the site" : "Hide on the site"}>{s.hidden ? "Show" : "Hide"}</button>
-            <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onCopy(s)} aria-label={`Copy ${s.name}`}>Copy</button>
-            <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onRemove(s)} aria-label={`Delete ${s.name}`}>✕</button>
+            {props.onCopy && <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onCopy?.(s)} aria-label={`Copy ${s.name}`}>Copy</button>}
+            {props.onRemove && <button type="button" className={t} disabled={props.busy || s.pinned} onClick={() => props.onRemove?.(s)} aria-label={`Delete ${s.name}`}>✕</button>}
           </span>
         </div>
         {props.selected === s.id && (props.canDesign && s.variants.length > 1 || s.tabs) && (
@@ -281,7 +283,7 @@ export function SectionsList(props: {
     );
   };
   const top = listOf("");
-  if (!top.length) return <p className="p-4 text-sm text-neutral-500">This page has no sections yet. Use ＋ Add.</p>;
+  if (!top.length) return <p className="p-4 text-sm text-neutral-500">This page has no sections yet.{props.onCopy ? " Use ＋ Add." : ""}</p>;
   return <ul className="p-2">{top.map((s) => row(s, 0))}</ul>;
 }
 
@@ -298,7 +300,8 @@ export function PreviewBar({ demo, onBack }: { demo: boolean; onBack: () => void
 /*  Section toolbar                                                    */
 /* ------------------------------------------------------------------ */
 
-export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove, onTabs, onHide }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove: (d: -1 | 1) => void; onCopy: () => void; onRemove: () => void; onTabs?: () => void; onHide?: () => void }) {
+export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove, onCopy, onRemove, onTabs, onHide }: { s: SectionInfo; first: boolean; last: boolean; busy: boolean; style: React.CSSProperties; onVariant: (v: string) => void; onMove?: (d: -1 | 1) => void; onCopy?: () => void; onRemove?: () => void; onTabs?: () => void; onHide?: () => void }) {
+  // move, copy, delete — only when given: designer and admin (ADR-006 → «Права»)
   const t = "rounded px-2 py-1 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40";
   const pinnedNote = "This section stays at the end of the page and cannot be removed";
   return (
@@ -309,11 +312,11 @@ export function SectionToolbar({ s, first, last, busy, style, onVariant, onMove,
           {s.variants.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
         </select>
       )}
-      <button type="button" className={t} disabled={busy || s.pinned || first} onClick={() => onMove(-1)} title={s.pinned ? pinnedNote : "Move up"} aria-label="Move up">↑</button>
-      <button type="button" className={t} disabled={busy || s.pinned || last} onClick={() => onMove(1)} title={s.pinned ? pinnedNote : "Move down"} aria-label="Move down">↓</button>
-      <button type="button" className={t} disabled={busy || s.pinned} onClick={onCopy} title={s.pinned ? pinnedNote : "Copy"}>Copy</button>
+      {onMove && <><button type="button" className={t} disabled={busy || s.pinned || first} onClick={() => onMove(-1)} title={s.pinned ? pinnedNote : "Move up"} aria-label="Move up">↑</button>
+      <button type="button" className={t} disabled={busy || s.pinned || last} onClick={() => onMove(1)} title={s.pinned ? pinnedNote : "Move down"} aria-label="Move down">↓</button></>}
+      {onCopy && <button type="button" className={t} disabled={busy || s.pinned} onClick={onCopy} title={s.pinned ? pinnedNote : "Copy"}>Copy</button>}
       {onHide && <button type="button" className={t} disabled={busy || s.pinned} onClick={onHide} title={s.pinned ? pinnedNote : s.hidden ? "Show on the site again" : "Hide on the site, keep on the page"}>{s.hidden ? "Show" : "Hide"}</button>}
-      <button type="button" className={t} disabled={busy || s.pinned} onClick={onRemove} title={s.pinned ? pinnedNote : "Delete"}>Delete</button>
+      {onRemove && <button type="button" className={t} disabled={busy || s.pinned} onClick={onRemove} title={s.pinned ? pinnedNote : "Delete"}>Delete</button>}
       {onTabs && <button type="button" className={t} disabled={busy} onClick={onTabs}>Tabs</button>}
     </div>
   );
@@ -559,15 +562,15 @@ export function HistoryList({ items, busy, onRestore, viewHref }: { items: Histo
 
 export const buttons = { primary, secondary };
 
-/** The tabs of a Product details block (docs/screens/on-page-editor.md → «Сами вкладки»). */
+/** The tabs of a Product details block (docs/screens/on-page-editor.md → «Сами вкладки»). An editor renames them; the rest only when given — designer and admin (ADR-006 → «Права»). */
 export function TabsPanel({ tabs, busy, onRename, onMove, onRemove, onLink, onAdd }: {
   tabs: { label: string; href?: string }[];
   busy: boolean;
   onRename: (tab: number, label: string) => void;
-  onMove: (tab: number, dir: -1 | 1) => void;
-  onRemove: (tab: number) => void;
-  onLink: (tab: number, href: string) => void;
-  onAdd: (label: string, href?: string) => void;
+  onMove?: (tab: number, dir: -1 | 1) => void;
+  onRemove?: (tab: number) => void;
+  onLink?: (tab: number, href: string) => void;
+  onAdd?: (label: string, href?: string) => void;
 }) {
   const [label, setLabel] = useState("");
   const [href, setHref] = useState("");
@@ -580,18 +583,18 @@ export function TabsPanel({ tabs, busy, onRename, onMove, onRemove, onLink, onAd
           <li key={`${i}:${t.label}:${t.href ?? ""}`} className="rounded border border-neutral-200 p-2">
             <div className="flex items-center gap-1">
               <input aria-label={`Name of tab ${i + 1}`} defaultValue={t.label} maxLength={60} disabled={busy} className={field} onBlur={(e) => e.target.value.trim() !== t.label && onRename(i, e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} />
-              <button type="button" aria-label={`Move tab ${t.label} up`} disabled={busy || i === 0} onClick={() => onMove(i, -1)} className="px-1 disabled:opacity-30">↑</button>
-              <button type="button" aria-label={`Move tab ${t.label} down`} disabled={busy || i === tabs.length - 1} onClick={() => onMove(i, 1)} className="px-1 disabled:opacity-30">↓</button>
-              <button type="button" disabled={busy} onClick={() => onRemove(i)} className="px-1 text-red-700">Delete</button>
+              {onMove && <><button type="button" aria-label={`Move tab ${t.label} up`} disabled={busy || i === 0} onClick={() => onMove(i, -1)} className="px-1 disabled:opacity-30">↑</button>
+              <button type="button" aria-label={`Move tab ${t.label} down`} disabled={busy || i === tabs.length - 1} onClick={() => onMove(i, 1)} className="px-1 disabled:opacity-30">↓</button></>}
+              {onRemove && <button type="button" disabled={busy} onClick={() => onRemove(i)} className="px-1 text-red-700">Delete</button>}
             </div>
             {t.href !== undefined && (
-              <input aria-label={`Link of tab ${t.label}`} defaultValue={t.href} disabled={busy} className={`${field} mt-1 font-mono text-xs`} onBlur={(e) => e.target.value.trim() !== t.href && onLink(i, e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} />
+              <input aria-label={`Link of tab ${t.label}`} defaultValue={t.href} disabled={busy || !onLink} readOnly={!onLink} className={`${field} mt-1 font-mono text-xs`} onBlur={(e) => onLink && e.target.value.trim() !== t.href && onLink(i, e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} />
             )}
             <span className="mt-1 block text-xs text-neutral-500">{t.href !== undefined ? "Link tab — opens another page" : "Tab with sections"}</span>
           </li>
         ))}
       </ol>
-      <form
+      {onAdd && <form
         className="space-y-2 rounded border border-dashed border-neutral-300 p-2"
         onSubmit={(e) => {
           e.preventDefault();
@@ -607,7 +610,7 @@ export function TabsPanel({ tabs, busy, onRename, onMove, onRemove, onLink, onAd
         <input aria-label="New tab name" value={label} onChange={(e) => setLabel(e.target.value)} maxLength={60} placeholder="Tab name" required className={field} />
         {link && <input aria-label="New tab link" value={href} onChange={(e) => setHref(e.target.value)} placeholder="/us/evidence or https://…" required className={`${field} font-mono text-xs`} />}
         <button type="submit" disabled={busy} className="rounded bg-blue-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-50">{link ? "+ Add link tab" : "+ Add tab"}</button>
-      </form>
+      </form>}
     </div>
   );
 }

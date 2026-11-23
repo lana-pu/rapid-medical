@@ -17,8 +17,8 @@
 ## Пригласить
 Окно «Invite a person»: Email, Name, «What they can do» — роли описаны тем, что человек может:
 - **Editor** — changes text and pictures, builds pages from templates, publishes;
-- **Designer** — the same, and changes how sections look;
-- **Admin** — the same, and people, settings, integrations.
+- **Designer** — the same, and adds, moves and removes sections, changes how they look, makes templates;
+- **Admin** — the same, and deletes pages and records, products, old links, people, integrations.
 Подпись: «They get an email with a link. Two-step sign-in is set up on the first visit.»
 **Send invite** → письмо со ссылкой (если почта не подключена — только ссылка) и на экране «Invite link for {name}:
 {ссылка} · Copy · valid 7 days». Повторное приглашение на ту же почту — «Already has access».

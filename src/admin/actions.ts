@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { canDelete, requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { fromIsraelInput } from "@/lib/israel-time";
 import { getResource } from "./resources";
@@ -31,6 +31,7 @@ async function persist(fd: FormData): Promise<Persisted | { state: NonNullable<S
   const id = idRaw ? Number(idRaw) : null;
   const res = getResource(slug);
   if (!res) return { state: { message: "Unknown resource" } };
+  if (res.adminOnly && user.role !== "admin") return { state: { message: "Only an admin can change this" } };
   if (res.alwaysLive && !id) return { state: { message: "These pages exist once; open them from Pages" } };
 
   const parsed = parseForm(res, fd);
@@ -86,6 +87,7 @@ async function ctx(fd: FormData) {
   const id = Number(fd.get("__id"));
   const res = getResource(slug);
   if (!res || !id) throw new Error("Bad request");
+  if (res.adminOnly && user.role !== "admin") redirect("/admin/website?error=forbidden");
   return { user, res, id };
 }
 
@@ -126,6 +128,7 @@ export async function discardDraftAction(fd: FormData) {
 /** «Delete draft» on the record's page: only what is not on the site (UX walk 2026-11-14). */
 export async function deleteDraftRecordAction(fd: FormData) {
   const { user, res, id } = await ctx(fd);
+  if (!canDelete(user)) redirect(`/admin/${res.slug}/${id}?error=Only+an+admin+can+delete`);
   if (!(await deleteUnpublished(res, id, user))) redirect(`/admin/${res.slug}/${id}?error=Unpublish+it+first%3A+only+a+draft+can+be+deleted+here`);
   revalidate(res.revalidate);
   redirect(`/admin/${res.slug}?bulk=delete&n=1`);
@@ -166,6 +169,8 @@ export async function bulkResource(fd: FormData) {
   const ids = [...new Set(fd.getAll("ids").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
   const res = getResource(slug);
   if (!res || !["publish", "unpublish", "delete"].includes(action)) return;
+  if (res.adminOnly && user.role !== "admin") return;
+  if (action === "delete" && !canDelete(user)) return; // no Delete button for them either (ADR-006 → «Права»)
   if (res.alwaysLive && action !== "publish") return; // Home, About… cannot be unpublished or deleted: no buttons for it
   // the message counts what was done, not what was ticked (docs/screens/admin-list.md, 2026-11-16)
   let done = 0;

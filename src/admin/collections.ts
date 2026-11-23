@@ -70,11 +70,14 @@ async function rowsOf(d: Def): Promise<Row[]> {
   return (await db.select().from(res.table as any)) as Row[];
 }
 
+/** Collections this person may open: Products — admin only (ADR-006 → «Права»). */
+const visibleDefs = (role: string) => DEFS.filter((d) => role === "admin" || !getResource(d.res)?.adminOnly);
+
 export async function collectionsOverview(): Promise<{ items: CollectionSummary[] } | Fail> {
   try {
-    await requireEditor();
+    const user = await requireEditor();
     const items = await Promise.all(
-      DEFS.map(async (d) => ({ key: d.res, icon: d.icon, title: d.title, where: d.where, count: (await rowsOf(d)).length, ownPage: !!d.page })),
+      visibleDefs(user.role).map(async (d) => ({ key: d.res, icon: d.icon, title: d.title, where: d.where, count: (await rowsOf(d)).length, ownPage: !!d.page })),
     );
     return { items };
   } catch (e) {
@@ -84,8 +87,8 @@ export async function collectionsOverview(): Promise<{ items: CollectionSummary[
 
 export async function collectionItems(key: string): Promise<{ title: string; where: string; newLabel: string; newHref: string; fields: CollectionField[]; items: CollectionItem[] } | Fail> {
   try {
-    await requireEditor();
-    const d = DEFS.find((x) => x.res === key);
+    const user = await requireEditor();
+    const d = visibleDefs(user.role).find((x) => x.res === key);
     const res = d && getResource(d.res);
     if (!d || !res) return { error: "Unknown collection" };
     const rows = (await rowsOf(d)).sort(d.order);

@@ -5,10 +5,10 @@ import Link from "next/link";
 import { submitForm, type FormState } from "@/lib/forms";
 import { attribution, track } from "@/lib/tracking";
 import { COUNTRIES_WITH_STATE, countryOptions } from "@/lib/countries";
+import { Button, Field, SelectField, TextAreaField, CheckboxField } from "./ui";
+import { chipClass, inputClass } from "./ui-classes";
 
 const REGIONS = ["Americas", "Europe", "Asia Pacific", "Middle East"];
-const input = "w-full rounded border border-border bg-background px-3 py-2 text-sm focus:border-foreground focus:outline-none";
-const invalid = "border-danger";
 /** Topics shown as chips; the rest are under «Other topic» (DESIGN.md → Формы: up to ~4 chips, else 3 + a list). */
 const CHIPS = 3;
 
@@ -106,14 +106,10 @@ export function ContactForm({
       ) : form === "contact" || form === "careers" ? (
         <TopicChips topics={topics} defaultTopic={defaultTopic} error={err("topic")} legend={form === "careers" ? "Area of interest*" : undefined} />
       ) : (
-        <label className="block text-sm">
-          <span className="mb-1 block">{form === "webinar" ? "Which webinar?*" : form === "careers" ? "Area of interest*" : "How can we help? Select a topic.*"}</span>
-          <select name="topic" required defaultValue={defaultTopic ?? ""} aria-invalid={!!err("topic") || undefined} className={`${input} ${err("topic") ? invalid : ""}`}>
-            <option value="" disabled>Select…</option>
-            {topics.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-          {err("topic") && <span className="mt-1 block text-xs text-danger">{err("topic")}</span>}
-        </label>
+        <SelectField label={form === "webinar" ? "Which webinar?*" : "How can we help? Select a topic.*"} name="topic" required defaultValue={defaultTopic ?? ""} error={err("topic")}>
+          <option value="" disabled>Select…</option>
+          {topics.map((t) => <option key={t} value={t}>{t}</option>)}
+        </SelectField>
       )}
 
       {form === "contact" ? (
@@ -141,32 +137,23 @@ export function ContactForm({
           <Field name="organization" label={form === "event" ? "Hospital" : "Organization"} />
           <Field name="email" label="Email*" type="email" error={err("email")} required />
           <Field name="phone" label="Phone" type="tel" />
-          <label className="block text-sm">
-            <span className="mb-1 block">Region</span>
-            <select name="region" defaultValue={defaultRegion ?? ""} className={input}>
-              <option value="">Select…</option>
-              {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </label>
+          <SelectField label="Region" name="region" defaultValue={defaultRegion ?? ""}>
+            <option value="">Select…</option>
+            {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+          </SelectField>
           {!compact && <Field name="country" label="Country" />}
           {!compact && <Field name="state" label="State/Province" />}
           {form === "event" && <Field name="meta_dietary" label="Dietary requirements" />}
         </div>
       )}
 
-      <label className="block text-sm">
-        <span className="mb-1 block">Message</span>
-        <textarea name="message" rows={4} className={input} placeholder={form === "careers" ? "What would you like to work on?" : undefined} />
-      </label>
+      <TextAreaField label="Message" name="message" rows={4} placeholder={form === "careers" ? "What would you like to work on?" : undefined} />
 
-      <label className="flex items-start gap-2 text-sm">
-        <input type="checkbox" name="optIn" className="mt-1" />
-        <span>Sign me up! I would like to receive Rapid Medical news and updates.</span>
-      </label>
+      <CheckboxField name="optIn" label="Sign me up! I would like to receive Rapid Medical news and updates." />
 
-      <button disabled={pending} className={`rounded bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground disabled:opacity-50 ${form === "contact" || form === "careers" ? "w-full" : ""}`}>
+      <Button type="submit" size="lg" block={form === "contact" || form === "careers"} disabled={pending}>
         {pending ? "Sending…" : "Submit"}
-      </button>
+      </Button>
 
       <p className="text-xs text-muted">
         By clicking “Submit,” you understand and agree that the information provided will be used and processed in accordance with our{" "}
@@ -182,8 +169,7 @@ function TopicChips({ topics, defaultTopic, error, legend = "How can we help? Se
   const rest = topics.slice(CHIPS);
   const [topic, setTopic] = useState(defaultTopic && topics.includes(defaultTopic) ? defaultTopic : "");
   const [other, setOther] = useState(!!topic && rest.includes(topic));
-  const chip = (on: boolean) =>
-    `cursor-pointer rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"} has-[:focus-visible]:outline has-[:focus-visible]:outline-2`;
+  const chip = (on: boolean) => `cursor-pointer ${chipClass(on)} has-[:focus-visible]:outline has-[:focus-visible]:outline-2`;
   return (
     <fieldset className="text-sm" aria-invalid={!!error || undefined}>
       <legend className="mb-2">{legend}</legend>
@@ -203,7 +189,7 @@ function TopicChips({ topics, defaultTopic, error, legend = "How can we help? Se
         )}
       </div>
       {other && (
-        <select aria-label="Other topic" required value={topic} onChange={(e) => setTopic(e.target.value)} className={`${input} mt-2 ${error ? invalid : ""}`}>
+        <select aria-label="Other topic" required value={topic} onChange={(e) => setTopic(e.target.value)} className={`${inputClass(!!error)} mt-2`}>
           <option value="" disabled>Select…</option>
           {rest.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
@@ -222,7 +208,7 @@ function CountryState({ defaultCountry, error }: { defaultCountry?: string; erro
     <>
       <label className="block text-sm">
         <span className="mb-1 block">Country*</span>
-        <select name="countryCode" required value={code} onChange={(e) => setCode(e.target.value)} aria-invalid={!!error || undefined} className={`${input} ${error ? invalid : ""}`}>
+        <select name="countryCode" required value={code} onChange={(e) => setCode(e.target.value)} aria-invalid={!!error || undefined} className={inputClass(!!error)}>
           <option value="" disabled>Select…</option>
           {options.map((o) => <option key={o.code} value={o.code}>{o.name}</option>)}
         </select>
@@ -234,12 +220,3 @@ function CountryState({ defaultCountry, error }: { defaultCountry?: string; erro
   );
 }
 
-function Field({ name, label, type = "text", error, required, placeholder }: { name: string; label: string; type?: string; error?: string | null; required?: boolean; placeholder?: string }) {
-  return (
-    <label className="block text-sm">
-      <span className="mb-1 block">{label}</span>
-      <input name={name} type={type} required={required} placeholder={placeholder} aria-invalid={!!error || undefined} className={`${input} ${error ? invalid : ""}`} />
-      {error && <span className="mt-1 block text-xs text-danger">{error}</span>}
-    </label>
-  );
-}

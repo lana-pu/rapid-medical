@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Section, H2, SharedLine } from "@/components/site/primitives";
+import { Section, H2, SharedLine, Btn } from "@/components/site/primitives";
+import { Rows, Row } from "@/components/site/ui";
 import { F, type EditBinding } from "./edit";
 import { safeHref } from "@/lib/safe-path";
 import type { BlockDef, BlockProps } from "./types";
@@ -29,22 +30,19 @@ function Events({ variant, data: d, edit: e, nested }: BlockProps<"events">) {
               <h3 className="mt-2 text-xl font-semibold"><Link href={first.href} className="hover:underline"><F e={first.edit} k="title">{first.title}</F></Link></h3>
               {(first.congress || first.venue) && <p className="mt-1 text-sm text-muted">{[first.congress, first.venue].filter(Boolean).join(" · ")}</p>}
               <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
-                {first.registrationOpen && <Link href={first.href} className="rounded bg-accent px-4 py-2 font-medium text-accent-foreground">Register</Link>}
+                {first.registrationOpen && <Btn href={first.href}>Register</Btn>}
                 <Link href={first.href} className="underline">Details →</Link>
               </div>
             </article>
             {rest.length > 0 && (
-              <ul className="mt-6 divide-y divide-border border-y border-border">
+              <Rows className="mt-6">
                 {rest.map((i) => (
-                  <li key={i.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
-                    <span className="text-sm text-muted">{i.dates}</span>
-                    <div className="min-w-0">
-                      <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
-                      {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
-                    </div>
-                  </li>
+                  <Row key={i.id} lead={i.dates}>
+                    <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
+                    {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
+                  </Row>
                 ))}
-              </ul>
+              </Rows>
             )}
           </>
         )}
@@ -61,17 +59,14 @@ function Events({ variant, data: d, edit: e, nested }: BlockProps<"events">) {
         {years.map((y) => (
           <div key={y} className="mt-8 first:mt-0">
             <div className="text-sm font-semibold">{y}</div>
-            <ul className="mt-2 divide-y divide-border border-y border-border">
+            <Rows className="mt-2">
               {d.items.filter((i) => i.year === y).map((i) => (
-                <li key={i.id} className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[7rem_minmax(0,1fr)]">
-                  <span className="text-sm text-muted">{i.dates}</span>
-                  <div className="min-w-0">
-                    <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
-                    {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
-                  </div>
-                </li>
+                <Row key={i.id} lead={i.dates}>
+                  <Link href={i.href} className="font-medium hover:underline"><F e={i.edit} k="title">{i.title}</F></Link>
+                  {(i.place || i.congress) && <div className="mt-1 text-xs text-muted">{[i.place, i.congress].filter(Boolean).join(" · ")}</div>}
+                </Row>
               ))}
-            </ul>
+            </Rows>
           </div>
         ))}
       </SharedLine>

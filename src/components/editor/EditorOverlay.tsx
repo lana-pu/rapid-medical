@@ -13,7 +13,7 @@ import type { RegionDiff } from "@/blocks/diff";
 import type { StoredBlock } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { DEMO, withBase } from "@/lib/demo";
-import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff } from "./demo-store";
+import { demoApi, demoPageApi, applyDemoState, applyDemoSections, demoEditorOff, setDemoEditorOff, setDemoRole, type DemoRole } from "./demo-store";
 import { BAR_H, DRAG_PRESET, RAIL_W, TOOL_W, buttons, CommentsPanel, Dialog, HistoryList, LinkForm, MediaActions, PresetList, PreviewBar, RichForm, SectionToolbar, SectionsList, SidePanel, TabsPanel, ToolPanel, ToolRail, TopBar, statusText, type ToolKey } from "./editor-ui";
 import { RegionsTable } from "./RegionsTable";
 import { PagesPanel, RecordPanel, type OpenRecord } from "./PagesPanel";
@@ -189,6 +189,8 @@ export default function EditorOverlay() {
   const [tool, setTool] = useState<Tool>(null);
   /** section layout (frames, toolbar, «+ Add section») while Add or Sections is open; the plain page otherwise */
   const layout = tool?.k === "add" || tool?.k === "sections" || panel?.k === "tabs";
+  /** add, move, copy, delete sections and tabs: designer and admin; an editor changes words and pictures and hides sections (ADR-006 → «Права») */
+  const arrange = !!info?.canDesign;
   const layoutRef = useRef(false);
   useEffect(() => {
     layoutRef.current = layout;
@@ -588,7 +590,7 @@ export default function EditorOverlay() {
 
   /* ---- dragging a section from the catalogue onto the page: a line shows where it lands ---- */
   useEffect(() => {
-    if (tool?.k !== "add" || !info) return;
+    if (tool?.k !== "add" || !info || !info.canDesign) return;
     const place = (e: DragEvent) => {
       const p = dragPreset.current;
       if (!p) return null;
@@ -780,8 +782,31 @@ export default function EditorOverlay() {
       {/* the page moves aside for the open tool panel (like Webflow's canvas), so nothing on it is covered */}
       <style>{STYLE(top, preview, layout, RAIL_W + (tool && tool.k !== "regions" ? toolWidth : 0))}</style>
       {DEMO && (
-        <div className="fixed inset-x-0 top-0 z-[1001] h-6 truncate bg-amber-400 px-4 text-center text-xs font-medium leading-6 text-black">
-          Demo — edits are saved only in your browser (localStorage). No server, no database.
+        <div className="fixed inset-x-0 top-0 z-[1001] flex h-6 items-center justify-center gap-3 overflow-hidden whitespace-nowrap bg-amber-400 px-4 text-xs font-medium text-black">
+          <span className="truncate">Demo — edits are saved only in your browser (localStorage). No server, no database.</span>
+          {/* the demo shows both roles (ADR-006 → «Права»); the editor's view by default */}
+          <span role="group" aria-label="View the editor as" className="flex shrink-0 items-center gap-1">
+            <span>View as</span>
+            {(["editor", "designer"] as DemoRole[]).map((r) => {
+              const on = (info?.canDesign ? "designer" : "editor") === r;
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => {
+                    if (on) return;
+                    setDemoRole(r);
+                    if (r === "editor" && tool?.k === "add") setTool(null);
+                    void loadInfo();
+                  }}
+                  className={`rounded px-1.5 leading-4 ${on ? "bg-black text-amber-300" : "underline hover:bg-amber-300"}`}
+                >
+                  {r === "editor" ? "Editor" : "Designer"}
+                </button>
+              );
+            })}
+          </span>
         </div>
       )}
 
@@ -814,6 +839,7 @@ export default function EditorOverlay() {
           top={top}
           active={tool?.k ?? null}
           hasPage={!!info}
+          canAdd={arrange}
           demo={DEMO}
           comments={DEMO || !page ? null : comments.filter((c) => !c.parentId && !c.resolvedAt).length}
           settingsHref={info && !DEMO ? info.adminHref : null}
@@ -892,9 +918,9 @@ export default function EditorOverlay() {
               busy={busy}
               style={{ top: Math.min(Math.max(sel.top - scroll - 34, top + 6), sel.top - scroll + sel.height - 34), left: Math.min(Math.max(sel.left + 8, toolEdge + 8), vw - 380) }}
               onVariant={(v) => runOp({ op: "variant", id: selInfo.id, variant: v }, `Changed layout of ${selInfo.name}`)}
-              onMove={(d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`)}
-              onCopy={() => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`)}
-              onRemove={() => runOp({ op: "remove", id: selInfo.id }, `Deleted ${selInfo.name}`)}
+              onMove={arrange ? (d) => runOp({ op: "move", id: selInfo.id, dir: d }, `Moved ${selInfo.name}`) : undefined}
+              onCopy={arrange ? () => runOp({ op: "duplicate", id: selInfo.id }, `Copied ${selInfo.name}`) : undefined}
+              onRemove={arrange ? () => runOp({ op: "remove", id: selInfo.id }, `Deleted ${selInfo.name}`) : undefined}
               onHide={() => runOp({ op: "hide", id: selInfo.id, hidden: !selInfo.hidden }, `${selInfo.hidden ? "Showed" : "Hid"} ${selInfo.name}`)}
               onTabs={selInfo.tabs ? () => setPanel({ k: "tabs", id: selInfo.id }) : undefined}
             />
@@ -905,7 +931,7 @@ export default function EditorOverlay() {
             </div>
           )}
           {/* add-section buttons on the edges of the hovered / selected section */}
-          {[...plusAt.entries()].map(([key, p]) => (
+          {arrange && [...plusAt.entries()].map(([key, p]) => (
             <button
               key={`plus-${key}`}
               type="button"
@@ -918,7 +944,7 @@ export default function EditorOverlay() {
               {p.list ? "+ Add section to this tab" : "+ Add section"}
             </button>
           ))}
-          {layout && boxes.length === 0 && (
+          {layout && arrange && boxes.length === 0 && (
             <button type="button" onClick={() => setTool({ k: "add", at: 0, list: "" })} className="fixed bottom-6 left-1/2 z-[1001] -translate-x-1/2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
               + Add section
             </button>
@@ -969,7 +995,7 @@ export default function EditorOverlay() {
           />
         </SidePanel>
       )}
-      {tool?.k === "add" && (
+      {tool?.k === "add" && arrange && (
         <ToolPanel title={tool.list ? "Add section to this tab" : "Add section"} top={top} onClose={() => setTool(null)}>
           <div className="h-full">
             <PresetList
@@ -999,11 +1025,11 @@ export default function EditorOverlay() {
               const b = boxesRef.current.find((x) => x.id === id);
               if (b) window.scrollTo({ top: Math.max(0, b.top - top - 80), behavior: "smooth" });
             }}
-            onMove={(x, d) => runOp({ op: "move", id: x.id, dir: d }, `Moved ${x.name}`)}
-            onMoveTo={(x, to) => runOp({ op: "moveTo", id: x.id, to }, `Moved ${x.name}`)}
+            onMove={arrange ? (x, d) => runOp({ op: "move", id: x.id, dir: d }, `Moved ${x.name}`) : undefined}
+            onMoveTo={arrange ? (x, to) => runOp({ op: "moveTo", id: x.id, to }, `Moved ${x.name}`) : undefined}
             onHide={(x) => runOp({ op: "hide", id: x.id, hidden: !x.hidden }, `${x.hidden ? "Showed" : "Hid"} ${x.name}`)}
-            onCopy={(x) => runOp({ op: "duplicate", id: x.id }, `Copied ${x.name}`)}
-            onRemove={(x) => runOp({ op: "remove", id: x.id }, `Deleted ${x.name}`)}
+            onCopy={arrange ? (x) => runOp({ op: "duplicate", id: x.id }, `Copied ${x.name}`) : undefined}
+            onRemove={arrange ? (x) => runOp({ op: "remove", id: x.id }, `Deleted ${x.name}`) : undefined}
             onVariant={(x, v) => runOp({ op: "variant", id: x.id, variant: v }, `Changed layout of ${x.name}`)}
             onTabs={(x) => setPanel({ k: "tabs", id: x.id })}
           />
@@ -1055,10 +1081,10 @@ export default function EditorOverlay() {
             tabs={sectionById.get(panel.id)?.tabs ?? []}
             busy={busy}
             onRename={(tab, label) => runOp({ op: "tab", id: panel.id, act: "rename", tab, label }, "Renamed a tab")}
-            onMove={(tab, dir) => runOp({ op: "tab", id: panel.id, act: "move", tab, dir }, "Moved a tab")}
-            onRemove={(tab) => runOp({ op: "tab", id: panel.id, act: "remove", tab }, "Deleted a tab")}
-            onLink={(tab, href) => runOp({ op: "tab", id: panel.id, act: "link", tab, href }, "Changed a tab link")}
-            onAdd={(label, href) => runOp({ op: "tab", id: panel.id, act: "add", at: sectionById.get(panel.id)?.tabs?.length ?? 0, label, ...(href !== undefined ? { href } : {}) }, `Added tab ${label}`)}
+            onMove={!arrange ? undefined : (tab, dir) => runOp({ op: "tab", id: panel.id, act: "move", tab, dir }, "Moved a tab")}
+            onRemove={!arrange ? undefined : (tab) => runOp({ op: "tab", id: panel.id, act: "remove", tab }, "Deleted a tab")}
+            onLink={!arrange ? undefined : (tab, href) => runOp({ op: "tab", id: panel.id, act: "link", tab, href }, "Changed a tab link")}
+            onAdd={!arrange ? undefined : (label, href) => runOp({ op: "tab", id: panel.id, act: "add", at: sectionById.get(panel.id)?.tabs?.length ?? 0, label, ...(href !== undefined ? { href } : {}) }, `Added tab ${label}`)}
           />
         </SidePanel>
       )}

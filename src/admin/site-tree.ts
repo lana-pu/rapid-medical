@@ -2,6 +2,7 @@ import "server-only";
 import { count, eq } from "drizzle-orm";
 import { db, contactSubmissions } from "@/db";
 import { getResource } from "./resources";
+import { getSession } from "@/lib/auth";
 import { listEditorPages, type PageCard } from "./pages-index";
 import { buildPageTree, pageKey, type PageNode } from "./page-tree";
 
@@ -33,6 +34,12 @@ export const COLLECTION_PAGES: { res: string; title: string; under: string; wher
   { res: "jobs", title: "Jobs", under: "/careers", where: "Open positions on Careers; each position has its own page" },
 ];
 
+/** Collections this person may open: Products is the admin's (ADR-006 → «Права») — no link that leads nowhere. */
+async function collectionPages() {
+  const u = await getSession();
+  return COLLECTION_PAGES.filter((c) => u?.role === "admin" || !getResource(c.res)?.adminOnly);
+}
+
 export const adminPageHref = (key: string) => (key === "/" ? "/admin/page" : `/admin/page${key}`);
 
 export async function collectionCounts(): Promise<Record<string, number>> {
@@ -55,10 +62,10 @@ export async function newRequestCount(): Promise<number> {
 }
 
 export async function siteTree(cards?: PageCard[]): Promise<SiteNode[]> {
-  const [all, counts] = await Promise.all([cards ? Promise.resolve(cards) : listEditorPages(), collectionCounts()]);
+  const [all, counts, cols] = await Promise.all([cards ? Promise.resolve(cards) : listEditorPages(), collectionCounts(), collectionPages()]);
   const convert = (n: PageNode): SiteNode => {
     const kids = n.children.map(convert);
-    for (const c of COLLECTION_PAGES.filter((x) => x.under === n.key)) kids.push({ key: `collection:${c.res}`, title: c.title, kind: "collection", href: `/admin/${c.res}`, count: counts[c.res] ?? 0, children: [] });
+    for (const c of cols.filter((x) => x.under === n.key)) kids.push({ key: `collection:${c.res}`, title: c.title, kind: "collection", href: `/admin/${c.res}`, count: counts[c.res] ?? 0, children: [] });
     return n.versions.length
       ? { key: n.key, title: n.title, kind: "page", href: adminPageHref(n.key), pending: n.versions.some((v) => v.status !== "live"), children: kids }
       : { key: n.key, title: n.title, kind: "group", children: kids };
@@ -85,6 +92,6 @@ export async function pageScreen(key: string) {
     node: hit.node,
     trail: hit.trail,
     cards: cards.filter((c) => pageKey(c.path) === key),
-    collections: COLLECTION_PAGES.filter((c) => c.under === key).map((c) => ({ ...c, count: counts[c.res] ?? 0, newLabel: getResource(c.res)?.titleSingular ?? "item" })),
+    collections: (await collectionPages()).filter((c) => c.under === key).map((c) => ({ ...c, count: counts[c.res] ?? 0, newLabel: getResource(c.res)?.titleSingular ?? "item" })),
   };
 }

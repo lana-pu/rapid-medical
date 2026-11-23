@@ -49,7 +49,7 @@ export async function SettingsOverview({ user }: { user: SessionUser }) {
       title: "Search & sharing",
       blocks: [
         { href: "/admin/seo", title: "Google & sharing", text: "How every page looks in Google — titles and descriptions, all pages in one place.", icon: ICON.google, note: seoProblems ? `${seoProblems} page version${seoProblems > 1 ? "s" : ""} to look at` : undefined },
-        { href: "/admin/not-found-log", title: "Old links", text: "Addresses that lead nowhere, and where old addresses send visitors.", icon: ICON.links, note: broken ? `${broken} broken link${broken > 1 ? "s" : ""} visitors hit` : undefined },
+        ...(admin ? [{ href: "/admin/not-found-log", title: "Old links", text: "Addresses that lead nowhere, and where old addresses send visitors.", icon: ICON.links, note: broken ? `${broken} broken link${broken > 1 ? "s" : ""} visitors hit` : undefined }] : []),
       ],
     },
     ...(canDesign(user) ? [{ title: "Look", blocks: [{ href: "/admin/settings?group=branding", title: "Branding", text: "Logo, the picture for shared links, the browser tab icon.", icon: ICON.brand }] }] : []),

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { buttonClass } from "./ui-classes";
 
 /**
  * "You seem to be in …: go to the regional site?" — suggested from the IP
@@ -22,7 +23,7 @@ export function RegionBanner({ suggested, label, href }: { suggested: string; la
         <span>
           It looks like you are in <b>{label}</b>. This site is intended for healthcare professionals in your region.
         </span>
-        <Link href={href} onClick={dismiss} className="rounded bg-accent px-3 py-1 text-accent-foreground" data-region={suggested}>
+        <Link href={href} onClick={dismiss} className={buttonClass({ size: "sm" })} data-region={suggested}>
           Go to the {label} site
         </Link>
         <button type="button" onClick={dismiss} className="underline">Stay here</button>

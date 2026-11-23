@@ -124,8 +124,14 @@ export async function requireSignedIn(): Promise<SessionUser> {
   return s;
 }
 
-/** Roles (ADR-006): editor — content; designer — also how sections look and Branding; admin — also people and Integrations. */
+/**
+ * Roles (ADR-006 → «Права», 2026-11-23): editor — text and pictures, pages from templates, publishing; designer — also
+ * sections (add, move, copy, remove, layout), Branding, Menu and footer, templates; admin — also deleting, Products,
+ * Old links, people and Integrations.
+ */
 export const canDesign = (u: { role: string }) => u.role === "designer" || u.role === "admin";
+/** Deleting pages and records (one or from a list) — admin only. */
+export const canDelete = (u: { role: string }) => u.role === "admin";
 
 export async function requireAdmin(): Promise<SessionUser> {
   const s = await requireUser();

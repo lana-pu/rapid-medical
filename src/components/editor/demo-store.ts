@@ -160,6 +160,24 @@ export const demoApi = {
  * section's layout, History and region comparison need the server and are not offered.
  */
 
+/** Who the demo shows the editor to (ADR-006 → «Права»): an editor (words, pictures, Hide) or a designer (sections too). Kept in this browser. */
+export type DemoRole = "editor" | "designer";
+const ROLE_KEY = "rm-demo:role";
+export function demoRole(): DemoRole {
+  try {
+    return localStorage.getItem(ROLE_KEY) === "designer" ? "designer" : "editor";
+  } catch {
+    return "editor";
+  }
+}
+export function setDemoRole(r: DemoRole) {
+  try {
+    localStorage.setItem(ROLE_KEY, r);
+  } catch {
+    /* private mode */
+  }
+}
+
 type PageApi = typeof import("@/admin/page-editor");
 type Op = { op: "move"; id: string; dir: -1 | 1 } | { op: "remove"; id: string } | { op: "hide"; id: string; hidden: boolean } | { op: "duplicate"; id: string; newId: string } | { op: "add"; at: number; type: string; variant: string; newId: string; name: string; in?: string };
 type SectionsState = { ops: Op[]; published: number };
@@ -322,11 +340,13 @@ export const demoPageApi: { [K in keyof PageApi]: (...args: Parameters<PageApi[K
       adminHref: withBase(`/admin/${ref.r}/${ref.id}`),
       sections: sectionsNow(),
       presets,
-      canDesign: false,
-      user: "Demo editor",
+      canDesign: demoRole() === "designer",
+      user: demoRole() === "designer" ? "Demo designer" : "Demo editor",
     };
   },
   async editBlocks(_ref, op) {
+    // the same rule as the server: an editor hides sections; adding, moving, copying, removing are a designer's
+    if (demoRole() !== "designer" && op.op !== "hide" && op.op !== "set") return { error: "Adding, moving and removing sections is for designers" };
     const st = loadSections();
     const before = sectionsNow();
     let rec: Op;

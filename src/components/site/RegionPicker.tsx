@@ -4,6 +4,8 @@ import { useId, useState } from "react";
 import type { Region } from "@/db/schema";
 import { findCountries, regionCountryNames } from "@/lib/countries";
 import { regionForCountry } from "@/lib/regions";
+import { Tag } from "./ui";
+import { inputClass } from "./ui-classes";
 
 export type RegionOption = { region: Region; label: string; href: string; suggested?: boolean };
 /** Where the current region came from: the IP, the visitor's own choice, or unknown (the page they opened). */
@@ -33,7 +35,7 @@ export function RegionPicker({ options, current, intro }: { options: RegionOptio
             <div className="text-xs text-muted">Current region</div>
             <div className="font-medium">{current.label}</div>
           </div>
-          {current.source && <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted">{current.source === "location" ? "From your location" : "Your choice"}</span>}
+          {current.source && <Tag muted>{current.source === "location" ? "From your location" : "Your choice"}</Tag>}
         </div>
       )}
 
@@ -45,7 +47,7 @@ export function RegionPicker({ options, current, intro }: { options: RegionOptio
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Start typing, e.g. Brazil"
         autoComplete="off"
-        className="mt-1 w-full rounded border border-border bg-background px-3 py-2 text-sm focus:border-foreground focus:outline-none"
+        className={`mt-1 ${inputClass()}`}
       />
       <p className="mt-1 min-h-5 text-xs text-muted" aria-live="polite">
         {query.trim().length >= 2 && (hit ? (matches.length > 1 ? `Showing ${hit.name} · also ${matches.slice(1, 4).map((m) => m.name).join(", ")}` : "") : "No country found — choose the region you practice in.")}

@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { JobRow } from "@/blocks/jobs";
+import { Button, Chip } from "./ui";
+import { inputClass } from "./ui-classes";
 
 /** How many roles are visible before «Show all N roles» (DESIGN.md → Careers). */
 export const ROLES_LIMIT = 6;
@@ -42,7 +44,6 @@ export function OpenRoles({ items }: { items: JobRow[] }) {
   const matching = items.filter((j) => (!dept || ((j.department ?? "").trim() || "Other") === dept) && (!city || (j.location ?? "").trim() === city));
   const groups = groupRoles(matching);
   const shown = all ? groups : limitRoles(groups, ROLES_LIMIT);
-  const chip = (on: boolean) => `rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"}`;
 
   return (
     <div>
@@ -50,12 +51,12 @@ export function OpenRoles({ items }: { items: JobRow[] }) {
         <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter roles">
           {departments.length > 1 &&
             ["", ...departments].map((d) => (
-              <button key={d || "all"} type="button" aria-pressed={dept === d} className={chip(dept === d)} onClick={() => { setDept(d); setAll(false); }}>
+              <Chip key={d || "all"} on={dept === d} onClick={() => { setDept(d); setAll(false); }}>
                 {d || "All"}
-              </button>
+              </Chip>
             ))}
           {cities.length > 1 && (
-            <select aria-label="Location" value={city} onChange={(e) => { setCity(e.target.value); setAll(false); }} className="rounded border border-border bg-background px-3 py-1.5 text-sm">
+            <select aria-label="Location" value={city} onChange={(e) => { setCity(e.target.value); setAll(false); }} className={`${inputClass()} w-auto py-1.5`}>
               <option value="">All locations</option>
               {cities.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -90,9 +91,9 @@ export function OpenRoles({ items }: { items: JobRow[] }) {
       )}
 
       {!all && matching.length > ROLES_LIMIT && (
-        <button type="button" onClick={() => setAll(true)} className="mt-6 w-full rounded border border-border px-5 py-2.5 text-sm font-medium hover:border-foreground">
+        <Button variant="secondary" size="lg" block onClick={() => setAll(true)} className="mt-6">
           Show all {matching.length} roles
-        </button>
+        </Button>
       )}
     </div>
   );

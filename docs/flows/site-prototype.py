@@ -41,7 +41,7 @@ FOOT = {'c': 'rm-footer', 'region': 'us', 'links': [{'text': t, 'to': 'terms', '
 # ---------- Home and the therapy page: written in branch therapy-home, waiting for Emily — drawn by that branch ----------
 # (render-branch.sh: the branch's last commit on a copy of the database with its migrations and build steps)
 def branch(path, links, act=None):
-    n = sp.route(path, region='us', branch=True, links=[{'text': t, 'to': to} for t, to in links])
+    n = sp.route(path, region='us', branch='therapy-home', links=[{'text': t, 'to': to} for t, to in links])
     if act: n['act'] = act
     return n
 

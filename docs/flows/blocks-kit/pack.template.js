@@ -15,8 +15,8 @@
    - "focus": {"part": "<field>", "style": "selected"|"hover", "toolbar": [nodes], "cursor": true} — the part is found by
      the field's text (header: menu | switcher | contact).
    A node with no snapshot shows a warning: re-run render.sh after changing a flow. "asis": true (screens "as is")
-   takes the snapshot of the code before the redesign (rm-render-asis.json); "branch": true — of a branch not yet in
-   main (rm-render-branch.json, render-branch.sh).
+   takes the snapshot of the code before the redesign (rm-render-asis.json); "branch": "<name>" — of that branch, not
+   yet in main (rm-render-branch-<name>.json, render-branch.sh <name>).
    @components /*NAMES*/ */
 (function () {
 const RENDER = /*RENDER*/{};
@@ -30,10 +30,10 @@ document.head.appendChild(style);
 const TYPES = new Set(META.map(m => m.type));
 const variantOf = t => (META.find(m => m.type === t) || { variants: [{ id: '' }] }).variants[0].id;
 const isBlock = t => TYPES.has(t);
-// which code drew it: today's, before the redesign ("asis"), a branch not yet in main ("branch")
+// which code drew it: today's, before the redesign ("asis"), a branch not yet in main ("branch": its name)
 const eraOf = n => n.asis ? 'asis' : n.branch ? 'branch' : '';
-const snap = (u, n) => ({ asis: RENDER.asis, branch: RENDER.branch }[eraOf(n)] || RENDER.units)[WFKEY.key(u)];
-const box = (n, html) => `<div class="${{ asis: 'rmxa', branch: 'rmxb' }[eraOf(n)] || 'rmx'}">${html}</div>`;
+const snap = (u, n) => ({ asis: RENDER.asis, branch: RENDER.branch[String(n.branch)] || {} }[eraOf(n)] || RENDER.units)[WFKEY.key(u)];
+const box = (n, html) => `<div class="${{ asis: 'rmxa', branch: 'rmxb rmxb-' + esc(n.branch) }[eraOf(n)] || 'rmx'}">${html}</div>`;
 const warn = (what, why) => `<div class="w-alert warning"><span class="tx"><code>${esc(what)}</code> — ${esc(why)}</span></div>`;
 const what = u => u.route ? 'page ' + u.route : u.chrome ? u.chrome : u.blocks.map(b => b.type + ' · ' + b.variant).join(', ');
 const missing = (u, s) => warn(what(u), s && s.error ? 'the site failed to render it: ' + s.error : 'no snapshot of this node: run docs/flows/blocks-kit/render.sh');
@@ -150,5 +150,11 @@ WF.register('rm-route', {
   props: { path: { type: 'text', doc: 'the page’s path on the site, e.g. /news-events/1-…' } },
   render: snapshotOf,
   examples: (EXAMPLES['rm-route'] || []),
+});
+WF.register('rm-dialog', {
+  group: 'Project', overlay: 'modal', doc: 'A window a real page opens (e.g. the webinar request): the page by its path, act steps that open the window (and fill it); only the window is drawn. Put it in screen.overlay.',
+  props: { path: { type: 'text', doc: 'the page’s path' }, region: { type: 'us | ous | apac', doc: 'the visitor’s region (cookie)' }, act: { type: 'steps', doc: 'what opens the window, e.g. [{click: "Request this recording"}]' } },
+  render: snapshotOf,
+  examples: [],
 });
 })();

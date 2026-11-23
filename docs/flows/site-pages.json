@@ -174,6 +174,20 @@
    ]
   },
   {
+   "title": "7 · Webinars — закрыта 2026-11-23, в коде ветки webinars-draft (в main — после ответа Emily о выдаче записи)",
+   "screens": [
+    "web-draft",
+    "web-draft-filled",
+    "web-draft-product",
+    "web-draft-window",
+    "web-draft-sent",
+    "web-draft-b",
+    "web-draft-empty",
+    "web-draft-phone",
+    "web-draft-window-phone"
+   ]
+  },
+  {
    "title": "8 · Evidence — как есть",
    "screens": [
     "ev-asis",
@@ -646,6 +660,46 @@
    "from": "home-branch",
    "to": "home-branch-phone",
    "label": "на телефоне"
+  },
+  {
+   "from": "web-mobbin",
+   "to": "web-draft",
+   "label": "черновик"
+  },
+  {
+   "from": "web-draft",
+   "to": "web-draft-filled",
+   "label": "когда вебинаров 9+"
+  },
+  {
+   "from": "web-draft",
+   "to": "web-draft-product",
+   "label": "со страницы терапии"
+  },
+  {
+   "from": "web-draft-window",
+   "to": "web-draft-sent",
+   "label": "вариант А"
+  },
+  {
+   "from": "web-draft-window",
+   "to": "web-draft-b",
+   "label": "вариант Б"
+  },
+  {
+   "from": "web-draft",
+   "to": "web-draft-empty",
+   "label": "регион без вебинаров"
+  },
+  {
+   "from": "web-draft",
+   "to": "web-draft-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "web-draft-phone",
+   "to": "web-draft-window-phone",
+   "label": "окно"
   }
  ],
  "screens": [
@@ -9835,6 +9889,470 @@
    ]
   },
   {
+   "id": "web-draft",
+   "title": "Webinars · decided, in code (branch webinars-draft) · 5 webinars, as in the database",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft",
+     "links": [
+      {
+       "text": "Request this recording",
+       "to": "web-draft-window"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Решение владелицы 2026-11-23 (1): отдельная страница, но на «общей линии» и теми же строками, что архив Evidence и новости. Когда появится knowledge base, страница станет её срезом «вебинары», переделывать ничего не придётся.",
+    "Строка: картинка · дата · длительность · название · спикер · событие · продукт · одна кнопка «Request this recording» (3). Даты и длительности в базе пока нет: поле «Duration, min» новое, «Date» было, но не заполнено, поэтому строка выводит только то, что есть.",
+    "Формы внизу страницы больше нет: «Request this recording» открывает окно с этим вебинаром (вопрос 2, вариант А).",
+    "Из 5 вебинаров фильтра не видно: он появляется сам от 9 (4).",
+    "Текст шапки: «…fill in the form below» → «…choose a webinar below», потому что формы внизу нет. Тексты за клиентом."
+   ]
+  },
+  {
+   "id": "web-draft-filled",
+   "title": "Webinars · draft · 12 webinars with date and length: the filter shows itself",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-page",
+     "branch": "webinars-draft",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, choose a webinar below."
+      },
+      {
+       "c": "rm-webinars",
+       "v": "library",
+       "items": [
+        {
+         "id": 1,
+         "title": "COMANECI Experience: Increasing packing density",
+         "speaker": "Dr. Mani Puthuran",
+         "event": "",
+         "productName": "COMANECI™",
+         "productSlug": "comaneci",
+         "heldOn": "2025-03-15",
+         "durationMin": 45
+        },
+        {
+         "id": 2,
+         "title": "TIGERTRIEVER: Tips to improve patient outcomes",
+         "speaker": "Dr. Eitan Abergel",
+         "event": "",
+         "productName": "TIGERTRIEVER™",
+         "productSlug": "tigertriever",
+         "heldOn": "2024-11-15",
+         "durationMin": 30
+        },
+        {
+         "id": 3,
+         "title": "Tiger Trial results with ESMINT",
+         "speaker": "Drs. Ashutosh Jadhav & Brian Jankowitz",
+         "event": "ESMINT",
+         "productName": "TIGERTRIEVER™",
+         "productSlug": "tigertriever",
+         "heldOn": "2024-09-15",
+         "durationMin": 60
+        },
+        {
+         "id": 4,
+         "title": "COMANECI: Tips & Tricks from Buffalo",
+         "speaker": "Drs. Adnan Siddiqui & Jason Davies",
+         "event": "",
+         "productName": "COMANECI™",
+         "productSlug": "comaneci",
+         "heldOn": "2024-05-15",
+         "durationMin": 40
+        },
+        {
+         "id": 5,
+         "title": "COLUMBUS 14 Guidewire: Mastering steerability",
+         "speaker": "Dr. Alexander von Hessling",
+         "event": "",
+         "productName": "DRIVEWIRE™",
+         "productSlug": "drivewire",
+         "heldOn": "2023-12-15",
+         "durationMin": 35
+        },
+        {
+         "id": 100,
+         "title": "Sample webinar · COMANECI™ case review",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "COMANECI™",
+         "productSlug": "comaneci",
+         "heldOn": "2023-10-15",
+         "durationMin": 50
+        },
+        {
+         "id": 101,
+         "title": "Sample webinar · TIGERTRIEVER™ in distal occlusions",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "TIGERTRIEVER™",
+         "productSlug": "tigertriever",
+         "heldOn": "2023-06-15",
+         "durationMin": 25
+        },
+        {
+         "id": 102,
+         "title": "Sample webinar · DRIVEWIRE™ first cases",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "DRIVEWIRE™",
+         "productSlug": "drivewire",
+         "heldOn": "2023-03-15",
+         "durationMin": 45
+        },
+        {
+         "id": 103,
+         "title": "Sample webinar · COMANECI™ in bifurcation aneurysms",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "COMANECI™",
+         "productSlug": "comaneci",
+         "heldOn": "2022-11-15",
+         "durationMin": 55
+        },
+        {
+         "id": 104,
+         "title": "Sample webinar · TIGERTRIEVER™ 13 technique",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "TIGERTRIEVER™",
+         "productSlug": "tigertriever",
+         "heldOn": "2022-09-15",
+         "durationMin": 30
+        },
+        {
+         "id": 105,
+         "title": "Sample webinar · Live case discussion",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "COMANECI™",
+         "productSlug": "comaneci",
+         "heldOn": "2022-05-15",
+         "durationMin": 40
+        },
+        {
+         "id": 106,
+         "title": "Sample webinar · Thrombectomy update",
+         "speaker": "Dr. A. Example",
+         "event": "Sample event",
+         "productName": "TIGERTRIEVER™",
+         "productSlug": "tigertriever",
+         "heldOn": "2022-02-15",
+         "durationMin": 35
+        }
+       ],
+       "defaultRegion": "Americas"
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "Пример данных: 5 настоящих вебинаров и 7 «Sample webinar», даты и длительности придуманы. Так страница выглядит, когда вебинаров 9 и больше и поля заполнены в админке.",
+    "Фильтр тот же, что в архиве Evidence (общий компонент FilterChips): «All n» и продукты со счётчиками."
+   ]
+  },
+  {
+   "id": "web-draft-product",
+   "title": "Webinars · draft · from a therapy page (?product=comaneci): filtered",
+   "url": "rapid-medical.com/us/webinars?product=comaneci",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars?product=comaneci",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "notes": [
+    "«Request to view» на странице терапии ведёт сюда с ?product=. Список сразу отфильтрован по продукту, чипы видны всегда, даже при 5 вебинарах, чтобы можно было вернуться к «All». Раньше в форме внизу выбирался первый вебинар продукта."
+   ]
+  },
+  {
+   "id": "web-draft-window",
+   "title": "Webinars · draft · «Request this recording»: the window",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "overlay": {
+    "c": "rm-dialog",
+    "path": "/us/webinars",
+    "region": "us",
+    "branch": "webinars-draft",
+    "act": [
+     {
+      "click": "Request this recording"
+     }
+    ],
+    "links": [
+     {
+      "text": "Submit",
+      "to": "web-draft-sent"
+     }
+    ]
+   },
+   "notes": [
+    "Окно общее для обоих вариантов вопроса 2: название вебинара, спикер и дата, короткая форма. Вебинар уже выбран, поэтому поля «Which webinar?» нет. Регион выбран заранее.",
+    "Закрыть можно кнопкой «Close», клавишей Esc или кликом по фону. На телефоне окно занимает весь экран."
+   ]
+  },
+  {
+   "id": "web-draft-sent",
+   "title": "Webinars · draft · request sent (variant A: the recording comes by email)",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "overlay": {
+    "c": "rm-dialog",
+    "path": "/us/webinars",
+    "region": "us",
+    "branch": "webinars-draft",
+    "act": [
+     {
+      "click": "Request this recording"
+     },
+     {
+      "fill": [
+       "First Name",
+       "Anna"
+      ]
+     },
+     {
+      "fill": [
+       "Last Name",
+       "Levi"
+      ]
+     },
+     {
+      "fill": [
+       "Email",
+       "anna.levi@clinic.org"
+      ]
+     },
+     {
+      "honeypot": true
+     },
+     {
+      "click": "Submit"
+     },
+     {
+      "expect": "Thank you — your request is in."
+     }
+    ]
+   },
+   "notes": [
+    "Вариант А (вручную проверяют, что смотрит специалист): после отправки окно говорит, что запись придёт на этот адрес. Заявка попадает в Requests, как сейчас."
+   ]
+  },
+  {
+   "id": "web-draft-b",
+   "title": "Webinars · variant B (sketch: not in code until Emily answers) · the video right after the form",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "overlay": {
+    "c": "modal",
+    "title": "COMANECI Experience: Increasing packing density",
+    "items": [
+     {
+      "c": "text",
+      "text": "Dr. Mani Puthuran",
+      "v": "muted"
+     },
+     {
+      "c": "media",
+      "kind": "video",
+      "label": "The recording · plays here",
+      "ratio": "16/9",
+      "annotation": "Вариант Б (форма только собирает контакты): после отправки та же форма сменяется видео, ссылка на запись приходит с сервера только после заявки. Заявка всё равно попадает в Requests. В коде этого нет, пока не ответит Emily."
+     },
+     {
+      "c": "text",
+      "text": "We have also emailed you the link.",
+      "v": "small"
+     }
+    ],
+    "actions": [
+     {
+      "c": "button",
+      "text": "Close"
+     }
+    ]
+   }
+  },
+  {
+   "id": "web-draft-empty",
+   "title": "Webinars · draft · a region without webinars (Asia & Pacific)",
+   "url": "rapid-medical.com/apac/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "apac"
+    },
+    {
+     "c": "rm-page",
+     "branch": "webinars-draft",
+     "items": [
+      {
+       "c": "rm-hero",
+       "v": "page",
+       "title": "Webinars",
+       "body": "Physician-led webinars are available to view on-demand. To request a recording, choose a webinar below."
+      },
+      {
+       "c": "rm-webinars",
+       "v": "library",
+       "items": [],
+       "defaultRegion": "Asia Pacific",
+       "emptyLine": "No webinars for Asia & Pacific yet."
+      }
+     ]
+    },
+    {
+     "c": "rm-footer",
+     "region": "apac",
+     "branch": "webinars-draft"
+    }
+   ],
+   "notes": [
+    "Решение (5): страницу не прячем, показываем пустое состояние, как «No upcoming events right now» у событий. Строка с названием региона и ссылка на Contact Us.",
+    "Сейчас вебинары без отмеченного региона показываются во всех регионах, поэтому /apac/webinars на деле не пустая. Отметить регионы у 5 вебинаров — за клиентом (№14)."
+   ]
+  },
+  {
+   "id": "web-draft-phone",
+   "title": "Webinars · draft · phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "web-draft-window-phone",
+   "title": "Webinars · draft · the window, phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/webinars",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/webinars",
+     "region": "us",
+     "branch": "webinars-draft"
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ],
+   "overlay": {
+    "c": "rm-dialog",
+    "path": "/us/webinars",
+    "region": "us",
+    "branch": "webinars-draft",
+    "act": [
+     {
+      "click": "Request this recording"
+     }
+    ]
+   }
+  },
+  {
    "id": "ev-asis",
    "title": "Evidence · as is",
    "url": "rapid-medical.com/us/evidence",
@@ -16767,7 +17285,7 @@
      "c": "rm-route",
      "path": "/us/therapies/aneurysm",
      "region": "us",
-     "branch": true
+     "branch": "therapy-home"
     },
     {
      "c": "rm-footer",
@@ -16789,7 +17307,7 @@
      "c": "rm-route",
      "path": "/us/therapies/lvo",
      "region": "us",
-     "branch": true
+     "branch": "therapy-home"
     },
     {
      "c": "rm-footer",
@@ -16811,7 +17329,7 @@
      "c": "rm-route",
      "path": "/us/therapies/aneurysm",
      "region": "us",
-     "branch": true
+     "branch": "therapy-home"
     },
     {
      "c": "rm-footer",
@@ -17223,7 +17741,7 @@
      "c": "rm-route",
      "path": "/",
      "region": "us",
-     "branch": true
+     "branch": "therapy-home"
     },
     {
      "c": "rm-footer",
@@ -17245,7 +17763,7 @@
      "c": "rm-route",
      "path": "/",
      "region": "us",
-     "branch": true
+     "branch": "therapy-home"
     },
     {
      "c": "rm-footer",

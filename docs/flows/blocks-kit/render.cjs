@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /* Wireframe snapshot of the real blocks: every rm-* node of the flows rendered by the site itself.
-     node docs/flows/blocks-kit/render.cjs [dev server URL, default http://localhost:3000] [--asis | --branch] [--root <checkout>]
+     node docs/flows/blocks-kit/render.cjs [dev server URL, default http://localhost:3000] [--asis | --branch <name>] [--root <checkout>]
    Needs a running dev server of this project (npm run dev). Collects the units (key.js: blocks, header/footer/banner,
    whole pages by path) from docs/flows/*.json and blocks-kit/examples.json, renders them on a temporary route
    (render-page.tsx) or opens the page itself, does a node's "act" steps there (a state), and writes
    docs/flows/rm-render.json: the compiled CSS scoped to .rmx (md:/lg: become container queries of the wireframe frame)
    and each unit's HTML with pictures, videos and maps as labelled grey boxes. Then make-pack.py puts it into pack.js.
    --asis: only the nodes of screens "as is", against a dev server of the code before the redesign → rm-render-asis.json
-   (CSS scoped to .rmxa); --branch: only the nodes marked "branch", against the code of a branch → rm-render-branch.json
-   (.rmxb). Run it through ./render.sh (render-asis.sh, render-branch.sh), which also refresh the examples and the pack. */
+   (CSS scoped to .rmxa); --branch <name>: only the nodes marked "branch": "<name>", against the code of that branch →
+   rm-render-branch-<name>.json (.rmxb-<name>). Run it through ./render.sh (render-asis.sh, render-branch.sh), which also refresh the examples and the pack. */
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -21,10 +21,12 @@ const ROOT = path.resolve(FLOWS, '../..');
 const ERA = process.argv.includes('--asis') ? 'asis' : process.argv.includes('--branch') ? 'branch' : '';
 const ASIS = ERA === 'asis';
 const opt = (name) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : null; };
-const URL_ = (process.argv.slice(2).find((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--root') || 'http://localhost:3000').replace(/\/$/, '');
+const BRANCH = ERA === 'branch' ? opt('--branch') : null;
+if (ERA === 'branch' && !/^[a-z0-9-]+$/.test(BRANCH || '')) { console.error('--branch needs the branch name (a-z, 0-9, -)'); process.exit(1); }
+const URL_ = (process.argv.slice(2).find((a, i, all) => !a.startsWith('--') && !['--root', '--branch'].includes(all[i - 1])) || 'http://localhost:3000').replace(/\/$/, '');
 const APP = path.resolve(opt('--root') || ROOT); // the checkout the dev server runs (--asis: the code before the redesign)
-const SCOPE = { '': '.rmx', asis: '.rmxa', branch: '.rmxb' }[ERA];
-const OUT = path.join(FLOWS, ERA ? `rm-render-${ERA}.json` : 'rm-render.json');
+const SCOPE = { '': '.rmx', asis: '.rmxa', branch: `.rmxb-${BRANCH}` }[ERA];
+const OUT = path.join(FLOWS, { '': 'rm-render.json', asis: 'rm-render-asis.json', branch: `rm-render-branch-${BRANCH}.json` }[ERA]);
 const META = JSON.parse(fs.readFileSync(path.join(FLOWS, 'rm-pages.json'), 'utf8')).meta;
 const TYPES = new Set(META.map((m) => m.type));
 const variantOf = (t) => ((META.find((m) => m.type === t) || { variants: [{ id: '' }] }).variants[0].id);
@@ -43,13 +45,13 @@ function walk(o) {
     }
     return;
   }
-  if (WFKEY.chrome[c] || c === 'rm-route' || (c.startsWith('rm-') && TYPES.has(c.slice(3)))) { const u = WFKEY.unit(o, variantOf); units.set(WFKEY.key(u), u); }
+  if (WFKEY.chrome[c] || c === 'rm-route' || c === 'rm-dialog' || (c.startsWith('rm-') && TYPES.has(c.slice(3)))) { const u = WFKEY.unit(o, variantOf); units.set(WFKEY.key(u), u); }
   Object.values(o).forEach(walk);
 }
 for (const f of sources) walk(JSON.parse(fs.readFileSync(f, 'utf8')));
-for (const [k, u] of units) if ((u.asis ? 'asis' : u.branch ? 'branch' : '') !== ERA) units.delete(k);
+for (const [k, u] of units) if ((u.asis ? 'asis' : u.branch ? 'branch' : '') !== ERA || (BRANCH && u.branch !== BRANCH)) units.delete(k);
 const queue = [...units].map(([k, u]) => Object.assign({ k }, u));
-const what = (u) => u.route ? 'page ' + u.route : u.chrome ? u.chrome + ' ' + (u.region || u.suggested || '') + (u.act ? ' +act' : '') : u.blocks.map((b) => b.type + '·' + b.variant).join(' ');
+const what = (u) => u.route ? (u.dialog ? 'window on ' : 'page ') + u.route : u.chrome ? u.chrome + ' ' + (u.region || u.suggested || '') + (u.act ? ' +act' : '') : u.blocks.map((b) => b.type + '·' + b.variant).join(' ');
 for (const dir of new Set([HERE, path.join(APP, 'docs/flows/blocks-kit')])) { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, '.queue.json'), JSON.stringify(queue)); }
 console.log('units:', queue.length, 'from', sources.map((s) => path.basename(s)).join(', '));
 
@@ -193,6 +195,8 @@ async function actOrFail(page, root, u) {
       await loadAll(page);
       const main = page.locator('body > div.flex-1').first();
       await main.evaluate((el, k) => el.setAttribute('data-wf-unit', k), u.k);
+      // a window the page opens: cut() keeps only the open <dialog>
+      if (u.dialog) await main.evaluate((el) => el.setAttribute('data-wf-modal', ''));
       await actOrFail(page, main, u);
       for (const sh of await page.evaluate(cssOf, SCOPE)) sheets.add(sh);
       Object.assign(all, await page.evaluate(cut));

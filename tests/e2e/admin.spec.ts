@@ -245,7 +245,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
 const addUser = (email: string, role: string) =>
   sql(`insert into users(email,name,password_hash,role,totp_secret,totp_enabled_at) values ('${email}','${role}',(select password_hash from users where email='${ADMIN.email}'),'${role}','${TOTP_SECRET}',now()) on conflict (email) do update set role='${role}', ${TWO_STEP_SQL}`);
 
-test("roles: an editor publishes, but cannot change how a section looks or open Integrations; a designer can", async ({ browser }) => {
+test("roles: an editor publishes and hides sections, but cannot add, move, delete, change how a section looks or open admin-only screens; a designer can", async ({ browser }) => {
   test.setTimeout(120_000);
   addUser("editor@e2e.test", "editor");
   addUser("designer@e2e.test", "designer");
@@ -277,6 +277,11 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await ed.mouse.click((ed.viewportSize()?.width ?? 1280) - 12, 300);
     await expect(ed.locator("#rm-section-toolbar")).toBeVisible();
     await expect(ed.locator('#rm-section-toolbar select[aria-label="Layout"]')).toHaveCount(0);
+    // …nor add, move, copy or delete sections (ADR-006 → «Права», 2026-11-23); hiding is theirs
+    await expect(ed.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Add section" })).toHaveCount(0);
+    await expect(ed.locator('#rm-section-toolbar button[aria-label="Move up"]')).toHaveCount(0);
+    await expect(ed.locator("#rm-section-toolbar").getByRole("button", { name: "Delete", exact: true })).toHaveCount(0);
+    await expect(ed.locator("#rm-section-toolbar").getByRole("button", { name: /^(Hide|Show)$/ })).toBeVisible();
     // …but the menu's labels are everyone's, on the page
     const careers = ed.locator('header [data-e*="menu.5.label"]');
     await careers.click();
@@ -285,6 +290,17 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await ed.keyboard.press("Enter");
     await expect(ed.getByRole("status")).toHaveText("Saved. Not live yet");
     sql(`delete from setting_drafts where key='navigation'`);
+    // deleting, Products and Old links are the admin's
+    await ed.goto("/admin/news");
+    await ed.locator('input[name="ids"]').first().check();
+    await expect(ed.locator("button[name=__action][value=publish]")).toBeVisible();
+    await expect(ed.locator("button[name=__action][value=delete]")).toHaveCount(0);
+    for (const p of ["/admin/products", "/admin/redirects", "/admin/not-found-log"]) {
+      await ed.goto(p);
+      await expect(ed).toHaveURL(/error=forbidden/);
+    }
+    await ed.goto("/admin/settings");
+    await expect(ed.getByRole("link", { name: "Old links" })).toHaveCount(0);
 
     const de = await (await browser.newContext()).newPage();
     await login(de, "designer@e2e.test", ADMIN.password);
@@ -299,6 +315,8 @@ test("roles: an editor publishes, but cannot change how a section looks or open 
     await de.evaluate(() => window.scrollTo(0, 0));
     await de.mouse.click((de.viewportSize()?.width ?? 1280) - 12, 300);
     await expect(de.locator('#rm-section-toolbar select[aria-label="Layout"]')).toBeVisible();
+    await expect(de.locator('#rm-section-toolbar button[aria-label="Move up"]')).toBeVisible();
+    await expect(de.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Add section" })).toBeVisible();
   } finally {
     sql(`delete from drafts where resource='news' and record_id=${id}`);
     sql(`update news_items set status='published' where id=${id}`);

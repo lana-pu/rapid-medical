@@ -14,7 +14,7 @@ export type VideoData = {
 function VideoBand({ data: d, edit: e }: BlockProps<"video">) {
   const isFile = !!d.url && /\.mp4(\?|$)/i.test(d.url);
   return (
-    <section className="relative overflow-hidden bg-neutral-900 py-16 text-white md:py-24">
+    <section className="relative overflow-hidden bg-inverse py-16 text-inverse-foreground md:py-24">
       {isFile && <VideoFile src={d.url} background />}
       <Container className="relative text-center">
         {d.title && <h2 className="text-2xl font-medium md:text-3xl"><F e={e} k="title">{d.title}</F></h2>}

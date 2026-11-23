@@ -359,9 +359,9 @@ test("two editors: the second save is refused, not silently overwritten", async 
   await page.locator('#rm-section-toolbar button:has-text("Copy")').click();
   await expect(page.getByRole("status")).toHaveText(/^Copied/);
 
-  // second editor, with the old version, tries to change it too
+  // second editor, with the old version, tries to change it too (an editor hides; copying is a designer's, ADR-006)
   await selectSection(other, 0);
-  await other.locator('#rm-section-toolbar button:has-text("Copy")').click();
+  await other.locator('#rm-section-toolbar button:has-text("Hide")').click();
   await expect(other.getByRole("dialog", { name: "Someone else changed this page" })).toContainText("Admin");
 
   // clean up
