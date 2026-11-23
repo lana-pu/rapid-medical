@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { withBase } from "@/lib/demo";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
 import { SectionView, type LabData } from "./render";
+import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -43,35 +44,19 @@ function locate(sections: Section[], id: string): { list: Block[]; i: number } |
 
 /* ---- panel pieces ---- */
 const btn = "rounded border border-border bg-background px-2.5 py-1 text-xs hover:border-foreground disabled:cursor-not-allowed disabled:opacity-40";
-const caption = "text-xs font-semibold uppercase tracking-widest text-muted";
 
-function Seg({ opt, value, onPick }: { opt: Opt; value: string; onPick: (v: string) => void }) {
+type Kind = BlockType | "section" | "column" | "tab";
+/** What is inside the selected thing: a row per child with its icon; a click goes down a level. */
+function Inside({ items, onOpen }: { items: { key: string; label: string; hint?: string; kind: Kind }[]; onOpen: (key: string) => void }) {
+  if (!items.length) return <p className="text-sm text-muted">Пока пусто.</p>;
   return (
-    <div className="grid gap-1.5">
-      <div className="text-xs text-muted">{opt.label}</div>
-      <div className="flex flex-wrap gap-1" role="group" aria-label={opt.label}>
-        {opt.values.map((v) => (
-          <button key={v.id} type="button" aria-pressed={value === v.id} onClick={() => onPick(v.id)}
-            className={`rounded border px-2 py-1 text-xs ${value === v.id ? "border-foreground bg-foreground text-background" : "border-border bg-background hover:border-foreground"}`}>{v.label}</button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Group({ title, children }: { title: string; children: ReactNode }) {
-  return <div className="grid gap-3 border-t border-border pt-4"><div className={caption}>{title}</div>{children}</div>;
-}
-
-/** Children of the selected thing: click one to go down a level. */
-function Inside({ items, onOpen }: { items: { key: string; label: string; hint?: string }[]; onOpen: (key: string) => void }) {
-  if (!items.length) return <p className="text-sm text-muted">Пусто.</p>;
-  return (
-    <ul className="grid gap-1">
+    <ul className="-mx-2 grid">
       {items.map((x) => (
         <li key={x.key}>
-          <button type="button" onClick={() => onOpen(x.key)} className="flex w-full items-center justify-between gap-2 rounded border border-border px-3 py-2 text-left text-sm hover:border-foreground">
-            <span>{x.label}{x.hint && <span className="block text-xs text-muted">{x.hint}</span>}</span><span aria-hidden className="text-muted">›</span>
+          <button type="button" onClick={() => onOpen(x.key)} className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-surface">
+            <TypeIcon kind={x.kind} className="text-muted" />
+            <span className="min-w-0 flex-1"><span className="block truncate text-sm">{x.label}</span>{x.hint && <span className="block truncate text-xs text-muted">{x.hint}</span>}</span>
+            <span aria-hidden className="text-muted">›</span>
           </button>
         </li>
       ))}
@@ -79,16 +64,40 @@ function Inside({ items, onOpen }: { items: { key: string; label: string; hint?:
   );
 }
 
+/** Adding a block: a tile per kind, with its icon. */
 function AddBlock({ onAdd, nested }: { onAdd: (t: BlockType) => void; nested?: boolean }) {
   const types = (Object.keys(BLOCK_DEFS) as BlockType[]).filter((t) => !nested || BLOCK_DEFS[t].nestable);
   return (
-    <div className="grid grid-cols-2 gap-1">
-      {types.map((t) => <button key={t} type="button" className={`${btn} text-left`} onClick={() => onAdd(t)} title={BLOCK_DEFS[t].hint}>+ {BLOCK_DEFS[t].name}</button>)}
+    <div className="grid grid-cols-3 gap-1.5">
+      {types.map((t) => (
+        <button key={t} type="button" onClick={() => onAdd(t)} title={BLOCK_DEFS[t].hint} className="grid justify-items-center gap-1 rounded-md border border-border px-1 pb-1.5 pt-2 text-muted hover:border-foreground hover:text-foreground">
+          <TypeIcon kind={t} /><span className="text-[11px] leading-tight">{BLOCK_DEFS[t].name}</span>
+        </button>
+      ))}
     </div>
   );
 }
 
-const blockHint = (b: Block) => BLOCK_DEFS[b.type].opts.map((o) => o.values.find((v) => v.id === b.o[o.key])?.label).filter(Boolean).join(" · ");
+const danger = "w-full rounded-md border border-danger/40 px-3 py-2 text-sm text-danger hover:bg-danger/10";
+
+/** Under a block's name in «Внутри»: what it says or holds, so blocks of one kind are told apart. */
+const cut = (t: unknown, n = 42) => { const x = String(t ?? "").trim(); return x.length > n ? `${x.slice(0, n - 1)}…` : x; };
+const optLabel = (b: Block, key: string) => BLOCK_DEFS[b.type].opts.find((o) => o.key === key)?.values.find((v) => v.id === b.o[key])?.label.toLowerCase() ?? "";
+function blockHint(b: Block): string {
+  const d = b.d as Record<string, unknown>;
+  switch (b.type) {
+    case "heading": return cut(d.title);
+    case "text": return cut(d.body);
+    case "buttons": return cut((d.items as string[]).slice(0, Number(b.o.count)).join(", "));
+    case "media": return optLabel(b, "kind");
+    case "numbers": return `${b.o.count} · ${optLabel(b, "style")}`;
+    case "cards": return `${b.o.count} · ${optLabel(b, "style")}`;
+    case "facts": return cut((d.rows as string[][]).slice(0, Number(b.o.rows)).map((r) => r[0]).join(", "));
+    case "quote": return cut(d.text);
+    case "list": return `${optLabel(b, "source")} · ${optLabel(b, "view")}`;
+    case "tabs": return cut((d.tabs as Tab[]).map((t) => t.label).join(", "));
+  }
+}
 
 export function Builder({ data }: { data: LabData }) {
   const [store, setStore] = useState<Store>(() => ({ sections: start(), custom: [] }));
@@ -181,55 +190,97 @@ export function Builder({ data }: { data: LabData }) {
 
   /* ---- what the panel shows for the selected thing ---- */
   const blockOf = (id: string) => { const l = locate(sections, id); return l ? l.list[l.i] : null; };
-  const blocksItems = (list: Block[]) => list.map((b) => ({ key: b.id, label: BLOCK_DEFS[b.type].name, hint: blockHint(b) }));
+
+  const kids = (list: Block[]) => list.map((b) => ({ key: b.id, label: BLOCK_DEFS[b.type].name, hint: blockHint(b), kind: b.type as Kind }));
+
+  /** The panel's header: what is selected, where it sits, the way up, and quick actions as icons. */
+  const head = (): ReactNode => {
+    if (!here)
+      return (
+        <div className="grid justify-items-center gap-2 px-6 py-10 text-center text-muted">
+          {ICON.pointer}
+          <div className="text-sm font-medium text-foreground">Ничего не выбрано</div>
+          <p className="text-xs">Кликните секцию или блок на странице — здесь появятся его настройки.</p>
+        </div>
+      );
+    const b = here.kind === "block" ? blockOf(here.id) : null;
+    const kind: Kind = here.kind === "block" ? (b?.type ?? "text") : here.kind;
+    const name = here.kind === "section" ? sections[here.s]?.name || `Секция ${here.s + 1}` : here.kind === "tab" ? `Вкладка ${here.label}` : here.label;
+    const parent = chain.length > 1 ? chain[chain.length - 2].label : "Страница";
+    let actions: ReactNode = null;
+    if (here.kind === "section") {
+      const i = here.s;
+      actions = (<>
+        <IconButton label="Выше" disabled={i === 0} onClick={() => moveSection(i, -1)}>{ICON.up}</IconButton>
+        <IconButton label="Ниже" disabled={i === sections.length - 1} onClick={() => moveSection(i, 1)}>{ICON.down}</IconButton>
+        <IconButton label="Копия секции" onClick={() => addSection(sections[i])}>{ICON.copy}</IconButton>
+      </>);
+    } else if (here.kind === "block" && designer && b) {
+      actions = (<>
+        <IconButton label="Выше" onClick={() => moveBlock(b.id, -1)}>{ICON.up}</IconButton>
+        <IconButton label="Ниже" onClick={() => moveBlock(b.id, 1)}>{ICON.down}</IconButton>
+        <IconButton label="Копия блока" onClick={() => copyBlock(b.id)}>{ICON.copy}</IconButton>
+      </>);
+    } else if (here.kind === "tab" && designer) {
+      const n = ((blockOf(here.id)?.d.tabs as Tab[]) ?? []).length;
+      actions = (<>
+        <IconButton label="Левее" disabled={here.t === 0} onClick={() => { editTabs(here.id, (x) => { [x[here.t - 1], x[here.t]] = [x[here.t], x[here.t - 1]]; }); pick(tabKey(here.id, here.t - 1)); }}>{ICON.left}</IconButton>
+        <IconButton label="Правее" disabled={here.t === n - 1} onClick={() => { editTabs(here.id, (x) => { [x[here.t + 1], x[here.t]] = [x[here.t], x[here.t + 1]]; }); pick(tabKey(here.id, here.t + 1)); }}>{ICON.right}</IconButton>
+      </>);
+    }
+    return (
+      <div className="sticky top-0 z-10 border-b border-border bg-background px-4 pb-3 pt-3">
+        <button type="button" onClick={up} title="На уровень выше (Esc)" className="mb-2 inline-flex items-center gap-1.5 rounded-md py-0.5 pr-2 text-xs text-muted hover:text-foreground">
+          {ICON.parent}<span className="truncate">{parent}</span>
+        </button>
+        <div className="flex items-center gap-2">
+          <TypeIcon kind={kind} className="h-9 w-9 rounded-md bg-surface text-foreground" />
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-base font-semibold leading-tight">{name}</div>
+            <div className="truncate text-xs text-muted">{here.kind === "block" && b ? BLOCK_DEFS[b.type].hint : here.kind === "section" ? `Секция ${here.s + 1} из ${sections.length}` : here.kind === "column" ? "колонка секции" : "вкладка"}</div>
+          </div>
+          <div className="flex">{actions}</div>
+        </div>
+      </div>
+    );
+  };
 
   const panel = (): ReactNode => {
     if (!here)
-      return (
-        <div className="grid gap-4">
-          <p className="text-sm text-muted">Кликните секцию или блок на странице — здесь появятся его настройки. Новую секцию добавьте слева.</p>
-          <Group title="Секции"><Inside items={sections.map((s, i) => ({ key: s.id, label: `Секция ${i + 1}`, hint: s.name }))} onOpen={pick} /></Group>
-        </div>
-      );
+      return <Group title="Секции страницы"><Inside items={sections.map((s, i) => ({ key: s.id, label: s.name || `Секция ${i + 1}`, hint: `Секция ${i + 1}`, kind: "section" as Kind }))} onOpen={pick} /></Group>;
     if (here.kind === "section") {
       const i = here.s;
       const s = sections[i];
+      if (!s) return null;
       const opts = SECTION_OPTS.filter((o) => designer || o.key !== "layout");
       return (
-        <div className="grid gap-4">
-          {opts.map((o) => <Seg key={o.key} opt={o} value={(s as unknown as Record<string, string>)[o.key]} onPick={(v) => setSectionOpt(i, o.key, v)} />)}
-          <Group title={s.cols.length > 1 ? "Колонки" : "Блоки"}>
-            <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => ({ key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: c.map((b) => BLOCK_DEFS[b.type].name).join(", ") || "пусто" })) : blocksItems(s.cols[0] ?? [])} onOpen={pick} />
-            {designer && s.cols.length === 1 && <AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} />}
+        <>
+          <Options block="section" opts={opts} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
+          <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
+            <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => ({ key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: c.map((b) => BLOCK_DEFS[b.type].name).join(", ") || "пусто", kind: "column" as Kind })) : kids(s.cols[0] ?? [])} onOpen={pick} />
           </Group>
-          <Group title="Секция">
-            <div className="flex flex-wrap gap-1">
-              <button type="button" className={btn} disabled={i === 0} onClick={() => moveSection(i, -1)}>↑ Выше</button>
-              <button type="button" className={btn} disabled={i === sections.length - 1} onClick={() => moveSection(i, 1)}>↓ Ниже</button>
-              <button type="button" className={btn} onClick={() => addSection(s)}>Копия</button>
-              <button type="button" className={btn} onClick={() => removeSection(i)}>Удалить</button>
-            </div>
-          </Group>
+          {designer && s.cols.length === 1 && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} /></Group>}
           {designer && (
-            <Group title="Готовая секция">
+            <Group title="Сохранить как готовую">
               {/* not a <form>: the demo build catches every form submit (DemoShell) */}
-              <label htmlFor="lab-ready-name" className="text-xs text-muted">Сохранить эту секцию как готовую: она появится слева у редактора.</label>
-              <div className="flex gap-1">
-                <input id="lab-ready-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Например, «Три преимущества»" className="min-w-0 flex-1 rounded border border-border px-2 py-1 text-sm" />
-                <button type="button" className={btn} disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
+              <p className="text-xs text-muted">Секция появится слева в «Добавить» у редактора.</p>
+              <div className="flex gap-1.5">
+                <input id="lab-ready-name" aria-label="Название готовой секции" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Например, «Три преимущества»" className="h-8 min-w-0 flex-1 rounded-md border border-border px-2 text-sm" />
+                <button type="button" className="h-8 rounded-md bg-foreground px-3 text-sm text-background disabled:opacity-40" disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
               </div>
             </Group>
           )}
-        </div>
+          <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeSection(i)}>Удалить секцию</button></div>
+        </>
       );
     }
     if (here.kind === "column") {
-      const col = sections[here.s].cols[here.c] ?? [];
+      const col = sections[here.s]?.cols[here.c] ?? [];
       return (
-        <div className="grid gap-4">
-          <Inside items={blocksItems(col)} onOpen={pick} />
+        <>
+          <Group title="Внутри"><Inside items={kids(col)} onOpen={pick} /></Group>
           {designer && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[here.s].cols[here.c], t)} /></Group>}
-        </div>
+        </>
       );
     }
     if (here.kind === "tab") {
@@ -237,35 +288,27 @@ export function Builder({ data }: { data: LabData }) {
       const t = all[here.t];
       if (!t) return null;
       return (
-        <div className="grid gap-4">
-          <label className="grid gap-1.5 text-xs text-muted" htmlFor="lab-tab-label">Название вкладки
-            <input id="lab-tab-label" defaultValue={t.label} key={here.key} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="rounded border border-border px-2 py-1 text-sm text-foreground" />
-          </label>
-          <Group title="Блоки во вкладке"><Inside items={blocksItems(t.blocks)} onOpen={pick} /></Group>
+        <>
+          <Group title="Название">
+            <input id="lab-tab-label" aria-label="Название вкладки" defaultValue={t.label} key={here.key} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="h-8 rounded-md border border-border px-2 text-sm" />
+          </Group>
+          <Group title="Внутри"><Inside items={kids(t.blocks)} onOpen={pick} /></Group>
           {designer && <Group title="Добавить блок"><AddBlock nested onAdd={(type) => addBlock((d) => tabsOf(d, here.id)?.[here.t]?.blocks, type)} /></Group>}
-          {designer && (
-            <Group title="Вкладка">
-              <div className="flex flex-wrap gap-1">
-                <button type="button" className={btn} disabled={here.t === 0} onClick={() => { editTabs(here.id, (x) => { [x[here.t - 1], x[here.t]] = [x[here.t], x[here.t - 1]]; }); pick(tabKey(here.id, here.t - 1)); }}>← Левее</button>
-                <button type="button" className={btn} disabled={here.t === all.length - 1} onClick={() => { editTabs(here.id, (x) => { [x[here.t + 1], x[here.t]] = [x[here.t], x[here.t + 1]]; }); pick(tabKey(here.id, here.t + 1)); }}>Правее →</button>
-                <button type="button" className={btn} disabled={all.length < 2} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button>
-              </div>
-            </Group>
-          )}
-        </div>
+          {designer && all.length > 1 && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button></div>}
+        </>
       );
     }
     const b = blockOf(here.id);
     if (!b) return null;
     return (
-      <div className="grid gap-4">
-        {BLOCK_DEFS[b.type].opts.map((o) => <Seg key={o.key} opt={o} value={b.o[o.key]} onPick={(v) => setOpt(b.id, o.key, v)} />)}
+      <>
+        <Options block={b.type} opts={BLOCK_DEFS[b.type].opts} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
         {(b.type === "media" || b.type === "quote") && (
           <Group title="Картинка">
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-4 gap-1.5">
               {data.images.slice(0, 12).map((im, k) => (
                 <button key={k} type="button" aria-label={im.alt || `Picture ${k + 1}`} aria-pressed={Number(b.d.src) === k} onClick={() => onData(b.id, { src: k })}
-                  className={`aspect-square overflow-hidden rounded border-2 ${Number(b.d.src) === k ? "border-accent" : "border-transparent"}`}>
+                  className={`aspect-square overflow-hidden rounded-md ${Number(b.d.src) === k ? "ring-2 ring-foreground ring-offset-2 ring-offset-background" : "opacity-80 hover:opacity-100"}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={withBase(im.url)} alt="" className="h-full w-full object-cover" />
                 </button>
@@ -274,24 +317,15 @@ export function Builder({ data }: { data: LabData }) {
           </Group>
         )}
         {b.type === "tabs" && (
-          <Group title="Вкладки">
-            <Inside items={(b.d.tabs as Tab[]).map((t, k) => ({ key: tabKey(b.id, k), label: t.label, hint: t.blocks.map((x) => BLOCK_DEFS[x.type].name).join(", ") || "пусто" }))} onOpen={pick} />
-            {designer && <button type="button" className={btn} onClick={() => editTabs(b.id, (x) => { x.push({ label: "New tab", blocks: [] }); })}>+ Вкладка</button>}
+          <Group title="Вкладки" aside={designer ? <button type="button" className="text-xs underline" onClick={() => editTabs(b.id, (x) => { x.push({ label: "New tab", blocks: [] }); })}>+ Вкладка</button> : undefined}>
+            <Inside items={(b.d.tabs as Tab[]).map((t, k) => ({ key: tabKey(b.id, k), label: t.label, hint: t.blocks.map((x) => BLOCK_DEFS[x.type].name).join(", ") || "пусто", kind: "tab" as Kind }))} onOpen={pick} />
           </Group>
         )}
-        {b.type !== "tabs" && b.type !== "list" && <p className="text-xs text-muted">Тексты правятся прямо на странице: клик по тексту, Enter — готово.</p>}
-        {b.type === "list" && <p className="text-xs text-muted">Записи берутся из коллекции и правятся там; здесь — что показывать и как.</p>}
-        {designer && (
-          <Group title="Блок">
-            <div className="flex flex-wrap gap-1">
-              <button type="button" className={btn} onClick={() => moveBlock(b.id, -1)}>↑ Выше</button>
-              <button type="button" className={btn} onClick={() => moveBlock(b.id, 1)}>↓ Ниже</button>
-              <button type="button" className={btn} onClick={() => copyBlock(b.id)}>Копия</button>
-              <button type="button" className={btn} onClick={() => removeBlock(b.id)}>Удалить</button>
-            </div>
-          </Group>
-        )}
-      </div>
+        <Group title="Текст">
+          <p className="text-xs text-muted">{b.type === "list" ? "Записи берутся из коллекции и правятся там; здесь — что показывать и как." : b.type === "tabs" ? "Названия вкладок — внутри каждой вкладки." : "Тексты правятся прямо на странице: клик по тексту, Enter — готово."}</p>
+        </Group>
+        {designer && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>}
+      </>
     );
   };
 
@@ -314,8 +348,6 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
 
-  const title = here ? (here.kind === "section" ? `Секция ${here.s + 1}` : here.kind === "tab" ? `Вкладка ${here.label}` : here.label) : "Страница";
-  const sub = here?.kind === "section" ? sections[here.s]?.name : here?.kind === "block" ? BLOCK_DEFS[blockOf(here.id)?.type ?? "text"].hint : undefined;
   const trail = new Set(chain.slice(0, -1).map((l) => l.key));
 
   return (
@@ -388,15 +420,8 @@ export function Builder({ data }: { data: LabData }) {
           </main>
         </div>
 
-        <aside className="min-h-0 overflow-auto border-l border-border p-4" aria-label="Настройки">
-          <div className="mb-4 flex items-start gap-2">
-            {here && <button type="button" onClick={up} aria-label="На уровень выше" title="На уровень выше (Esc)" className={`${btn} mt-0.5`}>←</button>}
-            <div className="min-w-0">
-              <div className="text-lg font-semibold leading-tight">{title}</div>
-              {sub && <div className="text-xs text-muted">{sub}</div>}
-              {here && chain.length > 1 && <div className="mt-0.5 text-xs text-muted">в: {chain[chain.length - 2].label}</div>}
-            </div>
-          </div>
+        <aside className="min-h-0 overflow-auto border-l border-border" aria-label="Настройки">
+          {head()}
           {panel()}
         </aside>
       </div>
