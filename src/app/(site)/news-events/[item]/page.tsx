@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getNews, getNewsItem } from "@/lib/content";
+import { getMovedNewsId, getNews, getNewsItem } from "@/lib/content";
 import { idFromParam, newsHref } from "@/lib/material";
 import { isExternalHref, safeHref } from "@/lib/safe-path";
 import { newsOrigin } from "@/blocks/news";
 import { Section, H1, Eyebrow, KeyValue, Btn, Img, formatMonth } from "@/components/site/primitives";
 import { ShareLinks } from "@/components/site/ShareLinks";
+import { MaterialSections } from "@/components/site/MaterialSections";
 
 type Params = Promise<{ item: string }>;
 
@@ -28,12 +29,20 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  */
 export default async function NewsItemPage({ params }: { params: Params }) {
   const { item, n } = await load(params);
-  if (!n) notFound();
+  if (!n) {
+    // an address from before the move to materials (2026-11-18): the old news id → its new page
+    const oldId = idFromParam(item);
+    const moved = oldId ? await getMovedNewsId(oldId) : null;
+    const target = moved ? await getNewsItem(moved) : null;
+    if (target) permanentRedirect(newsHref(target));
+    notFound();
+  }
   const canonical = newsHref(n);
   if (canonical !== `/news-events/${item}`) permanentRedirect(canonical);
+  if (n.blocks?.length) return <MaterialSections id={n.id} blocks={n.blocks} region={null} />;
 
   const original = safeHref(n.url);
-  const origin = newsOrigin(n) ?? "the original site";
+  const origin = newsOrigin({ source: n.source, url: n.url ?? "" }) ?? "the original site";
   const others = (await getNews(5)).filter((x) => x.id !== n.id).slice(0, 4);
   const date = n.publishedOn ? new Date(n.publishedOn).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }) : "";
 

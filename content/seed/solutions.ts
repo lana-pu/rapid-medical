@@ -92,6 +92,16 @@ const TIGER_DIAGRAM = (site: string): AnnotatedImage => ({
     { x: 90, y: 64, label: "Handle" },
   ],
 });
+/**
+ * Both handles of TIGERTRIEVER, as on Duda's US LVO and OUS LVO / MVO (Fix List A.1; placed 2026-11-18): each region its
+ * own models (US: T13 · T17 · T17 ULTRA · T21 · T25 and T13 MICRO; OUS: T17 · T17 ULTRA · T21 · TXL · T25 and T13). The
+ * labels are in the picture itself — no markers. Asia & Pacific keeps the one-handle diagram, as on Duda.
+ */
+const TIGER_HANDLES = (region: "us" | "ous"): AnnotatedImage => ({
+  imageUrl: IMG(US, `opt/Rapid_Medical_${region === "us" ? "US" : "OUS"}_LVO_Both_Handles_Annotated-1920w.png`),
+  caption: "TIGERTRIEVER™ – both handles",
+  markers: [],
+});
 const COMANECI_DIAGRAM = (site: string, img: string): AnnotatedImage => ({
   imageUrl: IMG(site, img),
   caption: "COMANECI™ – device anatomy",
@@ -213,7 +223,8 @@ const tigerBenefits = (site: string): Benefit[] => [
     eyebrow: "Gain active",
     title: "control",
     body: "Unlike conventional stent retrievers, active thrombectomy can improve clot penetration¹ and facilitate smooth retrieval with adjustable radial force.",
-    videoUrl: VID(site, "i7x3QkN4SCmElyjtyiDA_RAPID-MEDICAL_01_TIGERTRIEVER-LOGO_720_LOOP-v.mp4"),
+    // as on Duda (checked 2026-11-18): the stair graph is this section's, the procedure-time graph is «Accelerate»'s
+    videoUrl: VID(site, "Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"),
     secondaryImageUrl: IMG(APAC, "opt/TT_Revised-Base_V4-1920w.png"),
   },
   {
@@ -221,7 +232,8 @@ const tigerBenefits = (site: string): Benefit[] => [
     title: "thrombectomy",
     body: "Two million brain cells die every minute. TIGERTRIEVER™ saves minutes when removing the clot – with reported procedure times faster than the leading competitors.",
     footnote: "Speed matters – TIGER Trial showed quicker time to reperfusion than using aspiration alone.",
-    videoUrl: VID(site, "Ysj0VQoCRIS60VWmLvzj_Tiger+Stair+graph_animated-v.mp4"),
+    // procedure time: ASTER / COMPASS vs TIGER (lost in the migration, restored 2026-11-18; findings/unused-media-2026-11-18.md)
+    videoUrl: site === OUS ? VID(OUS, "DDCXTnSRSCmasu6QIGlU_TIGER+graph_website_3-v.mp4") : VID(site, "j4Uo8taSRCv4Ch0EW7r1_TIGER+graph_website-v.mp4"),
   },
   {
     eyebrow: "The 1st pass",
@@ -456,9 +468,10 @@ export const SOLUTIONS: SolutionSeed[] = [
     specImageUrls: [IMG(OUS, "opt/OUS-Aneurysm-Specifications-1920w.jpg"), IMG(OUS, "opt/OUS_APAC_Product+Overview_chart-1920w.png")],
     howItWorks: COMANECI_STEPS,
     inPractice: [
-      { kind: "case", title: "COMANECI case summary", person: "Dr. Josh Abecassis", linkUrl: FILE(US, "Abecassis_case+summary+1+.pdf"), imageUrl: IMG(US, "opt/COMANECI-testimonial-1-1920w.jpg") },
-      { kind: "case", title: "Y-Stent technique using dual COMANECI devices", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(US, "opt/COMANECI-testimonial-2-1920w.png") },
-      { kind: "testimonial", title: "COMANECI in practice", linkUrl: "/us/success-study-final-results", imageUrl: IMG(US, "opt/COMANECI-testimonial-3-1920w.png") },
+      // the cards as on Duda US (texts, doctors and places restored 2026-11-18)
+      { kind: "case", title: "AMS CTA with incidental aneurysms", person: "Dr. Josh Abecassis", location: "Louisville, KY", linkUrl: FILE(US, "Abecassis_case+summary+1+.pdf"), imageUrl: IMG(US, "opt/COMANECI-testimonial-1-1920w.jpg") },
+      { kind: "case", title: "The “Y” of COMANECI™ in a wide-necked ACA aneurysm", person: "Drs. Kristine Ravina, Ira Finch, Biraj Patel, Benjamin Yim", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(US, "opt/COMANECI-testimonial-2-1920w.png") },
+      { kind: "case", title: "Stable coiling with COMANECI™ in an ICA aneurysm", person: "Dr. Sabih Effendi", location: "Houston, TX", linkUrl: IMG(US, "Screenshot+2025-07-25+at+10.21.43-AM.png"), imageUrl: IMG(US, "opt/COMANECI-testimonial-3-1920w.png") },
     ],
     actionLinks: [
       { label: "Place an order", href: "mailto:orders.inc@rapid-medical.com" },
@@ -570,10 +583,11 @@ export const SOLUTIONS: SolutionSeed[] = [
     specImageUrls: [IMG(OUS, "opt/OUS-Aneurysm-Specifications-1920w.jpg"), IMG(OUS, "opt/OUS_APAC_Product+Overview_chart-1920w.png")],
     howItWorks: COMANECI_STEPS,
     inPractice: [
-      { kind: "case", title: "COMANECI case report – giant ICA aneurysm", person: "Dr. Patankar", linkUrl: FILE(OUS, "Patankar_COMANECI+case+report_giant+ICA+AN.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-1-1920w.png") },
-      { kind: "case", title: "Y-Stent technique using dual COMANECI devices", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(OUS, "opt/Aneurysym+slider-2-1920w.png") },
-      { kind: "case", title: "COMANECI spinal case", person: "Dr. Patankar", linkUrl: "/ous/comaneci-spinal-case-patankar", imageUrl: IMG(OUS, "opt/Aneurysym+slider-3-1920w.png") },
-      { kind: "testimonial", title: "COMANECI in practice", linkUrl: "/ous/success-study-final-results", imageUrl: IMG(OUS, "opt/Aneurysym+slider-4-1920w.png") },
+      // the four cards as on Duda OUS (texts, doctors and places restored 2026-11-18; findings/unused-media-2026-11-18.md)
+      { kind: "case", title: "Continuous perfusion during coil embolization in a giant ICA aneurysm", person: "Dr. Tufail Patankar", location: "Romford, UK", linkUrl: FILE(OUS, "Patankar_COMANECI+case+report_giant+ICA+AN.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-1-1920w.png") },
+      { kind: "case", title: "The “Y” of COMANECI™ in a wide-necked ACA aneurysm", person: "Drs. Kristine Ravina, Ira Finch, Biraj Patel, Benjamin Yim", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(OUS, "opt/Aneurysym+slider-2-1920w.png") },
+      { kind: "case", title: "COMANECI™-assisted coiling of an ASA aneurysm – Pressure cooker technique for spinal AVM fed by ASA sulcomedullary branch", person: "Dr. Tufail Patankar", location: "Romford, UK", linkUrl: "/ous/comaneci-spinal-case-patankar", imageUrl: IMG(OUS, "opt/Aneurysym+slider-3-1920w.png") },
+      { kind: "case", title: "Stable coiling in a large 15 mm aneurysm", person: "Dr. Torleif Sandner", location: "Bogenhausen, Germany", linkUrl: FILE(OUS, "Sandner+2_COMANECI+case+report.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-4-1920w.png") },
     ],
     actionLinks: [
       { label: "Place an order", href: "mailto:info@rapid-medical.com?subject=Order%20inquiry" },
@@ -713,14 +727,22 @@ export const SOLUTIONS: SolutionSeed[] = [
     specImageUrls: [IMG(OUS, "opt/OUS-Aneurysm-Specifications-1920w.jpg"), IMG(OUS, "opt/OUS_APAC_Product+Overview_chart-1920w.png")],
     howItWorks: COMANECI_STEPS,
     inPractice: [
-      { kind: "case", title: "COMANECI case report – giant ICA aneurysm", person: "Dr. Patankar", linkUrl: FILE(OUS, "Patankar_COMANECI+case+report_giant+ICA+AN.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-1-1920w.png") },
-      { kind: "case", title: "Y-Stent technique using dual COMANECI devices", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(OUS, "opt/Aneurysym+slider-2-1920w.png") },
+      // «Leave nothing behind with COMANECI™» on Duda APAC (lost in the migration, restored 2026-11-18): the quote is a
+      // testimonial here; the heading and the Blood Flow video are the closing band below
+      { kind: "testimonial", title: "“Comaneci’s visibility and controlled expansion is beneficial over balloon assistance. The fact that it doesn’t occlude flow is a game-changer.”", person: "Ajit S. Puri, MD", location: "UMass Memorial Medical Center, Boston, MA", imageUrl: IMG(APAC, "opt/Ajit-1920w.png"), linkUrl: "" },
+      // the four cards as on Duda APAC (there the last two led to a broken /watch-recording; here — the same case page and PDF as OUS) (texts, doctors and places restored 2026-11-18; findings/unused-media-2026-11-18.md)
+      { kind: "case", title: "Continuous perfusion during coil embolization in a giant ICA aneurysm", person: "Dr. Tufail Patankar", location: "Romford, UK", linkUrl: FILE(OUS, "Patankar_COMANECI+case+report_giant+ICA+AN.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-1-1920w.png") },
+      { kind: "case", title: "The “Y” of COMANECI™ in a wide-necked ACA aneurysm", person: "Drs. Kristine Ravina, Ira Finch, Biraj Patel, Benjamin Yim", linkUrl: "https://pubmed.ncbi.nlm.nih.gov/38578712/", imageUrl: IMG(OUS, "opt/Aneurysym+slider-2-1920w.png") },
+      { kind: "case", title: "COMANECI™-assisted coiling of an ASA aneurysm – Pressure cooker technique for spinal AVM fed by ASA sulcomedullary branch", person: "Dr. Tufail Patankar", location: "Romford, UK", linkUrl: "/ous/comaneci-spinal-case-patankar", imageUrl: IMG(OUS, "opt/Aneurysym+slider-3-1920w.png") },
+      { kind: "case", title: "Stable coiling in a large 15 mm aneurysm", person: "Dr. Torleif Sandner", location: "Bogenhausen, Germany", linkUrl: FILE(OUS, "Sandner+2_COMANECI+case+report.pdf"), imageUrl: IMG(OUS, "opt/Aneurysym+slider-4-1920w.png") },
     ],
     actionLinks: [
       { label: "Place an order", href: "mailto:info@rapid-medical.com?subject=Order%20inquiry" },
       { label: "Ask a product question", href: "/contact-us?region=apac&topic=support" },
       { label: "Request an IFU", href: "mailto:info@rapid-medical.com?subject=IFU%20request" },
     ],
+    closingTitle: "Leave nothing behind with COMANECI™",
+    closingEmbedUrl: VID(APAC, "nVGpaaf1Qhn4FzSmHI6e_Comaneci+Blood+Flow-v.mp4"),
     closingBody: CLOSING_Q_APAC,
     regulatoryHtml: "", referencesHtml: COMANECI_REFERENCES,
   },
@@ -780,7 +802,7 @@ for (const s of SOLUTIONS) {
   if (s.product.startsWith("tigertriever")) {
     s.shareImageUrl = IMG(APAC, "opt/TT_Revised-Base_V4-1920w.png");
     s.overviewFeatures = TIGER_FEATURES;
-    s.annotatedImage = TIGER_DIAGRAM(site);
+    s.annotatedImage = s.region === "us" && s.slug === "lvo" ? TIGER_HANDLES("us") : s.region === "ous" ? TIGER_HANDLES("ous") : TIGER_DIAGRAM(site);
     s.specs = s.region === "us" ? TT_SPECS_US : s.slug === "mvo" ? TT_SPECS_MVO_OUS : TT_SPECS_OUS;
   } else if (s.product === "comaneci") {
     const vaso = s.slug === "vasospasm";

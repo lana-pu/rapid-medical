@@ -39,7 +39,8 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
     // own page when there is one (every news item has, decision 2026-11-15), else the original
     const [big, ...side] = d.items.map((n) => ({ ...n, url: siteHref(n.href ?? n.url) }));
     if (!big) return null;
-    const inner = (
+    // Home carries its own title and «View all news» (nothing lost when Home took this layout, 2026-11-19); News & Events has neither
+    const grid = (
       <div id={d.anchor} className="mt-8 grid gap-8 border-t border-border pt-8 md:grid-cols-12 md:gap-10">
         <article className="md:col-span-7">
           <a href={big.url} {...ext(big.url)} className="group block">
@@ -66,6 +67,13 @@ function News({ variant, data: d, edit: e, nested }: BlockProps<"news">) {
         )}
       </div>
     );
+    const inner = d.title || d.allHref ? (
+      <>
+        {d.title && <H2 className="mt-8"><F e={e} k="title">{d.title}</F></H2>}
+        {grid}
+        {d.allHref && <div className="mt-8"><Btn href={safeHref(d.allHref)} variant="secondary">{d.allLabel || "View all news"}</Btn></div>}
+      </>
+    ) : grid;
     return nested ? inner : <Section>{inner}</Section>;
   }
   if (variant === "feed") {

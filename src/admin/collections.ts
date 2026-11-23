@@ -16,6 +16,12 @@ import { inArray } from "drizzle-orm";
 type Row = Record<string, any>;
 type Def = {
   res: string;
+  /** what the screens call it when it is a slice of a resource (materials: publications, news) */
+  key?: string;
+  /** the slice: rows of the resource that belong here */
+  only?: (r: Row) => boolean;
+  /** query of «+ New» that starts a record in the slice (kind, where it appears) */
+  start?: string;
   icon: string;
   title: string;
   where: string;
@@ -48,10 +54,10 @@ const pic = (k: string) => (r: Row) => (typeof r[k] === "string" && r[k] && !/\.
 const sorted = (a: Row, b: Row) => (Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0)) || String(a.title ?? a.name ?? "").localeCompare(String(b.title ?? b.name ?? ""));
 
 const DEFS: Def[] = [
-  { res: "news", icon: "📰", title: "News", newLabel: "news item", where: "Cards on News & Events and on the home page; each leads to the article", sub: (r) => join(month(r.publishedOn), r.source), order: newest("publishedOn"), group: (r) => year(r.publishedOn), thumb: pic("imageUrl") },
+  { res: "materials", key: "news", only: (r) => !!r.showInNews, start: "kind=news&showInNews=true", icon: "📰", title: "News", newLabel: "news item", where: "Cards on News & Events and on the home page; each leads to the article", sub: (r) => join(month(r.publishedOn), r.source), order: newest("publishedOn"), group: (r) => year(r.publishedOn), thumb: pic("imageUrl") },
   { res: "events", icon: "📅", title: "Events", newLabel: "event", where: "On News & Events; each event has its own page", page: (r) => `/events/${r.slug}`, sub: (r) => join(month(r.startsOn), r.city, r.congress), order: newest("startsOn"), group: (r) => year(r.startsOn), thumb: pic("imageUrl") },
   { res: "webinars", icon: "🎥", title: "Webinars", newLabel: "webinar", where: "On the Webinars page; visitors ask for a recording", sub: (r) => join(r.speaker, r.event), order: sorted, group: product, thumb: pic("imageUrl") },
-  { res: "publications", icon: "📄", title: "Publications", newLabel: "publication", where: "On Evidence, by product", sub: (r) => join(month(r.publishedOn), r.journal), order: newest("publishedOn"), group: product, thumb: pic("imageUrl") },
+  { res: "materials", key: "publications", only: (r) => !!r.showInEvidence, start: "kind=publication&showInEvidence=true", icon: "📄", title: "Publications", newLabel: "publication", where: "On Evidence, by product", sub: (r) => join(month(r.publishedOn), r.journal), order: newest("publishedOn"), group: product, thumb: pic("imageUrl") },
   { res: "jobs", icon: "💼", title: "Jobs", newLabel: "position", where: "Open positions on Careers; each position has its own page", page: (r) => `/open-positions/${r.slug}`, sub: (r) => join(r.department, r.location), order: sorted, group: (r) => String(r.department || "Other") },
   { res: "team", icon: "👤", title: "Team", newLabel: "person", where: "Leadership on About; each person has their own page", page: (r) => `/team/${r.slug}`, sub: (r) => join(r.title), order: sorted, thumb: pic("photoUrl") },
   { res: "products", icon: "🏷", title: "Products", newLabel: "product", where: "Product tabs on Evidence and links from therapy pages", sub: (r) => join(r.fullName), order: sorted, group: (r) => String(r.family || "Other") },
@@ -67,8 +73,10 @@ export type CollectionItem = { r: string; id: number; title: string; sub: string
 async function rowsOf(d: Def): Promise<Row[]> {
   const res = getResource(d.res);
   if (!res) return [];
-  return (await db.select().from(res.table as any)) as Row[];
+  const rows = (await db.select().from(res.table as any)) as Row[];
+  return d.only ? rows.filter(d.only) : rows;
 }
+const keyOf = (d: Def) => d.key ?? d.res;
 
 /** Collections this person may open: Products — admin only (ADR-006 → «Права»). */
 const visibleDefs = (role: string) => DEFS.filter((d) => role === "admin" || !getResource(d.res)?.adminOnly);
@@ -77,7 +85,7 @@ export async function collectionsOverview(): Promise<{ items: CollectionSummary[
   try {
     const user = await requireEditor();
     const items = await Promise.all(
-      visibleDefs(user.role).map(async (d) => ({ key: d.res, icon: d.icon, title: d.title, where: d.where, count: (await rowsOf(d)).length, ownPage: !!d.page })),
+      visibleDefs(user.role).map(async (d) => ({ key: keyOf(d), icon: d.icon, title: d.title, where: d.where, count: (await rowsOf(d)).length, ownPage: !!d.page })),
     );
     return { items };
   } catch (e) {
@@ -88,7 +96,7 @@ export async function collectionsOverview(): Promise<{ items: CollectionSummary[
 export async function collectionItems(key: string): Promise<{ title: string; where: string; newLabel: string; newHref: string; fields: CollectionField[]; items: CollectionItem[] } | Fail> {
   try {
     const user = await requireEditor();
-    const d = visibleDefs(user.role).find((x) => x.res === key);
+    const d = visibleDefs(user.role).find((x) => keyOf(x) === key);
     const res = d && getResource(d.res);
     if (!d || !res) return { error: "Unknown collection" };
     const rows = (await rowsOf(d)).sort(d.order);
@@ -109,7 +117,7 @@ export async function collectionItems(key: string): Promise<{ title: string; whe
     const fields: CollectionField[] = res.fields
       .filter((f) => (f.type === "text" || f.type === "textarea" || f.type === "url"))
       .map((f) => ({ name: f.name, label: f.label, type: f.type as CollectionField["type"], required: !!f.required }));
-    return { title: d.title, where: d.where, newLabel: d.newLabel, newHref: `/admin/${res.slug}/new`, fields, items };
+    return { title: d.title, where: d.where, newLabel: d.newLabel, newHref: `/admin/${res.slug}/new${d.start ? `?${d.start}` : ""}`, fields, items };
   } catch (e) {
     return fail(e);
   }

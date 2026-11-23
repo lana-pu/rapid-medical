@@ -39,7 +39,11 @@ export const submissionStatusEnum = pgEnum("submission_status", ["new", "in_prog
 export type ActionLink = { label: string; href: string };
 export type SpecTable = { caption?: string; columns: string[]; rows: string[][]; note?: string };
 /** Big number + caption (home counters, evidence badge, "47% FPE" circles). */
-export type Stat = { value: string; label: string; note?: string; iconUrl?: string };
+export type Stat = {
+  value: string; label: string; note?: string; iconUrl?: string;
+  /** the value is counted from the records, not typed (Home → evidence: the publications, the same number as Evidence) */
+  from?: "publications";
+};
 /** Structured chart rendered as SVG (replaces chart screenshots). */
 export type Chart = {
   kind: "bar" | "stackedBar";
@@ -386,6 +390,82 @@ export const newsItems = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/*  Materials (ADR-009, step 1 — 2026-11-18, docs/briefs/materials.md)  */
+/*  Publications, news, studies, cases and documents in one table. The   */
+/*  old publications / news_items tables stay for rollback; nothing     */
+/*  reads them.                                                          */
+/* ------------------------------------------------------------------ */
+
+/** «Create from a document» (docs/screens/admin-create-from-document.md): what was checked, and by whom. */
+export type DocumentCheck = {
+  /** the PDF of the media library; null — a web page whose text was pasted */
+  mediaId: number | null;
+  /** the PDF's file name, or the page's address without https:// */
+  file: string;
+  nct: string | null;
+  /** the registry's rows were added; or why they could not be (the draft is built without them) */
+  registry: { ok: true } | { ok: false; error: string } | null;
+  /** parts of the AI answer left out of the draft, each with its reason (the rest of the answer is used) */
+  skipped?: string[];
+  items: { id: string; part: "figures" | "passport" | "comparison" | "matrix" | "distribution" | "table" | "centres"; block?: string; fields?: string[]; label: string; value: string; quote: string; status: "ok" | "check" | "confirmed"; reason?: string; confirmedBy?: string; confirmedAt?: string }[];
+};
+
+export const materialKindEnum = pgEnum("material_kind", ["study", "publication", "news", "case", "document"]);
+export const MATERIAL_KINDS = materialKindEnum.enumValues;
+export type MaterialKind = (typeof MATERIAL_KINDS)[number];
+
+export const materials = pgTable(
+  "materials",
+  {
+    id: serial("id").primaryKey(),
+    kind: materialKindEnum("kind").notNull().default("publication"),
+    title: text("title").notNull(),
+    /** The day (news) or the first day of the month (publications; the day is ignored in UI) */
+    publishedOn: timestamp("published_on", { withTimezone: false, mode: "date" }).notNull(),
+    productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
+    /** Regions where it is shown; empty = all. With its own `slug`: one region → /{region}/{slug}, none → /{slug}. */
+    regions: jsonb("regions").$type<Region[]>().notNull().default([]),
+    // where it came from
+    authors: text("authors").notNull().default(""),
+    journal: text("journal").notNull().default(""),
+    source: text("source").notNull().default(""), // BusinessWire, NeuroNews…
+    url: text("url"), // the original: DOI / journal / press release
+    doi: text("doi"),
+    pdfUrl: text("pdf_url"),
+    pdfLicense: text("pdf_license").notNull().default(""),
+    pdfSource: text("pdf_source"),
+    abstract: text("abstract").notNull().default(""),
+    abstractSource: text("abstract_source").notNull().default(""),
+    excerpt: text("excerpt").notNull().default(""),
+    imageUrl: text("image_url"),
+    // where it appears (ADR-009 §8)
+    showInEvidence: boolean("show_in_evidence").notNull().default(false),
+    showInNews: boolean("show_in_news").notNull().default(false),
+    /** Highlights: home and the top of News & Events */
+    featured: boolean("featured").notNull().default(false),
+    /** Featured on Evidence: each region has its own set (as on Duda; decision 2026-11-18). Empty = not featured. */
+    featuredRegions: jsonb("featured_regions").$type<Region[]>().notNull().default([]),
+    // its own page
+    /** A kept address (moved pages, e.g. success-study-final-results); null = /…/{id}-{title slug} */
+    slug: text("slug"),
+    bodyHtml: text("body_html").notNull().default(""),
+    blocks: jsonb("blocks").$type<StoredBlock[] | null>(),
+    metaTitle: text("meta_title").notNull().default(""),
+    metaDescription: text("meta_description").notNull().default(""),
+    shareImageUrl: text("share_image_url"),
+    noindex: boolean("noindex").notNull().default(false),
+    /** Where the row was moved from on 2026-11-18: publications:12, news_items:5, pages:6 */
+    legacyRef: text("legacy_ref"),
+    /** Built by «Create from a document»: the PDF, the registry and every quoted value checked against the PDF */
+    documentCheck: jsonb("document_check").$type<DocumentCheck | null>(),
+    status: statusEnum("status").notNull().default("published"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("materials_date").on(t.publishedOn), index("materials_slug").on(t.slug), uniqueIndex("materials_legacy").on(t.legacyRef)],
+);
+
+/* ------------------------------------------------------------------ */
 /*  Events (decision 2026-11-10, docs/screens/events.md)                */
 /*  Upcoming / past is derived from the dates — nobody archives by hand */
 /* ------------------------------------------------------------------ */
@@ -704,7 +784,11 @@ export const auditLog = pgTable(
 export const productsRelations = relations(products, ({ many }) => ({
   solutions: many(solutions),
   publications: many(publications),
+  materials: many(materials),
   webinars: many(webinars),
+}));
+export const materialsRelations = relations(materials, ({ one }) => ({
+  product: one(products, { fields: [materials.productId], references: [products.id] }),
 }));
 export const solutionsRelations = relations(solutions, ({ one }) => ({
   product: one(products, { fields: [solutions.productId], references: [products.id] }),
@@ -724,8 +808,10 @@ export type Media = typeof media.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Solution = typeof solutions.$inferSelect;
 export type NewSolution = typeof solutions.$inferInsert;
-export type Publication = typeof publications.$inferSelect;
-export type NewsItem = typeof newsItems.$inferSelect;
+export type Material = typeof materials.$inferSelect;
+/** Readers' names for a material by the place it shows in (ADR-009): same row, same fields. */
+export type Publication = Material;
+export type NewsItem = Material;
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
 export type Webinar = typeof webinars.$inferSelect;

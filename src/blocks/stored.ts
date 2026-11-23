@@ -56,6 +56,8 @@ export type SourceLists = {
   jobs?: JobRow[];
   /** About: figures counted from the records (publications, offices) */
   facts?: { label: string; value: string }[];
+  /** Home: publications counted the way Evidence counts them (the region's, or all when no region is known) */
+  publicationCount?: number;
 };
 
 const choiceLabel = (r: Region) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
@@ -117,6 +119,19 @@ export const SOURCES: Record<string, Source> = {
     keys: ["groups", "anchors"],
     fill: (_d, ctx) => ({ groups: ctx.lists?.evidence ? evidenceLists(ctx.lists.evidence).groups : [], anchors: (ctx.lists?.evidence?.products ?? []).map((p) => p.slug), region: ctx.region ?? undefined }),
   },
+  /** Home: «Our therapies» — the overview's cards in one row; with no region known, every region's therapies through the chooser */
+  homeTherapies: {
+    keys: ["items"],
+    fill: (_d, ctx) => {
+      const list = ctx.lists?.therapies ?? [];
+      if (!list.length) return null;
+      const cards = overviewSections(list, ctx.region ?? "us", ctx.region ? ctx.lists?.publicationCounts : undefined).flatMap((g) => g.items);
+      // no region: the card's own therapy through the chooser (fillHref adds `next`)
+      return { items: ctx.region ? cards : cards.map((c) => ({ ...c, href: c.href.replace(/^\/us\//, "/{region}/"), more: null })) };
+    },
+  },
+  /** Home: the publications figure of the evidence block */
+  publicationCount: { keys: ["count"], fill: (_d, ctx) => ({ count: ctx.lists?.publicationCount ?? null }) },
   /** Therapies overview: the cards of one therapy group (`data.group`: ischemic / hemorrhagic / access / "" = the rest) */
   therapyGroup: {
     keys: ["title", "items"],
@@ -160,13 +175,21 @@ export function templateHref(href: string, region: Region | null, product?: stri
   return h;
 }
 
+/** A regional section the chooser may lead on to: «evidence», «therapies», «therapies/lvo». */
+export const CHOOSER_NEXT = /^[a-z-]+(\/[a-z0-9-]+)?$/;
+
 export function fillHref(href: string, ctx: RenderCtx): string {
   if (!href.includes("{")) return href;
   let h = href;
   if (!ctx.region) {
-    // region not known yet (Home before the visitor chose one): regional pages go through the chooser,
+    // region not known yet (Home before the visitor chose one): regional pages go through the chooser, which then leads
+    // on to the page asked for (`next`: «evidence», «therapies/lvo» — UX pass 2026-11-20: it used to land on the overview);
     // links that only preselect a region drop the parameter
-    h = h.replace(/^\/\{region\}(?=\/|$|[?#]).*$/, "/choose-your-location");
+    h = h.replace(/^\/\{region\}(\/[^?#]*)?(?:[?#].*)?$/, (_m, rest?: string) => {
+      const next = (rest ?? "").replace(/^\/|\/$/g, "");
+      // «therapies» is where the chooser leads anyway
+      return next !== "therapies" && CHOOSER_NEXT.test(next) ? `/choose-your-location?next=${next}` : "/choose-your-location";
+    });
     h = h.replace(/([?&])region=\{region\}(&|$)/, (_m, sep: string, next: string) => (next ? sep : "")).replace(/\?$/, "");
   }
   return h.replaceAll("{region}", ctx.region ?? "us").replaceAll("{product}", ctx.product || "browse-by-product");

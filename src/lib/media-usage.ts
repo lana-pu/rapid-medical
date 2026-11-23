@@ -34,8 +34,8 @@ const SOURCES: { table: string; r: string; cols: string[]; label: string; path?:
   { table: "site_pages", r: "site-pages", cols: ["blocks"], label: `title || coalesce(' (' || ${REGION_NAME} || ')', '')`, path: `case key when 'home' then '/' when 'about' then '/about-us' when 'careers' then '/careers' else '/' || region || '/' || key end` },
   { table: "solutions", r: "solutions", cols: ["hero_image_url", "hero_video_url", "intro_image_url", "intro_video_url", "overview_image_url", "share_image_url", "overview_features", "annotated_image", "spec_image_urls", "benefits", "how_it_works", "in_practice", "closing_embed_url", "regulatory_html", "references_html", "blocks"], label: `nav_label || ' (' || ${REGION_NAME} || ')'`, path: `'/' || region || '/therapies/' || slug` },
   { table: "pages", r: "pages", cols: ["body_html", "share_image_url", "blocks"], label: `title || coalesce(' (' || ${REGION_NAME} || ')', '')`, path: `coalesce('/' || region, '') || '/' || slug` },
-  { table: "publications", r: "publications", cols: ["pdf_url", "image_url"], label: "title" },
-  { table: "news_items", r: "news", cols: ["image_url"], label: "title" },
+  // materials (ADR-009): a page of its own in the site tree only when kept at an old address (moved study pages)
+  { table: "materials", r: "materials", cols: ["pdf_url", "image_url", "share_image_url", "body_html", "blocks"], label: `title || case when jsonb_array_length(regions) = 1 then coalesce(' (' || (select ${REGION_NAME} from (select regions->>0 as region) x) || ')', '') else '' end`, path: `case when slug is null or slug = '' then null when jsonb_array_length(regions) = 1 then '/' || (regions->>0) || '/' || slug else '/' || slug end` },
   { table: "events", r: "events", cols: ["image_url", "description_html", "recap_html", "recap_photos"], label: "title" },
   { table: "webinars", r: "webinars", cols: ["image_url", "video_url"], label: "title" },
   { table: "team_members", r: "team", cols: ["photo_url", "bio_html"], label: "name" },

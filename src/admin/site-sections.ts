@@ -5,7 +5,10 @@
 
 export type SectionKey = "home" | "therapies" | "evidence" | "webinars" | "news-events" | "about" | "careers" | "contact" | "other" | "menu";
 
-export type SectionList = { resource: string; label: string; where: string; newLabel?: string };
+export type SectionList = { resource: string; label: string; where: string; newLabel?: string; /** a slice of the resource (materials): one flag that is true */ only?: "showInEvidence" | "showInNews" };
+/** Admin address of a section list and of its «+ New» (a slice starts the record in it). */
+export const listHref = (l: SectionList) => `/admin/${l.resource}${l.only ? `?${l.only}=true` : ""}`;
+export const listNewHref = (l: SectionList) => `/admin/${l.resource}/new${l.only === "showInEvidence" ? "?kind=publication&showInEvidence=true" : l.only === "showInNews" ? "?kind=news&showInNews=true" : ""}`;
 
 export type Section = {
   key: SectionKey;
@@ -32,7 +35,7 @@ export const SECTIONS: Section[] = [
     title: "Home",
     intro: "The first page visitors see. Its sections are edited on the page; the news on it come from News.",
     sitePages: ["home"],
-    lists: [{ resource: "news", label: "News", where: "the latest featured news appear on Home", newLabel: "News item" }],
+    lists: [{ resource: "materials", only: "showInNews", label: "News", where: "the latest featured news appear on Home", newLabel: "News item" }],
   },
   {
     key: "therapies",
@@ -50,7 +53,7 @@ export const SECTIONS: Section[] = [
     intro: "Studies for each region, in a tab per product; therapy pages link here.",
     sitePages: ["evidence"],
     lists: [
-      { resource: "publications", label: "Publications", where: "Evidence of the regions they are marked for; featured ones at the top", newLabel: "Publication" },
+      { resource: "materials", only: "showInEvidence", label: "Publications", where: "Evidence of the regions they are marked for; featured ones at the top", newLabel: "Publication" },
       { resource: "products", label: "Products", where: "one tab per product on Evidence" },
     ],
   },
@@ -67,7 +70,7 @@ export const SECTIONS: Section[] = [
     intro: "Upcoming events at the top, then news and past events. Home links here.",
     views: [{ label: "News & Events", path: "/news-events" }],
     lists: [
-      { resource: "news", label: "News", where: "News & Events; featured ones also on Home", newLabel: "News item" },
+      { resource: "materials", only: "showInNews", label: "News", where: "News & Events; featured ones also on Home", newLabel: "News item" },
       { resource: "events", label: "Events", where: "News & Events and a page per event", newLabel: "Event" },
     ],
   },
@@ -114,9 +117,8 @@ export function sectionForResource(resource: string, siteKey?: string): Section 
   const by: Record<string, SectionKey> = {
     solutions: "therapies",
     products: "evidence",
-    publications: "evidence",
+    materials: "evidence",
     webinars: "webinars",
-    news: "news-events",
     events: "news-events",
     team: "about",
     jobs: "careers",

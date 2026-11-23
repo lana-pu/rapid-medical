@@ -59,6 +59,7 @@ test("sections: add from presets, edit its text, move, undo, delete; the regulat
   // its sample text is editable like any other
   const v = page.locator('[data-e*="blocks.1.data.items.0.value"]');
   await v.click();
+  await expect(v).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("47%");
   await page.keyboard.press("Enter");
@@ -234,6 +235,7 @@ test("menu and footer: a label changed on the page waits for Publish; Site setti
     const label = page.locator('header [data-e*="menu.5.label"]');
     await expect(label).toHaveText("Careers");
     await label.click();
+    await expect(label).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
     await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("Join us");
     await page.keyboard.press("Enter");
@@ -291,47 +293,58 @@ test("comments: on a section, a pin on the page, reply, resolve; in the Inbox as
 });
 
 test("history: restore an earlier version as a draft", async ({ page }) => {
-  await login(page);
-  await open(page);
-  const h1 = page.locator("h1 [data-e]").first();
-  const original = (await h1.innerText()).trim();
-  await h1.click();
-  await page.keyboard.press("ControlOrMeta+A");
-  await page.keyboard.type("History test title");
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
-  await publishFromEditor(page);
-
-  await page.getByRole("button", { name: "History", exact: true }).click();
-  const panel = page.getByRole("complementary", { name: "History" });
-  await expect(panel).toContainText("Changed title in Hero");
-  // the version before the change = the second "Published" entry
-  await panel.locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
-  await expect(page.getByRole("status")).toHaveText(/Version restored/);
-  await expect(page.locator("h1")).toHaveText(original);
-  await publishFromEditor(page);
-
-  // restoring the version that is live leaves nothing to publish (UX walk 2026-11-14)
-  await h1.click();
-  await page.keyboard.press("ControlOrMeta+A");
-  await page.keyboard.type("Restore same test");
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
-  await page.getByRole("button", { name: "History", exact: true }).click();
-  await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).first().getByRole("button", { name: "Restore this version" }).click();
-  await expect(page.getByRole("status")).toHaveText(/nothing to publish/);
-  await expect(page.locator('#rm-editor-ui button:has-text("Publish")')).toBeDisabled();
-
-  // restoring a version taken while live does not publish an unpublished page (Publish stays a step)
+  // titles of this run: the test ends by publishing a restored version, so a fixed title would already be live next run
+  const run = Date.now().toString(36);
+  // the page as it was: put back at the end even when a step fails, so the next run starts from the same history
   const id = sql("select id from solutions where region='apac' and slug='mvo'");
-  sql(`update solutions set status='draft' where id=${id}`);
-  await open(page);
-  await expect(page.getByRole("status")).toHaveText("Draft — not live yet");
-  await page.getByRole("button", { name: "History", exact: true }).click();
-  await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
-  await expect(page.getByRole("status")).toHaveText(/Version restored/);
-  expect(sql(`select status from solutions where id=${id}`)).toBe("draft");
-  sql(`update solutions set status='published' where id=${id}`);
+  const blocks = sql(`select blocks::text from solutions where id=${id}`);
+  try {
+    await login(page);
+    await open(page);
+    const h1 = page.locator("h1 [data-e]").first();
+    const original = (await h1.innerText()).trim();
+    await h1.click();
+    await expect(h1).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.type(`History test title ${run}`);
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+    await publishFromEditor(page);
+
+    await page.getByRole("button", { name: "History", exact: true }).click();
+    const panel = page.getByRole("complementary", { name: "History" });
+    await expect(panel).toContainText("Changed title in Hero");
+    // the version before the change = the second "Published" entry
+    await panel.locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
+    await expect(page.getByRole("status")).toHaveText(/Version restored/);
+    await expect(page.locator("h1")).toHaveText(original);
+    await publishFromEditor(page);
+
+    // restoring the version that is live leaves nothing to publish (UX walk 2026-11-14)
+    await h1.click();
+    await expect(h1).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.type(`Restore same test ${run}`);
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
+    await page.getByRole("button", { name: "History", exact: true }).click();
+    await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).first().getByRole("button", { name: "Restore this version" }).click();
+    await expect(page.getByRole("status")).toHaveText(/nothing to publish/);
+    await expect(page.locator('#rm-editor-ui button:has-text("Publish")')).toBeDisabled();
+
+    // restoring a version taken while live does not publish an unpublished page (Publish stays a step)
+    sql(`update solutions set status='draft' where id=${id}`);
+    await open(page);
+    await expect(page.getByRole("status")).toHaveText("Draft — not live yet");
+    await page.getByRole("button", { name: "History", exact: true }).click();
+    await page.getByRole("complementary", { name: "History" }).locator("li", { hasText: "Published" }).nth(1).getByRole("button", { name: "Restore this version" }).click();
+    await expect(page.getByRole("status")).toHaveText(/Version restored/);
+    expect(sql(`select status from solutions where id=${id}`)).toBe("draft");
+    sql(`update solutions set status='published' where id=${id}`);
+  } finally {
+    sql(`update solutions set blocks='${blocks.replace(/'/g, "''")}'::jsonb, status='published' where id=${id}`);
+    sql(`delete from drafts where resource='solutions' and record_id=${id}`);
+  }
 });
 
 test("compare with another region and switch region", async ({ page }) => {
@@ -568,6 +581,7 @@ test("History: View shows an earlier version without restoring it; Restore from 
   const h1 = page.locator("h1 [data-e]").first();
   const original = (await h1.innerText()).trim();
   await h1.click();
+  await expect(h1).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("Version view test");
   await page.keyboard.press("Enter");

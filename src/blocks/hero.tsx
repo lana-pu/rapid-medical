@@ -24,6 +24,8 @@ export type HeroData = {
   /** `bannerCompact`: small note under the text. */
   note?: string | null;
   cta?: ActionLink | null;
+  /** A small text link under the button — the therapy page's «Indications, Safety & Warnings ↓» (DESIGN.md, 2026-11-19). */
+  jump?: ActionLink | null;
   /** Image beside the text (`image`) or video poster (`video`). */
   imageUrl?: string | null;
   videoUrl?: string | null;
@@ -92,6 +94,7 @@ function Hero({ variant, data: d, edit: e, nested }: BlockProps<"hero">) {
           {title}
           {d.body && <p className="mt-6 text-lg"><F e={e} k="body">{d.body}</F></p>}
           {d.cta?.href && <div className="mt-8"><Btn href={d.cta.href}><F e={e} k="cta.label" kh="cta.href" kind="link">{d.cta.label}</F></Btn></div>}
+          {d.jump?.href && <a href={d.jump.href} className="mt-5 inline-block text-sm underline underline-offset-4"><F e={e} k="jump.label">{d.jump.label}</F></a>}
         </div>
         {variant === "image" && <FM e={e} k="imageUrl" kv="videoUrl"><Img src={d.imageUrl} className="w-full rounded object-contain" /></FM>}
       </Container>

@@ -10,7 +10,7 @@ import type { FieldDef } from "./fields";
 import { getRow } from "./engine";
 import { checkBlockPath } from "@/blocks/paths";
 import { checkBase, ConflictError, pageVersion } from "./page-core";
-import { saveWithWorkflow, publish, discardDraft, getDraft, getEditable, hasWorkflow } from "./workflow";
+import { ChecksPending, saveWithWorkflow, publish, discardDraft, getDraft, getEditable, hasWorkflow } from "./workflow";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -272,7 +272,12 @@ export async function publishTargets(targets: { r: string; id: number }[]): Prom
     const live = await getRow(res, t.id);
     if (!live) continue;
     if (!draft?.data && live.status === "published") continue; // nothing pending
-    await publish(res, t.id, user);
+    try {
+      await publish(res, t.id, user);
+    } catch (e) {
+      if (e instanceof ChecksPending) continue; // a material from a document waits for its checks (its record says which)
+      throw e;
+    }
     published++;
     for (const p of res.revalidate) revalidatePath(p, "layout");
     const url = res.previewUrl?.(live);

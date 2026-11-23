@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { regionOr404 } from "@/lib/region-param";
-import { getSolution, getSolutionRegions } from "@/lib/content";
+import { getProductMaterials, getSolution, getSolutionRegions } from "@/lib/content";
 import { REGION_CHOICES } from "@/lib/regions";
 import { JsonLd, plain, absUrl, siteUrl } from "@/components/site/JsonLd";
 import { redirectIfLegacy } from "@/lib/redirects";
@@ -37,6 +37,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
     notFound();
   }
   const others = available.filter((r) => r !== region);
+  const productMaterials = await getProductMaterials(region, s.productId);
   const site = siteUrl();
   const p = s.product;
   const deviceName = (p && (p.aliases?.[region]?.fullName ?? p.fullName)) || s.navLabel;
@@ -56,7 +57,7 @@ export default async function SolutionPage({ params }: { params: Promise<{ seg: 
         }}
       />
       {s.blocks?.length ? <PageMark r="solutions" id={s.id} /> : null}
-      <BlockList blocks={therapyPageBlocks(s, { region, others })} />
+      <BlockList blocks={therapyPageBlocks(s, { region, others, materials: productMaterials })} />
     </>
   );
 }

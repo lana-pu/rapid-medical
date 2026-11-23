@@ -1,8 +1,9 @@
-import { notFound } from "next/navigation";
+import { movedAdminPath } from "@/admin/legacy";
+import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db, products, solutions } from "@/db";
 import { canDelete, requireAdmin, requireUser } from "@/lib/auth";
-import { getResource } from "@/admin/resources";
+import { fieldsFor, getResource } from "@/admin/resources";
 import { getEditable, hasWorkflow, listRevisions } from "@/admin/workflow";
 import { makePreviewToken } from "@/lib/preview";
 import { DEMO, withBase } from "@/lib/demo";
@@ -12,18 +13,24 @@ import { crumbsFor } from "@/admin/site-sections";
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { PageTabs } from "@/components/admin/PageTabs";
 import { pageKey } from "@/admin/page-tree";
+import { isPageRecord } from "@/lib/version";
 
-const PAGE_RESOURCES = ["solutions", "pages", "site-pages"];
 import { WorkflowPanel } from "@/components/admin/WorkflowPanel";
 import { REGIONS } from "@/db/schema";
 import { REGION_CHOICES } from "@/lib/regions";
 import { BackButton } from "@/components/admin/BackLink";
+import { DocumentChecks } from "@/components/admin/DocumentChecks";
+import type { DocumentCheck } from "@/db/schema";
+import { sourceName, unchecked } from "@/lib/document-import";
 
-type SP = { saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
+type SP = { created?: string; checked?: string; saved?: string; pending?: string; published?: string; unpublished?: string; discarded?: string; scheduled?: string; restored?: string; error?: string };
 
 export default async function EditResource({ params, searchParams }: { params: Promise<{ resource: string; id: string }>; searchParams: Promise<SP> }) {
   const { resource, id } = await params;
   const sp = await searchParams;
+  await requireUser();
+  const moved = /^\d{1,9}$/.test(id) ? await movedAdminPath(resource, Number(id)) : null;
+  if (moved) redirect(moved);
   const res = getResource(resource);
   if (!res) notFound();
   const me = await requireUser();
@@ -38,13 +45,17 @@ export default async function EditResource({ params, searchParams }: { params: P
 
   const previewPath = res.previewUrl?.(row) ?? null;
   const previewHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/preview?token=${await makePreviewToken(previewPath)}`) : null;
-  const editHref = previewPath ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
+  // «Edit on page» only where the page is made of sections: not a material shown by its own template (publication, news)
+  const onPage = res.slug !== "materials" || isPageRecord(res.slug, row) || (Array.isArray(row.blocks) && row.blocks.length > 0);
+  const editHref = previewPath && onPage ? (DEMO ? withBase(previewPath) : `/api/editor?on=1&redirect=${encodeURIComponent(previewPath)}`) : null;
+  const fields = fieldsFor(res, row);
+  const checksOpen = res.slug === "materials" ? unchecked((row.documentCheck as DocumentCheck | null)?.items).length : 0;
   // a therapy page in a region it is not in yet: create that region's version (not a copy over an existing one)
   const taken = res.slug === "solutions" ? (await db.select({ region: solutions.region }).from(solutions).where(eq(solutions.slug, String(row.slug ?? "")))).map((x) => x.region) : [];
   const otherRegions = res.slug === "solutions" ? REGIONS.filter((r) => !taken.includes(r)) : [];
   const regionLabel = (r: string) => REGION_CHOICES.find((c) => c.region === r)?.label ?? r;
   // records that are pages of the site (therapy, text and site pages) show as a tab of their page
-  const pageOf = PAGE_RESOURCES.includes(res.slug) && previewPath ? pageKey(previewPath) : null;
+  const pageOf = isPageRecord(res.slug, row) && previewPath ? pageKey(previewPath) : null;
 
   return (
     <>
@@ -101,9 +112,12 @@ export default async function EditResource({ params, searchParams }: { params: P
       {sp.restored && <Notice kind="success">Revision restored{live.status === "published" ? " as pending changes" : ""}.</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
+      {sp.created === "document" && <Notice kind="success">The draft is built from the PDF. Check the values marked «Check» below, look at the page, then publish.</Notice>}
+      {sp.checked && <Notice kind="success">Confirmed.</Notice>}
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div>
-          <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} />
+        <div className="space-y-6">
+          {res.slug === "materials" && row.documentCheck ? <DocumentChecks id={Number(row.id)} check={row.documentCheck as DocumentCheck} demo={DEMO} /> : null}
+          <ResourceForm resourceSlug={res.slug} fields={fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} publishBlocked={checksOpen ? `Check ${checksOpen} value${checksOpen > 1 ? "s" : ""} against ${sourceName(row.documentCheck as DocumentCheck)} first` : null} />
         </div>
         {hasWorkflow(res) && (
           <WorkflowPanel resourceSlug={res.slug} id={row.id} liveStatus={String(live.status)} draft={draft} revisions={revisions} previewHref={previewHref} editHref={editHref} alwaysLive={!!res.alwaysLive} label={String(row[res.labelField] ?? "")} canDelete={canDelete(me)} />

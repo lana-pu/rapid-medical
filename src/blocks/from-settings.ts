@@ -18,9 +18,9 @@ import type { PublicationCard, PublicationGroup } from "./publications";
 
 const record = (r: string, id: number) => ({ r, id, prefix: "" });
 
-export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url, href: newsHref(n), imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("news", n.id) });
+export const newsCard = (n: NewsItem): NewsCard => ({ id: n.id, title: n.title, url: n.url ?? newsHref(n), href: newsHref(n), imageUrl: n.imageUrl, publishedOn: n.publishedOn, source: n.source, edit: record("materials", n.id) });
 
-export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("publications", p.id) });
+export const publicationCard = (p: Publication): PublicationCard => ({ id: p.id, title: p.title, journal: p.journal, authors: p.authors, publishedOn: p.publishedOn, imageUrl: p.imageUrl, url: p.url, pdfUrl: p.pdfUrl, doi: p.doi, edit: record("materials", p.id) });
 
 export type HomeSettings = {
   heroLine1?: string; heroLine2?: string; heroSub?: string; heroBody?: string;

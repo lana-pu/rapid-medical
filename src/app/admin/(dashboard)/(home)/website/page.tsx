@@ -15,9 +15,9 @@ import { Notice, formatDate } from "@/components/admin/ui";
 const KIND: Record<string, string> = { publish: "To publish", links: "Broken links" };
 const QUICK = [
   { href: "/admin/editor?new=1", label: "+ Page" },
-  { href: "/admin/news/new", label: "+ News item" },
+  { href: "/admin/materials/new?kind=news&showInNews=true", label: "+ News item" },
   { href: "/admin/events/new", label: "+ Event" },
-  { href: "/admin/publications/new", label: "+ Publication" },
+  { href: "/admin/materials/new?kind=publication&showInEvidence=true", label: "+ Publication" },
   { href: "/admin/media", label: "Upload files" },
 ];
 const h2 = "mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500";

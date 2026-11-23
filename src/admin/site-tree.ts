@@ -1,5 +1,5 @@
 import "server-only";
-import { count, eq } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { db, contactSubmissions } from "@/db";
 import { getResource } from "./resources";
 import { getSession } from "@/lib/auth";
@@ -24,11 +24,11 @@ export type SiteNode = {
 };
 
 /** Where each collection is shown: the page it hangs under. */
-export const COLLECTION_PAGES: { res: string; title: string; under: string; where: string }[] = [
-  { res: "publications", title: "Publications", under: "/evidence", where: "Listed on Evidence, by product" },
+export const COLLECTION_PAGES: { res: string; title: string; under: string; where: string; /** a slice of the resource: one boolean column that is true */ only?: "showInEvidence" | "showInNews"; key?: string }[] = [
+  { res: "materials", key: "publications", only: "showInEvidence", title: "Publications", under: "/evidence", where: "Listed on Evidence, by product" },
   { res: "products", title: "Products", under: "/evidence", where: "Product tabs on Evidence and links from therapy pages" },
   { res: "webinars", title: "Webinars", under: "/webinars", where: "On the Webinars page; visitors ask for a recording" },
-  { res: "news", title: "News", under: "/news-events", where: "Cards on News & Events and on the home page" },
+  { res: "materials", key: "news", only: "showInNews", title: "News", under: "/news-events", where: "Cards on News & Events and on the home page" },
   { res: "events", title: "Events", under: "/news-events", where: "On News & Events; each event has its own page" },
   { res: "team", title: "Team", under: "/about-us", where: "Leadership on About; each person has their own page" },
   { res: "jobs", title: "Jobs", under: "/careers", where: "Open positions on Careers; each position has its own page" },
@@ -48,9 +48,10 @@ export async function collectionCounts(): Promise<Record<string, number>> {
     COLLECTION_PAGES.map(async (c) => {
       const res = getResource(c.res);
       if (!res) return;
+      const only = c.only ? sql`${sql.identifier(c.only === "showInEvidence" ? "show_in_evidence" : "show_in_news")} = true` : undefined;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rows = (await db.select({ n: count() }).from(res.table as any)) as { n: number }[];
-      out[c.res] = Number(rows[0]?.n ?? 0);
+      const rows = (await db.select({ n: count() }).from(res.table as any).where(only)) as { n: number }[];
+      out[c.key ?? c.res] = Number(rows[0]?.n ?? 0);
     }),
   );
   return out;
@@ -65,7 +66,7 @@ export async function siteTree(cards?: PageCard[]): Promise<SiteNode[]> {
   const [all, counts, cols] = await Promise.all([cards ? Promise.resolve(cards) : listEditorPages(), collectionCounts(), collectionPages()]);
   const convert = (n: PageNode): SiteNode => {
     const kids = n.children.map(convert);
-    for (const c of cols.filter((x) => x.under === n.key)) kids.push({ key: `collection:${c.res}`, title: c.title, kind: "collection", href: `/admin/${c.res}`, count: counts[c.res] ?? 0, children: [] });
+    for (const c of cols.filter((x) => x.under === n.key)) kids.push({ key: `collection:${c.key ?? c.res}`, title: c.title, kind: "collection", href: `/admin/${c.res}${c.only ? `?${c.only}=true` : ""}`, count: counts[c.key ?? c.res] ?? 0, children: [] });
     return n.versions.length
       ? { key: n.key, title: n.title, kind: "page", href: adminPageHref(n.key), pending: n.versions.some((v) => v.status !== "live"), children: kids }
       : { key: n.key, title: n.title, kind: "group", children: kids };
@@ -92,6 +93,14 @@ export async function pageScreen(key: string) {
     node: hit.node,
     trail: hit.trail,
     cards: cards.filter((c) => pageKey(c.path) === key),
-    collections: (await collectionPages()).filter((c) => c.under === key).map((c) => ({ ...c, count: counts[c.res] ?? 0, newLabel: getResource(c.res)?.titleSingular ?? "item" })),
+    collections: (await collectionPages()).filter((c) => c.under === key).map((c) => ({
+      ...c,
+      key: c.key ?? c.res,
+      count: counts[c.key ?? c.res] ?? 0,
+      // a slice of materials: its own name for «+ New» and its own lists (ADR-009)
+      newLabel: c.only === "showInEvidence" ? "Publication" : c.only === "showInNews" ? "News item" : (getResource(c.res)?.titleSingular ?? "item"),
+      href: `/admin/${c.res}${c.only ? `?${c.only}=true` : ""}`,
+      newHref: `/admin/${c.res}/new${c.only === "showInEvidence" ? "?kind=publication&showInEvidence=true" : c.only === "showInNews" ? "?kind=news&showInNews=true" : ""}`,
+    })),
   };
 }

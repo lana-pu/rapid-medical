@@ -9,7 +9,7 @@ import { getResource } from "./resources";
 import { adminPageHref } from "./site-tree";
 import { pageKey } from "./page-tree";
 import { parseForm, duplicateRow, bulk, getRow, type FieldErrors } from "./engine";
-import { saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, deleteNotLive, schedule, restoreRevision, hasWorkflow } from "./workflow";
+import { ChecksPending, saveWithWorkflow, getEditable, publish, unpublish, discardDraft, deleteUnpublished, deleteNotLive, schedule, restoreRevision, hasWorkflow } from "./workflow";
 
 export type SaveState = { errors?: FieldErrors; message?: string } | null;
 
@@ -63,7 +63,12 @@ export async function saveResource(_prev: SaveState, fd: FormData): Promise<Save
   if ("state" in p) return p.state;
   const { user, res, result } = p;
   if (fd.get("__intent") === "publish" && hasWorkflow(res)) {
-    await publish(res, result.id, user);
+    try {
+      await publish(res, result.id, user);
+    } catch (e) {
+      if (e instanceof ChecksPending) redirect(`/admin/${res.slug}/${result.id}?saved=1&error=${encodeURIComponent(e.message)}`);
+      throw e;
+    }
     const row = await getRow(res, result.id);
     revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
     redirect(`/admin/${res.slug}/${result.id}?published=1`);
@@ -100,7 +105,12 @@ const pageScreenBack = (fd: FormData) => {
 
 export async function publishResource(fd: FormData) {
   const { user, res, id } = await ctx(fd);
-  await publish(res, id, user);
+  try {
+    await publish(res, id, user);
+  } catch (e) {
+    if (e instanceof ChecksPending) redirect(`/admin/${res.slug}/${id}?error=${encodeURIComponent(e.message)}`);
+    throw e;
+  }
   const row = await getRow(res, id);
   revalidate(res.revalidate, row ? res.previewUrl?.(row) ?? null : null);
   // back to the page's screen — at its new address, if publishing moved the page
@@ -185,8 +195,14 @@ export async function bulkResource(fd: FormData) {
     // the same as one by one: Publish takes the pending changes; Unpublish keeps them, cancels the schedule
     for (const id of ids) {
       if (!(await getEditable(res, id))) continue; // a row gone meanwhile is skipped
-      if (action === "publish") await publish(res, id, user);
-      else await unpublish(res, id, user);
+      if (action === "publish") {
+        try {
+          await publish(res, id, user);
+        } catch (e) {
+          if (e instanceof ChecksPending) continue; // waits for its checks; the others go out
+          throw e;
+        }
+      } else await unpublish(res, id, user);
       done++;
     }
   } else {

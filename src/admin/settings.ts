@@ -187,6 +187,13 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    key: "newsBar",
+    title: "News bar",
+    description: "A thin line above the header of the home page with the newest highlighted news. Off unless switched on.",
+    revalidate: ["/"],
+    fields: [{ name: "enabled", label: "Show the newest highlight above the header on Home", type: "boolean" }],
+  },
+  {
     key: "integrations",
     access: "admin",
     title: "Integrations",

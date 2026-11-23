@@ -50,5 +50,5 @@ export type ListColumn = {
   name: string;
   label: string;
   /** Render helper for special columns */
-  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen";
+  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen" | "materialKind";
 };

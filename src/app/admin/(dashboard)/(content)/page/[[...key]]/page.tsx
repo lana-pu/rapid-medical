@@ -205,13 +205,13 @@ export default async function SitePage({ params, searchParams }: { params: Promi
               <h2 className={h2}>Collections shown on this page</h2>
               <ul className={`${card} divide-y divide-neutral-100`}>
                 {collections.map((c) => (
-                  <li key={c.res} aria-label={c.title} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+                  <li key={c.key} aria-label={c.title} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
                     <span aria-hidden className="text-neutral-400">▤</span>
                     <span className="font-medium">{c.title}</span>
                     <span className="text-xs text-neutral-500">{c.count} {c.count === 1 ? "record" : "records"} · {c.where}</span>
                     <span className="flex-1" />
-                    <Link href={`/admin/${c.res}`} className={btn}>Open {c.title.toLowerCase()}</Link>
-                    <Link href={`/admin/${c.res}/new`} className="text-xs underline">+ New {c.newLabel.toLowerCase()}</Link>
+                    <Link href={c.href} className={btn}>Open {c.title.toLowerCase()}</Link>
+                    <Link href={c.newHref} className="text-xs underline">+ New {c.newLabel.toLowerCase()}</Link>
                   </li>
                 ))}
               </ul>

@@ -115,8 +115,8 @@ test("new publication: mistakes listed on top with links, month and year, Israel
   await summary.getByRole("link", { name: "Title" }).click();
   await expect(page).toHaveURL(/#title$/);
   // an existing publication: the schedule says which time zone it uses
-  const id = sql("select id from publications order by id limit 1");
-  await page.goto(`/admin/publications/${id}`);
+  const id = sql("select id from materials where kind='publication' order by id limit 1");
+  await page.goto(`/admin/materials/${id}`);
   await expect(page.getByText(/Time zone: Israel \(UTC\+[23]\)/)).toBeVisible();
   await expect(page.locator("input[name=publishedOn]")).toHaveValue(/^\d{4}-\d{2}$/);
 });
@@ -230,7 +230,7 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
 
   // a collection opens its records
   await tree.getByRole("link", { name: /Publications/ }).click();
-  await expect(page).toHaveURL(/\/admin\/publications$/);
+  await expect(page).toHaveURL(/\/admin\/materials\?showInEvidence=true$/);
   await page.goto("/admin/page/news-events");
   await expect(page.getByRole("region", { name: "Collections on this page" })).toContainText("News");
 
@@ -249,18 +249,18 @@ test("roles: an editor publishes and hides sections, but cannot add, move, delet
   test.setTimeout(120_000);
   addUser("editor@e2e.test", "editor");
   addUser("designer@e2e.test", "designer");
-  const id = sql("select id from news_items where status='published' order by id limit 1");
-  sql(`update news_items set status='draft' where id=${id}`);
+  const id = sql("select id from materials where show_in_news and status='published' order by id limit 1");
+  sql(`update materials set status='draft' where id=${id}`);
   try {
     const ed = await (await browser.newContext()).newPage();
     await login(ed, "editor@e2e.test", ADMIN.password);
     // no approval step: the status field publishes an unpublished record
-    await ed.goto(`/admin/news/${id}`);
+    await ed.goto(`/admin/materials/${id}`);
     await expect(ed.getByText("Submit for review")).toHaveCount(0);
     await expect(ed.getByTestId("record-status")).toHaveText("Draft · not on the site");
     await ed.click('button[name=__intent][value=publish]');
     await ed.waitForURL(/published=1/);
-    expect(sql(`select status from news_items where id=${id}`)).toBe("published");
+    expect(sql(`select status from materials where id=${id}`)).toBe("published");
     // Site settings without Branding, Integrations and Workflow
     await ed.goto("/admin/settings?group=integrations");
     await expect(ed.getByRole("link", { name: "Integrations" })).toHaveCount(0);
@@ -318,47 +318,47 @@ test("roles: an editor publishes and hides sections, but cannot add, move, delet
     await expect(de.locator('#rm-section-toolbar button[aria-label="Move up"]')).toBeVisible();
     await expect(de.getByRole("navigation", { name: "Editor tools" }).getByRole("button", { name: "Add section" })).toBeVisible();
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='published' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='published' where id=${id}`);
   }
 });
 
 test("unpublish keeps the pending changes in the record and cancels the schedule", async ({ page }) => {
   await login(page);
-  const id = sql("select id from news_items where status='published' order by id desc limit 1");
-  const title = sql(`select title from news_items where id=${id}`);
+  const id = sql("select id from materials where show_in_news and status='published' order by id desc limit 1");
+  const title = sql(`select title from materials where id=${id}`);
   try {
-    await page.goto(`/admin/news/${id}`);
+    await page.goto(`/admin/materials/${id}`);
     await page.fill("input[name=title]", "E2E pending title");
     await page.locator("input[name=title]").blur();
     await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
     await page.reload();
-    sql(`update drafts set publish_at=now() + interval '1 day' where resource='news' and record_id=${id}`);
+    sql(`update drafts set publish_at=now() + interval '1 day' where resource='materials' and record_id=${id}`);
     await page.click('button:has-text("Unpublish")');
     await page.waitForURL(/unpublished=1/);
-    expect(sql(`select status || '|' || title from news_items where id=${id}`)).toBe("draft|E2E pending title");
-    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
+    expect(sql(`select status || '|' || title from materials where id=${id}`)).toBe("draft|E2E pending title");
+    expect(sql(`select count(*) from drafts where resource='materials' and record_id=${id}`)).toBe("0");
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='published', title='${title.replace(/'/g, "''")}' where id=${id}`);
   }
 });
 
 test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete keeps what is on the site, counts are real, Home and About have no New or Delete", async ({ page }) => {
   await login(page);
   // a draft and a live news item ticked together: the draft goes with its schedule, the live one stays and the message says so
-  const live = sql("select id from news_items where status = 'published' order by id desc limit 1");
-  const draft = sql("insert into news_items(title, url, published_on, status) values ('E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
-  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${draft},null,now() + interval '1 day','Admin')`);
-  await page.goto("/admin/news?sort=id&dir=desc"); // both on the first page: the newest rows
+  const live = sql("select id from materials where show_in_news and status = 'published' order by id desc limit 1");
+  const draft = sql("insert into materials(kind, show_in_news, title, url, published_on, status) values ('news', true, 'E2E bulk draft', 'https://example.com/e2e-bulk', now(), 'draft') returning id");
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('materials',${draft},null,now() + interval '1 day','Admin')`);
+  await page.goto("/admin/materials?showInNews=true&sort=id&dir=desc"); // both on the first page: the newest rows
   await page.check(`input[name=ids][value="${draft}"]`);
   await page.check(`input[name=ids][value="${live}"]`);
   page.once("dialog", (d) => d.accept());
   await page.click("button[value=delete]");
   await page.waitForURL(/bulk=delete/);
-  expect(sql(`select count(*) from news_items where id=${draft}`)).toBe("0");
-  expect(sql(`select count(*) from drafts where resource='news' and record_id=${draft}`)).toBe("0");
-  expect(sql(`select status from news_items where id=${live}`)).toBe("published");
+  expect(sql(`select count(*) from materials where id=${draft}`)).toBe("0");
+  expect(sql(`select count(*) from drafts where resource='materials' and record_id=${draft}`)).toBe("0");
+  expect(sql(`select status from materials where id=${live}`)).toBe("published");
   await expect(page.getByText("Deleted 1 item(s).")).toBeVisible();
   await expect(page.getByText("1 on the site was not deleted: unpublish it first.")).toBeVisible();
 
@@ -383,21 +383,21 @@ test("lists do what they show (docs/screens/admin-list.md, 2026-11-16): Delete k
 
 test("bulk unpublish works like Unpublish: the schedule is cancelled", async ({ page }) => {
   await login(page);
-  await page.goto("/admin/news");
+  await page.goto("/admin/materials?showInNews=true");
   const id = await page.locator('input[name=ids]').first().getAttribute("value");
-  const was = sql(`select status from news_items where id=${id}`);
-  sql(`update news_items set status='published' where id=${id}`);
-  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('news',${id},null,now() + interval '1 day','Admin') on conflict (resource,record_id) do update set publish_at=now() + interval '1 day'`);
+  const was = sql(`select status from materials where id=${id}`);
+  sql(`update materials set status='published' where id=${id}`);
+  sql(`insert into drafts(resource,record_id,data,publish_at,updated_by_name) values ('materials',${id},null,now() + interval '1 day','Admin') on conflict (resource,record_id) do update set publish_at=now() + interval '1 day'`);
   try {
     await page.reload();
     await page.check(`input[name=ids][value="${id}"]`);
     await page.click('button[value=unpublish]');
     await page.waitForURL(/bulk=unpublish/);
-    expect(sql(`select status from news_items where id=${id}`)).toBe("draft");
-    expect(sql(`select count(*) from drafts where resource='news' and record_id=${id}`)).toBe("0");
+    expect(sql(`select status from materials where id=${id}`)).toBe("draft");
+    expect(sql(`select count(*) from drafts where resource='materials' and record_id=${id}`)).toBe("0");
   } finally {
-    sql(`delete from drafts where resource='news' and record_id=${id}`);
-    sql(`update news_items set status='${was}' where id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`update materials set status='${was}' where id=${id}`);
   }
 });
 
@@ -597,21 +597,24 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
 
   // restore via the editor
   await page.locator("h1 [data-e]").click();
+  await expect(page.locator("h1 [data-e]")).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("A patient-centric approach to AIS");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("status")).toHaveText("Saved. Not live yet");
   await publishFromEditor(page);
 
-  // Home is a site page (ADR-007): its numbers are in its block list, the change waits in drafts until Publish
+  // Home is a site page (ADR-007): its numbers are in its block list (the evidence block since 2026-11-19), the change
+  // waits in drafts until Publish
   await page.goto("/");
   await expect(page.getByRole("status")).toHaveText("Live", { timeout: 20_000 }); // the page info loads after the page
-  const stat = page.locator('[data-e*="stats.0.value"]');
+  const stat = page.locator('[data-e*="data.items.0.value"]').filter({ hasText: "50K+" });
   await stat.click();
+  await expect(stat).toHaveAttribute("contenteditable", /.+/); // a field opens once a page update is in
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("99K+");
   await page.keyboard.press("Enter");
-  const statIn = (table: string) => `select b->'data'->'stats'->0->>'value' from ${table}, jsonb_array_elements(blocks) b where b->>'type'='textMedia' and b->>'variant'='statement'`;
+  const statIn = (table: string) => `select b->'data'->'items'->0->>'value' from ${table}, jsonb_array_elements(blocks) b where b->>'type'='keyNumbers' and b->>'variant'='evidence'`;
   await expect.poll(() => sql(statIn("(select data->'blocks' as blocks from drafts where resource='site-pages') d"))).toBe("99K+");
   expect(sql(statIn("(select blocks from site_pages where key='home') s"))).toBe("50K+");
   await page.click('#rm-editor-ui button:has-text("Publish")');
@@ -626,21 +629,21 @@ test("on-page editor: inline text edit → pending → publish; Home is a site p
 
 test("user walk 2026-11-14: a draft is deleted from its own page; a request names the page before the form", async ({ page }) => {
   await login(page);
-  await page.goto("/admin/news/new");
-  await page.getByLabel(/^Title/).fill("E2E draft to delete");
+  await page.goto("/admin/materials/new?kind=news&showInNews=true");
+  await page.locator("input[name=title]").fill("E2E draft to delete");
   await page.getByLabel(/^Date/).fill("2026-11-14");
-  await page.getByLabel(/^External link/).fill("https://example.com/e2e");
+  await page.getByLabel(/^Link to the original/).fill("https://example.com/e2e");
   await page.getByRole("button", { name: "Create draft" }).click();
-  await page.waitForURL(/\/admin\/news\/\d+/);
+  await page.waitForURL(/\/admin\/materials\/\d+/);
   await expect(page.getByText("Status", { exact: true })).toBeVisible();
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Delete draft" }).click();
-  await page.waitForURL(/\/admin\/news\?bulk=delete&n=1/);
-  expect(sql("select count(*) from news_items where title = 'E2E draft to delete'")).toBe("0");
+  await page.waitForURL(/\/admin\/materials\?bulk=delete&n=1/);
+  expect(sql("select count(*) from materials where title = 'E2E draft to delete'")).toBe("0");
 
   // a published item has no Delete draft: Unpublish first
-  const live = sql("select id from news_items where status = 'published' order by id limit 1");
-  await page.goto(`/admin/news/${live}`);
+  const live = sql("select id from materials where show_in_news and status = 'published' order by id limit 1");
+  await page.goto(`/admin/materials/${live}`);
   await expect(page.getByRole("button", { name: "Delete draft" })).toHaveCount(0);
 
   // the therapy whose «Request a demo» led to the form is in the request
@@ -776,7 +779,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   await page.goto("/admin/page/evidence");
   // the page screen → + New publication → Back: to the page screen, not the collection's list
   await page.getByRole("listitem", { name: "Publications" }).getByRole("link", { name: "+ New publication" }).click();
-  await expect(page).toHaveURL(/\/admin\/publications\/new$/);
+  await expect(page).toHaveURL(/\/admin\/materials\/new\?kind=publication&showInEvidence=true$/);
   await page.getByRole("link", { name: "← Back" }).click();
   await expect(page).toHaveURL(/\/admin\/page\/evidence$/);
   // the header arrow is Back too
@@ -793,7 +796,7 @@ test("back goes where you came from: a record's Back, the header arrow, the edit
   const fresh = await page.context().newPage();
   await fresh.goto("/admin/publications/new");
   await fresh.getByRole("link", { name: "← Back" }).click();
-  await expect(fresh).toHaveURL(/\/admin\/publications$/);
+  await expect(fresh).toHaveURL(/\/admin\/materials$/);
   await fresh.close();
 });
 
@@ -941,5 +944,122 @@ test("My account: re-typing the password is limited like sign-in — 8 wrong in 
     expect(sql("select totp_enabled_at is not null from users where email = 'e2e@rapid-medical.com'")).toBe("t");
   } finally {
     sql("delete from login_attempts where key like 'pw:%'");
+  }
+});
+
+test("create from a document: kind from the file, the team's AI answer checked against the PDF, Publish closed until a person looks", async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  const pdf = sql("select id from media where filename like 'Comaneci-SUCCESS-jnis%' order by id limit 1");
+  await page.goto("/admin/materials");
+  await page.getByRole("link", { name: "Create from a document" }).click();
+  await expect(page).toHaveURL(/\/admin\/create-from-document$/);
+  await page.goto(`/admin/create-from-document/${pdf}`);
+  // suggested before any AI, from the file itself: the DOI says it is a journal article
+  await expect(page.getByText(/Suggested from the file · It has a DOI/)).toBeVisible();
+  await expect(page.getByLabel(/^Publication/)).toBeChecked();
+  // a broken answer: said in words, what was pasted stays
+  await page.locator("textarea[name=answer]").fill("I could not open the file");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await expect(page.getByTestId("import-error")).toContainText("No JSON found");
+  await expect(page.locator("textarea[name=answer]")).toHaveValue("I could not open the file");
+  const answer = {
+    title: "E2E SUCCESS from a document",
+    conclusion: "High rates of successful aneurysm occlusion with Comaneci-assisted coiling.",
+    figures: [
+      { value: "85.6%", label: "Occlusion after the procedure", quote: "successful occlusion (Raymond-Roy I/II) achieved in 85.6% of cases immediately post-procedure" },
+      { value: "99%", label: "Occlusion at one year", quote: "Successful occlusion was 99% at one year" },
+    ],
+    // a part that does not fit is left out with its reason — the rest of the answer is used
+    tables: [{ title: "Too wide", columns: [{ label: "A" }], rows: [{ label: "r", cells: ["1", "2"], quote: "a row" }] }],
+  };
+  await page.locator("textarea[name=answer]").fill("```json\n" + JSON.stringify(answer) + "\n```");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await page.waitForURL(/\/admin\/materials\/\d+\?created=document/);
+  const id = page.url().match(/materials\/(\d+)/)![1];
+  try {
+    const checks = page.getByRole("region", { name: "Checked against the PDF" });
+    await expect(checks).toContainText("1 of 2 checked");
+    await expect(checks).toContainText("Check: The quote is not in the PDF");
+    await expect(checks).toContainText("Left out of the draft");
+    await expect(checks).toContainText("Table 1 «Too wide»: rows — every row needs one cell per column");
+    await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
+    // the server refuses too, whatever the button says
+    expect(sql(`select document_check->'items'->1->>'status' from materials where id=${id}`)).toBe("check");
+    // in the editor on the page: the value to check is outlined, the checks are in the rail, Publish now waits
+    await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(`/us/evidence/${id}`)}`);
+    await expect(page.locator("[data-rm-check]")).toHaveCount(1);
+    await page.getByRole("button", { name: "Checked against the PDF" }).click();
+    await expect(page.getByRole("complementary", { name: "Checked against the PDF" })).toContainText("1 of 2 checked");
+    await page.getByRole("button", { name: "Publish", exact: true }).click();
+    await expect(page.getByText(/Check 1 value against the PDF first/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Publish now" })).toBeDisabled();
+    await page.getByRole("button", { name: "Keep editing" }).click();
+    await page.goto(`/admin/materials/${id}`);
+    await checks.getByRole("button", { name: "Looks right" }).click();
+    await expect(checks).toContainText("2 of 2 checked");
+    await expect(checks).toContainText(/Confirmed by/);
+    await page.getByRole("button", { name: /^Publish/ }).click();
+    await page.waitForURL(/published=1/);
+    // its own page is made of the sections: the conclusion, the figures with their quotes, the document
+    await page.goto(`/us/evidence/${id}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("E2E SUCCESS from a document");
+    await expect(page.getByText("Occlusion after the procedure")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open the original ↗" })).toHaveCount(0);
+  } finally {
+    sql(`delete from revisions where resource='materials' and record_id=${id}`);
+    sql(`delete from materials where id=${id}`);
+  }
+});
+
+test("create from a page: the link and the pasted text, the AI's numbers checked against that text (docs/screens/admin-create-from-document.md)", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  await page.goto("/admin/create-from-document");
+  await page.getByRole("link", { name: "Start from a link" }).click();
+  await expect(page).toHaveURL(/\/admin\/create-from-document\/link$/);
+  await expect(page.getByRole("radio", { name: /^Document/ })).toHaveCount(0); // an IFU is always a PDF
+  await page.getByLabel("Link to the page *").fill("https://www.prnewswire.com/news-releases/e2e-release.html");
+  await expect(page.getByText(/Suggested from the link · The link is a press-release service/)).toBeVisible();
+  await expect(page.getByRole("radio", { name: /^News/ })).toBeChecked();
+  await expect(page.getByLabel(/Show the PDF/)).toHaveCount(0);
+  // too little text: said in words
+  await page.locator("textarea[name=pageText]").evaluate((el) => el.removeAttribute("minlength"));
+  await page.locator("textarea[name=pageText]").fill("Too short.");
+  await page.locator("textarea[name=answer]").fill("{}");
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await expect(page.getByTestId("import-error")).toContainText("Paste the whole text of the page");
+  const text = "E2E Medical announced today that the first 50 patients were treated in the E2E registry. The device reached the target vessel in 96% of cases on the first attempt. About E2E Medical: a test company that develops neurovascular devices. Media contact: the press office of the test company.";
+  await page.locator("textarea[name=pageText]").fill(text);
+  const answer = {
+    title: "E2E first 50 patients from a page",
+    conclusion: "The first 50 patients were treated in the E2E registry.",
+    figures: [
+      { value: "96%", label: "Reached on the first attempt", quote: "The device reached the target vessel in 96% of cases on the first attempt." },
+      { value: "60", label: "Patients treated", quote: "the first 60 patients were treated in the E2E registry" },
+    ],
+    // an infographic whose quote is not in the text: its three shares are outlined in the editor
+    distributions: [{ title: "E2E shares", scale: ["Good", "Fair", "Poor"], series: [{ label: "All", points: [{ label: "Day 1", values: ["50", "30", "20"], quote: "Good 50%, fair 30%, poor 20% on day one." }] }] }],
+  };
+  await page.locator("textarea[name=answer]").fill(JSON.stringify(answer));
+  await page.getByRole("button", { name: "Build the draft" }).click();
+  await page.waitForURL(/\/admin\/materials\/\d+\?created=document/);
+  const id = page.url().match(/materials\/(\d+)/)![1];
+  try {
+    const checks = page.getByRole("region", { name: "Checked against the page text" });
+    await expect(checks).toContainText("1 of 3 checked");
+    await expect(checks).toContainText("Built from www.prnewswire.com/news-releases/e2e-release.html");
+    await expect(checks).toContainText("Check: The quote is not in the page text");
+    await expect(page.getByRole("button", { name: /^Publish/ })).toBeDisabled();
+    expect(sql(`select coalesce(pdf_url, '-') || ' ' || (document_check->>'mediaId' is null) from materials where id=${id}`)).toBe("- true");
+    // in the editor: the figure and the three shares of the distribution are outlined — exactly the fields of the check
+    await page.goto(`/api/editor?on=1&redirect=${encodeURIComponent(`/news-events/${id}`)}`);
+    await expect(page.locator("[data-rm-check]")).toHaveCount(4);
+    await page.getByRole("button", { name: "Checked against the page text" }).click();
+    await expect(page.getByRole("complementary", { name: "Checked against the page text" })).toContainText("50% · 30% · 20%");
+  } finally {
+    sql(`delete from revisions where resource='materials' and record_id=${id}`);
+    sql(`delete from drafts where resource='materials' and record_id=${id}`);
+    sql(`delete from materials where id=${id}`);
   }
 });

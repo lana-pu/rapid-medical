@@ -1,6 +1,6 @@
 import "server-only";
 import { inArray, sql } from "drizzle-orm";
-import { db, drafts, pages, sitePages, solutions } from "@/db";
+import { db, drafts, materials, pages, sitePages, solutions } from "@/db";
 import { listEditorPages } from "./pages-index";
 import { pageKey } from "./page-tree";
 import { getLiveSetting } from "@/lib/settings";
@@ -66,15 +66,16 @@ const LIST_PAGES: { key: string; name: string; versions: { region: Region | null
 export const SEO_SETTING_KEYS = new Set(LIST_PAGES.flatMap((p) => p.versions.flatMap((v) => [v.title, v.description])));
 
 export async function seoPages(): Promise<SeoPage[]> {
-  const [cards, sols, pgs, sps, pend, seo] = await Promise.all([
+  const [cards, sols, pgs, sps, pend, mats, seo] = await Promise.all([
     listEditorPages(),
     db.select({ id: solutions.id, t: solutions.metaTitle, d: solutions.metaDescription }).from(solutions),
     db.select({ id: pages.id, t: pages.metaTitle, d: pages.metaDescription }).from(pages),
     db.select({ id: sitePages.id, t: sitePages.metaTitle, d: sitePages.metaDescription }).from(sitePages),
-    db.select().from(drafts).where(inArray(drafts.resource, ["solutions", "pages", "site-pages"])),
+    db.select().from(drafts).where(inArray(drafts.resource, ["solutions", "pages", "site-pages", "materials"])),
+    db.select({ id: materials.id, t: materials.metaTitle, d: materials.metaDescription }).from(materials),
     getLiveSetting<Record<string, string>>("seo"),
   ]);
-  const live = (r: string, id: number) => (r === "solutions" ? sols : r === "pages" ? pgs : sps).find((x) => x.id === id);
+  const live = (r: string, id: number) => (r === "solutions" ? sols : r === "pages" ? pgs : r === "materials" ? mats : sps).find((x) => x.id === id);
   const byKey = new Map<string, SeoPage>();
   const put = (key: string, name: string, v: SeoVersion) => {
     const page = byKey.get(key) ?? { key, name, section: sectionOf(key), versions: [], problems: 0 };

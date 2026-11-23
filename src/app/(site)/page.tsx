@@ -1,5 +1,7 @@
 import { getSetting } from "@/lib/settings";
-import { getFeaturedNews, getSitePage } from "@/lib/content";
+import { getFeaturedNews, getProductsForRegion, getPublicationCount, getPublications, getSitePage, getSolutionsNav } from "@/lib/content";
+import { REGIONS, type Region } from "@/lib/regions";
+import { publicationCounts } from "@/blocks/from-settings";
 import { getRememberedRegion } from "@/lib/region-cookie";
 import { BlockList } from "@/blocks/render";
 import { homeToBlocks, type HomeSettings } from "@/blocks/from-settings";
@@ -29,6 +31,7 @@ export default async function HomePage() {
   ]);
   const site = siteUrl();
   const hq = contact.offices?.[0];
+  const lists = await homeLists(region ?? null);
   return (
     <>
       {/* Structured data (Emily's audit, SEO): the company, from the contact and social settings. */}
@@ -47,11 +50,26 @@ export default async function HomePage() {
       {page ? (
         <>
           <PageMark r="site-pages" id={page.id} />
-          <BlockList blocks={resolveBlocks(page.blocks, { region: region ?? null, lists: { news } }, { r: "site-pages", id: page.id })} />
+          <BlockList blocks={resolveBlocks(page.blocks, { region: region ?? null, lists: { news, ...lists } }, { r: "site-pages", id: page.id })} />
         </>
       ) : (
         <BlockList blocks={homeToBlocks({ home, news, region: region ?? null })} />
       )}
     </>
   );
+}
+
+/**
+ * «Our therapies» and the publications figure (docs/screens/home.md): the remembered region's, as its overview and
+ * Evidence show them; with no region yet — every region's therapies (once each) and every publication (once each).
+ */
+async function homeLists(region: Region | null) {
+  if (region) {
+    const [therapies, all, products] = await Promise.all([getSolutionsNav(region), getPublications(region), getProductsForRegion(region)]);
+    return { therapies, publicationCounts: publicationCounts({ all, products, featured: [] }), publicationCount: all.length };
+  }
+  const [per, publicationCount] = await Promise.all([Promise.all(REGIONS.map((r) => getSolutionsNav(r))), getPublicationCount()]);
+  const seen = new Set<string>();
+  const therapies = per.flat().filter((t) => (seen.has(t.slug) ? false : (seen.add(t.slug), true)));
+  return { therapies, publicationCount }; // the company-wide figure, as About shows it
 }

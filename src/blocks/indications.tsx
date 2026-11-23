@@ -10,7 +10,7 @@ export type IndicationsData = { indicationsHtml?: string | null; referencesHtml?
 function Indications({ data: d, edit: e }: BlockProps<"indications">) {
   if (!d.indicationsHtml && !d.referencesHtml) return null;
   return (
-    <section className="border-t border-border py-10">
+    <section id="indications" className="scroll-mt-20 border-t border-border py-10">
       <Container>
         {d.indicationsHtml && <F e={e} k="indicationsHtml" kind="rich"><Prose html={safeHtml(d.indicationsHtml)} className="prose-rm-sm max-w-4xl" /></F>}
         {d.referencesHtml && <F e={e} k="referencesHtml" kind="rich" className="mt-6"><Prose html={safeHtml(d.referencesHtml)} className="prose-rm-sm max-w-4xl" /></F>}
