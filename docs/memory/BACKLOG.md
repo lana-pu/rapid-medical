@@ -45,7 +45,9 @@
    editor (LkArx5FdPAWQQqCvsigRP8), admin (9mBBLfMDh1soj6rFuXaAPh), Library (9UHNuEdzXgzFdZRQ2jNN2H). Осталось:
    (б) ~~удалить ручные копии~~ — `proto-pack.js`, каталог `blocks-kit/build.py` + `page.template.html` удалены 2026-11-22
    с подтверждения владелицы (каталог — вкладка Library);
-   (в) Home и страница терапии — на настоящие страницы после слияния `therapy-home`.
+   (в) ~~Home и страница терапии~~ — 2026-11-23 рисует код ветки `therapy-home` (`render-branch.sh`, снимок с коммита
+   `9f3441b1`); после слияния ветки — убрать пометку `branch` в `site-pages.py` / `site-prototype.py` и снять обычным `render.sh`.
+   Пока ветка движется — перезапускать `render-branch.sh` перед показом.
    Contact Us — закрыта 2026-11-14 (композиция «общая линия», DESIGN.md → «Решения по страницам»); в код — через спеку,
    открыто: страна (Emily), срок ответа (клиент), частые темы (по заявкам). Текстовая страница закрыта 2026-11-14 (оглавление, дата редакции, документы Legal; DESIGN.md);
    **Ветка `site-redesign` влита в `main` 2026-11-17 (PR #2, CI зелёный, локально e2e 88/88).** **Полный e2e на продакшн-сборке — 88 из 88 (2026-11-17).** Порт 3100 занят чужим сервером (next 16.2.7) — прогон на 3110: `CRON_SECRET=e2e-cron-secret-0123456789abcdef npx next start -p 3110` + `E2E_BASE_URL=http://localhost:3110 npx playwright test`. Next.js 16.4.3 — две moderate-уязвимости (кэш `'use cache'` / `unstable_cache`, GHSA-mfr8-8qww-v76h, GHSA-vc7v-qv4w-wrv8); наш код их не использует (`cacheComponents: false`), обновиться до 16.4.6 — отдельным шагом.

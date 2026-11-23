@@ -236,6 +236,14 @@
    ]
   },
   {
+   "title": "10 · Страница терапии — в коде, ветка therapy-home (предварительно, ждёт Emily)",
+   "screens": [
+    "th-branch-aneurysm",
+    "th-branch-lvo",
+    "th-branch-phone"
+   ]
+  },
+  {
    "title": "11 · Home — как есть",
    "screens": [
     "home-asis",
@@ -246,6 +254,13 @@
    "title": "11 · Home — конкуренты и Mobbin",
    "screens": [
     "home-refs"
+   ]
+  },
+  {
+   "title": "11 · Home — в коде, ветка therapy-home (предварительно, ждёт Emily)",
+   "screens": [
+    "home-branch",
+    "home-branch-phone"
    ]
   },
   {
@@ -605,6 +620,31 @@
   {
    "from": "ev-new",
    "to": "ev-new-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "th-refs",
+   "to": "th-branch-aneurysm",
+   "label": "как это сделано"
+  },
+  {
+   "from": "th-branch-aneurysm",
+   "to": "th-branch-lvo",
+   "label": "та же страница, LVO"
+  },
+  {
+   "from": "th-branch-aneurysm",
+   "to": "th-branch-phone",
+   "label": "на телефоне"
+  },
+  {
+   "from": "home-refs",
+   "to": "home-branch",
+   "label": "как это сделано"
+  },
+  {
+   "from": "home-branch",
+   "to": "home-branch-phone",
    "label": "на телефоне"
   }
  ],
@@ -16714,6 +16754,72 @@
    ]
   },
   {
+   "id": "th-branch-aneurysm",
+   "title": "Therapy · in code, branch therapy-home (preliminary) · Aneurysm",
+   "device": "desktop",
+   "url": "rapid-medical.com/us/therapies/aneurysm",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/therapies/aneurysm",
+     "region": "us",
+     "branch": true
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "th-branch-lvo",
+   "title": "Therapy · in code, branch therapy-home (preliminary) · Large vessel stroke",
+   "device": "desktop",
+   "url": "rapid-medical.com/us/therapies/lvo",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/therapies/lvo",
+     "region": "us",
+     "branch": true
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "th-branch-phone",
+   "title": "Therapy · in code, branch therapy-home (preliminary) · phone",
+   "device": "mobile",
+   "url": "rapid-medical.com/us/therapies/aneurysm",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/us/therapies/aneurysm",
+     "region": "us",
+     "branch": true
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
    "id": "home-asis",
    "title": "Home · as is",
    "url": "rapid-medical.com",
@@ -17100,6 +17206,50 @@
        ]
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "home-branch",
+   "title": "Home · in code, branch therapy-home (preliminary)",
+   "device": "desktop",
+   "url": "rapid-medical.com",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/",
+     "region": "us",
+     "branch": true
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
+    }
+   ]
+  },
+  {
+   "id": "home-branch-phone",
+   "title": "Home · in code, branch therapy-home (preliminary) · phone",
+   "device": "mobile",
+   "url": "rapid-medical.com",
+   "body": [
+    {
+     "c": "rm-header",
+     "region": "us"
+    },
+    {
+     "c": "rm-route",
+     "path": "/",
+     "region": "us",
+     "branch": true
+    },
+    {
+     "c": "rm-footer",
+     "region": "us"
     }
    ]
   },

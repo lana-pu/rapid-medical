@@ -55,9 +55,10 @@ def snapshot(name):
     return json.loads(p.read_text(encoding='utf8')) if p.exists() else {'css': '', 'units': {}}
 
 
-now, asis = snapshot('rm-render.json'), snapshot('rm-render-asis.json')
-render = {'css': now['css'], 'units': now['units'], 'asis': asis['units']}
-render['css'] += '\n' + asis.get('css', '')  # the code before the redesign: its own CSS, scoped to .rmxa
+now, asis, branch = snapshot('rm-render.json'), snapshot('rm-render-asis.json'), snapshot('rm-render-branch.json')
+render = {'css': now['css'], 'units': now['units'], 'asis': asis['units'], 'branch': branch['units']}
+# the code before the redesign and a branch not yet in main: their own CSS, scoped to .rmxa and .rmxb
+render['css'] += '\n' + asis.get('css', '') + '\n' + branch.get('css', '')
 
 names = ['rm-page', 'rm-header', 'rm-footer', 'rm-regionBanner', 'rm-regionModal', 'rm-route', 'rm-hot'] + ['rm-' + m['type'] for m in META]
 pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
@@ -68,4 +69,4 @@ pack = ((HERE / 'pack.template.js').read_text(encoding='utf8')
         .replace('/*EXAMPLES*/{}', json.dumps(examples, ensure_ascii=False))
         .replace('/*NAMES*/', ' '.join(names)))
 (FLOWS / 'pack.js').write_text(pack, encoding='utf8')
-print(f"ok: pack.js {len(pack) // 1024} KB, {len(names)} components; snapshots: {len(now['units'])} now (from {now.get('snapshot', '—')}), {len(asis['units'])} as is")
+print(f"ok: pack.js {len(pack) // 1024} KB, {len(names)} components; snapshots: {len(now['units'])} now (from {now.get('snapshot', '—')}), {len(asis['units'])} as is, {len(branch['units'])} branch {branch.get('commit') or ''}")

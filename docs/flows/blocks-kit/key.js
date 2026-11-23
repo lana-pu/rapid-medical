@@ -4,11 +4,12 @@
    - blocks: "rm-<type>" with the variant in "v" and the block's fields, or a run of them inside "rm-page";
    - chrome: "rm-header" / "rm-footer" {region}, "rm-regionBanner" {suggested} — the site's own header, footer, banner;
      "rm-regionModal" {region, source, back | next} — the «Choose your location» window, opened as a click opens it;
-   - route: "rm-route" {path} — the main part of a real page of the site (pages built in their route, not from blocks).
+   - route: "rm-route" {path, region} — the main part of a real page of the site (pages built in their route, not from
+     blocks); region — the visitor's chosen region (its cookie).
    "act" on a node — steps done in the browser before the snapshot (a state: errors, sent, a search) — is part of the
    unit. The kit's own props (hotspots, notes, selection) and the pack's ("links", "state", "focus") are not. */
 var WFKEY = (function () {
-  var KIT = ['c', 'v', 'to', 'quiet', 'annotation', 'selected', 'hover', 'toolbar', 'toolbarPos', 'popover', 'popoverPos', 'cursor', 'grow', 'focus', 'asis', 'act', 'links', 'state', '_html'];
+  var KIT = ['c', 'v', 'to', 'quiet', 'annotation', 'selected', 'hover', 'toolbar', 'toolbarPos', 'popover', 'popoverPos', 'cursor', 'grow', 'focus', 'asis', 'branch', 'act', 'links', 'state', '_html'];
   var CHROME = { 'rm-header': 'header', 'rm-footer': 'footer', 'rm-regionBanner': 'banner', 'rm-regionModal': 'modal' };
   function stable(x) {
     if (Array.isArray(x)) return '[' + x.map(stable).join(',') + ']';
@@ -26,13 +27,14 @@ var WFKEY = (function () {
     Object.keys(n).forEach(function (k) { if (KIT.indexOf(k) < 0 && !(k === 'label' && n.to)) data[k] = n[k]; });
     return { type: type, variant: n.v || variantOf(type), data: data };
   }
-  // "asis": the node is on a screen "as is" — drawn by the code before the redesign, a separate snapshot
-  function era(u, n) { if (n.asis) u.asis = true; return u; }
+  // "asis": a screen "as is" — drawn by the code before the redesign; "branch": drawn by the code of a branch not yet in
+  // main (render-branch.sh) — each a separate snapshot
+  function era(u, n) { if (n.asis) u.asis = true; if (n.branch) u.branch = true; return u; }
   function acts(u, list) { if (list.length) u.act = list; return u; }
   function unit(n, variantOf) {
-    if (n.c === 'rm-regionModal') return acts({ chrome: 'modal', region: n.region || null, source: n.source || null, back: n.back || null, next: n.next || null }, n.act || []);
+    if (n.c === 'rm-regionModal') return acts(era({ chrome: 'modal', region: n.region || null, source: n.source || null, back: n.back || null, next: n.next || null }, n), n.act || []);
     if (CHROME[n.c]) return acts(era(n.c === 'rm-regionBanner' ? { chrome: 'banner', suggested: n.suggested || 'us' } : { chrome: CHROME[n.c], region: n.region || null }, n), n.act || []);
-    if (n.c === 'rm-route') return acts({ route: n.path }, n.act || []);
+    if (n.c === 'rm-route') return acts(era(n.region ? { route: n.path, region: n.region } : { route: n.path }, n), n.act || []);
     return acts(era({ page: false, blocks: [block(n, variantOf)] }, n), n.act || []);
   }
   // An rm-page: runs of page blocks are units (the site groups them); anything else between them (the header) stays a

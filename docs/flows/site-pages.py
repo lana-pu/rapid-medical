@@ -1478,6 +1478,25 @@ gi = next(i for i, g in enumerate(flow['groups']) if g['screens'][0] == 'ev-conc
 flow['groups'].insert(gi + 1, {'title': '8 · Evidence — в коде (первый этап, 2026-11-15)', 'screens': ['ev-new', 'ev-new-phone']})
 flow['links'] = flow.get('links', []) + [{'from': 'ev-concept', 'to': 'ev-new', 'label': 'что из концепции в коде'}, {'from': 'ev-new', 'to': 'ev-new-phone', 'label': 'на телефоне'}]
 
+# Home and the therapy page: in the code of branch therapy-home, not merged until Emily answers (BACKLOG №22) — drawn by
+# that branch (render-branch.sh: its last commit, a copy of the database with its migrations and build steps)
+def in_branch(path): return site(route(path, region='us', branch=True))
+
+
+BRANCH = [('th-branch-aneurysm', 'Therapy · in code, branch therapy-home (preliminary) · Aneurysm', 'desktop', '/us/therapies/aneurysm'),
+          ('th-branch-lvo', 'Therapy · in code, branch therapy-home (preliminary) · Large vessel stroke', 'desktop', '/us/therapies/lvo'),
+          ('th-branch-phone', 'Therapy · in code, branch therapy-home (preliminary) · phone', 'mobile', '/us/therapies/aneurysm'),
+          ('home-branch', 'Home · in code, branch therapy-home (preliminary)', 'desktop', '/'),
+          ('home-branch-phone', 'Home · in code, branch therapy-home (preliminary) · phone', 'mobile', '/')]
+flow['screens'] += [{'id': i, 'title': t, 'device': d, 'url': 'rapid-medical.com' + ('' if u == '/' else u), 'body': in_branch(u)} for i, t, d, u in BRANCH]
+for first, title, ids in [('th-refs', '10 · Страница терапии — в коде, ветка therapy-home (предварительно, ждёт Emily)', ['th-branch-aneurysm', 'th-branch-lvo', 'th-branch-phone']),
+                          ('home-refs', '11 · Home — в коде, ветка therapy-home (предварительно, ждёт Emily)', ['home-branch', 'home-branch-phone'])]:
+    gi = next(k for k, g in enumerate(flow['groups']) if g['screens'][0] == first)
+    flow['groups'].insert(gi + 1, {'title': title, 'screens': ids})
+flow['links'] += [{'from': 'th-refs', 'to': 'th-branch-aneurysm', 'label': 'как это сделано'}, {'from': 'th-branch-aneurysm', 'to': 'th-branch-lvo', 'label': 'та же страница, LVO'},
+                  {'from': 'th-branch-aneurysm', 'to': 'th-branch-phone', 'label': 'на телефоне'}, {'from': 'home-refs', 'to': 'home-branch', 'label': 'как это сделано'},
+                  {'from': 'home-branch', 'to': 'home-branch-phone', 'label': 'на телефоне'}]
+
 ORDER = [sid for g in flow['groups'] for sid in g['screens']]
 flow['screens'].sort(key=lambda x: ORDER.index(x['id']) if x['id'] in ORDER else len(ORDER))
 

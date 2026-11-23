@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /* Wireframe snapshot of the real blocks: every rm-* node of the flows rendered by the site itself.
-     node docs/flows/blocks-kit/render.cjs [dev server URL, default http://localhost:3000] [--asis --root <checkout>]
+     node docs/flows/blocks-kit/render.cjs [dev server URL, default http://localhost:3000] [--asis | --branch] [--root <checkout>]
    Needs a running dev server of this project (npm run dev). Collects the units (key.js: blocks, header/footer/banner,
    whole pages by path) from docs/flows/*.json and blocks-kit/examples.json, renders them on a temporary route
    (render-page.tsx) or opens the page itself, does a node's "act" steps there (a state), and writes
    docs/flows/rm-render.json: the compiled CSS scoped to .rmx (md:/lg: become container queries of the wireframe frame)
    and each unit's HTML with pictures, videos and maps as labelled grey boxes. Then make-pack.py puts it into pack.js.
    --asis: only the nodes of screens "as is", against a dev server of the code before the redesign → rm-render-asis.json
-   (CSS scoped to .rmxa). Run it through ./render.sh, which also refreshes the examples and the pack. */
+   (CSS scoped to .rmxa); --branch: only the nodes marked "branch", against the code of a branch → rm-render-branch.json
+   (.rmxb). Run it through ./render.sh (render-asis.sh, render-branch.sh), which also refresh the examples and the pack. */
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -16,12 +17,14 @@ const WFKEY = require('./key.js');
 const HERE = __dirname;
 const FLOWS = path.resolve(HERE, '..');
 const ROOT = path.resolve(FLOWS, '../..');
-const ASIS = process.argv.includes('--asis');
+// which code draws: today's (default), the code before the redesign (--asis), a branch not yet in main (--branch)
+const ERA = process.argv.includes('--asis') ? 'asis' : process.argv.includes('--branch') ? 'branch' : '';
+const ASIS = ERA === 'asis';
 const opt = (name) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : null; };
 const URL_ = (process.argv.slice(2).find((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--root') || 'http://localhost:3000').replace(/\/$/, '');
 const APP = path.resolve(opt('--root') || ROOT); // the checkout the dev server runs (--asis: the code before the redesign)
-const SCOPE = ASIS ? '.rmxa' : '.rmx';
-const OUT = path.join(FLOWS, ASIS ? 'rm-render-asis.json' : 'rm-render.json');
+const SCOPE = { '': '.rmx', asis: '.rmxa', branch: '.rmxb' }[ERA];
+const OUT = path.join(FLOWS, ERA ? `rm-render-${ERA}.json` : 'rm-render.json');
 const META = JSON.parse(fs.readFileSync(path.join(FLOWS, 'rm-pages.json'), 'utf8')).meta;
 const TYPES = new Set(META.map((m) => m.type));
 const variantOf = (t) => ((META.find((m) => m.type === t) || { variants: [{ id: '' }] }).variants[0].id);
@@ -44,7 +47,7 @@ function walk(o) {
   Object.values(o).forEach(walk);
 }
 for (const f of sources) walk(JSON.parse(fs.readFileSync(f, 'utf8')));
-for (const [k, u] of units) if (!!u.asis !== ASIS) units.delete(k);
+for (const [k, u] of units) if ((u.asis ? 'asis' : u.branch ? 'branch' : '') !== ERA) units.delete(k);
 const queue = [...units].map(([k, u]) => Object.assign({ k }, u));
 const what = (u) => u.route ? 'page ' + u.route : u.chrome ? u.chrome + ' ' + (u.region || u.suggested || '') + (u.act ? ' +act' : '') : u.blocks.map((b) => b.type + '·' + b.variant).join(' ');
 for (const dir of new Set([HERE, path.join(APP, 'docs/flows/blocks-kit')])) { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, '.queue.json'), JSON.stringify(queue)); }
@@ -119,7 +122,7 @@ function cut() {
 }
 
 /* ---------- act: steps in the browser before the snapshot ---------- */
-// {click: text} · {fill: [label, value]} · {select: [label, option]} · {pick: select name} (its first option) · {check: label} · {honeypot: true} (the forms'
+// {click: text} · {tab: name} · {fill: [label, value]} · {select: [label, option]} · {pick: select name} (its first option) · {check: label} · {honeypot: true} (the forms'
 // bot trap: the server answers «sent» and stores nothing) · {expect: text} (the state must show it) · {wait: ms}
 async function act(page, root, steps) {
   for (const st of steps) {
@@ -127,6 +130,7 @@ async function act(page, root, steps) {
     else if (st.fill) await root.getByLabel(st.fill[0]).or(root.getByPlaceholder(st.fill[0])).first().fill(st.fill[1], { timeout: 15000 });
     else if (st.select) await root.getByLabel(st.select[0]).first().selectOption({ label: st.select[1] }, { timeout: 15000 });
     else if (st.check) await root.getByLabel(st.check).first().check({ timeout: 15000 });
+    else if (st.tab) await root.getByRole('tab', { name: st.tab }).first().click({ timeout: 15000 });
     else if (st.pick) await root.locator(`select[name="${st.pick}"]`).first().evaluate((el) => { const o = [...el.options].find((x) => x.value); if (o) { el.value = o.value; el.dispatchEvent(new Event('change', { bubbles: true })); } });
     else if (st.honeypot) await root.locator('input[name="website"]').first().evaluate((el) => { el.value = 'wireframe'; });
     else if (st.expect) await root.getByText(st.expect).first().waitFor({ timeout: 15000 });
@@ -164,6 +168,8 @@ async function actOrFail(page, root, u) {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    // a snapshot is not a visit: the site's visit counter never hears from it
+    await page.route('**/api/track', (r) => r.fulfill({ status: 204 }));
     await open(page, URL_ + '/flows-render');
     await loadAll(page);
     for (const u of queue.filter((q) => q.act && !q.route && q.chrome !== 'modal')) await actOrFail(page, page.locator(`[data-wf-unit="${u.k}"]`), u);
@@ -180,6 +186,9 @@ async function actOrFail(page, root, u) {
     }
     // whole pages: the page itself, its main part between the header and the footer
     for (const u of queue.filter((q) => q.route)) {
+      // the visitor's chosen region, as its cookie; none: a first visit
+      await page.context().clearCookies();
+      if (u.region) await page.context().addCookies([{ name: 'rm_region', value: u.region, url: URL_ }]);
       try { await open(page, URL_ + u.route); } catch (e) { all[u.k] = { error: String(e.message) }; continue; }
       await loadAll(page);
       const main = page.locator('body > div.flex-1').first();
@@ -191,7 +200,7 @@ async function actOrFail(page, root, u) {
     const css = [...sheets].join('\n');
     const missing = queue.filter((q) => !all[q.k]).map((q) => q.k);
     const failed = Object.entries(all).filter(([, v]) => v.error);
-    const out = { snapshot: new Date().toISOString().slice(0, 10), css, units: all };
+    const out = { snapshot: new Date().toISOString().slice(0, 10), commit: process.env.WF_COMMIT || null, css, units: all };
     fs.writeFileSync(OUT, JSON.stringify(out));
     console.log(`${path.basename(OUT)}: ${Object.keys(all).length} units, css ${Math.round(css.length / 1024)} KB, ${Math.round(JSON.stringify(out).length / 1024)} KB in all`);
     if (failed.length) { console.log('FAILED to render:'); failed.forEach(([k, v]) => console.log(' ', k, what(units.get(k)), '—', v.error)); }

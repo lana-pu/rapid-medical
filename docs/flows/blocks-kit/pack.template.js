@@ -15,7 +15,8 @@
    - "focus": {"part": "<field>", "style": "selected"|"hover", "toolbar": [nodes], "cursor": true} — the part is found by
      the field's text (header: menu | switcher | contact).
    A node with no snapshot shows a warning: re-run render.sh after changing a flow. "asis": true (screens "as is")
-   takes the snapshot of the code before the redesign (rm-render-asis.json).
+   takes the snapshot of the code before the redesign (rm-render-asis.json); "branch": true — of a branch not yet in
+   main (rm-render-branch.json, render-branch.sh).
    @components /*NAMES*/ */
 (function () {
 const RENDER = /*RENDER*/{};
@@ -29,8 +30,10 @@ document.head.appendChild(style);
 const TYPES = new Set(META.map(m => m.type));
 const variantOf = t => (META.find(m => m.type === t) || { variants: [{ id: '' }] }).variants[0].id;
 const isBlock = t => TYPES.has(t);
-const snap = (u, asis) => (asis ? RENDER.asis : RENDER.units)[WFKEY.key(u)];
-const box = (asis, html) => `<div class="${asis ? 'rmxa' : 'rmx'}">${html}</div>`;
+// which code drew it: today's, before the redesign ("asis"), a branch not yet in main ("branch")
+const eraOf = n => n.asis ? 'asis' : n.branch ? 'branch' : '';
+const snap = (u, n) => ({ asis: RENDER.asis, branch: RENDER.branch }[eraOf(n)] || RENDER.units)[WFKEY.key(u)];
+const box = (n, html) => `<div class="${{ asis: 'rmxa', branch: 'rmxb' }[eraOf(n)] || 'rmx'}">${html}</div>`;
 const warn = (what, why) => `<div class="w-alert warning"><span class="tx"><code>${esc(what)}</code> — ${esc(why)}</span></div>`;
 const what = u => u.route ? 'page ' + u.route : u.chrome ? u.chrome : u.blocks.map(b => b.type + ' · ' + b.variant).join(', ');
 const missing = (u, s) => warn(what(u), s && s.error ? 'the site failed to render it: ' + s.error : 'no snapshot of this node: run docs/flows/blocks-kit/render.sh');
@@ -72,12 +75,14 @@ function post(html, n) {
   // both; only the first draws an arrow on the board
   const hots = [];
   for (const l of [].concat(links || [])) {
-    const w = bare(l.text), targets = [];
+    const w = bare(l.text), found = [];
     for (const el of t.content.querySelectorAll('*')) {
       if (bare(el.textContent) !== w && el.getAttribute('aria-label') !== l.text) continue;
       const target = el.closest('a, button') || el;
-      if (!targets.includes(target) && !targets.some(x => x.contains(target) || target.contains(x))) targets.push(target);
+      if (!found.includes(target)) found.push(target);
     }
+    // the deepest: a list whose other items are already hotspots reads as the last item's text too
+    const targets = found.filter(x => !found.some(y => y !== x && x.contains(y)));
     targets.forEach((target, i) => {
       const mark = document.createElement('wf-hot'); mark.setAttribute('data-i', String(hots.length));
       hots.push(WF.node({ c: 'rm-hot', to: l.to, label: l.label, quiet: l.quiet || i > 0, _html: target.outerHTML }));
@@ -96,8 +101,8 @@ for (const m of META) {
     props, examples: (EXAMPLES[m.type] || []).slice(0, 3),
     render: n => {
       if (n._html != null) return post(n._html, n); // a block inside rm-page: the page's snapshot carries it
-      const u = WFKEY.unit(n, variantOf), s = snap(u, n.asis);
-      return s && s.html != null ? box(n.asis, post(s.html, n)) : missing(u, s);
+      const u = WFKEY.unit(n, variantOf), s = snap(u, n);
+      return s && s.html != null ? box(n, post(s.html, n)) : missing(u, s);
     },
   });
 }
@@ -106,16 +111,16 @@ WF.register('rm-page', {
   props: { items: { type: 'rm-* nodes', doc: 'blocks top to bottom' }, asis: { type: 'bool', doc: 'screens "as is": the snapshot of the code before the redesign' } },
   render: n => post(WFKEY.segments(n, variantOf, isBlock).map(seg => {
     if (seg.node) return WF.node(seg.node);
-    const s = snap(seg.unit, n.asis);
+    const s = snap(seg.unit, n);
     if (!s || s.error) return missing(seg.unit, s);
-    if (s.html != null) return box(n.asis, s.html);
-    return box(n.asis, s.shell.replace(/<wf-slot data-i="(\d+)"><\/wf-slot>/g, (_, i) => WF.node(Object.assign({}, seg.items[i], { _html: s.items[i] || '' }))));
+    if (s.html != null) return box(n, s.html);
+    return box(n, s.shell.replace(/<wf-slot data-i="(\d+)"><\/wf-slot>/g, (_, i) => WF.node(Object.assign({}, seg.items[i], { _html: s.items[i] || '' }))));
   }).join(''), n), // links / state / focus on the page as a whole
   examples: (EXAMPLES['rm-page'] || []),
 });
 
 /* ---------- the site's header, footer, region banner and whole pages ---------- */
-const snapshotOf = n => { const u = WFKEY.unit(n, variantOf), s = snap(u, n.asis); return s && s.html != null ? box(n.asis, post(s.html, n)) : missing(u, s); };
+const snapshotOf = n => { const u = WFKEY.unit(n, variantOf), s = snap(u, n); return s && s.html != null ? box(n, post(s.html, n)) : missing(u, s); };
 WF.register('rm-header', {
   group: 'Project', doc: 'The site header (src/components/site/Header.tsx, data from siteChrome): contact strip with the region switcher, logo, menu, Contact Us. No region (IP country unknown): the switcher reads «Choose location». menuOpen: the Therapies menu open. links: hotspots on its items.',
   props: { region: { type: 'us | ous | apac | (none)', doc: 'current region; none = the IP country is unknown' }, menuOpen: { type: 'bool', doc: 'the Therapies menu open' }, links: { type: '[{text, to}]', doc: 'hotspots on menu items' }, focus: { type: '{part: menu | switcher | contact, style, cursor}', doc: 'highlight a part' } },

@@ -1,7 +1,7 @@
 # Generates site-prototype.json next to this file. Run: python3 docs/flows/site-prototype.py
 # A clickable prototype of the public site (Americas, desktop) with every decision from site-pages.md applied.
 # Screens are built by the same functions as the wireframe series (site-pages.py); this file adds a clickable
-# the two pages decided last (Home, therapy — sketches until they are in the code) and the links between screens.
+# the two pages decided last (Home, therapy — the code of branch therapy-home until it is merged) and the links between screens.
 # Pages in the code are the real site (site-pages.py: now / route), with hotspots on their real links ("links").
 # Build: build.py docs/flows/site-prototype.json <out>.html --pack docs/flows/pack.js
 import copy
@@ -38,77 +38,31 @@ def nav(active=None, menu_open=False):
 FOOT = {'c': 'rm-footer', 'region': 'us', 'links': [{'text': t, 'to': 'terms', 'quiet': True} for t in ('Privacy Statement', 'Terms of Use', 'Compliance Statement', 'Patents')]}
 
 
-# ---------- pages decided last ----------
+# ---------- Home and the therapy page: written in branch therapy-home, waiting for Emily — drawn by that branch ----------
+# (render-branch.sh: the branch's last commit on a copy of the database with its migrations and build steps)
+def branch(path, links, act=None):
+    n = sp.route(path, region='us', branch=True, links=[{'text': t, 'to': to} for t, to in links])
+    if act: n['act'] = act
+    return n
+
+
+HOME_LINKS = [('Explore Therapies', 'therapies'), ('Request a demo', 'contact-new'), ('Large vessel stroke', 'lvo'), ('Aneurysm', 'aneurysm'),
+              ('19 publications →', 'evidence'), ('12 publications →', 'evidence'), ('Explore the evidence →', 'evidence'), ('View all news ›', 'news')]
+
+
 def home_page(menu_open=False):
-    """Story order: promise → problem and our answer → the therapies → how they are engineered → proof → news."""
-    hero = dict(rm('Home', 0), to='therapies', label='Explore Therapies')
-    statement = rm('Home', 1)
-    stats = statement.pop('stats')
-    statement['to'] = 'contact-new'
-    cards = [sp.ther_card(f'{g} · {p}', t, b, n) for g, p, t, b, n in sp.THER_US]
-    cards[0]['to'] = 'lvo'
-    cards[1]['to'] = 'aneurysm'
-    therapies = {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'row', 'justify': 'between', 'items': [H('Our therapies', 2), {'c': 'link', 'text': 'All therapies →', 'to': 'therapies'}]},
-                                                          {'c': 'grid', 'cols': 3, 'gap': 'm', 'align': 'start', 'items': cards}], 'm')]}
-    numbers = {'c': 'grid', 'cols': 3, 'gap': 'm', 'items': [{'c': 'stat', 'value': '102' if 'publication' in x['label'] else x['value'], 'label': x['label']} for x in stats]}
-    studies = {'c': 'grid', 'cols': 2, 'gap': 'm', 'align': 'start', 'items': [
-        SUCCESS_CARD, sp.key_study('TIGER', 'Prospective, multicenter', '[N · центры — из публикации]', '[главная цифра]', '[конечная точка]', 'TIGERTRIEVER™ · LVO')]}
-    proof = {'c': 'section', 'pad': 'l', 'tone': 'surface', 'items': [S([
-        {'c': 'row', 'justify': 'between', 'items': [H('Backed by clinical evidence', 2), {'c': 'link', 'text': 'All evidence →', 'to': 'evidence'}]}, numbers, studies], 'l')]}
-    news = {'c': 'section', 'pad': 'l', 'items': [S([{'c': 'row', 'justify': 'between', 'items': [H('At the forefront of advancing stroke intervention', 2), {'c': 'link', 'text': 'View all news →', 'to': 'news'}]},
-                                                    sp.top_block()], 'm')]}
-    return [nav('home', menu_open), {'c': 'rm-page', 'items': [hero, statement]}, therapies,
-            {'c': 'rm-page', 'items': [rm('Home', 2)]}, proof, news, FOOT]
+    return [nav('home', menu_open), branch('/', HOME_LINKS), FOOT]
 
 
-def block(b):
-    if 'group' in b:
-        return [H(b['group'], 3)] + [block(x) for x in b['blocks']]
-    return dict({'c': 'rm-' + b['type'], 'v': b['variant']}, **b['data'])
+# the product's tabs; on LVO «Clinical evidence ↗» leads to Evidence, not to a tab
+TABS = [('Product overview', ''), ('How it works', '-how'), ('In-Practice', '-practice'), ('Clinical evidence', '-evidence')]
 
 
-def flat(xs):
-    out = []
-    for x in xs:
-        out += x if isinstance(x, list) else [x]
-    return out
-
-
-TABS = [('Product overview', 'overview'), ('How it works', 'how'), ('In-Practice', 'practice'), ('Clinical evidence', 'evidence')]
-
-
-def therapy_page(snap, slug, tab, studies, pubs):
-    blocks = sp.RM[snap]
-    pdx = next(b for b in blocks if b['type'] == 'productDetails')['data']
-    i_pd = next(i for i, b in enumerate(blocks) if b['type'] == 'productDetails')
-    hero = dict(rm(snap, 0), to='contact-new', label='Request a demo')
-    safety = {'c': 'section', 'pad': 's', 'items': [{'c': 'row', 'justify': 'end', 'items': [{'c': 'link', 'text': '⚠ Indications, Safety & Warnings ↓'}]}]}
-    tabbar = {'c': 'section', 'pad': 's', 'rule': True, 'items': [S([T(pdx.get('hint', ''), 'caption'),
-        {'c': 'row', 'gap': 'l', 'items': [item(t, f'{slug}-{k}' if k != 'overview' else slug, on=(k == tab)) for t, k in TABS]}], 's')]}
-    if tab == 'evidence':
-        content = [S([{'c': 'row', 'justify': 'between', 'items': [H('Key studies', 3), {'c': 'link', 'text': f'All {pubs} publications →', 'to': 'evidence'}]},
-                      {'c': 'grid', 'cols': 2, 'gap': 'm', 'align': 'start', 'items': studies}], 'm')]
-    else:
-        tabd = next(t for t in pdx['tabs'] if t['label'] == dict(TABS)[{v: k for k, v in TABS}.get(tab, tab)] or t['label'].lower().startswith({'overview': 'product', 'how': 'how', 'practice': 'in-practice'}[tab]))
-        content = flat([block(b) for b in tabd.get('blocks', [])])
-        for c in content:
-            if c.get('c') == 'rm-cta' and c.get('title') == 'Webinars':
-                c['to'] = 'webinars'
-        if tab == 'overview':
-            content.append({'c': 'row', 'gap': 'm', 'items': [{'c': 'button', 'v': 'secondary', 'text': 'Download IFU (PDF)'}, T('Where available for this region', 'caption')]})
-    body = [rm(snap, i) for i in range(1, i_pd)]
-    tail = [dict(rm(snap, i), to='contact-new') if blocks[i]['type'] == 'cta' else rm(snap, i) for i in range(i_pd + 1, len(blocks))]
-    return [nav('therapies'), {'c': 'rm-page', 'items': [hero]}, safety, {'c': 'rm-page', 'items': body}, tabbar,
-            {'c': 'section', 'pad': 'l', 'items': [S(content, 'm')]},
-            {'c': 'rm-page', 'items': tail}, FOOT]
-
-
-SUCCESS_CARD = dict(sp.key_study('SUCCESS', 'Prospective, multicenter', '90 patients · 17 US centers', '95%', 'occlusion at 6 months', 'COMANECI™ · wide-neck aneurysms'), to='study')
-ANEURYSM_STUDIES = [SUCCESS_CARD, sp.key_study('Long-term outcomes', 'Retrospective', '[N — из публикации]', '[главная цифра]', '[конечная точка]', 'COMANECI™ · stent-assisted coiling')]
-LVO_STUDIES = [sp.key_study('TIGER', 'Prospective, multicenter', '[N · центры — из публикации]', '[главная цифра]', '[конечная точка]', 'TIGERTRIEVER™ · LVO'),
-               sp.key_study('Meta-analysis', 'Meta-analysis', '[N исследований / пациентов]', '[главная цифра]', 'reperfusion vs self-expanding stent retrievers', 'TIGERTRIEVER™ · LVO')]
-
-
+def therapy_page(slug, tab):
+    links = [('Request a demo', 'contact-new'), ('Customer support', 'contact-new'), ('Therapies', 'therapies'), ('Request to view', 'webinars'),
+             ('Unlock SUCCESS: The prospective study data', 'study'), ('All 12 publications →', 'evidence'), ('Evidence', 'evidence')]
+    links += [(t, 'evidence' if (slug == 'lvo' and k == '-evidence') else slug + k) for t, k in TABS if t != tab]
+    return [nav('therapies'), branch(f'/us/therapies/{slug}', links, act=None if tab == 'Product overview' else [{'tab': tab}]), FOOT]
 
 
 # ---------- pages in the code: the real site (site-pages.py → now / route) ----------
@@ -118,18 +72,17 @@ def real(body, *links):
 
 NEWS_35, NEWS_24 = '/news-events/1-rapid-medical-announces-fda-clearance-of-drivewire-35-and-first-stroke-cases', '/news-events/7-rapid-medical-surpasses-1-000-cases-with-drivewire-24-in-north-america-and'
 screens = [
-    ('home', 'Home', 'rapid-medical.com', home_page()),
+    ('home', 'Home (branch therapy-home, preliminary)', 'rapid-medical.com', home_page()),
     ('menu', 'Therapies menu (open)', 'rapid-medical.com', home_page(True)),
     ('region', 'Choose your location (from the header)', 'rapid-medical.com', home_page(), {'c': 'rm-regionModal', 'region': 'us', 'source': 'location', 'back': '/', 'links': [{'text': 'Go to Americas →', 'to': 'home'}]}),
     ('therapies', 'All therapies', 'rapid-medical.com/us/therapies', real([sp.now('US · Therapies')], ('Large vessel stroke', 'lvo'), ('Aneurysm', 'aneurysm'))),
-    ('aneurysm', 'Aneurysm · Product overview', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'overview', ANEURYSM_STUDIES, '12 COMANECI™')),
-    ('aneurysm-how', 'Aneurysm · How it works', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'how', ANEURYSM_STUDIES, '12 COMANECI™')),
-    ('aneurysm-practice', 'Aneurysm · In-Practice', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'practice', ANEURYSM_STUDIES, '12 COMANECI™')),
-    ('aneurysm-evidence', 'Aneurysm · Clinical evidence', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('US · Aneurysm', 'aneurysm', 'evidence', ANEURYSM_STUDIES, '12 COMANECI™')),
-    ('lvo', 'Large vessel stroke · Product overview (content from the Europe page)', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'overview', LVO_STUDIES, '19 TIGERTRIEVER™')),
-    ('lvo-how', 'Large vessel stroke · How it works', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'how', LVO_STUDIES, '19 TIGERTRIEVER™')),
-    ('lvo-practice', 'Large vessel stroke · In-Practice', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'practice', LVO_STUDIES, '19 TIGERTRIEVER™')),
-    ('lvo-evidence', 'Large vessel stroke · Clinical evidence', 'rapid-medical.com/us/therapies/lvo', therapy_page('OUS · Large vessel stroke', 'lvo', 'evidence', LVO_STUDIES, '19 TIGERTRIEVER™')),
+    ('aneurysm', 'Aneurysm · Product overview (branch therapy-home, preliminary)', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('aneurysm', 'Product overview')),
+    ('aneurysm-how', 'Aneurysm · How it works', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('aneurysm', 'How it works')),
+    ('aneurysm-practice', 'Aneurysm · In-Practice', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('aneurysm', 'In-Practice')),
+    ('aneurysm-evidence', 'Aneurysm · Clinical evidence', 'rapid-medical.com/us/therapies/aneurysm', therapy_page('aneurysm', 'Clinical evidence')),
+    ('lvo', 'Large vessel stroke · Product overview (branch therapy-home, preliminary)', 'rapid-medical.com/us/therapies/lvo', therapy_page('lvo', 'Product overview')),
+    ('lvo-how', 'Large vessel stroke · How it works', 'rapid-medical.com/us/therapies/lvo', therapy_page('lvo', 'How it works')),
+    ('lvo-practice', 'Large vessel stroke · In-Practice', 'rapid-medical.com/us/therapies/lvo', therapy_page('lvo', 'In-Practice')),
     ('study', 'SUCCESS study', 'rapid-medical.com/us/success-study-final-results', real([sp.route('/us/success-study-final-results')])),
     ('evidence', 'Evidence', 'rapid-medical.com/us/evidence', real([sp.now('US · Evidence')])),
     ('webinars', 'Webinars (discussion parked)', 'rapid-medical.com/us/webinars', real([sp.now('US · Webinars')])),
@@ -169,13 +122,13 @@ flow = {
     'project': 'Rapid Medical',
     'description': 'Кликабельный прототип сайта со всеми решениями серии вайрфреймов (docs/flows/site-pages.md). Серые экраны: '
                    'визуальный стиль решается отдельно. Меню, «Contact Us», регион в шапке и ссылки Legal в футере кликаются. '
-                   'Страницы, которые уже в коде, — сам сайт (снимок, pack.js); шапка и футер — тоже. Home и страница терапии — '
-                   'эскизы (предварительно, ждут Emily; в main их ещё нет), с настоящими шапкой и футером. Webinars — обсуждение отложено.',
+                   'Весь прототип — сам сайт (снимок, pack.js). Home и страница терапии — код ветки therapy-home (предварительно, '
+                   'ждут Emily; в main их ещё нет; render-branch.sh). Webinars — обсуждение отложено.',
     'start': 'home',
     'view': 'present',
     'groups': [
         {'title': 'Главная и выбор региона', 'screens': ['home', 'region']},
-        {'title': 'Терапии', 'screens': ['menu', 'therapies', 'aneurysm', 'aneurysm-how', 'aneurysm-practice', 'aneurysm-evidence', 'lvo', 'lvo-how', 'lvo-practice', 'lvo-evidence']},
+        {'title': 'Терапии', 'screens': ['menu', 'therapies', 'aneurysm', 'aneurysm-how', 'aneurysm-practice', 'aneurysm-evidence', 'lvo', 'lvo-how', 'lvo-practice']},
         {'title': 'Доказательства', 'screens': ['study', 'evidence', 'webinars']},
         {'title': 'Новости и события', 'screens': ['news', 'news-35', 'news-page', 'event-past-new']},
         {'title': 'Компания и контакты', 'screens': ['about', 'careers', 'contact-new', 'contact-sent', 'terms']},

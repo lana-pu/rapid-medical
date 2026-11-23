@@ -3,7 +3,7 @@
    kit's light/dark theme. What the blocks hardcode (dark bands: neutral-900, black — DESIGN.md → «Отступления от
    токенов») stays as it is: the wireframe shows it honestly. */
 .w-screen { container: frame / inline-size }
-.rmx, .rmxa {
+.rmx, .rmxa, .rmxb {
   --background: var(--wf-paper);
   --foreground: var(--wf-ink);
   --muted: var(--wf-muted);
@@ -19,8 +19,8 @@
   line-height: 1.5;
 }
 /* the kit sets form controls to inherit their font outside any layer, which beats the site's utilities: give them back */
-.rmx :is(button, select, input, textarea), .rmxa :is(button, select, input, textarea) { font: revert-layer; color: revert-layer }
+:is(.rmx, .rmxa, .rmxb) :is(button, select, input, textarea) { font: revert-layer; color: revert-layer }
 /* pictures, videos, embeds and maps: a grey box with what is there (render.cjs) */
-:is(.rmx, .rmxa) [data-wf-media] { background: var(--wf-fill) }
+:is(.rmx, .rmxa, .rmxb) [data-wf-media] { background: var(--wf-fill) }
 /* the «Choose your location» window (rm-regionModal): in the frame of the screen's overlay, not the browser's top layer */
-:is(.rmx, .rmxa) dialog[open] { position: static; display: block; inset: auto; max-height: none; border: 0; box-shadow: 0 12px 40px -12px rgba(0, 0, 0, .35) }
+:is(.rmx, .rmxa, .rmxb) dialog[open] { position: static; display: block; inset: auto; max-height: none; border: 0; box-shadow: 0 12px 40px -12px rgba(0, 0, 0, .35) }
