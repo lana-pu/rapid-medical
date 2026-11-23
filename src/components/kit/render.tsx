@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode, CSSProperties } from "react";
+import { useLayoutEffect, useRef, type ReactNode, type CSSProperties } from "react";
+import { selectionColours } from "./contrast";
 import { Eyebrow, H1, H2, KeyValue } from "@/components/site/layout-primitives";
 import { buttonClass } from "@/components/site/ui-classes";
 import { withBase } from "@/lib/demo";
@@ -38,11 +39,25 @@ function Frame({ k, name, c, children, className = "", inset = false }: { k: str
   const on = c.sel === k;
   const up = c.trail.has(k);
   const hot = !on && c.hover === k;
-  const line = on ? "outline outline-2 outline-accent" : hot ? "outline outline-1 outline-accent" : up ? "outline outline-1 outline-dashed outline-accent/50" : "";
+  const ref = useRef<HTMLDivElement>(null);
+  // the outline's colour is worked out from the background really behind it (contrast.ts); re-read on every render
+  // while marked, so a changed section background or palette is picked up at once
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !(on || hot || up)) return;
+    const { line, text } = selectionColours(inset ? el : (el.parentElement ?? el));
+    el.style.setProperty("--lab-line", line);
+    el.style.setProperty("--lab-text", text);
+  });
+  const line = on ? "outline outline-2" : hot ? "outline outline-1" : up ? "outline outline-1 outline-dashed" : "";
   return (
-    <div data-lab={k} onClick={(e) => { e.stopPropagation(); c.onPick(k); }} onMouseOver={(e) => { e.stopPropagation(); if (c.hover !== k) c.onHover(k); }}
+    <div ref={ref} data-lab={k} onClick={(e) => { e.stopPropagation(); c.onPick(k); }} onMouseOver={(e) => { e.stopPropagation(); if (c.hover !== k) c.onHover(k); }}
+      style={{ outlineColor: "var(--lab-line)" }}
       className={`relative ${inset ? "-outline-offset-2" : "outline-offset-4"} ${line} ${className}`}>
-      {(on || hot) && <span className={`pointer-events-none absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${inset ? "top-1" : "-top-5"} ${on ? `${inset ? "left-1" : "left-0"} bg-accent text-accent-foreground` : `${inset ? "right-1" : "right-0"} bg-foreground/80 text-background`}`}>{name}</span>}
+      {(on || hot) && (
+        <span style={{ background: "var(--lab-line)", color: "var(--lab-text)" }}
+          className={`pointer-events-none absolute z-10 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-none ${inset ? "top-1" : "-top-5"} ${on ? (inset ? "left-1" : "left-0") : `${inset ? "right-1" : "right-0"} opacity-80`}`}>{name}</span>
+      )}
       {children}
     </div>
   );
