@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { and, desc, eq, isNotNull, like } from "drizzle-orm";
 import { db, jobs, media, newsItems, publications, webinars } from "@/db";
 import { formatMonth } from "@/components/site/layout-primitives";
 import { Builder } from "@/components/kit/Builder";
 import type { LabData } from "@/components/kit/render";
+import { DEMO } from "@/lib/demo";
 
 /**
  * Blocks sandbox: the proposed block model (sections → columns → blocks with switchable options) on the site's own look,
@@ -12,6 +14,8 @@ import type { LabData } from "@/components/kit/render";
 export const metadata: Metadata = { title: "Blocks sandbox", robots: { index: false, follow: false } };
 
 export default async function LabBlocks() {
+  // only in the static demo and local development: on the live site it would list media-library files, unpublished too
+  if (!DEMO && process.env.NODE_ENV === "production") notFound();
   const [pics, news, pubs, webs, roles] = await Promise.all([
     db.select({ url: media.url, alt: media.alt }).from(media).where(and(like(media.mime, "image/%"), like(media.url, "/uploads/%"))).orderBy(desc(media.size)).limit(24),
     db.select().from(newsItems).where(eq(newsItems.status, "published")).orderBy(desc(newsItems.publishedOn)).limit(6),
