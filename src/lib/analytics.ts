@@ -11,6 +11,7 @@ export type Report = {
   days: number;
   tiles: { visits: [number, number]; views: [number, number]; leads: [number, number] };
   visitsByDay: { day: string; value: number }[];
+  leadsByDay: { day: string; value: number }[]; // requests without spam, as visitsByDay (the dashboard's «This week»)
   sources: Count[]; // value: visits, extra: leads
   leadPages: Count[];
   topPages: Count[];
@@ -53,6 +54,8 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
   const byDay = new Map<string, number>();
   for (let t = from; t <= now.getTime(); t += DAY) byDay.set(new Date(t).toISOString().slice(0, 10), 0);
   for (const v of views) if (v.visit) byDay.set(v.at.toISOString().slice(0, 10), (byDay.get(v.at.toISOString().slice(0, 10)) ?? 0) + 1);
+  const leadDays = new Map([...byDay.keys()].map((d) => [d, 0]));
+  for (const l of leads) leadDays.set(l.at.toISOString().slice(0, 10), (leadDays.get(l.at.toISOString().slice(0, 10)) ?? 0) + 1);
 
   const sources = new Map<string, { v: number; e?: number }>();
   const campaigns = new Map<string, { v: number; e?: number }>();
@@ -95,6 +98,7 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
       leads: [leads.length, input.leads.filter(prev).length],
     },
     visitsByDay: [...byDay.entries()].map(([day, value]) => ({ day, value })),
+    leadsByDay: [...leadDays.entries()].map(([day, value]) => ({ day, value })),
     sources: srcList,
     leadPages: top(leadPages),
     topPages: top(topPages),

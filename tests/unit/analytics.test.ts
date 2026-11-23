@@ -26,6 +26,11 @@ describe("analytics report", () => {
     expect(r.tiles).toEqual({ visits: [2, 1], views: [3, 1], leads: [1, 1] });
     expect(r.visitsByDay).toHaveLength(8);
   });
+  it("requests by day: the same days as visits, the previous period left out", () => {
+    expect(r.leadsByDay.map((d) => d.day)).toEqual(r.visitsByDay.map((d) => d.day));
+    expect(r.leadsByDay.reduce((s, d) => s + d.value, 0)).toBe(1);
+    expect(r.leadsByDay.find((d) => d.day === "2026-11-14")?.value).toBe(1);
+  });
   it("visits and leads by source, the page that led to the request, in words", () => {
     expect(r.sources).toEqual([{ label: "LinkedIn", value: 1, extra: 1 }, { label: "Google", value: 1 }]);
     expect(r.headline).toBe("LinkedIn brought 1 visit and 1 lead");

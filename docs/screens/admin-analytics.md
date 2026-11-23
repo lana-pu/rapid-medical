@@ -24,7 +24,9 @@ Visits · Page views · Leads (заявки без спама) · Leads per 100 
 значению, число справа.
 
 ## Дашборд
-Блок «This week»: заявки за 7 дней (и к прошлым 7), визиты, главный источник; ссылка «Open analytics».
+Блок «This week»: заявки за 7 дней (и к прошлым 7), визиты, главный источник; ссылка «Open analytics». Для его
+столбиков отчёт считает и заявки по дням (`leadsByDay`, как `visitsByDay`), для полос — доли по формам и источникам
+(`screens/admin-home.md → Правая колонка`).
 
 ## Данные
 Заявки — `contact_submissions` (`meta`: referrer, landing_page, previous_page, utm_*), кроме `spam`. Посещения и

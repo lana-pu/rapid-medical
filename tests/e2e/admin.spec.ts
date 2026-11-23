@@ -21,7 +21,7 @@ test("login → choose a project; the project in the header; its dashboard; the 
   await expect(page).toHaveURL(/\/admin\/website$/);
   await expect(page.getByRole("banner")).toContainText("Website");
   await expect(page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Home/ })).toHaveAttribute("aria-current", "page");
-  await expect(page.getByRole("navigation", { name: "Quick actions" }).getByRole("link", { name: "+ News item" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Quick actions" }).getByRole("link", { name: "News item" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Site health" })).toContainText(/pictures? without a description/); // not a message: on the dashboard
   await expect(page.getByRole("region", { name: "Coming up" })).toBeVisible();
   // the header's arrow is Back (to the picker we came from); «Rapid Medical» is the way to the projects from anywhere

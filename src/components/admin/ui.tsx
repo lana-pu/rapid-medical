@@ -5,6 +5,23 @@ import { REGION_CHOICES, REGION_SHORT } from "@/lib/regions";
 
 /* Small, unstyled-ish primitives for the admin. Swap freely later. */
 
+/**
+ * A tooltip (docs/screens/admin-home.md → «Иерархия»): shown on hover and on keyboard focus inside, CSS only. It
+ * adds to what is already visible, never carries the only copy of something important. The bubble is a sibling of
+ * the trigger, so a link's name stays its own text; it is not displayed at all until wanted, so it never widens the page. `focusable` makes a non-interactive trigger reachable by Tab.
+ */
+export function Tip({ tip, children, align = "center", focusable = false, className = "", style }: { tip: ReactNode; children: ReactNode; align?: "start" | "center" | "end"; focusable?: boolean; className?: string; style?: React.CSSProperties }) {
+  const pos = { start: "left-0", center: "left-1/2 -translate-x-1/2", end: "right-0" }[align];
+  return (
+    <span className={`group/tip relative inline-flex ${className}`} style={style} tabIndex={focusable ? 0 : undefined}>
+      {children}
+      <span role="tooltip" className={`pointer-events-none absolute bottom-full z-50 mb-2 hidden w-max max-w-[min(16rem,calc(100vw-2rem))] rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-normal leading-snug text-white shadow-lg group-hover/tip:block group-focus-within/tip:block ${pos}`}>
+        {tip}
+      </span>
+    </span>
+  );
+}
+
 export const inputCls =
   "w-full rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-neutral-900 focus:outline-none";
 

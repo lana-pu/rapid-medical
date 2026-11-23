@@ -213,30 +213,84 @@ export async function comingUp(): Promise<ComingUp[]> {
 /*  Site health — only what can be fixed                               */
 /* ------------------------------------------------------------------ */
 
-export type Health = { key: string; text: string; ok: boolean; action?: string; href?: string };
+/**
+ * One check of the site's health (docs/screens/admin-home.md → «Site health»): every check, passed or not, so the
+ * dashboard can say «N of M need attention». A share check counts what is missing out of all; an age check counts days
+ * since the newest item against STALE_DAYS.
+ */
+export type Health = {
+  key: "alt" | "seo" | "2fa" | "news" | "studies";
+  ok: boolean;
+  /** the big number: what is missing, or days since the newest */
+  value: number;
+  /** all there is (share), or the limit in days (age) */
+  total: number;
+  kind: "share" | "age";
+  /** what the number is, after it: «pictures without a description» */
+  label: string;
+  /** the scale in words: «84 of 245 described» */
+  scale: string;
+  /** passed, in words: «Every picture has a description» */
+  okText: string;
+  /** why it matters, one line */
+  why: string;
+  action?: string;
+  href?: string;
+};
 
-const STALE_DAYS = 60;
+export const STALE_DAYS = 60;
 
 export async function health(user: { role: string }): Promise<Health[]> {
-  const [[{ n: noAlt }], [{ n: noDescription }], people, [news], [studies]] = await Promise.all([
+  const [[{ n: noAlt }], [{ n: pictures }], [{ n: noDescription }], [{ n: livePages }], people, [news], [studies]] = await Promise.all([
     db.select({ n: count() }).from(media).where(and(like(media.mime, "image/%"), eq(media.alt, ""))),
+    db.select({ n: count() }).from(media).where(like(media.mime, "image/%")),
     db.select({ n: count() }).from(pages).where(and(eq(pages.status, "published"), eq(pages.metaDescription, ""))),
+    db.select({ n: count() }).from(pages).where(eq(pages.status, "published")),
     db.select({ totp: users.totpEnabledAt }).from(users).where(eq(users.active, true)),
     db.select({ last: max(newsItems.publishedOn) }).from(newsItems).where(eq(newsItems.status, "published")),
     db.select({ last: max(publications.publishedOn) }).from(publications).where(eq(publications.status, "published")),
   ]);
-  const out: Health[] = [];
-  if (noAlt) out.push({ key: "alt", ok: false, text: `${noAlt} picture${noAlt > 1 ? "s" : ""} without a description`, action: "Describe pictures", href: "/admin/media?describe=1" });
-  if (noDescription) out.push({ key: "seo", ok: false, text: `${noDescription} page${noDescription > 1 ? "s" : ""} without a description for Google`, action: "Open pages", href: "/admin/pages" });
-  const without2fa = people.filter((p) => !p.totp).length;
-  if (user.role === "admin" && without2fa) out.push({ key: "2fa", ok: false, text: `${without2fa} ${without2fa > 1 ? "people" : "person"} without two-step sign-in`, action: "People", href: "/admin/users" });
+  const s = (n: number, one: string, many: string) => (n === 1 ? one : many);
+  const out: Health[] = [
+    {
+      key: "alt", kind: "share", ok: !noAlt, value: noAlt, total: pictures,
+      label: s(noAlt, "picture without a description", "pictures without a description"),
+      scale: `${pictures - noAlt} of ${pictures} described`, okText: "Every picture has a description",
+      why: "Screen readers and Google read the description; without it the picture says nothing to them.",
+      action: "Describe pictures", href: "/admin/media?describe=1",
+    },
+    {
+      key: "seo", kind: "share", ok: !noDescription, value: noDescription, total: livePages,
+      label: s(noDescription, "page without a description for Google", "pages without a description for Google"),
+      scale: `${livePages - noDescription} of ${livePages} pages on the site have one`, okText: "Every page has a description for Google",
+      why: "Google shows it under the page's name in results; without it Google picks a random piece of the page.",
+      action: "Open pages", href: "/admin/pages",
+    },
+  ];
+  if (user.role === "admin") {
+    const without2fa = people.filter((p) => !p.totp).length;
+    out.push({
+      key: "2fa", kind: "share", ok: !without2fa, value: without2fa, total: people.length,
+      label: s(without2fa, "person without two-step sign-in", "people without two-step sign-in"),
+      scale: `${people.length - without2fa} of ${people.length} people protected`, okText: "Everyone signs in with two steps",
+      why: "With one step, a stolen password alone opens the admin.",
+      action: "People", href: "/admin/users",
+    });
+  }
   const age = (d: Date | null) => (d ? Math.max(0, Math.round((Date.parse(today()) - Date.parse(day(d))) / 86400_000)) : null);
-  const fresh = (key: string, what: string, d: Date | null, href: string) => {
+  const fresh = (key: "news" | "studies", what: string, d: Date | null, href: string, why: string) => {
     const n = age(d);
     if (n == null) return;
-    out.push({ key, ok: n <= STALE_DAYS, text: `Last ${what}: ${n === 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`}`, action: n > STALE_DAYS ? "Add one" : undefined, href });
+    const ok = n <= STALE_DAYS;
+    out.push({
+      key, kind: "age", ok, value: n, total: STALE_DAYS,
+      label: `${s(n, "day", "days")} since the last ${what}`,
+      scale: ok ? `within ${STALE_DAYS} days` : `${n - STALE_DAYS} days over ${STALE_DAYS}`,
+      okText: `Last ${what}: ${n === 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`}`,
+      why, action: ok ? undefined : "Add one", href,
+    });
   };
-  fresh("news", "news item", news?.last ?? null, "/admin/news/new");
-  fresh("studies", "study on Evidence", studies?.last ?? null, "/admin/publications/new");
+  fresh("news", "news item", news?.last ?? null, "/admin/news/new", "Visitors judge whether the company is active by its newest news.");
+  fresh("studies", "study on Evidence", studies?.last ?? null, "/admin/publications/new", "Physicians look for recent evidence; an old list looks abandoned.");
   return out;
 }
