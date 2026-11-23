@@ -281,12 +281,20 @@ export function newsPageToBlocks(items: NewsItem[], eventItems: Event[] = [], no
 }
 
 export function webinarsToBlocks({ region, list, product }: { region: Region; list: (Webinar & { product?: Pick<Product, "name" | "slug"> | null })[]; product?: string }): Block[] {
-  // coming from a therapy page (?product=…): its first webinar is chosen in the form
-  const chosen = product ? list.find((w) => w.product?.slug === product)?.title : undefined;
+  // the request form opens in a window from a webinar's row (docs/screens/webinars.md); coming from a therapy page
+  // (?product=…) the list opens filtered to that product
   return [
-    { type: "hero", variant: "page", data: { title: "Webinars", body: "Physician-led webinars are available to view on-demand. To request a recording, please fill in the form below." } },
-    { type: "webinars", variant: "cards", data: { items: list.map((w) => ({ id: w.id, title: w.title, speaker: w.speaker, event: w.event, productName: w.product?.name, imageUrl: w.imageUrl, edit: record("webinars", w.id) })) } },
-    { type: "form", variant: "compact", data: { form: "webinar", topics: list.length ? list.map((w) => w.title) : ["Webinar recording request"], defaultTopic: chosen, defaultRegion: REGION_FORM_VALUE[region] } },
+    { type: "hero", variant: "page", data: { title: "Webinars", body: "Physician-led webinars are available to view on-demand. To request a recording, choose a webinar below." } },
+    {
+      type: "webinars",
+      variant: "library",
+      data: {
+        items: list.map((w) => ({ id: w.id, title: w.title, speaker: w.speaker, event: w.event, productName: w.product?.name, productSlug: w.product?.slug, heldOn: w.heldOn, durationMin: w.durationMin, imageUrl: w.imageUrl, edit: record("webinars", w.id) })),
+        product: product && list.some((w) => w.product?.slug === product) ? product : undefined,
+        defaultRegion: REGION_FORM_VALUE[region],
+        emptyLine: `No webinars for ${REGION_LABELS[region]} yet.`,
+      },
+    },
   ];
 }
 

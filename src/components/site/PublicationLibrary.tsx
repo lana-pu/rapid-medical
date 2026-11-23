@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { safeHref, siteHref } from "@/lib/safe-path";
+import { FilterChips } from "./FilterChips";
 
 export type LibraryRow = {
   id: number;
@@ -68,7 +69,6 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
     return rows.filter((r) => (!product || r.product === product) && hit(r)).sort((a, b) => (sort === "new" ? b.date - a.date : a.date - b.date));
   }, [rows, q, product, sort]);
 
-  const chip = (on: boolean) => `rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"}`;
   const input = "rounded border border-border bg-background px-3 py-2 text-sm focus:border-foreground focus:outline-none";
 
   return (
@@ -81,12 +81,8 @@ export function PublicationLibrary({ rows, products }: { rows: LibraryRow[]; pro
         </select>
       </div>
       {products.length > 1 && (
-        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Product">
-          {[{ id: "", label: "All", count: rows.length }, ...products].map((p) => (
-            <button key={p.id || "all"} type="button" aria-pressed={product === p.id} className={chip(product === p.id)} onClick={() => { setProduct(p.id); setShown(PAGE); }}>
-              {p.label} <span className="opacity-60">{p.count}</span>
-            </button>
-          ))}
+        <div className="mt-4">
+          <FilterChips options={products} total={rows.length} value={product} onChange={(id) => { setProduct(id); setShown(PAGE); }} />
         </div>
       )}
 

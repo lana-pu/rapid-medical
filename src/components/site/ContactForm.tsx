@@ -55,7 +55,9 @@ export function ContactForm({
         ? [`You're registered for ${defaultTopic || "the event"}.`, "We'll email you the details."]
         : form === "careers"
           ? ["Thanks — we've received your details.", "We'll be in touch if there's a match."]
-          : ["Thank you for contacting us.", "We will get back to you as soon as possible."];
+          : form === "webinar"
+            ? ["Thank you — your request is in.", `We'll email you the recording${sent.email ? ` at ${sent.email}` : ""}.`]
+            : ["Thank you for contacting us.", "We will get back to you as soon as possible."];
     return (
       <div className="rounded border border-border bg-surface p-6" role="status">
         <p className="text-lg font-medium">{title}</p>
@@ -98,7 +100,8 @@ export function ContactForm({
 
       <p className="text-xs text-muted">(* indicates a required field)</p>
 
-      {form === "event" ? (
+      {/* an event, or a webinar chosen before the form opened (its window): the topic is already known */}
+      {form === "event" || (form === "webinar" && topics.length === 1) ? (
         <input type="hidden" name="topic" value={defaultTopic ?? topics[0] ?? ""} />
       ) : form === "contact" || form === "careers" ? (
         <TopicChips topics={topics} defaultTopic={defaultTopic} error={err("topic")} legend={form === "careers" ? "Area of interest*" : undefined} />

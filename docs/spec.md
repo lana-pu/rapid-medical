@@ -137,7 +137,7 @@ East» (BACKLOG → Решения за владельцем, №9).
 | `solutions` | `solutions` (Therapies) | `slug`+`region` (unique), `productId`, `therapyGroup` (ischemic / hemorrhagic / access / пусто), `proofPoint`, hero/intro, `benefits[]`, overview, `overviewFeatures[]`, `annotatedImage`, `specs` (таблица) / `specImageUrls` (legacy), `howItWorks[]`, `inPractice[]`, `actionLinks[]`, closing, `regulatoryHtml`, `referencesHtml`, SEO (`metaTitle` — полный заголовок без шаблона, `metaDescription`, `shareImageUrl` → og:image, иначе hero) | `draft` | Одна строка на (терапия, регион) — регуляторика разная. «Copy to {REGION}» в админке |
 | `publications` | `publications` (Evidence) | `title`, `authors`, `journal`, `publishedOn` (месяц), `url`/`pdfUrl`/`doi`, `productId`, `regions[]` (пусто = все), `featured`, `imageUrl` | `published` | |
 | `news_items` | `news` | `title`, `publishedOn`, `url` (внешняя), `source`, `excerpt`, `featured` | `published` | Только внешние ссылки |
-| `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос |
+| `webinars` | `webinars` | `title`, `speaker`, `event`, `heldOn`, `durationMin` (длительность, мин), `videoUrl` (приватная), `productId`, `regions[]` | `published` | Доступ к записи — через форму-запрос (в окне у вебинара) |
 | `events` (решение 2026-11-10, сделано) | `events` | `slug`, `title`, `subtitle`, `startsOn` (первый день), `startTime` (текст), `endsOn` (пусто = один день), `city`, `venue`, `congress` (напр. ESMINT, необязательно), `descriptionMd`, `imageUrl`, `registration` (`none` / `form` / `link`), `registrationUrl`, `registrationClosesOn` (пусто = день начала), `recapMd`, `recapPhotos[]` | `draft` | Предстоящее / прошедшее считается **по дате автоматически**, ручного переноса в архив нет. Глобальные, как новости. См. [events](screens/events.md) |
 | `team_members` | `team` | `slug`, `name`, `title`, `longTitle`, `bioHtml`, `photoUrl` | `published` | |
 | `jobs` | `jobs` | `slug`, `title`, `location`, `department`, `descriptionHtml`, `applyUrl`/`applyEmail` | `draft` | |
@@ -440,7 +440,7 @@ reopening» в пакете S0 (2026-11-11).
 | `/{region}/therapies` | Лендинг «Our Therapies» региона (настройки `therapies:{region}`) | [therapies-index](screens/therapies-index.md) |
 | `/{region}/therapies/{slug}` | Страница терапии | [therapy](screens/therapy.md) |
 | `/{region}/evidence` | Публикации по региону, вкладки по продуктам | [evidence](screens/evidence.md) |
-| `/{region}/webinars` | Список вебинаров + форма-запрос записи | [webinars](screens/webinars.md) |
+| `/{region}/webinars` | Вебинары строками на «общей линии», запрос записи — окном у вебинара | [webinars](screens/webinars.md) |
 | `/{region}/{slug}` | Региональная страница из `pages` (лендинги) | [pages](screens/pages.md) |
 | `/{slug}` | Глобальная страница из `pages` (privacy, terms, …); промах → redirects / 404 | [pages](screens/pages.md) |
 | `/news-events` | Внешние новости; **(решение 2026-11-10)** сверху предстоящие события, ниже архив прошедших | [news-events](screens/news-events.md) |

@@ -432,6 +432,7 @@ export const webinars = pgTable("webinars", {
   speaker: text("speaker").notNull().default(""),
   event: text("event").notNull().default(""),
   heldOn: timestamp("held_on", { mode: "date" }),
+  durationMin: integer("duration_min"), // shown on the row: «45 min»
   videoUrl: text("video_url"), // private; sent on request
   imageUrl: text("image_url"),
   productId: integer("product_id").references(() => products.id, { onDelete: "set null" }),
