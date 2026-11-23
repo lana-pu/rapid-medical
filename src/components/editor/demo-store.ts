@@ -231,6 +231,33 @@ function setMark(el: HTMLElement, id: string, name: string, type: string, varian
   el.setAttribute("data-rm-b", JSON.stringify({ i: 0, id, ...(l ? { l } : {}), t: type, v: variant, n: name, p: false }));
 }
 
+/**
+ * A new or copied section gets field bindings of its own: the fields of this page under `demo.{newId}.…`, so its texts,
+ * links and pictures are edited and kept in this browser like the page's own (a sample from /style-guide is bound to
+ * `preset#0 data.…`, a copy to the original's fields).
+ */
+function retag(nodes: Node[], newId: string): Node[] {
+  const page = JSON.parse(document.querySelector("[data-rm-page]")?.getAttribute("data-rm-page") || "null") as { r: string; id: number } | null;
+  for (const n of nodes) {
+    if (!(n instanceof HTMLElement)) continue;
+    for (const el of [n, ...Array.from(n.querySelectorAll<HTMLElement>("[data-e]"))]) {
+      if (!el.hasAttribute("data-e")) continue;
+      try {
+        const tag = JSON.parse(el.getAttribute("data-e") || "") as Record<string, unknown>;
+        if (!page) {
+          el.removeAttribute("data-e");
+          continue;
+        }
+        const own = (f: unknown) => (typeof f === "string" ? `demo.${newId}.${f.replace(/^demo\.[^.]+\./, "")}` : f);
+        el.setAttribute("data-e", JSON.stringify({ ...tag, r: page.r, id: page.id, f: own(tag.f), ...(tag.fh ? { fh: own(tag.fh) } : {}), ...(tag.fv ? { fv: own(tag.fv) } : {}) }));
+      } catch {
+        el.removeAttribute("data-e");
+      }
+    }
+  }
+  return nodes;
+}
+
 let presetDoc: Promise<Document> | null = null;
 async function presetNodes(type: string, variant: string): Promise<Node[]> {
   presetDoc ??= fetch(withBase("/style-guide/")).then(async (r) => new DOMParser().parseFromString(await r.text(), "text/html"));
@@ -248,7 +275,7 @@ async function apply(op: Op): Promise<void> {
     const mark = document.createElement("i");
     mark.hidden = true;
     setMark(mark, op.newId, op.name, op.type, op.variant, l);
-    const nodes = [mark, ...(await presetNodes(op.type, op.variant))];
+    const nodes = [mark, ...retag(await presetNodes(op.type, op.variant), op.newId)];
     const refUnit = list[op.at] ? unitOf(list[op.at]) : [ref];
     insertBefore(nodes, refUnit[0]);
     return;
@@ -285,7 +312,7 @@ async function apply(op: Op): Promise<void> {
     const mk = first.hasAttribute?.("data-rm-b") ? first : (first.querySelector?.("[data-rm-b]") as HTMLElement | null);
     const src = info(m);
     if (mk) setMark(mk, op.newId, `${src.n ?? "Section"} (copy)`, src.t ?? "", src.v ?? "", src.l ?? "");
-    copy.forEach((n) => n instanceof HTMLElement && [n, ...Array.from(n.querySelectorAll("[data-e]"))].forEach((e) => e.removeAttribute("data-e")));
+    retag(copy, op.newId);
     insertAfter(copy, unit[unit.length - 1]);
   } else if (op.op === "move") {
     const list = marks(info(m).l ?? "");

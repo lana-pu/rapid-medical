@@ -4,6 +4,7 @@ import { ComponentsKit, TokenSwatch } from "@/components/site/StyleGuideKit";
 import { BLOCK_LIST } from "@/blocks/registry";
 import { BlockList } from "@/blocks/render";
 import type { Block, BlockCategory } from "@/blocks/types";
+import { DEMO } from "@/lib/demo";
 
 /**
  * The UI kit (DESIGN.md → Как устроено): foundations (tokens with their live values, type, layout), components in every
@@ -142,7 +143,8 @@ export default function StyleGuidePage() {
                 </Container>
                 {d.variants.map((v) => {
                   const examples = d.examples as Partial<Record<string, Block["data"]>> | undefined;
-                  const block = { type: d.type, variant: v.id, data: examples?.[v.id] ?? d.example } as Block;
+                  // in the demo the samples carry field bindings ("preset#0 data.…"): a copied section stays editable (demo-store retags them)
+                  const block = { type: d.type, variant: v.id, data: examples?.[v.id] ?? d.example, ...(DEMO ? { edit: { r: "preset", id: 0, prefix: "data." } } : {}) } as Block;
                   return (
                     <div key={v.id} className="pb-8">
                       <Container className="pb-3">

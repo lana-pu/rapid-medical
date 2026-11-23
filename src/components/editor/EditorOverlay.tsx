@@ -476,13 +476,26 @@ export default function EditorOverlay() {
   }, [doUndo, doRedo, busy]);
 
   /* ---- inline plain text ---- */
+  /**
+   * The text as typed: `innerText` returns it after CSS `text-transform` (an eyebrow shown in capitals came back as
+   * «EDITED» and was saved so), so the transform is switched off on the element and its children while reading.
+   */
+  const typedText = (el: HTMLElement) => {
+    const styled = [el, ...Array.from(el.querySelectorAll<HTMLElement>("*"))].filter((x) => getComputedStyle(x).textTransform !== "none");
+    const before = styled.map((x) => x.style.textTransform);
+    styled.forEach((x) => x.style.setProperty("text-transform", "none"));
+    const text = el.innerText;
+    styled.forEach((x, i) => (before[i] ? x.style.setProperty("text-transform", before[i]) : x.style.removeProperty("text-transform")));
+    return text;
+  };
+
   const commitText = useCallback(async () => {
     const cur = editing.current;
     if (!cur) return;
     editing.current = null;
     const { el, tag, original } = cur;
     el.removeAttribute("contenteditable");
-    const value = el.innerText;
+    const value = typedText(el);
     if (value === original) return;
     const ok = await save(tag, "text", value, { value: original, label: "text change" });
     if (!ok) el.innerText = original;
@@ -491,7 +504,7 @@ export default function EditorOverlay() {
   const startText = useCallback(
     (el: HTMLElement, tag: Tag) => {
       if (editing.current?.el === el) return;
-      editing.current = { el, tag, original: el.innerText };
+      editing.current = { el, tag, original: typedText(el) };
       // plaintext-only keeps paste clean; older Firefox falls back to "true"
       el.setAttribute("contenteditable", "plaintext-only");
       if (!el.isContentEditable) el.setAttribute("contenteditable", "true");
