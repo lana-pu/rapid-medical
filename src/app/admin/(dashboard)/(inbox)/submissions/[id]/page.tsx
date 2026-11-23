@@ -31,7 +31,8 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   // what the request was about, for the ready reply: the webinar's recording, the event's dates and place, the job
   const meta = s.meta as Record<string, string>;
   const [webinar, event, job] = await Promise.all([
-    s.form === "webinar" ? db.query.webinars.findFirst({ where: eq(webinars.title, meta.webinar || s.topic) }) : null,
+    // the topic is what the visitor's browser sent: only a published webinar's recording goes into the ready reply
+    s.form === "webinar" ? db.query.webinars.findFirst({ where: and(eq(webinars.title, meta.webinar || s.topic), eq(webinars.status, "published")) }) : null,
     s.form === "event" && meta.event ? db.query.events.findFirst({ where: eq(events.slug, meta.event) }) : null,
     s.form === "careers" && meta.job ? db.query.jobs.findFirst({ where: eq(jobs.slug, meta.job) }) : null,
   ]);
