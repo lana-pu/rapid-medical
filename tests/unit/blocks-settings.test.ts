@@ -120,11 +120,23 @@ describe("newsPageToBlocks", () => {
 });
 
 describe("webinarsToBlocks", () => {
-  it("topics come from the webinars, region is preselected", () => {
-    const f = webinarsToBlocks({ region: "apac", list: [{ id: 1, title: "W" } as Webinar] })[2] as BlockOf<"form">;
-    expect(f.data.topics).toEqual(["W"]);
-    expect(f.data.defaultRegion).toBe("Asia Pacific");
-    expect((webinarsToBlocks({ region: "us", list: [] })[2] as BlockOf<"form">).data.topics).toEqual(["Webinar recording request"]);
+  const list = [
+    { id: 1, title: "W", product: { name: "COMANECI", slug: "comaneci" } },
+    { id: 2, title: "V", product: { name: "TIGERTRIEVER", slug: "tigertriever" } },
+  ] as (Webinar & { product: { name: string; slug: string } })[];
+  it("rows on the shared line, the form in a window: no form block on the page", () => {
+    const blocks = webinarsToBlocks({ region: "apac", list });
+    expect(blocks.map((b) => `${b.type}.${b.variant}`)).toEqual(["hero.page", "webinars.library"]);
+    const w = blocks[1] as BlockOf<"webinars">;
+    expect(w.data.items.map((i) => i.productSlug)).toEqual(["comaneci", "tigertriever"]);
+    expect(w.data.defaultRegion).toBe("Asia Pacific");
+  });
+  it("?product= from a therapy page opens the list filtered; an unknown one is ignored", () => {
+    expect((webinarsToBlocks({ region: "us", list, product: "comaneci" })[1] as BlockOf<"webinars">).data.product).toBe("comaneci");
+    expect((webinarsToBlocks({ region: "us", list, product: "nope" })[1] as BlockOf<"webinars">).data.product).toBeUndefined();
+  });
+  it("no webinars in the region: a line names the region", () => {
+    expect((webinarsToBlocks({ region: "apac", list: [] })[1] as BlockOf<"webinars">).data.emptyLine).toBe("No webinars for Asia & Pacific yet.");
   });
 });
 

@@ -134,13 +134,14 @@ test.describe("usability pass 2026-11-13", () => {
     await expect(page.locator("input[name=email]")).toHaveAttribute("aria-invalid", "true");
   });
 
-  test("a webinar card picks its webinar in the request form", async ({ page }) => {
+  test("a webinar's row opens the request form for it in a window", async ({ page }) => {
     await page.goto("/ous/webinars");
-    const card = page.locator("ul li").filter({ has: page.getByRole("button", { name: "Request this recording" }) }).first();
-    const title = (await card.locator(".font-medium").first().innerText()).trim();
-    await card.getByRole("button", { name: "Request this recording" }).click();
-    await expect(page.locator('form[data-form="webinar"] select[name=topic]')).toHaveValue(title);
-    await expect(page.getByText("Which webinar?*")).toBeVisible();
+    const row = page.locator("ul li").filter({ has: page.getByRole("button", { name: "Request this recording" }) }).first();
+    const title = (await row.locator("h3").first().innerText()).trim();
+    await row.getByRole("button", { name: "Request this recording" }).click();
+    const dialog = page.locator("dialog[open]");
+    await expect(dialog.getByRole("heading", { name: title })).toBeVisible();
+    await expect(dialog.locator('form[data-form="webinar"] input[name=topic]')).toHaveValue(title);
   });
 
   test("careers with no open positions leads to the general-interest form", async ({ page, request }) => {
@@ -197,12 +198,13 @@ test.describe("usability pass 2026-11-13, part 2", () => {
     expect(keep.headers()["location"]).toMatch(/\/ous\/evidence#comaneci$/);
   });
 
-  test("Request to view on a therapy picks that product's webinar", async ({ page }) => {
+  test("Request to view on a therapy opens the webinars of that product", async ({ page }) => {
     await page.goto("/apac/therapies/aneurysm");
     const href = await page.locator('a:has-text("Request to view")').first().getAttribute("href"); // inside a closed tab
     expect(href).toMatch(/\/apac\/webinars\?product=/);
     await page.goto(href!);
-    await expect(page.locator('form[data-form="webinar"] select[name=topic]')).not.toHaveValue("");
+    // the list opens filtered to that product
+    await expect(page.getByRole("group", { name: "Product" }).locator('button[aria-pressed="true"]')).not.toHaveText(/^All/);
   });
 
   test("titles: no doubled brand on text pages, 404 says what it is", async ({ page }) => {

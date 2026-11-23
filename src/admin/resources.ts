@@ -327,7 +327,7 @@ export const RESOURCES: Resource[] = [
     table: webinars,
     labelField: "title",
     sortBy: "sortOrder",
-    revalidate: ["/us/webinars", "/ous/webinars"],
+    revalidate: ["/us/webinars", "/ous/webinars", "/apac/webinars"],
     listColumns: [
       { name: "title", label: "Title" },
       { name: "speaker", label: "Speaker" },
@@ -340,6 +340,7 @@ export const RESOURCES: Resource[] = [
       { name: "speaker", label: "Speaker", type: "text", half: true },
       { name: "event", label: "Event", type: "text", half: true },
       { name: "heldOn", label: "Date", type: "date", half: true },
+      { name: "durationMin", label: "Duration, min", type: "number", half: true },
       { name: "productId", label: "Product", type: "product", half: true },
       { name: "videoUrl", label: "Recording URL (private)", type: "url" },
       { name: "imageUrl", label: "Image", type: "image" },
