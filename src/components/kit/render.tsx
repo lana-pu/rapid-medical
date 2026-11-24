@@ -161,6 +161,14 @@ const img = (data: LabData, src: unknown): { url: string; alt: string } | null =
   if (typeof src === "string" && src) { const f = data.library.find((x) => x.url === src); return { url: src, alt: f?.alt ?? "" }; }
   return data.images.length ? data.images[Math.abs(Number(src) || 0) % data.images.length] : null;
 };
+/** A link people type: a path on this site («/…», not «//…») or an http(s) address — nothing else (no «javascript:»). */
+export function safeHref(h?: string): string | undefined {
+  const v = (h ?? "").trim();
+  if (!v) return undefined;
+  if (v.startsWith("/") && !v.startsWith("//")) return v;
+  try { const u = new URL(v); return u.protocol === "https:" || u.protocol === "http:" ? u.href : undefined; } catch { return undefined; }
+}
+
 /** A YouTube or Vimeo link → its embed address (privacy-friendly YouTube domain), or null when it is neither. */
 export function embedOf(link: string, ambient: boolean): string | null {
   const u = link.trim();
@@ -252,7 +260,7 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
           // a real clip from the library: a player with sound, or a silent loop behind nothing
           <video key={`${file.url}:${ambient}`} src={asset(file.url)} poster={poster ? asset(poster) : undefined} className="h-full w-full object-cover"
             {...(ambient ? { autoPlay: true, muted: true, loop: true, playsInline: true } : { controls: true, preload: "metadata" })}>
-            {(d.tracks ?? []).map((t, i) => <track key={t.src + t.lang} kind="subtitles" src={t.src.startsWith("/") ? asset(t.src) : t.src} srcLang={t.lang} label={LANGS[t.lang] ?? t.lang} default={i === 0} />)}
+            {(d.tracks ?? []).filter((t) => safeHref(t.src)).map((t, i) => <track key={t.src + t.lang} kind="subtitles" src={t.src.startsWith("/") ? asset(t.src) : safeHref(t.src)} srcLang={t.lang} label={LANGS[t.lang] ?? t.lang} default={i === 0} />)}
           </video>
         ) : <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-background/90 text-2xl text-foreground">▶</span>}
       </div>
@@ -265,17 +273,18 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
           // a phone gets its own picture (another crop) when there is one: the browser picks by the screen width
           <picture>
             {d.srcMobile && <source media="(max-width: 767px)" srcSet={asset(d.srcMobile)} />}
-            <img src={asset(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" && !d.href ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />
+            <img src={asset(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" && !safeHref(d.href) ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />
           </picture>
         )}
-        {d.href && <span aria-hidden className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs text-foreground">↗ link</span>}
-        {b.o.zoom === "on" && !d.href && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
+        {safeHref(d.href) && <span aria-hidden className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs text-foreground">↗ link</span>}
+        {b.o.zoom === "on" && !safeHref(d.href) && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
       </div>
     );
   }
-  if (b.o.kind === "image" && d.href)
+  const href = safeHref(d.href);
+  if (b.o.kind === "image" && href)
     body = (
-      <a href={d.href} target={d.newTab || previewMode ? "_blank" : undefined} rel="noopener" onClick={(e) => { if (!previewMode) e.preventDefault(); }} className="block">
+      <a href={href} target={d.newTab || previewMode ? "_blank" : undefined} rel="noopener noreferrer" onClick={(e) => { if (!previewMode) e.preventDefault(); }} className="block">
         {body}
       </a>
     );

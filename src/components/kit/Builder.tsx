@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
-import { LANGS, SectionView, asset, drag, embedOf, fileOf, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
+import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, Preview } from "./Library";
 import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
@@ -347,7 +347,7 @@ export function Builder({ data }: { data: LabData }) {
   /** Subtitles of a video file: WebVTT files by language (the first one is on by default). */
   const subtitles = (b: Block): ReactNode => {
     const tracks = (b.d.tracks as { src: string; lang: string }[] | undefined) ?? [];
-    const bad = !!track.src && !/\.vtt(\?|$)/i.test(track.src);
+    const bad = !!track.src && (!/\.vtt(\?|$)/i.test(track.src) || !safeHref(track.src));
     return (
       <Group title="Субтитры">
         <p className="text-xs text-muted">Файл WebVTT (.vtt) на каждый язык — для тех, кто смотрит без звука или не слышит. Первый включён сразу.</p>
@@ -369,7 +369,7 @@ export function Builder({ data }: { data: LabData }) {
           <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`h-8 min-w-0 flex-1 rounded-md border px-2 text-sm ${bad ? "border-danger" : "border-border"}`} />
           <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-8 rounded-md bg-foreground px-2.5 text-sm text-background disabled:opacity-40">+</button>
         </div>
-        {bad && <p className="text-xs text-danger">Нужен файл .vtt.</p>}
+        {bad && <p className="text-xs text-danger">Нужен файл .vtt: адрес на сайте (/…) или https://….</p>}
         <p className="text-xs text-muted">В медиатеке пока нет файлов .vtt: загрузка — в админке (нужен сервер).</p>
       </Group>
     );
@@ -395,6 +395,7 @@ export function Builder({ data }: { data: LabData }) {
           </Group>
           <Group title="Ссылка">
             <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
+            {!!(b.d as { href?: string }).href && !safeHref((b.d as { href?: string }).href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или ссылка https://… — такая ссылка не сохранится на странице.</p>}
             <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!(b.d as { newTab?: boolean }).newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> Открывать в новой вкладке</label>
             {(b.d as { href?: string }).href && b.o.zoom === "on" && <p className="text-xs text-muted">Со ссылкой клик ведёт по ссылке — увеличение не работает.</p>}
           </Group>
