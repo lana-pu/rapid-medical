@@ -502,6 +502,9 @@ export function BlockView({ b, c, list, index }: { b: Block; c: Ctx; list: strin
 const BG: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse text-inverse-foreground", image: "relative overflow-hidden bg-inverse text-inverse-foreground" };
 const GRID: Record<string, string> = { "1": "", "1-1": "md:grid-cols-2", "2-1": "md:grid-cols-[2fr_1fr]", "1-2": "md:grid-cols-[1fr_2fr]", "1-1-1": "md:grid-cols-3" };
 
+/** How dark the scrim over a section's photo or video is (literal classes for Tailwind). */
+const SCRIM: Record<string, string> = { light: "bg-scrim/30", medium: "bg-scrim/50", strong: "bg-scrim/70" };
+
 export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">; index: number }) {
   const dark = s.bg === "dark" || s.bg === "image";
   const ctx: Ctx = { ...c, dark };
@@ -522,7 +525,7 @@ export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">;
           // eslint-disable-next-line @next/next/no-img-element
           <img src={asset(pic.url)} alt="" className={`pointer-events-none absolute inset-0 h-full w-full ${s.bgFit === "contain" ? "object-contain" : "object-cover"}`} />
         ))}
-        {(pic || bgFile?.kind === "video") && <div className="pointer-events-none absolute inset-0 bg-scrim/50" />}
+        {(pic || bgFile?.kind === "video") && s.bgOverlay !== "none" && <div className={`pointer-events-none absolute inset-0 ${SCRIM[s.bgOverlay ?? "medium"] ?? SCRIM.medium}`} />}
         <div className={`relative mx-auto w-full max-w-6xl px-4 ${s.space === "large" ? "py-20 md:py-28" : "py-12 md:py-16"}`}>
           <div className={`grid gap-10 ${GRID[s.layout] ?? ""} ${s.valign === "center" ? "items-center" : "items-start"}`}>
             {s.cols.slice(0, n).map((col, i) => {

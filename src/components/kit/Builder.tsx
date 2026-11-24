@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, isAdvanced, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, isAdvanced, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, MediaPopover, Preview } from "./Library";
-import { Advanced, Control, ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
+import { Advanced, Control, ICON, IconButton, More, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -484,6 +484,10 @@ export function Builder({ data }: { data: LabData }) {
     const file = s.bg === "image" ? fileOf(data, s.bgSrc) ?? data.library.find((x) => x.url === data.images[0]?.url) ?? null : null;
     const setBg = (patch: Partial<Section>) => update((d) => { Object.assign(d[i], patch); });
     const pickMedia = (el: HTMLElement) => openPick(el, ["image", "video"], file?.url, (f) => (f.kind === "image" || f.kind === "video") && setBg({ bg: "image", bgSrc: f.url, ...(f.kind === "video" && s.bgFit === "tile" ? { bgFit: "cover" } : {}) }));
+    const video = file?.kind === "video";
+    const overlay: Opt = { key: "bgOverlay", label: "Затемнение", values: [{ id: "none", label: "Нет" }, { id: "light", label: "Лёгкое" }, { id: "medium", label: "Среднее" }, { id: "strong", label: "Сильное" }] };
+    const fit: Opt = { key: "bgFit", label: "Заполнение", values: video ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
+    const playOpt: Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
     const sw = "relative h-9 w-9 overflow-hidden rounded-full border border-border";
     const on = "ring-2 ring-foreground ring-offset-2 ring-offset-background";
     return (
@@ -501,25 +505,14 @@ export function Builder({ data }: { data: LabData }) {
             <button type="button" onClick={(e) => pickMedia(e.currentTarget)} className="flex min-w-0 items-center gap-2 rounded-md text-left text-xs text-muted hover:text-foreground">
               <span className="min-w-0 truncate">{file ? `${file.kind === "video" ? "Видео" : "Картинка"}: ${file.filename}` : "Выберите файл"}</span><span className="flex-none underline">заменить</span>
             </button>
-            <p className="text-xs text-muted">Поверх — затемнение, чтобы текст читался.</p>
+            <Control block="section" opt={overlay} value={s.bgOverlay ?? "medium"} onPick={(v) => setBg({ bgOverlay: v })} />
+            {/* fine-tuning stays next to the picture it tunes, folded */}
+            <More count={video ? 2 : 1}>
+              <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
+              {video && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
+            </More>
           </>
         )}
-      </Group>
-    );
-  };
-
-  /** The background's fine-tuning (in «Дополнительно»): how the file fills the band, the video's Play / Pause. */
-  const bgAdvanced = (i: number, s: Section): ReactNode => {
-    if (s.bg !== "image") return null;
-    const file = fileOf(data, s.bgSrc) ?? data.library.find((x) => x.url === data.images[0]?.url) ?? null;
-    const setBg = (patch: Partial<Section>) => update((d) => { Object.assign(d[i], patch); });
-    const fit: import("./model").Opt = { key: "bgFit", label: "Заполнение", values: file?.kind === "video" ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
-    const playOpt: import("./model").Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
-    return (
-      <Group title="Фон">
-        <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
-        {file?.kind === "video" && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
-        {file?.kind === "video" && <p className="text-xs text-muted">Видео без звука и по кругу; кнопка нужна, чтобы его можно было остановить (доступность).</p>}
       </Group>
     );
   };
@@ -543,8 +536,7 @@ export function Builder({ data }: { data: LabData }) {
               return { key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: hidden ? `скрыта: в раскладке её нет · ${what}` : what, kind: "column" as Kind, muted: hidden };
             }) : kids(s.cols[0] ?? [])} onOpen={pick} />
           </Group>
-          <Advanced count={opts.filter((o) => isAdvanced("section", o.key)).length + (s.bg === "image" ? 1 : 0)}>
-            {bgAdvanced(i, s)}
+          <Advanced count={opts.filter((o) => isAdvanced("section", o.key)).length}>
             <Options block="section" opts={opts.filter((o) => isAdvanced("section", o.key))} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
           </Advanced>
           {designer && s.cols.length === 1 && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} /></Group>}

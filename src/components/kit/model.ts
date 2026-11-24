@@ -8,7 +8,7 @@
 export type Opt = { key: string; label: string; values: { id: string; label: string }[] };
 export type Block = { id: string; type: BlockType; o: Record<string, string>; d: Record<string, unknown> };
 /** `name`: the ready section it was added from («Текст и картинка») — shown in the breadcrumbs and the structure. */
-export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][]; /** the picture or video behind a section with bg «image» (a library URL), how it fills, and the Play / Pause button of a video */ bgSrc?: string; bgFit?: string; bgPlay?: boolean };
+export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][]; /** the picture or video behind a section with bg «image» (a library URL), how it fills, and the Play / Pause button of a video */ bgSrc?: string; bgFit?: string; bgPlay?: boolean; /** the scrim over it: none / light / medium (default) / strong */ bgOverlay?: string };
 export type Tab = { label: string; blocks: Block[] };
 
 /**
