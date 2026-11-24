@@ -224,6 +224,9 @@ export const ICON = {
   parent: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M12 15H6a2 2 0 0 1-2-2V5M1 8l3-3 3 3" /></svg>,
   left: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M15 10H5M9 5l-4 5 4 5" /></svg>,
   right: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M5 10h10M11 5l4 5-4 5" /></svg>,
+  add: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M10 4v12M4 10h12" /></svg>,
+  layers: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M3 5h14M6 10h11M9 15h8" /><path d="M3 5v10h6" strokeWidth="1.2" /></svg>,
+  close: <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M5 5l10 10M15 5L5 15" /></svg>,
   pointer: <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><path d="M5 3l13 6.5-5.5 1.8L10.7 17z" /><path d="M14 13l5 5" /></svg>,
 };
 

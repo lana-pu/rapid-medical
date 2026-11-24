@@ -196,6 +196,14 @@ export const READY: Ready[] = [
   { key: "publications", name: "Публикации строками", was: "Publications · library", make: () => sec("white", "1-2", [[b("heading", { eyebrow: "off", level: "h3" }, { title: "Recent publications" })], [b("list", { source: "publications", view: "rows", count: "4" })]], { valign: "top" }) },
 ];
 
+/** Base blocks by subject, as «Добавить → Блоки» shows them (Webflow's Elements). */
+export const BLOCK_GROUPS: { title: string; types: BlockType[] }[] = [
+  { title: "Текст", types: ["heading", "text", "buttons", "quote"] },
+  { title: "Медиа", types: ["media"] },
+  { title: "Цифры и карточки", types: ["numbers", "cards", "facts"] },
+  { title: "Записи и вкладки", types: ["list", "tabs"] },
+];
+
 /** Ready sections by subject, as the left panel shows them (Squarespace, Wix — Mobbin, 2026-11-24). */
 export const READY_GROUPS: { title: string; keys: string[] }[] = [
   { title: "Первый экран", keys: ["hero-image", "hero-banner", "page-title"] },
