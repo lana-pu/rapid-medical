@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, isAdvanced, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, MediaPopover, Preview } from "./Library";
-import { Control, ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
+import { Advanced, Control, ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -344,12 +344,17 @@ export function Builder({ data }: { data: LabData }) {
         update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
       }} />
       <p className="text-xs text-muted">Картинка, видео или PDF из медиатеки — настройки ниже меняются под тип файла.</p>
+      {/* the YouTube / Vimeo field: in view for a video, behind a link for a picture or a document */}
+      {b.o.kind !== "video" && b.d.embed === undefined ? (
+        <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { embed: "" })}>Видео по ссылке YouTube / Vimeo…</button>
+      ) : <>
       <label htmlFor={`embed-${b.id}`} className="text-xs text-muted">Или видео по ссылке YouTube / Vimeo</label>
       <input id={`embed-${b.id}`} value={String(b.d.embed ?? "")} placeholder="https://www.youtube.com/watch?v=…"
-        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || undefined }; if (v) x.o = { ...x.o, kind: "video" }; }); }}
+        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || (x.o.kind === "video" ? undefined : "") }; if (v) x.o = { ...x.o, kind: "video" }; }); }}
         className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
       {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
       {!!b.d.embed && embedOf(String(b.d.embed), false) && <p className="text-xs text-muted">Играет видео по ссылке; файл из медиатеки не используется. Очистите поле, чтобы вернуть файл.</p>}
+      </>}
     </Group>
   );
 
@@ -384,17 +389,13 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
 
-  /** What only some kinds have: a description and a focal point for a picture, a poster for a video. */
-  const mediaExtras = (b: Block): ReactNode => {
+  /** A picture's description — main: without it a picture says nothing to a screen reader or a search engine. */
+  const altGroup = (b: Block): ReactNode => {
     const f = fileOf(data, b.d.src);
-    const d = b.d as { alt?: string; decorative?: boolean; focal?: string; poster?: string };
-    if (b.o.kind === "image") {
-      const alt = d.alt ?? f?.alt ?? "";
-      const missing = !d.decorative && !alt.trim();
-      const focus = b.o.fit !== "contain" && b.o.ratio !== "natural";
-      const [fx, fy] = (d.focal ?? "50% 50%").split(" ").map((x) => parseFloat(x));
-      return (
-        <>
+    const d = b.d as { alt?: string; decorative?: boolean };
+    const alt = d.alt ?? f?.alt ?? "";
+    const missing = !d.decorative && !alt.trim();
+    return (
           <Group title="Описание картинки">
             <textarea aria-label="Описание картинки" rows={2} disabled={!!d.decorative} value={d.decorative ? "" : alt} onChange={(e) => onData(b.id, { alt: e.target.value })}
               placeholder="Что на картинке — для незрячих и для поиска" className={`rounded-md border px-2 py-1.5 text-sm disabled:opacity-40 ${missing ? "border-danger" : "border-border"}`} />
@@ -402,6 +403,26 @@ export function Builder({ data }: { data: LabData }) {
             {!missing && f && d.alt === undefined && alt && <p className="text-xs text-muted">Описание из медиатеки. Можно уточнить для этого места.</p>}
             <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная — без описания (узор, фон)</label>
           </Group>
+    );
+  };
+
+  /** Groups mediaExtras shows (for the number on «Дополнительно»). */
+  const extrasCount = (b: Block) => {
+    if (b.type !== "media") return 0;
+    if (b.o.kind === "image") return 2 + (b.o.fit !== "contain" && b.o.ratio !== "natural" && fileOf(data, b.d.src) ? 1 : 0);
+    if (b.o.kind === "video") return b.d.embed ? 1 : 2;
+    return 0;
+  };
+
+  /** What only some kinds have: a description and a focal point for a picture, a poster for a video. */
+  const mediaExtras = (b: Block): ReactNode => {
+    const f = fileOf(data, b.d.src);
+    const d = b.d as { alt?: string; decorative?: boolean; focal?: string; poster?: string };
+    if (b.o.kind === "image") {
+      const focus = b.o.fit !== "contain" && b.o.ratio !== "natural";
+      const [fx, fy] = (d.focal ?? "50% 50%").split(" ").map((x) => parseFloat(x));
+      return (
+        <>
           <Group title="Ссылка">
             <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
             {!!(b.d as { href?: string }).href && !safeHref((b.d as { href?: string }).href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или ссылка https://… — такая ссылка не сохранится на странице.</p>}
@@ -462,8 +483,6 @@ export function Builder({ data }: { data: LabData }) {
     const pickMedia = (el: HTMLElement) => openPick(el, ["image", "video"], file?.url, (f) => (f.kind === "image" || f.kind === "video") && setBg({ bg: "image", bgSrc: f.url, ...(f.kind === "video" && s.bgFit === "tile" ? { bgFit: "cover" } : {}) }));
     const sw = "relative h-9 w-9 overflow-hidden rounded-full border border-border";
     const on = "ring-2 ring-foreground ring-offset-2 ring-offset-background";
-    const fit: import("./model").Opt = { key: "bgFit", label: "Заполнение", values: file?.kind === "video" ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
-    const playOpt: import("./model").Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
     return (
       <Group title="Фон">
         <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Фон">
@@ -479,11 +498,25 @@ export function Builder({ data }: { data: LabData }) {
             <button type="button" onClick={(e) => pickMedia(e.currentTarget)} className="flex min-w-0 items-center gap-2 rounded-md text-left text-xs text-muted hover:text-foreground">
               <span className="min-w-0 truncate">{file ? `${file.kind === "video" ? "Видео" : "Картинка"}: ${file.filename}` : "Выберите файл"}</span><span className="flex-none underline">заменить</span>
             </button>
-            <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
-            {file?.kind === "video" && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
-            <p className="text-xs text-muted">Поверх — затемнение, чтобы текст читался.{file?.kind === "video" ? " Видео без звука и по кругу; кнопка нужна, чтобы его можно было остановить (доступность)." : ""}</p>
+            <p className="text-xs text-muted">Поверх — затемнение, чтобы текст читался.</p>
           </>
         )}
+      </Group>
+    );
+  };
+
+  /** The background's fine-tuning (in «Дополнительно»): how the file fills the band, the video's Play / Pause. */
+  const bgAdvanced = (i: number, s: Section): ReactNode => {
+    if (s.bg !== "image") return null;
+    const file = fileOf(data, s.bgSrc) ?? data.library.find((x) => x.url === data.images[0]?.url) ?? null;
+    const setBg = (patch: Partial<Section>) => update((d) => { Object.assign(d[i], patch); });
+    const fit: import("./model").Opt = { key: "bgFit", label: "Заполнение", values: file?.kind === "video" ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
+    const playOpt: import("./model").Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
+    return (
+      <Group title="Фон">
+        <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
+        {file?.kind === "video" && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
+        {file?.kind === "video" && <p className="text-xs text-muted">Видео без звука и по кругу; кнопка нужна, чтобы его можно было остановить (доступность).</p>}
       </Group>
     );
   };
@@ -499,7 +532,7 @@ export function Builder({ data }: { data: LabData }) {
       return (
         <>
           {background(i, s)}
-          <Options block="section" opts={opts.filter((o) => o.key !== "bg")} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
+          <Options block="section" opts={opts.filter((o) => o.key !== "bg" && !isAdvanced("section", o.key))} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
           <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
             <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => {
               const hidden = k >= colCount(s.layout);
@@ -507,6 +540,10 @@ export function Builder({ data }: { data: LabData }) {
               return { key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: hidden ? `скрыта: в раскладке её нет · ${what}` : what, kind: "column" as Kind, muted: hidden };
             }) : kids(s.cols[0] ?? [])} onOpen={pick} />
           </Group>
+          <Advanced count={opts.filter((o) => isAdvanced("section", o.key)).length + (s.bg === "image" ? 1 : 0)}>
+            {bgAdvanced(i, s)}
+            <Options block="section" opts={opts.filter((o) => isAdvanced("section", o.key))} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
+          </Advanced>
           {designer && s.cols.length === 1 && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} /></Group>}
           {designer && (
             <Group title="Сохранить как готовую">
@@ -558,8 +595,8 @@ export function Builder({ data }: { data: LabData }) {
     return (
       <>
         {b.type === "media" && mediaFile(b)}
-        <Options block={b.type} opts={optsFor(b)} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
-        {b.type === "media" && mediaExtras(b)}
+        <Options block={b.type} opts={optsFor(b).filter((o) => !isAdvanced(b, o.key))} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
+        {b.type === "media" && b.o.kind === "image" && altGroup(b)}
         {b.type === "quote" && (
           <Group title="Фото">
             <FileCard src={b.d.src} want="image" onPick={(f) => onData(b.id, { src: f.url })} />
@@ -589,6 +626,10 @@ export function Builder({ data }: { data: LabData }) {
         <Group title="Текст">
           <p className="text-xs text-muted">{b.type === "list" ? "Записи берутся из коллекции и правятся там; здесь — что показывать и как." : b.type === "tabs" ? "Названия вкладок — внутри каждой вкладки." : "Тексты правятся прямо на странице: клик по тексту, Enter — готово."}</p>
         </Group>
+        <Advanced count={optsFor(b).filter((o) => isAdvanced(b, o.key)).length + extrasCount(b)}>
+          <Options block={b.type} opts={optsFor(b).filter((o) => isAdvanced(b, o.key))} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
+          {b.type === "media" && mediaExtras(b)}
+        </Advanced>
         {designer && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>}
       </>
     );

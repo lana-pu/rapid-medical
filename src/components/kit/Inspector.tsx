@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { BlockType, Opt } from "./model";
 
 /**
@@ -240,3 +240,23 @@ export const ICON = {
   right: <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M5 10h10M11 5l4 5-4 5" /></svg>,
   pointer: <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><path d="M5 3l13 6.5-5.5 1.8L10.7 17z" /><path d="M14 13l5 5" /></svg>,
 };
+
+/**
+ * «Дополнительно»: the secondary settings, folded. Stays as the person left it (open or closed) when another element
+ * is selected, so someone who works with the details does not reopen it every time.
+ */
+let advancedOpen = false;
+export function Advanced({ count, children }: { count: number; children: ReactNode }) {
+  const [open, setOpen] = useState(advancedOpen);
+  if (!count) return null;
+  return (
+    <div className="border-t border-border">
+      <button type="button" aria-expanded={open} onClick={() => { advancedOpen = !open; setOpen(!open); }}
+        className="flex w-full items-center gap-2 px-4 py-3 text-left text-xs font-semibold hover:bg-surface">
+        <svg viewBox="0 0 20 20" className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-90" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><path d="M7 4l6 6-6 6" /></svg>
+        Дополнительно <span className="font-normal text-muted">{count}</span>
+      </button>
+      {open && <div className="bg-surface/40 [&>section:first-child]:border-t-0">{children}</div>}
+    </div>
+  );
+}

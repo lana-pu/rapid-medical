@@ -153,6 +153,19 @@ const PLAY: Opt = { key: "play", label: "Кнопка Play / Пауза", values
 export const optsFor = (b: Block): Opt[] =>
   b.type !== "media" ? BLOCK_DEFS[b.type].opts : b.o.kind === "video" && b.o.mode === "ambient" ? [...MEDIA_OPTS.video, PLAY] : MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image;
 
+/**
+ * Secondary settings go under «Дополнительно», folded (owner, 2026-11-24: keep only the main ones in view). The main
+ * ones say what the element is and how it looks; the rest fine-tune it.
+ */
+const ADVANCED: Record<string, string[]> = {
+  heading: ["eyebrow", "rule"], text: ["cols"], buttons: ["align"], numbers: ["align"], cards: ["frame"], facts: ["layout"],
+  quote: ["photo", "size"], list: ["count"], tabs: ["style"],
+  "media:image": ["fit", "caption", "zoom"], "media:video": ["ratio", "fit", "caption", "play"], "media:document": ["caption"],
+  section: ["valign", "space"],
+};
+export const isAdvanced = (b: Block | "section", key: string) =>
+  (ADVANCED[b === "section" ? "section" : b.type === "media" ? `media:${b.o.kind}` : b.type] ?? []).includes(key);
+
 export function newBlock(type: BlockType, o: Record<string, string> = {}, d: Record<string, unknown> = {}): Block {
   const m = BLOCK_DEFS[type].make();
   return { id: uid(), type, o: { ...m.o, ...o }, d: { ...m.d, ...d } };
