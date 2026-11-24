@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { withBase } from "@/lib/demo";
 import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
-import { SectionView, drag, fileOf, type DropAt, type LabData, type LabFile } from "./render";
+import { LANGS, SectionView, asset, drag, embedOf, fileOf, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, Preview } from "./Library";
 import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
@@ -111,11 +110,23 @@ export function Builder({ data }: { data: LabData }) {
   const [hover, setHover] = useState<string | null>(null);
   const [dropAt, setDropAt] = useState<DropAt | null>(null);
   /** the media library, open for one slot: what kind it wants, what is there now, what to do with the choice */
+  const [track, setTrack] = useState({ src: "", lang: "en" });
+  /** «Просмотр»: the page as visitors see it, in a frame of a computer's or a phone's width (real media queries) */
+  const [view, setView] = useState<"edit" | "desktop" | "phone">("edit");
+  const [frame, setFrame] = useState(false);
   const [lib, setLib] = useState<{ want?: LabFile["kind"]; current?: string; onPick: (f: LabFile) => void } | null>(null);
   const [name, setName] = useState("");
   const [loaded, setLoaded] = useState(false);
   const designer = role === "designer";
 
+  useEffect(() => {
+    // the preview frame is this same page with ?view=canvas
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the address is known only in the browser
+    if (new URLSearchParams(location.search).get("view") === "canvas") setFrame(true);
+    const onStorage = (e: StorageEvent) => { if (e.key === KEY && e.newValue) setStore(JSON.parse(e.newValue) as Store); };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
@@ -309,7 +320,7 @@ export function Builder({ data }: { data: LabData }) {
         <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">{f ? <Preview f={f} /> : null}</div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm">{f?.filename ?? "Не выбран"}</div>
-          {f && <div className="truncate text-xs text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{(f.size / 1024 / 1024).toFixed(1)} МБ</div>}
+          {f && <div className="truncate text-xs text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(f.size / 1024))} КБ`}</div>}
         </div>
         <button type="button" onClick={() => setLib({ want, current: f?.url, onPick })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Заменить</button>
       </div>
@@ -324,8 +335,45 @@ export function Builder({ data }: { data: LabData }) {
         update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
       }} />
       <p className="text-xs text-muted">Картинка, видео или PDF из медиатеки — настройки ниже меняются под тип файла.</p>
+      <label htmlFor={`embed-${b.id}`} className="text-xs text-muted">Или видео по ссылке YouTube / Vimeo</label>
+      <input id={`embed-${b.id}`} value={String(b.d.embed ?? "")} placeholder="https://www.youtube.com/watch?v=…"
+        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || undefined }; if (v) x.o = { ...x.o, kind: "video" }; }); }}
+        className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
+      {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
+      {!!b.d.embed && embedOf(String(b.d.embed), false) && <p className="text-xs text-muted">Играет видео по ссылке; файл из медиатеки не используется. Очистите поле, чтобы вернуть файл.</p>}
     </Group>
   );
+
+  /** Subtitles of a video file: WebVTT files by language (the first one is on by default). */
+  const subtitles = (b: Block): ReactNode => {
+    const tracks = (b.d.tracks as { src: string; lang: string }[] | undefined) ?? [];
+    const bad = !!track.src && !/\.vtt(\?|$)/i.test(track.src);
+    return (
+      <Group title="Субтитры">
+        <p className="text-xs text-muted">Файл WebVTT (.vtt) на каждый язык — для тех, кто смотрит без звука или не слышит. Первый включён сразу.</p>
+        {tracks.length > 0 && (
+          <ul className="grid gap-1 text-sm">
+            {tracks.map((t, k) => (
+              <li key={t.src + t.lang} className="flex items-center gap-2">
+                <span className="w-20 flex-none text-xs text-muted">{LANGS[t.lang] ?? t.lang}</span>
+                <span className="min-w-0 flex-1 truncate text-xs">{t.src}</span>
+                <button type="button" aria-label={`Убрать субтитры ${LANGS[t.lang] ?? t.lang}`} className="text-xs text-muted hover:text-foreground" onClick={() => onData(b.id, { tracks: tracks.filter((_, j) => j !== k) })}>✕</button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex gap-1.5">
+          <select aria-label="Язык субтитров" value={track.lang} onChange={(e) => setTrack((t) => ({ ...t, lang: e.target.value }))} className="h-8 rounded-md border border-border px-1 text-sm">
+            {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+          <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`h-8 min-w-0 flex-1 rounded-md border px-2 text-sm ${bad ? "border-danger" : "border-border"}`} />
+          <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-8 rounded-md bg-foreground px-2.5 text-sm text-background disabled:opacity-40">+</button>
+        </div>
+        {bad && <p className="text-xs text-danger">Нужен файл .vtt.</p>}
+        <p className="text-xs text-muted">В медиатеке пока нет файлов .vtt: загрузка — в админке (нужен сервер).</p>
+      </Group>
+    );
+  };
 
   /** What only some kinds have: a description and a focal point for a picture, a poster for a video. */
   const mediaExtras = (b: Block): ReactNode => {
@@ -345,13 +393,23 @@ export function Builder({ data }: { data: LabData }) {
             {!missing && f && d.alt === undefined && alt && <p className="text-xs text-muted">Описание из медиатеки. Можно уточнить для этого места.</p>}
             <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная — без описания (узор, фон)</label>
           </Group>
+          <Group title="Ссылка">
+            <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
+            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!(b.d as { newTab?: boolean }).newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> Открывать в новой вкладке</label>
+            {(b.d as { href?: string }).href && b.o.zoom === "on" && <p className="text-xs text-muted">Со ссылкой клик ведёт по ссылке — увеличение не работает.</p>}
+          </Group>
+          <Group title="Картинка для телефона">
+            <p className="text-xs text-muted">Другой кадр для экранов до 767 px — например, вертикальный. Нет своей — показывается основная. Проверьте в просмотре «Телефон».</p>
+            <FileCard src={(b.d as { srcMobile?: string }).srcMobile} want="image" onPick={(x) => onData(b.id, { srcMobile: x.url })} />
+            {(b.d as { srcMobile?: string }).srcMobile && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { srcMobile: undefined })}>Убрать — показывать основную</button>}
+          </Group>
           {focus && f && (
             <Group title="Точка фокуса">
               <p className="text-xs text-muted">Что остаётся в кадре при обрезке. Кликните по главному на картинке.</p>
               <button type="button" aria-label="Поставить точку фокуса" className="relative overflow-hidden rounded-md bg-surface"
                 onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); onData(b.id, { focal: `${Math.round(((e.clientX - r.left) / r.width) * 100)}% ${Math.round(((e.clientY - r.top) / r.height) * 100)}%` }); }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={withBase(f.url)} alt="" className="block w-full" />
+                <img src={asset(f.url)} alt="" className="block w-full" />
                 <span aria-hidden className="absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-foreground/40 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
               </button>
             </Group>
@@ -360,21 +418,25 @@ export function Builder({ data }: { data: LabData }) {
       );
     }
     if (b.o.kind === "video") {
+      if (b.d.embed) return <Group title="Обложка и субтитры"><p className="text-xs text-muted">У видео по ссылке обложку и субтитры задаёт YouTube или Vimeo.</p></Group>;
       const poster = d.poster ?? f?.poster ?? null;
       const pf = poster ? data.library.find((x) => x.url === poster) ?? null : null;
       return (
+        <>
         <Group title="Обложка">
           <p className="text-xs text-muted">{b.o.mode === "ambient" ? "Видна, пока видео загружается." : "Видна до нажатия «Play»."}</p>
           <div className="flex items-center gap-3">
             <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {poster ? (pf ? <Preview f={pf} /> : <img src={withBase(poster)} alt="" className="h-full w-full object-cover" />) : null}
+              {poster ? (pf ? <Preview f={pf} /> : <img src={asset(poster)} alt="" className="h-full w-full object-cover" />) : null}
             </div>
             <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет — будет чёрный прямоугольник"}</div>
             <button type="button" onClick={() => setLib({ want: "image", current: d.poster, onPick: (x) => onData(b.id, { poster: x.url }) })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
           </div>
           {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
         </Group>
+        {subtitles(b)}
+        </>
       );
     }
     return null;
@@ -512,6 +574,8 @@ export function Builder({ data }: { data: LabData }) {
 
   const trail = new Set(chain.slice(0, -1).map((l) => l.key));
 
+  if (frame) return <PreviewCanvas sections={sections} data={data} />;
+
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
       {lib && <MediaLibrary files={data.library} want={lib.want} current={lib.current} onPick={(f) => { lib.onPick(f); setLib(null); }} onClose={() => setLib(null)} />}
@@ -519,6 +583,11 @@ export function Builder({ data }: { data: LabData }) {
         <strong>Песочница блоков</strong>
         <span className="opacity-70">предложение, не редактор: правки остаются в этом браузере</span>
         <span className="flex-1" />
+        <span role="group" aria-label="Режим" className="flex items-center gap-1">
+          {([["edit", "Правка"], ["desktop", "Просмотр: компьютер"], ["phone", "Телефон"]] as const).map(([k, l]) => (
+            <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)} className={`rounded px-2 py-0.5 ${view === k ? "bg-inverse-foreground text-inverse" : "underline"}`}>{l}</button>
+          ))}
+        </span>
         <span role="group" aria-label="Роль" className="flex items-center gap-1">
           <span className="opacity-70">Как</span>
           {(["editor", "designer"] as Role[]).map((r) => (
@@ -587,12 +656,16 @@ export function Builder({ data }: { data: LabData }) {
               if (dropAt?.at !== last || dropAt.side !== "after") setDropAt({ kind: "page", index: sections.length, at: last, side: "after" });
             }}
             onDrop={(e) => { if (!dropAt) return; e.preventDefault(); commitDrop(); }}>
+            {view !== "edit" ? (
+              <iframe title="Просмотр страницы" src={`${location.pathname}?view=canvas`} className={`mx-auto block h-full border-0 bg-background shadow-sm ${view === "phone" ? "w-[390px] rounded-[2rem] border-8 border-inverse" : "w-full max-w-[1280px]"}`} />
+            ) : (
             <div className="mx-auto max-w-[1280px] bg-background shadow-sm">
               {sections.map((s, i) => (
                 <SectionView key={s.id} s={s} index={i} c={{ data, sel, trail, hover, onHover: setHover, onPick: pick, onData, activeTab: (id) => tabs[id] ?? 0, drop: dropAt, onDragAt: setDropAt, onDropHere: commitDrop, canDragBlocks: designer }} />
               ))}
               {!sections.length && <p className="p-16 text-center text-muted">Страница пуста. Добавьте готовую секцию слева.</p>}
             </div>
+            )}
           </main>
         </div>
 
@@ -601,6 +674,20 @@ export function Builder({ data }: { data: LabData }) {
           {panel()}
         </aside>
       </div>
+    </div>
+  );
+}
+
+/** The page as visitors see it (inside the preview frame): no frames, no editing; tabs switch; follows the editor's changes. */
+function PreviewCanvas({ sections, data }: { sections: Section[]; data: LabData }) {
+  const [tabs, setTabs] = useState<Record<string, number>>({});
+  setPreviewMode(true);
+  const pick = (key: string) => { const m = key.match(/^(.*):t(\d+)$/); if (m) setTabs((t) => ({ ...t, [m[1]]: Number(m[2]) })); };
+  return (
+    <div className="bg-background text-foreground">
+      {sections.map((s, i) => (
+        <SectionView key={s.id} s={s} index={i} c={{ data, sel: null, trail: new Set(), hover: null, onHover: () => {}, onPick: pick, onData: () => {}, activeTab: (id) => tabs[id] ?? 0, drop: null, onDragAt: () => {}, onDropHere: () => {}, canDragBlocks: false, readOnly: true }} />
+      ))}
     </div>
   );
 }

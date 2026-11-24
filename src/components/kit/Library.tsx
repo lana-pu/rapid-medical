@@ -1,8 +1,8 @@
 "use client";
 
+
 import { useEffect, useMemo, useState } from "react";
-import { withBase } from "@/lib/demo";
-import type { LabFile } from "./render";
+import { asset, type LabFile } from "./render";
 
 /**
  * The media library in the blocks sandbox: the site's real files (images, videos, PDFs) — tabs by kind with counts,
@@ -12,17 +12,29 @@ import type { LabFile } from "./render";
 
 type Kind = LabFile["kind"] | "all";
 const KINDS: { id: Kind; label: string }[] = [{ id: "all", label: "Все" }, { id: "image", label: "Картинки" }, { id: "video", label: "Видео" }, { id: "document", label: "Документы" }];
+/** Folders come from where the file lies (/uploads/{folder}/…): the old site, open-access copies, monthly uploads. */
+const FOLDER_NAMES: Record<string, string> = { duda: "С прежнего сайта", oa: "Открытый доступ", features: "Иконки и схемы" };
+export const folderOf = (f: LabFile) => {
+  const m = f.url.match(/\/uploads\/([^/]+)\//);
+  const k = m?.[1] ?? "other";
+  return { key: k, label: FOLDER_NAMES[k] ?? (/^\d{4}-\d{2}$/.test(k) ? `Загружено ${k}` : k) };
+};
+/** Tags people give files (kept in this browser in the sandbox; in the admin — a field of the library record). */
+const TAGS_KEY = "rm-lab:tags";
+const readTags = (): Record<string, string[]> => { try { return JSON.parse(localStorage.getItem(TAGS_KEY) || "{}"); } catch { return {}; } };
+const writeTags = (t: Record<string, string[]>) => { try { localStorage.setItem(TAGS_KEY, JSON.stringify(t)); } catch { /* private mode */ } };
+
 const kb = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(n / 1024))} КБ`);
 const ext = (f: LabFile) => (f.filename.split(".").pop() ?? f.mime).toUpperCase();
 
 export function Preview({ f, className = "" }: { f: LabFile; className?: string }) {
   if (f.kind === "video" && !f.thumb)
-    return <video src={withBase(f.url)} muted playsInline preload="metadata" className={`h-full w-full bg-inverse object-cover ${className}`} />;
+    return <video src={asset(f.url)} muted playsInline preload="metadata" className={`h-full w-full bg-inverse object-cover ${className}`} />;
   if (f.thumb)
     return (
       <span className={`relative block h-full w-full ${className}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={withBase(f.thumb)} alt="" loading="lazy" className={`h-full w-full ${f.kind === "image" ? "object-contain" : "object-cover"}`} />
+        <img src={asset(f.thumb)} alt="" loading="lazy" className={`h-full w-full ${f.kind === "image" ? "object-contain" : "object-cover"}`} />
         {f.kind === "video" && <span className="absolute inset-0 m-auto flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-xs text-foreground">▶</span>}
       </span>
     );
@@ -33,6 +45,11 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
   const [kind, setKind] = useState<Kind>(want ?? "all");
   const [q, setQ] = useState("");
   const [focus, setFocus] = useState<LabFile | null>(() => files.find((f) => f.url === current) ?? null);
+  const [folder, setFolder] = useState<string>("all");
+  const [tag, setTag] = useState<string | null>(null);
+  const [tags, setTags] = useState<Record<string, string[]>>(() => (typeof window === "undefined" ? {} : readTags()));
+  const [newTag, setNewTag] = useState("");
+  const setFileTags = (url: string, list: string[]) => { const t = { ...tags, [url]: list }; if (!list.length) delete t[url]; setTags(t); writeTags(t); };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopImmediatePropagation(); onClose(); } };
@@ -41,7 +58,10 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
   }, [onClose]);
 
   const counts = useMemo(() => Object.fromEntries(KINDS.map((k) => [k.id, files.filter((f) => k.id === "all" || f.kind === k.id).length])), [files]);
-  const shown = files.filter((f) => (kind === "all" || f.kind === kind) && (!q || `${f.filename} ${f.alt}`.toLowerCase().includes(q.toLowerCase())));
+  const ofKind = files.filter((f) => kind === "all" || f.kind === kind);
+  const folders = [...new Map(ofKind.map((f) => { const x = folderOf(f); return [x.key, x.label] as const; })).entries()];
+  const allTags = [...new Set(Object.values(tags).flat())].sort();
+  const shown = ofKind.filter((f) => (folder === "all" || folderOf(f).key === folder) && (!tag || (tags[f.url] ?? []).includes(tag)) && (!q || `${f.filename} ${f.alt} ${(tags[f.url] ?? []).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
   const allowed = (f: LabFile) => !want || f.kind === want;
 
   return (
@@ -60,6 +80,18 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
           <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или описанию" aria-label="Поиск" autoFocus className="ml-auto h-8 w-64 rounded-md border border-border px-2.5 text-sm" />
           <button type="button" onClick={onClose} aria-label="Закрыть" className="flex h-8 w-8 items-center justify-center rounded-md text-muted hover:bg-surface hover:text-foreground">✕</button>
         </header>
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-5 py-2 text-xs">
+          <span className="text-muted">Папка</span>
+          {[["all", "Все"] as const, ...folders].map(([k, l]) => (
+            <button key={k} type="button" aria-pressed={folder === k} onClick={() => setFolder(k)} className={`rounded-full border px-2.5 py-0.5 ${folder === k ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"}`}>
+              {l} <span className="tabular-nums opacity-70">{k === "all" ? ofKind.length : ofKind.filter((f) => folderOf(f).key === k).length}</span>
+            </button>
+          ))}
+          {allTags.length > 0 && <span className="ml-3 text-muted">Метки</span>}
+          {allTags.map((t) => (
+            <button key={t} type="button" aria-pressed={tag === t} onClick={() => setTag(tag === t ? null : t)} className={`rounded-full border px-2.5 py-0.5 ${tag === t ? "border-accent bg-accent text-accent-foreground" : "border-border hover:border-foreground"}`}># {t}</button>
+          ))}
+        </div>
         <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="min-h-0 overflow-auto p-4">
             {!shown.length && <p className="py-16 text-center text-sm text-muted">Ничего не нашлось. Измените поиск или вкладку.</p>}
@@ -80,7 +112,7 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
             {focus ? (
               <>
                 <div className="aspect-[4/3] overflow-hidden rounded-md bg-surface">
-                  {focus.kind === "video" ? <video src={withBase(focus.url)} poster={focus.poster ? withBase(focus.poster) : undefined} controls muted className="h-full w-full bg-inverse object-contain" /> : <Preview f={focus} />}
+                  {focus.kind === "video" ? <video src={asset(focus.url)} poster={focus.poster ? asset(focus.poster) : undefined} controls muted className="h-full w-full bg-inverse object-contain" /> : <Preview f={focus} />}
                 </div>
                 <div className="break-all text-sm font-medium">{focus.filename}</div>
                 <dl className="grid grid-cols-[6rem_1fr] gap-y-1 text-xs">
@@ -90,7 +122,22 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
                   {focus.kind === "video" && <><dt className="text-muted">Обложка</dt><dd>{focus.poster ? "есть" : "нет"}</dd></>}
                   <dt className="text-muted">Загружен</dt><dd>{focus.created}</dd>
                   <dt className="text-muted">Описание</dt><dd className={focus.alt ? "" : "text-danger"}>{focus.alt || (focus.kind === "image" ? "нет — нужно для незрячих и поиска" : "—")}</dd>
+                  <dt className="text-muted">Папка</dt><dd>{folderOf(focus).label}</dd>
                 </dl>
+                <div className="grid gap-1.5">
+                  <div className="text-xs text-muted">Метки</div>
+                  <div className="flex flex-wrap gap-1">
+                    {(tags[focus.url] ?? []).map((t) => (
+                      <span key={t} className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs">
+                        # {t}<button type="button" aria-label={`Убрать метку ${t}`} className="text-muted hover:text-foreground" onClick={() => setFileTags(focus.url, (tags[focus.url] ?? []).filter((x) => x !== t))}>✕</button>
+                      </span>
+                    ))}
+                  </div>
+                  <input aria-label="Новая метка" value={newTag} onChange={(e) => setNewTag(e.target.value)} placeholder="+ метка, Enter — добавить (например, TIGERTRIEVER)"
+                    onKeyDown={(e) => { const t = newTag.trim(); if (e.key === "Enter" && t) { setFileTags(focus.url, [...new Set([...(tags[focus.url] ?? []), t])]); setNewTag(""); } }}
+                    list="lab-tags" className="h-8 rounded-md border border-border px-2 text-xs" />
+                  <datalist id="lab-tags">{allTags.map((t) => <option key={t} value={t} />)}</datalist>
+                </div>
                 <button type="button" disabled={!allowed(focus)} onClick={() => onPick(focus)} className="mt-auto h-9 rounded-md bg-foreground text-sm font-medium text-background disabled:opacity-40">
                   {allowed(focus) ? "Использовать" : "Здесь нужен другой тип файла"}
                 </button>

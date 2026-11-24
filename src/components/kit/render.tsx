@@ -4,7 +4,14 @@ import { useLayoutEffect, useRef, type ReactNode, type CSSProperties } from "rea
 import { selectionColours } from "./contrast";
 import { Eyebrow, H1, H2, KeyValue } from "@/components/site/layout-primitives";
 import { buttonClass } from "@/components/site/ui-classes";
-import { withBase } from "@/lib/demo";
+import { BASE, withBase } from "@/lib/demo";
+
+/**
+ * A file's address on the page. The demo export already writes the base path into the data it bakes in, so a URL that
+ * has it is used as it is (adding it again gave «/rapid-medical/redesign/rapid-medical/redesign/uploads/…» — every
+ * picture of the sandbox 404 in the demo, 2026-11-23).
+ */
+export const asset = (url: string) => (BASE && url.startsWith(`${BASE}/`) ? url : withBase(url));
 import { BLOCK_DEFS, colKey, shownCols, tabKey, type Block, type BlockType, type Section, type Tab } from "./model";
 
 /**
@@ -40,6 +47,8 @@ export type Ctx = {
   onDragAt: (d: DropAt | null) => void;
   onDropHere: () => void;
   canDragBlocks: boolean;
+  /** the preview (as visitors see it): no editing, no frames, links work */
+  readOnly?: boolean;
 };
 
 /* ---- drag and drop (HTML5, no library): what is being dragged and where it would land ---- */
@@ -116,9 +125,14 @@ function Frame({ k, name, c, children, className = "", inset = false, zone, hand
   );
 }
 
+/** In the preview (/lab/blocks?view=canvas) texts are plain text, not editable. */
+let previewMode = false;
+export const setPreviewMode = (on: boolean) => { previewMode = on; };
+
 /** A text edited in place: click, type, leave the field. */
 function E({ v, onSet, className = "", as = "span", style }: { v: string; onSet: (t: string) => void; className?: string; as?: "span" | "div" | "p" | "h1" | "h2" | "h3" | "blockquote"; style?: CSSProperties }) {
   const Tag = as;
+  if (previewMode) return <Tag className={className} style={style}>{v}</Tag>;
   return (
     <Tag
       contentEditable
@@ -147,7 +161,17 @@ const img = (data: LabData, src: unknown): { url: string; alt: string } | null =
   if (typeof src === "string" && src) { const f = data.library.find((x) => x.url === src); return { url: src, alt: f?.alt ?? "" }; }
   return data.images.length ? data.images[Math.abs(Number(src) || 0) % data.images.length] : null;
 };
+/** A YouTube or Vimeo link → its embed address (privacy-friendly YouTube domain), or null when it is neither. */
+export function embedOf(link: string, ambient: boolean): string | null {
+  const u = link.trim();
+  const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?rel=0${ambient ? `&autoplay=1&mute=1&loop=1&controls=0&playlist=${yt[1]}` : ""}`;
+  const vm = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vm) return `https://player.vimeo.com/video/${vm[1]}${ambient ? "?background=1" : ""}`;
+  return null;
+}
 export const fileOf = (data: LabData, src: unknown) => (typeof src === "string" ? data.library.find((x) => x.url === src) ?? null : null);
+export const LANGS: Record<string, string> = { en: "English", de: "Deutsch", fr: "Français", es: "Español", it: "Italiano", pt: "Português", ru: "Русский", ja: "日本語", zh: "中文", he: "עברית" };
 const RATIO: Record<string, string> = { wide: "aspect-video", photo: "aspect-[4/3]", square: "aspect-square", pano: "aspect-[21/9]" };
 const muted = (dark: boolean) => (dark ? "opacity-80" : "text-muted");
 const center = (o: Block["o"]) => o.align === "center";
@@ -186,7 +210,7 @@ function Buttons({ b, c }: { b: Block; c: Ctx }) {
 }
 
 function Media({ b, c }: { b: Block; c: Ctx }) {
-  const d = b.d as { src?: unknown; caption?: string; focal?: string; alt?: string; poster?: string; title?: string };
+  const d = b.d as { src?: unknown; caption?: string; focal?: string; alt?: string; poster?: string; title?: string; embed?: string; tracks?: { src: string; lang: string }[]; href?: string; newTab?: boolean; srcMobile?: string };
   const file = fileOf(c.data, d.src);
   const pic = img(c.data, d.src);
   const ratio = b.o.ratio === "natural" ? "" : (RATIO[b.o.ratio] ?? "aspect-video");
@@ -198,7 +222,7 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
       <div className="grid gap-3">
         <div className="overflow-hidden rounded border border-border bg-background">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={withBase(file.firstPage)} alt={`${title}, page 1`} className="w-full" />
+          <img src={asset(file.firstPage)} alt={`${title}, page 1`} className="w-full" />
         </div>
         <div className={`text-center text-xs ${muted(c.dark)}`}>Page 1 of {pages || 1}</div>
         {pages > 1 && <span className={buttonClass({ variant: "secondary", block: true, onDark: c.dark })}>Show all {pages} pages</span>}
@@ -207,7 +231,7 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
       <div className="flex items-center gap-5 rounded border border-border p-5">
         <div className="aspect-[3/4] w-20 flex-none overflow-hidden rounded bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {(file?.thumb || pic) && <img src={withBase(file?.thumb ?? pic!.url)} alt="" className="h-full w-full object-cover" />}
+          {(file?.thumb || pic) && <img src={asset(file?.thumb ?? pic!.url)} alt="" className="h-full w-full object-cover" />}
         </div>
         <div className="min-w-0">
           <E v={title} onSet={(t) => c.onData(b.id, { title: t })} className="block font-semibold" />
@@ -219,12 +243,17 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
   } else if (b.o.kind === "video") {
     const poster = d.poster || file?.poster || undefined;
     const ambient = b.o.mode === "ambient";
+    const embed = d.embed ? embedOf(d.embed, ambient) : null;
     body = (
       <div className={`relative w-full overflow-hidden rounded bg-inverse ${ratio || "aspect-video"}`}>
-        {file ? (
+        {embed ? (
+          <iframe key={embed} src={embed} title={d.caption || "Video"} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen className={`h-full w-full ${previewMode ? "" : "pointer-events-none"}`} />
+        ) : file ? (
           // a real clip from the library: a player with sound, or a silent loop behind nothing
-          <video key={`${file.url}:${ambient}`} src={withBase(file.url)} poster={poster ? withBase(poster) : undefined} className="h-full w-full object-cover"
-            {...(ambient ? { autoPlay: true, muted: true, loop: true, playsInline: true } : { controls: true, preload: "metadata" })} />
+          <video key={`${file.url}:${ambient}`} src={asset(file.url)} poster={poster ? asset(poster) : undefined} className="h-full w-full object-cover"
+            {...(ambient ? { autoPlay: true, muted: true, loop: true, playsInline: true } : { controls: true, preload: "metadata" })}>
+            {(d.tracks ?? []).map((t, i) => <track key={t.src + t.lang} kind="subtitles" src={t.src.startsWith("/") ? asset(t.src) : t.src} srcLang={t.lang} label={LANGS[t.lang] ?? t.lang} default={i === 0} />)}
+          </video>
         ) : <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-background/90 text-2xl text-foreground">▶</span>}
       </div>
     );
@@ -232,12 +261,24 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
     const alt = d.alt ?? pic?.alt ?? "";
     body = (
       <div className={`relative w-full overflow-hidden rounded ${b.o.fit === "contain" ? "bg-surface" : ""} ${ratio}`} title={b.o.zoom === "on" ? "Клик на сайте — увеличить" : undefined}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {pic && <img src={withBase(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />}
-        {b.o.zoom === "on" && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
+        {pic && (
+          // a phone gets its own picture (another crop) when there is one: the browser picks by the screen width
+          <picture>
+            {d.srcMobile && <source media="(max-width: 767px)" srcSet={asset(d.srcMobile)} />}
+            <img src={asset(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" && !d.href ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />
+          </picture>
+        )}
+        {d.href && <span aria-hidden className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs text-foreground">↗ link</span>}
+        {b.o.zoom === "on" && !d.href && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
       </div>
     );
   }
+  if (b.o.kind === "image" && d.href)
+    body = (
+      <a href={d.href} target={d.newTab || previewMode ? "_blank" : undefined} rel="noopener" onClick={(e) => { if (!previewMode) e.preventDefault(); }} className="block">
+        {body}
+      </a>
+    );
   return (
     <figure>
       {body}
@@ -305,7 +346,7 @@ function Cards({ b, c }: { b: Block; c: Ctx }) {
             {(b.o.style === "image" || b.o.style === "link") && (
               <div className="mb-4 aspect-video overflow-hidden rounded bg-surface">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {pic && <img src={withBase(pic.url)} alt="" className="h-full w-full object-cover" />}
+                {pic && <img src={asset(pic.url)} alt="" className="h-full w-full object-cover" />}
               </div>
             )}
             <E as="h3" v={it.title} onSet={set(i, "title")} className="block text-lg font-semibold" />
@@ -343,7 +384,7 @@ function Quote({ b, c }: { b: Block; c: Ctx }) {
       {b.o.photo === "on" && (
         <div className="h-16 w-16 flex-none overflow-hidden rounded-full bg-surface md:h-20 md:w-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {pic && <img src={withBase(pic.url)} alt="" className="h-full w-full object-cover" />}
+          {pic && <img src={asset(pic.url)} alt="" className="h-full w-full object-cover" />}
         </div>
       )}
       <div>
@@ -369,7 +410,7 @@ function List({ b, c }: { b: Block; c: Ctx }) {
     <div key={i}>
       <div className={`mb-4 overflow-hidden rounded bg-surface ${big ? "aspect-[16/9]" : "aspect-video"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {pic(i, r.image) && <img src={withBase(pic(i, r.image)!)} alt="" className="h-full w-full object-cover" />}
+        {pic(i, r.image) && <img src={asset(pic(i, r.image)!)} alt="" className="h-full w-full object-cover" />}
       </div>
       <div className={`text-xs uppercase tracking-wide ${muted(c.dark)}`}>{r.lead}{r.meta ? ` · ${r.meta}` : ""}</div>
       <div className={`mt-2 font-semibold leading-tight ${big ? "text-2xl" : "text-lg"}`}>{r.title}</div>
@@ -443,7 +484,7 @@ export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">;
         {pic && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={withBase(pic.url)} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+            <img src={asset(pic.url)} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-scrim/50" />
           </>
         )}
