@@ -1,6 +1,6 @@
 import "server-only";
 import { and, count, desc, eq, gte, isNull, like, ne, or } from "drizzle-orm";
-import { comments, contactSubmissions, db, events, jobs, pageViews } from "@/db";
+import { comments, contactSubmissions, db, events, jobs, pageViews, users } from "@/db";
 import { isPast } from "@/lib/events";
 import { whereTo } from "@/lib/subscribers";
 import { getResource } from "./resources";
@@ -20,6 +20,7 @@ export type Message = {
   /** opens outside the admin (a note opens its page in the editor) */
   external?: boolean;
   from: string;
+  /** the topic (a request) or «Note on …»; the form is said once, apart (docs/screens/admin-inbox.md) */
   subject: string;
   snippet: string;
   at: string;
@@ -31,6 +32,10 @@ export type Message = {
   optIn?: boolean;
   /** requests: the sender's address (Subscribed counts people by it) */
   email?: string;
+  /** requests: the region in words, as the visitor chose it */
+  region?: string;
+  /** requests: who answers */
+  owner?: { id: number; name: string };
 };
 
 /** Something sent from the site that does not reach us: an external registration or application (screens/admin-inbox.md). */
@@ -40,15 +45,15 @@ const LIMIT = 300;
 
 export async function inboxMessages(): Promise<Message[]> {
   const [reqs, notes] = await Promise.all([
-    db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt)).limit(LIMIT),
+    db.select({ r: contactSubmissions, owner: users.name }).from(contactSubmissions).leftJoin(users, eq(users.id, contactSubmissions.assignedToId)).orderBy(desc(contactSubmissions.createdAt)).limit(LIMIT),
     db.select().from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt))).orderBy(desc(comments.createdAt)).limit(LIMIT),
   ]);
-  const out: Message[] = reqs.map((r) => ({
+  const out: Message[] = reqs.map(({ r, owner }) => ({
     key: `r${r.id}`,
     kind: "request",
     href: `/admin/submissions/${r.id}`,
     from: [`${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || r.email, r.organization].filter(Boolean).join(" · "),
-    subject: r.topic ? `${formLabel(r.form)} · ${r.topic}` : formLabel(r.form),
+    subject: r.topic || formLabel(r.form),
     snippet: (r.message ?? "").replace(/\s+/g, " ").slice(0, 160),
     at: r.createdAt.toISOString(),
     unread: !r.readAt && r.status !== "spam", // open = read, like mail (docs/screens/admin-requests.md)
@@ -56,6 +61,8 @@ export async function inboxMessages(): Promise<Message[]> {
     status: r.status,
     optIn: r.optIn,
     email: r.email,
+    region: r.region || undefined,
+    owner: r.assignedToId && owner ? { id: r.assignedToId, name: owner } : undefined,
   }));
   for (const c of notes) {
     const res = getResource(c.resource);

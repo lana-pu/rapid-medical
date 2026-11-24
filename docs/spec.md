@@ -497,4 +497,4 @@ reopening» в пакете S0 (2026-11-11).
 | `GET /api/health` | Проба БД | публично |
 | `GET/PATCH/DELETE /api/admin/media` | Пикер медиатеки, alt, удаление (отказ, если используется) | сессия |
 | `POST /api/admin/upload` | Загрузка (≤ 200 МБ; png/jpg/webp/gif/svg/pdf/mp4/webm); на Vercel с `local` → 503 | сессия |
-| `GET /api/admin/submissions.csv` | Экспорт заявок | сессия |
+| `GET /api/admin/submissions.csv` | Экспорт заявок: то, что показано в Inbox (`state`, `form`, `region`) или подписчики (`subscribed=1`) | сессия |

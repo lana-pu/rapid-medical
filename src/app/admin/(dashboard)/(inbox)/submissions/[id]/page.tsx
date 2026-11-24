@@ -4,7 +4,7 @@ import { auditLog, contactSubmissions, db, events, jobs, requestNotes, users, we
 import { requireUser } from "@/lib/auth";
 import { addNote, setStatus } from "@/admin/requests";
 import { STATUS_LABEL, formLabel } from "@/admin/request-labels";
-import { Button, formatDate, inputCls } from "@/components/admin/ui";
+import { Button, StateDot, formatDate, inputCls } from "@/components/admin/ui";
 import { AssignSelect, MarkRead, ReplyButton } from "@/components/admin/RequestControls";
 import { sourceLabel } from "@/lib/tracking";
 import { getLiveSetting } from "@/lib/settings";
@@ -54,7 +54,6 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
     job: job?.title ?? null,
   });
 
-  const state = s.status === "done" ? "Done" : s.status === "spam" ? "Spam" : `${STATUS_LABEL[s.status] ?? s.status} · ${owner ? `${owner.id === me.id ? "you answer" : `${owner.name} answers`}` : "nobody answers"}`;
   // like an email (docs/screens/admin-requests.md): the message in the middle, everything about it in «Details»
   const name = `${s.firstName} ${s.lastName}`.trim();
   const initials = `${s.firstName.slice(0, 1)}${s.lastName.slice(0, 1)}`.toUpperCase() || "?";
@@ -62,7 +61,8 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const VISIT = new Set(["form_page", "previous_page", "landing_page", "referrer", "utm_source", "utm_medium", "utm_campaign"]);
   const visit = Object.entries(meta).filter(([k, v]) => VISIT.has(k) && v);
   const about = Object.entries(meta).filter(([k, v]) => !VISIT.has(k) && v && v !== s.topic);
-  const requestRows: [string, string][] = [["Form", formLabel(s.form)], ["Region", s.region], ...about.map(([k, v]) => [sourceLabel(k), v] as [string, string])].filter(([, v]) => v) as [string, string][];
+  // the form is the mark above the subject; who answers is in the bar (docs/screens/admin-requests.md, 2026-11-24)
+  const requestRows: [string, string][] = [["Region", s.region], ...about.map(([k, v]) => [sourceLabel(k), v] as [string, string])].filter(([, v]) => v) as [string, string][];
   const statusButton = (status: string, text: string) => (
     <form action={setStatus}>
       <input type="hidden" name="id" value={s.id} />
@@ -70,7 +70,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
       <Button type="submit" variant="secondary">{text}</Button>
     </form>
   );
-  const h3 = "mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500";
+  const h3 = "mb-2 text-[13px] font-semibold text-neutral-800";
   const rows = (list: [string, string][]) => (
     <dl className="space-y-1.5">
       {list.map(([k, v]) => (
@@ -91,12 +91,17 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           <ReplyButton id={s.id} href={reply} />
           {s.status === "done" ? statusButton("in_progress", "Reopen") : s.status !== "spam" && statusButton("done", "✓ Done")}
           {s.status === "spam" ? statusButton("new", "Not spam") : statusButton("spam", "Spam")}
-          <span className="flex-1" />
-          <span role="status" aria-label="Request state" className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-700">{state}</span>
+          <span className="hidden flex-1 @xl:block" />
+          <AssignSelect id={s.id} value={s.assignedToId} people={people} me={me.id} />
         </div>
 
         <div className="max-w-3xl px-4 py-6 sm:px-8">
-          <h1 className="text-2xl font-semibold text-neutral-900">{s.topic || formLabel(s.form)}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs font-medium text-neutral-600">{formLabel(s.form)}</span>
+            {s.status === "done" && <StateDot tone="live">Done</StateDot>}
+            {s.status === "spam" && <StateDot tone="draft">Spam</StateDot>}
+          </div>
+          <h1 className="mt-2 text-2xl font-semibold text-neutral-900">{s.topic || formLabel(s.form)}</h1>
 
           {/* the message as one piece: who, when, and what they wrote right under it */}
           <article aria-label="Message" className="mt-6 flex gap-4">
@@ -118,7 +123,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
 
           {/* the team's own notes: below the message, like internal comments */}
           <section aria-label="Notes for the team" className="mt-10 border-t border-neutral-200 pt-6 text-sm">
-            <h2 className={h3}>Notes for the team <span className="font-normal normal-case tracking-normal text-neutral-400">· only people in the admin see them</span></h2>
+            <h2 className={h3}>Notes for the team <span className="ml-1 text-xs font-normal text-neutral-500">Only people in the admin see them</span></h2>
             {notes.length > 0 && (
               <ul className="mb-4 space-y-3">
                 {notes.map((n) => (
@@ -140,7 +145,6 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
 
       {/* everything about the request, out of the way of the message */}
       <aside aria-label="Details" className="shrink-0 space-y-6 border-t border-neutral-200 @3xl:w-72 @3xl:border-l @3xl:border-t-0 bg-neutral-50 px-5 py-5 text-sm">
-        <AssignSelect id={s.id} value={s.assignedToId} people={people} />
         <section aria-label="Request">
           <h2 className={h3}>Request</h2>
           {rows(requestRows)}

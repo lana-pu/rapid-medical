@@ -22,15 +22,15 @@ export function ReplyButton({ id, href }: { id: number; href: string }) {
   );
 }
 
-/** Who answers — saved as soon as it is chosen. */
-export function AssignSelect({ id, value, people }: { id: number; value: number | null; people: { id: number; name: string }[] }) {
+/** Who answers — in the bar above the message, saved as soon as it is chosen (docs/screens/admin-requests.md). */
+export function AssignSelect({ id, value, people, me }: { id: number; value: number | null; people: { id: number; name: string }[]; me: number }) {
   return (
-    <form action={assignRequest} className="text-sm">
+    <form action={assignRequest} className="flex w-full items-center gap-2 text-sm @xl:w-auto">
       <input type="hidden" name="id" value={id} />
-      <label htmlFor={`assign-${id}`} className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">Who answers</label>
-      <select id={`assign-${id}`} name="assignedToId" defaultValue={value ?? ""} key={value ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} className="w-full rounded border border-neutral-300 bg-white px-2 py-1.5 text-sm">
+      <label htmlFor={`assign-${id}`} className="text-[13px] text-neutral-500">Answers</label>
+      <select id={`assign-${id}`} name="assignedToId" defaultValue={value ?? ""} key={value ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} className="min-w-0 max-w-xs flex-1 rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-sm font-medium text-neutral-900 @xl:w-44 @xl:flex-none">
         <option value="">Nobody</option>
-        {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+        {people.map((p) => <option key={p.id} value={p.id}>{p.id === me ? `${p.name} (you)` : p.name}</option>)}
       </select>
     </form>
   );

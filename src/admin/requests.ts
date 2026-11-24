@@ -26,7 +26,6 @@ const label = (r: { firstName: string; lastName: string; topic: string; form: st
 
 function refresh(id: number) {
   revalidatePath("/admin/inbox");
-  revalidatePath("/admin/submissions");
   revalidatePath(`/admin/submissions/${id}`);
 }
 

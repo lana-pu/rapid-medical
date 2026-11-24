@@ -12,11 +12,12 @@ import { UNDER_HEADER } from "./chrome";
  * moves the list into a column beside it — from lg; below, only the message with «← Inbox» (docs/admin-ia.md →
  * «Адаптив»). The filters live here, so they stay while messages are opened and closed.
  */
-export function InboxShell({ messages, elsewhere, detail }: { messages: Message[]; elsewhere: Elsewhere[]; detail: ReactNode }) {
+export function InboxShell({ messages, elsewhere, me, detail }: { messages: Message[]; elsewhere: Elsewhere[]; me: number; detail: ReactNode }) {
   const wide = usePathname() === "/admin/inbox";
-  const [state, setState] = useState("inbox");
+  const [state, setState] = useState("open");
   const [source, setSource] = useState("any");
-  const list = <MessageList messages={messages} elsewhere={elsewhere} state={state} source={source} onState={setState} onSource={setSource} wide={wide} />;
+  const [region, setRegion] = useState("any");
+  const list = <MessageList messages={messages} elsewhere={elsewhere} me={me} state={state} source={source} region={region} onState={setState} onSource={setSource} onRegion={setRegion} wide={wide} />;
   if (wide) return list;
   return (
     <>

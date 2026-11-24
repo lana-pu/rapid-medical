@@ -51,7 +51,7 @@ export async function attention(user: { role: string }): Promise<Attention[]> {
     out.push({ kind: "publish", key: `g${s.key}`, text: `${g.title} — unpublished changes`, by: s.updatedByName, at: s.updatedAt, action: own ? "Open" : "Open on page", href: own ? `/admin/settings?group=${s.key}` : "/api/editor?on=1&redirect=%2F" });
   }
   out.sort((a, b) => (b.at?.getTime() ?? 0) - (a.at?.getTime() ?? 0));
-  if (newRequests) out.unshift({ kind: "request", key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/submissions?status=new" });
+  if (newRequests) out.unshift({ kind: "request", key: "requests", text: `${newRequests} new request${newRequests > 1 ? "s" : ""}`, action: "Open requests", href: "/admin/inbox" });
   // open comment threads, per page
   const open = await db.select({ resource: comments.resource, recordId: comments.recordId, n: count() }).from(comments).where(and(isNull(comments.parentId), isNull(comments.resolvedAt))).groupBy(comments.resource, comments.recordId);
   for (const c of open) {

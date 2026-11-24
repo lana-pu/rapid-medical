@@ -42,8 +42,8 @@ test("login → choose a project; the project in the header; its dashboard; the 
   await expect(page.locator("main")).toContainText("home@example.com");
   // opened = read, like mail
   await expect.poll(() => sql(`select read_at is not null from contact_submissions where email='home@example.com'`)).toBe("t");
-  await inbox.getByRole("tab", { name: /^Unread/ }).click();
-  await expect(inbox.getByRole("link", { name: /E2E Home/ })).toHaveCount(0);
+  // no longer bold with the blue dot (unread is not a tab: docs/screens/admin-inbox.md → «Фильтры»)
+  await expect(inbox.getByRole("link", { name: /E2E Home/ }).first().locator('[aria-label="unread"]')).toHaveCount(0);
   await expect(inbox.getByText(/pictures? without a description/)).toHaveCount(0);
   // Content: the tree and + New page
   await page.getByRole("navigation", { name: "Admin spaces" }).getByRole("link", { name: /^Content/ }).click();
@@ -127,12 +127,16 @@ test("requests: opened = read; Reply opens the ready email and marks who answers
   const id = sql("select id from contact_submissions where email='req@example.com'");
   try {
     await login(page);
+    // the old table address leads to the Inbox: one list (docs/screens/admin-requests.md → «Список»)
     await page.goto("/admin/submissions");
-    await expect(page.getByRole("tab", { name: /New/, selected: true })).toBeVisible();
-    await page.getByText("Laura Mendes, Hospital São José").click();
+    await expect(page).toHaveURL(/\/admin\/inbox$/);
+    const inbox = page.getByRole("navigation", { name: "Inbox" });
+    await expect(inbox.getByRole("tab", { name: /^Open/, selected: true })).toBeVisible();
+    await inbox.getByRole("link", { name: /Laura Mendes · Hospital São José/ }).click();
     await expect(page.getByRole("heading", { name: "Request a demo" })).toBeVisible();
     await expect.poll(() => sql(`select read_at is not null from contact_submissions where id=${id}`)).toBe("t");
-    await expect(page.getByLabel("Request state")).toContainText("New · nobody answers");
+    // who answers: in the bar above the message
+    await expect(page.getByLabel("Answers")).toHaveValue("");
     // the ready email: to, subject, greeting, the quoted message
     const reply = page.getByRole("link", { name: /Reply/ });
     const href = decodeURIComponent((await reply.getAttribute("href")) ?? "");
@@ -144,24 +148,31 @@ test("requests: opened = read; Reply opens the ready email and marks who answers
     await reply.evaluate((a) => a.addEventListener("click", (e) => e.preventDefault(), { once: true }));
     await reply.click();
     await expect.poll(() => sql(`select status || '|' || (assigned_to_id is not null) from contact_submissions where id=${id}`)).toBe("in_progress|true");
-    await expect(page.getByLabel("Request state")).toContainText("In progress · you answer");
+    await expect(page.getByLabel("Answers").locator("option:checked")).toContainText("(you)");
+    await expect(inbox.getByRole("link", { name: /Laura Mendes/ }).first()).toContainText("You answer");
     // a note for the team: one more entry of the thread
     await page.getByLabel("New note").fill("Called back, demo on Friday");
     await page.getByRole("button", { name: "Add note" }).click();
     await expect(page.getByRole("region", { name: "Notes for the team" })).toContainText("Called back, demo on Friday");
     expect(sql(`select count(*) from request_notes where submission_id=${id}`)).toBe("1");
     // mine, in progress
-    await page.goto("/admin/submissions?status=in_progress&mine=1&form=contact");
-    await expect(page.getByText("Laura Mendes, Hospital São José")).toBeVisible();
-    await page.goto("/admin/submissions?status=in_progress&form=webinar");
-    await expect(page.getByText("Laura Mendes, Hospital São José")).toHaveCount(0);
+    await inbox.getByRole("tab", { name: /^Mine/ }).click();
+    await inbox.getByLabel("Which form").selectOption("contact");
+    await expect(inbox.getByRole("link", { name: /Laura Mendes · Hospital São José/ })).toBeVisible();
+    await inbox.getByLabel("Which form").selectOption("webinar");
+    await expect(inbox.getByRole("link", { name: /Laura Mendes · Hospital São José/ })).toHaveCount(0);
+    // Export: what is shown
+    const csv = await (await page.request.get("/api/admin/submissions.csv?state=mine&form=contact")).text();
+    expect(csv).toContain("req@example.com");
+    expect(await (await page.request.get("/api/admin/submissions.csv?state=done&form=contact")).text()).not.toContain("req@example.com");
     // Done at once, without Save; then Reopen
     await page.goto(`/admin/submissions/${id}`);
     await page.getByRole("button", { name: "✓ Done" }).click();
     await expect(page.getByRole("button", { name: "Reopen" })).toBeVisible();
     expect(sql(`select status from contact_submissions where id=${id}`)).toBe("done");
     // who answers: saved as soon as it is chosen
-    await page.getByLabel("Who answers").selectOption("");
+    await expect(page.getByRole("main").getByText("Done", { exact: true })).toBeVisible(); // the quiet mark above the subject
+    await page.getByLabel("Answers").selectOption("");
     await expect.poll(() => sql(`select assigned_to_id is null from contact_submissions where id=${id}`)).toBe("t");
   } finally {
     sql(`delete from contact_submissions where id=${id}`);
@@ -738,10 +749,12 @@ test("inbox: every folder shown; Subscribed with the Mailchimp list; what leaves
   await page.goto("/admin/inbox");
   const inbox = page.getByRole("navigation", { name: "Inbox" });
   // two levels: the state (tabs) and which form it came from (every form of the site in one list)
-  for (const f of ["Inbox", "Unread", "In progress", "Done", "Spam", "All"])
+  // Open, Mine, Done, Spam — the empty ones hidden
+  for (const f of ["Open", "Done", "Spam"])
     await expect(inbox.getByRole("tab", { name: new RegExp(`^${f}`) })).toBeVisible();
+  await expect(inbox.getByLabel("Region")).toBeVisible();
   const from = inbox.getByLabel("Which form");
-  for (const f of ["All sources", "Contact Us — contact form", "Webinars — recording requests", "Careers & jobs — applications", "Events — registrations", "Notes on pages", "Subscribed to news"])
+  for (const f of ["All forms", "Contact Us — contact form", "Webinars — recording requests", "Careers & jobs — applications", "Events — registrations", "Notes on pages", "Subscribed to news"])
     await expect(from.locator("option", { hasText: f })).toHaveCount(1);
   // like Gmail: no message open — the list takes the whole width, no reading pane
   await expect(page.getByRole("main")).toHaveCount(0);
@@ -749,9 +762,9 @@ test("inbox: every folder shown; Subscribed with the Mailchimp list; what leaves
   await from.selectOption("event");
   await expect(inbox.getByRole("link", { name: /E2E outside congress — outside the site/ })).toContainText("Registration on example.org");
   await expect(inbox.getByRole("link", { name: /E2E outside congress/ })).toContainText("1 click on Register");
-  // Subscribed to news, all states: one person (two requests, one address), spam left out; the export has them once
-  await inbox.getByRole("tab", { name: /^All/ }).click();
+  // Subscribed to news — people, whatever the state: one person (two requests, one address), spam left out; the export has them once
   await from.selectOption("subscribed");
+  await expect(inbox.getByRole("tab")).toHaveCount(0);
   await expect(inbox.getByRole("link", { name: /Sub New/ })).toBeVisible();
   await expect(inbox.getByRole("link", { name: /Sub Old/ })).toBeVisible(); // done, still subscribed
   await expect(inbox.getByRole("link", { name: /Sub Spam/ })).toHaveCount(0);
