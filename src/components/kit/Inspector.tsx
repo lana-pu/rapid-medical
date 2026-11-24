@@ -44,6 +44,7 @@ const GLYPH: Record<string, () => ReactNode> = {
   "ratio:pano": () => <S>{R(3, 9, 38, 11)}</S>,
   "ratio:natural": () => <S>{R(12, 3, 16, 22)}<path d="M32 6v16M30 8l2-2 2 2M30 20l2 2 2-2" strokeWidth="1.2" /></S>,
   "fit:cover": () => <S>{R(6, 4, 32, 20)}<path d="M6 18l9-8 7 6 5-4 11 9" /></S>,
+  "fit:tile": () => <S>{[4, 16, 28].map((x) => [4, 15].map((y) => <g key={`${x}${y}`}>{R(x, y, 10, 9, false, 1)}</g>))}</S>,
   "fit:contain": () => <S>{R(6, 4, 32, 20)}{R(13, 8, 18, 12, false, 1)}<path d="M13 17l5-4 4 3 3-2 6 5" strokeWidth="1.2" /></S>,
   "mode:player": () => <S>{R(6, 4, 32, 18)}<path d="M19 9v8l6-4z" fill="currentColor" />{L(6, 25, 38, 1.2, 0.6)}{C(18, 25, 1.6)}</S>,
   "mode:ambient": () => <S>{R(6, 4, 32, 20)}<path d="M14 18c3-6 6-6 8 0s5 6 8 0" /><path d="M33 8a3 3 0 1 1-3-3" strokeWidth="1.2" /></S>,
@@ -80,15 +81,15 @@ const GLYPH: Record<string, () => ReactNode> = {
   "space:large": () => <S>{L(4, 1.5, 40, 1, 0.5)}{R(12, 10, 20, 8, true, 1)}{L(4, 26.5, 40, 1, 0.5)}</S>,
 };
 /** Option keys that mean different things in different blocks get their own drawing set. */
-const glyphKey = (block: string, key: string) => (key === "style" ? { numbers: "nstyle", cards: "cstyle", tabs: "tstyle" }[block] ?? "style" : key === "layout" && block === "facts" ? "flayout" : key === "size" && block === "quote" ? "qsize" : key);
+const glyphKey = (block: string, key: string) => (key === "bgFit" ? "fit" : key === "style" ? { numbers: "nstyle", cards: "cstyle", tabs: "tstyle" }[block] ?? "style" : key === "layout" && block === "facts" ? "flayout" : key === "size" && block === "quote" ? "qsize" : key);
 
 /** Swatches for a section's background: the site's own tokens. */
 const SWATCH: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse", image: "bg-inverse" };
 
 /** How each option is shown and which group it goes in. */
-const TOGGLES = new Set(["eyebrow", "caption", "photo", "zoom"]);
+const TOGGLES = new Set(["eyebrow", "caption", "photo", "zoom", "play", "bgPlay"]);
 const COUNTS = new Set(["count", "rows"]);
-const LOOK = new Set(["level", "style", "kind", "size", "bg", "frame", "rule", "ratio", "view", "source", "fit", "mode", "show"]);
+const LOOK = new Set(["bgFit", "level", "style", "kind", "size", "bg", "frame", "rule", "ratio", "view", "source", "fit", "mode", "show"]);
 const GROUP_OF = (key: string) => (TOGGLES.has(key) ? "Показывать" : LOOK.has(key) ? "Вид" : "Расположение");
 const GROUP_ORDER = ["Вид", "Расположение", "Показывать"];
 
@@ -104,7 +105,7 @@ function Row({ label, children, stack }: { label: string; children: ReactNode; s
   );
 }
 
-function Control({ block, opt: o, value, onPick, bare }: { block: string; opt: Opt; value: string; onPick: (v: string) => void; /** the group already says it («Вид» in «Вид») */ bare?: boolean }) {
+export function Control({ block, opt: o, value, onPick, bare }: { block: string; opt: Opt; value: string; onPick: (v: string) => void; /** the group already says it («Вид» in «Вид») */ bare?: boolean }) {
   const opt = bare ? { ...o, label: "" } : o;
   if (TOGGLES.has(opt.key)) {
     const on = value === "on";

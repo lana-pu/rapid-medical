@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
-import { MediaLibrary, Preview } from "./Library";
-import { ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
+import { MediaLibrary, MediaPopover, Preview } from "./Library";
+import { Control, ICON, IconButton, Options, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -114,6 +114,8 @@ export function Builder({ data }: { data: LabData }) {
   /** «Просмотр»: the page as visitors see it, in a frame of a computer's or a phone's width (real media queries) */
   const [view, setView] = useState<"edit" | "desktop" | "phone">("edit");
   const [frame, setFrame] = useState(false);
+  /** the quick picker next to the panel, opened at a control */
+  const [pop, setPop] = useState<{ anchor: DOMRect; kinds: LabFile["kind"][]; current?: string; onPick: (f: LabFile) => void } | null>(null);
   const [lib, setLib] = useState<{ want?: LabFile["kind"]; current?: string; onPick: (f: LabFile) => void } | null>(null);
   const [name, setName] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -312,6 +314,13 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
 
+  /** Open the quick picker beside the settings panel, level with the control that was clicked. */
+  const openPick = (el: HTMLElement, kinds: LabFile["kind"][], current: string | undefined, onPick: (f: LabFile) => void) => {
+    const panel = el.closest("aside")?.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    setPop({ anchor: new DOMRect(panel?.left ?? r.left, r.top, r.width, r.height), kinds, current, onPick });
+  };
+
   /** A file in a slot: its preview, name and size; «Заменить» opens the media library for that slot. */
   function FileCard({ src, want, onPick }: { src: unknown; want?: LabFile["kind"]; onPick: (f: LabFile) => void }) {
     const f = fileOf(data, src) ?? (typeof src === "number" ? data.library.find((x) => x.url === data.images[src % Math.max(1, data.images.length)]?.url) ?? null : null);
@@ -322,7 +331,7 @@ export function Builder({ data }: { data: LabData }) {
           <div className="truncate text-sm">{f?.filename ?? "Не выбран"}</div>
           {f && <div className="truncate text-xs text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(f.size / 1024))} КБ`}</div>}
         </div>
-        <button type="button" onClick={() => setLib({ want, current: f?.url, onPick })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Заменить</button>
+        <button type="button" onClick={(e) => openPick(e.currentTarget, want ? [want] : ["image", "video", "document"], f?.url, onPick)} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Заменить</button>
       </div>
     );
   }
@@ -432,7 +441,7 @@ export function Builder({ data }: { data: LabData }) {
               {poster ? (pf ? <Preview f={pf} /> : <img src={asset(poster)} alt="" className="h-full w-full object-cover" />) : null}
             </div>
             <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет — будет чёрный прямоугольник"}</div>
-            <button type="button" onClick={() => setLib({ want: "image", current: d.poster, onPick: (x) => onData(b.id, { poster: x.url }) })} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
+            <button type="button" onClick={(e) => openPick(e.currentTarget, ["image"], d.poster, (x) => onData(b.id, { poster: x.url }))} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
           </div>
           {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
         </Group>
@@ -441,6 +450,42 @@ export function Builder({ data }: { data: LabData }) {
       );
     }
     return null;
+  };
+
+  /**
+   * A section's background in one place: colour swatches and «Фото / видео», whose swatch shows the chosen file and
+   * opens the quick picker; under it — how the file fills the band and, for a video, the Play / Pause button.
+   */
+  const background = (i: number, s: Section): ReactNode => {
+    const file = s.bg === "image" ? fileOf(data, s.bgSrc) ?? data.library.find((x) => x.url === data.images[0]?.url) ?? null : null;
+    const setBg = (patch: Partial<Section>) => update((d) => { Object.assign(d[i], patch); });
+    const pickMedia = (el: HTMLElement) => openPick(el, ["image", "video"], file?.url, (f) => (f.kind === "image" || f.kind === "video") && setBg({ bg: "image", bgSrc: f.url, ...(f.kind === "video" && s.bgFit === "tile" ? { bgFit: "cover" } : {}) }));
+    const sw = "relative h-9 w-9 overflow-hidden rounded-full border border-border";
+    const on = "ring-2 ring-foreground ring-offset-2 ring-offset-background";
+    const fit: import("./model").Opt = { key: "bgFit", label: "Заполнение", values: file?.kind === "video" ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
+    const playOpt: import("./model").Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
+    return (
+      <Group title="Фон">
+        <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Фон">
+          {([["white", "Белый", "bg-background"], ["grey", "Серый", "bg-surface"], ["dark", "Тёмный", "bg-inverse"]] as const).map(([id, label, cls]) => (
+            <button key={id} type="button" aria-label={label} title={label} aria-pressed={s.bg === id} onClick={() => setBg({ bg: id })} className={`${sw} ${cls} ${s.bg === id ? on : ""}`} />
+          ))}
+          <button type="button" aria-label="Фото / видео" title="Фото или видео из медиатеки" aria-pressed={s.bg === "image"} onClick={(e) => pickMedia(e.currentTarget)} className={`${sw} bg-surface ${s.bg === "image" ? on : ""}`}>
+            {s.bg === "image" && file ? <Preview f={file} /> : <svg viewBox="0 0 32 32" className="absolute inset-0 h-full w-full text-muted" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M8 21l5-5 4 4 3-3 4 4" /><circle cx="20" cy="12" r="2" /></svg>}
+          </button>
+        </div>
+        {s.bg === "image" && (
+          <>
+            <button type="button" onClick={(e) => pickMedia(e.currentTarget)} className="flex min-w-0 items-center gap-2 rounded-md text-left text-xs text-muted hover:text-foreground">
+              <span className="min-w-0 truncate">{file ? `${file.kind === "video" ? "Видео" : "Картинка"}: ${file.filename}` : "Выберите файл"}</span><span className="flex-none underline">заменить</span>
+            </button>
+            <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
+            {file?.kind === "video" && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
+            <p className="text-xs text-muted">Поверх — затемнение, чтобы текст читался.{file?.kind === "video" ? " Видео без звука и по кругу; кнопка нужна, чтобы его можно было остановить (доступность)." : ""}</p>
+          </>
+        )}
+      </Group>
+    );
   };
 
   const panel = (): ReactNode => {
@@ -453,13 +498,8 @@ export function Builder({ data }: { data: LabData }) {
       const opts = SECTION_OPTS.filter((o) => designer || o.key !== "layout");
       return (
         <>
-          <Options block="section" opts={opts} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
-          {s.bg === "image" && (
-            <Group title="Картинка фона">
-              <FileCard src={s.bgSrc ?? data.images[0]?.url} want="image" onPick={(f) => update((d) => { d[i].bgSrc = f.url; })} />
-              <p className="text-xs text-muted">Поверх картинки — затемнение, чтобы текст читался.</p>
-            </Group>
-          )}
+          {background(i, s)}
+          <Options block="section" opts={opts.filter((o) => o.key !== "bg")} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
           <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
             <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => {
               const hidden = k >= colCount(s.layout);
@@ -531,7 +571,7 @@ export function Builder({ data }: { data: LabData }) {
               {((b.d.items as { title: string; img?: string }[]) ?? []).slice(0, Number(b.o.count)).map((it, k) => {
                 const f = fileOf(data, it.img);
                 return (
-                  <button key={k} type="button" title={`${it.title} — заменить картинку`} onClick={() => setLib({ want: "image", current: it.img, onPick: (x) => onData(b.id, { items: (b.d.items as object[]).map((y, j) => (j === k ? { ...y, img: x.url } : y)) }) })}
+                  <button key={k} type="button" title={`${it.title} — заменить картинку`} onClick={(e) => openPick(e.currentTarget, ["image"], it.img, (x) => onData(b.id, { items: (b.d.items as object[]).map((y, j) => (j === k ? { ...y, img: x.url } : y)) }))}
                     className="aspect-square overflow-hidden rounded-md bg-surface hover:ring-2 hover:ring-foreground">
                     {f ? <Preview f={f} /> : <span className="flex h-full items-center justify-center text-[11px] text-muted">{k + 1}</span>}
                   </button>
@@ -579,6 +619,9 @@ export function Builder({ data }: { data: LabData }) {
 
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
+      {pop && <MediaPopover files={data.library} kinds={pop.kinds} current={pop.current} anchor={pop.anchor} onClose={() => setPop(null)}
+        onPick={(f) => { pop.onPick(f); setPop(null); }}
+        onAll={() => { const p = pop; setPop(null); setLib({ want: p.kinds.length === 1 ? p.kinds[0] : undefined, current: p.current, onPick: p.onPick }); }} />}
       {lib && <MediaLibrary files={data.library} want={lib.want} current={lib.current} onPick={(f) => { lib.onPick(f); setLib(null); }} onClose={() => setLib(null)} />}
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-inverse px-4 py-2 text-sm text-inverse-foreground">
         <strong>Песочница блоков</strong>

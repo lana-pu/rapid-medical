@@ -8,7 +8,7 @@
 export type Opt = { key: string; label: string; values: { id: string; label: string }[] };
 export type Block = { id: string; type: BlockType; o: Record<string, string>; d: Record<string, unknown> };
 /** `name`: the ready section it was added from («Текст и картинка») — shown in the breadcrumbs and the structure. */
-export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][]; /** the picture behind a section with bg «image» (a library URL) */ bgSrc?: string };
+export type Section = { id: string; name?: string; bg: string; layout: string; valign: string; space: string; cols: Block[][]; /** the picture or video behind a section with bg «image» (a library URL), how it fills, and the Play / Pause button of a video */ bgSrc?: string; bgFit?: string; bgPlay?: boolean };
 export type Tab = { label: string; blocks: Block[] };
 
 /**
@@ -56,7 +56,7 @@ export type BlockType = "heading" | "text" | "buttons" | "media" | "numbers" | "
 export const uid = () => Math.random().toString(36).slice(2, 10);
 
 export const SECTION_OPTS: Opt[] = [
-  { key: "bg", label: "Фон", values: [{ id: "white", label: "Белый" }, { id: "grey", label: "Серый" }, { id: "dark", label: "Тёмный" }, { id: "image", label: "Картинка" }] },
+  { key: "bg", label: "Фон", values: [{ id: "white", label: "Белый" }, { id: "grey", label: "Серый" }, { id: "dark", label: "Тёмный" }, { id: "image", label: "Фото / видео" }] },
   { key: "layout", label: "Колонки", values: [{ id: "1", label: "1" }, { id: "1-1", label: "½ + ½" }, { id: "2-1", label: "⅔ + ⅓" }, { id: "1-2", label: "⅓ + ⅔" }, { id: "1-1-1", label: "⅓ ⅓ ⅓" }] },
   { key: "valign", label: "По высоте", values: [{ id: "top", label: "Сверху" }, { id: "center", label: "По центру" }] },
   { key: "space", label: "Отступы", values: [{ id: "normal", label: "Обычные" }, { id: "large", label: "Крупные" }] },
@@ -91,7 +91,7 @@ export const BLOCK_DEFS: Record<BlockType, { name: string; hint: string; opts: O
     name: "Медиа", hint: "картинка, видео или документ из медиатеки", nestable: true,
     // the kind comes from the chosen file; each kind has its own options (mediaOpts)
     opts: [],
-    make: () => ({ o: { kind: "image", ratio: "wide", fit: "cover", caption: "off", zoom: "off", mode: "player", show: "button" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model.", focal: "50% 50%" } }),
+    make: () => ({ o: { kind: "image", ratio: "wide", fit: "cover", caption: "off", zoom: "off", mode: "player", show: "button", play: "on" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model.", focal: "50% 50%" } }),
   },
   numbers: {
     name: "Цифры", hint: "ключевые цифры, инфографика", nestable: true,
@@ -141,6 +141,7 @@ const MEDIA_OPTS: Record<string, Opt[]> = {
   video: [
     { key: "mode", label: "Как играет", values: v(["player", "Плеер со звуком"], ["ambient", "Фон: без звука, по кругу"]) },
     { key: "ratio", label: "Формат", values: v(["wide", "16:9"], ["photo", "4:3"], ["square", "1:1"], ["pano", "21:9"]) },
+    { key: "fit", label: "Кадр", values: v(["cover", "Заполнить"], ["contain", "Целиком"]) },
     { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
   ],
   document: [
@@ -148,7 +149,9 @@ const MEDIA_OPTS: Record<string, Opt[]> = {
     { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
   ],
 };
-export const optsFor = (b: Block): Opt[] => (b.type === "media" ? MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image : BLOCK_DEFS[b.type].opts);
+const PLAY: Opt = { key: "play", label: "Кнопка Play / Пауза", values: v(["on", "Есть"], ["off", "Нет"]) };
+export const optsFor = (b: Block): Opt[] =>
+  b.type !== "media" ? BLOCK_DEFS[b.type].opts : b.o.kind === "video" && b.o.mode === "ambient" ? [...MEDIA_OPTS.video, PLAY] : MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image;
 
 export function newBlock(type: BlockType, o: Record<string, string> = {}, d: Record<string, unknown> = {}): Block {
   const m = BLOCK_DEFS[type].make();

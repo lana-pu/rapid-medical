@@ -149,3 +149,51 @@ export function MediaLibrary({ files, want, current, onPick, onClose }: { files:
     </div>
   );
 }
+
+/**
+ * Quick pick (like Figma's and Framer's fill pickers): a small window next to the settings panel, at the control that
+ * opened it — tabs by kind, search, a grid of previews; a click puts the file in at once. «Вся медиатека…» opens the
+ * big window for the details (description, size, folders, tags).
+ */
+export function MediaPopover({ files, kinds, current, anchor, onPick, onAll, onClose }: { files: LabFile[]; kinds: LabFile["kind"][]; current?: string; anchor: DOMRect; onPick: (f: LabFile) => void; onAll: () => void; onClose: () => void }) {
+  const [kind, setKind] = useState<LabFile["kind"]>(() => files.find((f) => f.url === current)?.kind ?? kinds[0]);
+  const [q, setQ] = useState("");
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopImmediatePropagation(); onClose(); } };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
+  const shown = files.filter((f) => f.kind === kind && (!q || `${f.filename} ${f.alt}`.toLowerCase().includes(q.toLowerCase())));
+  const W = 340, H = 440;
+  // to the left of the panel, level with the control; kept on the screen
+  const top = Math.max(8, Math.min(anchor.top - 8, window.innerHeight - H - 8));
+  const left = Math.max(8, anchor.left - W - 12);
+  const LABEL: Record<string, string> = { image: "Картинки", video: "Видео", document: "Документы" };
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden />
+      <div data-lab-modal role="dialog" aria-label="Выбрать файл" className="fixed z-50 flex flex-col overflow-hidden rounded-lg border border-border bg-background shadow-xl" style={{ top, left, width: W, height: H }}>
+        <div className="flex items-center gap-1 border-b border-border px-2 py-2">
+          {kinds.length > 1 && kinds.map((k) => (
+            <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} className={`rounded-full px-2.5 py-0.5 text-xs ${kind === k ? "bg-foreground text-background" : "text-muted hover:bg-surface"}`}>{LABEL[k]}</button>
+          ))}
+          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск" aria-label="Поиск файла" autoFocus className="ml-auto h-7 w-36 rounded-md border border-border px-2 text-xs" />
+        </div>
+        <div className="min-h-0 flex-1 overflow-auto p-2">
+          {!shown.length && <p className="py-10 text-center text-xs text-muted">Ничего не нашлось.</p>}
+          <ul className="grid grid-cols-3 gap-1.5">
+            {shown.map((f) => (
+              <li key={f.id}>
+                <button type="button" title={f.filename} onClick={() => onPick(f)} aria-pressed={f.url === current}
+                  className={`block aspect-square w-full overflow-hidden rounded-md bg-surface ${f.url === current ? "ring-2 ring-foreground ring-offset-1 ring-offset-background" : "hover:ring-2 hover:ring-border"}`}>
+                  <Preview f={f} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <button type="button" onClick={onAll} className="border-t border-border px-3 py-2 text-left text-xs hover:bg-surface">Вся медиатека… <span className="text-muted">описание, размеры, папки, метки</span></button>
+      </div>
+    </>
+  );
+}

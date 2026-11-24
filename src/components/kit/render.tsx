@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, type ReactNode, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
 import { selectionColours } from "./contrast";
 import { Eyebrow, H1, H2, KeyValue } from "@/components/site/layout-primitives";
 import { buttonClass } from "@/components/site/ui-classes";
@@ -217,6 +217,28 @@ function Buttons({ b, c }: { b: Block; c: Ctx }) {
   );
 }
 
+/**
+ * A silent looping video (a background, or a media block in «фон» mode) with an optional Play / Pause button: moving
+ * pictures longer than 5 s need a way to stop them (WCAG 2.2.2), so the button is on unless the designer turns it off.
+ */
+export function LoopVideo({ src, poster, fit = "cover", button = true, className = "" }: { src: string; poster?: string; fit?: string; button?: boolean; className?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [paused, setPaused] = useState(false);
+  return (
+    <>
+      {/* the button follows what the video does (a clip still loading is «playing» for the visitor: it will start) */}
+      <video ref={ref} key={src} src={src} poster={poster} autoPlay muted loop playsInline onPlay={() => setPaused(false)} onPause={() => setPaused(true)} className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} ${className}`} />
+      {button && (
+        <button type="button" aria-label={paused ? "Play" : "Pause"} title={paused ? "Play" : "Pause"}
+          onClick={(e) => { e.stopPropagation(); const v = ref.current; if (!v) return; if (paused) { setPaused(false); void v.play().catch(() => setPaused(true)); } else { v.autoplay = false; v.pause(); setPaused(true); } }}
+          className="absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow hover:bg-background">
+          {paused ? <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M6 4l10 6-10 6z" /></svg> : <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M5 4h3.5v12H5zM11.5 4H15v12h-3.5z" /></svg>}
+        </button>
+      )}
+    </>
+  );
+}
+
 function Media({ b, c }: { b: Block; c: Ctx }) {
   const d = b.d as { src?: unknown; caption?: string; focal?: string; alt?: string; poster?: string; title?: string; embed?: string; tracks?: { src: string; lang: string }[]; href?: string; newTab?: boolean; srcMobile?: string };
   const file = fileOf(c.data, d.src);
@@ -258,8 +280,8 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
           <iframe key={embed} src={embed} title={d.caption || "Video"} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen className={`h-full w-full ${previewMode ? "" : "pointer-events-none"}`} />
         ) : file ? (
           // a real clip from the library: a player with sound, or a silent loop behind nothing
-          <video key={`${file.url}:${ambient}`} src={asset(file.url)} poster={poster ? asset(poster) : undefined} className="h-full w-full object-cover"
-            {...(ambient ? { autoPlay: true, muted: true, loop: true, playsInline: true } : { controls: true, preload: "metadata" })}>
+          ambient ? <LoopVideo src={asset(file.url)} poster={poster ? asset(poster) : undefined} fit={b.o.fit} button={b.o.play !== "off"} /> :
+          <video key={file.url} src={asset(file.url)} poster={poster ? asset(poster) : undefined} className={`h-full w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"}`} controls preload="metadata">
             {(d.tracks ?? []).filter((t) => safeHref(t.src)).map((t, i) => <track key={t.src + t.lang} kind="subtitles" src={t.src.startsWith("/") ? asset(t.src) : safeHref(t.src)} srcLang={t.lang} label={LANGS[t.lang] ?? t.lang} default={i === 0} />)}
           </video>
         ) : <span className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-background/90 text-2xl text-foreground">▶</span>}
@@ -483,20 +505,24 @@ const GRID: Record<string, string> = { "1": "", "1-1": "md:grid-cols-2", "2-1": 
 export function SectionView({ s, c, index }: { s: Section; c: Omit<Ctx, "dark">; index: number }) {
   const dark = s.bg === "dark" || s.bg === "image";
   const ctx: Ctx = { ...c, dark };
-  const pic = s.bg === "image" ? img(c.data, s.bgSrc ?? 0) : null;
+  const bgFile = s.bg === "image" ? fileOf(c.data, s.bgSrc) : null;
+  const pic = s.bg === "image" && bgFile?.kind !== "video" ? img(c.data, s.bgSrc ?? 0) : null;
   const n = shownCols(s); // columns beyond the layout stay in the section, hidden
   const many = n > 1;
   return (
     <Frame k={s.id} name={`Секция ${index + 1}${s.name ? ` · ${s.name}` : ""}`} c={c} inset className={BG[s.bg] ?? ""}
       zone={{ page: index, ...(many ? {} : { into: { list: colKey(s.id, 0), length: s.cols[0]?.length ?? 0 } }) }} handle={{ t: "section", id: s.id }}>
       <section>
-        {pic && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={asset(pic.url)} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-scrim/50" />
-          </>
-        )}
+        {/* the background: a picture (fill, whole, or tiles) or a silent looping video, under a scrim so text reads */}
+        {bgFile?.kind === "video" ? (
+          <div className="absolute inset-0"><LoopVideo src={asset(bgFile.url)} poster={bgFile.poster ? asset(bgFile.poster) : undefined} fit={s.bgFit} button={s.bgPlay !== false} className="pointer-events-none" /></div>
+        ) : pic && (s.bgFit === "tile" ? (
+          <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url(${asset(pic.url)})`, backgroundRepeat: "repeat", backgroundSize: "240px auto" }} />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={asset(pic.url)} alt="" className={`pointer-events-none absolute inset-0 h-full w-full ${s.bgFit === "contain" ? "object-contain" : "object-cover"}`} />
+        ))}
+        {(pic || bgFile?.kind === "video") && <div className="pointer-events-none absolute inset-0 bg-scrim/50" />}
         <div className={`relative mx-auto w-full max-w-6xl px-4 ${s.space === "large" ? "py-20 md:py-28" : "py-12 md:py-16"}`}>
           <div className={`grid gap-10 ${GRID[s.layout] ?? ""} ${s.valign === "center" ? "items-center" : "items-start"}`}>
             {s.cols.slice(0, n).map((col, i) => {
