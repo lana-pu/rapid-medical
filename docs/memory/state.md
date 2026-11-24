@@ -532,3 +532,9 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   необычный, события Upcoming / Past, форма одной карточкой с подзаголовками, одна карточка статуса; Publish на
   телефоне больше не под навигацией. Спека — `screens/admin-list.md`, `screens/admin-record-edit.md` → «Иерархия».
   Замер 19 × 7 ширин — 0; tsc, lint, unit 244; e2e не прогоняли.
+
+## 2026-11-24 — Inbox: один список
+- Тем же циклом (`02b5dae2`), черновик сразу «тихий»: таблица «All requests» ушла в Inbox (регион, Mine, Export),
+  вкладки Open · Mine · Done · Spam с одним числом, форма в строке один раз, инициалы отвечающего, «Answers ▾» в полосе
+  заявки. Спека — `screens/admin-inbox.md`, `screens/admin-requests.md`. Замер 42 × 7 ширин — 0; tsc, lint, unit 244;
+  e2e не прогоняли.

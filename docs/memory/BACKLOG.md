@@ -241,6 +241,8 @@
   странице (в замер не входил; иконки панели — эмодзи, в админке линейные). Сессия: `sessions/2026-11-23-admin-responsive.md`.
 - **Списки и форма (2026-11-24, `ef3be4a3`):** e2e общим прогоном — обновлены слова статуса формы (On the site / Changes
   waiting) и «Publish later…» в тесте расписания. Сессия: `sessions/2026-11-24-admin-records.md`.
+- **Inbox (2026-11-24, `02b5dae2`):** e2e общим прогоном — тесты Inbox и заявки переписаны (редирект таблицы, вкладки
+  Open · Mine · Done · Spam, «Answers», Export с фильтрами). Сессия: `sessions/2026-11-24-admin-inbox.md`.
 
 **Исправлено 2026-11-16 в ветке `site-redesign`** (`d1d66d5`, e2e-тест — с общим прогоном): «+ New page» и
 бездействующие Unpublish/Delete у Site pages убраны; счётчики «N item(s)» — по сделанному; массовый Delete удаляет только
