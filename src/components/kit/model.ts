@@ -196,4 +196,13 @@ export const READY: Ready[] = [
   { key: "publications", name: "Публикации строками", was: "Publications · library", make: () => sec("white", "1-2", [[b("heading", { eyebrow: "off", level: "h3" }, { title: "Recent publications" })], [b("list", { source: "publications", view: "rows", count: "4" })]], { valign: "top" }) },
 ];
 
+/** Ready sections by subject, as the left panel shows them (Squarespace, Wix — Mobbin, 2026-11-24). */
+export const READY_GROUPS: { title: string; keys: string[] }[] = [
+  { title: "Первый экран", keys: ["hero-image", "hero-banner", "page-title"] },
+  { title: "Текст и медиа", keys: ["text", "text-media", "facts-text", "quote"] },
+  { title: "Цифры и карточки", keys: ["numbers", "text-numbers", "steps", "features", "link-cards"] },
+  { title: "Записи", keys: ["news", "publications"] },
+  { title: "Действие и вкладки", keys: ["cta", "tabs"] },
+];
+
 export const START: string[] = ["hero-image", "numbers", "text-media", "steps", "tabs", "cta"];

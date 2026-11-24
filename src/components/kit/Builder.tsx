@@ -1,9 +1,10 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, CLICK, EDITOR_KEYS, clickOf, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, READY, READY_GROUPS, SECTION_OPTS, START, colCount, colKey, levels, newBlock, CLICK, EDITOR_KEYS, clickOf, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, MediaPopover, Preview } from "./Library";
+import { SectionThumb } from "./Thumb";
 import { Control, ICON, INPUT, IconButton, More, Section as Group, TypeIcon } from "./Inspector";
 
 /**
@@ -43,7 +44,6 @@ function locate(sections: Section[], id: string): { list: Block[]; i: number } |
 }
 
 /* ---- panel pieces ---- */
-const btn = "rounded border border-border bg-background px-2.5 py-1 text-xs hover:border-foreground disabled:cursor-not-allowed disabled:opacity-40";
 
 type Kind = BlockType | "section" | "column" | "tab";
 /** What is inside the selected thing: a row per child with its icon; a click goes down a level. */
@@ -127,6 +127,8 @@ export function Builder({ data }: { data: LabData }) {
   }, [store, role, loaded]);
 
   const sections = store.sections;
+  /** each ready section made once, for its drawing in the left panel */
+  const readyMade = useMemo(() => Object.fromEntries(READY.map((r) => [r.key, r.make()])), []);
   const map = useMemo(() => levels(sections), [sections]);
   const chain: Level[] = (sel && map.get(sel)) || [];
   const here = chain[chain.length - 1] ?? null;
@@ -581,24 +583,62 @@ export function Builder({ data }: { data: LabData }) {
     ].filter(Boolean);
   };
 
-  /* ---- the structure tree (Webflow's Navigator) ---- */
+  /** The structure tree (Webflow's Navigator, Figma's layers): 28 px rows, a type icon, a hairline per level. */
   const tree = (): ReactNode => {
-    const row = (key: string, label: string, depth: number, kids?: ReactNode, muted = false) => (
+    const row = (key: string, label: string, kind: Kind, kids?: ReactNode, muted = false, strong = false) => (
       <li key={key} className={muted ? "opacity-50" : ""}>
-        <button type="button" onClick={() => pick(key)} style={{ paddingLeft: 8 + depth * 14 }}
-          className={`block w-full truncate rounded py-1 pr-2 text-left text-sm ${sel === key ? "bg-foreground text-background" : chain.some((l) => l.key === key) ? "font-semibold" : "hover:bg-surface"}`}>{label}</button>
-        {kids && <ul>{kids}</ul>}
+        <button type="button" onClick={() => pick(key)}
+          className={`flex h-7 w-full min-w-0 items-center gap-1.5 rounded-md px-1.5 text-left text-xs ${sel === key ? "bg-surface font-medium text-foreground" : "text-foreground hover:bg-surface/60"} ${strong ? "font-medium" : ""}`}>
+          <TypeIcon kind={kind} small className="text-muted" /><span className="min-w-0 truncate">{label}</span>
+        </button>
+        {kids && <ul className="ml-3 border-l border-border pl-1">{kids}</ul>}
       </li>
     );
-    const blocks = (list: Block[], depth: number): ReactNode => list.map((b) => row(b.id, BLOCK_DEFS[b.type].name, depth,
-      b.type === "tabs" ? (b.d.tabs as Tab[]).map((t, k) => row(tabKey(b.id, k), `Вкладка «${t.label}»`, depth + 1, blocks(t.blocks, depth + 2))) : undefined));
+    const blocks = (list: Block[]): ReactNode => list.map((b) => row(b.id, BLOCK_DEFS[b.type].name, b.type,
+      b.type === "tabs" ? (b.d.tabs as Tab[]).map((t, k) => row(tabKey(b.id, k), t.label, "tab", blocks(t.blocks))) : undefined));
     return (
-      <ul className="grid gap-0.5" aria-label="Структура страницы">
-        {sections.map((s, i) => row(s.id, `Секция ${i + 1}${s.name ? ` · ${s.name}` : ""}`, 0,
-          s.cols.length > 1 ? s.cols.map((c, k) => row(colKey(s.id, k), `Колонка ${k + 1}${k >= colCount(s.layout) ? " · скрыта" : ""}`, 1, blocks(c, 2), k >= colCount(s.layout))) : blocks(s.cols[0] ?? [], 1)))}
+      <ul className="grid" aria-label="Структура страницы">
+        {sections.map((s, i) => row(s.id, s.name || `Секция ${i + 1}`, "section",
+          s.cols.length > 1 ? s.cols.map((c, k) => row(colKey(s.id, k), `Колонка ${k + 1}${k >= colCount(s.layout) ? " · скрыта" : ""}`, "column", blocks(c), k >= colCount(s.layout))) : blocks(s.cols[0] ?? []), false, true))}
       </ul>
     );
   };
+
+  /** A ready section as a card: its drawing and its name; a click adds it after the selected one, or drag it in place. */
+  const readyCard = (key: string, name: string, section: Section, hint?: string, onRemove?: () => void) => (
+    <li key={key} className="group relative min-w-0">
+      <button type="button" onClick={() => addSection(section, name)} title={hint ? `${name} — сейчас на сайте: ${hint}` : name}
+        draggable onDragStart={(e) => { drag.set({ t: "ready", key }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", name); }}
+        className="grid w-full cursor-grab gap-1 rounded-md p-1 text-left hover:bg-surface">
+        <SectionThumb s={section} />
+        <span className="line-clamp-2 px-0.5 text-[11px] leading-tight">{name}</span>
+      </button>
+      {onRemove && <button type="button" aria-label={`Удалить ${name}`} title="Удалить" onClick={onRemove} className="absolute right-2 top-2 hidden h-5 w-5 items-center justify-center rounded bg-background text-[11px] text-muted shadow-sm hover:text-danger group-hover:flex">✕</button>}
+    </li>
+  );
+  const shelf = (title: string, items: ReactNode[]) => items.length > 0 && (
+    <section key={title} className="grid gap-1.5">
+      <h3 className="px-1 text-[11px] font-semibold text-muted">{title}</h3>
+      <ul className="grid grid-cols-2 gap-x-1 gap-y-1.5">{items}</ul>
+    </section>
+  );
+  const readyPanel = (): ReactNode => (
+    <div className="grid gap-4" aria-label="Готовые секции">
+      {(designer || store.custom.length > 0) && shelf("Свои", [
+        ...(designer ? [
+          <li key="blank">
+            <button type="button" onClick={() => addSection({ id: uid(), name: "Пустая", bg: "white", layout: "1", valign: "top", space: "normal", cols: [[]] })}
+              className="grid w-full gap-1 rounded-md p-1 text-left hover:bg-surface">
+              <span aria-hidden className="flex aspect-[16/10] w-full items-center justify-center rounded-md border border-dashed border-border text-lg text-muted">+</span>
+              <span className="truncate px-0.5 text-[11px] leading-tight">Пустая</span>
+            </button>
+          </li>,
+        ] : []),
+        ...store.custom.map((c) => readyCard(c.key, c.name, c.section, undefined, designer ? () => setStore((st) => ({ ...st, custom: st.custom.filter((x) => x.key !== c.key) })) : undefined)),
+      ])}
+      {READY_GROUPS.map((g) => shelf(g.title, g.keys.map((k) => READY.find((r) => r.key === k)).filter((r) => !!r).map((r) => readyCard(r.key, r.name, readyMade[r.key], r.was))))}
+    </div>
+  );
 
   const trail = new Set(chain.slice(0, -1).map((l) => l.key));
   // the settings panel is there only when the selected thing has something to change; otherwise the page takes the width
@@ -639,39 +679,16 @@ export function Builder({ data }: { data: LabData }) {
 
       <div className={`grid min-h-0 flex-1 ${open ? "lg:grid-cols-[17rem_minmax(0,1fr)_18rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)]"}`}>
         <aside className="flex min-h-0 flex-col border-r border-border" aria-label="Добавить и структура">
-          <div role="tablist" className="flex border-b border-border text-sm">
-            {([["add", "Добавить"], ["tree", "Структура"]] as const).map(([k, l]) => (
-              <button key={k} role="tab" type="button" aria-selected={left === k} onClick={() => setLeft(k)} className={`-mb-px flex-1 border-b-2 px-3 py-2 ${left === k ? "border-foreground font-medium" : "border-transparent text-muted"}`}>{l}</button>
-            ))}
+          <div className="border-b border-border p-2">
+            <div role="tablist" className="flex rounded-md bg-surface p-0.5 text-xs">
+              {([["add", "Секции"], ["tree", "Структура"]] as const).map(([k, l]) => (
+                <button key={k} role="tab" type="button" aria-selected={left === k} onClick={() => setLeft(k)}
+                  className={`h-6 flex-1 rounded-[5px] ${left === k ? "bg-background font-medium text-foreground shadow-sm" : "text-muted hover:text-foreground"}`}>{l}</button>
+              ))}
+            </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-auto p-4">
-            {left === "tree" ? tree() : (
-              <>
-                <p className="text-xs text-muted">Готовые секции. Клик — встаёт после выбранной; или перетащите на нужное место страницы.</p>
-                <ul className="mt-3 grid gap-1" aria-label="Готовые секции">
-                  {READY.map((r) => (
-                    <li key={r.key}>
-                      <button type="button" onClick={() => addSection(r.make(), r.name)} title="Клик — после выбранной секции, или перетащите на страницу"
-                        draggable onDragStart={(e) => { drag.set({ t: "ready", key: r.key }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", r.name); }}
-                        className="w-full cursor-grab rounded border border-border px-3 py-2 text-left hover:border-foreground">
-                        <span className="block text-sm font-medium">{r.name}</span><span className="block text-xs text-muted">сейчас: {r.was}</span>
-                      </button>
-                    </li>
-                  ))}
-                  {store.custom.map((c) => (
-                    <li key={c.key} className="flex gap-1">
-                      <button type="button" onClick={() => addSection(c.section, c.name)}
-                        draggable onDragStart={(e) => { drag.set({ t: "ready", key: c.key }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", c.name); }}
-                        className="flex-1 cursor-grab rounded border border-accent px-3 py-2 text-left hover:border-foreground">
-                        <span className="block text-sm font-medium">{c.name}</span><span className="block text-xs text-muted">собрана дизайнером</span>
-                      </button>
-                      {designer && <button type="button" aria-label={`Удалить ${c.name}`} className={btn} onClick={() => setStore((st) => ({ ...st, custom: st.custom.filter((x) => x.key !== c.key) }))}>✕</button>}
-                    </li>
-                  ))}
-                </ul>
-                {designer && <button type="button" className={`mt-3 w-full ${btn}`} onClick={() => addSection({ id: uid(), name: "Пустая", bg: "white", layout: "1", valign: "top", space: "normal", cols: [[]] })}>+ Пустая секция</button>}
-              </>
-            )}
+          <div className="min-h-0 flex-1 overflow-auto p-2">
+            {left === "tree" ? tree() : readyPanel()}
           </div>
         </aside>
 

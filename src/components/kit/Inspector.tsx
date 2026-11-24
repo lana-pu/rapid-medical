@@ -204,8 +204,8 @@ const TYPE_GLYPH: Record<string, () => ReactNode> = {
   list: () => GLYPH["view:rows"](),
   tabs: () => GLYPH["tstyle:pills"](),
 };
-export function TypeIcon({ kind, className = "" }: { kind: BlockType | "section" | "column" | "tab"; className?: string }) {
-  return <span className={`inline-flex flex-none items-center justify-center [&_svg]:h-5 [&_svg]:w-8 ${className}`}>{TYPE_GLYPH[kind]?.()}</span>;
+export function TypeIcon({ kind, className = "", small }: { kind: BlockType | "section" | "column" | "tab"; className?: string; /** a row of the structure tree */ small?: boolean }) {
+  return <span className={`inline-flex flex-none items-center justify-center ${small ? "[&_svg]:h-3.5 [&_svg]:w-5 [&_svg_*]:[vector-effect:non-scaling-stroke]" : "[&_svg]:h-5 [&_svg]:w-8"} ${className}`}>{TYPE_GLYPH[kind]?.()}</span>;
 }
 
 /** An icon button of the panel's header (move, copy) with its name as a tooltip. */
