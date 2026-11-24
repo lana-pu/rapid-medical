@@ -80,6 +80,7 @@ test("library in order: groups by where files are used, a page by its sections, 
   // a fresh upload is not used anywhere: select it in «Not used» and delete after the list
   const name = `e2e-unused-${Date.now()}`;
   await page.goto("/admin/media");
+  await expect(page.getByRole("button", { name: "Upload", exact: true })).toBeVisible(); // in the header, no strip over the grid
   await page.setInputFiles("input[type=file]", { name: `${name}.png`, mimeType: "image/png", buffer: PNG });
   await expect(page.getByText(name).first()).toBeVisible({ timeout: 20_000 });
   await page.goto(`/admin/media?show=unused&q=${name}`);

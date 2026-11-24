@@ -11,7 +11,7 @@ import { Button, inputCls } from "./ui";
 
 const editHref = editorHref;
 
-export function AltField({ id, alt, label = "Description (alt text)" }: { id: number; alt: string; label?: string }) {
+export function AltField({ id, alt, label = "Description (alt text)", hint }: { id: number; alt: string; label?: string; hint?: string }) {
   const [value, setValue] = useState(alt);
   const [saved, setSaved] = useState(alt);
   const [msg, setMsg] = useState<string | null>(null);
@@ -24,9 +24,9 @@ export function AltField({ id, alt, label = "Description (alt text)" }: { id: nu
   };
   return (
     <label className="block text-sm">
-      <span className="mb-1 block text-xs font-medium text-neutral-600">{label}</span>
+      <span className={hint ? "mb-1.5 block text-[13px] font-semibold text-neutral-800" : "mb-1 block text-xs font-medium text-neutral-600"}>{label}</span>
       <input value={value} onChange={(e) => { setValue(e.target.value); setMsg(null); }} onBlur={save} onKeyDown={(e) => e.key === "Enter" && save()} maxLength={300} placeholder="What is in the picture, for people who cannot see it" className={inputCls} />
-      {msg && <span className="mt-1 block text-xs text-neutral-500">{msg}</span>}
+      {msg ? <span role="status" className="mt-1 block text-xs text-neutral-500">{msg}</span> : hint && <span className="mt-1 block text-xs text-neutral-500">{hint}</span>}
     </label>
   );
 }
@@ -34,7 +34,7 @@ export function AltField({ id, alt, label = "Description (alt text)" }: { id: nu
 type FileInfo = { id: number; url: string; filename: string; mime: string };
 const mediaKind = (mime: string): MediaKind => (mime.startsWith("image/") ? "image" : mime.startsWith("video/") ? "video" : mime === "application/pdf" ? "pdf" : "any");
 
-export function ReplaceButton({ file, places }: { file: FileInfo; places: number }) {
+export function ReplaceButton({ file, places, compact = false }: { file: FileInfo; places: number; /** in the file's side card: a secondary button, the explanation in one line */ compact?: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [picker, setPicker] = useState(false);
@@ -75,6 +75,14 @@ export function ReplaceButton({ file, places }: { file: FileInfo; places: number
     router.refresh();
   };
 
+  if (!open && compact) {
+    return (
+      <div>
+        <Button type="button" variant="secondary" onClick={() => setOpen(true)} disabled={DEMO} title={DEMO ? "Replacing files needs the server; not in the demo" : undefined}>Replace everywhere…</Button>
+        <p className="mt-1 text-xs text-neutral-500">A new version takes this file&apos;s place on every page, as unpublished changes.</p>
+      </div>
+    );
+  }
   if (!open) {
     return (
       <span className="inline-flex flex-col items-end gap-1">
