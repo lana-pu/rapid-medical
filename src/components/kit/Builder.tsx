@@ -4,7 +4,7 @@ import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, CLICK, EDITOR_KEYS, clickOf, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, MediaPopover, Preview } from "./Library";
-import { Control, ICON, IconButton, More, Section as Group, TypeIcon } from "./Inspector";
+import { Control, ICON, INPUT, IconButton, More, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -72,7 +72,7 @@ function AddBlock({ onAdd, nested }: { onAdd: (t: BlockType) => void; nested?: b
       {types.map((t) => (
         <button key={t} type="button" onClick={() => onAdd(t)} title={`${BLOCK_DEFS[t].hint}. Клик — в конец, или перетащите на страницу`}
           draggable onDragStart={(e) => { drag.set({ t: "new", type: t }); e.dataTransfer.effectAllowed = "copy"; e.dataTransfer.setData("text/plain", BLOCK_DEFS[t].name); }}
-          className="grid cursor-grab justify-items-center gap-1 rounded-md border border-border px-1 pb-1.5 pt-2 text-muted hover:border-foreground hover:text-foreground">
+          className="grid cursor-grab justify-items-center gap-0.5 rounded-md bg-surface px-1 pb-1 pt-1.5 text-muted hover:bg-border hover:text-foreground [&_svg]:h-4 [&_svg]:w-6">
           <TypeIcon kind={t} /><span className="text-[11px] leading-tight">{BLOCK_DEFS[t].name}</span>
         </button>
       ))}
@@ -80,7 +80,8 @@ function AddBlock({ onAdd, nested }: { onAdd: (t: BlockType) => void; nested?: b
   );
 }
 
-const danger = "w-full rounded-md border border-danger/40 px-3 py-2 text-sm text-danger hover:bg-danger/10";
+/** Delete: a quiet text action at the bottom of the panel, not a big red box. */
+const danger = "flex h-7 items-center gap-1.5 rounded-md px-2 -mx-2 text-xs text-danger hover:bg-danger/10";
 
 export function Builder({ data }: { data: LabData }) {
   const [store, setStore] = useState<Store>(() => ({ sections: start(), custom: [] }));
@@ -267,7 +268,7 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
   /** A named piece inside a group (a file, a description, a focal point). */
-  const field = (label: string, children: ReactNode) => <div className="grid gap-1.5"><div className="text-xs text-muted">{label}</div>{children}</div>;
+  const field = (label: string, children: ReactNode) => <div className="grid gap-1.5 pt-1"><div className="text-xs text-muted">{label}</div>{children}</div>;
 
   /** Quick actions of the selected thing (move, copy): an editor has them only for sections. */
   const actionsOf = (): ReactNode => {
@@ -325,13 +326,13 @@ export function Builder({ data }: { data: LabData }) {
   function FileCard({ src, want, onPick }: { src: unknown; want?: LabFile["kind"]; onPick: (f: LabFile) => void }) {
     const f = fileOf(data, src) ?? (typeof src === "number" ? data.library.find((x) => x.url === data.images[src % Math.max(1, data.images.length)]?.url) ?? null : null);
     return (
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">{f ? <Preview f={f} /> : null}</div>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <div className="h-9 w-12 flex-none overflow-hidden rounded bg-surface">{f ? <Preview f={f} /> : null}</div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm">{f?.filename ?? "Не выбран"}</div>
-          {f && <div className="truncate text-xs text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(f.size / 1024))} КБ`}</div>}
+          <div className="truncate text-xs">{f?.filename ?? "Не выбран"}</div>
+          {f && <div className="truncate text-[11px] text-muted">{f.width ? `${f.width}×${f.height} · ` : ""}{f.kind === "document" && f.pages ? `${f.pages} стр. · ` : ""}{f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} МБ` : `${Math.max(1, Math.round(f.size / 1024))} КБ`}</div>}
         </div>
-        <button type="button" onClick={(e) => openPick(e.currentTarget, want ? [want] : ["image", "video", "document"], f?.url, onPick)} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Заменить</button>
+        <button type="button" onClick={(e) => openPick(e.currentTarget, want ? [want] : ["image", "video", "document"], f?.url, onPick)} className="h-7 flex-none rounded-md bg-surface px-2 text-xs hover:bg-border">Заменить</button>
       </div>
     );
   }
@@ -349,8 +350,8 @@ export function Builder({ data }: { data: LabData }) {
         <>
           <input aria-label="Или видео по ссылке YouTube / Vimeo" value={String(b.d.embed ?? "")} placeholder="или ссылка YouTube / Vimeo"
             onChange={(e) => { const v = e.target.value; onData(b.id, { embed: v || undefined }); }}
-            className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
-          {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
+            className={`${INPUT} ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : ""}`} />
+          {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-[11px] text-danger">Это не ссылка на YouTube или Vimeo.</p>}
         </>
       )}
     </>
@@ -364,24 +365,24 @@ export function Builder({ data }: { data: LabData }) {
     const missing = !d.decorative && !alt.trim();
     return field("Описание", <>
       <textarea aria-label="Описание картинки" rows={2} disabled={!!d.decorative} value={d.decorative ? "" : alt} onChange={(e) => onData(b.id, { alt: e.target.value })}
-        placeholder="Что на картинке" className={`rounded-md border px-2 py-1.5 text-sm disabled:opacity-40 ${missing ? "border-danger" : "border-border"}`} />
-      {missing && <p className="text-xs text-danger">Опишите картинку или отметьте декоративной.</p>}
+        placeholder="Что на картинке" className={`${INPUT} h-auto py-1.5 disabled:opacity-40 ${missing ? "border-danger" : ""}`} />
+      {missing && <p className="text-[11px] text-danger">Опишите картинку или отметьте декоративной.</p>}
       <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная (узор, фон)</label>
     </>);
   };
 
-  /** What a click on the picture does: nothing, a link, or zoom — one of the three. */
-  const clickGroup = (b: Block): ReactNode => {
+  /** What a click on the picture does (in «Картинка»): nothing, a link, or zoom — one of the three. */
+  const clickRows = (b: Block): ReactNode => {
     const d = b.d as { href?: string; newTab?: boolean };
     const c = clickOf(b);
-    return group("По клику", [
-      <Control key="c" block="media" opt={CLICK} value={c} bare onPick={(v) => update((x) => { const l = locate(x, b.id); if (l) l.list[l.i].o = { ...l.list[l.i].o, click: v, zoom: v === "zoom" ? "on" : "off" }; })} />,
-      c === "link" && <>
-        <input aria-label="Куда ведёт картинка" value={d.href ?? ""} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className={`h-8 rounded-md border px-2 text-sm ${d.href && !safeHref(d.href) ? "border-danger" : "border-border"}`} />
-        {!!d.href && !safeHref(d.href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или https://….</p>}
+    return (<>
+      <Control block="media" opt={CLICK} value={c} onPick={(v) => update((x) => { const l = locate(x, b.id); if (l) l.list[l.i].o = { ...l.list[l.i].o, click: v, zoom: v === "zoom" ? "on" : "off" }; })} />
+      {c === "link" && <>
+        <input aria-label="Куда ведёт картинка" value={d.href ?? ""} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className={`${INPUT} ${d.href && !safeHref(d.href) ? "border-danger" : ""}`} />
+        {!!d.href && !safeHref(d.href) && <p className="text-[11px] text-danger">Нужен адрес на сайте (/…) или https://….</p>}
         <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> В новой вкладке</label>
-      </>,
-    ]);
+      </>}
+    </>);
   };
 
   /** Where the crop keeps the subject: a click on the main thing in the picture. */
@@ -415,12 +416,12 @@ export function Builder({ data }: { data: LabData }) {
     const pf = poster ? data.library.find((x) => x.url === poster) ?? null : null;
     return field("Обложка", <>
       <div className="flex items-center gap-3">
-        <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">
+        <div className="h-9 w-12 flex-none overflow-hidden rounded bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {poster ? (pf ? <Preview f={pf} /> : <img src={asset(poster)} alt="" className="h-full w-full object-cover" />) : null}
         </div>
         <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет"}</div>
-        <button type="button" onClick={(e) => openPick(e.currentTarget, ["image"], d.poster, (x) => onData(b.id, { poster: x.url }))} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
+        <button type="button" onClick={(e) => openPick(e.currentTarget, ["image"], d.poster, (x) => onData(b.id, { poster: x.url }))} className="h-7 flex-none rounded-md bg-surface px-2 text-xs hover:bg-border">Выбрать</button>
       </div>
       {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
     </>);
@@ -444,13 +445,13 @@ export function Builder({ data }: { data: LabData }) {
         </ul>
       )}
       <div className="flex gap-1.5">
-        <select aria-label="Язык субтитров" value={track.lang} onChange={(e) => setTrack((t) => ({ ...t, lang: e.target.value }))} className="h-8 rounded-md border border-border px-1 text-sm">
+        <select aria-label="Язык субтитров" value={track.lang} onChange={(e) => setTrack((t) => ({ ...t, lang: e.target.value }))} className={`${INPUT} w-auto px-1`}>
           {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`h-8 min-w-0 flex-1 rounded-md border px-2 text-sm ${bad ? "border-danger" : "border-border"}`} />
-        <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-8 rounded-md bg-foreground px-2.5 text-sm text-background disabled:opacity-40">+</button>
+        <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`${INPUT} flex-1 ${bad ? "border-danger" : ""}`} />
+        <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-7 rounded-md bg-foreground px-2.5 text-xs text-background disabled:opacity-40">+</button>
       </div>
-      {bad && <p className="text-xs text-danger">Нужен файл .vtt: /… или https://….</p>}
+      {bad && <p className="text-[11px] text-danger">Нужен файл .vtt: /… или https://….</p>}
     </>);
   };
 
@@ -487,7 +488,7 @@ export function Builder({ data }: { data: LabData }) {
           // a video plays silently in a loop; «with sound» is the rare case — last of all
           return [group("Видео", [fileField(b), ctl(b, "ratio"), ctl(b, "play")], [ctl(b, "fit"), ctl(b, "caption"), posterField(b), subtitlesField(b), ctl(b, "mode")])];
         if (b.o.kind === "document") return [group("Документ", [fileField(b), ctl(b, "show")], [ctl(b, "caption")])];
-        return [group("Картинка", [fileField(b), altField(b), ctl(b, "ratio"), ctl(b, "caption")], [ctl(b, "fit"), focalField(b), phoneField(b)]), clickGroup(b)];
+        return [group("Картинка", [fileField(b), altField(b), ctl(b, "ratio"), ctl(b, "caption"), clickRows(b)], [ctl(b, "fit"), focalField(b), phoneField(b)])];
     }
   };
 
@@ -504,8 +505,8 @@ export function Builder({ data }: { data: LabData }) {
     const overlay: Opt = { key: "bgOverlay", label: "Затемнение", values: [{ id: "none", label: "Нет" }, { id: "light", label: "Лёгкое" }, { id: "medium", label: "Среднее" }, { id: "strong", label: "Сильное" }] };
     const fit: Opt = { key: "bgFit", label: "Заполнение", values: video ? [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }] : [{ id: "cover", label: "Заполнить" }, { id: "contain", label: "Целиком" }, { id: "tile", label: "Плиткой" }] };
     const playOpt: Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
-    const sw = "relative h-9 w-9 overflow-hidden rounded-full border border-border";
-    const on = "ring-2 ring-foreground ring-offset-2 ring-offset-background";
+    const sw = "relative h-6 w-6 overflow-hidden rounded-full border border-border";
+    const on = "ring-2 ring-foreground ring-offset-1 ring-offset-background";
     const swatches = designer && (
       <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Фон">
         {([["white", "Белый", "bg-background"], ["grey", "Серый", "bg-surface"], ["dark", "Тёмный", "bg-inverse"]] as const).map(([id, label, cls]) => (
@@ -546,11 +547,11 @@ export function Builder({ data }: { data: LabData }) {
         designer && group("Сохранить как готовую", [
           // not a <form>: the demo build catches every form submit (DemoShell)
           <div key="save" className="flex gap-1.5">
-            <input id="lab-ready-name" aria-label="Название готовой секции" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Название" className="h-8 min-w-0 flex-1 rounded-md border border-border px-2 text-sm" />
-            <button type="button" className="h-8 rounded-md bg-foreground px-3 text-sm text-background disabled:opacity-40" disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
+            <input id="lab-ready-name" aria-label="Название готовой секции" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Название" className={`${INPUT} flex-1`} />
+            <button type="button" className="h-7 rounded-md bg-foreground px-2.5 text-xs text-background disabled:opacity-40" disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
           </div>,
         ]),
-        <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => removeSection(i)}>Удалить секцию</button></div>,
+        <div key="del" className="border-t border-border px-4 py-3"><button type="button" className={danger} onClick={() => removeSection(i)}>Удалить секцию</button></div>,
       ].filter(Boolean);
     }
     if (here.kind === "column") {
@@ -567,16 +568,16 @@ export function Builder({ data }: { data: LabData }) {
       const t = all[here.t];
       if (!t) return [];
       return [
-        group("Вкладка", [<input key={here.key} id="lab-tab-label" aria-label="Название вкладки" defaultValue={t.label} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="h-8 rounded-md border border-border px-2 text-sm" />]),
+        group("Вкладка", [<input key={here.key} id="lab-tab-label" aria-label="Название вкладки" defaultValue={t.label} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className={INPUT} />]),
         designer && group("Добавить блок", [<AddBlock key="add" nested onAdd={(type) => addBlock((d) => tabsOf(d, here.id)?.[here.t]?.blocks, type)} />]),
-        designer && all.length > 1 && <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button></div>,
+        designer && all.length > 1 && <div key="del" className="border-t border-border px-4 py-3"><button type="button" className={danger} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button></div>,
       ].filter(Boolean);
     }
     const b = blockOf(here.id);
     if (!b) return [];
     return [
       ...blockGroups(b),
-      designer && <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>,
+      designer && <div key="del" className="border-t border-border px-4 py-3"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>,
     ].filter(Boolean);
   };
 
@@ -636,7 +637,7 @@ export function Builder({ data }: { data: LabData }) {
         <button type="button" onClick={() => { setStore({ sections: start(), custom: store.custom }); setSel(null); }} className="underline">Начать заново</button>
       </header>
 
-      <div className={`grid min-h-0 flex-1 ${open ? "lg:grid-cols-[17rem_minmax(0,1fr)_20rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)]"}`}>
+      <div className={`grid min-h-0 flex-1 ${open ? "lg:grid-cols-[17rem_minmax(0,1fr)_18rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)]"}`}>
         <aside className="flex min-h-0 flex-col border-r border-border" aria-label="Добавить и структура">
           <div role="tablist" className="flex border-b border-border text-sm">
             {([["add", "Добавить"], ["tree", "Структура"]] as const).map(([k, l]) => (

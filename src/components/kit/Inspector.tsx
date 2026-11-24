@@ -94,96 +94,95 @@ const SWATCH: Record<string, string> = { white: "bg-background", grey: "bg-surfa
 const TOGGLES = new Set(["eyebrow", "caption", "photo", "play", "bgPlay"]);
 const COUNTS = new Set(["count", "rows"]);
 
-/** Tiles in one row when they fit (2–4), else three to a row. */
-const TILE_COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
-
-function Row({ label, children, stack }: { label: string; children: ReactNode; stack?: boolean }) {
+/**
+ * A setting's row (Framer, Subframe, Webflow — Mobbin, 2026-11-24): the name left in muted small type, the control right,
+ * 28 px high. When the control shows only drawings, the chosen value is written under the name.
+ */
+function Row({ label, value, children, stack }: { label: string; value?: string; children: ReactNode; stack?: boolean }) {
+  if (stack) return <div className="grid gap-1.5">{label && <div className="text-xs text-muted">{label}</div>}{children}</div>;
   return (
-    <div className={stack ? "grid gap-2" : "grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3"}>
-      {label && <div className="text-xs text-muted">{label}</div>}
+    <div className={label ? "grid min-h-7 grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-2" : "min-h-7"}>
+      {label && <div className="min-w-0 leading-tight"><div className="truncate text-xs text-muted">{label}</div>{value && <div className="truncate text-[11px] text-foreground">{value}</div>}</div>}
       <div className="min-w-0">{children}</div>
     </div>
   );
 }
 
-export function Control({ block, opt: o, value, onPick, bare }: { block: string; opt: Opt; value: string; onPick: (v: string) => void; /** the group already says it («Вид» in «Вид») */ bare?: boolean }) {
+/** Segments on one grey track; the chosen one is a white chip. */
+const TRACK = "flex w-full rounded-md bg-surface p-0.5";
+const seg = (on: boolean) => `flex h-6 min-w-0 flex-1 items-center justify-center rounded-[5px] px-1.5 text-xs transition-colors ${on ? "bg-background text-foreground shadow-sm" : "text-muted hover:text-foreground"}`;
+/** Drawings in a segment: small, strokes stay 1.6 px whatever the scale. */
+const ICONIC = "[&_svg]:h-[18px] [&_svg]:w-7 [&_svg_*]:[vector-effect:non-scaling-stroke]";
+/** Words that fit in segments; longer ones go into a list. */
+const fitsTrack = (o: Opt) => o.values.reduce((n, v) => n + v.label.length, 0) <= 20;
+
+export function Control({ block, opt: o, value, onPick, bare }: { block: string; opt: Opt; value: string; onPick: (v: string) => void; /** the group already says what it is */ bare?: boolean }) {
   const opt = bare ? { ...o, label: "" } : o;
   if (TOGGLES.has(opt.key)) {
     const on = value === "on";
     return (
       <Row label={opt.label}>
         <button type="button" role="switch" aria-checked={on} aria-label={o.label} onClick={() => onPick(on ? "off" : "on")}
-          className={`relative h-5 w-9 rounded-full transition-colors ${on ? "bg-foreground" : "bg-border"}`}>
-          <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background shadow transition-all ${on ? "left-[1.125rem]" : "left-0.5"}`} />
+          className={`relative block h-4 w-7 rounded-full transition-colors ${on ? "bg-foreground" : "bg-border"}`}>
+          <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-background shadow-sm transition-all ${on ? "left-[0.875rem]" : "left-0.5"}`} />
         </button>
       </Row>
     );
   }
-  if (COUNTS.has(opt.key))
-    return (
-      <Row label={opt.label}>
-        <div className="inline-flex overflow-hidden rounded-md border border-border" role="group" aria-label={o.label}>
-          {opt.values.map((v) => (
-            <button key={v.id} type="button" aria-pressed={value === v.id} onClick={() => onPick(v.id)}
-              className={`h-8 min-w-8 border-l border-border px-2 text-sm tabular-nums first:border-l-0 ${value === v.id ? "bg-foreground text-background" : "hover:bg-surface"}`}>{v.label}</button>
-          ))}
-        </div>
-      </Row>
-    );
   if (opt.key === "bg")
     return (
       <Row label={opt.label}>
-        <div className="flex flex-wrap gap-2" role="group" aria-label={o.label}>
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label={o.label}>
           {opt.values.map((v) => (
             <button key={v.id} type="button" aria-pressed={value === v.id} aria-label={v.label} title={v.label} onClick={() => onPick(v.id)}
-              className={`relative h-8 w-8 rounded-full border border-border ${SWATCH[v.id] ?? ""} ${value === v.id ? "ring-2 ring-foreground ring-offset-2 ring-offset-background" : ""}`}>
-              {v.id === "image" && <svg viewBox="0 0 32 32" className="absolute inset-0 h-full w-full text-inverse-foreground" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M7 22l6-6 4 4 3-3 5 5" /><circle cx="21" cy="11" r="2" /></svg>}
-            </button>
+              className={`relative h-6 w-6 rounded-full border border-border ${SWATCH[v.id] ?? ""} ${value === v.id ? "ring-2 ring-foreground ring-offset-1 ring-offset-background" : ""}`} />
           ))}
         </div>
       </Row>
     );
   const g = glyphKey(block, opt.key);
-  const drawn = opt.values.every((v) => GLYPH[`${g}:${v.id}`]);
-  if (!drawn)
+  const drawn = !COUNTS.has(opt.key) && opt.values.every((v) => GLYPH[`${g}:${v.id}`]);
+  const chosen = opt.values.find((v) => v.id === value)?.label;
+  if (drawn)
+    // a choice shown as what it looks like; its name in the tooltip and under the setting's name
     return (
-      <Row label={opt.label}>
-        <div className="flex flex-wrap gap-1" role="group" aria-label={o.label}>
+      <Row label={opt.label} value={chosen}>
+        <div className={TRACK} role="group" aria-label={o.label}>
           {opt.values.map((v) => (
-            <button key={v.id} type="button" aria-pressed={value === v.id} onClick={() => onPick(v.id)}
-              className={`h-8 rounded-md border px-2.5 text-sm ${value === v.id ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"}`}>{v.label}</button>
+            <button key={v.id} type="button" aria-pressed={value === v.id} aria-label={v.label} title={v.label} onClick={() => onPick(v.id)} className={`${seg(value === v.id)} ${ICONIC}`}>
+              {GLYPH[`${g}:${v.id}`]()}
+            </button>
           ))}
         </div>
       </Row>
     );
-  // a choice shown as what it looks like; the name under it
-  const small = opt.key === "align" || opt.key === "valign";
+  if (COUNTS.has(opt.key) || fitsTrack(opt))
+    return (
+      <Row label={opt.label}>
+        <div className={TRACK} role="group" aria-label={o.label}>
+          {opt.values.map((v) => (
+            <button key={v.id} type="button" aria-pressed={value === v.id} onClick={() => onPick(v.id)} className={`${seg(value === v.id)} tabular-nums`}><span className="truncate">{v.label}</span></button>
+          ))}
+        </div>
+      </Row>
+    );
   return (
-    <Row label={opt.label} stack={!small}>
-      <div className={small ? "inline-flex overflow-hidden rounded-md border border-border" : `grid gap-1.5 ${TILE_COLS[opt.values.length] ?? "grid-cols-3"}`} role="group" aria-label={o.label}>
-        {opt.values.map((v) => {
-          const on = value === v.id;
-          return small ? (
-            <button key={v.id} type="button" aria-pressed={on} aria-label={v.label} title={v.label} onClick={() => onPick(v.id)}
-              className={`flex h-8 w-10 items-center justify-center border-l border-border first:border-l-0 [&_svg]:h-5 [&_svg]:w-8 ${on ? "bg-foreground text-background" : "text-muted hover:bg-surface hover:text-foreground"}`}>{GLYPH[`${g}:${v.id}`]()}</button>
-          ) : (
-            <button key={v.id} type="button" aria-pressed={on} onClick={() => onPick(v.id)}
-              className={`grid justify-items-center gap-1 rounded-md border px-1 pb-1.5 pt-2 ${on ? "border-foreground bg-surface text-foreground ring-1 ring-foreground" : "border-border text-muted hover:border-foreground hover:text-foreground"}`}>
-              {GLYPH[`${g}:${v.id}`]()}
-              <span className="text-[11px] leading-tight">{v.label}</span>
-            </button>
-          );
-        })}
-      </div>
+    <Row label={opt.label}>
+      <select aria-label={o.label} value={value} onChange={(e) => onPick(e.target.value)} className={INPUT}>
+        {opt.values.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+      </select>
     </Row>
   );
 }
 
-/** A named group of the panel: a heading, a hairline above. */
+/** A text field or a list in the panel: filled, no frame until focused. */
+export const INPUT = "h-7 w-full min-w-0 rounded-md border border-transparent bg-surface px-2 text-xs outline-none focus:border-foreground";
+
+/** A named group of the panel: a short bold name, a hairline above, compact rows. */
 export function Section({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
   return (
-    <section className="grid min-w-0 gap-3 border-t border-border px-4 py-4 [&>*]:min-w-0">
-      <div className="flex items-center justify-between"><h3 className="text-xs font-semibold text-foreground">{title}</h3>{aside}</div>
+    <section className="grid min-w-0 gap-2 border-t border-border px-4 pb-4 pt-3 first:border-t-0 [&>*]:min-w-0">
+      <div className="flex h-6 items-center justify-between"><h3 className="text-xs font-semibold text-foreground">{title}</h3>{aside}</div>
       {children}
     </section>
   );
@@ -213,7 +212,7 @@ export function TypeIcon({ kind, className = "" }: { kind: BlockType | "section"
 export function IconButton({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: ReactNode }) {
   return (
     <button type="button" aria-label={label} title={label} disabled={disabled} onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-muted hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30">
+      className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30">
       {children}
     </button>
   );
@@ -228,19 +227,16 @@ export const ICON = {
   pointer: <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><path d="M5 3l13 6.5-5.5 1.8L10.7 17z" /><path d="M14 13l5 5" /></svg>,
 };
 
-/**
- * «Дополнительно»: the secondary settings, folded. Stays as the person left it (open or closed) when another element
- * is selected, so someone who works with the details does not reopen it every time.
- */
+/** Stays as the person left it (open or closed) when another element is selected. */
 let moreOpen = false;
 /** A small fold inside a group («Ещё N»): fine-tuning that belongs next to what it tunes (a background's fill, Play). */
 export function More({ count, children }: { count: number; children: ReactNode }) {
   const [open, setOpen] = useState(moreOpen);
   if (!count) return null;
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-2">
       <button type="button" aria-expanded={open} onClick={() => { moreOpen = !open; setOpen(!open); }}
-        className="flex items-center gap-1.5 justify-self-start rounded-md text-xs text-muted hover:text-foreground">
+        className="flex h-6 items-center gap-1 justify-self-start rounded-md text-[11px] text-muted hover:text-foreground">
         <svg viewBox="0 0 20 20" className={`h-3 w-3 transition-transform ${open ? "rotate-90" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><path d="M7 4l6 6-6 6" /></svg>
         Ещё <span>{count}</span>
       </button>
