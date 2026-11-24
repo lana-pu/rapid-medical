@@ -248,6 +248,8 @@
   Open · Mine · Done · Spam, «Answers», Export с фильтрами). Сессия: `sessions/2026-11-24-admin-inbox.md`.
 - **Analytics (2026-11-24, `9ef90010`):** e2e общим прогоном — проверка Analytics под панели и вкладки. Экран страницы Careers
   при 1280 px: длинное имя видеофайла фона шире колонки (замер ширин). Сессия: `sessions/2026-11-24-admin-analytics.md`.
+- **Media (2026-11-24, `27917bee`):** e2e общим прогоном (Upload в шапке, сетка, карточка файла). Сессия:
+  `sessions/2026-11-24-admin-media.md`.
 
 **Исправлено 2026-11-16 в ветке `site-redesign`** (`d1d66d5`, e2e-тест — с общим прогоном): «+ New page» и
 бездействующие Unpublish/Delete у Site pages убраны; счётчики «N item(s)» — по сделанному; массовый Delete удаляет только
