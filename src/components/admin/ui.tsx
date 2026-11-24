@@ -142,7 +142,7 @@ export function Crumbs({ items, flush = false }: { items: Crumb[]; flush?: boole
  * A screen's head. `back` — a small «← Back» beside the crumbs; `tag` — what kind of thing this is («News item»), a quiet
  * label under the title (docs/screens/admin-record-edit.md → «Иерархия»).
  */
-export function PageHeader({ title, actions, subtitle, crumbs, back, tag }: { title: string; subtitle?: string; actions?: ReactNode; crumbs?: Crumb[]; back?: ReactNode; tag?: string }) {
+export function PageHeader({ title, actions, subtitle, note, crumbs, back, tag }: { title: string; subtitle?: string; /** a line in words under the subtitle (Analytics: the main source) */ note?: ReactNode; actions?: ReactNode; crumbs?: Crumb[]; back?: ReactNode; tag?: string }) {
   return (
     <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
       <div className="min-w-0 flex-1 break-words">
@@ -157,6 +157,7 @@ export function PageHeader({ title, actions, subtitle, crumbs, back, tag }: { ti
         <h1 className="text-2xl font-semibold text-neutral-900">{title}</h1>
         {tag && <span className="mt-2 inline-block rounded bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">{tag}</span>}
         {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}
+        {note && <p className="mt-2 text-sm text-neutral-800">{note}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>

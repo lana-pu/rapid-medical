@@ -3,6 +3,7 @@ import { and, desc, gte, min, ne } from "drizzle-orm";
 import { contactSubmissions, db, pageViews } from "@/db";
 import { buildReport, type Report } from "@/lib/analytics";
 import { REGION_CHOICES } from "@/lib/regions";
+import { countryName } from "@/lib/countries";
 import { formLabel } from "./request-labels";
 import { listEditorPages } from "./pages-index";
 import { pageKey } from "./page-tree";
@@ -36,7 +37,8 @@ export async function analyticsReport(days: number): Promise<Report & { truncate
   const report = buildReport({
     days,
     now,
-    views,
+    // the counter keeps the host's country code, a request the name from its form: one row per country (2026-11-24)
+    views: views.map((v) => (v.country ? { ...v, country: countryName(v.country) } : v)),
     leads: leads.map((l) => ({ at: l.createdAt, form: l.form, topic: l.topic, region: l.region, country: l.country, meta: l.meta })),
     pageTitle,
     formLabel,

@@ -25,6 +25,12 @@ describe("analytics report", () => {
   it("counts the period against the one before", () => {
     expect(r.tiles).toEqual({ visits: [2, 1], views: [3, 1], leads: [1, 1] });
     expect(r.visitsByDay).toHaveLength(8);
+    expect(r.viewsByDay.map((d) => d.day)).toEqual(r.visitsByDay.map((d) => d.day));
+    expect(r.viewsByDay.reduce((s, d) => s + d.value, 0)).toBe(3);
+  });
+  it("what people ask for: a Contact Us topic, the other forms as one line", () => {
+    const x = buildReport({ days: 7, now, views: [], leads: [lead(1, {}), lead(1, {}, { form: "webinar", topic: "Tiger Trial" }), lead(2, {}, { form: "webinar", topic: "TT13" }), lead(2, {}, { topic: "" })], pageTitle: (p) => p, formLabel: (f) => ({ contact: "Contact form", webinar: "Webinar recording" })[f] ?? f, regionLabel: (x) => x });
+    expect(x.leadForms).toEqual([{ label: "Webinar recording", value: 2 }, { label: "Request a demo", value: 1 }, { label: "Contact form", value: 1 }]);
   });
   it("requests by day: the same days as visits, the previous period left out", () => {
     expect(r.leadsByDay.map((d) => d.day)).toEqual(r.visitsByDay.map((d) => d.day));
@@ -33,10 +39,10 @@ describe("analytics report", () => {
   });
   it("visits and leads by source, the page that led to the request, in words", () => {
     expect(r.sources).toEqual([{ label: "LinkedIn", value: 1, extra: 1 }, { label: "Google", value: 1 }]);
-    expect(r.headline).toBe("LinkedIn brought 1 visit and 1 lead");
+    expect(r.headline).toBe("LinkedIn brought 1 visit and 1 request");
     expect(r.leadPages).toEqual([{ label: "Large vessel stroke (Americas)", value: 1 }]);
     expect(r.campaigns).toEqual([{ label: "post-1", value: 1, extra: 1 }]);
-    expect(r.leadForms).toEqual([{ label: "Contact form · Request a demo", value: 1 }]);
+    expect(r.leadForms).toEqual([{ label: "Request a demo", value: 1 }]);
     expect(r.downloads).toEqual([{ label: "IFU TT.pdf", value: 1 }]);
   });
 });

@@ -706,9 +706,15 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   expect(sql("select count(*) from page_views")).toBe("2");
   await page.goto("/admin/analytics?days=7");
   await expect(page.getByText(/LinkedIn brought 1 visit/)).toBeVisible();
-  await expect(page.getByRole("region", { name: "Where people come from" })).toContainText("LinkedIn");
-  await expect(page.getByRole("region", { name: "LinkedIn posts and campaigns" })).toContainText("e2e-post");
-  await expect(page.getByRole("region", { name: "Most visited pages" })).toContainText("Large vessel stroke (Americas)");
+  // four panels; the lesser lists behind tabs (docs/screens/admin-analytics.md → «Панели»)
+  const from = page.getByRole("region", { name: "Where people come from" });
+  await expect(from.getByRole("tabpanel").filter({ visible: true })).toContainText("LinkedIn");
+  await from.getByRole("tab", { name: "LinkedIn posts & campaigns" }).click();
+  await expect(from.getByRole("tabpanel").filter({ visible: true })).toContainText("e2e-post");
+  await expect(page.getByRole("region", { name: "Pages" }).getByRole("tabpanel").filter({ visible: true })).toContainText("Large vessel stroke (Americas)");
+  // the numbers are the tabs of the chart: Requests shows the requests by day
+  await page.getByRole("tab", { name: /^Requests/ }).click();
+  await expect(page.getByRole("tab", { name: /^Requests/ })).toHaveAttribute("aria-selected", "true");
   await page.goto("/admin/website");
   // numbers from the first day, with since when they are counted and where the old site's visits are
   const week = page.getByRole("link", { name: "This week — open analytics" });

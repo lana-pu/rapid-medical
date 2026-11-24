@@ -11,11 +11,12 @@ export type Report = {
   days: number;
   tiles: { visits: [number, number]; views: [number, number]; leads: [number, number] };
   visitsByDay: { day: string; value: number }[];
+  viewsByDay: { day: string; value: number }[]; // pages viewed, as visitsByDay (the chart's «Pages viewed» tab)
   leadsByDay: { day: string; value: number }[]; // requests without spam, as visitsByDay (the dashboard's «This week»)
   sources: Count[]; // value: visits, extra: leads
   leadPages: Count[];
   topPages: Count[];
-  leadForms: Count[];
+  leadForms: Count[]; // what people ask for: a Contact Us topic, or the form (docs/screens/admin-analytics.md)
   leadRegions: Count[];
   countries: Count[]; // value: visits, extra: leads
   downloads: Count[];
@@ -53,8 +54,13 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
 
   const byDay = new Map<string, number>();
   for (let t = from; t <= now.getTime(); t += DAY) byDay.set(new Date(t).toISOString().slice(0, 10), 0);
-  for (const v of views) if (v.visit) byDay.set(v.at.toISOString().slice(0, 10), (byDay.get(v.at.toISOString().slice(0, 10)) ?? 0) + 1);
+  const viewDays = new Map([...byDay.keys()].map((d) => [d, 0]));
   const leadDays = new Map([...byDay.keys()].map((d) => [d, 0]));
+  for (const v of views) {
+    const d = v.at.toISOString().slice(0, 10);
+    if (v.visit) byDay.set(d, (byDay.get(d) ?? 0) + 1);
+    if (v.kind === "view") viewDays.set(d, (viewDays.get(d) ?? 0) + 1);
+  }
   for (const l of leads) leadDays.set(l.at.toISOString().slice(0, 10), (leadDays.get(l.at.toISOString().slice(0, 10)) ?? 0) + 1);
 
   const sources = new Map<string, { v: number; e?: number }>();
@@ -84,7 +90,8 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
     }
     const led = clean(m.previous_page) ?? clean(m.landing_page);
     bump(leadPages, led ? pageTitle(led) : "Unknown");
-    bump(forms, l.topic ? `${input.formLabel(l.form)} · ${l.topic}` : input.formLabel(l.form));
+    // Contact Us — by its topic (demo, IFU, support…); the other forms as one line each: which webinar or job is in the Inbox
+    bump(forms, l.form === "contact" && l.topic ? l.topic : input.formLabel(l.form));
     bump(regions, l.region ? input.regionLabel(l.region) : "No region");
   }
   const srcList = top(sources, 12);
@@ -98,6 +105,7 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
       leads: [leads.length, input.leads.filter(prev).length],
     },
     visitsByDay: [...byDay.entries()].map(([day, value]) => ({ day, value })),
+    viewsByDay: [...viewDays.entries()].map(([day, value]) => ({ day, value })),
     leadsByDay: [...leadDays.entries()].map(([day, value]) => ({ day, value })),
     sources: srcList,
     leadPages: top(leadPages),
@@ -107,7 +115,7 @@ export function buildReport(input: { days: number; now: Date; views: ViewRow[]; 
     countries: top(countries),
     downloads: top(downloads),
     campaigns: top(campaigns),
-    headline: lead ? `${lead.label} brought ${lead.value} visit${lead.value === 1 ? "" : "s"} and ${lead.extra ?? 0} lead${(lead.extra ?? 0) === 1 ? "" : "s"}` : null,
+    headline: lead ? `${lead.label} brought ${lead.value} visit${lead.value === 1 ? "" : "s"} and ${lead.extra ?? 0} request${(lead.extra ?? 0) === 1 ? "" : "s"}` : null,
   };
 }
 

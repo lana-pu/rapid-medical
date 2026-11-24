@@ -6,30 +6,42 @@ import { Tip } from "./ui";
  * text beside the marks, a tooltip on hover. Admin chrome: the neutral admin palette, one accent for data.
  */
 
-/** Rows with a bar as long as the value; an optional second number (e.g. leads) in its own column. */
-export function BarList({ rows, valueLabel, extraLabel, empty }: { rows: Count[]; valueLabel: string; extraLabel?: string; empty: string }) {
-  if (!rows.length) return <p className="py-3 text-sm text-neutral-500">{empty}</p>;
+/**
+ * Rows with a light bar as long as the value, the name over it, the numbers right; their columns are named above
+ * them (docs/screens/admin-analytics.md → «Панели»). A second number (requests) is the main one: dark and bolder.
+ */
+export function BarList({ rows, valueLabel, extraLabel, empty, note }: { rows: Count[]; valueLabel: string; extraLabel?: string; empty: string; note?: string }) {
+  const foot = note && <p className="mt-2 text-xs text-neutral-500">{note}</p>;
+  if (!rows.length) return <><p className="py-3 text-sm text-neutral-500">{empty}</p>{foot}</>;
   const max = Math.max(...rows.map((r) => r.value), 1);
+  const num = "w-16 py-0.5 pl-2 text-right tabular-nums";
   return (
-    <table className="w-full table-fixed text-sm">
-      <thead className="sr-only">
-        <tr><th>Name</th><th>{valueLabel}</th>{extraLabel && <th>{extraLabel}</th>}</tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => (
-          <tr key={r.label} title={`${r.label}: ${r.value} ${valueLabel.toLowerCase()}${extraLabel ? `, ${r.extra ?? 0} ${extraLabel.toLowerCase()}` : ""}`}>
-            <td className="py-1 pr-3">
-              <div className="relative h-7 overflow-hidden rounded">
-                <div aria-hidden className="absolute inset-y-0 left-0 rounded bg-blue-100" style={{ width: `${Math.max((r.value / max) * 100, 2)}%` }} />
-                <span className="relative block truncate px-2 leading-7">{r.label}</span>
-              </div>
-            </td>
-            <td className="w-16 py-1 text-right tabular-nums text-neutral-900">{r.value}</td>
-            {extraLabel && <td className="w-16 py-1 text-right tabular-nums text-neutral-500">{r.extra ?? 0}</td>}
+    <>
+      <table className="w-full table-fixed text-[13px]">
+        <thead>
+          <tr className="text-xs font-medium text-neutral-500">
+            <th className="pb-1 text-left font-medium"><span className="sr-only">Name</span></th>
+            <th className={`${num} font-medium`}>{valueLabel}</th>
+            {extraLabel && <th className={`${num} font-medium`}>{extraLabel}</th>}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.label} title={`${r.label}: ${r.value} ${valueLabel.toLowerCase()}${extraLabel ? `, ${r.extra ?? 0} ${extraLabel.toLowerCase()}` : ""}`}>
+              <td className="py-0.5">
+                <div className="relative h-[26px] overflow-hidden rounded-[5px]">
+                  <div aria-hidden className="absolute inset-y-0 left-0 rounded-[5px] bg-blue-100" style={{ width: `${Math.max((r.value / max) * 100, 2)}%` }} />
+                  <span className="relative block truncate px-2 leading-[26px] text-neutral-900">{r.label}</span>
+                </div>
+              </td>
+              <td className={`${num} ${extraLabel ? "text-neutral-600" : "font-semibold text-neutral-900"}`}>{r.value.toLocaleString("en-US")}</td>
+              {extraLabel && <td className={`${num} font-semibold text-neutral-900`}>{r.extra ?? 0}</td>}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {foot}
+    </>
   );
 }
 
@@ -52,18 +64,6 @@ export function DailyBars({ days, label }: { days: { day: string; value: number 
         <span>{days.length ? fmt(days[days.length - 1].day) : ""}</span>
       </figcaption>
     </figure>
-  );
-}
-
-/** A headline number with the change against the period before, in words. */
-export function Tile({ label, value, prev, days, suffix = "" }: { label: string; value: number; prev: number; days: number; suffix?: string }) {
-  const diff = value - prev;
-  return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5">
-      <div className="text-sm text-neutral-500">{label}</div>
-      <div className="mt-1 text-3xl font-semibold tabular-nums">{value}{suffix}</div>
-      <div className="mt-1 text-xs text-neutral-500">{diff === 0 ? "same as" : `${diff > 0 ? "+" : ""}${Math.round(diff * 10) / 10}${suffix} vs`} previous {days} days</div>
-    </div>
   );
 }
 
