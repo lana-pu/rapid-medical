@@ -6,7 +6,7 @@ import { autosaveResource, saveResource, type SaveState } from "@/admin/actions"
 import { DEMO } from "@/lib/demo";
 import { REGIONS, type Product } from "@/db/schema";
 import { REGION_CHOICES, REGION_LABELS } from "@/lib/regions";
-import { Button, inputCls, Notice } from "./ui";
+import { Button, inputCls, Notice, StateDot } from "./ui";
 import { Repeater } from "./Repeater";
 import { ImageField } from "./ImageField";
 import { RichText } from "./RichText";
@@ -43,6 +43,8 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
   const errors = state?.errors ?? auto.errors ?? {};
   const labels = new Map(fields.map((f) => [f.name, f.label]));
   const errorKeys = state?.errors ? Object.keys(state.errors) : [];
+  // on the site, nothing saved since: Publish has nothing to do, and the bar says so in words
+  const noChanges = liveStatus === "published" && !hasPending && !auto.saved && !auto.touched;
 
   // the summary takes the focus when Publish / Create draft finds mistakes (GOV.UK)
   useEffect(() => {
@@ -64,7 +66,7 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
   }
 
   return (
-    <form ref={formRef} action={action} className="space-y-8">
+    <form ref={formRef} action={action} className="space-y-6">
       <input type="hidden" name="__resource" value={resourceSlug} />
       {row?.id ? <input type="hidden" name="__id" value={String(row.id)} /> : null}
       <UnsavedGuard formRef={formRef} storageKey={`rm-draft:${resourceSlug}:${row?.id ?? "new"}`} />
@@ -92,36 +94,46 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
         </div>
       )}
 
-      {sections.map((s) => (
-        <fieldset key={s.name || "_"} className="rounded-lg border border-neutral-200 bg-white p-5">
-          {s.name && <legend className="px-2 text-sm font-semibold uppercase tracking-wide text-neutral-500">{s.name}</legend>}
-          <div className="grid grid-cols-1 gap-x-4 gap-y-5 @xl:grid-cols-2">
-            {s.fields.map((f) => (
-              <Field key={f.name} f={f} value={row?.[f.name]} error={errors[f.name]} products={products} />
-            ))}
-          </div>
-        </fieldset>
-      ))}
+      {/* one card, the sections inside as quiet headings (docs/screens/admin-record-edit.md → «Иерархия») */}
+      {sections.length > 0 && (
+        <div className="rounded-lg border border-neutral-200 bg-white px-4 py-5 @xl:px-6">
+          {sections.map((s, i) => (
+            <fieldset key={s.name || "_"} className={i > 0 ? "mt-6 border-t border-neutral-100 pt-5" : ""}>
+              {s.name && <legend className="float-left mb-4 w-full text-xs font-semibold text-neutral-500">{s.name}</legend>}
+              <div className="clear-both grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-5 @xl:grid-cols-2">
+                {s.fields.map((f) => (
+                  // a section that is just one picture: its heading names it, the field's own label stays for screen readers
+                  <Field key={f.name} f={f} value={row?.[f.name]} error={errors[f.name]} products={products} bare={!!s.name && s.fields.length === 1 && f.type === "image"} />
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+      )}
 
-      <div className="sticky bottom-0 flex flex-wrap items-center gap-3 border-t border-neutral-200 bg-neutral-50/95 py-3 backdrop-blur">
+      {/* above the admin's bottom navigation on a phone (it hid the button) */}
+      <div className="sticky bottom-[4.25rem] z-20 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-neutral-200 bg-white/95 px-4 py-2.5 shadow-lg backdrop-blur sm:bottom-3">
+        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+          {workflow && (
+            <span data-testid="record-status">
+              {isNew || liveStatus !== "published" ? <StateDot tone="draft">Draft · not on the site</StateDot> : hasPending || auto.saved ? <StateDot tone="changed">Changes waiting</StateDot> : <StateDot tone="live">On the site</StateDot>}
+            </span>
+          )}
+          {workflow && !isNew && (
+            <span className="text-xs text-neutral-500" role="status">
+              {DEMO ? "Demo: changes are not saved" : auto.text}
+            </span>
+          )}
+        </span>
+        {workflow && !isNew && noChanges && <span className="text-xs text-neutral-500">No changes</span>}
         {!workflow ? (
           <Button type="submit" disabled={submitting}>{submitting ? "Saving…" : "Save"}</Button>
         ) : isNew ? (
           <Button type="submit" disabled={submitting}>{submitting ? "Creating…" : "Create draft"}</Button>
         ) : (
-          <Button type="submit" name="__intent" value="publish" disabled={submitting || auto.busy || (liveStatus === "published" && !hasPending && !auto.saved && !auto.touched)} title={liveStatus === "published" && !hasPending && !auto.saved && !auto.touched ? "No changes to publish" : undefined}>
+          <Button type="submit" name="__intent" value="publish" disabled={submitting || auto.busy || noChanges}>
             {submitting ? "Publishing…" : liveStatus === "published" ? "Publish changes" : "Publish"}
           </Button>
-        )}
-        {workflow && (
-          <span className="text-sm font-medium" data-testid="record-status">
-            {isNew || liveStatus !== "published" ? "Draft · not on the site" : hasPending || auto.saved ? "Live, with unpublished changes" : "Live"}
-          </span>
-        )}
-        {workflow && !isNew && (
-          <span className="text-xs text-neutral-500" role="status">
-            {DEMO ? "Demo: changes are not saved" : auto.text}
-          </span>
         )}
       </div>
     </form>
@@ -134,7 +146,7 @@ export function ResourceForm({ resourceSlug, fields, row, products, workflow = f
  */
 function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boolean) {
   const [busy, setBusy] = useState(false);
-  const [text, setText] = useState("Saved automatically. Visitors see it only after you publish.");
+  const [text, setText] = useState("Saved automatically");
   const [saved, setSaved] = useState(false);
   const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string> | null>(null);
@@ -164,7 +176,7 @@ function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boole
         setErrors(null);
         setSaved(r.pending);
         const t = new Date(r.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-        setText(`Saved automatically · ${t}. Visitors see it only after you publish.`);
+        setText(`Saved automatically · ${t}`);
         formRef.current?.dispatchEvent(new CustomEvent("rm-saved"));
       } else {
         last.current = s.key; // the same content is not retried until it changes
@@ -206,23 +218,45 @@ function useAutosave(formRef: React.RefObject<HTMLFormElement | null>, on: boole
   return { busy, text, saved, touched, errors };
 }
 
-function Label({ f, error }: { f: FieldDef; error?: string }) {
+function Label({ f, error, count, bare = false }: { f: FieldDef; error?: string; count?: number; bare?: boolean }) {
   return (
-    <div className="mb-1 flex items-baseline justify-between">
+    <div className={bare ? "sr-only" : "mb-1 flex items-baseline gap-2"}>
       <label htmlFor={f.name} className="text-sm font-medium text-neutral-800">
         {f.label}
         {f.required && <span className="text-red-600"> *</span>}
       </label>
       {error && <span className="text-xs text-red-600">{error}</span>}
+      {f.max != null && count != null && (
+        <span className={`ml-auto text-xs tabular-nums ${count > f.max ? "font-medium text-amber-700" : "text-neutral-500"}`}>{count} / {f.max}</span>
+      )}
     </div>
   );
 }
 
-export function Field({ f, value, error, products, namePrefix = "" }: { f: FieldDef; value: unknown; error?: string; products: Product[]; namePrefix?: string }) {
+/** A text with a recommended length: counts characters beside the label (Title in Google 60, Description 155). */
+function Counted({ f, name, str, error, wrap, help }: { f: FieldDef; name: string; str: string; error?: string; wrap: string; help: React.ReactNode }) {
+  const [n, setN] = useState(str.length);
+  const area = f.type === "textarea";
+  return (
+    <div className={wrap}>
+      <Label f={f} error={error} count={n} />
+      {area ? (
+        <textarea id={name} name={name} defaultValue={str} rows={f.rows ?? 4} onInput={(e) => setN(e.currentTarget.value.length)} className={inputCls} />
+      ) : (
+        <input id={name} name={name} defaultValue={str} placeholder={f.placeholder} onInput={(e) => setN(e.currentTarget.value.length)} className={inputCls} />
+      )}
+      {help}
+    </div>
+  );
+}
+
+export function Field({ f, value, error, products, namePrefix = "", bare = false }: { f: FieldDef; value: unknown; error?: string; products: Product[]; namePrefix?: string; bare?: boolean }) {
   const name = namePrefix + f.name;
   const wrap = f.half ? "min-w-0" : "min-w-0 @xl:col-span-2"; // one column below 576 px of the working area (docs/admin-ia.md → «Адаптив»)
   const help = f.help ? <p className="mt-1 text-xs text-neutral-500">{f.help}</p> : null;
   const str = value == null ? "" : String(value);
+
+  if (f.max != null && (f.type === "text" || f.type === "textarea")) return <Counted f={f} name={name} str={str} error={error} wrap={wrap} help={help} />;
 
   switch (f.type) {
     case "text":
@@ -268,10 +302,15 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
         </div>
       );
     case "boolean":
+      // a switch (docs/screens/admin-record-edit.md → «Иерархия»): still a checkbox underneath, so the form posts the same
       return (
-        <div className={`${wrap} flex items-center gap-2 pt-6`}>
-          <input id={name} name={name} type="checkbox" defaultChecked={Boolean(value)} className="h-4 w-4" />
-          <label htmlFor={name} className="text-sm text-neutral-800">{f.label}</label>
+        <div className={wrap}>
+          <label htmlFor={name} className="inline-flex cursor-pointer items-start gap-3">
+            <input id={name} name={name} type="checkbox" role="switch" defaultChecked={Boolean(value)} className="peer sr-only" />
+            <span aria-hidden className="relative mt-0.5 h-5 w-9 shrink-0 rounded-full bg-neutral-300 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-neutral-900 peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-neutral-900 peer-focus-visible:ring-offset-2" />
+            <span className="text-sm font-medium text-neutral-800">{f.label}</span>
+          </label>
+          {help}
         </div>
       );
     case "date":
@@ -359,8 +398,9 @@ export function Field({ f, value, error, products, namePrefix = "" }: { f: Field
     case "image":
       return (
         <div className={wrap}>
-          <Label f={f} error={error} />
-          <ImageField name={name} defaultValue={str} />
+          <Label f={f} error={error} bare={bare} />
+          {bare && error && <p className="mb-1 text-xs text-red-600">{error}</p>}
+          <ImageField name={name} defaultValue={str} large={!namePrefix} />
           {help}
         </div>
       );
@@ -414,13 +454,14 @@ function LinkInput({ name, initial }: { name: string; initial: { label?: string;
   );
 }
 
+/** Regions as chips in one row (docs/screens/admin-record-edit.md → «Иерархия»); checkboxes underneath. */
 function RegionsCheckboxes({ name, selected }: { name: string; selected: string[] }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-wrap gap-2">
       {REGIONS.map((r) => (
-        <label key={r} className="flex items-center gap-2 text-sm">
-          <input type="checkbox" value={r} defaultChecked={selected.includes(r)} className="h-4 w-4" data-regions={name} onChange={(e) => syncRegions(e.currentTarget.form, name)} />
-          {REGION_LABELS[r]}
+        <label key={r} className="cursor-pointer rounded-full border border-neutral-300 bg-white px-3 py-1 text-sm text-neutral-800 hover:border-neutral-500 has-[:checked]:border-neutral-900 has-[:checked]:bg-neutral-900 has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-neutral-900 has-[:focus-visible]:ring-offset-2">
+          <input type="checkbox" value={r} defaultChecked={selected.includes(r)} className="sr-only" data-regions={name} onChange={(e) => syncRegions(e.currentTarget.form, name)} />
+          {REGION_CHOICES.find((c) => c.region === r)?.label ?? REGION_LABELS[r]}
         </label>
       ))}
       <input type="hidden" name={name} defaultValue={selected.join(",")} />

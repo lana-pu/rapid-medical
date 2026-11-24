@@ -28,6 +28,10 @@ export type ListQuery = {
   dir?: "asc" | "desc";
   page?: number;
   per?: number;
+  /** only these ids (a status tab that lives in `drafts`: Changes waiting, Scheduled); [] = nothing */
+  ids?: number[];
+  /** not these ids (On the site = published without pending changes) */
+  notIds?: number[];
 };
 
 export async function listRows(res: Resource, q: ListQuery = {}): Promise<{ rows: Row[]; total: number; page: number; per: number }> {
@@ -42,6 +46,9 @@ export async function listRows(res: Resource, q: ListQuery = {}): Promise<{ rows
     else if (cols[k].dataType === "boolean") conds.push(sql`${cols[k]} = ${v === "true"}`);
     else conds.push(sql`${cols[k]} = ${v}`);
   }
+  const idc = col(res.table, "id");
+  if (q.ids) conds.push(q.ids.length ? inArray(idc, q.ids) as never : sql`false`);
+  if (q.notIds?.length) conds.push(sql`${idc} NOT IN (${sql.join(q.notIds.map((i) => sql`${i}`), sql`, `)})`);
   const where = conds.length ? sql.join(conds, sql` AND `) : undefined;
 
   const sortKey = q.sort && cols[q.sort] ? q.sort : res.sortBy;

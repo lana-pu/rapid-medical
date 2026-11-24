@@ -40,6 +40,8 @@ export type FieldDef = {
   /** Narrow column (half width) */
   half?: boolean;
   rows?: number;
+  /** A recommended length: the form counts characters «42 / 60» beside the label (docs/screens/admin-record-edit.md) */
+  max?: number;
   /** Edited on the page (ADR-007): not in the form; a form save keeps the current value. */
   onPage?: boolean;
   /** Set when the record is created, then shown as text (a page's region: another region is a copy of the page). */
@@ -49,6 +51,9 @@ export type FieldDef = {
 export type ListColumn = {
   name: string;
   label: string;
-  /** Render helper for special columns */
-  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen";
+  /**
+   * Render helper for special columns. Columns without a kind (and region, regions, product) are secondary: the list
+   * shows them in the line under the name (docs/screens/admin-list.md → «Иерархия»); a `number` keeps its own column.
+   */
+  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen" | "number";
 };

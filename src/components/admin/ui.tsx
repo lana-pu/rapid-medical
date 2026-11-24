@@ -100,6 +100,22 @@ export function StatusBadge({ status }: { status: string }) {
   return <span className={`whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium ${cls}`}>{WORDS[status] ?? status}</span>;
 }
 
+/**
+ * A record's state as a dot and a word (docs/screens/admin-list.md → «Иерархия»): the same look in a list row, the
+ * status card and the form's bottom bar. `big` — the status card's headline.
+ */
+export type StateTone = "live" | "changed" | "scheduled" | "draft";
+export function StateDot({ tone, children, big = false, className = "" }: { tone: StateTone; children: ReactNode; big?: boolean; className?: string }) {
+  const dot = { live: "bg-emerald-500", changed: "bg-amber-500", scheduled: "bg-blue-500", draft: "bg-neutral-400" }[tone];
+  const ink = { live: "text-neutral-900", changed: "text-amber-900", scheduled: "text-blue-800", draft: "text-neutral-700" }[tone];
+  return (
+    <span className={`inline-flex items-center ${big ? "gap-2 text-[15px] font-semibold" : "gap-1.5 text-xs font-medium"} ${ink} ${className}`}>
+      <span aria-hidden className={`${big ? "h-2.5 w-2.5" : "h-[7px] w-[7px]"} shrink-0 rounded-full ${dot}`} />
+      {children}
+    </span>
+  );
+}
+
 export function RegionBadge({ region }: { region: Region | null | undefined }) {
   if (!region) return <span className="text-xs text-neutral-400">All regions</span>;
   // names as in the region menu, not codes (docs/screens/admin-list.md)
@@ -109,9 +125,9 @@ export function RegionBadge({ region }: { region: Region | null | undefined }) {
 export type Crumb = { label: string; href?: string };
 
 /** «Website › Evidence › Publications»: where this screen is in the site (docs/screens/admin-sections.md). */
-export function Crumbs({ items }: { items: Crumb[] }) {
+export function Crumbs({ items, flush = false }: { items: Crumb[]; flush?: boolean }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-1 text-xs text-neutral-500">
+    <nav aria-label="Breadcrumb" className={`${flush ? "" : "mb-1 "}text-xs text-neutral-500`}>
       {items.map((c, i) => (
         <span key={i}>
           {i > 0 && <span className="px-1">›</span>}
@@ -122,12 +138,24 @@ export function Crumbs({ items }: { items: Crumb[] }) {
   );
 }
 
-export function PageHeader({ title, actions, subtitle, crumbs }: { title: string; subtitle?: string; actions?: ReactNode; crumbs?: Crumb[] }) {
+/**
+ * A screen's head. `back` — a small «← Back» beside the crumbs; `tag` — what kind of thing this is («News item»), a quiet
+ * label under the title (docs/screens/admin-record-edit.md → «Иерархия»).
+ */
+export function PageHeader({ title, actions, subtitle, crumbs, back, tag }: { title: string; subtitle?: string; actions?: ReactNode; crumbs?: Crumb[]; back?: ReactNode; tag?: string }) {
   return (
     <div className="mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0 break-words">
-        {crumbs && <Crumbs items={crumbs} />}
+      <div className="min-w-0 flex-1 break-words">
+        {back ? (
+          <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+            {back}
+            {crumbs && <Crumbs items={crumbs} flush />}
+          </div>
+        ) : (
+          crumbs && <Crumbs items={crumbs} />
+        )}
         <h1 className="text-2xl font-semibold text-neutral-900">{title}</h1>
+        {tag && <span className="mt-2 inline-block rounded bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">{tag}</span>}
         {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}

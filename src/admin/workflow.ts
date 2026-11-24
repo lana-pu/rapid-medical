@@ -265,3 +265,35 @@ export async function pendingDrafts(): Promise<(Draft & { label: string; resourc
   }
   return out;
 }
+
+/** A list row's state beyond its status column: saved changes waiting for Publish, a set publishing time. */
+export type RowState = { pending: boolean; publishAt: Date | null };
+
+/**
+ * The list's status tabs and each row's state (docs/screens/admin-list.md → «Иерархия»): counts over the whole collection,
+ * the ids behind the tabs that live in `drafts` (Changes waiting, Scheduled), the state of every record that has a draft.
+ */
+export async function listStates(res: Resource): Promise<{
+  counts: { all: number; live: number; changed: number; scheduled: number; drafts: number };
+  changedIds: number[];
+  scheduledIds: number[];
+  byId: Map<number, RowState>;
+}> {
+  const [byStatus, ds] = await Promise.all([
+    db.select({ status: sql<string>`status::text`, n: sql<number>`count(*)::int` }).from(res.table as any).groupBy(sql`status`),
+    db.select({ id: drafts.recordId, pending: sql<boolean>`${drafts.data} is not null`, publishAt: drafts.publishAt }).from(drafts).where(eq(drafts.resource, res.slug)),
+  ]);
+  const n = (s: string) => byStatus.find((r) => r.status === s)?.n ?? 0;
+  const published = new Set<number>();
+  const byId = new Map<number, RowState>(ds.map((d) => [d.id, { pending: d.pending, publishAt: d.publishAt }]));
+  // Changes waiting = on the site with saved changes; a draft record's own changes are just the draft
+  const pendingIds = ds.filter((d) => d.pending).map((d) => d.id);
+  if (pendingIds.length) {
+    const rows = (await db.select({ id: sql<number>`id` }).from(res.table as any).where(and(sql`status = 'published'`, inArray(sql`id`, pendingIds)))) as { id: number }[];
+    for (const r of rows) published.add(r.id);
+  }
+  const changedIds = pendingIds.filter((id) => published.has(id));
+  const scheduledIds = ds.filter((d) => d.publishAt).map((d) => d.id);
+  const all = byStatus.reduce((a, r) => a + r.n, 0);
+  return { counts: { all, live: n("published") - changedIds.length, changed: changedIds.length, scheduled: scheduledIds.length, drafts: n("draft") }, changedIds, scheduledIds, byId };
+}

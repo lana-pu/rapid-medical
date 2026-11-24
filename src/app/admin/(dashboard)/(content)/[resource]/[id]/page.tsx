@@ -63,24 +63,27 @@ export default async function EditResource({ params, searchParams }: { params: P
           </>
         } />
       ) : (
+        // «← Back» small beside the crumbs, the kind of record as a quiet label (docs/screens/admin-record-edit.md → «Иерархия»)
         <PageHeader
-        crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
-        title={String(row[res.labelField] ?? res.titleSingular)}
-        subtitle={res.titleSingular}
-        actions={
-          <>
-            {otherRegions.map((r) => (
-              <form key={r} action={duplicateResource}>
-                <input type="hidden" name="__resource" value={res.slug} />
-                <input type="hidden" name="__id" value={row.id} />
-                <input type="hidden" name="region" value={r} />
-                <Button type="submit" variant="secondary">Create {regionLabel(r)} version</Button>
-              </form>
-            ))}
-            <BackButton fallback={`/admin/${res.slug}`} />
-          </>
-        }
-      />
+          back={<BackButton fallback={`/admin/${res.slug}`} small />}
+          crumbs={crumbsFor(res.slug, res.title, String(row.key ?? ""))}
+          title={String(row[res.labelField] ?? res.titleSingular)}
+          tag={res.titleSingular}
+          actions={
+            otherRegions.length ? (
+              <>
+                {otherRegions.map((r) => (
+                  <form key={r} action={duplicateResource}>
+                    <input type="hidden" name="__resource" value={res.slug} />
+                    <input type="hidden" name="__id" value={row.id} />
+                    <input type="hidden" name="region" value={r} />
+                    <Button type="submit" variant="secondary">Create {regionLabel(r)} version</Button>
+                  </form>
+                ))}
+              </>
+            ) : undefined
+          }
+        />
       )}
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.pending && <Notice kind="info">Saved as pending changes. The live page is unchanged until you publish.</Notice>}
@@ -101,8 +104,8 @@ export default async function EditResource({ params, searchParams }: { params: P
       {sp.restored && <Notice kind="success">Revision restored{live.status === "published" ? " as pending changes" : ""}.</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
-      <div className="grid gap-6 @4xl:grid-cols-[1fr_320px]">
-        <div>
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 @4xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0">
           <ResourceForm resourceSlug={res.slug} fields={res.fields} row={row} products={prods} workflow={hasWorkflow(res)} liveStatus={String(live.status ?? "")} pending={!!draft?.data} contentHref={editHref} />
         </div>
         {hasWorkflow(res) && (

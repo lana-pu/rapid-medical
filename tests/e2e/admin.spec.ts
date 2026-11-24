@@ -61,7 +61,7 @@ test("editing a live record creates pending changes, preview shows them, publish
   const id = sql("select id from solutions where region='ous' and slug='lvo'");
   await page.goto(`/admin/solutions/${id}`);
   await expect(page.locator("select[name=status]")).toHaveCount(0); // on the site only through Publish
-  await expect(page.getByTestId("record-status")).toHaveText("Live");
+  await expect(page.getByTestId("record-status")).toHaveText("On the site");
   // page content is edited on the page (ADR-007): the form keeps basics and SEO only
   await expect(page.locator("input[name=heroTitle]")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Edit on page ✎" }).first()).toBeVisible();
@@ -72,7 +72,7 @@ test("editing a live record creates pending changes, preview shows them, publish
   await page.fill("input[name=metaTitle]", "E2E pending title");
   await page.locator("input[name=metaTitle]").blur(); // autosave on leaving the field
   await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
-  await expect(page.getByTestId("record-status")).toHaveText("Live, with unpublished changes");
+  await expect(page.getByTestId("record-status")).toHaveText("Changes waiting");
   await page.reload();
 
   await anon.reload();
@@ -408,6 +408,7 @@ test("scheduled publishing via cron", async ({ page, request }) => {
   await page.fill("input[name=metaTitle]", "Scheduled title");
   await page.locator("input[name=metaTitle]").blur();
   await expect(page.locator("[role=status]", { hasText: /^Saved automatically/ })).toBeVisible();
+  await page.getByText("Publish later…").click(); // folded until wanted (docs/screens/admin-record-edit.md)
   await page.fill("input[name=publishAt]", "2020-01-01T00:00");
   await page.click('button:has-text("Set")');
   await page.waitForURL(/scheduled=1/);
@@ -632,7 +633,7 @@ test("user walk 2026-11-14: a draft is deleted from its own page; a request name
   await page.getByLabel(/^External link/).fill("https://example.com/e2e");
   await page.getByRole("button", { name: "Create draft" }).click();
   await page.waitForURL(/\/admin\/news\/\d+/);
-  await expect(page.getByText("Status", { exact: true })).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Status" })).toContainText("Draft · not on the site");
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Delete draft" }).click();
   await page.waitForURL(/\/admin\/news\?bulk=delete&n=1/);

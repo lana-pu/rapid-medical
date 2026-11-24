@@ -55,9 +55,9 @@ export function BackLink({ fallback, children, className, label }: { fallback: s
 }
 
 /** The «← Back» button of a screen, styled as the admin's secondary button. */
-export function BackButton({ fallback, children = "← Back" }: { fallback: string; children?: ReactNode }) {
+export function BackButton({ fallback, children = "← Back", small = false }: { fallback: string; children?: ReactNode; small?: boolean }) {
   return (
-    <BackLink fallback={fallback} className="inline-flex items-center gap-2 rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100">
+    <BackLink fallback={fallback} className={small ? "inline-flex items-center rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100" : "inline-flex items-center gap-2 rounded border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100"}>
       {children}
     </BackLink>
   );

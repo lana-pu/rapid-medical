@@ -17,7 +17,7 @@ export default async function NewResource({ params }: { params: Promise<{ resour
 
   return (
     <>
-      <PageHeader crumbs={crumbsFor(res.slug, res.title)} title={`New ${res.titleSingular.toLowerCase()}`} actions={<BackButton fallback={`/admin/${res.slug}`} />} />
+      <PageHeader back={<BackButton fallback={`/admin/${res.slug}`} small />} crumbs={crumbsFor(res.slug, res.title)} title={`New ${res.titleSingular.toLowerCase()}`} />
       <ResourceForm resourceSlug={res.slug} fields={res.fields} row={null} products={prods} workflow={hasWorkflow(res)} contentHref={null} />
     </>
   );

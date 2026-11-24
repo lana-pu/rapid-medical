@@ -13,6 +13,21 @@
 до 50 ревизий. Preview-ссылка — JWT на 7 дней (`/api/preview?token=…`), если у ресурса
 есть `previewUrl` (solutions, team, jobs, pages).
 
+## Иерархия (2026-11-24, разбор с Mobbin, черновик v2 «тише» одобрен владелицей)
+- Шапка: «← Back» маленькой кнопкой у крошек, название записи, под ним — тип записи меткой («News item»). Статус в
+  шапке не повторяется — он в карточке справа и в нижней панели. Create {регион} version — в шапке, как раньше.
+- **Поля — одной белой карточкой**, разделы внутри — тихими подзаголовками с линией (не отдельными карточками). Первая
+  группа без подзаголовка. Разделы коллекций: News — Picture, Where it shows; Publications — Links and PDF, Abstract,
+  Where it shows; Webinars — Picture, Where it shows; Team — Photo, Where it shows; Jobs — How to apply, Where it shows;
+  Events — Event, Registration, After the event (как было). Ни одно поле не пропадает.
+- Картинка — превью 150 px (16:10) с кнопками Choose from library · Upload · Remove; адрес файла — мелким полем под ними.
+- Да/нет-поля (Featured, Hide from search engines, Permanent) — переключателем (`role="switch"`).
+- Регионы (Show in regions) — кнопками-чипами в одну строку.
+- У «Title in Google» и «Description in Google» — счётчик «{n} / 60», «{n} / 155» у подписи поля (жёлтый, если больше).
+- Справа **одна карточка статуса** (см. «Панель workflow»), внутри неё же — «Publish later…» и History.
+- Нижняя панель: слева точка и статус словами, затем текст автосохранения; справа кнопка. Неактивная Publish — с
+  видимой причиной «No changes». На телефоне панель стоит над нижней навигацией админки (раньше пряталась под ней).
+
 ## Форма
 Генерируется из `resource.fields`, сгруппирована по `section`. Типы полей: text, slug, textarea,
 markdown (Tiptap), json, link, table (редактор спецификаций, вставка из Excel), number, boolean, select,
@@ -48,8 +63,8 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 | Состояние записи | Как сохраняется | Нижняя панель |
 |---|---|---|
 | Новая | кнопка **Create draft** → черновик, редирект на `/admin/{resource}/{id}` | «Draft · not on the site» · Create draft |
-| Не опубликована | **автоматически** через 2 с после правки и при уходе из поля; правка на месте | «Draft · not on the site» · «Saved automatically · 10:42. Visitors see it only after you publish.» · **Publish** |
-| Опубликована | автоматически; изменения в `drafts`, live не меняется | «Live» / «Live, with unpublished changes» · то же · **Publish changes** |
+| Не опубликована | **автоматически** через 2 с после правки и при уходе из поля; правка на месте | «Draft · not on the site» · «Saved automatically · 10:42» · **Publish** |
+| Опубликована | автоматически; изменения в `drafts`, live не меняется | «On the site» / «Changes waiting» · то же · **Publish changes** (без правок — неактивна, рядом «No changes») |
 | `products`, `redirects` (без workflow) | кнопка **Save** → сразу в live | Save |
 - Автосохранение пропускает форму с ошибками: «Not saved: {N} field(s) need attention» (сводка — по Publish).
   Ошибка сервера → «Not saved: {причина}», правка остаётся в форме.
@@ -57,18 +72,20 @@ date, image (пикер медиатеки + загрузка), url, regions, re
 - После Publish: «Live on {адрес} · View on the site ↗» (если у записи есть адрес на сайте), иначе «Published».
 - В демо автосохранения нет (нет сервера): «Demo: changes are not saved».
 
-## Панель workflow (только ресурсы со `status`)
+## Панель workflow (только ресурсы со `status`) — одна карточка справа (2026-11-24)
 | Элемент | Когда показан | Кто может |
 |---|---|---|
-| «Status» + метка статуса, плашка «Unpublished changes by … · дата» | всегда / при pending | — |
-| «Scheduled to publish …» | если `publishAt` | — |
-| **Publish / Publish changes** | в нижней панели формы (не в панели справа: публикуется то, что в форме, а не последнее автосохранение) | любая роль (согласования нет, ADR-006) |
+| Крупный статус точкой и словом: On the site · Changes waiting · Draft · not on the site | всегда | — |
+| Жёлтая плашка «{кто} · {когда}. Visitors see the old version until you publish.» (у черновика — «…Not on the site until you publish.») | при pending | — |
+| «Published {дата} by {кто}» — по последней ревизии `published` | запись на сайте | — |
+| «Publishes {дата, время} (Israel time)» | если `publishAt` | — |
+| **Publish / Publish changes** | в нижней панели формы (не в карточке: публикуется то, что в форме, а не последнее автосохранение) | любая роль (согласования нет, ADR-006) |
 | **Unpublish** | запись live | любая роль; неопубликованные правки (pending) переходят в саму запись (ревизия «Unpublished: pending changes kept in the record»), одобрение сбрасывается, расписание отменяется |
 | **Discard changes** | есть pending | любая роль |
-| **Delete draft** | запись не на сайте (не `published`), не Home/About… | любая роль; «Delete «{название}»? This cannot be undone.» → запись и её расписание удаляются, возврат в список с «Deleted 1 item(s).». Опубликованную — сначала Unpublish (UX-прогон 2026-11-14: удалить черновик можно было только из списка) |
-| Preview ↗ (+ «share this link — valid 7 days»), **Edit on site ✎** | если есть `previewUrl` | любая |
-| **Schedule publication** (datetime-local, Set, clear) — «Publish later» | всегда | любая роль; время — по Израилю, подпись «Time zone: Israel (UTC+2/+3)» по дате |
-| **History**: список ревизий, restore, «Compare ↗» (если > 1) | всегда | любая роль |
+| **Delete draft** | запись не на сайте (не `published`), не Home/About… | админ; «Delete «{название}»? This cannot be undone.» → запись и её расписание удаляются, возврат в список с «Deleted 1 item(s).». Опубликованную — сначала Unpublish (UX-прогон 2026-11-14) |
+| Preview ↗ (+ «the link works 7 days»), **Edit on page ✎** | если есть `previewUrl` | любая |
+| **Publish later…** — раскрывается в дату-время, Set, clear; рядом всегда видно «Time zone: Israel (UTC+2/+3)»; раскрыто, если время уже задано | всегда | любая роль |
+| **History** — лентой: значок по типу (сохранено · опубликовано · восстановлено · создано), кто, когда, заметка; **Restore**; «Compare» (если > 1) | если есть ревизии | любая роль |
 | **Create {регион} version** (в шапке; было «Copy to {REGION}») | только `solutions`, только регионы, где этой терапии ещё нет | дубликат как draft в этом регионе |
 
 Уведомления после действий — через query-параметры: `published`, `unpublished`, `discarded`,
