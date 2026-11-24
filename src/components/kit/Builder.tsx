@@ -341,16 +341,15 @@ export function Builder({ data }: { data: LabData }) {
     <Group title="Файл">
       <FileCard src={b.d.src} onPick={(f) => {
         if (f.kind === "other") return;
-        update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
+        update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind, ...(f.kind === "video" && x.o.kind !== "video" ? { mode: "ambient" } : {}) }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
       }} />
-      <p className="text-xs text-muted">Картинка, видео или PDF из медиатеки — настройки ниже меняются под тип файла.</p>
       {/* the YouTube / Vimeo field: in view for a video, behind a link for a picture or a document */}
       {b.o.kind !== "video" && b.d.embed === undefined ? (
         <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { embed: "" })}>Видео по ссылке YouTube / Vimeo…</button>
       ) : <>
       <label htmlFor={`embed-${b.id}`} className="text-xs text-muted">Или видео по ссылке YouTube / Vimeo</label>
       <input id={`embed-${b.id}`} value={String(b.d.embed ?? "")} placeholder="https://www.youtube.com/watch?v=…"
-        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || (x.o.kind === "video" ? undefined : "") }; if (v) x.o = { ...x.o, kind: "video" }; }); }}
+        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || (x.o.kind === "video" ? undefined : "") }; if (v) x.o = { ...x.o, kind: "video", ...(x.o.kind !== "video" ? { mode: "ambient" } : {}) }; }); }}
         className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
       {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
       {!!b.d.embed && embedOf(String(b.d.embed), false) && <p className="text-xs text-muted">Играет видео по ссылке; файл из медиатеки не используется. Очистите поле, чтобы вернуть файл.</p>}
@@ -406,10 +405,20 @@ export function Builder({ data }: { data: LabData }) {
     );
   };
 
+  /** A picture's link — main: «where does this picture lead» is asked often. */
+  const linkGroup = (b: Block): ReactNode => (
+    <Group title="Ссылка">
+            <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
+            {!!(b.d as { href?: string }).href && !safeHref((b.d as { href?: string }).href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или ссылка https://… — такая ссылка не сохранится на странице.</p>}
+            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!(b.d as { newTab?: boolean }).newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> Открывать в новой вкладке</label>
+            {(b.d as { href?: string }).href && b.o.zoom === "on" && <p className="text-xs text-muted">Со ссылкой клик ведёт по ссылке — увеличение не работает.</p>}
+          </Group>
+  );
+
   /** Groups mediaExtras shows (for the number on «Дополнительно»). */
   const extrasCount = (b: Block) => {
     if (b.type !== "media") return 0;
-    if (b.o.kind === "image") return 2 + (b.o.fit !== "contain" && b.o.ratio !== "natural" && fileOf(data, b.d.src) ? 1 : 0);
+    if (b.o.kind === "image") return 1 + (b.o.fit !== "contain" && b.o.ratio !== "natural" && fileOf(data, b.d.src) ? 1 : 0);
     if (b.o.kind === "video") return b.d.embed ? 1 : 2;
     return 0;
   };
@@ -423,12 +432,6 @@ export function Builder({ data }: { data: LabData }) {
       const [fx, fy] = (d.focal ?? "50% 50%").split(" ").map((x) => parseFloat(x));
       return (
         <>
-          <Group title="Ссылка">
-            <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
-            {!!(b.d as { href?: string }).href && !safeHref((b.d as { href?: string }).href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или ссылка https://… — такая ссылка не сохранится на странице.</p>}
-            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!(b.d as { newTab?: boolean }).newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> Открывать в новой вкладке</label>
-            {(b.d as { href?: string }).href && b.o.zoom === "on" && <p className="text-xs text-muted">Со ссылкой клик ведёт по ссылке — увеличение не работает.</p>}
-          </Group>
           <Group title="Картинка для телефона">
             <p className="text-xs text-muted">Другой кадр для экранов до 767 px — например, вертикальный. Нет своей — показывается основная. Проверьте в просмотре «Телефон».</p>
             <FileCard src={(b.d as { srcMobile?: string }).srcMobile} want="image" onPick={(x) => onData(b.id, { srcMobile: x.url })} />
@@ -597,6 +600,7 @@ export function Builder({ data }: { data: LabData }) {
         {b.type === "media" && mediaFile(b)}
         <Options block={b.type} opts={optsFor(b).filter((o) => !isAdvanced(b, o.key))} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
         {b.type === "media" && b.o.kind === "image" && altGroup(b)}
+        {b.type === "media" && b.o.kind === "image" && linkGroup(b)}
         {b.type === "quote" && (
           <Group title="Фото">
             <FileCard src={b.d.src} want="image" onPick={(f) => onData(b.id, { src: f.url })} />
@@ -623,12 +627,15 @@ export function Builder({ data }: { data: LabData }) {
             <Inside items={(b.d.tabs as Tab[]).map((t, k) => ({ key: tabKey(b.id, k), label: t.label, hint: t.blocks.map((x) => BLOCK_DEFS[x.type].name).join(", ") || "пусто", kind: "tab" as Kind }))} onOpen={pick} />
           </Group>
         )}
-        <Group title="Текст">
-          <p className="text-xs text-muted">{b.type === "list" ? "Записи берутся из коллекции и правятся там; здесь — что показывать и как." : b.type === "tabs" ? "Названия вкладок — внутри каждой вкладки." : "Тексты правятся прямо на странице: клик по тексту, Enter — готово."}</p>
-        </Group>
+        {b.type === "list" && <p className="px-4 pb-3 text-xs text-muted">Записи — из своей коллекции, правятся там.</p>}
         <Advanced count={optsFor(b).filter((o) => isAdvanced(b, o.key)).length + extrasCount(b)}>
-          <Options block={b.type} opts={optsFor(b).filter((o) => isAdvanced(b, o.key))} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
+          <Options block={b.type} opts={optsFor(b).filter((o) => isAdvanced(b, o.key) && o.key !== "mode")} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
           {b.type === "media" && mediaExtras(b)}
+          {/* sound: the rare case, at the very bottom */}
+          {b.type === "media" && b.o.kind === "video" && (() => {
+            const mode = optsFor(b).find((o) => o.key === "mode");
+            return mode && <Group title="Звук"><Control block="media" opt={mode} value={b.o.mode ?? "ambient"} onPick={(v) => setOpt(b.id, "mode", v)} /></Group>;
+          })()}
         </Advanced>
         {designer && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>}
       </>

@@ -272,7 +272,7 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
     );
   } else if (b.o.kind === "video") {
     const poster = d.poster || file?.poster || undefined;
-    const ambient = b.o.mode === "ambient";
+    const ambient = b.o.mode !== "player"; // silent loop unless «with sound» was chosen
     const embed = d.embed ? embedOf(d.embed, ambient) : null;
     body = (
       <div className={`relative w-full overflow-hidden rounded bg-inverse ${ratio || "aspect-video"}`}>

@@ -91,7 +91,7 @@ export const BLOCK_DEFS: Record<BlockType, { name: string; hint: string; opts: O
     name: "Медиа", hint: "картинка, видео или документ из медиатеки", nestable: true,
     // the kind comes from the chosen file; each kind has its own options (mediaOpts)
     opts: [],
-    make: () => ({ o: { kind: "image", ratio: "wide", fit: "cover", caption: "off", zoom: "off", mode: "player", show: "button", play: "on" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model.", focal: "50% 50%" } }),
+    make: () => ({ o: { kind: "image", ratio: "wide", fit: "cover", caption: "off", zoom: "off", mode: "ambient", show: "button", play: "on" }, d: { src: 0, caption: "TIGERTRIEVER™ in a vessel model.", focal: "50% 50%" } }),
   },
   numbers: {
     name: "Цифры", hint: "ключевые цифры, инфографика", nestable: true,
@@ -139,10 +139,10 @@ const MEDIA_OPTS: Record<string, Opt[]> = {
     { key: "zoom", label: "Увеличение по клику", values: v(["off", "Нет"], ["on", "Есть"]) },
   ],
   video: [
-    { key: "mode", label: "Как играет", values: v(["player", "Плеер со звуком"], ["ambient", "Фон: без звука, по кругу"]) },
     { key: "ratio", label: "Формат", values: v(["wide", "16:9"], ["photo", "4:3"], ["square", "1:1"], ["pano", "21:9"]) },
     { key: "fit", label: "Кадр", values: v(["cover", "Заполнить"], ["contain", "Целиком"]) },
     { key: "caption", label: "Подпись", values: v(["off", "Нет"], ["on", "Есть"]) },
+    { key: "mode", label: "Как играет", values: v(["ambient", "Без звука, по кругу"], ["player", "Плеер со звуком"]) },
   ],
   document: [
     { key: "show", label: "Как показать", values: v(["button", "Кнопкой"], ["pages", "Страницами"]) },
@@ -151,17 +151,19 @@ const MEDIA_OPTS: Record<string, Opt[]> = {
 };
 const PLAY: Opt = { key: "play", label: "Кнопка Play / Пауза", values: v(["on", "Есть"], ["off", "Нет"]) };
 export const optsFor = (b: Block): Opt[] =>
-  b.type !== "media" ? BLOCK_DEFS[b.type].opts : b.o.kind === "video" && b.o.mode === "ambient" ? [...MEDIA_OPTS.video, PLAY] : MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image;
+  b.type !== "media" ? BLOCK_DEFS[b.type].opts : b.o.kind === "video" && b.o.mode !== "player" ? [MEDIA_OPTS.video[0], PLAY, ...MEDIA_OPTS.video.slice(1)] : MEDIA_OPTS[b.o.kind] ?? MEDIA_OPTS.image;
 
 /**
  * Secondary settings go under «Дополнительно», folded (owner, 2026-11-24: keep only the main ones in view). The main
  * ones say what the element is and how it looks; the rest fine-tune it.
  */
 const ADVANCED: Record<string, string[]> = {
-  heading: ["eyebrow", "rule"], text: ["cols"], buttons: ["align"], numbers: ["align"], cards: ["frame"], facts: ["layout"],
-  quote: ["photo", "size"], list: ["count"], tabs: ["style"],
-  "media:image": ["fit", "caption", "zoom"], "media:video": ["ratio", "fit", "caption", "play"], "media:document": ["caption"],
-  section: ["valign", "space"],
+  heading: ["rule"], text: ["cols"], cards: ["frame"], facts: ["layout"], quote: ["photo"], tabs: ["style"],
+  "media:image": ["fit", "zoom"],
+  // a video plays silently in a loop by default; «with sound» is the rare case — last of all
+  "media:video": ["fit", "caption", "mode"],
+  "media:document": ["caption"],
+  section: ["valign"],
 };
 export const isAdvanced = (b: Block | "section", key: string) =>
   (ADVANCED[b === "section" ? "section" : b.type === "media" ? `media:${b.o.kind}` : b.type] ?? []).includes(key);
