@@ -12,7 +12,7 @@ import { BASE, withBase } from "@/lib/demo";
  * picture of the sandbox 404 in the demo, 2026-11-23).
  */
 export const asset = (url: string) => (BASE && url.startsWith(`${BASE}/`) ? url : withBase(url));
-import { BLOCK_DEFS, colKey, shownCols, tabKey, type Block, type BlockType, type Section, type Tab } from "./model";
+import { BLOCK_DEFS, clickOf, colKey, shownCols, tabKey, type Block, type BlockType, type Section, type Tab } from "./model";
 
 /**
  * The sandbox's blocks (/lab/blocks), drawn with the site's primitives, classes and tokens — the same look the site has
@@ -289,22 +289,25 @@ function Media({ b, c }: { b: Block; c: Ctx }) {
     );
   } else {
     const alt = d.alt ?? pic?.alt ?? "";
+    // a click either follows a link or zooms the picture — one of the two (clickOf)
+    const zoom = clickOf(b) === "zoom";
+    const linked = clickOf(b) === "link" && !!safeHref(d.href);
     body = (
-      <div className={`relative w-full overflow-hidden rounded ${b.o.fit === "contain" ? "bg-surface" : ""} ${ratio}`} title={b.o.zoom === "on" ? "Клик на сайте — увеличить" : undefined}>
+      <div className={`relative w-full overflow-hidden rounded ${b.o.fit === "contain" ? "bg-surface" : ""} ${ratio}`} title={zoom ? "Клик на сайте — увеличить" : undefined}>
         {pic && (
           // a phone gets its own picture (another crop) when there is one: the browser picks by the screen width
           <picture>
             {d.srcMobile && <source media="(max-width: 767px)" srcSet={asset(d.srcMobile)} />}
-            <img src={asset(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${b.o.zoom === "on" && !safeHref(d.href) ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />
+            <img src={asset(pic.url)} alt={alt} className={`${ratio ? "h-full" : "h-auto"} w-full ${b.o.fit === "contain" ? "object-contain" : "object-cover"} ${zoom ? "cursor-zoom-in" : ""}`} style={{ objectPosition: d.focal || "50% 50%" }} />
           </picture>
         )}
-        {safeHref(d.href) && <span aria-hidden className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs text-foreground">↗ link</span>}
-        {b.o.zoom === "on" && !safeHref(d.href) && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
+        {linked && <span aria-hidden className="absolute bottom-2 left-2 rounded-full bg-background/90 px-2 py-0.5 text-xs text-foreground">↗ link</span>}
+        {zoom && <span aria-hidden className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-sm text-foreground">⤢</span>}
       </div>
     );
   }
   const href = safeHref(d.href);
-  if (b.o.kind === "image" && href)
+  if (b.o.kind === "image" && href && clickOf(b) === "link")
     body = (
       <a href={href} target={d.newTab || previewMode ? "_blank" : undefined} rel="noopener noreferrer" onClick={(e) => { if (!previewMode) e.preventDefault(); }} className="block">
         {body}

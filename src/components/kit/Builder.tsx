@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, isAdvanced, newBlock, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
+import { BLOCK_DEFS, READY, SECTION_OPTS, START, colCount, colKey, levels, newBlock, CLICK, EDITOR_KEYS, clickOf, optsFor, tabKey, uid, type Block, type BlockType, type Level, type Opt, type Section, type Tab } from "./model";
 import { LANGS, SectionView, asset, drag, embedOf, fileOf, safeHref, setPreviewMode, type DropAt, type LabData, type LabFile } from "./render";
 import { MediaLibrary, MediaPopover, Preview } from "./Library";
-import { Advanced, Control, ICON, IconButton, More, Options, Section as Group, TypeIcon } from "./Inspector";
+import { Control, ICON, IconButton, More, Section as Group, TypeIcon } from "./Inspector";
 
 /**
  * Blocks sandbox (/lab/blocks): the proposed model on the site's own look, before it goes into the editor.
@@ -81,25 +81,6 @@ function AddBlock({ onAdd, nested }: { onAdd: (t: BlockType) => void; nested?: b
 }
 
 const danger = "w-full rounded-md border border-danger/40 px-3 py-2 text-sm text-danger hover:bg-danger/10";
-
-/** Under a block's name in «Внутри»: what it says or holds, so blocks of one kind are told apart. */
-const cut = (t: unknown, n = 42) => { const x = String(t ?? "").trim(); return x.length > n ? `${x.slice(0, n - 1)}…` : x; };
-const optLabel = (b: Block, key: string) => BLOCK_DEFS[b.type].opts.find((o) => o.key === key)?.values.find((v) => v.id === b.o[key])?.label.toLowerCase() ?? "";
-function blockHint(b: Block): string {
-  const d = b.d as Record<string, unknown>;
-  switch (b.type) {
-    case "heading": return cut(d.title);
-    case "text": return cut(d.body);
-    case "buttons": return cut((d.items as string[]).slice(0, Number(b.o.count)).join(", "));
-    case "media": return ({ image: "картинка", video: "видео", document: "документ" } as Record<string, string>)[b.o.kind] ?? "";
-    case "numbers": return `${b.o.count} · ${optLabel(b, "style")}`;
-    case "cards": return `${b.o.count} · ${optLabel(b, "style")}`;
-    case "facts": return cut((d.rows as string[][]).slice(0, Number(b.o.rows)).map((r) => r[0]).join(", "));
-    case "quote": return cut(d.text);
-    case "list": return `${optLabel(b, "source")} · ${optLabel(b, "view")}`;
-    case "tabs": return cut((d.tabs as Tab[]).map((t) => t.label).join(", "));
-  }
-}
 
 export function Builder({ data }: { data: LabData }) {
   const [store, setStore] = useState<Store>(() => ({ sections: start(), custom: [] }));
@@ -260,56 +241,75 @@ export function Builder({ data }: { data: LabData }) {
   /* ---- what the panel shows for the selected thing ---- */
   const blockOf = (id: string) => { const l = locate(sections, id); return l ? l.list[l.i] : null; };
 
-  const kids = (list: Block[]) => list.map((b) => ({ key: b.id, label: BLOCK_DEFS[b.type].name, hint: blockHint(b), kind: b.type as Kind }));
+  /** May this role change this option: an editor — the content (EDITOR_KEYS), a designer — everything. */
+  const can = (key: string) => designer || EDITOR_KEYS.has(key);
+  /** One setting of a block, or nothing when the role may not change it. */
+  const ctl = (b: Block, key: string): ReactNode => {
+    const o = optsFor(b).find((x) => x.key === key);
+    return o && can(key) ? <Control block={b.type} opt={o} value={b.o[key]} onPick={(v) => setOpt(b.id, key, v)} /> : null;
+  };
+  const sctl = (i: number, s: Section, key: string): ReactNode => {
+    const o = SECTION_OPTS.find((x) => x.key === key);
+    return o && designer ? <Control block="section" opt={o} value={(s as unknown as Record<string, string>)[key]} onPick={(v) => setSectionOpt(i, key, v)} /> : null;
+  };
+  /**
+   * A group of the panel: one subject (everything about a picture in «Картинка»), its fine-tuning folded under «Ещё» right
+   * in it. A group with nothing the role may change is not shown at all.
+   */
+  const group = (title: string, main: ReactNode[], more: ReactNode[] = [], aside?: ReactNode): ReactNode => {
+    const m = main.filter(Boolean), x = more.filter(Boolean);
+    if (!m.length && !x.length) return null;
+    return (
+      <Group key={title} title={title} aside={aside}>
+        {m.map((n, k) => <Fragment key={k}>{n}</Fragment>)}
+        {x.length > 0 && <More count={x.length}>{x.map((n, k) => <Fragment key={k}>{n}</Fragment>)}</More>}
+      </Group>
+    );
+  };
+  /** A named piece inside a group (a file, a description, a focal point). */
+  const field = (label: string, children: ReactNode) => <div className="grid gap-1.5"><div className="text-xs text-muted">{label}</div>{children}</div>;
 
-  /** The panel's header: what is selected, where it sits, the way up, and quick actions as icons. */
-  const head = (): ReactNode => {
-    if (!here)
-      return (
-        <div className="grid justify-items-center gap-2 px-6 py-10 text-center text-muted">
-          {ICON.pointer}
-          <div className="text-sm font-medium text-foreground">Ничего не выбрано</div>
-          <p className="text-xs">Кликните секцию или блок на странице — здесь появятся его настройки.</p>
-        </div>
-      );
+  /** Quick actions of the selected thing (move, copy): an editor has them only for sections. */
+  const actionsOf = (): ReactNode => {
+    if (!here) return null;
     const b = here.kind === "block" ? blockOf(here.id) : null;
-    const kind: Kind = here.kind === "block" ? (b?.type ?? "text") : here.kind;
-    const name = here.kind === "section" ? sections[here.s]?.name || `Секция ${here.s + 1}` : here.kind === "tab" ? `Вкладка ${here.label}` : here.label;
-    const parent = chain.length > 1 ? chain[chain.length - 2].label : "Страница";
-    let actions: ReactNode = null;
     if (here.kind === "section") {
       const i = here.s;
-      actions = (<>
+      return (<>
         <IconButton label="Выше" disabled={i === 0} onClick={() => moveSection(i, -1)}>{ICON.up}</IconButton>
         <IconButton label="Ниже" disabled={i === sections.length - 1} onClick={() => moveSection(i, 1)}>{ICON.down}</IconButton>
         <IconButton label="Копия секции" onClick={() => addSection(sections[i])}>{ICON.copy}</IconButton>
       </>);
-    } else if (here.kind === "block" && designer && b) {
-      actions = (<>
+    }
+    if (here.kind === "block" && designer && b)
+      return (<>
         <IconButton label="Выше" onClick={() => moveBlock(b.id, -1)}>{ICON.up}</IconButton>
         <IconButton label="Ниже" onClick={() => moveBlock(b.id, 1)}>{ICON.down}</IconButton>
         <IconButton label="Копия блока" onClick={() => copyBlock(b.id)}>{ICON.copy}</IconButton>
       </>);
-    } else if (here.kind === "tab" && designer) {
+    if (here.kind === "tab" && designer) {
       const n = ((blockOf(here.id)?.d.tabs as Tab[]) ?? []).length;
-      actions = (<>
+      return (<>
         <IconButton label="Левее" disabled={here.t === 0} onClick={() => { editTabs(here.id, (x) => { [x[here.t - 1], x[here.t]] = [x[here.t], x[here.t - 1]]; }); pick(tabKey(here.id, here.t - 1)); }}>{ICON.left}</IconButton>
         <IconButton label="Правее" disabled={here.t === n - 1} onClick={() => { editTabs(here.id, (x) => { [x[here.t + 1], x[here.t]] = [x[here.t], x[here.t + 1]]; }); pick(tabKey(here.id, here.t + 1)); }}>{ICON.right}</IconButton>
       </>);
     }
+    return null;
+  };
+
+  /** The panel's header, one line: the way up, what is selected, quick actions. */
+  const head = (actions: ReactNode): ReactNode => {
+    if (!here) return null;
+    const b = here.kind === "block" ? blockOf(here.id) : null;
+    const kind: Kind = here.kind === "block" ? (b?.type ?? "text") : here.kind;
+    const name = here.kind === "section" ? sections[here.s]?.name || `Секция ${here.s + 1}` : here.kind === "tab" ? `Вкладка ${here.label}` : here.label;
+    const parent = chain.length > 1 ? chain[chain.length - 2].label : "Страница";
     return (
-      <div className="sticky top-0 z-10 border-b border-border bg-background px-4 pb-3 pt-3">
-        <button type="button" onClick={up} title="На уровень выше (Esc)" className="mb-2 inline-flex items-center gap-1.5 rounded-md py-0.5 pr-2 text-xs text-muted hover:text-foreground">
-          {ICON.parent}<span className="truncate">{parent}</span>
-        </button>
-        <div className="flex items-center gap-2">
-          <TypeIcon kind={kind} className="h-9 w-9 rounded-md bg-surface text-foreground" />
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-base font-semibold leading-tight">{name}</div>
-            <div className="truncate text-xs text-muted">{here.kind === "block" && b ? BLOCK_DEFS[b.type].hint : here.kind === "section" ? `Секция ${here.s + 1} из ${sections.length}` : here.kind === "column" ? "колонка секции" : "вкладка"}</div>
-          </div>
-          <div className="flex">{actions}</div>
-        </div>
+      <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-background px-3 py-2.5">
+        <IconButton label={`На уровень выше: ${parent} (Esc)`} onClick={up}>{ICON.parent}</IconButton>
+        <TypeIcon kind={kind} className="h-7 w-7 flex-none rounded-md bg-surface text-foreground" />
+        <div className="min-w-0 flex-1 truncate text-sm font-semibold">{name}</div>
+        <div className="flex">{actions}</div>
       </div>
     );
   };
@@ -321,7 +321,7 @@ export function Builder({ data }: { data: LabData }) {
     setPop({ anchor: new DOMRect(panel?.left ?? r.left, r.top, r.width, r.height), kinds, current, onPick });
   };
 
-  /** A file in a slot: its preview, name and size; «Заменить» opens the media library for that slot. */
+  /** A file in a slot: its preview, name and size; «Заменить» opens the quick picker for that slot. */
   function FileCard({ src, want, onPick }: { src: unknown; want?: LabFile["kind"]; onPick: (f: LabFile) => void }) {
     const f = fileOf(data, src) ?? (typeof src === "number" ? data.library.find((x) => x.url === data.images[src % Math.max(1, data.images.length)]?.url) ?? null : null);
     return (
@@ -336,149 +336,165 @@ export function Builder({ data }: { data: LabData }) {
     );
   }
 
-  /** Media block: the file first — its kind decides the options below. */
-  const mediaFile = (b: Block): ReactNode => (
-    <Group title="Файл">
+  /* -- the media block: everything about the file in its own group -- */
+
+  /** The file — its kind decides the group; a video can come from YouTube / Vimeo instead. */
+  const fileField = (b: Block): ReactNode => (
+    <>
       <FileCard src={b.d.src} onPick={(f) => {
         if (f.kind === "other") return;
         update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.o = { ...x.o, kind: f.kind, ...(f.kind === "video" && x.o.kind !== "video" ? { mode: "ambient" } : {}) }; x.d = { ...x.d, src: f.url, alt: undefined, title: undefined, poster: undefined, focal: "50% 50%" }; });
       }} />
-      {/* the YouTube / Vimeo field: in view for a video, behind a link for a picture or a document */}
-      {b.o.kind !== "video" && b.d.embed === undefined ? (
-        <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { embed: "" })}>Видео по ссылке YouTube / Vimeo…</button>
-      ) : <>
-      <label htmlFor={`embed-${b.id}`} className="text-xs text-muted">Или видео по ссылке YouTube / Vimeo</label>
-      <input id={`embed-${b.id}`} value={String(b.d.embed ?? "")} placeholder="https://www.youtube.com/watch?v=…"
-        onChange={(e) => { const v = e.target.value; update((d) => { const l = locate(d, b.id); if (!l) return; const x = l.list[l.i]; x.d = { ...x.d, embed: v || (x.o.kind === "video" ? undefined : "") }; if (v) x.o = { ...x.o, kind: "video", ...(x.o.kind !== "video" ? { mode: "ambient" } : {}) }; }); }}
-        className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
-      {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
-      {!!b.d.embed && embedOf(String(b.d.embed), false) && <p className="text-xs text-muted">Играет видео по ссылке; файл из медиатеки не используется. Очистите поле, чтобы вернуть файл.</p>}
-      </>}
-    </Group>
+      {b.o.kind === "video" && (
+        <>
+          <input aria-label="Или видео по ссылке YouTube / Vimeo" value={String(b.d.embed ?? "")} placeholder="или ссылка YouTube / Vimeo"
+            onChange={(e) => { const v = e.target.value; onData(b.id, { embed: v || undefined }); }}
+            className={`h-8 rounded-md border px-2 text-sm ${b.d.embed && !embedOf(String(b.d.embed), false) ? "border-danger" : "border-border"}`} />
+          {!!b.d.embed && !embedOf(String(b.d.embed), false) && <p className="text-xs text-danger">Это не ссылка на YouTube или Vimeo.</p>}
+        </>
+      )}
+    </>
   );
 
-  /** Subtitles of a video file: WebVTT files by language (the first one is on by default). */
-  const subtitles = (b: Block): ReactNode => {
-    const tracks = (b.d.tracks as { src: string; lang: string }[] | undefined) ?? [];
-    const bad = !!track.src && (!/\.vtt(\?|$)/i.test(track.src) || !safeHref(track.src));
-    return (
-      <Group title="Субтитры">
-        <p className="text-xs text-muted">Файл WebVTT (.vtt) на каждый язык — для тех, кто смотрит без звука или не слышит. Первый включён сразу.</p>
-        {tracks.length > 0 && (
-          <ul className="grid gap-1 text-sm">
-            {tracks.map((t, k) => (
-              <li key={t.src + t.lang} className="flex items-center gap-2">
-                <span className="w-20 flex-none text-xs text-muted">{LANGS[t.lang] ?? t.lang}</span>
-                <span className="min-w-0 flex-1 truncate text-xs">{t.src}</span>
-                <button type="button" aria-label={`Убрать субтитры ${LANGS[t.lang] ?? t.lang}`} className="text-xs text-muted hover:text-foreground" onClick={() => onData(b.id, { tracks: tracks.filter((_, j) => j !== k) })}>✕</button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="flex gap-1.5">
-          <select aria-label="Язык субтитров" value={track.lang} onChange={(e) => setTrack((t) => ({ ...t, lang: e.target.value }))} className="h-8 rounded-md border border-border px-1 text-sm">
-            {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
-          <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`h-8 min-w-0 flex-1 rounded-md border px-2 text-sm ${bad ? "border-danger" : "border-border"}`} />
-          <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-8 rounded-md bg-foreground px-2.5 text-sm text-background disabled:opacity-40">+</button>
-        </div>
-        {bad && <p className="text-xs text-danger">Нужен файл .vtt: адрес на сайте (/…) или https://….</p>}
-        <p className="text-xs text-muted">В медиатеке пока нет файлов .vtt: загрузка — в админке (нужен сервер).</p>
-      </Group>
-    );
-  };
-
-  /** A picture's description — main: without it a picture says nothing to a screen reader or a search engine. */
-  const altGroup = (b: Block): ReactNode => {
+  /** A picture's description: without it a picture says nothing to a screen reader or a search engine. */
+  const altField = (b: Block): ReactNode => {
     const f = fileOf(data, b.d.src);
     const d = b.d as { alt?: string; decorative?: boolean };
     const alt = d.alt ?? f?.alt ?? "";
     const missing = !d.decorative && !alt.trim();
-    return (
-          <Group title="Описание картинки">
-            <textarea aria-label="Описание картинки" rows={2} disabled={!!d.decorative} value={d.decorative ? "" : alt} onChange={(e) => onData(b.id, { alt: e.target.value })}
-              placeholder="Что на картинке — для незрячих и для поиска" className={`rounded-md border px-2 py-1.5 text-sm disabled:opacity-40 ${missing ? "border-danger" : "border-border"}`} />
-            {missing && <p className="text-xs text-danger">Нет описания: опишите картинку или отметьте её декоративной.</p>}
-            {!missing && f && d.alt === undefined && alt && <p className="text-xs text-muted">Описание из медиатеки. Можно уточнить для этого места.</p>}
-            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная — без описания (узор, фон)</label>
-          </Group>
-    );
+    return field("Описание", <>
+      <textarea aria-label="Описание картинки" rows={2} disabled={!!d.decorative} value={d.decorative ? "" : alt} onChange={(e) => onData(b.id, { alt: e.target.value })}
+        placeholder="Что на картинке" className={`rounded-md border px-2 py-1.5 text-sm disabled:opacity-40 ${missing ? "border-danger" : "border-border"}`} />
+      {missing && <p className="text-xs text-danger">Опишите картинку или отметьте декоративной.</p>}
+      <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.decorative} onChange={(e) => onData(b.id, { decorative: e.target.checked })} /> Декоративная (узор, фон)</label>
+    </>);
   };
 
-  /** A picture's link — main: «where does this picture lead» is asked often. */
-  const linkGroup = (b: Block): ReactNode => (
-    <Group title="Ссылка">
-            <input aria-label="Куда ведёт картинка" value={String((b.d as { href?: string }).href ?? "")} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className="h-8 rounded-md border border-border px-2 text-sm" />
-            {!!(b.d as { href?: string }).href && !safeHref((b.d as { href?: string }).href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или ссылка https://… — такая ссылка не сохранится на странице.</p>}
-            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!(b.d as { newTab?: boolean }).newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> Открывать в новой вкладке</label>
-            {(b.d as { href?: string }).href && b.o.zoom === "on" && <p className="text-xs text-muted">Со ссылкой клик ведёт по ссылке — увеличение не работает.</p>}
-          </Group>
-  );
-
-  /** Groups mediaExtras shows (for the number on «Дополнительно»). */
-  const extrasCount = (b: Block) => {
-    if (b.type !== "media") return 0;
-    if (b.o.kind === "image") return 1 + (b.o.fit !== "contain" && b.o.ratio !== "natural" && fileOf(data, b.d.src) ? 1 : 0);
-    if (b.o.kind === "video") return b.d.embed ? 1 : 2;
-    return 0;
+  /** What a click on the picture does: nothing, a link, or zoom — one of the three. */
+  const clickGroup = (b: Block): ReactNode => {
+    const d = b.d as { href?: string; newTab?: boolean };
+    const c = clickOf(b);
+    return group("По клику", [
+      <Control key="c" block="media" opt={CLICK} value={c} bare onPick={(v) => update((x) => { const l = locate(x, b.id); if (l) l.list[l.i].o = { ...l.list[l.i].o, click: v, zoom: v === "zoom" ? "on" : "off" }; })} />,
+      c === "link" && <>
+        <input aria-label="Куда ведёт картинка" value={d.href ?? ""} onChange={(e) => onData(b.id, { href: e.target.value || undefined })} placeholder="/us/therapies или https://…" className={`h-8 rounded-md border px-2 text-sm ${d.href && !safeHref(d.href) ? "border-danger" : "border-border"}`} />
+        {!!d.href && !safeHref(d.href) && <p className="text-xs text-danger">Нужен адрес на сайте (/…) или https://….</p>}
+        <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!d.newTab} onChange={(e) => onData(b.id, { newTab: e.target.checked })} /> В новой вкладке</label>
+      </>,
+    ]);
   };
 
-  /** What only some kinds have: a description and a focal point for a picture, a poster for a video. */
-  const mediaExtras = (b: Block): ReactNode => {
+  /** Where the crop keeps the subject: a click on the main thing in the picture. */
+  const focalField = (b: Block): ReactNode => {
     const f = fileOf(data, b.d.src);
-    const d = b.d as { alt?: string; decorative?: boolean; focal?: string; poster?: string };
-    if (b.o.kind === "image") {
-      const focus = b.o.fit !== "contain" && b.o.ratio !== "natural";
-      const [fx, fy] = (d.focal ?? "50% 50%").split(" ").map((x) => parseFloat(x));
-      return (
-        <>
-          <Group title="Картинка для телефона">
-            <p className="text-xs text-muted">Другой кадр для экранов до 767 px — например, вертикальный. Нет своей — показывается основная. Проверьте в просмотре «Телефон».</p>
-            <FileCard src={(b.d as { srcMobile?: string }).srcMobile} want="image" onPick={(x) => onData(b.id, { srcMobile: x.url })} />
-            {(b.d as { srcMobile?: string }).srcMobile && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { srcMobile: undefined })}>Убрать — показывать основную</button>}
-          </Group>
-          {focus && f && (
-            <Group title="Точка фокуса">
-              <p className="text-xs text-muted">Что остаётся в кадре при обрезке. Кликните по главному на картинке.</p>
-              <button type="button" aria-label="Поставить точку фокуса" className="relative overflow-hidden rounded-md bg-surface"
-                onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); onData(b.id, { focal: `${Math.round(((e.clientX - r.left) / r.width) * 100)}% ${Math.round(((e.clientY - r.top) / r.height) * 100)}%` }); }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={asset(f.url)} alt="" className="block w-full" />
-                <span aria-hidden className="absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-foreground/40 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
-              </button>
-            </Group>
-          )}
-        </>
-      );
+    if (!f || b.o.fit === "contain" || b.o.ratio === "natural") return null;
+    const [fx, fy] = (String(b.d.focal ?? "50% 50%")).split(" ").map((x) => parseFloat(x));
+    return field("Точка фокуса — что остаётся при обрезке",
+      <button type="button" aria-label="Поставить точку фокуса" className="relative overflow-hidden rounded-md bg-surface"
+        onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); onData(b.id, { focal: `${Math.round(((e.clientX - r.left) / r.width) * 100)}% ${Math.round(((e.clientY - r.top) / r.height) * 100)}%` }); }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset(f.url)} alt="" className="block w-full" />
+        <span aria-hidden className="absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-foreground/40 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
+      </button>);
+  };
+
+  /** Another crop for screens up to 767 px; without it the phone shows the main picture. */
+  const phoneField = (b: Block): ReactNode => {
+    const m = (b.d as { srcMobile?: string }).srcMobile;
+    return field("Для телефона", <>
+      <FileCard src={m} want="image" onPick={(x) => onData(b.id, { srcMobile: x.url })} />
+      {m && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { srcMobile: undefined })}>Убрать — показывать основную</button>}
+    </>);
+  };
+
+  /** A video's poster: its own picture or the video's frame. */
+  const posterField = (b: Block): ReactNode => {
+    if (b.d.embed) return null;
+    const d = b.d as { poster?: string };
+    const poster = d.poster ?? fileOf(data, b.d.src)?.poster ?? null;
+    const pf = poster ? data.library.find((x) => x.url === poster) ?? null : null;
+    return field("Обложка", <>
+      <div className="flex items-center gap-3">
+        <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {poster ? (pf ? <Preview f={pf} /> : <img src={asset(poster)} alt="" className="h-full w-full object-cover" />) : null}
+        </div>
+        <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет"}</div>
+        <button type="button" onClick={(e) => openPick(e.currentTarget, ["image"], d.poster, (x) => onData(b.id, { poster: x.url }))} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
+      </div>
+      {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
+    </>);
+  };
+
+  /** Subtitles of a video file: a WebVTT file per language (the first is on by default). */
+  const subtitlesField = (b: Block): ReactNode => {
+    if (b.d.embed) return null;
+    const tracks = (b.d.tracks as { src: string; lang: string }[] | undefined) ?? [];
+    const bad = !!track.src && (!/\.vtt(\?|$)/i.test(track.src) || !safeHref(track.src));
+    return field("Субтитры (.vtt)", <>
+      {tracks.length > 0 && (
+        <ul className="grid gap-1 text-sm">
+          {tracks.map((t, k) => (
+            <li key={t.src + t.lang} className="flex items-center gap-2">
+              <span className="w-20 flex-none text-xs text-muted">{LANGS[t.lang] ?? t.lang}</span>
+              <span className="min-w-0 flex-1 truncate text-xs">{t.src}</span>
+              <button type="button" aria-label={`Убрать субтитры ${LANGS[t.lang] ?? t.lang}`} className="text-xs text-muted hover:text-foreground" onClick={() => onData(b.id, { tracks: tracks.filter((_, j) => j !== k) })}>✕</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex gap-1.5">
+        <select aria-label="Язык субтитров" value={track.lang} onChange={(e) => setTrack((t) => ({ ...t, lang: e.target.value }))} className="h-8 rounded-md border border-border px-1 text-sm">
+          {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <input aria-label="Адрес файла .vtt" value={track.src} onChange={(e) => setTrack((t) => ({ ...t, src: e.target.value }))} placeholder="/uploads/…/clip.en.vtt" className={`h-8 min-w-0 flex-1 rounded-md border px-2 text-sm ${bad ? "border-danger" : "border-border"}`} />
+        <button type="button" disabled={!track.src || bad} onClick={() => { onData(b.id, { tracks: [...tracks, { src: track.src.trim(), lang: track.lang }] }); setTrack((t) => ({ ...t, src: "" })); }} className="h-8 rounded-md bg-foreground px-2.5 text-sm text-background disabled:opacity-40">+</button>
+      </div>
+      {bad && <p className="text-xs text-danger">Нужен файл .vtt: /… или https://….</p>}
+    </>);
+  };
+
+  /** The block's groups, one per subject; for an editor only what is content. */
+  const blockGroups = (b: Block): ReactNode[] => {
+    switch (b.type) {
+      case "heading": return [group("Заголовок", [ctl(b, "level"), ctl(b, "align"), ctl(b, "eyebrow")], [ctl(b, "rule")])];
+      case "text": return [group("Текст", [ctl(b, "size"), ctl(b, "align")], [ctl(b, "cols")])];
+      case "buttons": return [group("Кнопки", [ctl(b, "count"), ctl(b, "style"), ctl(b, "align")])];
+      case "numbers": return [group("Цифры", [ctl(b, "count"), ctl(b, "style"), ctl(b, "align")])];
+      case "facts": return [group("Факты", [ctl(b, "rows")], [ctl(b, "layout")])];
+      case "list": return [group("Список", [ctl(b, "source"), ctl(b, "view"), ctl(b, "count")])];
+      case "quote": return [group("Цитата", [ctl(b, "size"), ctl(b, "photo"), b.o.photo === "on" && field("Фото", <FileCard src={b.d.src} want="image" onPick={(f) => onData(b.id, { src: f.url })} />)])];
+      case "cards": {
+        const pics = (b.o.style === "image" || b.o.style === "link") && field("Картинки — клик, чтобы заменить",
+          <div className="grid grid-cols-4 gap-1.5">
+            {((b.d.items as { title: string; img?: string }[]) ?? []).slice(0, Number(b.o.count)).map((it, k) => {
+              const f = fileOf(data, it.img);
+              return (
+                <button key={k} type="button" title={`${it.title} — заменить картинку`} onClick={(e) => openPick(e.currentTarget, ["image"], it.img, (x) => onData(b.id, { items: (b.d.items as object[]).map((y, j) => (j === k ? { ...y, img: x.url } : y)) }))}
+                  className="aspect-square overflow-hidden rounded-md bg-surface hover:ring-2 hover:ring-foreground">
+                  {f ? <Preview f={f} /> : <span className="flex h-full items-center justify-center text-[11px] text-muted">{k + 1}</span>}
+                </button>
+              );
+            })}
+          </div>);
+        return [group("Карточки", [ctl(b, "count"), ctl(b, "style"), pics], [ctl(b, "frame")])];
+      }
+      case "tabs":
+        return [group("Вкладки", [designer && <Inside items={(b.d.tabs as Tab[]).map((t, k) => ({ key: tabKey(b.id, k), label: t.label, kind: "tab" as Kind }))} onOpen={pick} />], [ctl(b, "style")],
+          designer ? <button type="button" className="text-xs underline" onClick={() => editTabs(b.id, (x) => { x.push({ label: "New tab", blocks: [] }); })}>+ Вкладка</button> : undefined)];
+      case "media":
+        if (b.o.kind === "video")
+          // a video plays silently in a loop; «with sound» is the rare case — last of all
+          return [group("Видео", [fileField(b), ctl(b, "ratio"), ctl(b, "play")], [ctl(b, "fit"), ctl(b, "caption"), posterField(b), subtitlesField(b), ctl(b, "mode")])];
+        if (b.o.kind === "document") return [group("Документ", [fileField(b), ctl(b, "show")], [ctl(b, "caption")])];
+        return [group("Картинка", [fileField(b), altField(b), ctl(b, "ratio"), ctl(b, "caption")], [ctl(b, "fit"), focalField(b), phoneField(b)]), clickGroup(b)];
     }
-    if (b.o.kind === "video") {
-      if (b.d.embed) return <Group title="Обложка и субтитры"><p className="text-xs text-muted">У видео по ссылке обложку и субтитры задаёт YouTube или Vimeo.</p></Group>;
-      const poster = d.poster ?? f?.poster ?? null;
-      const pf = poster ? data.library.find((x) => x.url === poster) ?? null : null;
-      return (
-        <>
-        <Group title="Обложка">
-          <p className="text-xs text-muted">{b.o.mode === "ambient" ? "Видна, пока видео загружается." : "Видна до нажатия «Play»."}</p>
-          <div className="flex items-center gap-3">
-            <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-surface">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {poster ? (pf ? <Preview f={pf} /> : <img src={asset(poster)} alt="" className="h-full w-full object-cover" />) : null}
-            </div>
-            <div className="min-w-0 flex-1 text-xs text-muted">{d.poster ? "своя картинка" : poster ? "кадр из видео" : "нет — будет чёрный прямоугольник"}</div>
-            <button type="button" onClick={(e) => openPick(e.currentTarget, ["image"], d.poster, (x) => onData(b.id, { poster: x.url }))} className="h-8 flex-none rounded-md border border-border px-2.5 text-xs hover:border-foreground">Выбрать</button>
-          </div>
-          {d.poster && <button type="button" className="justify-self-start text-xs underline" onClick={() => onData(b.id, { poster: undefined })}>Вернуть кадр из видео</button>}
-        </Group>
-        {subtitles(b)}
-        </>
-      );
-    }
-    return null;
   };
 
   /**
-   * A section's background in one place: colour swatches and «Фото / видео», whose swatch shows the chosen file and
-   * opens the quick picker; under it — how the file fills the band and, for a video, the Play / Pause button.
+   * A section's background in one group: colour swatches and «Фото / видео» (its swatch shows the file and opens the
+   * quick picker), the file, the overlay; how the file fills the band and the video's Play / Pause folded under «Ещё».
+   * An editor only replaces the file of a photo or video background.
    */
   const background = (i: number, s: Section): ReactNode => {
     const file = s.bg === "image" ? fileOf(data, s.bgSrc) ?? data.library.find((x) => x.url === data.images[0]?.url) ?? null : null;
@@ -490,148 +506,78 @@ export function Builder({ data }: { data: LabData }) {
     const playOpt: Opt = { key: "bgPlay", label: "Кнопка Play / Пауза", values: [{ id: "on", label: "Есть" }, { id: "off", label: "Нет" }] };
     const sw = "relative h-9 w-9 overflow-hidden rounded-full border border-border";
     const on = "ring-2 ring-foreground ring-offset-2 ring-offset-background";
-    return (
-      <Group title="Фон">
-        <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Фон">
-          {([["white", "Белый", "bg-background"], ["grey", "Серый", "bg-surface"], ["dark", "Тёмный", "bg-inverse"]] as const).map(([id, label, cls]) => (
-            <button key={id} type="button" aria-label={label} title={label} aria-pressed={s.bg === id} onClick={() => setBg({ bg: id })} className={`${sw} ${cls} ${s.bg === id ? on : ""}`} />
-          ))}
-          <button type="button" aria-label="Фото / видео" title="Фото или видео из медиатеки" aria-pressed={s.bg === "image"} onClick={(e) => pickMedia(e.currentTarget)} className={`${sw} bg-surface ${s.bg === "image" ? on : ""}`}>
-            {s.bg === "image" && file ? <Preview f={file} /> : <svg viewBox="0 0 32 32" className="absolute inset-0 h-full w-full text-muted" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M8 21l5-5 4 4 3-3 4 4" /><circle cx="20" cy="12" r="2" /></svg>}
-          </button>
-        </div>
-        {s.bg === "image" && (
-          <>
-            <button type="button" onClick={(e) => pickMedia(e.currentTarget)} className="flex min-w-0 items-center gap-2 rounded-md text-left text-xs text-muted hover:text-foreground">
-              <span className="min-w-0 truncate">{file ? `${file.kind === "video" ? "Видео" : "Картинка"}: ${file.filename}` : "Выберите файл"}</span><span className="flex-none underline">заменить</span>
-            </button>
-            <Control block="section" opt={overlay} value={s.bgOverlay ?? "medium"} onPick={(v) => setBg({ bgOverlay: v })} />
-            {/* fine-tuning stays next to the picture it tunes, folded */}
-            <More count={video ? 2 : 1}>
-              <Control block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />
-              {video && <Control block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />}
-            </More>
-          </>
-        )}
-      </Group>
+    const swatches = designer && (
+      <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Фон">
+        {([["white", "Белый", "bg-background"], ["grey", "Серый", "bg-surface"], ["dark", "Тёмный", "bg-inverse"]] as const).map(([id, label, cls]) => (
+          <button key={id} type="button" aria-label={label} title={label} aria-pressed={s.bg === id} onClick={() => setBg({ bg: id })} className={`${sw} ${cls} ${s.bg === id ? on : ""}`} />
+        ))}
+        <button type="button" aria-label="Фото / видео" title="Фото или видео из медиатеки" aria-pressed={s.bg === "image"} onClick={(e) => pickMedia(e.currentTarget)} className={`${sw} bg-surface ${s.bg === "image" ? on : ""}`}>
+          {s.bg === "image" && file ? <Preview f={file} /> : <svg viewBox="0 0 32 32" className="absolute inset-0 h-full w-full text-muted" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M8 21l5-5 4 4 3-3 4 4" /><circle cx="20" cy="12" r="2" /></svg>}
+        </button>
+      </div>
     );
+    const img = s.bg === "image";
+    return group("Фон", [
+      swatches,
+      img && <button type="button" onClick={(e) => pickMedia(e.currentTarget)} className="flex min-w-0 items-center gap-2 rounded-md text-left text-xs text-muted hover:text-foreground">
+        <span className="min-w-0 truncate">{file ? `${video ? "Видео" : "Картинка"}: ${file.filename}` : "Выберите файл"}</span><span className="flex-none underline">заменить</span>
+      </button>,
+      img && designer && <Control block="section" opt={overlay} value={s.bgOverlay ?? "medium"} onPick={(v) => setBg({ bgOverlay: v })} />,
+    ], img && designer ? [
+      <Control key="fit" block="section" opt={fit} value={s.bgFit ?? "cover"} onPick={(v) => setBg({ bgFit: v })} />,
+      video && <Control key="play" block="section" opt={playOpt} value={s.bgPlay === false ? "off" : "on"} onPick={(v) => setBg({ bgPlay: v === "on" })} />,
+    ] : []);
   };
 
-  const panel = (): ReactNode => {
-    if (!here)
-      return <Group title="Секции страницы"><Inside items={sections.map((s, i) => ({ key: s.id, label: s.name || `Секция ${i + 1}`, hint: `Секция ${i + 1}`, kind: "section" as Kind }))} onOpen={pick} /></Group>;
+  /** What the panel holds for the selected thing; empty — the panel is folded away. */
+  const panel = (): ReactNode[] => {
+    if (!here) return [];
     if (here.kind === "section") {
       const i = here.s;
       const s = sections[i];
-      if (!s) return null;
-      const opts = SECTION_OPTS.filter((o) => designer || o.key !== "layout");
-      return (
-        <>
-          {background(i, s)}
-          <Options block="section" opts={opts.filter((o) => o.key !== "bg" && !isAdvanced("section", o.key))} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
-          <Group title={s.cols.length > 1 ? "Колонки" : "Внутри"}>
-            <Inside items={s.cols.length > 1 ? s.cols.map((c, k) => {
-              const hidden = k >= colCount(s.layout);
-              const what = c.map((b) => BLOCK_DEFS[b.type].name).join(", ") || "пусто";
-              return { key: colKey(s.id, k), label: `Колонка ${k + 1}`, hint: hidden ? `скрыта: в раскладке её нет · ${what}` : what, kind: "column" as Kind, muted: hidden };
-            }) : kids(s.cols[0] ?? [])} onOpen={pick} />
-          </Group>
-          <Advanced count={opts.filter((o) => isAdvanced("section", o.key)).length}>
-            <Options block="section" opts={opts.filter((o) => isAdvanced("section", o.key))} values={s as unknown as Record<string, string>} onPick={(k, v) => setSectionOpt(i, k, v)} />
-          </Advanced>
-          {designer && s.cols.length === 1 && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[i].cols[0], t)} /></Group>}
-          {designer && (
-            <Group title="Сохранить как готовую">
-              {/* not a <form>: the demo build catches every form submit (DemoShell) */}
-              <p className="text-xs text-muted">Секция появится слева в «Добавить» у редактора.</p>
-              <div className="flex gap-1.5">
-                <input id="lab-ready-name" aria-label="Название готовой секции" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Например, «Три преимущества»" className="h-8 min-w-0 flex-1 rounded-md border border-border px-2 text-sm" />
-                <button type="button" className="h-8 rounded-md bg-foreground px-3 text-sm text-background disabled:opacity-40" disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
-              </div>
-            </Group>
-          )}
-          <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeSection(i)}>Удалить секцию</button></div>
-        </>
-      );
+      if (!s) return [];
+      const hidden = s.cols.map((_, k) => k).filter((k) => k >= colCount(s.layout));
+      return [
+        background(i, s),
+        group("Раскладка", [sctl(i, s, "layout"), sctl(i, s, "space"),
+          designer && hidden.length > 0 && <p className="text-xs text-muted">{hidden.map((k) => `Колонка ${k + 1}`).join(", ")} скрыта — блоки сохранены. <button type="button" className="underline" onClick={() => pick(colKey(s.id, hidden[0]))}>Открыть</button></p>,
+        ], [sctl(i, s, "valign")]),
+        designer && s.cols.length === 1 && group("Добавить блок", [<AddBlock key="add" onAdd={(t) => addBlock((d) => d[i].cols[0], t)} />]),
+        designer && group("Сохранить как готовую", [
+          // not a <form>: the demo build catches every form submit (DemoShell)
+          <div key="save" className="flex gap-1.5">
+            <input id="lab-ready-name" aria-label="Название готовой секции" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveReady(s)} placeholder="Название" className="h-8 min-w-0 flex-1 rounded-md border border-border px-2 text-sm" />
+            <button type="button" className="h-8 rounded-md bg-foreground px-3 text-sm text-background disabled:opacity-40" disabled={!name.trim()} onClick={() => saveReady(s)}>Сохранить</button>
+          </div>,
+        ]),
+        <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => removeSection(i)}>Удалить секцию</button></div>,
+      ].filter(Boolean);
     }
     if (here.kind === "column") {
+      if (!designer) return [];
       const sec = sections[here.s];
-      const col = sec?.cols[here.c] ?? [];
       const hidden = !!sec && here.c >= colCount(sec.layout);
-      return (
-        <>
-          {hidden && (
-            <div className="mx-4 mb-1 mt-4 rounded-md bg-surface p-3 text-xs text-muted">
-              Колонка скрыта: в раскладке «{SECTION_OPTS[1].values.find((v) => v.id === sec.layout)?.label}» её нет. Блоки сохранены — выберите раскладку с {here.c + 1} колонками, и она встанет на своё место.
-            </div>
-          )}
-          <Group title="Внутри"><Inside items={kids(col)} onOpen={pick} /></Group>
-          {designer && <Group title="Добавить блок"><AddBlock onAdd={(t) => addBlock((d) => d[here.s].cols[here.c], t)} /></Group>}
-        </>
-      );
+      return [
+        hidden && <p key="hidden" className="mx-4 mb-1 mt-4 rounded-md bg-surface p-3 text-xs text-muted">Скрыта: в раскладке её нет. Выберите раскладку с {here.c + 1} колонками — встанет на место.</p>,
+        group("Добавить блок", [<AddBlock key="add" onAdd={(t) => addBlock((d) => d[here.s].cols[here.c], t)} />]),
+      ].filter(Boolean);
     }
     if (here.kind === "tab") {
       const all = (blockOf(here.id)?.d.tabs as Tab[] | undefined) ?? [];
       const t = all[here.t];
-      if (!t) return null;
-      return (
-        <>
-          <Group title="Название">
-            <input id="lab-tab-label" aria-label="Название вкладки" defaultValue={t.label} key={here.key} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="h-8 rounded-md border border-border px-2 text-sm" />
-          </Group>
-          <Group title="Внутри"><Inside items={kids(t.blocks)} onOpen={pick} /></Group>
-          {designer && <Group title="Добавить блок"><AddBlock nested onAdd={(type) => addBlock((d) => tabsOf(d, here.id)?.[here.t]?.blocks, type)} /></Group>}
-          {designer && all.length > 1 && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button></div>}
-        </>
-      );
+      if (!t) return [];
+      return [
+        group("Вкладка", [<input key={here.key} id="lab-tab-label" aria-label="Название вкладки" defaultValue={t.label} onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== t.label && editTabs(here.id, (x) => { x[here.t].label = e.target.value.trim(); })} onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()} className="h-8 rounded-md border border-border px-2 text-sm" />]),
+        designer && group("Добавить блок", [<AddBlock key="add" nested onAdd={(type) => addBlock((d) => tabsOf(d, here.id)?.[here.t]?.blocks, type)} />]),
+        designer && all.length > 1 && <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => { editTabs(here.id, (x) => { x.splice(here.t, 1); }); setTabs((m) => ({ ...m, [here.id]: 0 })); setSel(here.id); }}>Удалить вкладку</button></div>,
+      ].filter(Boolean);
     }
     const b = blockOf(here.id);
-    if (!b) return null;
-    return (
-      <>
-        {b.type === "media" && mediaFile(b)}
-        <Options block={b.type} opts={optsFor(b).filter((o) => !isAdvanced(b, o.key))} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
-        {b.type === "media" && b.o.kind === "image" && altGroup(b)}
-        {b.type === "media" && b.o.kind === "image" && linkGroup(b)}
-        {b.type === "quote" && (
-          <Group title="Фото">
-            <FileCard src={b.d.src} want="image" onPick={(f) => onData(b.id, { src: f.url })} />
-          </Group>
-        )}
-        {b.type === "cards" && (b.o.style === "image" || b.o.style === "link") && (
-          <Group title="Картинки карточек">
-            <div className="grid grid-cols-4 gap-1.5">
-              {((b.d.items as { title: string; img?: string }[]) ?? []).slice(0, Number(b.o.count)).map((it, k) => {
-                const f = fileOf(data, it.img);
-                return (
-                  <button key={k} type="button" title={`${it.title} — заменить картинку`} onClick={(e) => openPick(e.currentTarget, ["image"], it.img, (x) => onData(b.id, { items: (b.d.items as object[]).map((y, j) => (j === k ? { ...y, img: x.url } : y)) }))}
-                    className="aspect-square overflow-hidden rounded-md bg-surface hover:ring-2 hover:ring-foreground">
-                    {f ? <Preview f={f} /> : <span className="flex h-full items-center justify-center text-[11px] text-muted">{k + 1}</span>}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted">Клик по картинке — выбрать другую из медиатеки.</p>
-          </Group>
-        )}
-        {b.type === "tabs" && (
-          <Group title="Вкладки" aside={designer ? <button type="button" className="text-xs underline" onClick={() => editTabs(b.id, (x) => { x.push({ label: "New tab", blocks: [] }); })}>+ Вкладка</button> : undefined}>
-            <Inside items={(b.d.tabs as Tab[]).map((t, k) => ({ key: tabKey(b.id, k), label: t.label, hint: t.blocks.map((x) => BLOCK_DEFS[x.type].name).join(", ") || "пусто", kind: "tab" as Kind }))} onOpen={pick} />
-          </Group>
-        )}
-        {b.type === "list" && <p className="px-4 pb-3 text-xs text-muted">Записи — из своей коллекции, правятся там.</p>}
-        <Advanced count={optsFor(b).filter((o) => isAdvanced(b, o.key)).length + extrasCount(b)}>
-          <Options block={b.type} opts={optsFor(b).filter((o) => isAdvanced(b, o.key) && o.key !== "mode")} values={b.o} onPick={(k, v) => setOpt(b.id, k, v)} />
-          {b.type === "media" && mediaExtras(b)}
-          {/* sound: the rare case, at the very bottom */}
-          {b.type === "media" && b.o.kind === "video" && (() => {
-            const mode = optsFor(b).find((o) => o.key === "mode");
-            return mode && <Group title="Звук"><Control block="media" opt={mode} value={b.o.mode ?? "ambient"} onPick={(v) => setOpt(b.id, "mode", v)} /></Group>;
-          })()}
-        </Advanced>
-        {designer && <div className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>}
-      </>
-    );
+    if (!b) return [];
+    return [
+      ...blockGroups(b),
+      designer && <div key="del" className="px-4 py-4"><button type="button" className={danger} onClick={() => removeBlock(b.id)}>Удалить блок</button></div>,
+    ].filter(Boolean);
   };
 
   /* ---- the structure tree (Webflow's Navigator) ---- */
@@ -654,6 +600,15 @@ export function Builder({ data }: { data: LabData }) {
   };
 
   const trail = new Set(chain.slice(0, -1).map((l) => l.key));
+  // the settings panel is there only when the selected thing has something to change; otherwise the page takes the width
+  const actions = actionsOf();
+  const body = panel();
+  const open = !!here && (!!actions || body.length > 0);
+  // the page changes width when the panel opens or folds: keep the selected thing in view
+  useEffect(() => {
+    if (sel) document.querySelector(`[data-lab="${CSS.escape(sel)}"]`)?.scrollIntoView({ block: "nearest" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on the panel opening or folding
+  }, [open]);
 
   if (frame) return <PreviewCanvas sections={sections} data={data} />;
 
@@ -681,7 +636,7 @@ export function Builder({ data }: { data: LabData }) {
         <button type="button" onClick={() => { setStore({ sections: start(), custom: store.custom }); setSel(null); }} className="underline">Начать заново</button>
       </header>
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[17rem_minmax(0,1fr)_20rem]">
+      <div className={`grid min-h-0 flex-1 ${open ? "lg:grid-cols-[17rem_minmax(0,1fr)_20rem]" : "lg:grid-cols-[17rem_minmax(0,1fr)]"}`}>
         <aside className="flex min-h-0 flex-col border-r border-border" aria-label="Добавить и структура">
           <div role="tablist" className="flex border-b border-border text-sm">
             {([["add", "Добавить"], ["tree", "Структура"]] as const).map(([k, l]) => (
@@ -753,10 +708,12 @@ export function Builder({ data }: { data: LabData }) {
           </main>
         </div>
 
-        <aside className="min-h-0 overflow-auto border-l border-border" aria-label="Настройки">
-          {head()}
-          {panel()}
-        </aside>
+        {open && (
+          <aside className="min-h-0 overflow-auto border-l border-border" aria-label="Настройки">
+            {head(actions)}
+            {body}
+          </aside>
+        )}
       </div>
     </div>
   );

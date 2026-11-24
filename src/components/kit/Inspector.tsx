@@ -47,6 +47,9 @@ const GLYPH: Record<string, () => ReactNode> = {
   "fit:tile": () => <S>{[4, 16, 28].map((x) => [4, 15].map((y) => <g key={`${x}${y}`}>{R(x, y, 10, 9, false, 1)}</g>))}</S>,
   "fit:contain": () => <S>{R(6, 4, 32, 20)}{R(13, 8, 18, 12, false, 1)}<path d="M13 17l5-4 4 3 3-2 6 5" strokeWidth="1.2" /></S>,
   ...Object.fromEntries(([["none", 0], ["light", 0.25], ["medium", 0.45], ["strong", 0.7]] as const).map(([id, o]) => [`overlay:${id}`, () => <S>{R(6, 4, 32, 20)}<path d="M6 18l9-8 7 6 5-4 11 9" />{o > 0 && <rect x="6" y="4" width="32" height="20" rx="1.5" fill="currentColor" stroke="none" opacity={o} />}</S>])),
+  "click:none": () => <S>{R(6, 4, 32, 20)}<path d="M6 18l9-8 7 6 5-4 11 9" /></S>,
+  "click:link": () => <S>{R(6, 4, 32, 20)}<path d="M19 18l8-8m-6 0h6v6" /></S>,
+  "click:zoom": () => <S>{R(6, 4, 32, 20)}{C(21, 13, 5)}<path d="M25 17l4 4" /></S>,
   "mode:player": () => <S>{R(6, 4, 32, 18)}<path d="M19 9v8l6-4z" fill="currentColor" />{L(6, 25, 38, 1.2, 0.6)}{C(18, 25, 1.6)}</S>,
   "mode:ambient": () => <S>{R(6, 4, 32, 20)}<path d="M14 18c3-6 6-6 8 0s5 6 8 0" /><path d="M33 8a3 3 0 1 1-3-3" strokeWidth="1.2" /></S>,
   "show:button": () => <S>{R(6, 5, 10, 14)}{R(20, 9, 18, 7, true, 2)}</S>,
@@ -87,12 +90,9 @@ const glyphKey = (block: string, key: string) => (key === "bgFit" ? "fit" : key 
 /** Swatches for a section's background: the site's own tokens. */
 const SWATCH: Record<string, string> = { white: "bg-background", grey: "bg-surface", dark: "bg-inverse", image: "bg-inverse" };
 
-/** How each option is shown and which group it goes in. */
-const TOGGLES = new Set(["eyebrow", "caption", "photo", "zoom", "play", "bgPlay"]);
+/** How each option is shown: a switch, a row of numbers, or drawings. */
+const TOGGLES = new Set(["eyebrow", "caption", "photo", "play", "bgPlay"]);
 const COUNTS = new Set(["count", "rows"]);
-const LOOK = new Set(["bgFit", "bgOverlay","level", "style", "kind", "size", "bg", "frame", "rule", "ratio", "view", "source", "fit", "mode", "show"]);
-const GROUP_OF = (key: string) => (TOGGLES.has(key) ? "Показывать" : LOOK.has(key) ? "Вид" : "Расположение");
-const GROUP_ORDER = ["Вид", "Расположение", "Показывать"];
 
 /** Tiles in one row when they fit (2–4), else three to a row. */
 const TILE_COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
@@ -179,20 +179,6 @@ export function Control({ block, opt: o, value, onPick, bare }: { block: string;
   );
 }
 
-/** All options of a block or a section, in groups: «Вид», «Расположение», «Показывать». */
-export function Options({ block, opts, values, onPick }: { block: string; opts: Opt[]; values: Record<string, string>; onPick: (key: string, v: string) => void }) {
-  const groups = GROUP_ORDER.map((name) => ({ name, items: opts.filter((o) => GROUP_OF(o.key) === name) })).filter((g) => g.items.length);
-  return (
-    <>
-      {groups.map((g) => (
-        <Section key={g.name} title={g.name}>
-          {g.items.map((o) => <Control key={o.key} block={block} opt={o} value={values[o.key]} onPick={(v) => onPick(o.key, v)} bare={g.items.length === 1 && o.label === g.name} />)}
-        </Section>
-      ))}
-    </>
-  );
-}
-
 /** A named group of the panel: a heading, a hairline above. */
 export function Section({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
   return (
@@ -263,18 +249,3 @@ export function More({ count, children }: { count: number; children: ReactNode }
   );
 }
 
-let advancedOpen = false;
-export function Advanced({ count, children }: { count: number; children: ReactNode }) {
-  const [open, setOpen] = useState(advancedOpen);
-  if (!count) return null;
-  return (
-    <div className="border-t border-border">
-      <button type="button" aria-expanded={open} onClick={() => { advancedOpen = !open; setOpen(!open); }}
-        className="flex w-full items-center gap-2 px-4 py-3 text-left text-xs font-semibold hover:bg-surface">
-        <svg viewBox="0 0 20 20" className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-90" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><path d="M7 4l6 6-6 6" /></svg>
-        Дополнительно <span className="font-normal text-muted">{count}</span>
-      </button>
-      {open && <div className="bg-surface/40 [&>section:first-child]:border-t-0">{children}</div>}
-    </div>
-  );
-}
