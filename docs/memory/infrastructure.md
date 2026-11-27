@@ -31,6 +31,11 @@
 работает, пока к базе подключён чей-то dev-сервер), затем `DATABASE_URL=…/rm_demo_export npm run demo:export`.
 Ветка `site-redesign` (worktree `projects/rapid-medical-redesign`) работает со своей базой `rapid_medical_redesign` в
 том же кластере (копия через `pg_dump`, `.env` worktree); её e2e и миграции не трогают базу `main`. Dev ветки — порт 3300.
+**e2e не на общей базе (2026-11-27):** подготовка e2e стирает базу (`seed --reset`, сессии, журнал, черновики), а общую
+`rapid_medical` держит dev-сервер :3600 владелицы и параллельных сессий. Прогон — на своей базе того же кластера:
+`set -a; source .env; set +a; export DATABASE_URL="${DATABASE_URL%/*}/rapid_medical_e2e"; npx playwright test` (база
+создана `create database rapid_medical_e2e`; переменная из окружения сильнее `--env-file=.env` у скриптов — проверено).
+Сборка e2e пишет в `.next`, dev — в `.next/dev`: друг другу не мешают.
 
 **Preview для владелицы (с 2026-11-23): весь сайт на дизайн-системе, включая невлитые ветки.** Ветка `preview` =
 `main` + `therapy-home` + `webinars-draft` (в `main` не вливается; миграция вебинаров в ней — 0037, после 0032–0036
