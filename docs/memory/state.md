@@ -561,3 +561,9 @@ DESIGN.md → следующая. Contact Us показана (как есть, 
   соцсетей, значок вкладки и переключатель подсказки региона, Logo PNG убран; одно число для Google; People с ролями;
   My account — входы словами. Спека — `screens/admin-settings.md`. Замер 13 × 7 — 0; unit 250; e2e нет.
   Settings — последнее пространство полоски.
+
+## 2026-11-27 — полный прогон e2e, гонка редактора после Publish
+- e2e на своей базе `rapid_medical_e2e` (общую не трогает; `memory/infrastructure.md`): все 88 проходят. Тесты поправлены
+  (`5fbb94e1`): Home «Visits counted since», повтор кода при входе, время My account. Ошибка редактора (`ab135545`): окно
+  «Live now» и закрытие после Discard — после перечитывания версии страницы, иначе правка сразу после «Keep editing»
+  получала «changed by someone else».
