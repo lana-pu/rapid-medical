@@ -293,7 +293,7 @@
    четверым — Ronen Eckhouse, Nir Palmor, Emily Richardson, Alyssa Elkins (письмо 10.11, почты там).
 6. **Дизайн.** **Клиент выбрал Direction 02 «Generative Biotech» (Alyssa, 25.11)**, без острых углов; передать скорость,
    плавность, регулируемость, премиальность, смелую технологию; сначала раскладка страниц с заглушками
-   (`findings/client-email-2026-11-25.md`). Палитра и шрифты (владелица 27.11) — из Brand Guidelines V1.5 клиента как есть (BRAND PORTAL, `findings/design-references.md → Версия 5`); открыто: средняя точка градиента PMS 7472 или 7473;  бриф JUUCED 2024 так и не прислан. Референсы: `findings/design-references.md`.
+   (`findings/client-email-2026-11-25.md`). Палитра и шрифты (владелица 27.11) — из Brand Guidelines V1.5 клиента как есть (BRAND PORTAL, `findings/design-references.md → Версия 5`); градиенты — похожие, фирменные цвета — по кодам; подборка картинок из портала — там же; попросить у клиента чистые фоны без логотипа и сроки новых ручек;  бриф JUUCED 2024 так и не прислан. Референсы: `findings/design-references.md`.
 7. ~~Ветка Tigertriever~~ **Влита в `main`, ветка удалена (2026-11-05).** Один репозиторий на оба продукта: ADR-005.
 8. **Контент-проблемы из Duda** (раздел выше): кто решает и в каком виде (тексты Access, PDF кейса, картинки APAC, US Aneurysm)?
 9. **Регионы:** подпись OUS «Europe, Middle East, Latin America & Australia», но гео-маппинг шлёт Ближний
