@@ -13,6 +13,12 @@
 - **Вид (2026-11-15):** роль — читаемый список (название роли видно), меняется **сразу при выборе**, без кнопки Change;
   двухшаговый вход — «Two-step: On» (подпись, а не голое «On»); редкие действия (Reset two-step sign-in, Turn off,
   Set a new password) — в меню **More ▾** у строки; Copy invite link again — на виду, пока человек не вошёл.
+- **Вид (решение владелицы 2026-11-27, референсы Vercel Members, Lyssna):** подпись под заголовком «Who can sign in to
+  the admin. Everyone signs in with a password and a code from their phone.»; список — таблицей с подписями колонок
+  Person · Role · Two-step sign-in · Last signed in: инициалы, имя и почта, роль, «✓ On» зелёным / «Waiting for
+  sign-in» / «Not set up» / «Access off», дата последнего входа, **⋯** с теми же редкими действиями. На телефоне —
+  имя и почта, под ними роль, вход и дата, ⋯ справа. Под списком — **What each role can do**: три строки (Editor ·
+  Designer · Admin) тем, что роль может (`spec.md → Доступы`).
 
 ## Пригласить
 Окно «Invite a person»: Email, Name, «What they can do» — роли описаны тем, что человек может:

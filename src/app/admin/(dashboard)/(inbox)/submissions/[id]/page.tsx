@@ -8,7 +8,7 @@ import { Button, StateDot, formatDate, inputCls } from "@/components/admin/ui";
 import { AssignSelect, MarkRead, ReplyButton } from "@/components/admin/RequestControls";
 import { sourceLabel } from "@/lib/tracking";
 import { getLiveSetting } from "@/lib/settings";
-import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
+import { recipientFor, routingOf } from "@/lib/contact-topics";
 import { formatEventDates } from "@/lib/events";
 import { replyHref } from "@/lib/reply-mail";
 import { MAIN_BLEED } from "@/components/admin/chrome";
@@ -21,11 +21,12 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const s = await db.query.contactSubmissions.findFirst({ where: eq(contactSubmissions.id, Number(id)) });
   if (!s) notFound();
-  const [people, history, notes, contact] = await Promise.all([
+  const [people, history, notes, contact, requests] = await Promise.all([
     db.select({ id: users.id, name: users.name }).from(users).where(eq(users.active, true)).orderBy(users.name),
     db.select().from(auditLog).where(and(eq(auditLog.action, "request"), eq(auditLog.recordId, String(s.id)))).orderBy(desc(auditLog.createdAt)).limit(20),
     db.select().from(requestNotes).where(eq(requestNotes.submissionId, s.id)).orderBy(asc(requestNotes.createdAt)),
-    getLiveSetting<RoutingSettings & { phoneHq?: string; phoneUs?: string }>("contact"),
+    getLiveSetting<{ phoneHq?: string; phoneUs?: string }>("contact"),
+    getLiveSetting("requests"),
   ]);
   const owner = people.find((p) => p.id === s.assignedToId);
 
@@ -39,7 +40,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   ]);
   const reply = replyHref({
     to: s.email,
-    cc: recipientFor(s, contact) ?? process.env.MAIL_TO ?? undefined,
+    cc: recipientFor(s, routingOf(requests, contact)) ?? process.env.MAIL_TO ?? undefined,
     firstName: s.firstName,
     lastName: s.lastName,
     form: s.form,

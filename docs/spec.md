@@ -245,7 +245,7 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 
 | Событие | Кому | Тема | Код |
 |---|---|---|---|
-| Отправка любой формы (contact / webinar / careers / event) | `MAIL_TO` (один адрес на все формы), `replyTo` = посетитель. **Решение 2026-11-10, сделано:** контактная форма разводится по теме и региону (`src/lib/contact-topics.ts`, `screens/contact-us.md`) — заказ и IFU уходят туда, куда раньше шли письма (US заказы → orders.inc@, остальное → customerservice@), адреса правятся в настройках | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts` |
+| Отправка любой формы (contact / webinar / careers / event) | Адрес из **Settings → Where requests go** (решение владелицы 2026-11-27, `screens/admin-settings.md`): у каждой темы Contact Us и каждой формы — свой, пусто — Main address региона посетителя (Americas / everywhere else), пусты оба — `MAIL_TO` сервера. Заказы — по региону (Inc / Canada / Ltd, решение 2026-11-10). Несколько адресов — через запятую. `replyTo` = посетитель | `[Website] {form}: {topic} – {Имя Фамилия}` + ссылка в админку | `src/lib/forms.ts`, `src/lib/contact-topics.ts` |
 | Запрос сброса пароля | e-mail пользователя | `Reset your Rapid Medical admin password` | `src/app/admin/reset/page.tsx` |
 
 Без `SMTP_HOST` письма не уходят: при разработке текст письма в консоли (с токеном сброса и данными заявки), на проде — только «кому» и тема; заявка всё равно в Inbox, приглашение — ссылкой в People and roles, сброс пароля честно говорит, что почты нет (`screens/admin-login.md`).
@@ -257,7 +257,8 @@ workflow (`src/admin/workflow.ts`); `products` и `redirects` сохраняют
 |---|---|---|
 | Google Analytics 4 | `next/script`, ID из Site settings → Integrations (`G-FB4LNFSBSR` на Duda по README) | Код есть; актуальный ID в БД не проверен |
 | UserWay (доступность) | `cdn.userway.org/widget.js?account=…` | То же |
-| Гео-подсказка региона | заголовки Vercel / Cloudflare | Работает всегда (тумблер `geoSuggest` не подключён) |
+| Гео-подсказка региона | заголовки Vercel / Cloudflare | Тумблер `geoSuggest` в Integrations подключён 2026-11-27: выключен — плашки нет; не сохранялся — включён |
+| Картинка для соцсетей, значок вкладки | Branding → `ogImageUrl`, `faviconUrl` (метаданные сайта) | Подключены 2026-11-27; пусто — `/og-image.jpg`, `/favicon.ico` (`public/`) |
 | YouTube / Vimeo | iframe в rich text и closing-блоке, whitelist хостов в санитайзере | |
 | Duda CDN | `images.remotePatterns`, скрипты миграции `scripts/*duda*` | Временно, до полной миграции медиа |
 | S3-совместимое хранилище | `@aws-sdk/client-s3`, `STORAGE_DRIVER=s3` | Код есть; не сконфигурировано (BACKLOG) |

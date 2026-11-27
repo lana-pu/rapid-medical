@@ -30,7 +30,15 @@ const TABS = [
 /** Secondary columns go under the name; the date, numbers and the status keep their own column. */
 const OWN_COLUMN = new Set<ListColumn["kind"]>(["date", "number", "status"]);
 
-export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
+export default async function ResourceList(props: { params: Promise<{ resource: string }>; searchParams: Promise<SP> }) {
+  return ResourceListView(props);
+}
+
+/**
+ * The list itself. `embedded` — inside another screen that has its own heading (Redirects inside Old links): no
+ * heading of its own; the screen shows the count and «New» (docs/screens/admin-not-found-log.md, 2026-11-27).
+ */
+export async function ResourceListView({ params, searchParams, embedded = false }: { params: Promise<{ resource: string }>; searchParams: Promise<SP>; embedded?: boolean }) {
   const me = await requireUser(); // the layout checks too; a page never relies on it alone
   const { resource } = await params;
   const sp = await searchParams;
@@ -68,7 +76,9 @@ export default async function ResourceList({ params, searchParams }: { params: P
   // the status column only when some record is not simply on the site (docs/screens/admin-list.md → «Иерархия»)
   const quiet = !!states && states.counts.changed + states.counts.scheduled + states.counts.drafts === 0;
   const own = rest.filter((c) => OWN_COLUMN.has(c.kind) && !(c.kind === "status" && quiet));
-  const under = rest.filter((c) => !OWN_COLUMN.has(c.kind));
+  // «to» goes beside the name at the same size: «/old → /new» (a redirect, docs/screens/admin-not-found-log.md)
+  const arrow = rest.find((c) => c.kind === "to");
+  const under = rest.filter((c) => !OWN_COLUMN.has(c.kind) && c.kind !== "to");
   const dateCol = own.find((c) => c.kind === "date");
   const pages = Math.max(1, Math.ceil(total / per));
   const has = (c: string) => res.listColumns.some((x) => x.name === c);
@@ -144,7 +154,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
               </span>
             )}
             <span className="grid min-w-0 gap-0.5">
-              <span className="line-clamp-2 font-medium leading-snug text-neutral-900 group-hover:underline">{String(r[nameCol.name] ?? "")}</span>
+              <span className={`line-clamp-2 ${arrow ? "break-all" : ""} font-medium leading-snug text-neutral-900 group-hover:underline`}>{String(r[nameCol.name] ?? "")}{arrow && <span className="font-normal text-neutral-600"> → {String(r[arrow.name] ?? "")}</span>}</span>
               {(tags.length > 0 || meta.length > 0 || dateCol || s) && (
                 <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-neutral-500">
                   {tags.map((t) => <span key={t} className="rounded-full bg-amber-50 px-2 py-px text-[11px] font-medium text-amber-900">{t}</span>)}
@@ -169,7 +179,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
 
   return (
     <>
-      <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={subtitle || undefined} actions={res.alwaysLive ? undefined : <LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />
+      {!embedded && <PageHeader crumbs={crumbsFor(res.slug).slice(0, -1)} title={res.title} subtitle={subtitle || undefined} actions={res.alwaysLive ? undefined : <LinkButton href={`/admin/${res.slug}/new`} variant="primary">+ New {res.titleSingular.toLowerCase()}</LinkButton>} />}
       {/* Home, About… cannot be created: no «+ New» that leads to a 404 (docs/screens/admin-list.md, 2026-11-16) */}
       {sp.bulk && <Notice kind="success">{sp.bulk === "delete" ? "Deleted" : sp.bulk === "publish" ? "Published" : "Unpublished"} {sp.n} item(s).</Notice>}
       {sp.bulk === "delete" && Number(sp.live) > 0 && <Notice kind="error">{sp.live} on the site {Number(sp.live) === 1 ? "was" : "were"} not deleted: unpublish {Number(sp.live) === 1 ? "it" : "them"} first.</Notice>}
@@ -212,7 +222,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
                 {[nameCol, ...own].map((c, i) => (
                   <th key={`${c.name}-${i}`} className={`px-3 py-2 font-medium ${i === 0 ? "" : `hidden @xl:table-cell ${width(c)}`}`}>
                     <Link href={sortLink(c.name)} className="hover:text-neutral-900">
-                      {c.label}{sp.sort === c.name ? (sp.dir === "desc" ? " ↓" : " ↑") : ""}
+                      {c.label}{i === 0 && arrow ? ` → ${arrow.label}` : ""}{sp.sort === c.name ? (sp.dir === "desc" ? " ↓" : " ↑") : ""}
                     </Link>
                   </th>
                 ))}

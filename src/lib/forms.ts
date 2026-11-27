@@ -7,7 +7,7 @@ import { db, contactSubmissions, loginAttempts } from "@/db";
 import { clientIp } from "./client-ip";
 import { sendMail } from "@/lib/mail";
 import { getLiveSetting } from "@/lib/settings";
-import { recipientFor, type RoutingSettings } from "@/lib/contact-topics";
+import { recipientFor, routingOf } from "@/lib/contact-topics";
 import { sourceLabel } from "./tracking";
 import { countryName, formRegionForCountry, isCountryCode } from "./countries";
 
@@ -106,7 +106,8 @@ export async function submitForm(_prev: FormState, fd: FormData): Promise<FormSt
     "", `View in admin: ${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions/${row.id}`,
   ];
   try {
-    const to = recipientFor(d, await getLiveSetting<RoutingSettings>("contact")); // published values only, never a preview draft
+    const [requests, contact] = await Promise.all([getLiveSetting("requests"), getLiveSetting("contact")]); // published values only, never a preview draft
+    const to = recipientFor(d, routingOf(requests, contact));
     await sendMail({ to, subject: `[Website] ${d.form}: ${d.topic || "new submission"} – ${d.firstName} ${d.lastName}`, text: lines.join("\n"), replyTo: d.email });
   } catch (e) {
     console.error("mail failed", e);

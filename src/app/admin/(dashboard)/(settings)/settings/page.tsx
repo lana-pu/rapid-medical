@@ -6,9 +6,14 @@ import { audit } from "@/lib/audit";
 import { SETTINGS_GROUPS, getSettingsGroup, groupValue, mayEditGroup } from "@/admin/settings";
 import { getLiveSetting, setSetting, getSettingDraft, deleteSettingDraft } from "@/lib/settings";
 import { db, products } from "@/db";
-import { PageHeader, Notice, Button } from "@/components/admin/ui";
+import { PageHeader, Notice } from "@/components/admin/ui";
+import { SettingsForm } from "@/components/admin/SettingsForm";
+import { isEmailList } from "@/lib/contact-topics";
 import { SettingsOverview } from "./Overview";
 import { SettingsFields } from "@/components/admin/SettingsFields";
+
+/** The overview's block each group sits in, for the crumb (docs/screens/admin-settings.md → «Иерархия»). */
+const AREA: Record<string, string> = { contact: "On the site", social: "On the site", regional: "On the site", requests: "Requests", branding: "Look & connections", integrations: "Look & connections" };
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ group?: string; saved?: string; error?: string; f?: string }> }) {
   const sp = await searchParams;
@@ -18,7 +23,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const groups = SETTINGS_GROUPS.filter((g) => mayEditGroup(me, g));
   const asked = getSettingsGroup(sp.group ?? "contact");
   const group = asked && mayEditGroup(me, asked) ? asked : groups[0];
-  const [live, draft, prods] = await Promise.all([getLiveSetting(group.key), getSettingDraft(group.key), db.select().from(products)]);
+  const [own, inherited, draft, prods] = await Promise.all([
+    getLiveSetting(group.key),
+    group.inherit ? getLiveSetting(group.inherit.from) : Promise.resolve({} as Record<string, unknown>),
+    getSettingDraft(group.key),
+    db.select().from(products),
+  ]);
+  // Where requests go reads the old Contact details addresses until it is saved once (docs/screens/admin-settings.md)
+  const live = { ...Object.fromEntries((group.inherit?.keys ?? []).filter((k) => k in inherited).map((k) => [k, inherited[k]])), ...own };
   const value = groupValue(group, live, draft?.value);
 
   async function save(fd: FormData) {
@@ -43,6 +55,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         }
       } else if (f.type === "link" || f.type === "json" || f.type === "table") {
         try { out[f.name] = s ? JSON.parse(s) : null; } catch { out[f.name] = null; }
+      } else if (f.emails && s && !isEmailList(s)) {
+        redirect(`/admin/settings?group=${g.key}&error=emails&f=${encodeURIComponent(f.name)}`);
       } else if (f.type === "boolean") out[f.name] = raw === "on";
       else if (f.type === "stringList") out[f.name] = s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
       else if (f.type === "url" && s && safeLocalPath(s, "") === "" && !/^(https?:\/\/|mailto:|tel:)\S+$/i.test(s)) {
@@ -70,13 +84,13 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      {/* the groups are listed in the Settings column (docs/admin-ia.md); the page shows one */}
-      <PageHeader crumbs={[{ label: "Settings", href: "/admin/settings" }]} title={group.title} />
+      {/* the groups are listed in the Settings column (docs/admin-ia.md); the page shows one, its line right under the title */}
+      <PageHeader crumbs={[{ label: "Settings", href: "/admin/settings" }, ...(AREA[group.key] ? [{ label: AREA[group.key] }] : [])]} title={group.title} subtitle={group.description} />
       {sp.saved && <Notice kind="success">Saved.</Notice>}
       {sp.error && (
         <Notice kind="error">
           {group.fields.find((x) => x.name === sp.f)?.label ?? "A field"}:{" "}
-          {sp.error === "list" ? "the list could not be read, nothing was saved." : "use a page address (/…) or a full link (https://…). Nothing was saved."}
+          {sp.error === "list" ? "the list could not be read, nothing was saved." : sp.error === "emails" ? "use email addresses, separated by commas. Nothing was saved." : "use a page address (/…) or a full link (https://…). Nothing was saved."}
         </Notice>
       )}
       {draft && (
@@ -85,8 +99,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <form action={discard} className="inline"><input type="hidden" name="__group" value={group.key} /><button type="submit" className="underline">discard</button></form> drops them.
         </Notice>
       )}
-      {group.description && <p className="mb-4 text-sm text-neutral-500">{group.description}</p>}
-      <form action={save} className="space-y-6">
+      <SettingsForm action={save} discardHref={`/admin/settings?group=${group.key}`}>
         <input type="hidden" name="__group" value={group.key} />
         {/* the form in blocks, each with a line on what it is for (docs/screens/admin-settings.md) */}
         {[...new Set(group.fields.map((f) => f.section ?? ""))].map((name) => (
@@ -100,8 +113,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             <SettingsFields fields={group.fields.filter((f) => (f.section ?? "") === name)} value={value} products={prods} />
           </section>
         ))}
-        <Button type="submit">Save</Button>
-      </form>
+      </SettingsForm>
     </>
   );
 }

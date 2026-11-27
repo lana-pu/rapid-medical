@@ -191,10 +191,14 @@ test("the admin: functions on a rail, the site as a tree with collections; page 
   await expect(page).toHaveURL(/\/admin\/settings$/, { timeout: 20_000 });
   const settings = page.getByRole("navigation", { name: "Settings" });
   // Settings opens on an overview in blocks; the column has the same groups (docs/screens/admin-settings.md)
-  for (const g of ["On the site", "Search & sharing", "Team", "You"]) await expect(page.getByRole("region", { name: g })).toBeVisible();
+  for (const g of ["On the site", "Requests", "Search & sharing", "Team & you"]) await expect(page.getByRole("region", { name: g, exact: true })).toBeVisible();
   await expect(settings.getByRole("link", { name: "Old links" })).toBeVisible();
   await settings.getByRole("link", { name: "Contact details" }).click();
-  await expect(page.getByRole("region", { name: "Where requests go" })).toBeVisible(); // the form in blocks
+  await expect(page.getByRole("region", { name: "Offices" })).toBeVisible(); // the form in blocks
+  // where requests go is its own setting: a mailbox per topic and per form (docs/screens/admin-settings.md, 2026-11-27)
+  await settings.getByRole("link", { name: "Where requests go" }).click();
+  await expect(page.getByRole("region", { name: "Contact Us — by topic" })).toBeVisible();
+  await expect(page.getByLabel("Request a demo")).toBeVisible();
   await settings.getByRole("link", { name: "Old links" }).click();
   await page.getByRole("navigation", { name: "Old links" }).getByRole("link", { name: "Redirects" }).click();
   await expect(page).toHaveURL(/\/admin\/redirects$/);
@@ -510,7 +514,7 @@ test("invite → welcome link → two-step sign-in set up on the first visit →
   await again.waitForURL(/\/admin$/);
   expect(sql(`select jsonb_array_length(recovery_codes) from users where email='invited@e2e.test'`)).toBe("7");
   await again.goto("/admin/account");
-  await expect(again.getByRole("button", { name: "Set up on a new phone" })).toBeVisible();
+  await expect(again.getByText("Set up on a new phone…")).toBeVisible();
   await expect(again.getByRole("button", { name: "Disable" })).toHaveCount(0);
 
   await page.reload();
@@ -947,14 +951,16 @@ test("My account: re-typing the password is limited like sign-in — 8 wrong in 
   try {
     for (let i = 0; i < 8; i++) {
       await page.goto("/admin/account");
+      await page.getByText("Set up on a new phone…").click(); // folded under its row (docs/screens/admin-account.md)
       await page.fill("input[name=password]", `wrong-password-${i}`);
-      await page.getByRole("button", { name: "Set up on a new phone" }).click();
+      await page.getByRole("button", { name: "Set up on a new phone", exact: true }).click();
       await page.waitForURL(/error=/);
       await expect(page.getByText("Password is wrong")).toBeVisible();
     }
     await page.goto("/admin/account");
+    await page.getByText("Set up on a new phone…").click();
     await page.fill("input[name=password]", "wrong-password-9");
-    await page.getByRole("button", { name: "Set up on a new phone" }).click();
+    await page.getByRole("button", { name: "Set up on a new phone", exact: true }).click();
     await page.waitForURL(/error=/);
     await expect(page.getByText("Too many attempts. Try again in 15 minutes.")).toBeVisible();
     // two-step sign-in is untouched

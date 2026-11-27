@@ -44,6 +44,13 @@ export type FieldDef = {
   max?: number;
   /** Edited on the page (ADR-007): not in the form; a form save keeps the current value. */
   onPage?: boolean;
+  /** Repeater: items start folded; `summary` — the fields shown on a folded item, joined by « · » */
+  folded?: boolean;
+  summary?: string[];
+  /** Repeater sub-field: shown inside a folded «{fold}» part of the item (an office's map pin) */
+  fold?: string;
+  /** A list of email addresses separated by commas: checked on save (Where requests go) */
+  emails?: boolean;
   /** Set when the record is created, then shown as text (a page's region: another region is a copy of the page). */
   fixedAfterCreate?: boolean;
 };
@@ -55,5 +62,5 @@ export type ListColumn = {
    * Render helper for special columns. Columns without a kind (and region, regions, product) are secondary: the list
    * shows them in the line under the name (docs/screens/admin-list.md → «Иерархия»); a `number` keeps its own column.
    */
-  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen" | "number";
+  kind?: "status" | "date" | "region" | "regions" | "product" | "boolean" | "eventWhen" | "number" | "to";
 };

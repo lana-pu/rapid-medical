@@ -21,7 +21,8 @@ export default async function SearchAndSharing({ searchParams }: { searchParams:
   const back = `/admin/seo?page=${encodeURIComponent(page?.key ?? "/")}`;
   const inUse = page?.versions.filter((v) => !v.region || !PAUSED_REGIONS.includes(v.region)) ?? [];
   const paused = page?.versions.filter((v) => v.region && PAUSED_REGIONS.includes(v.region)) ?? [];
-  const problems = pages.reduce((n, p) => n + p.problems, 0);
+  // pages, the same number as «Only problems» and the Settings overview (docs/screens/admin-seo.md)
+  const problems = pages.filter((p) => p.problems).length;
 
   return (
     <div className={`${MAIN_BLEED} flex min-h-[calc(100vh-3rem)] flex-col lg:flex-row`}>
@@ -35,7 +36,7 @@ export default async function SearchAndSharing({ searchParams }: { searchParams:
         <h1 className="text-2xl font-semibold text-neutral-900">{page?.name ?? "Search & sharing"}</h1>
         <p className="mt-1 max-w-3xl text-sm text-neutral-600">
           How this page looks in Google. The same texts are in the page&apos;s own Settings — change them here or there.
-          {problems ? ` ${problems} version${problems > 1 ? "s" : ""} of pages need a look across the site.` : " Every page is fine."}
+          {problems ? ` ${problems} page${problems > 1 ? "s" : ""} need${problems > 1 ? "" : "s"} a look across the site.` : " Every page is fine."}
         </p>
         {page && page.key !== "/webinars" && page.key !== "/news-events" && page.key !== "/open-positions" && page.key !== "/contact-us" && (
           <Link href={adminPageHref(page.key)} className="mt-2 inline-block text-sm underline">Open the page</Link>

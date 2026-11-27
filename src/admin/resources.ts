@@ -515,7 +515,7 @@ export const RESOURCES: Resource[] = [
     revalidate: [],
     listColumns: [
       { name: "from", label: "From" },
-      { name: "to", label: "To" },
+      { name: "to", label: "To", kind: "to" },
       { name: "permanent", label: "Temporary", kind: "boolean" },
       { name: "hits", label: "Used", kind: "number" },
     ],

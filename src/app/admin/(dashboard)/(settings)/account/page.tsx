@@ -4,6 +4,7 @@ import { db, passwordResets, users } from "@/db";
 import { requireUser, listSessions, destroyAllSessions, hashPassword, confirmOwnPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { PageHeader, Button, inputCls, Notice, formatDate } from "@/components/admin/ui";
+import { deviceName } from "@/lib/device";
 
 export default async function AccountPage({ searchParams }: { searchParams: Promise<{ msg?: string; error?: string }> }) {
   const me = await requireUser();
@@ -48,55 +49,81 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     redirect("/admin/account?msg=Other+sessions+signed+out");
   }
 
+  // newest first, this device on top; five on view, the rest folded (docs/screens/admin-account.md, 2026-11-27)
+  const ordered = [...sessions].sort((a, b) => Number(b.current) - Number(a.current) || +new Date(b.lastSeenAt) - +new Date(a.lastSeenAt));
+  const SHOWN = 5;
+  const when = (d: Date | string) => formatDate(d, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jerusalem" });
+  const row = (x: (typeof ordered)[number]) => (
+    <li key={x.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 px-5 py-2.5 text-sm @xl:grid-cols-[minmax(0,1fr)_9rem_11rem]" title={`Signed in ${when(x.createdAt)}${x.userAgent ? ` · ${x.userAgent}` : ""}`}>
+      <span className="min-w-0 truncate">{deviceName(x.userAgent)}{x.current && <span className="ml-2 rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-800">this device</span>}</span>
+      <span className="hidden text-neutral-500 @xl:block">{x.ip ?? "—"}</span>
+      <span className="text-neutral-500">{x.current ? "Now" : when(x.lastSeenAt)}</span>
+    </li>
+  );
+  const codes = user.recoveryCodes.length;
+  const reveal = "cursor-pointer list-none rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-800 hover:bg-neutral-100";
+
   return (
-    <>
-      <PageHeader title="My account" subtitle={`${user.name} · ${user.email}`} />
+    <div className="max-w-3xl">
+      <PageHeader title="My account & security" subtitle={`${user.name} · ${user.email}`} />
       {sp.msg && <Notice kind="success">{sp.msg}</Notice>}
       {sp.error && <Notice kind="error">{sp.error}</Notice>}
 
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 @3xl:grid-cols-2">
-        <section className="rounded-lg border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Two-step sign-in</h2>
-          <form action={setUpAgain} className="mt-3 space-y-2 text-sm">
-            <p className="text-green-800">On since {formatDate(user.totpEnabledAt, { dateStyle: "medium" })}. {user.recoveryCodes.length} recovery codes left.</p>
-            <p className="text-neutral-600">New phone? Set it up again: the old codes stop working.</p>
-            <input name="password" type="password" placeholder="Confirm with your password" autoComplete="current-password" required className={inputCls} />
-            <Button type="submit" variant="secondary">Set up on a new phone</Button>
-          </form>
+      <div className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 bg-white">
+        <section aria-label="Two-step sign-in" className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 px-5 py-4">
+          <div className="min-w-0 flex-1 basis-64">
+            <h2 className="font-semibold">Two-step sign-in</h2>
+            <p className="mt-0.5 text-sm text-neutral-600">On since {formatDate(user.totpEnabledAt, { dateStyle: "medium" })} · a code from your phone at every sign-in.</p>
+            {codes > 0 ? (
+              <p className="mt-0.5 text-sm text-neutral-600">{codes} recovery code{codes === 1 ? "" : "s"} left.</p>
+            ) : (
+              <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-amber-900"><span aria-hidden className="h-1.5 w-1.5 rounded-full bg-amber-500" />No recovery codes left — if you lose the phone, an admin has to reset it.</p>
+            )}
+          </div>
+          <details className="group w-full @xl:w-72">
+            <summary className={`${reveal} text-center`}>Set up on a new phone…</summary>
+            <form action={setUpAgain} className="mt-3 space-y-2 text-sm">
+              <p className="text-neutral-600">The old codes stop working.</p>
+              <input name="password" type="password" placeholder="Confirm with your password" autoComplete="current-password" required className={inputCls} />
+              <Button type="submit" variant="secondary">Set up on a new phone</Button>
+            </form>
+          </details>
         </section>
 
-        <section className="rounded-lg border border-neutral-200 bg-white p-5">
-          <h2 className="font-semibold">Change password</h2>
-          <form action={changePassword} className="mt-3 space-y-2 text-sm">
-            <input name="current" type="password" placeholder="Current password" autoComplete="current-password" required className={inputCls} />
-            <input name="next" type="password" placeholder="New password (10+ characters)" autoComplete="new-password" minLength={10} required className={inputCls} />
-            <Button type="submit" variant="secondary">Change password</Button>
-          </form>
-        </section>
-
-        <section className="rounded-lg border border-neutral-200 bg-white p-5 @3xl:col-span-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-semibold">Active sessions</h2>
-            <form action={signOutEverywhere}><Button type="submit" variant="secondary">Sign out other sessions</Button></form>
+        <section aria-label="Password" className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 px-5 py-4">
+          <div className="min-w-0 flex-1 basis-64">
+            <h2 className="font-semibold">Password</h2>
+            <p className="mt-0.5 text-sm text-neutral-600">Changing it signs you out everywhere else.</p>
           </div>
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full whitespace-nowrap text-sm">
-            <thead className="text-left text-xs uppercase text-neutral-500"><tr><th className="py-1">Device</th><th>IP</th><th>Signed in</th><th>Last seen</th><th></th></tr></thead>
-            <tbody>
-              {sessions.map((s) => (
-                <tr key={s.id} className="border-t border-neutral-100">
-                  <td className="max-w-md truncate py-1.5" title={s.userAgent ?? ""}>{s.userAgent?.replace(/^Mozilla\/5\.0 /, "").slice(0, 70) ?? "—"}</td>
-                  <td>{s.ip ?? "—"}</td>
-                  <td>{formatDate(s.createdAt, { dateStyle: "short", timeStyle: "short" })}</td>
-                  <td>{formatDate(s.lastSeenAt, { dateStyle: "short", timeStyle: "short" })}</td>
-                  <td className="text-right">{s.current && <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs text-green-800">this device</span>}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
+          <details className="w-full @xl:w-72">
+            <summary className={`${reveal} text-center`}>Change password…</summary>
+            <form action={changePassword} className="mt-3 space-y-2 text-sm">
+              <input name="current" type="password" placeholder="Current password" autoComplete="current-password" required className={inputCls} />
+              <input name="next" type="password" placeholder="New password (10+ characters)" autoComplete="new-password" minLength={10} required className={inputCls} />
+              <Button type="submit" variant="secondary">Change password</Button>
+            </form>
+          </details>
         </section>
       </div>
-    </>
+
+      <section aria-label="Where you are signed in" className="mt-8">
+        <h2 className="mb-2 text-sm font-semibold text-neutral-600">Where you are signed in</h2>
+        <div className="rounded-lg border border-neutral-200 bg-white">
+          <div aria-hidden className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 border-b border-neutral-100 px-5 py-2 text-xs text-neutral-500 @xl:grid-cols-[minmax(0,1fr)_9rem_11rem]">
+            <span>Device</span><span className="hidden @xl:block">IP</span><span>Last active</span>
+          </div>
+          <ul className="divide-y divide-neutral-100">{ordered.slice(0, SHOWN).map(row)}</ul>
+          {ordered.length > SHOWN && (
+            <details className="border-t border-neutral-100">
+              <summary className="cursor-pointer px-5 py-2.5 text-sm text-neutral-700 underline decoration-neutral-300 underline-offset-[3px]">Show {ordered.length - SHOWN} more</summary>
+              <ul className="divide-y divide-neutral-100 border-t border-neutral-100">{ordered.slice(SHOWN).map(row)}</ul>
+            </details>
+          )}
+          <div className="flex justify-end border-t border-neutral-100 px-5 py-3">
+            <form action={signOutEverywhere}><Button type="submit" variant="secondary">Sign out everywhere else</Button></form>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

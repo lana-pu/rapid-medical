@@ -417,7 +417,7 @@ export function Field({ f, value, error, products, namePrefix = "", bare = false
       return (
         <div className={wrap}>
           <Label f={f} error={error} />
-          <Repeater name={name} fields={f.fields ?? []} initial={items} products={products} itemLabel={f.label.toLowerCase().replace(/s$/, "")} />
+          <Repeater name={name} fields={f.fields ?? []} initial={items} products={products} itemLabel={f.label.toLowerCase().replace(/s$/, "")} folded={f.folded} summaryFields={f.summary} />
           {help}
         </div>
       );

@@ -37,6 +37,8 @@ export type SettingsGroup = {
   access?: "designer" | "admin";
   /** its text fields (labels) are edited on the page by any role, even when the group itself is limited */
   pageLabels?: boolean;
+  /** values read from another group until this one is saved (Where requests go ← Contact details, 2026-11-27) */
+  inherit?: { from: string; keys: string[] };
   /** what the site shows while the group has never been saved (the form and on-page edits start from it) */
   defaults?: Record<string, unknown>;
   /** the form's blocks: a field's `section` → one line on what the block is for (docs/screens/admin-settings.md) */
@@ -50,26 +52,24 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
     key: "contact",
     title: "Contact details",
-    description: "Phones, emails and offices shown on the site, and where the contact form sends requests.",
+    description: "Phones, emails and offices shown on the site. Where requests go is its own setting.",
     revalidate: ["/"],
     sections: {
       "Phones and email on the site": "In the footer of every page and on Contact Us.",
-      "Where requests go": "The contact form sends orders by region and IFU requests to these addresses; everything else goes to the main team address.",
-      Offices: "Shown on Contact Us with a map pin, and the first one in the footer.",
+      Offices: "On Contact Us with a map pin; the first one is also in the footer.",
     },
     fields: [
       { name: "phoneHq", label: "Head office phone", type: "text", half: true, section: "Phones and email on the site" },
       { name: "phoneUs", label: "US phone", type: "text", half: true, section: "Phones and email on the site" },
       { name: "email", label: "General email", type: "text", half: true, section: "Phones and email on the site" },
-      { name: "ordersEmailInc", label: "Orders — Americas (Inc)", type: "text", half: true, section: "Where requests go" },
-      { name: "ordersEmailCanada", label: "Orders — Canada", type: "text", half: true, section: "Where requests go" },
-      { name: "ordersEmailLtd", label: "Orders — everywhere else (Ltd)", type: "text", half: true, section: "Where requests go" },
-      { name: "ifuEmail", label: "Instructions for Use (IFU) requests", type: "text", half: true, section: "Where requests go" },
+      // the order and IFU mailboxes moved to Where requests go (2026-11-27); their values stay here and are read from there
       {
         name: "offices",
         label: "Offices",
         section: "Offices",
         type: "repeater",
+        folded: true,
+        summary: ["name", "label"],
         fields: [
           { name: "name", label: "Entity", type: "text", required: true, half: true },
           { name: "label", label: "Label", type: "text", half: true, placeholder: "Headquarters" },
@@ -77,15 +77,44 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
           { name: "phone", label: "Phone", type: "text", half: true },
           { name: "fax", label: "Fax", type: "text", half: true },
           { name: "ordersEmail", label: "Orders email", type: "text" },
-          { name: "lat", label: "Latitude (map pin)", type: "text", half: true },
-          { name: "lon", label: "Longitude (map pin)", type: "text", half: true },
+          { name: "lat", label: "Latitude", type: "text", half: true, fold: "Map pin" },
+          { name: "lon", label: "Longitude", type: "text", half: true, fold: "Map pin" },
         ],
       },
     ],
   },
   {
+    // docs/screens/admin-settings.md → «Where requests go» (decision 2026-11-27); read by src/lib/contact-topics.ts
+    key: "requests",
+    title: "Where requests go",
+    description: "Every request is in the Inbox; here — which mailbox also gets it by email. An empty line sends it to the main address of the visitor's region. Several addresses — separate with commas.",
+    revalidate: [],
+    inherit: { from: "contact", keys: ["ordersEmailInc", "ordersEmailCanada", "ordersEmailLtd", "ifuEmail"] },
+    sections: {
+      "Main address": "Gets every request that has no address of its own below. Both empty — the address set on the server.",
+      "Contact Us — by topic": "The topic the visitor picks on Contact Us.",
+      "Other forms": "The forms on webinar, job and event pages.",
+    },
+    fields: [
+      { name: "mainEmailAmericas", label: "Main address — Americas", type: "text", half: true, emails: true, section: "Main address", placeholder: "Empty — the other main address" },
+      { name: "mainEmail", label: "Main address — everywhere else", type: "text", half: true, emails: true, section: "Main address", placeholder: "Empty — the other main address" },
+      ...(
+        [
+          ["demoEmail", "Request a demo"], ["supportEmail", "Product question / Support"],
+          ["ordersEmailInc", "Customer Service / Orders — Americas (Inc)"], ["ordersEmailCanada", "Customer Service / Orders — Canada"],
+          ["ordersEmailLtd", "Customer Service / Orders — everywhere else (Ltd)"], ["ifuEmail", "Instructions for Use (IFU)"],
+          ["eventsEmail", "Meetings & Events"], ["investorsEmail", "Investor relations"], ["otherEmail", "Other"],
+        ] as const
+      ).map(([name, label]): FieldDef => ({ name, label, type: "text", half: true, emails: true, section: "Contact Us — by topic", placeholder: name === "ordersEmailCanada" ? "Empty — Orders, Americas" : "Empty — the main address" })),
+      ...(
+        [["webinarEmail", "Webinar recording"], ["careersEmail", "Job application"], ["eventFormEmail", "Event registration"]] as const
+      ).map(([name, label]): FieldDef => ({ name, label, type: "text", half: true, emails: true, section: "Other forms", placeholder: "Empty — the main address" })),
+    ],
+  },
+  {
     key: "social",
     title: "Social links",
+    description: "The icons in the footer of every page. An empty address — no icon.",
     revalidate: ["/"],
     fields: [
       { name: "x", label: "X / Twitter", type: "url", half: true },
@@ -97,14 +126,18 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   {
     key: "regional",
     title: "Regional notices",
-    description: "Text shown on the location chooser and region banners.",
-    revalidate: ["/choose-your-location", "/us", "/ous"],
+    description: "The region chooser and the regulatory note at the bottom of each region's pages.",
+    revalidate: ["/choose-your-location", "/us", "/ous", "/apac"],
+    sections: {
+      "Region chooser": "The page where a visitor picks a region.",
+      "Note under each region's pages": "Above the footer of every page of the region.",
+    },
     fields: [
-      { name: "chooserTitle", label: "Chooser title", type: "text", placeholder: "Choose your location." },
-      { name: "usNotice", label: "US regulatory footer note", type: "textarea", rows: 2 },
-      { name: "ousNotice", label: "OUS regulatory footer note", type: "textarea", rows: 2 },
-      { name: "apacNotice", label: "APAC regulatory footer note", type: "textarea", rows: 2 },
-      { name: "chooserNote", label: "Chooser subtitle", type: "text" },
+      { name: "chooserTitle", label: "Title", type: "text", placeholder: "Choose your location.", section: "Region chooser" },
+      { name: "chooserNote", label: "Subtitle", type: "text", section: "Region chooser" },
+      { name: "usNotice", label: "Americas (US)", type: "textarea", rows: 2, section: "Note under each region's pages", help: "Empty — no note on US pages." },
+      { name: "ousNotice", label: "Europe & Middle East (OUS)", type: "textarea", rows: 2, section: "Note under each region's pages", help: "Empty — no note on OUS pages." },
+      { name: "apacNotice", label: "Asia & Pacific (APAC)", type: "textarea", rows: 2, section: "Note under each region's pages", help: "Empty — no note on APAC pages." },
     ],
   },
   ...(["us", "ous", "apac"] as const).map((r) => ({
@@ -178,24 +211,25 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     key: "branding",
     access: "designer",
     title: "Branding",
+    description: "The logo in the site's header, the picture shown when a page is shared, and the icon in the browser tab.",
     revalidate: ["/"],
+    // «Logo PNG (email / fallback)» is not in the form: emails go without a logo (decision 2026-11-27); its value stays
     fields: [
-      { name: "logoUrl", label: "Logo (SVG/PNG)", type: "image", half: true },
-      { name: "logoPngUrl", label: "Logo PNG (email / fallback)", type: "image", half: true },
-      { name: "ogImageUrl", label: "Social sharing image", type: "image", half: true },
-      { name: "faviconUrl", label: "Favicon", type: "image", half: true, help: "Also replace src/app/favicon.ico when changing." },
+      { name: "logoUrl", label: "Logo (SVG/PNG)", type: "image", half: true, help: "In the header of every page." },
+      { name: "ogImageUrl", label: "Social sharing image", type: "image", half: true, help: "When a page is shared on LinkedIn, in a message or an email. 1200 × 630. Empty — the standard picture." },
+      { name: "faviconUrl", label: "Browser tab icon", type: "image", half: true, help: "Square, at least 48 × 48. Empty — the standard icon." },
     ],
   },
   {
     key: "integrations",
     access: "admin",
     title: "Integrations",
-    description: "Third-party scripts. Leave a field empty to disable.",
+    description: "Services the site connects to. An empty field — the service is off.",
     revalidate: ["/"],
     fields: [
-      { name: "gaMeasurementId", label: "Google Analytics 4 measurement ID", type: "text", half: true, placeholder: "G-XXXXXXXXXX" },
-      { name: "userwayAccount", label: "UserWay accessibility widget account", type: "text", half: true },
-      { name: "geoSuggest", label: "Suggest region by visitor country", type: "boolean" },
+      { name: "gaMeasurementId", label: "Google Analytics 4 measurement ID", type: "text", half: true, placeholder: "G-XXXXXXXXXX", help: "Marketing's own reports in Google Analytics. In GA: Admin → Data streams → the site → Measurement ID." },
+      { name: "userwayAccount", label: "UserWay accessibility widget account", type: "text", half: true, help: "The accessibility button on every page." },
+      { name: "geoSuggest", label: "Suggest region by visitor country", type: "boolean", help: "A visitor on another region's pages sees «It looks like you are in …» with a link to their region." },
     ],
   },
 ];

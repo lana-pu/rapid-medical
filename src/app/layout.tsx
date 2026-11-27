@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "Purpose-built devices for stroke intervention. Personalized tools for patient anatomy.",
   openGraph: { type: "website", siteName: "Rapid Medical™", images: ["/og-image.jpg"] },
   twitter: { card: "summary", images: ["/og-image.jpg"] },
+  // the site's pages take the icon from Branding ((site)/layout.tsx); a favicon file in app/ would override any setting
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

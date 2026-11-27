@@ -1,5 +1,5 @@
 import "server-only";
-import { inArray, sql } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { db, drafts, pages, sitePages, solutions } from "@/db";
 import { listEditorPages } from "./pages-index";
 import { pageKey } from "./page-tree";
@@ -119,20 +119,3 @@ export async function seoPages(): Promise<SeoPage[]> {
 
 /** The page a section is named after comes first in it (Therapies overview before the therapies). */
 const sectionKey = (section: string) => ({ Home: "/", Therapies: "/therapies", Evidence: "/evidence", Webinars: "/webinars", "News & Events": "/news-events", "About Us": "/about-us", Careers: "/careers", "Contact Us": "/contact-us" })[section] ?? "";
-
-/**
- * How many page versions need a look, cheaply (the Settings overview): the live fields of the pages that keep them, and
- * Settings → seo — without reading the pages themselves. Pending changes are not counted.
- */
-export async function seoProblemCount(): Promise<number> {
-  const bad = (t: string) => sql.raw(`select count(*)::int as n from ${t} where meta_description = '' or length(meta_title) > 60 or length(meta_description) > 155`);
-  const [a, b, c, seo] = await Promise.all([
-    db.execute(bad("solutions")),
-    db.execute(bad("pages")),
-    db.execute(bad("site_pages")),
-    getLiveSetting<Record<string, string>>("seo"),
-  ]);
-  const n = (r: unknown) => Number((r as { n: number }[])[0]?.n ?? 0);
-  const lists = LIST_PAGES.flatMap((p) => p.versions).filter((v) => seoProblems(seo[v.title] ?? "", seo[v.description] ?? "").length).length;
-  return n(a) + n(b) + n(c) + lists;
-}

@@ -41,8 +41,10 @@ function strip(items: Item[]): Record<string, unknown>[] {
   });
 }
 
-/** Label shown on a collapsed item: first non-empty text-ish field. */
-function summary(it: Item, fields: FieldDef[]): string {
+/** Label shown on a collapsed item: the named fields joined by « · », else the first non-empty text-ish field. */
+function summary(it: Item, fields: FieldDef[], names?: string[]): string {
+  const named = (names ?? []).map((n) => it[n]).filter((v): v is string => typeof v === "string" && !!v.trim());
+  if (named.length) return named.join(" · ").slice(0, 120);
   for (const f of fields) {
     const v = it[f.name];
     if (typeof v === "string" && v.trim() && ["text", "textarea", "slug", "url"].includes(f.type)) return v.slice(0, 80);
@@ -63,6 +65,8 @@ export function Repeater({
   onChange,
   detached = false,
   itemLabel = "item",
+  folded = false,
+  summaryFields,
 }: {
   name: string;
   fields: FieldDef[];
@@ -71,9 +75,12 @@ export function Repeater({
   onChange?: (items: Record<string, unknown>[]) => void;
   detached?: boolean;
   itemLabel?: string;
+  /** items start folded to one line (an office: «Rapid Medical Ltd. · Headquarters»), opened by a click */
+  folded?: boolean;
+  summaryFields?: string[];
 }) {
   const [items, setItems] = useState<Item[]>(() => withKeys(initial as Item[]));
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => (folded ? Object.fromEntries(items.map((it) => [it._key!, true])) : {}));
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
   const dndId = useId();
 
@@ -108,15 +115,29 @@ export function Repeater({
                   <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-neutral-600">
                     <button type="button" {...handle} className="cursor-grab select-none px-1 text-neutral-400 hover:text-neutral-900" title="Drag to reorder" aria-label="Drag to reorder">⋮⋮</button>
                     <button type="button" onClick={() => setCollapsed((c) => ({ ...c, [it._key!]: !c[it._key!] }))} className="flex-1 truncate text-left font-medium text-neutral-800">
-                      {collapsed[it._key!] ? "▸" : "▾"} #{i + 1} · {summary(it, fields)}
+                      {collapsed[it._key!] ? "▸" : "▾"} {summaryFields ? "" : `#${i + 1} · `}{summary(it, fields, summaryFields)}
                     </button>
                     <button type="button" onClick={() => duplicate(i)} className="hover:text-neutral-900">duplicate</button>
                     <button type="button" onClick={() => remove(i)} className="text-red-600 hover:text-red-800">remove</button>
                   </div>
                   {!collapsed[it._key!] && (
                     <div className="grid grid-cols-1 gap-3 border-t border-neutral-200 p-3 @xl:grid-cols-2">
-                      {fields.map((f) => (
+                      {fields.filter((f) => !f.fold).map((f) => (
                         <SubField key={f.name} f={f} value={it[f.name]} onChange={(v) => update(i, f.name, v)} products={products} path={`${name}.${i}.${f.name}`} />
+                      ))}
+                      {/* rarely changed fields folded under their own heading (an office's map pin) */}
+                      {[...new Set(fields.filter((f) => f.fold).map((f) => f.fold!))].map((fold) => (
+                        <details key={fold} className="@xl:col-span-2">
+                          <summary className="cursor-pointer text-xs text-neutral-600">
+                            {fold}
+                            <span className="text-neutral-400"> · {fields.filter((f) => f.fold === fold).map((f) => it[f.name]).filter((v) => v !== "" && v != null).join(", ") || "not set"}</span>
+                          </summary>
+                          <div className="mt-2 grid grid-cols-1 gap-3 @xl:grid-cols-2">
+                            {fields.filter((f) => f.fold === fold).map((f) => (
+                              <SubField key={f.name} f={f} value={it[f.name]} onChange={(v) => update(i, f.name, v)} products={products} path={`${name}.${i}.${f.name}`} />
+                            ))}
+                          </div>
+                        </details>
                       ))}
                     </div>
                   )}

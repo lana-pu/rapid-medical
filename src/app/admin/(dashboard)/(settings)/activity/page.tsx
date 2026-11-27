@@ -70,7 +70,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader title="Activity" subtitle={signIns ? "Sign-ins to the admin" : "What the team changed, newest first"} />
+      <PageHeader title="Activity log" subtitle={signIns ? "Sign-ins to the admin" : "What the team changed, newest first"} />
       {me.role === "admin" && (
         <nav aria-label="Activity views" className="mb-4 flex gap-1 border-b border-neutral-200">
           {[["", "Changes"], ["sign-ins", "Sign-ins"]].map(([v, label]) => (
