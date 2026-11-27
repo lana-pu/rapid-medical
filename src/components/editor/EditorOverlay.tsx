@@ -676,9 +676,11 @@ export default function EditorOverlay() {
       setUndoCount(0);
       redo.current = [];
       setRedoCount(0);
+      // publishing changes the page's version: learn it before «Keep editing» lets the next edit go, or that edit
+      // carries the old one and reads as someone else's change (docs/screens/on-page-editor.md → «Публикация»)
+      await afterChange();
       setModal(r.published ? { k: "live", path: info?.livePath ?? pathname } : null);
       if (!r.published) say("Nothing to publish");
-      await afterChange();
     } finally {
       setBusy(false);
     }
@@ -692,9 +694,9 @@ export default function EditorOverlay() {
       setUndoCount(0);
       redo.current = [];
       setRedoCount(0);
+      await afterChange(); // the draft is gone, so is its version: the same as after Publish
       setModal(null);
       say(n ? "Changes discarded" : "Nothing to discard");
-      await afterChange();
     } finally {
       setBusy(false);
     }

@@ -209,6 +209,9 @@
    «Removed section Video», «Moved section Text», «Changed image in Benefits 2», «Changed variant of Hero»), кто и когда.
    Кнопки Publish now / Keep editing / Discard all changes (с подтверждением).
 2. После Publish → окно «Live now»: адрес страницы, «Open live page ↗», «Keep editing».
+   Окно (и после Discard — закрытие окна) — только когда редактор перечитал страницу и знает её новую версию: публикация
+   меняет версию, и правка сразу после «Keep editing» со старой версией выглядела бы чужой — «This page was changed by
+   someone else» (найдено e2e 2026-11-27, тест истории падал 2 раза из 3).
 
 ## История
 Панель справа: версии страницы новые сверху — «Published», «Saved», «Restored», кто, когда. «Restore this version» кладёт
