@@ -723,7 +723,8 @@ test("analytics: the site counts visits without cookies (not bots, not the team)
   // numbers from the first day, with since when they are counted and where the old site's visits are
   const week = page.getByRole("link", { name: "This week — open analytics" });
   await expect(week).toContainText("visits");
-  await expect(week).toContainText(/Visits counted since/);
+  // the line on since when — under the chart's link, in the same block (docs/screens/admin-home.md, c61aa3dd)
+  await expect(page.getByRole("region", { name: "This week" })).toContainText(/Visits counted since/);
   await expect(page.getByRole("region", { name: "This week" }).getByRole("link", { name: /Google Analytics/ })).toBeVisible();
   // a counter older than the week: no «since», visits compared with last week
   sql(`insert into page_views(kind,path,visit,at) values ('view','/',false, now() - interval '8 days')`);
@@ -947,6 +948,7 @@ test("search & sharing: every page's Google texts in one place; a page's text wa
 });
 
 test("My account: re-typing the password is limited like sign-in — 8 wrong in 15 minutes (docs/screens/admin-account.md)", async ({ page }) => {
+  test.setTimeout(150_000); // nine password checks, each a slow hash on purpose: past 60 s under a full run (2026-11-27)
   await login(page);
   try {
     for (let i = 0; i < 8; i++) {

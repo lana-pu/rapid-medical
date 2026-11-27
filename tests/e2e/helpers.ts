@@ -40,7 +40,16 @@ export async function login(page: Page, email = ADMIN.email, password = ADMIN.pa
     await freshCodeWindow(page);
     await page.fill("input[name=code]", totp(TOTP_SECRET));
     await page.click('button:has-text("Verify")');
-    await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/login"));
+    const signedIn = (u: URL) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/login");
+    await page.waitForURL((u) => signedIn(u) || (u.pathname === "/admin/login/2fa" && u.searchParams.has("error")));
+    // a code is accepted once: a second sign-in in the same 30-second window is refused as a replay (full run
+    // 2026-11-27) — wait for the next window and enter its code
+    if (!signedIn(new URL(page.url()))) {
+      await page.waitForTimeout((30 - ((Date.now() / 1000) % 30) + 0.5) * 1000);
+      await page.fill("input[name=code]", totp(TOTP_SECRET));
+      await page.click('button:has-text("Verify")');
+      await page.waitForURL(signedIn);
+    }
   }
 }
 
